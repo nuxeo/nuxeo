@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXThemes JSF Web editor
+Bundle-SymbolicName: org.nuxeo.theme.jsf.editor.web;singleton:=true
+Bundle-Vendor: Chalmers
+Bundle-Localization: bundle

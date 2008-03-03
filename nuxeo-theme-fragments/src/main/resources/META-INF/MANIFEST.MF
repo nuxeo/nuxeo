@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXThemes Fragments
+Bundle-SymbolicName: org.nuxeo.theme.fragments;singleton:=true
+Bundle-Vendor: Chalmers
+Nuxeo-Component: OSGI-INF/nxthemes-fragments-contrib.xml
+Bundle-Localization: bundle
+Require-Bundle: org.nuxeo.theme.core

@@ -1,0 +1,23 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  class="nxthemesCollapsible nxthemesToolbox" id="nxthemesFragmentFactory">
+
+<div class="title">
+<img class="close" onclick="javascript:NXThemesEditor.backToCanvas()"
+     src="/nuxeo/nxthemes-jsf-editor/img/close-button.png" width="14" height="14" alt="" />
+Fragments
+</div>
+<ul>
+  <ui:repeat value="#{nxthemesUiManager.availableFragments}"
+    var="fragment">
+    <li class="fragment">#{fragment.fragmentType.typeName}</li>
+    <ul class="views">
+      <ui:repeat value="#{fragment.views}" var="v">
+        <li class="nxthemesFragmentFactory" title="Drag this widget to the canvas"
+          typename="#{fragment.fragmentType.typeName}/#{v.viewName}">#{v.viewName}</li>
+      </ui:repeat>
+    </ul>
+  </ui:repeat>
+</ul>
+
+</div>

@@ -1,0 +1,156 @@
+/*
+ * (C) Copyright 2006-2007 Nuxeo SAS <http://nuxeo.com> and others
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Jean-Marc Orliaguet, Chalmers
+ *
+ * $Id$
+ */
+
+package org.nuxeo.theme.elements;
+
+import java.io.StringWriter;
+import java.net.URL;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.engines.EngineType;
+import org.nuxeo.theme.formats.Format;
+import org.nuxeo.theme.formats.FormatFilter;
+import org.nuxeo.theme.formats.FormatType;
+import org.nuxeo.theme.fragments.Fragment;
+import org.nuxeo.theme.nodes.Node;
+import org.nuxeo.theme.rendering.Filter;
+import org.nuxeo.theme.rendering.FilterType;
+import org.nuxeo.theme.rendering.FilterTypeFamily;
+import org.nuxeo.theme.rendering.RendererType;
+import org.nuxeo.theme.rendering.RenderingInfo;
+import org.nuxeo.theme.types.TypeFamily;
+import org.nuxeo.theme.types.TypeRegistry;
+
+public final class ElementRenderer {
+
+    private static final Log log = LogFactory.getLog(ElementRenderer.class);
+
+    private static final TypeRegistry typeRegistry = Manager.getTypeRegistry();
+
+    private ElementRenderer() {
+        // This class is not supposed to be instantiated.
+    }
+
+    public static RenderingInfo render(final RenderingInfo info) {
+        return render(info, true);
+    }
+
+    public static RenderingInfo render(final RenderingInfo info,
+            final boolean cache) {
+        final StringWriter rendered = new StringWriter();
+
+        final URL themeUrl = info.getThemeUrl();
+        if (themeUrl == null) {
+            log.warn("Theme URL not set for the element: " + info.getElement());
+        }
+
+        final EngineType engine = info.getEngine();
+        final Element element = info.getElement();
+
+        RenderingInfo copy = info.createCopy();
+
+        String markup = "";
+        if (element.isLeaf()) {
+            final Fragment fragment = (Fragment) element;
+            copy.setModel(fragment.getModel());
+
+            if (fragment.isDynamic()) {
+                copy.setDirty(true);
+            }
+        } else {
+            for (Node child : element.getChildrenInContext(themeUrl)) {
+                final RenderingInfo childInfo = new RenderingInfo(
+                        (Element) child, themeUrl);
+                final RenderingInfo renderedChild = render(childInfo);
+                if (renderedChild == null) {
+                    continue;
+                }
+                rendered.append(renderedChild.getMarkup());
+            }
+            markup = rendered.toString();
+        }
+
+        copy.setMarkup(markup);
+
+        final RendererType renderer = engine.getRenderers().get(
+                element.getElementType().getTypeName());
+
+        if (renderer == null) {
+            return copy;
+        }
+
+        final String engineName = engine.getName();
+        final String viewMode = info.getViewMode();
+        for (String filterName : renderer.getFilters()) {
+
+            // get the filter for this specified engine and view mode
+            FilterType filterType = (FilterType) typeRegistry.lookup(
+                    TypeFamily.FILTER, String.format("%s/%s/%s", engineName,
+                            viewMode, filterName));
+
+            // fall back to unspecified view mode
+            if (filterType == null) {
+                filterType = (FilterType) typeRegistry.lookup(
+                        TypeFamily.FILTER, String.format("%s/*/%s", engineName,
+                                filterName));
+            }
+
+            // fall back to unspecified engine and view mode
+            if (filterType == null) {
+                filterType = (FilterType) typeRegistry.lookup(
+                        TypeFamily.FILTER, String.format("*/*/%s", filterName));
+            }
+
+            if (filterType == null) {
+                log.warn("Filter type '" + filterName + "' not found.");
+                continue;
+            }
+
+            final Filter filter = filterType.getFilter();
+            if (filter == null) {
+                log.warn("Filter instantiation failed: " + filterName);
+                continue;
+            }
+
+            final FilterTypeFamily filterTypeFamily = filterType.getFilterTypeFamily();
+
+            if (filterTypeFamily == FilterTypeFamily.FORMAT) {
+                final FormatType formatType = ((FormatFilter) filter).getFormatType();
+                final Format format = ElementFormatter.getFormatByType(element,
+                        formatType);
+                if (format == null) {
+                    log.debug("Could not find '" + formatType.getTypeName()
+                            + "' format for: "
+                            + element.getElementType().getTypeName());
+                    continue;
+                }
+                copy.setFormat(format);
+            } else if (filterTypeFamily == FilterTypeFamily.STANDALONE) {
+                // Do nothing
+            } else {
+                log.warn("Unsupported filter type: " + filterName);
+            }
+
+            copy = filter.process(copy, cache);
+
+            // Abort the rendering if the filter returns null
+            if (copy == null) {
+                break;
+            }
+        }
+        return copy;
+    }
+}
