@@ -4,6 +4,10 @@
 
   <implementation class="org.nuxeo.ecm.webapp.pagination.ResultsProviderService"/>
 
+  <service>
+    <provide interface="org.nuxeo.ecm.webapp.pagination.ResultsProviderService"/>
+  </service>
+
   <extension-point name="model">
     <object class="org.nuxeo.ecm.webapp.pagination.ResultsProviderDescriptor"/>
   </extension-point>

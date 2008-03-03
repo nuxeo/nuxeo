@@ -28,11 +28,18 @@ public class TestResultsProviderService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("test-resultsprovider-service.xml");
-        deploy("resultsprovider-components-test-setup.xml");
+        deployContrib("org.nuxeo.ecm.webapp.core", "OSGI-INF/resultsprovider-framework.xml");
+        deployContrib("org.nuxeo.ecm.webapp.core.tests",
+                "resultsprovider-components-test-setup.xml");
 
+        // old style lookup kept to ensure BBB. See NXP-2161
         service = (ResultsProviderService) Framework.getRuntime()
                         .getComponent(ResultsProviderService.NAME);
+    }
+
+    // NXP-2161
+    public void testModernLookup() throws Exception {
+        assertNotNull(Framework.getService(ResultsProviderService.class));
     }
 
     public void testRegistration() throws Exception {
