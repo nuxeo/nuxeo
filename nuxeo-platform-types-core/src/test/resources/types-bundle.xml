@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.types.TypeService">
+
+	<implementation	class="org.nuxeo.ecm.platform.types.TypeService"/>
+
+	<extension-point name="types">
+		<object class="org.nuxeo.ecm.platform.types.Type"/>
+	</extension-point>
+  
+    <extension-point name="default_layout">
+      <object class="org.nuxeo.ecm.platform.types.TypeWidget"/>
+    </extension-point>
+
+</component>
+

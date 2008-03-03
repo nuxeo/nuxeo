@@ -1,0 +1,380 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<h3>
+    <h:form>
+      <h:commandLink actionListener="#{archiveManagerActions.toggleCreateForm}" rendered="#{nxd:hasPermission(currentDocument, 'Write')}">
+        <h:graphicImage url="/img/toggle_plus.png" rendered="#{!archiveManagerActions.showCreateForm}" />
+        <h:graphicImage url="/img/toggle_minus.png" rendered="#{archiveManagerActions.showCreateForm}" />
+        <h:outputText value="#{messages['title.create.archive.record']}" />
+      </h:commandLink>
+    </h:form>
+</h3>
+
+
+<h:form id="createForm" rendered="#{archiveManagerActions.showCreateForm}">
+  <div class="archiveTabContent">
+  <h4><h:outputText value="#{messages['label.document.general.info']}"/></h4>
+  <h:panelGrid columns="4" styleClass="dataInput currentDocumentInformation"
+    columnClasses="relationCreateLabelColumn, relationCreateFieldColumn,
+    relationCreateLabelColumn, relationCreateFieldColumn twoColumns">
+
+    <h:outputLabel for = "docUID"  value="#{messages['label.document.uid']}" />
+    <h:outputText value="#{selectedArchiveRecord.docUID}"
+    id = "docUID" />
+
+    <h:outputLabel for = "docVersion"  value="#{messages['label.document.version']}" />
+    <h:selectOneMenu value="#{selectedArchiveRecord.docVersion}"
+      styleClass="#{archiveManagerActions.style}"
+      readonly="#{!archiveManagerActions.editable}"
+      disabled="#{!archiveManagerActions.editable}">
+          <f:selectItems value="#{archiveManagerActions.documentVersions}"/>
+        </h:selectOneMenu>
+
+      <h:outputLabel for = "docType"  value="#{messages['label.document.type']}" />
+      <h:outputText value="#{messages[nxd:typeLabel(currentDocument)]}"
+      id = "docType" />
+
+      <h:outputLabel for = "docLifeCycle"  value="#{messages['label.document.lifecycle.state']}" />
+      <h:outputText value="#{messages[selectedArchiveRecord.docLifeCycle]}"
+      id = "docLifeCycle" />
+
+      <h:outputLabel for = "docTitle"  value="#{messages['label.document.title']}" />
+      <h:outputText value="#{selectedArchiveRecord.docTitle}"
+      id = "docTitle" />
+
+      <h:outputLabel for = "parentDocPath"  value="#{messages['label.document.parent.path']}" />
+      <h:outputText value="#{selectedArchiveRecord.parentDocPath}"
+      id = "parentDocPath" />
+
+  </h:panelGrid>
+
+  <ui:insert name="current_document_information_addon" />
+
+  <h4><h:outputText value="#{messages['label.archive.global.info']}" /></h4>
+  <h:panelGrid columns="4" styleClass="dataInput"
+    columnClasses="relationCreateLabelColumn, relationCreateFieldColumn,
+    relationCreateLabelColumn, relationCreateFieldColumn twoColumns">
+
+    <h:outputLabel for="archiveDate" value="#{messages['label.archive.global.date']}" />
+    <h:panelGroup>
+
+           <nxu:inputDateTime
+             readonly="#{!archiveManagerActions.editable}"
+             disabled="#{!archiveManagerActions.editable}"
+             styleClass="#{archiveManagerActions.style}"
+             value="#{selectedArchiveRecord.archiveDate}"
+             format="#{nxu:basicDateFormater()}"
+             id="archiveDate"
+           />
+
+          <h:message styleClass="errorMessage" for="archiveDate" />
+    </h:panelGroup>
+
+    <h:outputLabel for="gatheringFolder" value="#{messages['label.archive.global.gathering.folder']}" />
+    <h:panelGroup>
+      <h:inputText
+        id="gatheringFolder"
+        value="#{selectedArchiveRecord.gatheringFolder}"
+        readonly="#{!archiveManagerActions.editable}"
+        disabled="#{!archiveManagerActions.editable}"
+        styleClass="#{archiveManagerActions.style}"
+        maxlength="20"
+        size="20">
+      </h:inputText>
+      <h:message styleClass="errorMessage" for="gatheringFolder" />
+    </h:panelGroup>
+
+  </h:panelGrid>
+
+  <ui:insert name="global_information_addon" />
+
+
+  <h4><h:outputText value="#{messages['label.conservation.support']}" /></h4>
+  <h:panelGrid columns="4" styleClass="dataInput"
+    columnClasses="relationCreateLabelColumn, relationCreateFieldColumn,
+    relationCreateLabelColumn, relationCreateFieldColumn twoColumns">
+
+    <h:outputLabel for="conservationQuality" value="#{messages['label.support.quality']}" />
+      <h:panelGroup>
+      <h:inputText
+        id="conservationQuality"
+        value="#{selectedArchiveRecord.retentionMediumQuality}"
+        readonly="#{!archiveManagerActions.editable}"
+        disabled="#{!archiveManagerActions.editable}"
+        styleClass="#{archiveManagerActions.style}"
+        size="10">
+      </h:inputText>
+    </h:panelGroup>
+
+    <h:outputLabel for="conservationState" value="#{messages['label.support.state']}" styleClass="#{nxu:test(archiveManagerActions.required, 'required', '')}" />
+      <h:panelGroup>
+      <nxdir:selectOneListbox
+                required="#{archiveManagerActions.required}"
+                value="#{selectedArchiveRecord.retentionMediumState}"
+                directoryName="conservation_state"
+                id="conservationState"
+                localize="true"
+                displayValueOnly="#{!archiveManagerActions.editable}"
+                displayIdAndLabel="true" />
+      <h:message for="conservationState" class="errorMessage" />
+    </h:panelGroup>
+
+    <h:outputLabel for="conservationType" value="#{messages['label.support.type']}" />
+    <h:panelGroup>
+      <nxdir:selectOneListbox
+                value="#{selectedArchiveRecord.retentionMediumType}"
+                directoryName="conservation_type"
+                id="conservationType"
+                localize="true"
+                displayValueOnly="#{!archiveManagerActions.editable}"
+                displayIdAndLabel="true" />
+    </h:panelGroup>
+
+
+    <h:outputLabel for="conservationLocation" value="#{messages['label.support.location']}" />
+    <h:panelGroup>
+      <nxdir:selectOneListbox
+                value="#{selectedArchiveRecord.retentionMediumLocation}"
+                directoryName="conservation_location"
+                id="conservationLocation"
+                localize="true"
+                displayValueOnly="#{!archiveManagerActions.editable}"
+                displayIdAndLabel="true" />
+    </h:panelGroup>
+
+    <h:outputLabel for="microformNumber" value="#{messages['label.archive.microform.number']}" />
+      <h:panelGroup>
+      <h:inputText
+        id="microformNumber"
+        value="#{selectedArchiveRecord.microformNumber}"
+        readonly="#{!archiveManagerActions.editable}"
+        disabled="#{!archiveManagerActions.editable}"
+        styleClass="#{archiveManagerActions.style}"
+        size="4">
+      </h:inputText>
+      <h:message styleClass="errorMessage" for="microformNumber" />
+    </h:panelGroup>
+
+    <h:outputLabel for="supportDuration" value="#{messages['label.support.duration']}" />
+      <h:panelGroup>
+      <h:inputText
+        id="supportDuration"
+        value="#{selectedArchiveRecord.retentionMediumMaxAge}"
+        readonly="#{!archiveManagerActions.editable}"
+        disabled="#{!archiveManagerActions.editable}"
+        styleClass="#{archiveManagerActions.style}"
+        size="20">
+      </h:inputText>
+      <h:message styleClass="errorMessage" for="supportDuration" />
+    </h:panelGroup>
+
+
+    <h:outputLabel for="endSupportYear" value="#{messages['label.end.of.support.year']}" />
+      <h:panelGroup>
+
+          <nxu:inputDateTime
+             readonly="#{!archiveManagerActions.editable}"
+             disabled="#{!archiveManagerActions.editable}"
+             styleClass="#{archiveManagerActions.style}"
+             value="#{selectedArchiveRecord.retentionMediumLastYear}"
+             format="#{nxu:basicDateFormater()}"
+             id="endSupportYear"
+           />
+
+          <h:message styleClass="errorMessage" for="endSupportYear" />
+    </h:panelGroup>
+
+    <h:outputLabel for="destructionExpectedDate" value="#{messages['label.destruction.expected.date']}" />
+    <h:panelGroup>
+
+           <nxu:inputDateTime
+             readonly="#{!archiveManagerActions.editable}"
+             disabled="#{!archiveManagerActions.editable}"
+             styleClass="#{archiveManagerActions.style}"
+             value="#{selectedArchiveRecord.estimatedRemovalDate}"
+             format="#{nxu:basicDateFormater()}"
+             id="destructionExpectedDate"
+           />
+
+          <h:message styleClass="errorMessage" for="destructionExpectedDate" />
+    </h:panelGroup>
+
+  </h:panelGrid>
+
+
+  <h4><h:outputText value="#{messages['label.restore.support']}"/></h4>
+  <h:panelGrid columns="2" styleClass="dataInput"
+      columnClasses="relationCreateLabelColumn, relationCreateFieldColumn">
+
+    <h:outputLabel for="restoreState" value="#{messages['label.support.state']}" styleClass="#{nxu:test(archiveManagerActions.required, 'required', '')}" />
+    <h:panelGroup>
+      <nxdir:selectOneListbox
+                value="#{selectedArchiveRecord.restMediumState}"
+                required="#{archiveManagerActions.required}"
+                directoryName="restore_state"
+                id="restoreState"
+                localize="true"
+                displayValueOnly="#{!archiveManagerActions.editable}"
+                displayIdAndLabel="true"/>
+          <h:message for="restoreState" class="errorMessage" />
+    </h:panelGroup>
+
+    <h:outputLabel for="restoreType" value="#{messages['label.support.type']}"/>
+    <h:panelGroup>
+      <nxdir:selectOneListbox
+                value="#{selectedArchiveRecord.restMediumType}"
+                directoryName="restore_type"
+                id="restoreType"
+                localize="true"
+                displayValueOnly="#{!archiveManagerActions.editable}"
+                displayIdAndLabel="true" />
+    </h:panelGroup>
+
+    <h:outputLabel for="restoreLocation" value="#{messages['label.support.location']}"/>
+    <h:panelGroup>
+      <nxdir:selectOneListbox
+                value="#{selectedArchiveRecord.restMediumLoc}"
+                directoryName="restore_location"
+                id="restoreLocation"
+                localize="true"
+                displayValueOnly="#{!archiveManagerActions.editable}"
+                displayIdAndLabel="true" />
+    </h:panelGroup>
+
+    </h:panelGrid>
+
+  <h4><h:outputText value="#{messages['label.modification.support']}"/></h4>
+  <h:panelGrid columns="2" styleClass="dataInput"
+      columnClasses="relationCreateLabelColumn, relationCreateFieldColumn">
+
+    <h:outputLabel for="modificationState" value="#{messages['label.support.state']}" styleClass="#{nxu:test(archiveManagerActions.required, 'required', '')}" />
+    <h:panelGroup>
+      <nxdir:selectOneListbox
+                value="#{selectedArchiveRecord.writableMediumState}"
+                required="#{archiveManagerActions.required}"
+                directoryName="modification_state"
+                id="modificationState"
+                localize="true"
+                displayValueOnly="#{!archiveManagerActions.editable}"
+                displayIdAndLabel="true" />
+          <h:message for="modificationState" class="errorMessage" />
+    </h:panelGroup>
+
+    <h:outputLabel for="modificationType" value="#{messages['label.support.type']}" />
+    <h:panelGroup>
+      <nxdir:selectOneListbox
+                value="#{selectedArchiveRecord.writableMediumType}"
+                directoryName="modification_type"
+                id="modificationType"
+                localize="true"
+                displayValueOnly="#{!archiveManagerActions.editable}"
+                displayIdAndLabel="true" />
+    </h:panelGroup>
+
+    <h:outputLabel for="modificationLocation" value="#{messages['label.support.location']}" />
+    <h:panelGroup>
+      <nxdir:selectOneListbox
+                value="#{selectedArchiveRecord.writableMediumLoc}"
+                directoryName="modification_location"
+                id="modificationLocation"
+                localize="true"
+                displayValueOnly="#{!archiveManagerActions.editable}"
+                displayIdAndLabel="true" />
+    </h:panelGroup>
+
+  </h:panelGrid>
+
+    <p class="smallButtonsGadget">
+
+      <h:commandButton type="submit" value="#{messages[archiveManagerActions.commandName1]}" styleClass="button"
+      action="#{archiveManagerActions.addArchiveRecord}"
+      rendered="#{archiveManagerActions.editable}"
+      />
+
+      <h:commandButton type="submit" value="#{messages[archiveManagerActions.commandName2]}" styleClass="button"
+      action="#{archiveManagerActions.cancel}"
+      immediate="true"
+      actionListener="#{archiveManagerActions.setRequired}"
+      />
+    </p>
+  </div>
+</h:form>
+
+<h:form rendered="#{archiveRecords.rowCount != 0}">
+  <h3><h:outputText value="#{messages['title.archive']}" /></h3>
+
+  <h:dataTable var="archiveRecord" value="${archiveRecords}"
+    styleClass="dataOutput" rowClasses="dataRowEven,dataRowOdd"
+       columnClasses=",,,,buttonColumn">
+
+    <h:column>
+          <f:facet name="header">
+            <h:outputText value="#{messages['label.document.version']}" />
+          </f:facet>
+
+          <h:outputText value="#{messages[archiveRecord.docVersion]}" />
+      </h:column>
+
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.conservation.support.state']}" />
+      </f:facet>
+
+      <h:outputText value="#{archiveRecord.retentionMediumState}"
+      id = "conservationState" />
+
+    </h:column>
+
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.restore.support.state']}" />
+      </f:facet>
+
+      <h:outputText value="#{archiveRecord.restMediumState}"
+      id = "restoreState" />
+
+    </h:column>
+
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="#{messages['label.modification.support.state']}" />
+      </f:facet>
+
+      <h:outputText value="#{archiveRecord.writableMediumState}"
+      id = "modificationState" />
+
+    </h:column>
+
+    <h:column>
+      <f:facet name="header">
+        <h:outputText value="Action" />
+      </f:facet>
+
+      <h:commandLink value="#{messages['command.edit']}"
+        action="#{archiveManagerActions.editArchiveRecord}"
+        rendered="#{nxd:hasPermission(currentDocument, 'Write')}"/>
+      <h:outputText value=" | " rendered="#{nxd:hasPermission(currentDocument, 'Write')}"/>
+
+      <h:commandLink value="#{messages['command.view']}"
+        action="#{archiveManagerActions.viewArchiveRecord}"/>
+
+      <h:outputText value=" | " rendered="#{nxd:hasPermission(currentDocument, 'Write')}"/>
+
+      <h:commandLink value="#{messages['command.delete']}"
+        action="#{archiveManagerActions.deleteArchiveRecord}"
+        rendered="#{nxd:hasPermission(currentDocument, 'Write')}"/>
+    </h:column>
+
+  </h:dataTable>
+</h:form>
+
+</div>

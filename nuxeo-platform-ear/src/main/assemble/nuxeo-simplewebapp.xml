@@ -1,0 +1,8 @@
+<assembly>
+
+  <include>include/commands.xml</include>  
+  <include>include/nuxeo-all.xml</include>
+  <include>include/exclude-facades.xml</include>
+
+</assembly>
+

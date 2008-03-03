@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <ui:define name="page title">Nuxeo 5 EP</ui:define>
+
+  <ui:define name="body">
+    <h:form id="searchForm" onkeypress="trapEnter(event);" >
+    <div>
+    <ui:include src="/userManager_action_tabs.xhtml"/>
+      <div style="clear:both"></div>
+    </div>
+
+    <div class="tabsContent">
+
+	<f:subview rendered="#{userManagerActions.allowCreateUser}">
+      <div class="action_bar">
+      <ul>
+      <li class="selected">
+          <h:commandLink action="#{userManagerActions.createUser}" >
+          <h:graphicImage value="/icons/action_add_user.gif" />
+            <h:outputText value="#{messages['command.createUser']}"  />
+          </h:commandLink>
+      </li>
+      </ul>
+      </div>
+	</f:subview>
+
+
+      <ui:include src="/incl/message_banner.xhtml"/>
+
+    <div style="clear:both" />
+
+      <h:inputText id="searchText" value="#{userManagerActions.searchString}" class="directoryFilter"/>
+      &nbsp;
+      <h:commandButton id="searchButton" value="#{messages['command.search']}" action="#{userManagerActions.searchUsers}" class="button"/>
+      <h:commandButton id="clearButton" value="#{messages['command.clearSearch']}" action="#{userManagerActions.clearSearch}" class="button"/>
+
+<script language="javascript">
+function trapEnter(evt) {
+    var keycode;
+    if (evt)
+        ;
+    else if (window.event)
+        evt = window.event;
+    else if (event)
+        evt = event;
+    else
+        return true;
+
+    if (evt.charCode)
+        keycode = evt.charCode;
+    else if (evt.keyCode)
+        keycode = evt.keyCode;
+    else if (evt.which)
+        keycode = evt.which;
+    else
+        keycode = 0;
+
+    if (keycode == 13) {
+        document.getElementById('searchForm:searchButton').click();
+        return false;
+    } else {
+        return true;
+    }
+}
+</script>
+
+    <div>
+      <h:outputText value="#{messages['label.userManager.emptyUserList']}"
+    	rendered="#{userList.rowCount == 0 and userManagerActions.searchOverflow == false and ! empty userManagerActions.searchString}" />
+    	
+	  <h:outputText value="#{messages['label.security.searchOverFlow']}"
+		class="infoFeedback"
+		rendered="#{userManagerActions.searchOverflow}" />
+
+      <h:dataTable var="user" value="#{userList}"
+        rendered="#{userList.rowCount > 0}"
+        styleClass="dataOutput">
+        <h:column>
+          <f:facet name="header">
+            <h:outputText value="#{messages['label.userManager.user']}" />
+          </f:facet>
+          <h:commandLink value="#{user.name}"
+            action="#{userManagerActions.viewUser}" />
+        </h:column>
+        <h:column>
+          <f:facet name="header">
+            <h:outputText value="#{messages['label.userManager.firstName']}" />
+          </f:facet>
+            <h:outputText value="#{user.firstName}" />
+        </h:column>
+        <h:column>
+          <f:facet name="header">
+            <h:outputText value="#{messages['label.userManager.lastName']}" />
+          </f:facet>
+            <h:outputText value="#{user.lastName}" />
+        </h:column>
+
+      </h:dataTable>
+    </div>
+      <h:messages />
+
+    </div>
+    <div>
+    </div>
+    </h:form>
+
+  </ui:define>
+
+</nxthemes:composition>
+

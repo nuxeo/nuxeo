@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component
+  name="org.nuxeo.ecm.platform.relation.service.binding.contrib">
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+        point="services">
+
+      <documentation> Define the Relation bean as a platform service. </documentation>
+      <service class="org.nuxeo.ecm.platform.relations.api.RelationManager" group="platform/relations">
+        <locator>%RelationManagerBean</locator>
+      </service>
+
+    </extension>
+</component>

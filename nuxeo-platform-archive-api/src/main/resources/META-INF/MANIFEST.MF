@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXArchiveAPI
+Bundle-SymbolicName: org.nuxeo.ecm.platform.archive.api
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Export-Package: org.nuxeo.ecm.platform.archive.api

@@ -1,0 +1,154 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<h3><h:outputText
+  value="#{messages['label.content.header.documentProperties']}" /></h3>
+
+<h:form id="document_view">
+
+  <a4j:outputPanel >
+    <ui:include src="/incl/lock_details.xhtml" />
+  </a4j:outputPanel>
+
+  <h:panelGrid rendered="#{deleteActions.trashManagementEnabled}">
+    <ui:include src="/incl/trash_details.xhtml" />
+  </h:panelGrid>
+
+  <c:if test="#{empty documentActions.currentType.layout}">
+    <nxl:documentLayout mode="view" value="#{currentDocument}" />
+  </c:if>
+
+  <h:dataTable var="field" value="#{documentActions.currentType.layout}"
+    rendered="#{!empty documentActions.currentType.layout}"
+    class="dataInput" columnClasses="labelColumn, fieldColumn">
+    <h:column>
+      <h:outputText value="#{messages[field.displayLabel]}" />
+    </h:column>
+
+    <h:column>
+
+      <h:outputText value="#{currentDocument[field.schemaName][field.fieldName]}"
+        rendered="${field.jsfComponent=='h:inputText'}" />
+
+      <h:outputText value="#{currentDocument[field.schemaName][field.fieldName]}"
+        rendered="${field.jsfComponent=='h:inputTextarea'}" />
+
+      <h:outputText
+        rendered="#{field.jsfComponent=='t:inputFileUpload' and currentDocument[field.schemaName][field.fieldName] != null}">
+        <h:outputText rendered="false">
+          XXX AT: get rid of hardcoded file name references using a custom multi-component
+        </h:outputText>
+        <nxh:outputLink
+          value="#{nxd:fileUrl('downloadFile', currentDocument, field.fullName, currentDocument.file.filename)}">
+          <nxh:graphicImage value="#{nxd:fileIconPath(currentDocument[field.schemaName][field.fieldName])}"
+            rendered="#{! empty nxd:fileIconPath(currentDocument[field.schemaName][field.fieldName])}" />
+          <nxh:outputText value="#{currentDocument.file.filename}" />
+        </nxh:outputLink>
+
+        <nxu:methodResult name="hasPDFCapabilities" value="#{conversionActions.isFileExportableToPDF(field.fullName)}">
+          <h:panelGroup rendered="#{hasPDFCapabilities}">
+            <h:outputText value=" | " />
+            <h:commandLink action="#{conversionActions.generatePdfFile}">
+              <f:param name="fileFieldFullName" value="#{field.fullName}" />
+              <f:param name="filename" value="#{currentDocument.file.filename}" />
+              <h:outputText value="#{messages['label.document.generatePdf']}" />
+            </h:commandLink>
+          </h:panelGroup>
+        </nxu:methodResult>
+
+      <nxu:methodResult name="immutable" value="#{currentDocument.hasFacet('Immutable')}">
+        <nxu:methodResult name="onlineEditable" value="#{conversionActions.isFileOnlineEditable(field.fullName)}">
+          <nxu:methodResult name="isLiveEditable" value="#{lockActions.isCurrentDocumentLiveEditable()}">
+            <h:panelGroup rendered="#{!immutable and onlineEditable and isLiveEditable}">
+            <h:outputText value=" | " />
+
+          <nxh:outputLink value="#{liveEditHelper.getEditURL()}"
+              rendered="false">
+              <h:outputText value="#{messages['label.document.directEdit']}" />
+          </nxh:outputLink>
+
+
+            <h:commandLink action="#{FileManageWS.edit}"
+              rendered="#{documentActions.writeRight}">
+              <f:param name="fileFieldFullName" value="#{field.fullName}" />
+              <f:param name="filename" value="#{currentDocument.file.filename}" />
+              <f:param name="filenameFieldFullName" value="file:filename" />
+              <h:outputText value="#{messages['label.document.directEdit']}" />
+            </h:commandLink>
+
+            </h:panelGroup>
+          </nxu:methodResult>
+        </nxu:methodResult>
+      </nxu:methodResult>
+
+      </h:outputText>
+
+      <h:outputText value="#{currentDocument[field.schemaName][field.fieldName]}"
+        rendered="${field.jsfComponent=='nxu:editor'}" escape="false" />
+
+      <h:outputText value="#{currentDocument[field.schemaName][field.fieldName]}"
+        rendered="${field.jsfComponent=='t:inputCalendar'}">
+        <f:convertDateTime pattern="#{nxu:basicDateFormater()}" />
+      </h:outputText>
+
+      <nxdir:directoryEntryOutput
+        value="#{currentDocument[field.schemaName][field.fieldName]}"
+        directoryName="#{field.directory}"
+        rendered="${field.jsfComponent=='nxdir:selectOneListbox'}" />
+
+      <t:dataList
+          var="item"
+          value="#{currentDocument[field.schemaName][field.fieldName]}"
+          layout="simple"
+          rendered="${field.jsfComponent=='nxdir:selectManyListbox'}">
+        <div>
+          <nxdir:directoryEntryOutput
+            value="#{item}"
+            directoryName="#{field.directory}" />
+        </div>
+      </t:dataList>
+
+    </h:column>
+  </h:dataTable>
+
+<h3><h:outputText
+  value="#{messages['label.workflow.lifeCycleInformation']}" /></h3>
+
+<h:panelGrid columns="2" styleClass="dataInput"
+  columnClasses="labelColumn, fieldColumn">
+  <h:outputText value="#{messages['label.workflow.lifeCyclePolicy']}" />
+  <h:outputText value="${messages[currentDocument.lifeCyclePolicy]}" />
+  <h:outputText
+    value="#{messages['label.workflow.currentLifeCycleState']}" />
+  <h:outputText value="${messages[currentDocument.currentLifeCycleState]}" />
+</h:panelGrid>
+
+<nxu:methodResult name="versionable" value="#{currentDocument.hasFacet('Versionable')}">
+<h3><h:outputText
+  value="#{messages['label.versioning.documentVersioning']}"
+  rendered="#{versionable}"/></h3>
+<h:panelGrid columns="2" styleClass="dataInput"
+  columnClasses="labelColumn, fieldColumn"
+  rendered="#{versionable}">
+  <h:outputText value="#{messages['label.versioning.currentVersion']}"
+    rendered="#{documentVersioning.uidInfoAvailable}"/>
+  <h:panelGroup>
+    <nxh:outputText value="#{documentVersioning.getVersionLabel(currentDocument)}" />
+  </h:panelGroup>
+</h:panelGrid>
+</nxu:methodResult>
+
+<ui:include src="/incl/document_publishing_actions.xhtml" />
+
+</h:form>
+
+</div>

@@ -1,0 +1,218 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<h3><h:outputText value="#{messages['label.search.form.simple']}" /></h3>
+<h:outputText value="#{messages['label.search.form.desc']}"
+  class="infoMessage" />
+
+<h:inputHidden value="#{searchActions.searchTypeId}">
+  <f:attribute name="value" value="FORM"/>
+</h:inputHidden>
+
+<br />
+
+<c:set var="doc" value="#{searchDocumentModel}" />
+
+<h:panelGrid columns="2" styleClass="dataInput"
+  columnClasses="labelColumn, labelColumn, fieldColumn">
+
+  <h:outputText value="#{messages['label.search.all_words']}" />
+  <h:inputText value="#{doc.advanced_search.fulltext_all}" styleClass="dataInputText" />
+
+  <h:outputText value="#{messages['lable.search.exact_text']}" />
+  <h:inputText value="#{doc.advanced_search.fulltext_phrase}" styleClass="dataInputText" />
+
+  <h:outputText value="#{messages['label.search.one_word']}" />
+  <h:inputText value="#{doc.advanced_search.fulltext_one_of}" styleClass="dataInputText" />
+
+  <h:outputText value="#{messages['label.search.no_word']}" />
+  <h:inputText value="#{doc.advanced_search.fulltext_none}" styleClass="dataInputText" />
+</h:panelGrid>
+
+<br />
+
+<t:panelGrid columns="4" styleClass="dataInput"
+  columnClasses="labelColumn,fieldColumn,labelColumn,fieldColumn">
+
+  <t:outputText value="#{messages['label.dublincore.title']}" />
+  <t:panelGroup colspan="3" >
+  <t:inputText value="#{doc.advanced_search.title}" styleClass="dataInputText" />
+  </t:panelGroup>
+
+  <t:outputText value="#{messages['label.dublincore.description']}" />
+  <t:panelGroup colspan="3" >
+  <t:inputText value="#{doc.advanced_search.description}" styleClass="dataInputText" />
+  </t:panelGroup>
+
+  <t:outputText value="#{messages['label.dublincore.rights']}" />
+  <t:panelGroup colspan="3" >
+  <t:inputText value="#{doc.advanced_search.rights}" styleClass="dataInputText" />
+  </t:panelGroup>
+
+  <t:outputText value="#{messages['label.dublincore.source']}" />
+  <t:panelGroup colspan="3" >
+  <t:inputText value="#{doc.advanced_search.source}" styleClass="dataInputText" />
+  </t:panelGroup>
+
+  <t:outputText value="#{messages['label.dublincore.coverage']}" />
+  <t:panelGroup colspan="3" >
+        <nxdir:chainSelect
+        size="2"
+        multiSelect="true"
+        multiParentSelect="true"
+        allowBranchSelection="false"
+        value="#{doc.advanced_search.coverage}"
+        id="coverage"
+      >
+        <nxdir:chainSelectListbox
+            id="continent"
+            index="0"
+            size="4"
+            directoryName="continent"
+            localize="true"
+        >
+        <a4j:support event="onchange" reRender="country,coverageSelection" />
+        </nxdir:chainSelectListbox>
+
+        <nxdir:chainSelectListbox
+            id="country"
+            size="4"
+            directoryName="country"
+            index="1"
+            localize="true"
+        >
+        </nxdir:chainSelectListbox>
+
+        <a4j:commandButton value="#{messages['command.add']}" styleClass="button"
+        immediate="true" actionListener="#{chainSelectActions.add}" reRender="coverageSelection" />
+
+
+        <br />
+        <nxdir:chainSelectStatus id="coverageSelection"
+            display="value"
+            entryCssStyle="background-color: #DDEEFF"
+            label="#{messages['label.chainSelect.selection']}"
+        >
+          <f:facet name="removeButton">
+          <a4j:commandButton actionListener="#{chainSelectActions.delete}"
+              immediate="true"
+              reRender="coverageSelection"
+              image="/img/toggle_minus.png"
+          />
+          </f:facet>
+        </nxdir:chainSelectStatus>
+      </nxdir:chainSelect>
+  </t:panelGroup>
+
+
+  <t:panelGroup>
+    <h:outputText value="#{messages['label.dublincore.creationDate']}" />
+    <h:outputText value=" #{messages['label.search.between']}" />
+  </t:panelGroup>
+
+  <nxu:inputDateTime
+    value="#{doc.advanced_search.created_min}"
+    showsTime="true"
+    format="#{nxu:basicDateFormater()}"
+  />
+
+
+  <h:panelGroup styleClass="labelColumn">
+  <h:outputText value="#{messages['label.search.and']}" />
+  </h:panelGroup>
+
+  <nxu:inputDateTime
+    value="#{doc.advanced_search.created_max}"
+    showsTime="true"
+    format="#{nxu:basicDateFormater()}"
+  />
+
+
+  <t:panelGroup>
+    <h:outputText value="#{messages['label.dublincore.modificationDate']}" />
+    <h:outputText value=" #{messages['label.search.between']}" />
+  </t:panelGroup>
+  <nxu:inputDateTime
+    value="#{doc.advanced_search.modified_min}"
+    format="#{nxu:basicDateFormater()}"
+  />
+
+  <h:outputText value="#{messages['label.search.and']}" />
+  <nxu:inputDateTime
+    value="#{doc.advanced_search.modified_max}"
+    format="#{nxu:basicDateFormater()}"
+  />
+
+
+
+  <t:panelGroup>
+    <h:outputText value="#{messages['label.dublincore.issueDate']}" />
+    <h:outputText value=" #{messages['label.search.between']}" />
+  </t:panelGroup>
+  <nxu:inputDateTime
+    value="#{doc.advanced_search.issued_min}"
+    format="#{nxu:basicDateFormater()}"
+  />
+
+  <h:outputText value="#{messages['label.search.and']}" />
+  <nxu:inputDateTime
+    value="#{doc.advanced_search.issued_max}"
+    format="#{nxu:basicDateFormater()}"
+  />
+
+
+  <t:panelGroup>
+    <h:outputText value="#{messages['label.dublincore.validationDate']}" />
+    <h:outputText value=" #{messages['label.search.between']}" />
+  </t:panelGroup>
+  <nxu:inputDateTime
+    value="#{doc.advanced_search.valid_min}"
+    format="#{nxu:basicDateFormater()}"
+  />
+
+
+  <h:outputText value="#{messages['label.search.and']}" />
+  <nxu:inputDateTime
+    value="#{doc.advanced_search.valid_max}"
+    format="#{nxu:basicDateFormater()}"
+  />
+
+  <t:panelGroup>
+    <h:outputText value="#{messages['label.dublincore.expirationDate']}" />
+    <h:outputText value=" #{messages['label.search.between']}" />
+  </t:panelGroup>
+  <nxu:inputDateTime
+    value="#{doc.advanced_search.expired_min}"
+    format="#{nxu:basicDateFormater()}"
+  />
+
+  <h:outputText value="#{messages['label.search.and']}" />
+  <nxu:inputDateTime
+    value="#{doc.advanced_search.expired_max}"
+    format="#{nxu:basicDateFormater()}"
+  />
+
+  <t:outputText value="#{messages['label.dublincore.format']}" />
+  <t:panelGroup colspan="3" >
+    <t:inputText value="#{doc.advanced_search.format}" styleClass="dataInputText" />
+  </t:panelGroup>
+
+  <t:outputText value="#{messages['label.dublincore.language']}" />
+  <t:panelGroup colspan="3" >
+    <t:inputText value="#{doc.advanced_search.language}" styleClass="dataInputText" />
+  </t:panelGroup>
+
+  <t:selectBooleanCheckbox value="#{deleteActions.searchDeletedDocuments}" rendered="#{deleteActions.trashManagementEnabled}"/>
+  <t:panelGroup colspan="3" rendered="#{deleteActions.trashManagementEnabled}">
+    <t:outputText value="#{messages['label.search.deleted.documents']}" />
+  </t:panelGroup>
+</t:panelGrid>
+</div>

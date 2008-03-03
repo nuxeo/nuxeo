@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService">
+
+	<implementation class="org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService"/>
+
+	<extension-point name="docTypeRule">
+		<object class="org.nuxeo.ecm.platform.workflow.document.service.extensions.WorkflowDoctypeRuleDescriptor"/>
+	</extension-point>
+
+	<extension-point name="pathRule">
+		<object class="org.nuxeo.ecm.platform.workflow.document.service.extensions.WorkflowPathRuleDescriptor"/>
+	</extension-point>
+
+</component>

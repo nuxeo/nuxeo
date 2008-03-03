@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<fragment>
+
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+
+    <navigation-case>
+      <from-outcome>editor_link_search_document</from-outcome>
+      <to-view-id>/editor_link_search_document.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>editor_image_upload</from-outcome>
+      <to-view-id>/editor_image_upload.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+  </extension>
+
+  <install>
+
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+
+  </install>
+
+</fragment>
+

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<jboss>
+  <enterprise-beans>
+    <session>
+      <ejb-name>LogsBean</ejb-name>
+      <method-attributes>
+        <method>
+          <method-name>
+            syncLogCreationEntries
+          </method-name>
+          <transaction-timeout>3600</transaction-timeout>
+        </method>
+      </method-attributes>
+    </session>
+  </enterprise-beans>
+</jboss>

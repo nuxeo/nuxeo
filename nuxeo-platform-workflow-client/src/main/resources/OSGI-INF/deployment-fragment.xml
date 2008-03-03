@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+
+<fragment>
+
+
+  <extension target="application#MODULE">
+
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+
+  </extension>
+
+  <extension target="faces-config#VALIDATOR">
+    <validator>
+      <validator-id>dueDateValidator</validator-id>
+      <validator-class>
+        org.nuxeo.ecm.platform.workflow.web.ui.jsf.DueDateValidator
+      </validator-class>
+    </validator>
+  </extension>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+    <!--  create a temp dir -->
+    <!--  be sure no directory with that name exists -->
+    <delete path="nxworkflow-client.tmp" />
+    <mkdir path="nxworkflow-client.tmp" />
+
+    <unzip from="${bundle.fileName}" to="nxworkflow-client.tmp">
+      <include>OSGI-INF/l10n/**</include>
+    </unzip>
+
+    <append from="nxworkflow-client.tmp/OSGI-INF/l10n/messages_en.properties"
+      to="nuxeo.war/WEB-INF/classes/messages.properties" addNewLine="true" />
+    <append from="nxworkflow-client.tmp/OSGI-INF/l10n/messages_en.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
+    <append from="nxworkflow-client.tmp/OSGI-INF/l10n/messages_fr.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_fr.properties" addNewLine="true" />
+    <append from="nxworkflow-client.tmp/OSGI-INF/l10n/messages_de.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_de.properties" addNewLine="true" />
+    <append from="nxworkflow-client.tmp/OSGI-INF/l10n/messages_it.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_it.properties" addNewLine="true" />
+
+    <delete path="nxworkflow-client.tmp" />
+  </install>
+
+
+
+</fragment>
+

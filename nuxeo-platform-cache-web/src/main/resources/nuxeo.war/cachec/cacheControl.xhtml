@@ -1,0 +1,19 @@
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:nxthemes="http://nuxeo.org/nxthemes"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:s="http://jboss.com/products/seam/taglib">
+ 
+  <ui:define name="body">
+    <div><h:form>
+      <table>
+        <tr>
+          <td colspan="2">List</td>
+          <td colspan="2"><h:commandButton value="List" action="#{cacheControlActions.clearClientCache}" /></td>
+        </tr>
+      </table>
+    </h:form></div>
+  </ui:define>
+
+</nxthemes:composition>

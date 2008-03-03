@@ -1,0 +1,73 @@
+<assembly>
+
+  <fileSet id="nuxeo-template">
+    <directory>src/main/resources</directory>
+    <includes>
+      <include>**</include>
+    </includes>
+    <excludes>
+      <exclude>config/nuxeo-webapp-core.properties</exclude>
+      <exclude>**/.svn</exclude>
+    </excludes>
+  </fileSet>
+
+  <fileSet id="nuxeo-template-platform-stateful">
+    <directory>src/main/resources_platform-stateful</directory>
+    <includes>
+      <include>**</include>
+    </includes>
+    <excludes>
+      <exclude>**/.svn</exclude>
+    </excludes>
+  </fileSet>
+
+
+  <artifactSet extends="nuxeo-platform">
+    <includes>
+      <artifact group="org.nuxeo.ecm.platform" />
+    </includes>
+    <excludes>
+      <artifact name="nuxeo-platform-audit-client"/>
+      <artifact name="nuxeo-platform-actions-core"/>
+      <artifact name="nuxeo-platform-cache-client" />
+      <artifact name="nuxeo-platform-cache-web" />
+      <artifact name="nuxeo-platform-comment-web" />
+      <artifact name="nuxeo-platform-forms-layout-api" />
+      <artifact name="nuxeo-platform-forms-layout-client" />
+      <artifact name="nuxeo-platform-forum" />
+      <artifact name="nuxeo-platform-io-client" />
+      <artifact name="nuxeo-platform-imaging-core" />
+      <artifact name="nuxeo-platform-imaging-facade" />
+      <artifact name="nuxeo-platform-imaging-transform" />
+      <artifact name="nuxeo-platform-notification-web" />
+      <artifact name="nuxeo-platform-publishing-web" />
+      <artifact name="nuxeo-platform-relations-web"/>
+      <artifact name="nuxeo-platform-types-core"/>
+      <artifact name="nuxeo-platform-ui-web"/>
+      <artifact name="nuxeo-platform-userdata" />
+      <artifact name="nuxeo-platform-syndication"/>
+      <artifact name="nuxeo-platform-workflow-client" />
+      <artifact name="nuxeo-platform" />
+      <artifact name="nuxeo-platform-ws" />
+
+      <artifact name="nuxeo-platform-archive-*" />
+      <!--
+      <artifact name="nuxeo-platform-mimetype-facade" />
+      <artifact name="nuxeo-platform-comment" />
+      <artifact name="nuxeo-platform-workflow-document" />
+       -->
+    </excludes>
+  </artifactSet>
+
+  <artifactSet extends="nuxeo-platform-unpacked">
+    <excludes>
+      <artifact name="nuxeo-platform-archive-facade" />
+    </excludes>
+  </artifactSet>
+
+  <artifactSet id="nuxeo-web" />
+
+  <artifactSet id="nuxeo-themes" />
+
+</assembly>
+

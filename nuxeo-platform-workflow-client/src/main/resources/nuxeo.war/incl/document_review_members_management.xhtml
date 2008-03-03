@@ -1,0 +1,129 @@
+<div xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <h:panelGroup class="dataInputGroup" rendered="#{canManageWorkflow}">
+
+    <c:choose>
+      <c:when test="#{((reviewModel.reviewType == 'workflowDocumentReviewTypeParallel') and (empty documentTasks))
+                   or ((reviewModel.reviewType == 'workflowDocumentReviewTypeSerie') and (documentTasks.size == 1))}">
+        <c:set var="foldedClass" value="unfolded"/>
+        <c:set var="displayStyle" value=""/>
+      </c:when>
+      <c:otherwise>
+        <c:set var="foldedClass" value="folded"/>
+        <c:set var="displayStyle" value="display: none"/>
+      </c:otherwise>
+    </c:choose>
+
+    <div class="foldableBox">
+      <h3 class="#{foldedClass}">
+        <a href="#" onclick="return toggleBox(this)">
+          <h:outputText value="#{messages['label.review.choose.reviewer']}"/>
+        </a>
+      </h3>
+      <div class="boxBody" style="#{displayStyle}">
+
+        <h:form>
+
+          <table class="dataInput">
+            <tbody>
+            <a4j:region>
+              <tr>
+                <td class="labelColumn">
+                  <h:outputText
+                    value="#{messages['label.review.select.reviewers']}"/>
+                </td>
+                <td class="labelField">
+                  <div>
+                    <ui:include src="/incl/select_users_search.xhtml"/>
+                  </div>
+                  <table class="rightsAddManager">
+                    <tr>
+                      <td valign="top">
+                        <ui:include src="/incl/select_users_results.xhtml"/>
+                      </td>
+                      <td valign="top">
+                        <ui:include src="/incl/select_users_selection.xhtml"/>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </a4j:region>
+            <f:subview rendered="#{reviewModel.reviewType == 'workflowDocumentReviewTypeSerie'}">
+              <tr>
+                <td class="labelColumn">
+                  <h:outputText value="#{messages['label.review.insertionLevel']}"/>
+                </td>
+                <td class="labelField">
+                  <h:selectOneRadio required="true"
+                    id="insertionLevel"
+                    value="#{documentTaskActions.selectedTaskInsertionLevel}">
+                    <f:selectItem itemValue="below"
+                      itemLabel="#{messages['label.review.insertionLevelOption.belowCurrentLevel']}" />
+                    <f:selectItem itemValue="current"
+                      itemLabel="#{messages['label.review.insertionLevelOption.currentLevel']}" />
+                  </h:selectOneRadio>
+                  <h:message for="insertionLevel" />
+                </td>
+              </tr>
+            </f:subview>
+            <tr>
+              <td class="labelColumn">
+                <h:outputText value="#{messages['label.review.directive']}"/>
+              </td>
+              <td class="labelField">
+                <h:selectOneMenu
+                  value="#{documentTaskActions.selectedTaskDirective}">
+                  <f:selectItems value="#{workItemDirectives}"/>
+                </h:selectOneMenu>
+              </td>
+            </tr>
+            <tr>
+              <td class="labelColumn">
+                <h:outputText value="#{messages['label.review.duedate']}"/>
+              </td>
+              <td class="labelField">
+                <nxu:inputDateTime value="#{documentTaskActions.selectedTaskDueDate}"
+                  id="dueDate" showsTime="true" validator="dueDateValidator"
+                  format="#{nxu:basicDateAndTimeFormater()}" />
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <h:message styleClass="errorMessage" for="dueDate"/>
+              </td>
+            </tr>
+            <tr>
+              <td class="labelColumn">
+                <h:outputText value="#{messages['label.review.user.comment']}"/>
+              </td>
+              <td colspan="5">
+                <h:inputTextarea id="userComment" rows="5" cols="50"
+                  value="#{documentTaskActions.userComment}"/>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td colspan="5">
+                <h:commandButton type="submit"
+                  value="#{messages['label.review.create.task']}"
+                  styleClass="button"
+                  action="#{documentTaskActions.createTaskFor}"/>
+              </td>
+            </tr>
+          </tbody>
+          </table>
+
+        </h:form>
+      </div>
+    </div>
+
+  </h:panelGroup>
+</div>
+

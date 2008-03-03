@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component
+    name="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService.audit">
+    <require>
+        org.nuxeo.ecm.platform.audit.service.NXAuditEventsService
+    </require>
+
+    <documentation>
+        Declare Login/Logout events to audit service to make
+        authentication auditable.
+
+        @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+
+    <extension
+        target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+        point="event">
+        <event name="loginSuccess" />
+        <event name="loginFailed" />
+        <event name="logout" />
+    </extension>
+</component>

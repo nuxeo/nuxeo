@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webapp.security.UIPermissionService">
+  <implementation
+    class="org.nuxeo.ecm.webapp.security.UIPermissionService" />
+  <documentation>
+    This service provides the list of permissions displayed in the UI
+    for a document type.
+
+    Attention: this service is deprecated in favor of the centralized
+    org.nuxeo.ecm.core.security.SecurityService that provides similar UI
+    related features
+
+    Example: @author GeorgeLefter (glefter@nuxeo.com)
+  </documentation>
+  <extension-point name="uiPermissions">
+    <object
+      class="org.nuxeo.ecm.webapp.security.UIPermissionListDescriptor" />
+  </extension-point>
+  <documentation>
+    Example:
+    <uiPermissionList default="true">
+      <permission name="Read" />
+      <permission name="Write" />
+    </uiPermissionList>
+    <uiPermissionList documentType="Section">
+      <permission name="Read" />
+      <permission name="Write" />
+    </uiPermissionList>
+    <uiPermissionList documentType="Workspace">
+      <permission name="Read" />
+      <permission name="Write" />
+      <permission name="Remove" />
+    </uiPermissionList>
+  </documentation>
+</component>

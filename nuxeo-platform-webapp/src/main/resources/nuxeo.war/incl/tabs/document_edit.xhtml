@@ -1,0 +1,25 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+<h:form enctype="multipart/form-data" id="document_edit">
+
+  <c:if test="#{!empty documentActions.changeableDocumentType.layout}">
+    <ui:include src="/incl/document_editor.xhtml" />
+  </c:if>
+  <c:if test="#{empty documentActions.changeableDocumentType.layout}">
+    <nxl:documentLayout mode="edit" value="#{changeableDocument}" />
+    <ui:include src="/incl/document_versioning.xhtml" />
+  </c:if>
+
+  <p class="buttonsGadget">
+    <h:commandButton type="submit" value="#{messages['command.save']}"
+      styleClass="button"
+      action="#{documentActions.updateDocument}" />
+  </p>
+
+</h:form>
+</div>

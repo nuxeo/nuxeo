@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.workflow.testing.MockWAPIService">
+
+  <implementation
+    class="org.nuxeo.ecm.platform.workflow.testing.MockWAPIService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.workflow.api.client.wfmc.WAPI" />
+    <provide
+      interface="org.nuxeo.ecm.platform.workflow.document.api.lifecycle.WorkflowDocumentLifeCycleManager" />
+    <provide
+      interface="org.nuxeo.ecm.platform.workflow.document.api.versioning.WorkflowDocumentVersioningPolicyManager" />
+    <provide
+      interface="org.nuxeo.ecm.platform.workflow.document.api.relation.WorkflowDocumentRelationManager" />
+    <provide
+      interface="org.nuxeo.ecm.platform.workflow.document.api.security.WorkflowDocumentSecurityManager" />
+    <provide
+      interface="org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicyManager" />
+    <provide
+      interface="org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicy" />
+    <provide
+      interface="org.nuxeo.ecm.platform.workflow.document.api.rules.WorkflowRulesManager" />
+    <provide
+      interface="org.nuxeo.ecm.platform.workflow.document.api.workitem.WorkItemsListsManager" />
+    <provide
+      interface="org.nuxeo.ecm.platform.events.api.DocumentMessageProducer" />
+  </service>
+
+</component>

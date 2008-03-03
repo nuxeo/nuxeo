@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<xs:schema
+	targetNamespace="http://www.nuxeo.org/ecm/schemas/test/various/"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:nxs="http://www.nuxeo.org/ecm/schemas/test/various/"
+	>
+
+  <xs:complexType name="subjectList">
+    <xs:sequence>
+      <xs:element name="subject" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="contributorList">
+    <xs:sequence>
+      <xs:element name="contributor" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="title" type="xs:string"/>
+  <xs:element name="description" type="xs:string"/>
+  <xs:element name="subjects" type="nxs:subjectList"/>
+  <xs:element name="rights" type="xs:string"/>
+  <xs:element name="source" type="xs:string"/>
+  <xs:element name="coverage" type="xs:string"/>
+  <xs:element name="created" type="xs:date"/>
+  <xs:element name="modified" type="xs:date"/>
+  <xs:element name="issued" type="xs:date"/>
+  <xs:element name="valid" type="xs:date"/>
+  <xs:element name="expired" type="xs:date"/>
+  <xs:element name="format" type="xs:string"/>
+  <xs:element name="language" type="xs:string"/>
+  <xs:element name="contributors" type="nxs:contributorList"/>
+
+  <xs:element name="available" type="xs:boolean"/>
+
+</xs:schema>
+
+

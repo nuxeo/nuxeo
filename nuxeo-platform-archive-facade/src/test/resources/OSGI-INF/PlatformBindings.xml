@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.archive.facade.test.PlatformBindings" version="1.0">
+	<documentation>
+		Defines the archive manager service binding
+		@author <a href="mailto:bt@nuxeo.com">Bogdan Tatar</a>
+	</documentation>
+
+  <extension target="org.nuxeo.ecm.platform.api.PlatformService"
+  		point="servers">
+    	<documentation>Defines the archive manager service binding</documentation>
+
+		<server name="default" host="localhost">
+			<service class="org.nuxeo.ecm.platform.archive.api.ArchiveManager" jndiName="%ArchiveManagerBean"/>
+		</server>
+
+  </extension>
+
+</component>

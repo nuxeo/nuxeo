@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<component name="treeManagerComponentBase">
+	<documentation>
+	Empty Service for the TreeManager.
+	Only used to get some configuration from the EP.
+	</documentation>
+    <implementation class="org.nuxeo.ecm.webapp.navigation.TreeManagerService"/>
+
+	<extension-point name="display">
+		<documentation>
+		This extension point is used to configure the display of the TreeManager.
+		
+		Possible XML elements are :
+		showFiles : true/false
+		showSection : true/false
+		excludedTypes/type : list of types that won't be displayed in the tree
+		filterClass : name of the class that implements the DocumentFilter interface.
+		
+		By default, the filterClass will be implemented by TypeBasedDocumentFilter
+		
+		</documentation>
+		<object class="org.nuxeo.ecm.webapp.navigation.TreeManagerPluginExtension" />
+	</extension-point>
+
+</component>

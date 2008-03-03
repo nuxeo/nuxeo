@@ -1,0 +1,28 @@
+<rdf:RDF
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:uid="http://www.ecm.org/uid/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:metadata="http://www.ecm.org/metadata/" >
+  <rdf:Description rdf:about="http://www.ecm.org/uid/demo/DOC200600015_01.00">
+    <dcterms:IsBasedOn rdf:resource="http://www.ecm.org/uid/demo/DOC200600013_02.01"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.ecm.org/uid/demo/DOC200600013_02.01">
+    <dcterms:References rdf:resource="http://www.wikipedia.com/Enterprise_Content_Management"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A0">
+    <metadata:CreationDate>2006-06-06T06:06:06</metadata:CreationDate>
+    <metadata:Author>toto</metadata:Author>
+    <rdf:subject rdf:resource="http://www.ecm.org/uid/demo/DOC200600015_01.00"/>
+    <rdf:predicate rdf:resource="http://purl.org/dc/terms/IsBasedOn"/>
+    <rdf:object rdf:resource="http://www.ecm.org/uid/demo/DOC200600013_02.01"/>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <metadata:CreationDate>2007-03-13T14:36:18</metadata:CreationDate>
+    <metadata:Author>tata</metadata:Author>
+    <rdf:subject rdf:resource="http://www.ecm.org/uid/demo/DOC200600013_02.01"/>
+    <rdf:predicate rdf:resource="http://purl.org/dc/terms/References"/>
+    <rdf:object rdf:resource="http://www.wikipedia.com/Enterprise_Content_Management"/>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+</rdf:RDF>

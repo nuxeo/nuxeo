@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<process-definition
+  xmlns=""  name="tasksprocess_parallel">
+
+   <start-state name="start">
+      <transition name="review" to="review"/>
+   </start-state>
+
+   <task-node name="review" create-tasks="false" end-tasks="true" signal="never">
+      <event type="node-enter">
+        <action
+          class="org.nuxeo.ecm.platform.workflow.jbpm.TestActionHandler"/>
+      </event>
+      <task name="review">
+        <assignment class="org.nuxeo.ecm.platform.workflow.jbpm.DefaultAssignmentHandler"/>
+      </task>
+      <transition name="validate" to="validated">
+        <action class="org.nuxeo.ecm.platform.workflow.jbpm.ToReviewActionHandler"/>
+      </transition>
+   </task-node>
+
+   <end-state name="validated"></end-state>
+</process-definition>

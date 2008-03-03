@@ -1,0 +1,27 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:t="http://myfaces.apache.org/tomahawk"
+	xmlns:nxh="http://nuxeo.org/nxweb/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:tr="http://myfaces.apache.org/trinidad" class="clipboard"
+	xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+<div id="lock_unlock_button" class="lockButton">
+
+<table class="dataInput">
+	<tbody>
+		<tr>
+			<td class="labelColumn"></td>
+			<td class="fieldColumn"><h:commandButton type="submit"
+				value="#{messages['command.undeleteDocs']}" styleClass="button"
+				action="#{deleteActions.restoreCurrentDocument}"
+				rendered="#{deleteActions.canRestoreCurrentDoc}" /></td>
+		</tr>
+	</tbody>
+</table>
+
+</div>
+
+</div>

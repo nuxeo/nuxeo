@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Workflow Web Client
+Bundle-SymbolicName: org.nuxeo.ecm.platform.workflow.web;singleton:=true
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Nuxeo-Component: OSGI-INF/actions-contrib.xml,
+  OSGI-INF/document-adapter-service-contrib.xml
+Require-Bundle: org.nuxeo.ecm.platform.workflow.api,
+ org.nuxeo.ecm.platform.workflow.document.api,
+ org.nuxeo.ecm.webapp.core
+Nuxeo-RequiredBy: org.nuxeo.ecm.war

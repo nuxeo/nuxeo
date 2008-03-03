@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Comment Core
+Bundle-SymbolicName: org.nuxeo.ecm.platform.comment.core;singleton=true
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/comment-schemas-contrib.xml,
+  OSGI-INF/comment-life-cycle-contrib.xml
+Eclipse-LazyStart: true
+Require-Bundle: org.nuxeo.ecm.core.schema

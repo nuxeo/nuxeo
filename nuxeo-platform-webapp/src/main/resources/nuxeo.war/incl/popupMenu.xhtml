@@ -1,0 +1,26 @@
+<div
+	xmlns="http://www.w3.org/1999/xhtml"
+  	xmlns:ui="http://java.sun.com/jsf/facelets"
+  	xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  	xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  	xmlns:nxu="http://nuxeo.org/nxweb/util"
+  	xmlns:t="http://myfaces.apache.org/tomahawk"
+  	xmlns:nxd="http://nuxeo.org/nxweb/document"
+    xmlns:nxh="http://nuxeo.org/nxweb/html">
+<h:panelGroup id="contextMenuRegion">
+	<div id="contextMenu">
+	<span id="contextMenuInternal">
+
+      <t:dataList var="cb_action" value="#{popupHelper.popupActions}">
+        <div class="clipboardFunction">
+          <nxh:commandLink action="#{cb_action.getLink()}">
+            <t:graphicImage value="#{cb_action.icon}"/>
+            <h:outputText value=" #{messages[cb_action.label]}" />
+          </nxh:commandLink>
+        </div>
+      </t:dataList>
+
+	</span>
+	</div>
+</h:panelGroup>
+</div>

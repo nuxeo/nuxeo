@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<component name="test.listener">
+
+  <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+    point="listener">
+
+    <listener name="testListener"
+      class="org.nuxeo.ecm.platform.scheduler.core.EventListener"/>
+
+  </extension>
+
+</component>

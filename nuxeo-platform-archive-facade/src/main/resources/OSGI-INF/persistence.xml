@@ -1,0 +1,10 @@
+<persistence>
+   <persistence-unit name="nxarchive">
+       <jta-data-source>java:/nxarchive-records</jta-data-source>
+       %{CLASS}%
+       <properties>
+         <property name="hibernate.hbm2ddl.auto">update</property>
+         <property name="jboss.entity.manager.jndi.name" value="java:/nxarchive"/>
+       </properties>
+   </persistence-unit>
+</persistence>

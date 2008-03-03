@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.search.testing.backend.join">
+
+  <extension target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="resource">
+
+        <resource name="join" prefix="jn" indexAllFields="true"
+            type="other">
+           <field name="id" stored="true" type="keyword"/>
+           <field name="foo" stored="true" type="keyword"/>
+        </resource>
+        <resource name="join2" prefix="jn2" indexAllFields="true"
+            type="other">
+           <field name="id" stored="true" type="keyword"/>
+           <field name="title" stored="true" type="keyword"/>
+           <field name="foo" stored="true" type="keyword"/>
+        </resource>
+        <resource name="joinMore" prefix="jnm" indexAllFields="true"
+            type="yetAnother">
+           <field name="id" stored="true" type="keyword"/>
+           <field name="foo" stored="true" type="keyword"/>
+        </resource>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="resourceType">
+    <resourceType name="other"
+      factoryClass="org.nuxeo.ecm.core.search.backend.compass.join.FakeIndexableResourceFactory"
+      />
+  </extension>
+
+</component>

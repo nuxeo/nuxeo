@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXEventsFacade
+Bundle-SymbolicName: org.nuxeo.ecm.platform.events.facade
+Bundle-Localization: plugin
+Export-Package: org.nuxeo.ecm.platform.events.facade.ejb,
+ org.nuxeo.ecm.platform.events.facade.ejb.local,
+ org.nuxeo.ecm.platform.events.facade.ejb.remote
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.platform.events
+Nuxeo-Component: OSGI-INF/nxevents-facade-platform-contrib.xml

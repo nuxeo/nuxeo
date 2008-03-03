@@ -1,0 +1,13 @@
+<h:panelGroup rendered="#{currentUser.anonymous}">
+<nxu:methodResult name="provider"
+                  value="#{resultsProvidersCache.get('USER_SECTIONS')}">
+  <ui:decorate template="/incl/foldable_box_document_listing.xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+    <ui:param name="documents" value="#{provider.currentPage}" />
+    <ui:param name="provider" value="#{provider}" />
+    <ui:param name="heading"
+      value="#{messages['title.dashboard.sections']}" />
+    <ui:param name="idParam" value="USER_SECTIONS" />
+  </ui:decorate>
+</nxu:methodResult>
+</h:panelGroup>

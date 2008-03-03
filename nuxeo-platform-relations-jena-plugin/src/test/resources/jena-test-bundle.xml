@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.relations.services.RelationService">
+
+  <implementation
+    class="org.nuxeo.ecm.platform.relations.services.RelationService" />
+
+  <extension-point name="graphtypes">
+    <object
+      class="org.nuxeo.ecm.platform.relations.descriptors.GraphTypeDescriptor" />
+  </extension-point>
+
+  <!-- Graph for jena -->
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="graphtypes">
+    <graphtype name="jena"
+      class="org.nuxeo.ecm.platform.relations.jena.JenaGraph" />
+  </extension>
+
+  <extension-point name="graphs">
+    <object
+      class="org.nuxeo.ecm.platform.relations.descriptors.GraphDescriptor" />
+  </extension-point>
+
+  <!-- Graph example for tests -->
+  <extension target="org.nuxeo.ecm.platform.relations.services.RelationService"
+    point="graphs">
+    <graph name="myrelations" type="jena">
+      <namespaces>
+        <namespace name="rdf">
+          http://www.w3.org/1999/02/22-rdf-syntax-ns#
+        </namespace>
+        <namespace name="dcterms">http://purl.org/dc/terms/</namespace>
+      </namespaces>
+    </graph>
+  </extension>
+
+</component>

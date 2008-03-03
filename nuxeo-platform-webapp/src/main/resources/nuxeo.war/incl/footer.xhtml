@@ -1,0 +1,26 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:insert name="footer">
+  Copyright <f:verbatim>&amp;copy;</f:verbatim> 2006-2008 Nuxeo. Visit <!-- &nbsp; -->
+  <h:outputLink value="http://www.nuxeo.com">
+    <h:outputText value="nuxeo.com" />
+  </h:outputLink> | Get <!-- &nbsp; --><h:outputLink value="http://www.nuxeo.com/en/services/support/">
+  <h:outputText value="support" />
+    </h:outputLink> | Join the <!-- &nbsp; -->
+  <h:outputLink value="http://www.nuxeo.org/sections/community">
+    <h:outputText value="community" />
+  </h:outputLink>
+  <br />
+  <h:form>
+   <h:outputText value="#{messages['label.selectLocale']}" />
+    <h:selectOneMenu value="#{localeSelector.localeString}" styleClass="langSelect">
+      <f:selectItems value="#{localeSelector.supportedLocales}"/>
+    </h:selectOneMenu>
+    <h:commandButton action="#{localeSelector.select}"
+                     value="#{messages['command.changeLocale']}"
+                     class="langSubmit" />
+  </h:form>
+</ui:insert>
+</div>

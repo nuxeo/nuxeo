@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.archive.facade" version="1.0">
+	<documentation>
+		Defines the archive manager service binding
+		@author <a href="mailto:bt@nuxeo.com">Bogdan Tatar</a>
+	</documentation>
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement"
+  		point="services">
+    	<documentation>Defines the archive manager service binding</documentation>
+
+		<server name="default">
+			<service class="org.nuxeo.ecm.platform.archive.api.ArchiveManager" group="platform" >
+				<locator>%ArchiveManagerBean</locator>
+			</service>
+		</server>
+
+  </extension>
+
+</component>

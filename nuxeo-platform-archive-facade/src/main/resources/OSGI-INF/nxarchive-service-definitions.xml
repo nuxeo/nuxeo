@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.archive.service.NXArchiveFactoryService">
+
+   <documentation>
+     Service that has to do with archive record management.
+	 The role of the  Archive tab is to offer an user the possibility
+	 to associate to a document information about it's physical archiving.
+	 This information is not part of the document itself, but it is
+ 	 related to the document.By modifying or adding an archive record
+ 	 to a document, the  state in life cycle, version number and other
+ 	 characteristics of the document are not affected. The records
+ 	 correspond to a specific version of the document and by deleting
+ 	 a document,the archive records associated to this document are not deleted.
+
+     @version 1.0
+     @author <a href="mailto:bt@nuxeo.com">Bogdan Tatar</a>
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.archive.service.NXArchiveFactoryService"/>
+
+  <extension-point name="archiveRecordFactory">
+
+    <documentation>
+      This service is used to generate the needed archive record implementation.
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.archive.service.extension.ArchiveRecordFactoryDescriptor"/>
+  </extension-point>
+
+</component>

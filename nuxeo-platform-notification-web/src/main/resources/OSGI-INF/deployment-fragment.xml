@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+
+<fragment>
+
+
+
+  <extension target="application#MODULE">
+
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+
+  </extension>
+
+  <extension target="faces-config#NAVIGATION">
+    <!-- generic pages -->
+    <navigation-case>
+      <from-outcome>send_notification_email</from-outcome>
+      <to-view-id>/document_notif_email.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+  </extension>
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+    <!--  create a temp dir -->
+    <!--  be sure no directory with that name exists -->
+    <delete path="nxnotificationservice-web.tmp" />
+    <mkdir path="nxnotificationservice-web.tmp" />
+
+    <unzip from="${bundle.fileName}" to="nxnotificationservice-web.tmp">
+      <include>OSGI-INF/l10n/**</include>
+      <include>OSGI-INF/**</include>
+    </unzip>
+
+    <append from="nxnotificationservice-web.tmp/OSGI-INF/l10n/messages.properties"
+      to="nuxeo.war/WEB-INF/classes/messages.properties"
+      addNewLine="true" />
+    <append
+      from="nxnotificationservice-web.tmp/OSGI-INF/l10n/messages_en.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_en.properties"
+      addNewLine="true" />
+    <append
+      from="nxnotificationservice-web.tmp/OSGI-INF/l10n/messages_fr.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_fr.properties"
+      addNewLine="true" />
+    <append
+      from="nxnotificationservice-web.tmp/OSGI-INF/l10n/messages_de.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_de.properties"
+      addNewLine="true" />
+
+    <delete path="nxnotificationservice-web.tmp" />
+  </install>
+
+</fragment>
+

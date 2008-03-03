@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NuxeoWeb UI part
+Bundle-SymbolicName: org.nuxeo.ecm.webapp.ui
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo

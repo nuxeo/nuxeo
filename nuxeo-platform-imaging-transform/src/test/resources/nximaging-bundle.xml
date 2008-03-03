@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.imaging.ImagingComponent" version="1.0">
+  <documentation>
+  The imaging component is providing API for image manipulations
+  @author Max Stepanov
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.imaging.ImagingComponent"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.imaging.api.ImagingService" />
+  </service>
+
+</component>
+

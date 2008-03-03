@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXArchiveFacade
+Bundle-SymbolicName: org.nuxeo.ecm.platform.archive.ejb
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.platform.archive.api,
+ org.nuxeo.ecm.core.api
+Export-Package: org.nuxeo.ecm.platform.archive.ejb,
+ org.nuxeo.ecm.platform.archive.ejb.local,
+ org.nuxeo.ecm.platform.archive.ejb.remote
+Nuxeo-Component: OSGI-INF/PlatformBindings.xml,
+  OSGI-INF/nxarchive-service-definitions.xml,
+  OSGI-INF/nxarchive-service-contrib.xml

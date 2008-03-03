@@ -1,0 +1,11 @@
+<assembly>
+
+<!--
+To be used over a nuxeo assembly to excludes the web layer
+-->
+
+<artifactSet id="nuxeo-web"/>
+<artifactSet id="nuxeo-themes"/>
+
+</assembly>
+

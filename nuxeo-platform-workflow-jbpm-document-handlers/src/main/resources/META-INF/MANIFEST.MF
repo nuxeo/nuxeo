@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Workflow Jbpm Document Handlers
+Bundle-SymbolicName: org.nuxeo.ecm.platform.workflow.jbpm.handlers;singleton:=true
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Require-Bundle: org.nuxeo.ecm.platform.workflow.jbpm,
+ org.nuxeo.ecm.platform.workflow.document.api

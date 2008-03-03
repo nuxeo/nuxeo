@@ -1,0 +1,69 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  id="#{widget.id}">
+
+  <c:if test="#{widget.mode != 'create' and widget.mode != 'edit' and field_0 != null}">
+
+    <nxh:outputLink
+      value="#{nxd:fileUrl('downloadFile', value, widget.fieldDefinitions[0].propertyName, field_1)}">
+      <nxh:graphicImage value="#{nxd:fileIconPath(field_0)}"
+        rendered="#{! empty nxd:fileIconPath(field_0)}" />
+      <nxh:outputText value="#{field_1}" />
+    </nxh:outputLink>
+
+    <nxu:methodResult name="hasPDFCapabilities"
+      value="#{conversionActions.isFileExportableToPDF(widget.fieldDefinitions[0].propertyName)}">
+      <h:panelGroup rendered="#{hasPDFCapabilities}">
+        <h:outputText value=" | " />
+        <h:commandLink action="#{conversionActions.generatePdfFile}">
+          <f:param name="fileFieldFullName"
+            value="#{widget.fieldDefinitions[0].propertyName}" />
+          <f:param name="filename" value="#{field_1}" />
+          <h:outputText value="#{messages['label.document.generatePdf']}" />
+        </h:commandLink>
+      </h:panelGroup>
+    </nxu:methodResult>
+
+    <nxu:methodResult name="immutable"
+      value="#{currentDocument.hasFacet('Immutable')}">
+      <nxu:methodResult name="onlineEditable"
+        value="#{conversionActions.isFileOnlineEditable(widget.fieldDefinitions[0].propertyName)}">
+        <nxu:methodResult name="isLiveEditable"
+          value="#{lockActions.isCurrentDocumentLiveEditable()}">
+          <h:panelGroup
+            rendered="#{!immutable and onlineEditable and isLiveEditable}">
+            <h:outputText value=" | " />
+
+            <h:commandLink action="#{FileManageWS.edit}"
+              rendered="#{documentActions.writeRight}">
+              <f:param name="fileFieldFullName"
+                value="#{widget.fieldDefinitions[0].propertyName}" />
+              <f:param name="filename" value="#{field_1}" />
+              <f:param name="filenameFieldFullName"
+                value="#{widget.fieldDefinitions[1].propertyName}" />
+              <h:outputText value="#{messages['label.document.directEdit']}" />
+            </h:commandLink>
+
+          </h:panelGroup>
+        </nxu:methodResult>
+      </nxu:methodResult>
+    </nxu:methodResult>
+
+  </c:if>
+
+  <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
+
+    <nxu:inputFile id="#{widget.id}_file" value="#{field_0}"
+      filename="#{field_1}" required="#{widget.required}" editFilename="false" />
+    <h:message styleClass="errorMessage" for="#{widget.id}_file"
+      id="#{widget.id}_message" />
+
+  </c:if>
+
+</f:subview>

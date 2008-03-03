@@ -1,0 +1,109 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+  <h:outputText rendered="#{!canStartWorkflow}"
+    value="#{messages['label.review.no.review.started']}">
+  </h:outputText>
+
+  <h:form rendered="#{canStartWorkflow}">
+
+    <h3>
+      <h:outputText value="#{messages['label.review.start.new']}"/></h3> <i>
+    <h:outputText value="#{messages['label.review.fillup.information']}"/></i>
+
+    <h:panelGrid columns="2" styleClass="dataInput"
+      columnClasses="labelColumn, fieldColumn">
+      <h:outputLabel for="workflowDefinitionId" class="required"
+        value="#{messages['label.review.select.one']}"/>
+
+      <a4j:region renderRegionOnly="false">
+        <h:panelGroup class="dataInputGroup">
+          <h:selectOneRadio id="workflowDefinitionId"
+            value="#{documentWorkflowActions.workflowDefinitionId}"
+            required="true" layout="pageDirection">
+            <a4j:support event="onclick" ajaxSingle="true"
+              reRender="ajaxPanel1, ajaxPanel2"/>
+            <f:selectItems
+              value="#{workflowDefinitionsMap}"/>
+          </h:selectOneRadio>
+          <h:message styleClass="errorMessage" for="workflowDefinitionId"/>
+        </h:panelGroup>
+      </a4j:region>
+
+      <a4j:outputPanel id="ajaxPanel1">
+        <h:outputLabel for="lifeCycleDestinationStateTransition" class="required"
+          rendered="#{documentWorkflowActions.workflowDefinitionLabel == 'document_review_approbation'}"
+          value="#{messages['label.review.out.life.cycle']}"/>
+      </a4j:outputPanel>
+
+      <a4j:outputPanel id="ajaxPanel2">
+        <h:panelGroup class="dataInputGroup"
+          rendered="#{documentWorkflowActions.workflowDefinitionLabel == 'document_review_approbation'}">
+          <h:selectOneRadio id="lifeCycleDestinationStateTransition"
+            value="#{documentWorkflowActions.lifeCycleDestinationStateTransition}"
+            required="true" layout="pageDirection">
+            <f:selectItems
+              value="#{availableStateTransitionsMap}"/>
+          </h:selectOneRadio>
+          <h:message styleClass="errorMessage"
+            for="lifeCycleDestinationStateTransition"/>
+        </h:panelGroup>
+      </a4j:outputPanel>
+
+      <h:outputLabel for="reviewModificationProperty" class="required"
+        value="#{messages['label.review.prop.modification']}"/>
+
+      <a4j:region renderRegionOnly="false">
+        <h:panelGroup class="dataInputGroup">
+          <h:selectOneRadio id="reviewModificationProperty"
+            value="#{documentWorkflowActions.reviewModificationProperty}"
+            required="true" layout="pageDirection">
+            <a4j:support event="onclick" ajaxSingle="true"
+              reRender="ajaxPanel3, ajaxPanel4"/>
+            <f:selectItems
+              value="#{reviewModificationPropertiesMap}"/>
+          </h:selectOneRadio>
+          <h:message styleClass="errorMessage" for="reviewModificationProperty"/>
+        </h:panelGroup>
+      </a4j:region>
+
+      <f:subview rendered="false">
+        NXP-2016: versioning props disabled for now: not working
+
+      <a4j:outputPanel id="ajaxPanel3">
+        <h:outputLabel for="reviewVersioningProperty" class="required"
+          rendered="#{documentWorkflowActions.reviewModificationProperty == 'workflowDocumentModificationAllowed'}"
+          value="#{messages['label.review.prop.version.scheme']}"/>
+      </a4j:outputPanel>
+
+      <a4j:outputPanel id="ajaxPanel4">
+
+        <h:panelGroup class="dataInputGroup"
+          rendered="#{documentWorkflowActions.reviewModificationProperty == 'workflowDocumentModificationAllowed'}">
+          <h:selectOneRadio id="reviewVersioningProperty"
+            value="#{documentWorkflowActions.reviewVersioningProperty}"
+            required="false" layout="pageDirection">
+            <f:selectItems
+              value="#{reviewVersioningPropertiesMap}"/>
+          </h:selectOneRadio>
+          <h:message styleClass="errorMessage" for="reviewVersioningProperty"/>
+        </h:panelGroup>
+      </a4j:outputPanel>
+
+      </f:subview>
+
+      <h:outputText value=""/>
+
+      <h:commandButton type="submit" value="#{messages['label.review.start']}"
+        styleClass="button"
+        action="#{documentWorkflowActions.startOneWorkflow}"/>
+
+    </h:panelGrid>
+
+  </h:form>
+</div>

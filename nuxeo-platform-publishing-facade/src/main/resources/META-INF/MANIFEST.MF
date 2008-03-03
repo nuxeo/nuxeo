@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Publishing Facade
+Bundle-SymbolicName: org.nuxeo.ecm.platform.publishing.facade;singleton:=true
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Require-Bundle: org.nuxeo.ecm.core.api,
+  org.nuxeo.ecm.platform.publishing.api
+  

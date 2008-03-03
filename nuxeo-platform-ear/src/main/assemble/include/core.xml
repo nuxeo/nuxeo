@@ -1,0 +1,108 @@
+<assembly>
+
+  <fileSet id="nuxeo-template">
+    <directory>src/main/resources</directory>
+    <includes>
+      <include>config</include>
+      <include>config/default-repository-config.xml</include>
+      <include>config/mbeans</include>
+      <include>config/nuxeo.properties</include>
+      <include>config/login-config.xml</include>
+      <include>config/platform-config.xml</include>
+      <include>config/default-versioning-config.xml</include>
+      <include>config/mbeans/*</include>
+      <include>datasources/nxuidsequencer-ds.xml</include>
+      <include>datasources/core-events-ds.xml</include>
+      <include>datasources</include>
+      <include>META-INF/**</include>
+      <include>OSGI-INF/**</include>
+    </includes>
+    <excludes>
+      <exclude>**/.svn</exclude>
+      <exclude>lib-fragments.xml</exclude>
+      <!--
+      <exclude>config/addWorkspace.jpdl.xml</exclude>
+      <exclude>config/commentService-config-bundle.xml</exclude>
+      <exclude>config/default-sql-directories-bundle.xml</exclude>
+      <exclude>config/nuxeo-webapp-core.properties</exclude>
+      <exclude>config/nxrelations-default-jena-bundle.xml</exclude>
+      <exclude>datasources/nxarchive*.xml</exclude>
+      <exclude>datasources/nxaudit*.xml</exclude>
+      <exclude>datasources/nxcomment*.xml</exclude>
+      <exclude>datasources/nxplaceful*.xml</exclude>
+      <exclude>datasources/nxrelations*.xml</exclude>
+      <exclude>datasources/nxsearch*.xml</exclude>
+      <exclude>datasources/nxsqldirectory*.xml</exclude>
+      <exclude>datasources/nxworkflow*.xml</exclude>
+      <exclude>OSGI-INF/templates/WAR_MANIFEST.MF</exclude>
+      <exclude>config/fileManagerService-config-bundle.xml</exclude>
+      -->
+    </excludes>
+  </fileSet>
+
+  <fileSet id="nuxeo-template-core">
+    <directory>src/main/resources_core</directory>
+    <includes>
+      <include>**</include>
+    </includes>
+    <excludes>
+      <exclude>**/.svn</exclude>
+    </excludes>
+  </fileSet>
+
+
+  <artifactSet extends="nuxeo-platform">
+    <includes>
+      <artifact name="nuxeo-platform-api" />
+      <artifact name="nuxeo-platform-dublincore" />
+      <artifact name="nuxeo-platform-cache-*" />
+      <artifact name="nuxeo-platform-events-*" />
+      <artifact name="nuxeo-platform-mimetype-*" />
+      <artifact name="nuxeo-platform-uidgen-core" />
+      <artifact name="nuxeo-platform-modifier" />
+      <artifact name="nuxeo-platform-usermanager-api" />
+      <artifact name="nuxeo-platform-relations-api" />
+      <artifact name="nuxeo-platform-search-api" />
+      <artifact name="nuxeo-platform-search-core-listener" />
+      <artifact name="nuxeo-platform-versioning-core" />
+      <artifact name="nuxeo-platform-versioning-api" />
+      <artifact name="nuxeo-platform-comment-core" />
+      <artifact name="nuxeo-platform-forum-core" />
+      <artifact name="nuxeo-platform-login" />
+      <artifact name="nuxeo-platform-webapp-types" />
+      <artifact name="nuxeo-platform-directory-types-contrib" />
+      <artifact name="nuxeo-platform-userdata-core-contrib" />
+      <artifact name="nuxeo-platform-scheduler-core*" />
+
+      <artifact name="nuxeo-platform-transform-api" />
+      <artifact name="nuxeo-platform-transform-core" />
+      <!-- what to do with these bundles? remove them from default core deploy?  -->
+      <artifact name="nuxeo-platform-modifier" />
+      <!-- needed by versioning -->
+      <artifact name="nuxeo-platform-workflow-document-api" />
+      <artifact name="nuxeo-platform-workflow-api" />
+
+      <artifact name="nuxeo-platform-content-template*" />
+      <artifact name="nuxeo-platform-url-api" />
+      <artifact name="nuxeo-platform-types-api" />
+    </includes>
+    <excludes>
+      <artifact name="nuxeo-platform-cache-client" />
+      <artifact name="nuxeo-platform-cache-web" />
+      <!-- remove mimetype facade -->
+      <artifact name="nuxeo-platform-mimetype-facade" />
+      <!-- remove transform -->
+      <artifact name="nuxeo-platform-transform-facade" />
+    </excludes>
+  </artifactSet>
+
+
+  <artifactSet id="nuxeo-platform-unpacked" />
+
+  <artifactSet id="nuxeo-web" />
+
+  <artifactSet id="nuxeo-themes" />
+
+
+</assembly>
+

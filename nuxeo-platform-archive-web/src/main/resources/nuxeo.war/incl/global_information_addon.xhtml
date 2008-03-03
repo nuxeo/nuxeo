@@ -1,0 +1,38 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory">
+
+  <h:panelGrid columns="4" styleClass="dataInput"
+    columnClasses="relationCreateLabelColumn, relationCreateFieldColumn,
+    relationCreateLabelColumn, relationCreateFieldColumn twoColumns">
+
+    <h:outputLabel for="format1" value="#{messages['label.archive.global.format1']}" />
+    <h:panelGroup>
+    <nxdir:selectOneListbox
+      value="#{selectedArchiveRecord.format1}"
+      directoryName="archive_format"
+      id="format1"
+      localize="true"
+      displayValueOnly="#{!archiveManagerActions.editable}"/>
+    </h:panelGroup>
+
+    <h:outputLabel for="folios1" value="#{messages['label.archive.global.folios1']}" />
+    <h:panelGroup>
+      <h:inputText
+        id="folios1"
+        value="#{selectedArchiveRecord.folios1}"
+        readonly="#{!archiveManagerActions.editable}"
+        disabled="#{!archiveManagerActions.editable}"
+        styleClass="#{archiveManagerActions.style}"
+        size="4">
+        <f:validateLongRange minimum="0"/>
+      </h:inputText>
+      <h:message styleClass="errorMessage" for="folios1" />
+    </h:panelGroup>
+  </h:panelGrid>
+
+</div>

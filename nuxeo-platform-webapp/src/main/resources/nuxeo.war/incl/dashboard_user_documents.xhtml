@@ -1,0 +1,11 @@
+<nxu:methodResult name="provider"
+                  value="#{resultsProvidersCache.get('USER_DOCUMENTS')}">
+  <ui:decorate template="/incl/foldable_box_document_listing.xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+    <ui:param name="documents" value="#{provider.currentPage}" />
+    <ui:param name="provider" value="#{provider}" />
+    <ui:param name="heading"
+      value="#{messages['title.dashboard.userDocuments']}" />
+    <ui:param name="idParam" value="USER_DOCUMENTS" />
+  </ui:decorate>
+</nxu:methodResult>

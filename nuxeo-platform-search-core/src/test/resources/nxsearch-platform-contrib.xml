@@ -1,0 +1,22 @@
+<component name="org.nuxeo.ecm.core.search.service.facade" version="1.0">
+
+  <documentation> Expose the search service as a platform service.
+
+    @version 1.0
+    @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+  </documentation>
+
+  <require> org.nuxeo.ecm.core.search.service.SearchServiceImpl></require>
+
+    <extension target="org.nuxeo.ecm.platform.api.PlatformService"
+      point="servers">
+
+      <documentation> Define the search service as a platform service. </documentation>
+
+      <server name="default" host="localhost">
+
+        <service class="org.nuxeo.ecm.core.search.service.SearchService"
+          jndiName="%SearchServiceBean"/>
+      </server>
+
+    </extension> </component>

@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.uidgen.generators">
+
+  <!-- Sample versioning rules -->
+  <extension target="org.nuxeo.ecm.platform.versioning.service.VersioningService"
+			   point="rules">
+			   
+	<!-- Life cycle transitions incrementation rules -->
+    <versioningRuleWF name="sampleWFRule_from_project_to_review"
+               workflowStateInitial="project"
+               workflowStateFinal="review"
+               action="inc_minor">
+    </versioningRuleWF>
+    
+    <versioningRuleWF name="sampleWFRule_from_project_to_approved"
+               workflowStateInitial="review"
+               workflowStateFinal="approved"
+               action="inc_minor">
+    </versioningRuleWF>
+    
+    <versioningRuleWF name="sampleWFRule_from_approved_to_project"
+               workflowStateInitial="review"
+               workflowStateFinal="project"
+               action="inc_major">
+    </versioningRuleWF>
+    
+    <versioningRuleWF name="sampleWFRule_from_project_to_project"
+               workflowStateInitial="project"
+               workflowStateFinal="project"
+               action="ask_user">
+    </versioningRuleWF>
+    
+    <!-- 
+      Edit rules: rules that apply when document is about to be edited
+      or saved
+     -->
+    <versioningRuleEdit name="sampleEditRule"
+               action="query_workflow" lifecycleState="review">
+               
+    </versioningRuleEdit>
+    
+    <versioningRuleEdit name="sampleEditRule2"
+                action="ask_user" lifecycleState="project">
+      <option>nothing</option>
+      <option>minor</option>
+      <option>major</option>
+    </versioningRuleEdit>
+    
+    <!-- valid state : increment major version -->
+    <versioningRuleEdit name="IncrementMajorWhenInValidState" lifecycleState="approved"
+      action="inc_major">
+      
+      <option>inc_minor</option>
+      <option lifecycleTransition="back_to_project" value="inc_major"/>
+    </versioningRuleEdit>
+    
+    <versioningRuleEdit name="sampleEditRuleAnyState"
+                action="ask_user" lifecycleState="*">
+      <option>nothing</option>
+      <option>minor</option>
+      <option>major</option>
+    </versioningRuleEdit>
+    
+    <!-- 
+      Auto rules: rules that apply when core events are received
+     -->
+    <versioningRuleAuto name="sampleAutoRule_if_state_is_project" lifecycleState="project"
+               action="inc_minor">
+    </versioningRuleAuto>
+    
+    <versioningRuleAuto name="sampleAutoRule_if_state_is_review" lifecycleState="review"
+               action="inc_minor">
+    </versioningRuleAuto>
+    
+    <versioningRuleAuto name="sampleAutoRule_if_state_is_approved" lifecycleState="approved"
+               action="inc_major">
+    </versioningRuleAuto>
+    
+  </extension>
+  
+  <require>org.nuxeo.ecm.core.listener.CoreEventListenerService</require>
+  <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+    point="listener">
+    <listener name="versioningChangeListener"
+      class="org.nuxeo.ecm.platform.versioning.VersioningChangeListenerForTesting" />
+  </extension>
+
+</component>

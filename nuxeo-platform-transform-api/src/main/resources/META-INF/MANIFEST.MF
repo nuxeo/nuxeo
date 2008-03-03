@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Transform API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.transform.api;singleton:=true
+Bundle-Vendor: Nuxeo

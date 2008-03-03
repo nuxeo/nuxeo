@@ -1,0 +1,57 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<nxu:methodResult name="hasFiles" value="#{currentDocument.hasSchema('files')}">
+  <h:form enctype="multipart/form-data" rendered="#{hasFiles}">
+    <h:panelGrid>
+
+      <a4j:region renderRegionOnly="false">
+        <a4j:outputPanel ajaxRendered="true">
+          <nxu:inputList value="#{currentDocument.files.files}"
+            id="files" model="model" diff="true"
+            template="#{nxd:defaultValue('files', 'files')}"
+            required="true">
+
+            <h:panelGrid columns="2">
+              <a4j:commandLink immediate="true"
+                actionListener="#{editableListBean.performAction}"
+                reRender="geideForm" bypassUpdates="true">
+                <h:graphicImage value="/icons/action_delete.gif" />
+                <f:param name="for" value="files" />
+                <f:param name="index" value="#{model.rowIndex}" />
+                <f:param name="type" value="remove" />
+              </a4j:commandLink>
+              <h:panelGroup>
+                <nxu:inputFile value="#{model.rowData.file}"
+                  filename="#{model.rowData.filename}" editFilename="false"
+                  required="true" id="file" />
+                <h:message styleClass="errorMessage" for="file" />
+              </h:panelGroup>
+            </h:panelGrid>
+
+          </nxu:inputList>
+          <h:message styleClass="errorMessage" for="files" />
+        </a4j:outputPanel>
+
+        <a4j:commandLink immediate="true"
+          actionListener="#{editableListBean.performAction}"
+          reRender="geideForm">
+          <f:param name="for" value="files" />
+          <f:param name="type" value="add" />
+          <h:graphicImage value="/icons/action_add.gif" />
+          <h:outputText value="#{messages['command.addNewAttachedFile']}" />
+        </a4j:commandLink>
+      </a4j:region>
+
+      <h:commandButton type="submit"
+        value="#{messages['command.save']}" styleClass="button"
+        action="#{documentActions.updateCurrentDocument}" />
+
+    </h:panelGrid>
+  </h:form>
+</nxu:methodResult>
+
+</div>

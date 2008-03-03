@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component
+  name="org.nuxeo.ecm.platform.archive.service.NXArchiveFactoryService.contrib">
+
+  <require>org.nuxeo.ecm.platform.archive.service.NXArchiveFactoryService</require>
+
+  <documentation> This service is used to register the archive record factory.
+
+    @version 1.0
+    @author <a href="mailto:bt@nuxeo.com">Bogdan Tatar</a>
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.archive.service.NXArchiveFactoryService"
+    point="archiveRecordFactory">
+    <archiveRecordFactory
+      class="org.nuxeo.ecm.platform.archive.ejb.ArchiveRecordFactoryImpl"/>
+  </extension>
+
+</component>

@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.ui.web.rest.URLService.webapp.contrib">
+  <documentation>
+    Contributions for rest links to document attached files.
+
+    @version 1.0
+    @author Anahide Tchertchian (at@nuxeo.com)
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.rest.URLService"
+    point="urlpatterns">
+    <documentation>
+      Basic pattern for download: it resolve the file on given property of given
+      document and makes its available for download.
+    </documentation>
+
+    <urlPattern name="downloadFile" enabled="true">
+      <defaultURLPolicy>false</defaultURLPolicy>
+      <needBaseURL>true</needBaseURL>
+      <needRedirectFilter>false</needRedirectFilter>
+      <needFilterPreprocessing>true</needFilterPreprocessing>
+      <codecName>downloadFile</codecName>
+      <actionBinding>#{documentActions.download}</actionBinding>
+      <documentViewBinding>#{restHelper.documentView}</documentViewBinding>
+      <newDocumentViewBinding>#{restHelper.newDocumentView}</newDocumentViewBinding>
+    </urlPattern>
+
+    <!-- TODO: add patterns for pdf + edit online links -->
+
+  </extension>
+
+
+</component>

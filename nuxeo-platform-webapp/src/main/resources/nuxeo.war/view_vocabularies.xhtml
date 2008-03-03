@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:nxthemes="http://nuxeo.org/nxthemes"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:c="http://java.sun.com/jstl/core">
+
+
+
+    <ui:define name="page title">Nuxeo 5 EP: <h:outputText value="#{messages['title.vocabularies']}" /></ui:define>
+
+    <ui:define name="body">
+
+        <h:form rendered="#{vocabularyNames.rowCount != 0}">
+
+            <script type="text/javascript">
+                function confirmDeleteVocabulary() {
+                       return confirm("#{messages['label.vocabulary.cleared.confirmDeleteVocabulary']}");
+                }
+            </script>
+
+            <h1><h:outputText value="#{messages['title.vocabularies']}" /></h1>
+
+              <div>
+
+                <h:dataTable var="vocName" value="${vocabularyNames}"
+                class="dataOutput" rowClasses="dataRowEven,dataRowOdd"
+                columnClasses=",buttonColumn">
+
+                  <h:column>
+                      <f:facet name="header">
+                        <h:outputText value="#{messages['label.vocabulary.name']}" />
+                      </f:facet>
+
+                      <h:outputText value="#{vocName}" />
+                  </h:column>
+
+                  <h:column>
+                      <f:facet name="header">
+                        <h:outputText value="Action" />
+                      </f:facet>
+
+                      <h:commandButton value="#{messages['command.edit']}" class="button"
+                          action="#{vocabularyActions.editVocabulary}" />
+
+                      <h:commandButton value="#{messages['command.empty']}" class="button"
+                          action="#{vocabularyActions.clearVocabulary}"
+                          onclick="return confirmDeleteVocabulary()" />
+                  </h:column>
+
+                </h:dataTable>
+
+              </div>
+        </h:form>
+    </ui:define>
+
+</nxthemes:composition>

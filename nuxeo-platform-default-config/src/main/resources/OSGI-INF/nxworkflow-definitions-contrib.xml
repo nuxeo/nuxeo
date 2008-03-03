@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.workflow.DefaultWorkflowDefinitionContributions">
+
+  <documentation>
+
+      Default NXP workflow definition contributions.
+
+      @version 1.0
+      @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+  </documentation>
+
+  <require>org.nuxeo.ecm.platform.workflow.jbpm</require>
+
+    <extension target="org.nuxeo.ecm.platform.workflow.service.WorkflowService"
+                point="definition">
+
+       <documentation>
+
+         JBPM workflow definition (JPDL).
+
+         <p/>
+
+         Describe a document <i>parallel</i> review process.
+
+         <p/>
+
+         <i>Parallel</i> means that every participant can approve or reject without
+         any notion of priority or order. All participants are granted with the same
+         rights on the document during review. The review ends when every participants
+         did approve the document.
+
+         <p/>
+         Every participants can add other reviewers.
+
+         <p/>
+         The initiator of the process can abandon the process whenever he wants.
+
+         <p/>
+         Note, the life cycle of the document doesn't change after review.
+
+         <p/>
+         Every operations during the review is audited and available from the
+         document history.
+
+      </documentation>
+
+                <definition>
+                        <engineName>jbpm</engineName>
+                        <mimetype>text/xml</mimetype>
+                        <definitionPath>workflows/document_review_parallel.xml</definitionPath>
+                </definition>
+
+      </extension>
+
+      <extension target="org.nuxeo.ecm.platform.workflow.service.WorkflowService"
+                point="definition">
+         <documentation>
+
+         JBPM workflow definition (JPDL).
+
+         <p/>
+
+         Describe a document <i>serie</i>review process.
+
+         <p/>
+
+         <i>serie</i> means that every participant can approve or reject only
+         if considered as master (or at <i>current level</i>). There is a notion
+         of order and participant review paths.
+
+         <p/>
+
+         All participants are granted with the same rights except the master
+         during the review who gets more extended privileges.
+         The review ends when all masters participants did approve the documents.
+
+         <p/>
+         When master one can approve and then the next actor in the review path
+         becomes master or reject and the former actor in the path get master again.
+
+         <p/>
+         When master a participant can add other reviewers.
+
+         <p/>
+         The initiator of the process can abandon the process whenever he wants.
+
+         <p/>
+         Note, the life cycle of the document doesn't change after review.
+
+         <p/>
+         Every operations during the review is audited and available from the
+
+
+      </documentation>
+                <definition>
+                        <engineName>jbpm</engineName>
+                        <mimetype>text/xml</mimetype>
+                        <definitionPath>workflows/document_review_serial.xml</definitionPath>
+                </definition>
+
+      </extension>
+
+      <extension target="org.nuxeo.ecm.platform.workflow.service.WorkflowService"
+                point="definition">
+
+               <documentation>
+
+         JBPM workflow definition (JPDL).
+
+         <p/>
+
+         Describe a document <i>approbation</i>review process.
+
+         <p/>
+
+         The approbation review is a serial review.
+
+         <p/>
+         The life cycle of the document changes after the review.
+
+         <p/>
+         Every operations during the review is audited and available from the
+
+
+      </documentation>
+
+                <definition>
+                        <engineName>jbpm</engineName>
+                        <mimetype>text/xml</mimetype>
+                        <definitionPath>workflows/document_review_approbation.xml</definitionPath>
+                </definition>
+
+      </extension>
+
+</component>

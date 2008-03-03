@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<component name="filemanager.core.listener" version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+    point="listener">
+    <listener name="digestListener"
+      class="org.nuxeo.ecm.platform.filemanager.core.listener.DigestComputer"
+      order="140" />
+    <documentation>
+      Listen for Core event DOCUMENT_UPDATED and DOCUMENT_CREATED and generate disgests for blobs according to filemanager configuration.
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+
+  </extension>
+
+</component>
+
+

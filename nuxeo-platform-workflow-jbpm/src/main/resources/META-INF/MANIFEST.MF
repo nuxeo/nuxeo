@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Workflow JBPM
+Bundle-SymbolicName: org.nuxeo.ecm.platform.workflow.jbpm;singleton:=true
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Require-Bundle: org.nuxeo.ecm.platform.workflow
+Nuxeo-Component: OSGI-INF/nxworkflow-jbpm.xml

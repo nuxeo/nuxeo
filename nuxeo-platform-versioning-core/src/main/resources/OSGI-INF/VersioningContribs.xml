@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.versioning.service.VersioningContribs">
+  <documentation>
+    Contains extensions for other bundles like core listeners and document model adapters
+    @version 1.0
+    @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+    @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+  </documentation>
+
+  <require>org.nuxeo.ecm.core.listener.CoreEventListenerService</require>
+
+  <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+    point="listener">
+
+    <documentation>
+      Register core listener that could trigger version incrementation.
+    </documentation>
+
+    <listener name="versioninglistener"
+      class="org.nuxeo.ecm.platform.versioning.listeners.DocVersioningListener">
+      <eventId>lifecycle_transition_event</eventId>
+      <eventId>documentCreated</eventId>
+      <eventId>beforeDocumentModification</eventId>
+      <eventId>documentUpdated</eventId>
+      <eventId>documentRestored</eventId>
+    </listener>
+    <listener name="versioningChangelistener"
+      class="org.nuxeo.ecm.platform.versioning.listeners.VersioningChangeListener" />
+  </extension>
+
+</component>

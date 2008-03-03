@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+
+<permissions>
+
+	<!-- The "everything" permission is builtin -->
+
+	<permission name="Read"/>
+	<permission name="ReadSecurity" groups="Read"/>
+	<permission name="Version" groups="Read"/>
+	<permission name="ReadProperties" groups="Read"/>
+	<permission name="ReadChildren" groups="Read"/>
+	<permission name="Browse" groups="ReadProperties"/>
+
+	<permission name="Write"/>
+	<permission name="WriteSecurity"/>
+	<permission name="AddChildren" groups="Write"/>
+	<permission name="RemoveChildren" groups="Write"/>
+	<permission name="WriteProperties" groups="Write"/>
+
+	<permission name="Remove"/>
+	<permission name="Version"/>
+
+	<permission name="ReadLifeCycle" groups="Read"/>
+	<permission name="WriteLifeCycle" groups="Write"/>
+
+</permissions>

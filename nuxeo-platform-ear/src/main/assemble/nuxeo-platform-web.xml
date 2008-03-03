@@ -1,0 +1,10 @@
+<assembly>
+
+  <include>include/commands.xml</include>  
+  <include>include/commands-webplatform.xml</include>  
+  <include>include/nuxeo-all.xml</include>
+  <include>include/webplatform.xml</include>
+  <include>include/exclude-core.xml</include>
+
+</assembly>
+

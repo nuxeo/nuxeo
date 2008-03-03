@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<process-definition
+  xmlns=""  name="document_review_parallel">
+
+  <event type="process-start">
+    <script>
+      <expression>
+        executionContext.setVariable("workflow_review_type", "workflowDocumentReviewTypeParallel");
+        System.out.println("Setting workflow review type....");
+        executionContext.setVariable("workflowDirectives", new String[] {"workflowDirectiveCheck", "workflowDirectiveDiffusion", "workflowDirectiveOpinion"});
+        System.out.println("Setting work item directives for this process definition ....");
+      </expression>
+   </script>
+  </event>
+
+   <start-state name="start">
+      <transition name="review" to="review">
+         <action class="org.nuxeo.ecm.platform.workflow.jbpm.handlers.StartupActionHandler"/>
+      </transition>
+   </start-state>
+
+   <task-node name="review" create-tasks="false" end-tasks="true" signal="last-wait">
+      <task name="review">
+        <assignment class="org.nuxeo.ecm.platform.workflow.jbpm.handlers.NuxeoAssignmentHandler"/>
+      </task>
+      <transition name="validate" to="validated">
+        <action class="org.nuxeo.ecm.platform.workflow.jbpm.handlers.EndActionHandler"/>
+      </transition>
+   </task-node>
+
+   <end-state name="validated"/>
+</process-definition>

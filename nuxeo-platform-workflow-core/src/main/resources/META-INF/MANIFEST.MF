@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Workflow Core
+Bundle-SymbolicName: org.nuxeo.ecm.platform.workflow;singleton:=true
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Require-Bundle: org.nuxeo.ecm.platform.workflow.api,
+ org.nuxeo.ecm.core.api
+Nuxeo-Component: OSGI-INF/nxworkflow-framework.xml,
+  OSGI-INF/nxaudit-events-workflow.xml

@@ -1,0 +1,45 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:s="http://jboss.com/products/seam/taglib">
+
+  <h:panelGroup
+    layout="block" styleClass="pageNavigationControls"
+    rendered="#{provider.nextPageAvailable or provider.previousPageAvailable}">
+
+    <h:commandButton action="#{provider.rewind}"
+                     alt="rewind"
+                     image="/icons/action_page_rewind.gif" >
+      <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
+    </h:commandButton>
+    <h:commandButton action="#{provider.previous}"
+                     alt="previous"
+                     image="/icons/action_page_previous.gif" >
+      <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
+    </h:commandButton>
+
+    <t:htmlTag value="span">
+	<!-- Message system seems to evaluate expressions only once :-(
+	have to resort back to a method -->
+        <h:outputText value="#{provider.currentPageStatus}"/>
+    </t:htmlTag>
+
+    <h:commandButton action="#{provider.next}"
+                     alt="next"
+                     image="/icons/action_page_next.gif" >
+      <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
+    </h:commandButton>
+
+    <h:commandButton action="#{provider.last}"
+                     alt="fast forward"
+                     image="/icons/action_page_fastforward.gif" >
+      <f:attribute name="disabled" value="#{not provider.nextPageAvailable}"/>
+    </h:commandButton>
+  </h:panelGroup>
+</div>

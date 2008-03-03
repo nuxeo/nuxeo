@@ -1,0 +1,30 @@
+<component name="org.nuxeo.ecm.platform.events.service.facade"
+	version="1.0">
+
+	<documentation>
+		Expose the document message producer service as a Nuxeo platform
+		service.
+
+		@version 1.0 @author
+		<a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+	</documentation>
+
+	<extension target="org.nuxeo.runtime.api.ServiceManagement"
+		point="services">
+
+		<documentation>
+			Define the search service as a platform service.
+		</documentation>
+
+		<server name="default">
+
+			<service
+				class="org.nuxeo.ecm.platform.events.api.DocumentMessageProducer"
+				group="platform">
+				<locator>%JMSDocumentMessageProducerBean</locator>
+			</service>
+
+		</server>
+
+	</extension>
+</component>

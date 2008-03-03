@@ -1,0 +1,92 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+  <div class="foldableBox">
+
+     <h3 class="#{foldedClass}">
+       <a href="#" onclick="toggleBox(this); return false;">
+         <h:outputText value="#{messages['label.review.work.items.lists']}"/>
+       </a>
+     </h3>
+
+      <div class="boxBody" style="#{displayStyle}">
+        <f:subview
+          rendered="#{reviewModel.processInstanceCreatorName == currentUser.name}">
+
+          <div class="closedContent">
+
+            <h:panelGroup class="dataInputGroup">
+
+              <h:form>
+              <table class="dataInput">
+                <tbody>
+                <tr>
+                  <td class="labelColumn">
+                    <h:outputLabel for="workItemsListsEntrySelectionName"
+                      value="#{messages['label.review.work.items.lists.existing.presets']}"/>
+                  </td>
+                  <td>
+                    <h:selectOneMenu id="workItemsListsEntrySelectionName"
+                      value="#{workItemsListsActions.workItemsListsEntrySelectionName}">
+                      <f:selectItems value="#{userWorkItemsListsItems}"/>
+                    </h:selectOneMenu>
+                    <h:message styleClass="errorMessage"
+                      for="workItemsListsEntrySelectionName"/>
+                  </td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>
+                    <h:commandButton type="submit"
+                      value="#{messages['label.review.work.items.lists.delete.one']}"
+                      styleClass="button"
+                      action="#{workItemsListsActions.deleteWorkItemsList}"/>
+                    <h:commandButton type="submit"
+                      value="#{messages['label.review.work.items.lists.load.one']}"
+                      styleClass="button"
+                      action="#{workItemsListsActions.loadWorkItemsList}"/>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+              </h:form>
+
+              <h:form>
+              <table class="dataInput">
+                <tbody>
+                <tr>
+                  <td class="labelColumn required">
+                    <h:outputText
+                      value="#{messages['label.review.work.items.lists.save.name']}"/>
+                  </td>
+                  <td>
+                    <h:inputTextarea id="newWorkItemsListPropsName" rows="1"
+                      cols="50"
+                      required="true"
+                      value="#{workItemsListsActions.newWorkItemsListName}"/>
+                    <h:message styleClass="errorMessage" for="newWorkItemsListPropsName" />
+                  </td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>
+                    <h:commandButton type="submit"
+                      value="#{messages['label.review.work.items.lists.do.save']}"
+                      styleClass="button"
+                      action="#{workItemsListsActions.createWorkItemsList}"/>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+              </h:form>
+
+            </h:panelGroup>
+          </div>
+        </f:subview>
+      </div>
+</div>
+</div>

@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <ui:define name="page title">Nuxeo 5 EP</ui:define>
+
+  <ui:define name="body">
+    <h:form>
+    <div>
+      <ui:include src="/groupManager_action_tabs.xhtml"/>
+      <div style="clear:both"></div>
+    </div>
+
+      <ui:include src="/incl/message_banner.xhtml"/>
+
+    <div class="tabsContent">
+
+        <br />
+        <ui:decorate template="/incl/back_link.xhtml">
+	      <ui:param name="doAction" value="view_groups" />
+	    </ui:decorate>
+
+        <br />
+        <h1><h:outputText value="#{selectedGroup.name}" /></h1>
+        
+        <ui:decorate template="/incl/delete_link.xhtml">
+	      	<ui:param name="doDelete" value="delete_group" />
+	    </ui:decorate>
+
+        <div>
+            <ui:include src="/groupManager_view_subtabs.xhtml"/>
+            <div style="clear:both" />
+        </div>
+
+
+      <div class="tabsContent">
+      <table class="dataInput">
+      <tbody>
+        <tr>
+          <td class="labelColumn"><h:outputText value="#{messages['label.groupManager.userMembers']}"/></td>
+          <td class="fieldColumn">
+            <t:dataList
+                var="user"
+                value="#{selectedGroup.memberUsers}"
+                layout="simple"
+                rowCountVar="rowCount"
+                rowIndexVar="rowIndex">
+                <h:outputText value="#{user}" />
+                <h:outputText value=", " rendered="#{rowIndex + 1 &lt; rowCount}" />
+            </t:dataList>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="labelColumn"><h:outputText value="#{messages['label.groupManager.groupMembers']}"/></td>
+          <td class="fieldColumn">
+            <t:dataList
+                var="group"
+                value="#{selectedGroup.memberGroups}"
+                layout="simple"
+                rowCountVar="rowCount"
+                rowIndexVar="rowIndex">
+                <h:outputText value="#{group}" />
+                <h:outputText value=", " rendered="#{rowIndex + 1 &lt; rowCount}" />
+            </t:dataList>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2"></td>
+        </tr>
+      </tbody>
+      </table>
+      </div> <!-- inner tabsContent -->
+
+    </div> <!-- outer tabsContent -->
+    </h:form>
+  </ui:define>
+
+</nxthemes:composition>

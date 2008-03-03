@@ -1,0 +1,701 @@
+<component name="org.nuxeo.ecm.platform.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <!-- server actions -->
+
+    <action id="user_dashboard" link="user_dashboard" enabled="true"
+      label="command.user_dashboard" order="10">
+      <category>USER_SERVICES</category>
+      <filter id="user_dashboard_enabled">
+        <rule grant="true">
+          <condition>#{userServicesContext.dashboardEnabled}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="logout" link="#{loginLogoutAction.logout}" enabled="true"
+      label="command.logout" order="200">
+      <category>USER_SERVICES</category>
+    </action>
+
+    <action id="user_manager" link="#{userManagerActions.viewUsers}"
+      enabled="true" label="command.manageMembers" order="20">
+      <category>USER_SERVICES</category>
+      <filter id="user_manager">
+          <rule grant="true">
+              <condition>#{userServicesContext.userManagerEnabled}</condition>
+          </rule>
+      </filter>
+    </action>
+
+    <action id="vocabularies_manager"
+      link="#{vocabularyActions.viewAllVocabularies}" enabled="true"
+      label="title.vocabularies" order="30">
+      <category>USER_SERVICES</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="themes_manager"
+      link="#{nxthemesUiManager.startEditor}" enabled="true"
+      label="command.manageThemes" order="40">
+      <category>USER_SERVICES</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="newDomain" link="#{documentActions.createDocument('Domain')}"
+      enabled="true" label="command.create.domain"
+      icon="/icons/action_add.gif">
+      <category>SUBVIEW_UPPER_LIST</category>
+      <filter id="newDomain">
+        <rule grant="true">
+          <permission>AddChildren</permission>
+          <type>Root</type>
+        </rule>
+      </filter>
+    </action>
+
+    <!-- domain and roots actions -->
+
+    <action id="newWorkspace"
+      link="#{documentActions.createDocument('Workspace')}" enabled="true"
+      label="command.create.workspace" icon="/icons/action_add.gif">
+      <category>SUBVIEW_UPPER_LIST</category>
+      <filter id="newWorkspace">
+        <rule grant="true">
+          <permission>AddChildren</permission>
+          <type>WorkspaceRoot</type>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="newWorkspaceWithWizard" link="create_workspace_wizard"
+      enabled="false" label="command.create.workspace.wizard"
+      icon="/icons/action_add.gif">
+      <category>SUBVIEW_UPPER_LIST</category>
+      <filter id="newWorkspaceWizard">
+        <rule grant="true">
+          <permission>AddChildren</permission>
+          <type>WorkspaceRoot</type>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="newSection" link="#{documentActions.createDocument('Section')}"
+      enabled="true" label="command.create.section"
+      icon="/icons/action_add.gif">
+      <category>SUBVIEW_UPPER_LIST</category>
+      <filter id="newSection">
+        <rule grant="true">
+          <permission>AddChildren</permission>
+          <type>SectionRoot</type>
+        </rule>
+      </filter>
+    </action>
+
+    <!-- generic actions -->
+
+    <action id="newDocument" link="select_document_type" enabled="true"
+      label="action.new.document" icon="/icons/action_add.gif">
+      <category>SUBVIEW_UPPER_LIST</category>
+      <filter-id>create</filter-id>
+    </action>
+
+    <action id="newFile" link="create_file" enabled="true"
+      label="action.new.file" icon="/icons/action_add_file.gif">
+      <category>SUBVIEW_UPPER_LIST</category>
+      <filter-id>importFile</filter-id>
+    </action>
+
+    <!-- XXX AT: is it really used? -->
+    <action id="deleteChildDocuments" link="deletable.deleteChildDocuments"
+      enabled="true" label="command.deleteDocs"
+      icon="/icons/action_delete.gif">
+      <category>SUBVIEW_LOWER_LIST</category>
+      <filter-id>delete_content</filter-id>
+    </action>
+
+    <!-- tabs are handled by a specific template so links should be paths to template
+      to include in the tab content -->
+
+    <action id="TAB_VIEW" link="/incl/tabs/document_view.xhtml" enabled="true"
+      order="0" label="action.view.summary" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>view</filter-id>
+    </action>
+
+    <action id="TAB_CONTENT" link="/incl/tabs/document_content.xhtml" order="10"
+      enabled="true" label="action.view.content" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>view_content</filter-id>
+      <filter-id>outSection</filter-id>
+    </action>
+
+    <action id="TAB_SECTION_CONTENT" link="/incl/tabs/section_content.xhtml" order="10"
+      enabled="true" label="action.view.content" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>view_content</filter-id>
+      <filter-id>inSection</filter-id>
+    </action>
+
+    <action id="TAB_TRASH_CONTENT" link="/incl/tabs/document_trash_content.xhtml" order="100"
+      enabled="true" label="action.view.trash.content" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter id="viewTrash">
+        <rule grant="true">
+          <permission>Manage everything</permission>
+          <facet>Folderish</facet>
+          <condition>#{deleteActions.trashManagementEnabled}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="sendEmail" link="send_email" enabled="true"
+      order="17" label="action.email.document" icon="/icons/mail.gif">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>not_folder</filter-id>
+    </action>
+
+    <action id="TAB_EDIT" link="/incl/tabs/document_edit.xhtml" enabled="true"
+      order="20" label="action.view.edit" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>edit</filter-id>
+      <filter-id>mutable_document</filter-id>
+    </action>
+
+    <action id="TAB_WORKSPACE_EDIT" link="/incl/tabs/document_edit.xhtml" enabled="true"
+      order="22" label="action.view.edit" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>workspace_edit</filter-id>
+      <filter-id>mutable_document</filter-id>
+    </action>
+
+    <action id="TAB_METADATA_VIEW"
+      link="/incl/tabs/document_metadata_view.xhtml" enabled="true" order="30"
+      label="action.view.metadata" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>cannotEdit</filter-id>
+    </action>
+
+    <action id="TAB_METADATA_EDIT" order="40"
+      link="/incl/tabs/document_metadata_edit.xhtml" enabled="true"
+      label="action.view.metadata" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>metadata_edit</filter-id>
+      <filter-id>mutable_document</filter-id>
+    </action>
+
+    <action id="TAB_FILES_VIEW" link="/incl/tabs/document_files_view.xhtml"
+      order="42" label="action.view.files">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>cannotEdit</filter-id>
+      <filter-id>hasAttachedFiles</filter-id>
+    </action>
+
+    <action id="TAB_FILES_EDIT" link="/incl/tabs/document_files_edit.xhtml"
+      order="43" label="action.view.files">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>edit</filter-id>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>hasAttachedFiles</filter-id>
+    </action>
+
+    <action id="TAB_RIGHTS" link="/incl/tabs/document_rights.xhtml" order="50"
+      enabled="true" label="action.view.rights" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>rights</filter-id>
+    </action>
+
+    <action id="TAB_PUBLISH" link="/incl/tabs/document_publish.xhtml" order="53"
+      enabled="true" label="action.publish.content" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>publish_document</filter-id>
+      <filter-id>mutable_document</filter-id>
+    </action>
+
+    <action id="TAB_THEME" link="/incl/tabs/document_theme.xhtml" enabled="true"
+      order="60" label="action.view.theme" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>canChangeTheme</filter-id>
+    </action>
+
+    <!--  Actions on WorkLists  -->
+
+    <action id="WORKLIST_PASTE" link="#{clipboardActions.pasteWorkingList}"
+      enabled="true" label="command.clipboard.pasteAll"
+      icon="/icons/action_paste_all.gif">
+      <category>DEFAULT_LIST</category>
+      <category>CLIPBOARD_LIST</category>
+      <filter-id>canPasteCurrentWorkList</filter-id>
+    </action>
+
+    <action id="WORKLIST_MOVE" link="#{clipboardActions.moveWorkingList}"
+      enabled="true" label="command.clipboard.moveAll"
+      icon="/icons/action_move_all.gif">
+      <category>DEFAULT_LIST</category>
+      <category>CLIPBOARD_LIST</category>
+      <filter-id>canMoveWorkingList</filter-id>
+    </action>
+
+
+    <action id="WORKLIST_EXPORT"
+      link="#{clipboardActions.exportWorklistAsZip()}" enabled="true"
+      label="command.clipboard.zipExport" icon="/icons/action_export_zip.gif">
+      <category>DEFAULT_LIST</category>
+      <filter id="currentWorkListIsNotEmpty2">
+        <rule grant="false">
+          <condition>#{clipboardActions.workListEmpty}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="WORKLIST_PUBLISH" link="#{publishActions.publishWorkList()}"
+      enabled="true" label="command.clipboard.publish"
+      icon="/icons/action_publish.gif">
+      <category>DEFAULT_LIST</category>
+      <filter id="canPublishWorkList">
+        <rule grant="false">
+          <condition>#{clipboardActions.workListEmpty}</condition>
+        </rule>
+        <rule grant="true">
+          <type>Section</type>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="WORKLIST_CLEAN" link="#{clipboardActions.clearWorkingList()}"
+      enabled="true" label="command.clipboard.delAll"
+      icon="/icons/action_clipboard_deleteall.gif">
+      <category>DEFAULT_LIST</category>
+      <category>CLIPBOARD_LIST</category>
+      <filter id="currentWorkListIsNotEmpty3">
+        <rule grant="false">
+          <condition>#{clipboardActions.workListEmpty}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <!--  Actions for the sections selection - for publishing purposes -->
+
+    <action id="DOCUMENT_PUBLISH" link="#{publishActions.publishDocument}"
+      enabled="true" label="command.document.publish" icon="">
+      <category>PUBLISH_DOCUMENT</category>
+      <filter-id>not_review_documents</filter-id>
+      <filter-id>edit</filter-id>
+    </action>
+
+    <!--  Actions for the document selection  -->
+
+    <action id="CLIPBOARD_PASTE" link="#{clipboardActions.pasteClipboard}"
+      enabled="true" label="command.clipboard.paste" icon="">
+      <category>CURRENT_SELECTION_LIST</category>
+      <filter id="canPastFromClipboard">
+        <rule grant="true">
+          <condition>#{clipboardActions.canPasteFromClipboard}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="CURRENT_SELECTION_DELETE"
+      link="#{deleteActions.purgeSelection}" enabled="true"
+      label="command.deleteDocs" icon="" help="comand.deleteDocs.help"
+      confirm="if( !confirmDeleteDocumentsForever() ) return false;">
+      <category>CURRENT_SELECTION_TRASH_LIST</category>
+      <filter id="canPurge">
+        <rule grant="true">
+          <condition>#{deleteActions.canPurge}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="CURRENT_SELECTION_UNDELETE"
+      link="#{deleteActions.undeleteSelection}" enabled="true"
+      label="command.undeleteDocs" icon="" help="comand.undeleteDocs.help"
+      confirm="if( !confirmUndeleteDocuments() ) return false;">
+      <category>CURRENT_SELECTION_TRASH_LIST</category>
+      <filter id="canPurge">
+        <rule grant="true">
+          <condition>#{deleteActions.canPurge}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="CURRENT_SELECTION_TRASH"
+      link="#{deleteActions.deleteSelection}" enabled="true"
+      label="command.trashDocs" icon="" help="comand.trashDocs.help"
+      confirm="if( !confirmDeleteDocuments() ) return false;">
+      <category>CURRENT_SELECTION_LIST</category>
+      <filter id="canDelete">
+        <rule grant="true">
+          <condition>#{deleteActions.canDelete}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="CURRENT_SELECTION_COPY"
+      link="#{clipboardActions.putSelectionInClipboard}" enabled="true"
+      label="command.clipboard.copy" icon="">
+      <category>CURRENT_SELECTION_LIST</category>
+      <filter-id>canCopyFromCurrentSelection</filter-id>
+    </action>
+
+    <action id="CURRENT_SELECTION_ADDTOLIST"
+      link="#{clipboardActions.putSelectionInDefaultWorkList}" enabled="true"
+      label="help.command.clipboard.addworklist" icon="">
+      <category>CURRENT_SELECTION_LIST</category>
+      <filter-id>canCopyFromCurrentSelection</filter-id>
+      <filter id="no_addtolist_for_domains">
+        <rule grant="false">
+          <type>Root</type>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="CURRENT_SELECTION_MASS_EDIT"
+      link="#{massEditActions.putSelectionInWorkList}" enabled="false"
+      label="command.mass_edition.addworklist" icon="">
+      <category>CURRENT_SELECTION_LIST</category>
+      <filter-id>canCopyFromCurrentSelection</filter-id>
+      <filter id="no_massedit_for_domains">
+        <rule grant="false">
+          <type>Root</type>
+        </rule>
+      </filter>
+      <filter id="canBulkEdit">
+        <rule grant="true">
+          <condition>#{clipboardActions.canEditSelectedDocs}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="CURRENT_SELECTION_UNPUBLISH"
+      link="#{publishActions.unPublishDocumentsFromCurrentSelection}" enabled="true"
+      label="command.document.unpublish" icon="">
+      <category>CURRENT_SELECTION_SECTIONS_LIST</category>
+      <filter id="can_unpublish">
+        <rule grant="true">
+          <permission>AddChildren</permission>
+          <type>SectionRoot</type>
+          <type>Section</type>
+          <condition>#{documentActions.canUnpublish}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="CURRENT_SELECTION_SECTIONS_TRASH"
+      link="#{deleteActions.deleteSelectionSections}" enabled="true"
+      label="command.trashDocs" icon="" help="comand.trashDocs.help"
+      confirm="if( !confirmDeleteDocuments() ) return false;">
+      <category>CURRENT_SELECTION_SECTIONS_LIST</category>
+      <filter id="canDeleteSection">
+        <rule grant="true">
+          <condition>#{deleteActions.canDeleteSections}</condition>
+        </rule>
+      </filter>
+    </action>
+
+
+    <action id="CLIPBOARD_BULK_EDIT" link="#{massEditActions.massEditWorkList}"
+      enabled="true" label="command.mass_edition.addworklist"
+      icon="/icons/action_mass_edit.gif">
+      <category>DEFAULT_LIST</category>
+      <filter id="currentWorkListIsNotEmpty_massedit">
+        <rule grant="false">
+          <condition>#{clipboardActions.workListEmpty}</condition>
+        </rule>
+      </filter>
+      <filter id="no_massedit_for_domains">
+        <rule grant="false">
+          <type>Root</type>
+        </rule>
+      </filter>
+      <filter id="canBulkEdit">
+        <rule grant="true">
+          <condition>#{clipboardActions.canEditSelectedDocs}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="POPUP_COPY" link="#{clipboardActions.putInClipboard(popupDoc)}"
+      enabled="false" label="command.clipboard.copy" icon="">
+      <category>POPUP</category>
+    </action>
+
+    <action id="POPUP_DEL" link="#{deleteActions.deleteItem(popupDoc)}"
+      enabled="false" label="command.deleteDocs" icon="">
+      <category>POPUP</category>
+      <filter id="canDeletePopup">
+        <rule grant="true">
+          <condition>#{deleteActions.canDeleteItem(popupDoc)}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <!--  Actions for the document lock/unlock -->
+
+    <action id="DOCUMENT_LOCK" link="#{lockActions.lockCurrentDocument}"
+      enabled="true" label="command.lock" icon="">
+      <category>EDIT_ACTIONS</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>can_lock</filter-id>
+    </action>
+
+    <action id="DOCUMENT_UNLOCK" link="#{lockActions.unlockCurrentDocument}"
+      enabled="true" label="command.unlock" icon="">
+      <category>EDIT_ACTIONS</category>
+      <filter-id>mutable_document</filter-id>
+      <filter-id>can_unlock</filter-id>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="view">
+      <rule grant="false">
+        <facet>Folderish</facet>
+      </rule>
+    </filter>
+
+    <filter id="create">
+      <rule grant="true">
+        <permission>AddChildren</permission>
+        <facet>Folderish</facet>
+      </rule>
+      <!-- sub content creation is handled differently from these docs -->
+      <rule grant="false">
+        <type>Root</type>
+        <type>Domain</type>
+        <type>WorkspaceRoot</type>
+        <type>SectionRoot</type>
+      </rule>
+    </filter>
+
+    <filter id="importFile">
+      <rule grant="true">
+        <permission>AddChildren</permission>
+        <facet>Folderish</facet>
+      </rule>
+      <!-- sub content creation is handled differently from these docs -->
+      <rule grant="false">
+        <type>Root</type>
+        <type>Domain</type>
+        <type>WorkspaceRoot</type>
+        <type>SectionRoot</type>
+        <type>TemplateRoot</type>
+        <type>Section</type>
+      </rule>
+    </filter>
+
+    <filter id="edit">
+      <rule grant="false">
+        <type>Root</type>
+        <type>Domain</type>
+        <type>WorkspaceRoot</type>
+        <type>Workspace</type>
+      </rule>
+      <rule grant="true">
+        <permission>Write</permission>
+      </rule>
+    </filter>
+
+    <filter id="workspace_edit">
+      <rule grant="true">
+        <type>Domain</type>
+        <type>WorkspaceRoot</type>
+        <type>Workspace</type>
+        <permission>WriteSecurity</permission>
+      </rule>
+    </filter>
+
+    <filter id="metadata_edit">
+      <rule grant="false">
+        <type>Root</type>
+      </rule>
+      <rule grant="true">
+        <permission>Write</permission>
+      </rule>
+    </filter>
+
+    <filter id="cannotEdit">
+      <rule grant="false">
+        <type>Root</type>
+      </rule>
+      <rule grant="false">
+        <condition>
+          !document.isProxy()
+        </condition>
+        <permission>Write</permission>
+      </rule>
+      <rule grant="false">
+        <condition>
+          !document.isProxy()
+        </condition>
+        <permission>Manage everything</permission>
+      </rule>
+    </filter>
+
+    <filter id="anonymous">
+      <rule grant="true">
+        <condition>#{currentUser.anonymous}</condition>
+      </rule>
+    </filter>
+
+    <filter id="not_anonymous">
+      <rule grant="false">
+        <condition>#{currentUser.anonymous}</condition>
+      </rule>
+    </filter>
+
+    <filter id="view_content">
+      <rule grant="true">
+        <permission>ReadChildren</permission>
+        <facet>Folderish</facet>
+      </rule>
+    </filter>
+
+    <filter id="publish_document">
+      <rule grant="true">
+        <facet>Publishable</facet>
+      </rule>
+    </filter>
+
+    <filter id="valid_for_publish">
+      <rule grant="true">
+        <condition>
+          document.getCurrentLifeCycleState().equals("approved")
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="not_review_documents">
+      <rule grant="false">
+        <condition>
+          document.getCurrentLifeCycleState().equals("review")
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="mutable_document">
+      <rule grant="false">
+        <facet>Immutable</facet>
+      </rule>
+      <rule grant="false">
+        <type>Root</type>
+      </rule>
+      <rule grant="false">
+        <condition>
+          document.getCurrentLifeCycleState().equals("deleted")
+        </condition>
+      </rule>
+    </filter>
+
+    <filter id="delete_content">
+      <rule grant="true">
+        <permission>RemoveChildren</permission>
+        <facet>Folderish</facet>
+      </rule>
+    </filter>
+
+    <filter id="rights">
+      <rule grant="true">
+        <permission>WriteSecurity</permission>
+        <facet>Folderish</facet>
+      </rule>
+    </filter>
+
+    <filter id="not_folder">
+      <rule grant="false">
+        <facet>Folderish</facet>
+      </rule>
+    </filter>
+
+    <filter id="currentWorkListIsNotEmpty">
+      <rule grant="false">
+        <condition>#{clipboardActions.workListEmpty}</condition>
+      </rule>
+    </filter>
+
+    <filter id="canPasteCurrentWorkList">
+      <rule grant="true">
+        <condition>#{clipboardActions.canPasteWorkList}</condition>
+      </rule>
+    </filter>
+
+    <filter id="canMoveWorkingList">
+      <rule grant="true">
+        <condition>#{clipboardActions.canMoveWorkingList}</condition>
+      </rule>
+    </filter>
+
+    <filter id="canCopyFromCurrentSelection">
+      <rule grant="true">
+        <condition>#{clipboardActions.canCopy}</condition>
+      </rule>
+    </filter>
+
+    <!--  Filters for the document lock/unlock actions edit.lock-->
+    <filter id="can_lock">
+      <rule grant="true">
+        <permission>Write</permission>
+        <condition>#{lockActions.canLockCurrentDoc}</condition>
+      </rule>
+      <rule grant="false">
+        <facet>Folderish</facet>
+      </rule>
+    </filter>
+
+    <filter id="can_unlock">
+      <rule grant="true">
+        <permission>Write</permission>
+        <condition>#{lockActions.canUnlockCurrentDoc}</condition>
+      </rule>
+      <rule grant="false">
+        <facet>Folderish</facet>
+      </rule>
+    </filter>
+
+    <filter id="only_for_manager">
+      <rule grant="true">
+        <condition>#{userSession.administrator}</condition>
+      </rule>
+    </filter>
+
+    <filter id="canChangeTheme">
+      <rule grant="true">
+        <permission>Manage everything</permission>
+        <facet>SuperSpace</facet>
+      </rule>
+    </filter>
+
+    <filter id="hasAttachedFiles">
+      <rule grant="true">
+        <schema>files</schema>
+      </rule>
+    </filter>
+
+    <filter id="type_section">
+      <rule grant="false">
+        <type>Section</type>
+      </rule>
+    </filter>
+
+    <filter id="inSection">
+      <rule grant="true">
+        <type>Section</type>
+        <type>SectionRoot</type>
+      </rule>
+    </filter>
+
+    <filter id="outSection">
+      <rule grant="false">
+        <type>Section</type>
+        <type>SectionRoot</type>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

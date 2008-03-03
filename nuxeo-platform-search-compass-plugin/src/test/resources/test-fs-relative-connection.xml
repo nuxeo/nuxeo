@@ -1,0 +1,10 @@
+<component
+  name="org.nuxeo.ecm.core.search.backend.compass.test.RelFsConnection"
+  version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.search.backend.compass.CompassBackend"
+             point="connection">
+    <file path="foo/bar"/>
+  </extension>
+
+</component>

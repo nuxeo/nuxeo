@@ -1,0 +1,422 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.forms.layouts.webapp">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="heading">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>title</widget>
+        </row>
+        <row>
+          <widget>description</widget>
+        </row>
+      </rows>
+      <widget name="title" type="text">
+        <labels>
+          <label mode="any">title</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:title</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="description" type="textarea">
+        <labels>
+          <label mode="any">description</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:description</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="dublincore">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>subjects</widget>
+        </row>
+        <row>
+          <widget>rights</widget>
+        </row>
+        <row>
+          <widget>source</widget>
+        </row>
+        <row>
+          <widget>coverage</widget>
+        </row>
+        <row>
+          <widget>created</widget>
+        </row>
+        <row>
+          <widget>modified</widget>
+        </row>
+        <row>
+          <widget>format</widget>
+        </row>
+        <row>
+          <widget>language</widget>
+        </row>
+        <row>
+          <widget>expired</widget>
+        </row>
+        <row>
+          <widget>author</widget>
+        </row>
+        <row>
+          <widget>contributors</widget>
+        </row>
+      </rows>
+      <widget name="subjects" type="template">
+        <labels>
+          <label mode="any">label.dublincore.subject</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:subjects</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">/widgets/subjects_widget.xhtml</property>
+        </properties>
+      </widget>
+      <widget name="rights" type="text">
+        <labels>
+          <label mode="any">label.dublincore.rights</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:rights</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="source" type="text">
+        <labels>
+          <label mode="any">label.dublincore.source</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:source</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="coverage" type="template">
+        <labels>
+          <label mode="any">label.dublincore.coverage</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:coverage</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">/widgets/coverage_widget.xhtml</property>
+        </properties>
+      </widget>
+      <widget name="created" type="datetime">
+        <labels>
+          <label mode="any">label.dublincore.created</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:created</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        </properties>
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+      </widget>
+      <widget name="modified" type="datetime">
+        <labels>
+          <label mode="any">label.dublincore.modified</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:modified</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="pattern">#{nxu:basicDateAndTimeFormater()}</property>
+        </properties>
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+      </widget>
+      <widget name="format" type="text">
+        <labels>
+          <label mode="any">label.dublincore.format</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:format</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="language" type="text">
+        <labels>
+          <label mode="any">label.dublincore.language</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:language</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="expired" type="datetime">
+        <labels>
+          <label mode="any">label.dublincore.expired</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:expired</field>
+        </fields>
+
+      </widget>
+      <widget name="author" type="text">
+        <labels>
+          <label mode="any">label.dublincore.owner</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:contributors/0</field>
+        </fields>
+        <widgetModes>
+          <mode value="any">view</mode>
+        </widgetModes>
+      </widget>
+      <widget name="contributors" type="template">
+        <labels>
+          <label mode="any">label.dublincore.contributors</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:contributors</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/contributors_widget.xhtml
+          </property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="file">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>file</widget>
+        </row>
+      </rows>
+      <widget name="file" type="template">
+        <labels>
+          <label mode="any">label.file.content</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>file:content</field>
+          <field>file:filename</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/extended_file_widget.xhtml
+          </property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="note">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>note</widget>
+        </row>
+      </rows>
+      <widget name="note" type="htmltext">
+        <labels>
+          <label mode="any">note</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>note:note</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <!-- XXX AT: not used right now  -->
+    <layout name="files">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>files</widget>
+        </row>
+      </rows>
+      <widget name="files" type="list">
+        <labels>
+          <label mode="any">action.view.files</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="files">files</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="diff">true</property>
+        </properties>
+        <subWidgets>
+          <widget name="file" type="file">
+            <fields>
+              <field>file</field>
+              <field>filename</field>
+            </fields>
+          </widget>
+        </subWidgets>
+      </widget>
+    </layout>
+
+    <layout name="user">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>username</widget>
+        </row>
+        <row>
+          <widget>firstname</widget>
+        </row>
+        <row>
+          <widget>lastname</widget>
+        </row>
+        <row>
+          <widget>company</widget>
+        </row>
+        <row>
+          <widget>email</widget>
+        </row>
+        <row>
+          <widget>password</widget>
+        </row>
+      </rows>
+      <widget name="username" type="text">
+        <labels>
+          <label mode="any">username</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">username</field>
+        </fields>
+        <widgetModes>
+          <mode value="create">edit</mode>
+          <mode value="any">view</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="firstname" type="text">
+        <labels>
+          <label mode="any">firstName</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">firstName</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="lastname" type="text">
+        <labels>
+          <label mode="any">lastName</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">lastName</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="company" type="text">
+        <labels>
+          <label mode="any">company</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">company</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="email" type="text">
+        <labels>
+          <label mode="any">email</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">email</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="password" type="secret">
+        <labels>
+          <label mode="any">password</label>
+        </labels>
+        <widgetModes>
+          <mode value="create">edit</mode>
+          <mode value="any">hidden</mode>
+        </widgetModes>
+        <translated>true</translated>
+        <fields>
+          <field schema="user">password</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+    </layout>
+
+
+  </extension>
+
+</component>

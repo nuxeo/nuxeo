@@ -1,0 +1,140 @@
+<assembly>
+
+  <properties>
+    <property name="profile">nuxeo</property>
+  </properties>
+
+
+  <fileSet id="nuxeo-template">
+    <directory>src/main/resources</directory>
+    <excludes>
+      <exclude>**/.svn</exclude>
+    </excludes>
+  </fileSet>
+
+  <artifactSet id="nuxeo-runtime">
+    <import>**</import>
+    <includes>
+      <artifact group="org.nuxeo.runtime" />
+    </includes>
+    <excludes>
+      <artifact name="nuxeo-runtime-extensions" />
+      <artifact name="nuxeo-runtime-template" />
+      <artifact name="nuxeo-runtime-test" />
+    </excludes>
+  </artifactSet>
+
+  <artifactSet id="nuxeo-core">
+    <import>**</import>
+    <includes>
+      <artifact group="org.nuxeo.ecm.core" />
+    </includes>
+  </artifactSet>
+
+  <artifactSet id="nuxeo-platform">
+    <import>**</import>
+    <includes>
+      <artifact group="org.nuxeo.ecm.platform" />
+    </includes>
+    <excludes>
+      <artifact name="nuxeo-platform-api-test" />
+
+      <artifact name="nuxeo-platform-webapp" />
+      <artifact name="nuxeo-platform-webapp-core" />
+
+      <artifact name="nuxeo-platform-archive-facade" />
+      <artifact name="nuxeo-platform-audit-facade" />
+      <artifact name="nuxeo-platform-placeful-facade" />
+      <artifact name="nuxeo-platform-search-compass-plugin" />
+    </excludes>
+  </artifactSet>
+
+  <artifactSet id="nuxeo-platform-unpacked">
+    <import>**</import>
+    <includes>
+      <artifact name="nuxeo-platform-archive-facade" />
+      <artifact name="nuxeo-platform-audit-facade" />
+      <artifact name="nuxeo-platform-placeful-facade" />
+      <artifact name="nuxeo-platform-search-compass-plugin" />
+    </includes>
+  </artifactSet>
+
+  <artifactSet id="nuxeo-web">
+    <import>**</import>
+    <includes>
+      <artifact name="nuxeo-platform-webapp" />
+      <artifact name="nuxeo-platform-webapp-core" />
+    </includes>
+  </artifactSet>
+
+  <artifactSet id="nuxeo-themes">
+    <import>**</import>
+    <includes>
+      <artifact group="org.nuxeo.theme" />
+    </includes>
+  </artifactSet>
+
+
+  <!-- TOOD
+    This dependencySet is not working correctly because of bad project poms.
+    After fixing the problems you can enable this for a fully automatic build
+  -->
+  <artifactSet id="nuxeo-libs">
+    <import>nuxeo-runtime</import>
+    <import>nuxeo-core</import>
+    <import>nuxeo-platform</import>
+    <import>nuxeo-platform-unpacked</import>
+    <import>nuxeo-web</import>
+    <import>nuxeo-theme</import>
+    <includeDependencies>true</includeDependencies>
+    <excludes>
+      <artifact group="org.nuxeo.*" />
+    </excludes>
+  </artifactSet>
+
+
+  <!-- third party libraries embeded in the ear -->
+  <artifactSet id="nuxeo-fixed-libs">
+    <artifacts>
+      <artifact group="org.osgi" name="osgi-core" version="4.1" />
+      <artifact group="commons-collections" name="commons-collections" version="3.1" />
+      <artifact group="commons-io" name="commons-io" version="1.2" />
+      <artifact group="commons-lang" name="commons-lang" version="2.2" />
+      <artifact group="commons-fileupload" name="commons-fileupload"
+        version="1.1.1" />
+      <artifact group="cssparser" name="cssparser" version="0.9.4-fix" />
+      <artifact group="net.sf.ehcache" name="ehcache" version="1.2.3" />
+      <artifact group="net.sf.ezmorph" name="ezmorph" version="0.9" />
+      <artifact group="org.hibernate" name="hibernate" version="3.2.0.ga" />
+      <artifact group="org.hibernate" name="hibernate-annotations"
+        version="3.2.0.ga" />
+      <artifact group="org.hibernate" name="hibernate-entitymanager"
+        version="3.2.0.ga" />
+      <artifact group="jboss" name="jboss-cache-jdk50" version="1.4.0.SP1" />
+      <!--artifact group="jboss" name="jboss-remoting" version="4.0.4.GA"/-->
+      <artifact group="org.jboss.seam" name="jboss-seam" version="1.1.5.NX3" />
+      <artifact group="jboss" name="jbpm" version="3.1.2" />
+      <artifact group="jboss" name="jgroups" version="2.2.9" />
+      <artifact group="net.sf.json-lib" name="json-lib" version="0.9" />
+      <artifact group="org.apache.lucene" name="lucene-core" version="2.0.0" />
+      <artifact group="net.sf.opencsv" name="opencsv" version="1.7" />
+      <artifact group="org.slf4j" name="slf4j-api" version="1.3.0" />
+      <artifact group="org.slf4j" name="slf4j-log4j12" version="1.3.0" />
+      <artifact group="org.apache.myfaces.tomahawk" name="tomahawk"
+        version="1.1.5" />
+      <artifact group="org.apache.myfaces.tomahawk" name="tomahawk-sandbox"
+        version="1.1.5" />
+      <artifact group="org.apache.myfaces.trinidad" name="trinidad-api"
+        version="1.0.1-incubating-NXEP51M2" />
+      <artifact group="org.apache.myfaces.trinidad" name="trinidad-impl"
+        version="1.0.1-incubating-NXEP51M2" />
+      <artifact group="org.apache.directory.server" name="apacheds-protocol-shared" version="1.5.1" />
+      <artifact group="org.apache.directory.shared" name="shared-ldap" version="0.9.7" />
+      <artifact group="com.sun.facelets" name="jsf-facelets" version="1.1.11" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-jbossws-wrapper" version="4.0.5.GA" />
+    </artifacts>
+  </artifactSet>
+
+
+</assembly>
+

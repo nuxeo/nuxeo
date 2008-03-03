@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.transform.service.TransformService"
+  version="1.0">
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.transform.interfaces.TransformServiceCommon"/>
+  </service>
+
+  <documentation> Core transformation service.
+
+    <p/>
+    Allows the definition of transformation plugins and the definition of transformation
+    chains.
+
+    @version 1.0
+    @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.transform.service.TransformService"/>
+
+  <extension-point name="plugins">
+
+    <documentation>
+      Extension allowing one to register transformation plugins
+
+      <p/> A transformation plugin must implements :
+      org.nuxeo.ecm.platform.transform.interfaces.PLugin and should extend :
+      org.nuxeo.ecm.platform.transform.plugin.AbstractPlugin
+
+      <p/>
+      A plugin is responsible for a given transformation of one or several input files to one or
+      several output files.
+
+      <p/>
+      For instance a plugin converting pdf to text using pdfbox :
+
+      <pre>
+
+        <extension
+          target="org.nuxeo.ecm.platform.transform.service.TransformService"
+          point="plugins">
+          <plugin name="pdf2text"
+            class="org.nuxeo.ecm.platform.transform.plugin.pdfbox.impl.PDFBoxPluginImpl"
+            destinationMimeType="plain/text">
+            <sourceMimeType>application/pdf</sourceMimeType>
+          </plugin>
+        </extension>
+
+      </pre>
+
+      <p/> You can find the plugin implementation class over there :
+      org.nuxeo.ecm.platform.transform.plugin.pdfbox.impl.PDFBoxPluginImpl
+
+      <p/>
+      :XXX: explain plugin options.
+      </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.transform.service.extensions.PluginExtension"/>
+
+  </extension-point>
+
+  <extension-point name="transformers">
+
+    <documentation>
+      Extension allowing one to register transformation chains.
+
+      <p/>
+      A transformer takes given sources and transform them using default and/or runtime
+      options. The transformation is performed by underlying plugins defined in a ordered
+      plugins chain.
+
+      <p/>
+      In most of the cases you won't need to deploy your own transformer. You will simply need to
+      contribute a well configured transformer extension.
+
+      <p/>
+      :XXX: explain transformation options forwarded to plugins as options
+      </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.transform.service.extensions.TransformerExtension"/>
+  </extension-point>
+</component>
+

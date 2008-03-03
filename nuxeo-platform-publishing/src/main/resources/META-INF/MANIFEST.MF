@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Publishing
+Bundle-SymbolicName: org.nuxeo.ecm.platform.publishing;singleton:=true
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Nuxeo-Component: OSGI-INF/nxworkflow-contrib.xml,
+  OSGI-INF/nxworkflow-document-security-policy-contrib.xml,
+  OSGI-INF/nuxeo-platform-publishing-framework.xml,
+  OSGI-INF/nuxeo-platform-publishing-contrib.xml
+Require-Bundle: org.nuxeo.ecm.platform.publishing.api,
+  org.nuxeo.ecm.platform.workflow.jbpm.handlers,
+  org.nuxeo.ecm.platform.workflow.api

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService">
+
+  <documentation>
+    Service that deals with audit.
+
+    <p/>
+    Most of the work is done at EJB layer though
+    This supports JMS events based notifications on a dedicated topic.
+    @version 1.0
+    @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"/>
+
+  <extension-point name="event">
+
+    <documentation> This service registered auditable events.
+
+      <p/> Registered events are dummy strings for now.
+
+      <p/> This service is used to filter auditable events from the JMS topic based on their
+      names. </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor"/>
+  </extension-point>
+
+   <extension-point name="logEntryFactory">
+
+    <documentation> This service registered loge entry factory XXX </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.audit.service.extension.LogEntryFactoryDescriptor"/>
+  </extension-point>
+
+</component>

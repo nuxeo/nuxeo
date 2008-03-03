@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.modifier.service.DocModifierService">
+  <documentation>
+    A document modifier alter a document binary data attached to the document.
+    The service defines an extension point to associate transformation plugins
+    that will perform modificaiton in binary data provided from a document
+    property. The binary data is passed to the associated transformation plugin.
+    The transformation result value will be set to a specified field.
+
+    @version 1.0
+    @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.modifier.service.DocModifierServiceImpl" />
+
+  <extension-point name="docTypeToTransformer">
+    <documentation>
+      Extension Point for registering new document modifiers XML extensions may
+      contain any number of 'docModifier' elements of the form: -
+
+      <code>
+
+        <docModifier name="wordMLinjectModifier" documentType="File"
+          transformationPluginName="wordMLinjectPlugin" sourceFieldName="content"
+          destinationFieldName="content" order="10">
+
+          <customField name="dc:title" xmlNode="o:TitreDocument" />
+          <customField name="uid" xmlNode="o:HAG" />
+          ... ...
+          <coreEvent>documentCreated</coreEvent>
+          <coreEvent>beforeDocumentModification</coreEvent>
+          ...
+          <customOutputField outputParamName="titleParam" name="dc:title" />
+          ...
+        </docModifier>
+
+      </code>
+
+      - The specific tag is
+      <code>
+        <docModifier />
+      </code>
+      which is mapped on class DocModifierEPDescriptor. The following attributes
+      are important for document modifier descriptor: - documentType: specifies
+      the type of the document for which this document modifier will be applied.
+      In this case the all documents of type 'File' will be taken into
+      consideration.
+
+      An option is to specify many document types that will be associated with
+      the same modifier. For this, one could use nested elements insted of
+      "documentType" attribute. Nested elements can be defined as:
+      <docType>File</docType>
+      <docType>Note</docType>
+
+      <p />
+      - transformationPluginName: specifies the name of the plugin that must be
+      defined as an NXTransformationPlugin – and registered with Transformation
+      service. This plugin will need to be able to handle binary data and some
+      variable parameters list. - sourceFieldName: is the name of the document
+      property that has the binary value (with runtime instance of type
+      LazyBlob) - destinationFieldName: the name of the document property to put
+      the new value (the result of the transformation) into. For a particular
+      case it may be the same as the sourceFieldName in which case the initial
+      value is replaced.
+
+      <p />
+      - The customField(s) can be defined in any number and must have one of the
+      following attribute pairs: - name + xmlNode - value + xmlNode
+
+      <p />
+      - name is the name of the document property for which value is read and
+      transferred as value for Property with name defined by xmlNode (due to
+      change into destPropName) - value is a plain value (string) - defined
+      inside the xml
+
+      <p />
+      - The coreEvent(s) should have as value the name of the core events (as
+      they are defined in DocumentEventTypes class. If a core event matching one
+      of the specified event names occurs, the document modifier is applied.
+
+      <p />
+      If there are many document modifiers defined for a type of Document they
+      are applied sequencially.
+
+      <p />
+      Note: if no core event is specified, then the transformation will be
+      applied for default core events: "documentCreated" "documentModified" -
+
+      <p />
+      Composition: If a destPropName is defined many times then the values are
+      concatenated as strings if it is possible
+
+      <p />
+      - Triggering: The DocumentModifier is invoked for BEFORE_DOC_UPDATE and
+      DOCUMENT_CREATED events.
+
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.modifier.service.DocModifierEPDescriptor" />
+  </extension-point>
+
+  <require>org.nuxeo.ecm.core.listener.CoreEventListenerService</require>
+  <extension target="org.nuxeo.ecm.core.listener.CoreEventListenerService"
+    point="listener">
+
+    <documentation>
+      Register core listener that will trigger document modification.
+    </documentation>
+
+    <listener name="docModifierListener"
+      class="org.nuxeo.ecm.platform.modifier.corelistener.DocModifierListener"
+      order="130">
+      <eventId>documentCreated</eventId>
+      <eventId>documentModified</eventId>
+    </listener>
+  </extension>
+
+</component>
+

@@ -1,0 +1,6 @@
+syntax:glob
+.classpath
+.project
+.settings
+bin
+target

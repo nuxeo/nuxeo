@@ -1,0 +1,26 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:nxdir="http://nuxeo.org/nxdirectory"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <ui:composition template="/incl/document_archive_template.xhtml">
+
+    <ui:define name="current_document_information_addon">
+
+      <ui:include src="/incl/current_document_information_addon.xhtml" />
+
+    </ui:define>
+
+    <ui:define name="global_information_addon">
+
+      <ui:include src="/incl/global_information_addon.xhtml" />
+
+    </ui:define>
+
+  </ui:composition>
+
+</div>

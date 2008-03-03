@@ -1,0 +1,9 @@
+<assembly>
+
+  <include>include/commands.xml</include>
+  <include>include/commands-platform-stateful.xml</include>
+  <include>include/nuxeo-all.xml</include>
+  <include>include/platform-stateful.xml</include>
+
+</assembly>
+

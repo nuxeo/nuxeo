@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Platform Imaging API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.imaging.api;singleton=true
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: true
+Export-Package: org.nuxeo.ecm.platform.imaging.api

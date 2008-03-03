@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="com.nuxeo.project.arevanc.geide.notifiactions">
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="notifications">
+
+    <!-- Remove some default Nuxeo notifications -->
+    <notification name="Modification" channel="email" enabled="false"
+      template="modif">
+      <event name="documentModified"/>
+    </notification>
+
+    <notification name="Publication" channel="email" enabled="false"
+      template="publish">
+      <event name="documentPublished"/>
+    </notification>
+
+    <!-- Add notifications for Geide -->
+    <notification name="Publication de contenu" channel="email" enabled="true" availableIn="section"
+      autoSubscribed="false" template="publishContent">
+      <event name="sectionContentPublished"/>
+    </notification>
+
+    <notification name="Ajout d'un commentaire" channel="email" enabled="true" availableIn="all"
+      autoSubscribed="false" template="addComent">
+      <event name="commentAdded"/>
+    </notification>
+
+    <notification name="Création/modification de contenu" channel="email" enabled="true" availableIn="workspace"
+      autoSubscribed="false" template="modifContent">
+      <event name="contentSubdocumentModified"/>
+    </notification>
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="templates">
+
+    <template name="publishContent" src="templates/publishContent.ftl" />
+    <template name="addComent" src="templates/commentAdded.ftl" />
+    <template name="modifContent" src="templates/modifContent.ftl" />
+    <template name="modif" src="templates/modif_fr.ftl" />
+
+  </extension>
+
+</component>

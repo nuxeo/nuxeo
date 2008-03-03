@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXCacheClient
+Bundle-SymbolicName: org.nuxeo.ecm.platform.cache.client
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.platform.cache.api
+Export-Package: org.nuxeo.ecm.platform.cache.client
+X-Comment-Nuxeo-Component: OSGI-INF/platform-cacheable-server-contrib.xml

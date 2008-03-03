@@ -1,0 +1,46 @@
+<assembly>
+
+  <!--
+    This may be used over a full nuxeo assembly to eliminate core server modules
+    This way you can create core client deployments
+  -->
+
+  <!--
+    Overwrite nuxeo-core in order to exclude non API bundles
+  -->
+  <artifactSet extends="nuxeo-core">
+    <includes>
+      <artifact name="nuxeo-core-api" />
+      <artifact name="nuxeo-core-io" />
+      <artifact name="nuxeo-core-schema" />
+      <artifact name="nuxeo-core-query" />
+    </includes>
+  </artifactSet>
+
+
+  <!--
+    Overwrite nuxeo-platform to exclude all core server modules
+  -->
+  <artifactSet extends="nuxeo-platform">
+    <excludes>
+      <artifact name="nuxeo-platform-dublincore" />
+      <artifact name="nuxeo-platform-cache-server" />
+      <artifact name="nuxeo-platform-events-core" />
+      <artifact name="nuxeo-platform-events-facade" />
+      <artifact name="nuxeo-platform-uidgen-core" />
+      <artifact name="nuxeo-platform-modifier" />
+      <artifact name="nuxeo-platform-search-core-listener" />
+      <artifact name="nuxeo-platform-versioning-core" />
+      <artifact name="nuxeo-platform-comment-core" />
+      <artifact name="nuxeo-platform-forum-core" />
+      <artifact name="nuxeo-platform-modifier" />
+      <artifact name="nuxeo-platform-userdata-core*" />
+      <artifact name="nuxeo-platform-webapp-types" />
+      <artifact name="nuxeo-platform-directory-type*" />
+      <artifact name="nuxeo-platform-content-template*" />
+      <artifact name="nuxeo-platform-scheduler-core*" />
+    </excludes>
+  </artifactSet>
+
+</assembly>
+

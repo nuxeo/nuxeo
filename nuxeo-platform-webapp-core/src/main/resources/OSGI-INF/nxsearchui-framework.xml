@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webapp.search.SearchUIConfigService">
+
+  <implementation class="org.nuxeo.ecm.webapp.search.SearchUIConfigService"/>
+
+  <extension-point name="config">
+    <documentation>
+    This extension point is used to register lists of fields.
+    </documentation>
+    <object class="org.nuxeo.ecm.webapp.search.ConfigDescriptor" />
+  </extension-point>
+
+  <extension-point name="resultColumns">
+    <documentation>
+    This extension point is used to register lists of fields.
+    </documentation>
+    <object class="org.nuxeo.ecm.webapp.search.ResultColumnsDescriptor" />
+  </extension-point>
+
+</component>

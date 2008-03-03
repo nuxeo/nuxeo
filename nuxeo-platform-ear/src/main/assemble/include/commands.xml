@@ -1,0 +1,50 @@
+<assembly>
+
+  <assemble>
+    <outputFile>/</outputFile>
+    <set>nuxeo-template</set>
+  </assemble>
+
+  <assemble>
+    <outputFile>lib</outputFile>
+    <set>nuxeo-fixed-libs</set>
+  </assemble>
+
+  <!--assemble>
+    <outputFile>lib-all</outputFile>
+    <set>nuxeo-libs</set>
+    </assemble-->
+
+  <assemble>
+    <outputFile>system</outputFile>
+    <set>nuxeo-runtime</set>
+  </assemble>
+
+  <assemble>
+    <outputFile>core</outputFile>
+    <set>nuxeo-core</set>
+  </assemble>
+
+  <assemble>
+    <outputFile>platform</outputFile>
+    <set>nuxeo-platform</set>
+  </assemble>
+
+  <assemble>
+    <outputFile>platform</outputFile>
+    <unpack>true</unpack>
+    <unpackInNewDirectory>true</unpackInNewDirectory>
+    <set>nuxeo-platform-unpacked</set>
+  </assemble>
+
+  <assemble>
+    <outputFile>themes</outputFile>
+    <set>nuxeo-themes</set>
+  </assemble>
+
+  <assemble>
+    <outputFile>/</outputFile>
+    <set>nuxeo-web</set>
+  </assemble>
+
+</assembly>

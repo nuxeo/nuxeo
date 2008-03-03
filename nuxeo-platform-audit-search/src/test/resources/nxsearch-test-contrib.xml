@@ -1,0 +1,28 @@
+<component name="org.nuxeo.ecm.platform.audit.search.contri">
+
+	<extension
+		target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+		point="resourceType">
+
+		<resourceType name="audit"
+			factoryClass="org.nuxeo.ecm.platform.audit.search.resources.indexing.AuditIndexableResourceFactory" />
+	</extension>
+
+	<extension
+		target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+		point="resource">
+
+		<resource name="audit" prefix="audit" indexAllFields="true"
+			type="audit" />
+
+	</extension>
+
+	<resource name="audit" prefix="audit" type="audit">
+
+		<field name="note" analyzer="default" stored="false"
+			indexed="true" type="Text" binary="false" />
+
+	</resource>
+
+
+</component>

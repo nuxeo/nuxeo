@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.htmleditor.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.htmleditor.service.HtmlEditorPluginServiceImpl"
+      point="plugins">
+
+   <htmlEditorPlugin
+           pluginName="nuxeolink"
+           pluginButtonName="nuxeolink"
+           toolbarName="theme_advanced_buttons3_add">
+   </htmlEditorPlugin>
+
+   <htmlEditorPlugin
+           pluginName="nuxeoimageupload"
+           pluginButtonName="nuxeoimageupload"
+           toolbarName="theme_advanced_buttons3_add">
+   </htmlEditorPlugin>
+
+  </extension>
+
+</component>

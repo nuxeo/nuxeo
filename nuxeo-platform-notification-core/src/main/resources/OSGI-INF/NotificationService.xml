@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.ec.notification.service.NotificationService">
+  <implementation
+    class="org.nuxeo.ecm.platform.ec.notification.service.NotificationService" />
+  <documentation>
+    This component provides a registry for notifications
+    <p>
+      By registring to it's extention point one can specify the possible
+      notifications a user can subscribe to.
+    </p>
+  </documentation>
+  <extension-point name="notifications">
+    <documentation>
+      This extension point can be used to specify the notifications.
+
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ec.notification.service.NotificationDescriptor" />
+    <object
+      class="org.nuxeo.ecm.platform.ec.notification.service.NotificationEventDescriptor" />
+  </extension-point>
+
+  <extension-point name="templates">
+    <documentation>
+      This extension point can be used to define templates for
+      notifications.
+
+      Inside the template files are supported by default these
+      expressions :
+
+      ${docId} - displays the UID of the document that produced the
+      notification
+
+      ${author} - displays the user that produced the event
+
+      ${dateTime) - date and time when it happened - must be formatted
+      according to the freemaker rules
+
+      ${docUrl} - For now it displays the path to follow to get to the
+      document that was the source of the event
+
+      ${docTitle} - displays the title of the document that produced the
+      notification
+
+      ${newDocUrl} - this can display the path of the document
+      modified/created inside the document that produced the
+      notification. This newDoc is the child of the producer document.
+
+      ${newDocTitle} - the same that ${newDocUrl}, but displays the
+      title.
+
+      ${newDocId} - the same that ${newDocUrl}, but displays the UID.
+
+      If you need to add some more variables into your templates, just
+      put the data you need to display in the notification in the
+      eventInfo map of the JMS message that is sent to queue
+      topic/NXPMessages.
+
+      The same goes for subject but in this case there is no need to
+      define a template. Just put the string that you need to have as
+      subject and if it contains dynamic elements ${XXX}, they will be
+      rendered just like it happens in the body.
+
+      For example :
+
+      When creating the message : mesage.getEventInfo().put("docSize",
+      sizeOfDocument);
+
+      In your template file : The document has ${docSize}KB.
+
+      @author Narcis Paslaru
+
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ec.notification.service.TemplateDescriptor" />
+  </extension-point>
+
+  <extension-point name="generalSettings">
+    <documentation>
+      This extension point can be used to define general settings. For
+      now only server prefix E.g. : http://server:port/appName/
+
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ec.notification.service.GeneralSettingsDescriptor" />
+  </extension-point>
+
+</component>

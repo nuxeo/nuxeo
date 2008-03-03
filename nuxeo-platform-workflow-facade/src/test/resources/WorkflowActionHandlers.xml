@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.workflow.service.WorkflowActionHandlers">
+
+	<require>org.nuxeo.ecm.platform.workflow.service.WorkflowService</require>
+
+	<extension target="org.nuxeo.ecm.platform.workflow.service.WorkflowService"
+		       point="actionhandler">
+		<actionhandler name="jbpmActionHandler"
+					   provider="nuxeo"
+			           class="org.nuxeo.ecm.platform.workflow.ejb.api.FakeJbpmWorkflowActionHandler"/>
+
+	</extension>
+
+</component>

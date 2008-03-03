@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/common/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/querymodel-common/"
+  >
+
+  <!-- ordering information -->
+  <xs:element name="sortColumn" type="xs:string"/>
+  <xs:element name="sortAscending" type="xs:boolean"/>
+
+  <!-- batching information -->
+  <xs:element name="batchStart" type="xs:integer"/>
+  <xs:element name="batchLength" type="xs:integer"/>
+
+</xs:schema>
+
+

@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Workflow Document API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.workflow.document.api;singleton:=true
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Require-Bundle: org.nuxeo.ecm.core.api,
+ org.nuxeo.ecm.platform.events.api,
+ org.nuxeo.ecm.platform.workflow.api
+Export-Package: org.nuxeo.ecm.platform.workflow.document.api

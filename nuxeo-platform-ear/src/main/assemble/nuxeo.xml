@@ -1,0 +1,7 @@
+<assembly>
+
+  <include>include/commands.xml</include>
+  <include>include/nuxeo-all.xml</include>
+
+</assembly>
+

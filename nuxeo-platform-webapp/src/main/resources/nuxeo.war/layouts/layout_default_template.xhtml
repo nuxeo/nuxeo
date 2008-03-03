@@ -1,0 +1,60 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  id="#{layout.id}">
+
+<c:if test="#{layout.mode != 'edit' and layout.mode != 'create'}">
+
+  <table class="dataInput">
+    <tbody>
+
+      <nxl:layoutRow>
+        <tr>
+          <nxl:layoutRowWidget>
+            <td class="labelColumn">
+              <h:outputText value="#{widget.label}" rendered="#{!widget.translated}" />
+              <h:outputText value="#{messages[widget.label]}" rendered="#{widget.translated}" />
+            </td>
+            <td class="fieldColumn">
+              <nxl:widget widget="#{widget}" mode="#{widget.mode}" value="#{value}" />
+            </td>
+          </nxl:layoutRowWidget>
+        </tr>
+      </nxl:layoutRow>
+
+    </tbody>
+  </table>
+
+</c:if>
+
+<c:if test="#{layout.mode == 'edit' or layout.mode == 'create'}">
+
+  <table class="dataInput">
+    <tbody>
+
+      <nxl:layoutRow>
+        <tr>
+          <nxl:layoutRowWidget>
+            <td class="labelColumn">
+              <h:outputText value="#{widget.label}" rendered="#{!widget.translated}"
+                styleClass="#{nxu:test(widget.required, 'required', '')}" />
+              <h:outputText value="#{messages[widget.label]}" rendered="#{widget.translated}"
+                styleClass="#{nxu:test(widget.required, 'required', '')}" />
+            </td>
+            <td class="fieldColumn">
+              <nxl:widget widget="#{widget}" mode="#{widget.mode}" value="#{value}" />
+            </td>
+          </nxl:layoutRowWidget>
+        </tr>
+      </nxl:layoutRow>
+
+    </tbody>
+  </table>
+
+</c:if>
+
+</f:subview>

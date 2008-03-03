@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webapp.search.searchUI">
+  <documentation>
+    Default configuration for searchUIConfigService
+  </documentation>
+  <extension target="org.nuxeo.ecm.webapp.search.SearchUIConfigService"
+    point="config">
+    <config name="resultFieldGroups" >
+      <fieldGroup name="uid" >
+        <field schema="uid" name="uid" />
+        <field schema="uid" name="major_version" />
+        <field schema="uid" name="minor_version" />
+      </fieldGroup>
+
+      <fieldGroup name="dublincore" >
+        <field schema="dublincore" name="title" />
+        <field schema="dublincore" name="description" />
+        <field schema="dublincore" name="subjects" />
+        <field schema="dublincore" name="rights" />
+        <field schema="dublincore" name="source" />
+        <field schema="dublincore" name="coverage" />
+        <field schema="dublincore" name="created" />
+        <field schema="dublincore" name="modified" />
+        <field schema="dublincore" name="issued" />
+        <field schema="dublincore" name="valid" />
+        <field schema="dublincore" name="expired" />
+        <field schema="dublincore" name="contributors" />
+      </fieldGroup>
+    </config>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.webapp.search.SearchUIConfigService"
+    point="resultColumns">
+      <resultColumns name="resultColumns">
+        <field schema="dublincore" name="title" />
+        <field schema="dublincore" name="created" />
+        <field schema="dublincore" name="modified" />
+        <field schema="dublincore" name="description" />
+      </resultColumns>
+  </extension>
+</component>

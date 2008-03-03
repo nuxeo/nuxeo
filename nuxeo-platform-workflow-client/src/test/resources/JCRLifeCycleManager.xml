@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.repository.jcr.lifecycle.JCRLifeCycleManager">
+
+	<require>org.nuxeo.ecm.core.lifecycle.LifeCycleService</require>
+
+	<extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+			   point="lifecyclemanager">
+		<lifecyclemanager name="jcrlifecyclemanager"
+						  class="org.nuxeo.ecm.core.repository.jcr.JCRLifeCycleManager"
+						  />
+	</extension>
+
+</component>

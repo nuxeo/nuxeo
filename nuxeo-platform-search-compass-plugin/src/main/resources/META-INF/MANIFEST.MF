@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Search compass plugin
+Bundle-SymbolicName: org.nuxeo.ecm.platform.search.compass-plugin;singleton:=true
+Bundle-Vendor: Nuxeo
+Eclipse-LazyStart: false
+Nuxeo-Component: OSGI-INF/nxsearch-backend-compass-framework.xml,
+  OSGI-INF/nxsearch-compass-contrib.xml
+Require-Bundle: org.nuxeo.ecm.platform.search

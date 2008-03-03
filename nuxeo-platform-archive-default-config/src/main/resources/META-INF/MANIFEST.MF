@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Archive Default Configuration
+Bundle-SymbolicName: org.nuxeo.ecm.platform.archive.default.config;singleton:=true
+Require-Bundle: org.nuxeo.ecm.directory.sql
+Nuxeo-Component: OSGI-INF/archive-directories-contrib.xml

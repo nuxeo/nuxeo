@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesServiceTestExtensions">
+
+	<require>org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService</require>
+
+	<extension target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService"
+			   point="docTypeRule">
+		<docTypeRule docType="Folder">
+			<workflowDefinition>ddef1</workflowDefinition>
+			<workflowDefinition>ddef2</workflowDefinition>
+		</docTypeRule>
+	</extension>
+
+   <extension target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService"
+			   point="docTypeRule">
+		<docTypeRule docType="File">
+			<workflowDefinition>def1</workflowDefinition>
+			<workflowDefinition>def2</workflowDefinition>
+		</docTypeRule>
+	</extension>
+
+	<extension target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService"
+			   point="pathRule">
+		<pathRule path="/workspaces">
+			<workflowDefinition>def1</workflowDefinition>
+		</pathRule>
+	</extension>
+
+   <extension target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService"
+			   point="pathRule">
+		<pathRule path="/sections">
+			<workflowDefinition>def2</workflowDefinition>
+		</pathRule>
+	</extension>
+
+</component>

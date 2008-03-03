@@ -1,0 +1,16 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+<h:outputText value="#{messages['label.files.noAttachedFiles']}"
+  rendered="#{empty currentDocument.files.files}" />
+
+<h:form rendered="#{not empty currentDocument.files.files}">
+  <h:dataTable value="#{currentDocument.files.files}" var="row">
+    <h:column>
+      <nxu:outputFile value="#{row['file']}" filename="#{row['filename']}" />
+    </h:column>
+  </h:dataTable>
+</h:form>
+
+</div>

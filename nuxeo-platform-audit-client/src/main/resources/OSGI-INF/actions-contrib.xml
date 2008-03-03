@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.platform.audit.web">
+
+  <documentation>
+
+      NXAudit action contributions.
+
+      @version 1.0
+      @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
+
+    <documentation>
+
+      Contribute a new action related to document history.
+
+    </documentation>
+
+    <action id="TAB_CONTENT_HISTORY" link="/incl/tabs/document_history.xhtml"
+      enabled="true" label="action.view.history" icon="/icons/file.gif"
+      order="100">
+      <category>VIEW_ACTION_LIST</category>
+      <filter id="view_content_history">
+        <rule grant="false">
+          <type>WorkspaceRoot</type>
+          <type>SectionRoot</type>
+          <type>Server</type>
+        </rule>
+      </filter>
+      <filter-id>mutable_document</filter-id>
+
+    </action>
+
+  </extension>
+
+
+</component>

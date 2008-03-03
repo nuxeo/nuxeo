@@ -1,0 +1,9 @@
+<component name="org.nuxeo.ecm.platform.audit.search.contrib">
+
+  <extension target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="resourceType">
+    <resourceType name="audit"
+      factoryClass="org.nuxeo.ecm.platform.audit.search.resources.indexing.AuditIndexableResourceFactory"/>
+  </extension>
+
+</component>

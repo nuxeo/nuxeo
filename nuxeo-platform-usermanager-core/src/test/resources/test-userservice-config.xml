@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.usermanager.test">
+
+  <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
+    point="userManager">
+    <userManager
+      class="org.nuxeo.ecm.platform.usermanager.FakeUserManagerImpl">
+      <users>
+        <directory>somedir</directory>
+        <emailField>mail</emailField>
+        <searchFields append="true">
+          <searchField>first</searchField>
+          <searchField>last</searchField>
+        </searchFields>
+        <listingMode>search_only</listingMode>
+        <anonymousUser id="Guest">
+          <property name="first">Anonymous</property>
+          <property name="last">Coward</property>
+        </anonymousUser>
+      </users>
+      <groups>
+        <directory>somegroupdir</directory>
+        <membersField>members</membersField>
+        <subGroupsField>subg</subGroupsField>
+        <parentGroupsField>parentg</parentGroupsField>
+        <listingMode>search_oh_yeah</listingMode>
+      </groups>
+      <defaultAdministratorId>tehroot</defaultAdministratorId>
+      <defaultGroup>defgr</defaultGroup>
+      <userSortField>name</userSortField>
+      <groupSortField>sn</groupSortField>
+    </userManager>
+  </extension>
+
+</component>

@@ -1,0 +1,264 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+      "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+      "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+  <typedef class="org.jbpm.db.hibernate.StringMax" name="string_max" />
+
+  <query name="GraphSession.findLatestProcessDefinitionQuery">
+    <![CDATA[
+     select pd
+     from org.jbpm.graph.def.ProcessDefinition as pd
+     where pd.name = :name
+     order by pd.version desc
+    ]]>
+  </query>
+
+  <query name="GraphSession.findProcessDefinitionByNameAndVersion">
+    <![CDATA[
+      select pd
+      from org.jbpm.graph.def.ProcessDefinition as pd
+      where pd.name = :name
+        and pd.version = :version
+    ]]>
+  </query>
+
+  <query name="GraphSession.findAllProcessDefinitions">
+    <![CDATA[
+      select pd
+      from org.jbpm.graph.def.ProcessDefinition as pd
+      order by pd.name, pd.version desc
+    ]]>
+  </query>
+
+  <query name="GraphSession.findAllProcessDefinitionVersions">
+    <![CDATA[
+      select pd
+      from org.jbpm.graph.def.ProcessDefinition as pd
+      where pd.name = :name
+      order by pd.version desC
+    ]]>
+  </query>
+
+  <query name="GraphSession.findAllProcessInstancesForADefinition">
+    <![CDATA[
+      select pi
+      from org.jbpm.graph.exe.ProcessInstance as pi
+      where pi.processDefinition.id = :processDefinitionId
+      order by pi.start desc
+    ]]>
+  </query>
+
+  <query name="GraphSession.findTokensForProcessInstance">
+    <![CDATA[
+      select token
+      from org.jbpm.graph.exe.Token token
+      where token.processInstance = :processInstance
+    ]]>
+  </query>
+
+  <query name="GraphSession.selectLogsForTokens">
+    <![CDATA[
+      select pl
+      from org.jbpm.logging.log.ProcessLog as pl
+      where pl.token in (:tokens)
+    ]]>
+  </query>
+
+  <query name="GraphSession.findTaskInstanceIdsForProcessInstance">
+    <![CDATA[
+      select t
+      from org.jbpm.taskmgmt.exe.TaskInstance t
+      where t.taskMgmtInstance.processInstance = :processInstance
+    ]]>
+  </query>
+
+  <query name="GraphSession.deleteTaskInstancesById">
+    <![CDATA[
+      delete
+      from org.jbpm.taskmgmt.exe.TaskInstance t
+      where t.id in (:taskInstanceIds)
+    ]]>
+  </query>
+
+  <query name="GraphSession.deleteMessagesForToken">
+    <![CDATA[
+      delete
+      from org.jbpm.msg.Message m
+      where m.token = :token
+    ]]>
+  </query>
+
+  <query name="LoggingSession.findLogsByToken">
+    <![CDATA[
+      select pl
+      from org.jbpm.logging.log.ProcessLog as pl
+      where pl.token = :token
+      order by pl.index
+    ]]>
+  </query>
+
+  <query name="MessagingSession.findMessages">
+    <![CDATA[
+      select message
+      from org.jbpm.msg.Message as message
+      where message.destination = :destination
+        and message.isSuspended != true
+        and message.exception is null
+    ]]>
+  </query>
+
+  <query name="MessagingSession.findErrorMessages">
+    <![CDATA[
+      select message
+      from org.jbpm.msg.Message as message
+      where message.destination = :destination
+        and message.isSuspended != true
+        and message.exception is not null
+    ]]>
+  </query>
+
+  <query name="MessagingSession.suspendMessagesForToken">
+    <![CDATA[
+      update org.jbpm.msg.Message m
+      set m.isSuspended = true
+      where m.token = :token
+    ]]>
+  </query>
+
+  <query name="MessagingSession.resumeMessagesForToken">
+    <![CDATA[
+      update org.jbpm.msg.Message m
+      set m.isSuspended = false
+      where m.token = :token
+    ]]>
+  </query>
+
+  <query name="SchedulerSession.findTimersByDueDate">
+    <![CDATA[
+      select ti
+      from org.jbpm.scheduler.exe.Timer as ti
+      where ti.exception is null
+        and ti.isSuspended != true
+      order by ti.dueDate asc
+    ]]>
+  </query>
+
+  <query name="SchedulerSession.findFailedTimers">
+    <![CDATA[
+      select ti
+      from org.jbpm.scheduler.exe.Timer as ti
+      where ti.exception is not null
+      order by ti.dueDate asc
+    ]]>
+  </query>
+
+  <query name="SchedulerSession.findSuspendedTimers">
+    <![CDATA[
+      select ti
+      from org.jbpm.scheduler.exe.Timer as ti
+      where ti.isSuspended = true
+      order by ti.dueDate asc
+    ]]>
+  </query>
+
+  <query name="SchedulerSession.findTimersByName">
+    <![CDATA[
+      select t
+      from org.jbpm.scheduler.exe.Timer t
+      where t.name = :timerName
+        and t.token = :token
+    ]]>
+  </query>
+
+  <query name="SchedulerSession.deleteTimersForProcessInstance">
+    <![CDATA[
+      delete from org.jbpm.scheduler.exe.Timer t
+      where t.processInstance = :processInstance
+    ]]>
+  </query>
+
+  <query name="SchedulerSession.suspendTimersForToken">
+    <![CDATA[
+      update org.jbpm.scheduler.exe.Timer t
+      set t.isSuspended = true
+      where t.token = :token
+    ]]>
+  </query>
+
+  <query name="SchedulerSession.resumeTimersForToken">
+    <![CDATA[
+      update org.jbpm.scheduler.exe.Timer t
+      set t.isSuspended = false
+      where t.token = :token
+    ]]>
+  </query>
+
+  <query name="TaskMgmtSession.findTaskInstancesByActorId">
+    <![CDATA[
+      select ti
+      from org.jbpm.taskmgmt.exe.TaskInstance as ti
+      where ti.actorId = :actorId
+        and ti.isOpen = true
+    ]]>
+  </query>
+
+  <query name="TaskMgmtSession.findAllTaskInstancesByActorId">
+    <![CDATA[
+      select ti
+      from org.jbpm.taskmgmt.exe.TaskInstance as ti
+      where ti.actorId = :actorId
+    ]]>
+  </query>
+
+  <query name="TaskMgmtSession.findTaskInstancesByActorIds">
+    <![CDATA[
+      select ti
+      from org.jbpm.taskmgmt.exe.TaskInstance as ti
+      where ti.actorId in ( :actorIds )
+        and ti.isOpen = true
+    ]]>
+  </query>
+
+  <query name="TaskMgmtSession.findPooledTaskInstancesByActorId">
+    <![CDATA[
+      select distinct ti
+      from org.jbpm.taskmgmt.exe.PooledActor pooledActor
+           join pooledActor.taskInstances ti
+      where pooledActor.actorId = :swimlaneActorId
+        and ti.actorId is null
+        and ti.isOpen = true
+    ]]>
+  </query>
+
+  <query name="TaskMgmtSession.findPooledTaskInstancesByActorIds">
+    <![CDATA[
+      select distinct ti
+      from org.jbpm.taskmgmt.exe.PooledActor pooledActor
+           join pooledActor.taskInstances ti
+      where pooledActor.actorId in ( :actorIds )
+        and ti.actorId is null
+        and ti.isOpen = true
+    ]]>
+  </query>
+
+  <query name="TaskMgmtSession.findTaskInstancesByTokenId">
+    <![CDATA[
+      select ti
+      from org.jbpm.taskmgmt.exe.TaskInstance ti
+      where ti.token.id = :tokenId
+        and ti.isOpen = true
+    ]]>
+  </query>
+
+  <query name="TaskMgmtSession.findTaskInstancesByIds">
+    <![CDATA[
+      select ti
+      from org.jbpm.taskmgmt.exe.TaskInstance ti
+      where ti.id in ( :taskInstanceIds )
+    ]]>
+  </query>
+</hibernate-mapping>

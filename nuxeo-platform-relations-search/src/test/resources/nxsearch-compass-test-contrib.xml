@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.search.backend.compass">
+
+  <!-- Not renamed to point out that it's loading the file from
+  compass backend package -->
+  <extension target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="searchEngineBackend">
+
+    <searchEngineBackend name="compass" default="true"
+      class="org.nuxeo.ecm.core.search.backend.compass.CompassBackend">
+      <configurationFileName>/testcompass.cfg.xml</configurationFileName>
+    </searchEngineBackend>
+
+  </extension>
+
+</component>

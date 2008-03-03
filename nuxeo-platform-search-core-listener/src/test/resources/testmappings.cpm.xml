@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE compass-core-mapping PUBLIC
+    "-//Compass/Compass Core Mapping DTD 1.0//EN"
+    "http://www.opensymphony.com/compass/dtd/compass-core-mapping.dtd">
+<compass-core-mapping>
+  <!--  all is useless with Nuxeo mixed type contents -->
+  <resource alias="nxdoc" sub-index="nxdocs" analyzer="default" all="false">
+    <resource-id name="nxdoc_id" />
+    <resource-property name="bk:frenchtitle" analyzer="french" />
+    <resource-property name="bk:barcode" analyzer="lowerWhitespace" />
+    <resource-property name="bk:published" converter="date" store="yes"
+      index="un_tokenized" />
+    <resource-property name="ecm:isCheckedInVersion" converter="boolean"
+      store="yes" index="un_tokenized" />
+    <!-- needed for >, <, BETWEEN and the like -->
+    <resource-property name="kw1" store="yes" index="un_tokenized" />
+    <resource-property name="bk:pages" converter="long" store="yes"
+      index="un_tokenized" />
+    <!-- DUBLINCORE -->
+    <resource-property name="dc:modified" converter="date" store="yes"
+      index="un_tokenized" />
+  </resource>
+  <!-- unit tests will make an alias per schema -->
+  <resource alias="book" sub-index="split_schemas" analyzer="default"
+    all="false">
+    <resource-id name="nxdoc_id" />
+    <resource-property name="bk:frenchtitle" analyzer="french" />
+    <resource-property name="bk:published" converter="date" store="yes"
+      index="un_tokenized" />
+    <resource-property name="bk:pages" converter="long" store="yes"
+      index="un_tokenized" />
+  </resource>
+  <resource alias="dublincore" sub-index="split_schemas" analyzer="default"
+    all="false">
+    <resource-id name="nxdoc_id" />
+  </resource>
+</compass-core-mapping>

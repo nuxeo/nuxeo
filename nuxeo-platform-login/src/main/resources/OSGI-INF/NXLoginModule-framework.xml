@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.login.LoginPluginRegistry">
+
+    <implementation class="org.nuxeo.ecm.platform.login.LoginPluginRegistry" version="1.0.0"/>
+
+    <documentation>
+          Login module for Nuxeo.
+          Uses JAAS.
+    </documentation>
+    <extension-point name="plugin">
+        <documentation>
+              This extension point can be used to register new Login Plugin.
+              The XML extension can contain a arbitrary number of Plugin declaration if the form :
+                    <LoginPlugin name="CAS2SSO" class="org.nuxeo.ecm.platform.login.cas2.CAS2LoginPlugin">
+                            <enabled>true</enabled>
+                            <parameters name="ServiceLoginUrl">http://127.0.0.1:8080/cas/login</parameters>
+                            ...
+                    </LoginPlugin>
+              The parameters tag can be repeated an arbitrary number of time and can be used to pass configuration to the plugin.
+              The class attribute defines the class implementing the org.nuxeo.ecm.platform.login.LoginPlugin interface.
+        </documentation>
+        <object class="org.nuxeo.ecm.platform.login.LoginPluginDescriptor" />
+    </extension-point>
+
+</component>

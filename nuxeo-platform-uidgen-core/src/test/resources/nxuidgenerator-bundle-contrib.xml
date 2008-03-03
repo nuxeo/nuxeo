@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.uidgen.generators">
+
+  <!-- Sample generators -->
+  <extension target="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService"
+    point="generators">
+
+    <generator name="geideDoc"
+      class="org.nuxeo.ecm.platform.uidgen.tests.generators.UIDGenerator1">
+      <propertyName>uid:uid</propertyName>
+      <docType>GeideDoc</docType>
+    </generator>
+
+  </extension>
+
+</component>

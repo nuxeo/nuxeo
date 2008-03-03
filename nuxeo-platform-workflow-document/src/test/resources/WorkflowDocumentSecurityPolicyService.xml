@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService">
+
+	<implementation class="org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService"/>
+
+    <extension-point name="workflowDocumentSecurityPolicy">
+      <object class="org.nuxeo.ecm.platform.workflow.document.service.extensions.WorkflowDocumentSecurityPolicyDescriptor"/>
+    </extension-point>
+
+    <extension-point name="workflowDocumentSecurityPolicyRelation">
+      <object class="org.nuxeo.ecm.platform.workflow.document.service.extensions.WorkflowDocumentSecurityPolicyRelationDescriptor"/>
+    </extension-point>
+
+</component>

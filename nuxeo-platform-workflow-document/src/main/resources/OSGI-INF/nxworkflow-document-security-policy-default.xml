@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyServiceDefaultExtensions">
+
+  <documentation>
+      Default security policy contributions.
+
+      @version 1.0
+      @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+    </documentation>
+
+  <require>org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService</require>
+
+  <extension target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService"
+         point="workflowDocumentSecurityPolicy">
+
+    <documentation>
+
+      This security policy distributes ACEs to the workflow participants
+      (i.e : the users with active work items) in an homogeneous way. Every
+      participant gets the same rights.
+
+    </documentation>
+
+    <workflowDocumentSecurityPolicy
+      name="parallel_review"
+      class="org.nuxeo.ecm.platform.workflow.document.security.policy.ParallelReviewWorkflowDocumentSecurityPolicy"
+      />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService"
+         point="workflowDocumentSecurityPolicy">
+
+    <documentation>
+
+      This security policy doesn't distribute the rights among participants in
+      a an homogeneous way. It considers a master participant granted with more rights
+      than the others.
+
+    </documentation>
+
+    <workflowDocumentSecurityPolicy
+      name="ordered_review"
+      class="org.nuxeo.ecm.platform.workflow.document.security.policy.OrderedReviewWorkflowDocumentSecurityPolicy"
+      />
+
+  </extension>
+
+</component>

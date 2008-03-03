@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo URL Facade
+Bundle-SymbolicName: org.nuxeo.ecm.platform.url.facade;singleton:=true
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.core.api, org.nuxeo.ecm.platform.url.core

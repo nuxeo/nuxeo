@@ -1,0 +1,4 @@
+groupname, description
+"members","Group of users with read access rights"
+"administrators","Group of users with adminstrative rights"
+"group_1","Group 1"

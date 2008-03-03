@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.transform.plugins">
+
+  <!-- This plugin converts the sources to pdf using an external OOo server -->
+  <extension target="org.nuxeo.ecm.platform.transform.service.TransformService" point="plugins">
+
+  <!-- This plugin converts pdf to text using PDFBox-->
+  <extension target="org.nuxeo.ecm.platform.transform.service.TransformService"
+    point="plugins">
+    <plugin name="pdf2text"
+      class="org.nuxeo.ecm.platform.transform.plugin.pdfbox.impl.PDFBoxPluginImpl"
+      destinationMimeType="plain/text">
+      <sourceMimeType>application/pdf</sourceMimeType>
+    </plugin>
+  </extension>
+
+  <!-- This transformer uses a the OOo plugin to transform documents to pdf-->
+  <extension target="org.nuxeo.ecm.platform.transform.service.TransformService" point="transformers">
+    <transformer name="pdf2text"
+      class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
+      <plugins>
+        <plugin name="pdf2text"/>
+      </plugins>
+    </transformer>
+  </extension>
+
+</extension>
+</component>

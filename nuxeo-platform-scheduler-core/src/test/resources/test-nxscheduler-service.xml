@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService">
+    <implementation class="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService"/>
+    <extension-point name="schedule">
+        <object class="org.nuxeo.ecm.platform.scheduler.core.service.ScheduleImpl"/>
+    </extension-point>
+</component>

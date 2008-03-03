@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.usermanager.UserService">
+
+  <documentation>
+    A service to interact with the list of users and groups of the
+    platform.
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.usermanager.UserService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.usermanager.UserManager" />
+  </service>
+
+  <extension-point name="userManager">
+
+    <documentation>
+      Configure the userManager.
+      <p />
+      The extension should use the format:
+      <code>
+        <userManager>
+          <users>
+            <directory>somedirectory</directory>
+            <emailField>mail</emailField>
+            <searchFields append="true">
+              <searchField>first</searchField>
+              <searchField>last</searchField>
+            </searchFields>
+            <listingMode>tabbed</listingMode>
+            <anonymousUser id="Anonymous">
+              <property name="firstName">Anonymous</property>
+              <property name="lastName">User</property>
+            </anonymousUser>
+          </users>
+          <defaultAdministratorId>admin</defaultAdministratorId>
+          <userSortField>sn</userSortField>
+          <userPasswordPattern>^[a-zA-Z0-9]{5,}$</userPasswordPattern>
+          <groups>
+            <directory>somegroupdir</directory>
+            <membersField>members</membersField>
+            <subGroupsField>subgroups</subGroupsField>
+            <parentGroupsField>parentgroup</parentGroupsField>
+            <listingMode>search_only</listingMode>
+          </groups>
+          <defaultGroup>members</defaultGroup>
+          <groupSortField>groupname</groupSortField>
+        </userManager>
+      </code>
+      <p />
+      If the element anonymousUser has the attribute remove="true", then
+      the anonymous user will be disabled.
+      <p />
+      The userPasswordPattern format is specified by
+      java.util.regex.Pattern.
+      <p />
+      The values for users listingMode are: "all", "tabbed",
+      "search_only". (These values are defined in
+      org.nuxeo.ecm.webapp.security.UserManagerActionsBean.)
+      <p />
+      The values for groups listingMode are: "all" and "search_only".
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.usermanager.UserManagerDescriptor" />
+
+  </extension-point>
+
+</component>

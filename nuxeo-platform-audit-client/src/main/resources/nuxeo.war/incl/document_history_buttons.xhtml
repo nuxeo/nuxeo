@@ -1,0 +1,18 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:t="http://myfaces.apache.org/tomahawk">
+
+        <h:commandButton value="#{messages['command.restore']}"
+          class="button"
+          action="#{versionedActions.restoreToVersion(versionItem)}"
+          disabled="#{!versionedActions.canRestore}" />
+
+        <h:outputText value=" "/>
+
+        <h:commandButton value="#{messages['command.viewArchivedVersion']}"
+          class="button"
+          action="#{versionedActions.viewArchivedVersion(versionItem)}" />
+</div>

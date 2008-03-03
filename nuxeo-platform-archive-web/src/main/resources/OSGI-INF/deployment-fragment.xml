@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+<fragment>
+
+
+
+  <extension target="application#MODULE">
+
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+
+  </extension>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+    <!--  create a temp dir -->
+    <!--  be sure no directory with that name exists -->
+    <delete path="nxarchive-web.tmp" />
+    <mkdir path="nxarchive-web.tmp" />
+
+    <unzip from="${bundle.fileName}" to="nxarchive-web.tmp">
+      <include>OSGI-INF/l10n/**</include>
+    </unzip>
+
+    <append from="nxarchive-web.tmp/OSGI-INF/l10n/messages.properties"
+      to="nuxeo.war/WEB-INF/classes/messages.properties"
+      addNewLine="true" />
+    <append
+      from="nxarchive-web.tmp/OSGI-INF/l10n/messages_en.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_en.properties"
+      addNewLine="true" />
+    <append
+      from="nxarchive-web.tmp/OSGI-INF/l10n/messages_fr.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_fr.properties"
+      addNewLine="true" />
+    <append
+      from="nxarchive-web.tmp/OSGI-INF/l10n/messages_de.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_de.properties"
+      addNewLine="true" />
+
+    <delete path="nxarchive-web.tmp" />
+  </install>
+
+</fragment>
+

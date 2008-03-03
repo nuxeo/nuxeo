@@ -1,0 +1,974 @@
+<?xml version="1.0"?>
+
+<fragment>
+
+
+  <extension target="application#MODULE">
+
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+
+  </extension>
+
+  <extension target="web#LISTENER">
+
+    <listener>
+      <listener-class>org.jboss.seam.servlet.SeamListener</listener-class>
+    </listener>
+
+    <!--  Configure SUN JSF RI -->
+    <listener>
+      <listener-class>com.sun.faces.config.ConfigureListener</listener-class>
+    </listener>
+
+  </extension>
+
+
+  <!-- AT: mixing filters and mappings for clarity, does not change
+    resulting web.xml file -->
+
+
+  <!-- comment that to disable exception filter -->
+  <extension target="web#EXCEPTION-FILTER">
+
+    <filter>
+      <filter-name>Seam Exception Filter</filter-name>
+      <filter-class>org.jboss.seam.servlet.SeamExceptionFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+      <filter-name>Seam Exception Filter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+      <display-name>Nuxeo Exception Filter</display-name>
+      <filter-name>NuxeoExceptionFilter</filter-name>
+      <filter-class>
+        org.nuxeo.ecm.platform.ui.web.shield.NuxeoExceptionFilter
+      </filter-class>
+    </filter>
+
+    <filter-mapping>
+      <filter-name>NuxeoExceptionFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+  </extension>
+
+  <!-- comment that to disable filter based auth -->
+  <extension target="web#STD-AUTH-FILTER">
+    <filter>
+      <display-name>Nuxeo Security Filter</display-name>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <filter-class>
+        org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter
+      </filter-class>
+    </filter>
+
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>*.faces</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>*.seam</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/nxdoc/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/nxfile/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/nxbigfile/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/seam/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/restAPI/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <!-- filter also requests for web services -->
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/ws/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/webservices/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/logout</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+
+  </extension>
+
+  <extension target="web#FIRST-FILTER">
+
+    <filter>
+      <display-name>Nuxeo Fancy URL Filter</display-name>
+      <filter-name>NuxeoFancyURLFilter</filter-name>
+      <filter-class>
+        org.nuxeo.ecm.platform.ui.web.rest.FancyURLFilter
+      </filter-class>
+      <init-param>
+        <param-name>EnableFancyURLParsing</param-name>
+        <param-value>false</param-value>
+      </init-param>
+      <init-param>
+        <param-name>EnableFancyURLRedirect</param-name>
+        <param-value>false</param-value>
+      </init-param>
+    </filter>
+
+    <filter-mapping>
+      <filter-name>NuxeoFancyURLFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+      <display-name>Ajax4jsf Filter</display-name>
+      <filter-name>ajax4jsf</filter-name>
+      <filter-class>org.ajax4jsf.FastFilter</filter-class>
+      <init-param>
+        <param-name>forceparser</param-name>
+        <param-value>false</param-value>
+      </init-param>
+    </filter>
+
+    <filter-mapping>
+      <filter-name>ajax4jsf</filter-name>
+      <url-pattern>*.seam</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>ajax4jsf</filter-name>
+      <url-pattern>*.faces</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+  </extension>
+
+  <extension target="web#FILTER">
+
+    <filter>
+      <filter-name>Trinidad</filter-name>
+      <filter-class>
+        org.apache.myfaces.trinidad.webapp.TrinidadFilter
+      </filter-class>
+    </filter>
+
+    <filter-mapping>
+      <filter-name>Trinidad</filter-name>
+      <url-pattern>*.seam</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>Trinidad</filter-name>
+      <url-pattern>*.faces</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter>
+      <filter-name>Seam Redirect Filter</filter-name>
+      <filter-class>org.jboss.seam.servlet.SeamRedirectFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+      <filter-name>Seam Redirect Filter</filter-name>
+      <url-pattern>*.faces</url-pattern>
+      <!-- FancyURLFilter sometimes triggers forward
+        => make it keep conversation info -->
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>Seam Redirect Filter</filter-name>
+      <url-pattern>*.seam</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>Seam Redirect Filter</filter-name>
+      <url-pattern>*.jsf</url-pattern>
+    </filter-mapping>
+
+    <filter>
+      <filter-name>Seam Servlet Filter</filter-name>
+      <filter-class>org.jboss.seam.servlet.SeamServletFilter</filter-class>
+    </filter>
+
+    <filter>
+      <display-name>Nuxeo Simple Cache Filter</display-name>
+      <filter-name>simpleCacheFilter</filter-name>
+      <filter-class>
+        org.nuxeo.ecm.platform.ui.web.cache.SimpleCacheFilter
+      </filter-class>
+      <init-param>
+        <param-name>cacheTime</param-name>
+        <param-value>3600</param-value>
+      </init-param>
+    </filter>
+
+    <filter-mapping>
+      <filter-name>simpleCacheFilter</filter-name>
+      <url-pattern>/img/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>simpleCacheFilter</filter-name>
+      <url-pattern>/icons/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>simpleCacheFilter</filter-name>
+      <url-pattern>/css/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>simpleCacheFilter</filter-name>
+      <url-pattern>/scripts/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>simpleCacheFilter</filter-name>
+      <url-pattern>/seam/remoting/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>simpleCacheFilter</filter-name>
+      <url-pattern>/waitdialog/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>simpleCacheFilter</filter-name>
+      <url-pattern>/showLogo.faces*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>simpleCacheFilter</filter-name>
+      <url-pattern>/a4j.res/*</url-pattern>
+    </filter-mapping>
+
+    <!-- My Faces Extensions Filter -->
+    <filter>
+      <filter-name>extensionsFilter</filter-name>
+      <filter-class>
+        org.apache.myfaces.component.html.util.ExtensionsFilter
+      </filter-class>
+      <!--  filter-class>org.apache.myfaces.webapp.filter.ExtensionsFilter</filter-class-->
+      <init-param>
+        <param-name>uploadMaxFileSize</param-name>
+        <param-value>100m</param-value>
+        <!--
+          <description>Set the size limit for uploaded files.
+          Format: 10 - 10 bytes
+          10k - 10 KB
+          10m - 10 MB
+          1g - 1 GB
+          </description>
+        -->
+      </init-param>
+      <init-param>
+        <param-name>uploadThresholdSize</param-name>
+        <param-value>100k</param-value>
+        <!--
+          <description>Set the threshold size - files
+          below this limit are stored in memory, files above
+          this limit are stored on disk.
+
+          Format: 10 - 10 bytes
+          10k - 10 KB
+          10m - 10 MB
+          1g - 1 GB
+          </description>
+        -->
+      </init-param>
+      <!--
+        <init-param>
+        <param-name>uploadRepositoryPath</param-name>
+        <param-value>/temp</param-value>
+        <description>Set the path where the intermediary files will be stored.
+        </description>
+        </init-param>
+      -->
+    </filter>
+
+    <!-- extension mapping for serving page-independent resources (javascript, stylesheets, images, etc.)  -->
+    <!-- servlet-name must match the name of your javax.faces.webapp.FacesServlet entry -->
+    <filter-mapping>
+      <filter-name>extensionsFilter</filter-name>
+      <servlet-name>Faces Servlet</servlet-name>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>extensionsFilter</filter-name>
+      <url-pattern>/faces/myFacesExtensionResource/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>extensionsFilter</filter-name>
+      <url-pattern>*.faces</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <!-- Trinidad filter config for file upload -->
+    <context-param>
+      <!-- Maximum memory per request (in bytes) -->
+      <param-name>org.apache.myfaces.trinidad.UPLOAD_MAX_MEMORY</param-name>
+      <!-- Use 500K -->
+      <param-value>512000</param-value>
+    </context-param>
+    <context-param>
+      <!-- Maximum disk space per request (in bytes) -->
+      <param-name>org.apache.myfaces.trinidad.UPLOAD_MAX_DISK_SPACE</param-name>
+      <!-- Use 20,000K -->
+      <param-value>20480000</param-value>
+    </context-param>
+  </extension>
+
+  <!-- AT: mixing servlets and mappings for clarity, does not change
+    resulting web.xml file -->
+  <extension target="web#SERVLET">
+
+    <servlet>
+      <servlet-name>Faces Servlet</servlet-name>
+      <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+      <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+      <servlet-name>Faces Servlet</servlet-name>
+      <url-pattern>*.faces</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+      <servlet-name>Faces Servlet</servlet-name>
+      <url-pattern>*.jsf</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>Nuxeo Downloader</servlet-name>
+      <servlet-class>org.nuxeo.ecm.platform.ui.web.download.DownloadServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+      <servlet-name>Nuxeo Downloader</servlet-name>
+      <url-pattern>/nxbigfile/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+      <servlet-name>Seam Remoting</servlet-name>
+      <servlet-class>org.jboss.seam.remoting.SeamRemotingServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+      <servlet-name>Seam Remoting</servlet-name>
+      <url-pattern>/seam/remoting/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Trinidad servlet -->
+    <servlet>
+      <servlet-name>Trinidad Resources</servlet-name>
+      <servlet-class>
+        org.apache.myfaces.trinidad.webapp.ResourceServlet
+      </servlet-class>
+    </servlet>
+
+    <!-- This cannot be configured currently -->
+    <servlet-mapping>
+      <servlet-name>Trinidad Resources</servlet-name>
+      <url-pattern>/adf/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- restlet API mapping -->
+    <servlet>
+      <servlet-name>Nuxeo Restlet Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.platform.ui.web.restAPI.RestletServlet
+      </servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+      <servlet-name>Nuxeo Restlet Servlet</servlet-name>
+      <url-pattern>/restAPI/*</url-pattern>
+    </servlet-mapping>
+
+
+  </extension>
+
+
+  <!-- IceFaces servlet -->
+  <!--
+    <servlet>
+    <servlet-name>Persistent Faces Servlet</servlet-name>
+    <servlet-class>com.icesoft.faces.webapp.xmlhttp.PersistentFacesServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+    <servlet-name>Persistent Faces Servlet</servlet-name>
+    <url-pattern>*.faces</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+    <servlet-name>Persistent Faces Servlet</servlet-name>
+    <url-pattern>*.seam</url-pattern>
+    </servlet-mapping>
+  -->
+
+  <extension target="web#CONTEXT-PARAM">
+
+    <context-param>
+      <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+      <!-- <param-value>client</param-value> -->
+      <param-value>server</param-value>
+    </context-param>
+
+    <context-param>
+      <param-name>javax.faces.DEFAULT_SUFFIX</param-name>
+      <param-value>.xhtml</param-value>
+    </context-param>
+
+    <context-param>
+      <param-name>facelets.LIBRARIES</param-name>
+      <param-value>
+        /WEB-INF/tomahawk.taglib.xml; /WEB-INF/nxdirectory.taglib.xml;
+        /WEB-INF/nxweb-html.taglib.xml; /WEB-INF/nxweb-util.taglib.xml;
+        /WEB-INF/nxweb-document.taglib.xml;
+      </param-value>
+    </context-param>
+
+    <!-- glefter: leave this set to false for now
+      if true, chainSelects are not updated properly - issue NXP-589
+    -->
+    <context-param>
+      <param-name>facelets.DEVELOPMENT</param-name>
+      <param-value>false</param-value>
+    </context-param>
+
+    <!-- When a page is requested, what interval in seconds should the compiler
+      check for changes. If you don't want the compiler to check for changes
+      once the page is compiled, then use a value of -1.
+
+      Setting a low refresh period helps during development to be able to edit
+      pages in a running application but slows down page rendering.
+
+      Default: 2 seconds.
+    -->
+    <context-param>
+      <param-name>facelets.REFRESH_PERIOD</param-name>
+      <param-value>-1</param-value>
+    </context-param>
+
+    <!--  Seam and Ajax4JSF  integration-->
+    <!--
+      <context-param>
+      <param-name>org.ajax4jsf.VIEW_HANDLERS</param-name>
+      <param-value>
+      org.jboss.seam.ui.facelet.SeamFaceletViewHandler
+      </param-value>
+      </context-param>
+    -->
+
+    <!--  Trinidad conf replacing the above ajax4jsf.VIEW_HANDLERS conf,
+      see http://wiki.apache.org/myfaces/TrinidadSeamAjax4Jsf -->
+    <context-param>
+      <param-name>
+        org.apache.myfaces.trinidad.ALTERNATE_VIEW_HANDLER
+      </param-name>
+      <param-value>
+        org.nuxeo.theme.jsf.facelets.NXThemesFaceletViewHandler
+      </param-value>
+    </context-param>
+
+    <!-- Configure Ajax4Jsf Filter-->
+    <context-param>
+      <param-name>org.ajax4jsf.Filter</param-name>
+      <param-value>org.ajax4jsf.FastFilter</param-value>
+    </context-param>
+
+    <!-- MyFaces Tomahawk conf -->
+    <context-param>
+      <param-name>org.apache.myfaces.ALLOW_JAVASCRIPT</param-name>
+      <param-value>true</param-value>
+    </context-param>
+
+    <!-- IceFaces configuration -->
+    <!--
+      <context-param>
+      <param-name>org.ajax4jsf.VIEW_HANDLERS</param-name>
+      <param-value>com.icesoft.faces.facelets.D2DSeamFaceletViewHandler</param-value>
+      </context-param>
+
+      <context-param>
+      <param-name>com.icesoft.faces.doJSFStateManagement</param-name>
+      <param-value>true</param-value>
+      </context-param>
+
+      <context-param>
+      <param-name>com.icesoft.faces.actionURLSuffix</param-name>
+      <param-value>.faces</param-value>
+      </context-param>
+    -->
+
+    <context-param>
+      <param-name>com.sun.faces.responseBufferSize</param-name>
+      <param-value>500000</param-value>
+    </context-param>
+
+    <context-param>
+      <param-name>facelets.BUFFER_SIZE</param-name>
+      <param-value>500000</param-value>
+    </context-param>
+
+    <context-param>
+      <param-name>com.sun.faces.numberOfViewsInSession</param-name>
+      <param-value>50</param-value>
+    </context-param>
+    <context-param>
+      <param-name>com.sun.faces.numberOfLogicalViews</param-name>
+      <param-value>50</param-value>
+    </context-param>
+
+  </extension>
+
+  <extension target="faces-config#APPLICATION">
+
+    <navigation-handler>
+      org.nuxeo.ecm.platform.ui.web.rest.FancyNavigationHandler
+    </navigation-handler>
+
+    <el-resolver>
+      org.nuxeo.ecm.platform.ui.web.resolver.DocumentModelResolver
+    </el-resolver>
+
+    <!-- This line should not strictly speaking be necessary, but it works
+      around a minor bug in the RI.) -->
+    <el-resolver>org.jboss.seam.jsf.SeamELResolver</el-resolver>
+
+    <!-- disabled, problem for trinidad integration -->
+    <!--
+      <view-handler>
+      org.jboss.seam.ui.facelet.SeamFaceletViewHandler
+      </view-handler>
+    -->
+
+    <!-- view-handler>com.sun.facelets.FaceletViewHandler</view-handler-->
+
+    <default-render-kit-id>
+      org.apache.myfaces.trinidad.core
+    </default-render-kit-id>
+
+  </extension>
+
+  <extension target="faces-config#PHASE-LISTENER">
+
+    <phase-listener>
+      org.nuxeo.ecm.platform.ui.web.rest.RestfulPhaseListener
+    </phase-listener>
+
+    <!-- Transactional Seam Phase Listener -->
+    <!--
+      <phase-listener>
+      org.jboss.seam.jsf.TransactionalSeamPhaseListener
+      </phase-listener>
+    -->
+    <!-- Standard Seam Phase Listener -->
+    <!--
+      <phase-listener>org.jboss.seam.jsf.SeamPhaseListener</phase-listener>
+    -->
+
+  </extension>
+
+  <extension target="faces-config#COMPONENT">
+
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.UISelectItems
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.UISelectItems
+      </component-class>
+    </component>
+
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.UISelectItem
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.UISelectItem
+      </component-class>
+    </component>
+
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.editor.UIHtmlEditor
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.editor.UIHtmlEditor
+      </component-class>
+    </component>
+
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.date.UIInputDateTime
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.date.UIInputDateTime
+      </component-class>
+    </component>
+
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.file.UIInputFile
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.file.UIInputFile
+      </component-class>
+    </component>
+
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.file.UIOutputFile
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.file.UIOutputFile
+      </component-class>
+    </component>
+
+    <!-- directory components -->
+
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.directory.UIDirectorySelectItems
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.directory.UIDirectorySelectItems
+      </component-class>
+    </component>
+
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.directory.UIDirectorySelectItem
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.directory.UIDirectorySelectItem
+      </component-class>
+    </component>
+
+    <component>
+      <component-type>nxdirectory.selectOneListbox</component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.directory.SelectOneListboxComponent
+      </component-class>
+    </component>
+    <component>
+      <component-type>nxdirectory.selectManyListbox</component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.directory.SelectManyListboxComponent
+      </component-class>
+    </component>
+    <component>
+      <component-type>nxdirectory.DirectoryEntryOutput</component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.directory.DirectoryEntryOutputComponent
+      </component-class>
+    </component>
+    <component>
+      <component-type>nxdirectory.ChainSelectOutput</component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.directory.ChainSelectOutputComponent
+      </component-class>
+    </component>
+
+    <!-- chain selects -->
+    <component>
+      <component-type>nxdirectory.chainSelectListbox</component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.directory.ChainSelectListboxComponent
+      </component-class>
+    </component>
+    <component>
+      <component-type>nxdirectory.chainSelect</component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.directory.ChainSelect
+      </component-class>
+    </component>
+    <component>
+      <component-type>nxdirectory.chainSelectStatus</component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.directory.ChainSelectStatus
+      </component-class>
+    </component>
+
+    <component>
+      <component-type>nxdirectory.ChainSelectOne</component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.directory.ChainSelectOne
+      </component-class>
+    </component>
+
+    <component>
+      <component-type>nxdirectory.ChainSelectMany</component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.directory.ChainSelectMany
+      </component-class>
+    </component>
+
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList
+      </component-class>
+    </component>
+
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.document.RestDocumentLink
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.document.RestDocumentLink
+      </component-class>
+    </component>
+
+  </extension>
+
+  <extension target="faces-config#RENDERER">
+
+    <renderer>
+      <component-family>javax.faces.Input</component-family>
+      <renderer-type>
+        org.nuxeo.ecm.platform.ui.web.component.editor.UIHtmlEditor
+      </renderer-type>
+      <renderer-class>
+        org.nuxeo.ecm.platform.ui.web.component.editor.HtmlEditorRenderer
+      </renderer-class>
+    </renderer>
+
+    <renderer>
+      <component-family>javax.faces.Input</component-family>
+      <renderer-type>
+        org.nuxeo.ecm.platform.ui.web.component.date.UIInputDateTime
+      </renderer-type>
+      <renderer-class>
+        org.nuxeo.ecm.platform.ui.web.component.date.InputDateTimeRenderer
+      </renderer-class>
+    </renderer>
+
+    <renderer>
+      <component-family>nxdirectory.selectOneListbox</component-family>
+      <renderer-type>nxdirectory.selectOneListbox</renderer-type>
+      <renderer-class>
+        org.nuxeo.ecm.platform.ui.web.directory.SelectOneListboxRenderer
+      </renderer-class>
+    </renderer>
+    <renderer>
+      <component-family>nxdirectory.selectManyListbox</component-family>
+      <renderer-type>nxdirectory.selectManyListbox</renderer-type>
+      <renderer-class>
+        org.nuxeo.ecm.platform.ui.web.directory.SelectManyListboxRenderer
+      </renderer-class>
+    </renderer>
+    <renderer>
+      <component-family>nxdirectory.DirectoryEntryOutput</component-family>
+      <renderer-type>nxdirectory.DirectoryEntryOutput</renderer-type>
+      <renderer-class>
+        org.nuxeo.ecm.platform.ui.web.directory.DirectoryEntryOutputRenderer
+      </renderer-class>
+    </renderer>
+    <renderer>
+      <component-family>nxdirectory.ChainSelectOutput</component-family>
+      <renderer-type>nxdirectory.ChainSelectOutput</renderer-type>
+      <renderer-class>
+        org.nuxeo.ecm.platform.ui.web.directory.ChainSelectOutputRenderer
+      </renderer-class>
+    </renderer>
+
+    <!-- chain selects -->
+    <renderer>
+      <component-family>nxdirectory.chainSelectListbox</component-family>
+      <renderer-type>nxdirectory.chainSelectListbox</renderer-type>
+      <renderer-class>
+        org.nuxeo.ecm.platform.ui.web.directory.ChainSelectListboxRenderer
+      </renderer-class>
+    </renderer>
+
+    <!--  new tree2 renderer -->
+    <renderer>
+      <component-family>org.apache.myfaces.HtmlTree2</component-family>
+      <renderer-type>
+        org.nuxeo.ecm.platform.ui.web.tree.HtmlLazyTreeRenderer
+      </renderer-type>
+      <renderer-class>
+        org.nuxeo.ecm.platform.ui.web.tree.HtmlLazyTreeRenderer
+      </renderer-class>
+    </renderer>
+
+  </extension>
+
+  <!-- uncomment that to enable filter based auth
+    <extension target="web#SECURITY-CONSTRAINT">
+    <security-constraint>
+    <web-resource-collection>
+    <web-resource-name>Secure area</web-resource-name>
+    <description>Security for Protected Pages</description>
+    <url-pattern>*.faces</url-pattern>
+    <http-method>HEAD</http-method>
+    <http-method>GET</http-method>
+    <http-method>POST</http-method>
+    <http-method>PUT</http-method>
+    <http-method>DELETE</http-method>
+    </web-resource-collection>
+    <web-resource-collection>
+    <web-resource-name>Secure area nxdoc</web-resource-name>
+    <description>Security for Protected Pages</description>
+    <url-pattern>/nxdoc/*</url-pattern>
+    <http-method>HEAD</http-method>
+    <http-method>GET</http-method>
+    <http-method>POST</http-method>
+    <http-method>PUT</http-method>
+    <http-method>DELETE</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+    <description>Only the regular users can see this</description>
+    <role-name>regular</role-name>
+    </auth-constraint>
+    </security-constraint>
+    </extension>
+  -->
+  <extension target="faces-config#CONVERTER">
+
+    <converter>
+      <converter-id>DateConverter</converter-id>
+      <converter-class>
+        org.nuxeo.ecm.platform.ui.web.converter.DateConverter
+      </converter-class>
+    </converter>
+    <converter>
+      <converter-id>TimeConverter</converter-id>
+      <converter-class>
+        org.nuxeo.ecm.platform.ui.web.converter.TimeConverter
+      </converter-class>
+    </converter>
+    <converter>
+      <converter-id>DateTimeConverter</converter-id>
+      <converter-class>
+        org.nuxeo.ecm.platform.ui.web.converter.DateTimeConverter
+      </converter-class>
+    </converter>
+
+  </extension>
+
+  <extension target="faces-config#VALIDATOR">
+
+    <validator>
+      <validator-id>InputFileSizeValidator</validator-id>
+      <validator-class>
+        org.nuxeo.ecm.platform.ui.web.component.file.InputFileSizeValidator
+      </validator-class>
+    </validator>
+    <validator>
+      <validator-id>InputFileMimetypeValidator</validator-id>
+      <validator-class>
+        org.nuxeo.ecm.platform.ui.web.component.file.InputFileMimetypeValidator
+      </validator-class>
+    </validator>
+
+  </extension>
+
+  <extension target="faces-config#MANAGED-BEAN">
+
+    <managed-bean>
+      <managed-bean-name>editableListBean</managed-bean-name>
+      <managed-bean-class>
+        org.nuxeo.ecm.platform.ui.web.component.list.EditableListBean
+      </managed-bean-class>
+      <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+
+  </extension>
+
+  <install>
+
+    <!--  create a temp dir -->
+    <!--  be sure no directory with that name exists -->
+    <delete path="nxwebplatform.tmp" />
+    <mkdir path="nxwebplatform.tmp" />
+
+    <unzip from="${bundle.fileName}" to="nxwebplatform.tmp">
+      <include>OSGI-INF/**</include>
+      <include>WEB/**</include>
+      <include>tiny_mce/**</include>
+      <include>jscalendar/**</include>
+    </unzip>
+
+    <append from="nxwebplatform.tmp/OSGI-INF/l10n/messages_en.properties"
+      to="nuxeo.war/WEB-INF/classes/messages.properties" addNewLine="true" />
+    <append from="nxwebplatform.tmp/OSGI-INF/l10n/messages_en.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
+    <append from="nxwebplatform.tmp/OSGI-INF/l10n/messages_fr.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_fr.properties" addNewLine="true" />
+    <append from="nxwebplatform.tmp/OSGI-INF/l10n/messages_it.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_it.properties" addNewLine="true" />
+
+    <copy from="nxwebplatform.tmp/WEB/" to="nuxeo.war/WEB-INF/" />
+    <copy from="nxwebplatform.tmp/tiny_mce/" to="nuxeo.war/tiny_mce/" />
+    <copy from="nxwebplatform.tmp/jscalendar/" to="nuxeo.war/jscalendar/" />
+
+    <delete path="nxwebplatform.tmp" />
+
+  </install>
+
+</fragment>
+

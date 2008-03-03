@@ -1,0 +1,25 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:nxh="http://nuxeo.org/nxweb/html"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:nxu="http://nuxeo.org/nxweb/util">
+  <h:form>
+    <nxu:methodResult name="actions"
+                      value="#{webActions.getActionsList('SUBVIEW_UPPER_LIST')}">
+    <f:subview rendered="#{!empty actions}">
+    <div class="action_bar">
+        <nxu:dataList layout="unorderedList"
+                      var="action"
+                      value="#{actions}">
+          <nxh:commandLink action="#{action.getLink()}">
+            <h:graphicImage value="#{action.icon}" />
+            <h:outputText value="#{messages[action.label]}" />
+          </nxh:commandLink>
+        </nxu:dataList>
+    </div>
+    </f:subview>
+    </nxu:methodResult>
+
+    <div style="clear:both"></div>
+  </h:form>
+</div>

@@ -1,0 +1,193 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:c="http://java.sun.com/jstl/core" class="menu"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  ><c:if test="#{treeManager.treeModel != null}"><a4j:region>
+
+  <dl>
+    <dd class="menuForm"><h:form>
+      <h:panelGroup id="treeNav">
+        <nxu:lazyTree value="#{treeManager.treeModel}" showNav="false"
+          showRootNode="true" preserveToggle="false" clientSideToggle="false"
+          var="node" varNodeToggler="t">
+
+          <f:facet name="Folder">
+            <!-- AT: quick fix for comments root-->
+          </f:facet>
+
+          <f:facet name="Domain">
+            <h:panelGroup>
+              <!-- This link manage the Navigation -->
+              <a4j:commandLink immediate="true"
+                actionListener="#{t.setNodeSelected}"
+                action="#{t.toggleExpanded}" reRender="treeNav">
+                <t:graphicImage value="/img/toggle_minus.png"
+                  rendered="#{t.nodeExpanded}" />
+                <t:graphicImage value="/img/toggle_plus.png"
+                  rendered="#{!t.nodeExpanded}" />
+              </a4j:commandLink>
+
+              <!-- This link is the one which opens documents -->
+              <nxd:restDocumentLink document="#{node.doc}"
+              actionListener="#{t.setNodeSelected}" styleClass="treeLink">
+                <nxu:graphicImage
+                  value="#{nxd:iconExpandedPath(node.doc)}" alt="#{node.doc.type}"
+                  rendered="#{t.nodeExpanded}"/>
+                <nxu:graphicImage
+                  value="#{nxd:iconPath(node.doc)}" alt="#{node.doc.type}"
+                  rendered="#{!t.nodeExpanded}"/>
+                <h:outputText value="#{nxd:titleOrId(node.doc)}" />
+              </nxd:restDocumentLink>
+            </h:panelGroup>
+          </f:facet>
+
+          <f:facet name="SectionRoot">
+            <h:panelGroup>
+              <!-- Navigation management -->
+              <a4j:commandLink immediate="true"
+                actionListener="#{t.setNodeSelected}"
+                action="#{t.toggleExpanded}" reRender="treeNav">
+                <t:graphicImage value="/img/toggle_minus.png"
+                  rendered="#{t.nodeExpanded}" />
+                <t:graphicImage value="/img/toggle_plus.png"
+                  rendered="#{!t.nodeExpanded}" />
+              </a4j:commandLink>
+
+              <!-- Opening document -->
+              <nxd:restDocumentLink document="#{node.doc}"
+              actionListener="#{t.setNodeSelected}" styleClass="treeLink">
+                 <nxu:graphicImage
+                  value="#{nxd:iconExpandedPath(node.doc)}" alt="#{node.doc.type}"
+                  rendered="#{t.nodeExpanded}"/>
+                <nxu:graphicImage
+                  value="#{nxd:iconPath(node.doc)}" alt="#{node.doc.type}"
+                  rendered="#{!t.nodeExpanded}"/>
+                <h:outputText value="#{nxd:titleOrId(node.doc)}" />
+        </nxd:restDocumentLink>
+            </h:panelGroup>
+          </f:facet>
+
+          <f:facet name="WorkspaceRoot">
+            <h:panelGroup>
+              <!-- Navigation management -->
+              <a4j:commandLink immediate="true"
+                actionListener="#{t.setNodeSelected}"
+                action="#{t.toggleExpanded}" reRender="treeNav">
+                <t:graphicImage value="/img/toggle_minus.png"
+                  rendered="#{t.nodeExpanded}" />
+                <t:graphicImage value="/img/toggle_plus.png"
+                  rendered="#{!t.nodeExpanded}" />
+              </a4j:commandLink>
+
+              <!-- Opening document -->
+              <nxd:restDocumentLink document="#{node.doc}"
+              actionListener="#{t.setNodeSelected}" styleClass="treeLink">
+                 <nxu:graphicImage
+                  value="#{nxd:iconExpandedPath(node.doc)}" alt="#{node.doc.type}"
+                  rendered="#{t.nodeExpanded}"/>
+                <nxu:graphicImage
+                  value="#{nxd:iconPath(node.doc)}" alt="#{node.doc.type}"
+                  rendered="#{!t.nodeExpanded}"/>
+                <h:outputText value="#{nxd:titleOrId(node.doc)}" />
+              </nxd:restDocumentLink>
+            </h:panelGroup>
+          </f:facet>
+
+          <f:facet name="Workspace">
+            <h:panelGroup>
+              <div id="#{node.nodeCellId}"><!-- Navigation management -->
+              <a4j:commandLink immediate="true"
+                actionListener="#{t.setNodeSelected}"
+                action="#{t.toggleExpanded}" reRender="treeNav">
+                <t:graphicImage value="/img/toggle_minus.png"
+                  rendered="#{t.nodeExpanded}" />
+                <t:graphicImage value="/img/toggle_plus.png"
+                  rendered="#{!t.nodeExpanded}" />
+              </a4j:commandLink>
+              <!-- opening document -->
+              <nxd:restDocumentLink document="#{node.doc}"
+              actionListener="#{t.setNodeSelected}" styleClass="treeLink">
+                 <nxu:graphicImage
+                  value="#{nxd:iconExpandedPath(node.doc)}" alt="#{node.doc.type}"
+                  rendered="#{t.nodeExpanded}"/>
+                <nxu:graphicImage
+                  value="#{nxd:iconPath(node.doc)}" alt="#{node.doc.type}"
+                  rendered="#{!t.nodeExpanded}"/>
+                <h:outputText value="#{nxd:titleOrId(node.doc)}" />
+              </nxd:restDocumentLink> <script type="text/javascript">
+                <h:outputText value="Droppables.add('#{node.nodeCellId}', {accept:'cell', onDrop:function(element){moveElement(element,'#{node.nodeCellId}')}, hoverclass:'dropInto'});"/>
+              </script></div>
+            </h:panelGroup>
+          </f:facet>
+
+          <f:facet name="Section">
+            <h:panelGroup>
+              <!-- Navigation management -->
+              <a4j:commandLink immediate="true"
+                actionListener="#{t.setNodeSelected}"
+                action="#{t.toggleExpanded}" reRender="treeNav">
+                <t:graphicImage value="/img/toggle_minus.png"
+                  rendered="#{t.nodeExpanded}" />
+                <t:graphicImage value="/img/toggle_plus.png"
+                  rendered="#{!t.nodeExpanded}" />
+              </a4j:commandLink>
+
+              <!-- opening document -->
+              <nxd:restDocumentLink document="#{node.doc}"
+              actionListener="#{t.setNodeSelected}" styleClass="treeLink">
+                 <nxu:graphicImage
+                  value="#{nxd:iconExpandedPath(node.doc)}" alt="#{node.doc.type}"
+                  rendered="#{t.nodeExpanded}"/>
+                <nxu:graphicImage
+                  value="#{nxd:iconPath(node.doc)}" alt="#{node.doc.type}"
+                  rendered="#{!t.nodeExpanded}"/>
+                <h:outputText value="#{nxd:titleOrId(node.doc)}" />
+       </nxd:restDocumentLink>
+            </h:panelGroup>
+          </f:facet>
+
+          <f:facet name="Document">
+            <h:panelGroup>
+              <div id="#{node.nodeCellId}"><a4j:commandLink
+                immediate="true" rendered="#{node.doc.folder}"
+                actionListener="#{t.setNodeSelected}"
+                action="#{t.toggleExpanded}" reRender="treeNav">
+                <t:graphicImage value="/img/toggle_minus.png"
+                  rendered="#{t.nodeExpanded}" />
+                <t:graphicImage value="/img/toggle_plus.png"
+                  rendered="#{!t.nodeExpanded}" />
+              </a4j:commandLink>
+             <nxd:restDocumentLink document="#{node.doc}"
+              actionListener="#{t.setNodeSelected}"
+                rendered="#{node.doc.folder}" styleClass="treeLink">
+                 <nxu:graphicImage
+                  value="#{nxd:iconExpandedPath(node.doc)}" alt="#{node.doc.type}"
+                  rendered="#{t.nodeExpanded}"/>
+                <nxu:graphicImage
+                  value="#{nxd:iconPath(node.doc)}" alt="#{node.doc.type}"
+                  rendered="#{!t.nodeExpanded}"/>
+                <h:outputText value="#{nxd:titleOrId(node.doc)}" />
+              </nxd:restDocumentLink> <script type="text/javascript">
+                <h:outputText rendered="#{node.doc.folder}"
+                  value="Droppables.add('#{node.nodeCellId}', {accept:'cell', onDrop:function(element){moveElement(element,'#{node.nodeCellId}')}, hoverclass:'dropInto'});"/>
+                </script> <t:graphicImage value="/img/transp.gif"
+                styleClass="iconImage" rendered="#{!node.doc.folder}" />
+               <nxd:restDocumentLink document="#{node.doc}"
+              actionListener="#{t.setNodeSelected}"
+                action="#{treeManager.selectNode}" styleClass="treeLink"
+                rendered="#{!node.doc.folder}">
+                <t:graphicImage value="#{node.doc.common.icon}"
+                  styleClass="iconImage" rendered="#{!node.doc.folder}" />
+                <h:outputText value="#{nxd:titleOrId(node.doc)}" />
+              </nxd:restDocumentLink></div>
+            </h:panelGroup>
+          </f:facet>
+        </nxu:lazyTree>
+      </h:panelGroup>
+    </h:form></dd>
+  </dl></a4j:region>
+</c:if></div>

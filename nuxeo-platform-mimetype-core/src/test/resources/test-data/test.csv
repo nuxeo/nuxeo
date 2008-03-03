@@ -1,0 +1,25 @@
+id,parent,label,obsolete
+pole_eco_gest,__NULL__,Le pôle de l'économie et de la gestion,0
+pole_art_huma,__NULL__,Le pôle des arts et des humanités,0
+art_huma_hist,pole_art_huma,Histoire - Géographie,0
+pole_lng_viv,__NULL__,Le pôle des langues vivantes,0
+pole_sci,__NULL__,Le pôle des sciences,0
+pole_tec_prof_ind,__NULL__,Le pôle technologique et professionnel  industriel,0
+pole_doc,__NULL__,Le pôle de la documentation,0
+lng_viv_allemand,pole_lng_viv,Allemand,0
+lng_viv_anglais,pole_lng_viv,Anglais,0
+lng_viv_arabe,pole_lng_viv,Arabe,0
+lng_viv_breton,pole_lng_viv,Breton,0
+lng_viv_chinois,pole_lng_viv,Chinois,0
+lng_viv_espagnol,pole_lng_viv,Espagnol,0
+lng_viv_fle,pole_lng_viv,Français langue étrangère,0
+lng_viv_gallo,pole_lng_viv,Gallo,0
+lng_viv_hindi,pole_lng_viv,Hindi,0
+lng_viv_italien,pole_lng_viv,Italien,0
+lng_viv_japonais,pole_lng_viv,Japonais,0
+lng_viv_portugais,pole_lng_viv,Portugais,0
+lng_viv_russe,pole_lng_viv,Russe,0
+lng_viv_turc,pole_lng_viv,Turc,0
+lng_viv_ang-all,pole_lng_viv,Bilangue Anglais/Allemand,0
+lng_viv_ang-esp,pole_lng_viv,Bilangue Anglais/Espagnol,0
+lng_viv_dnl,pole_lng_viv,DNL  Disciplines non linguistiques,0

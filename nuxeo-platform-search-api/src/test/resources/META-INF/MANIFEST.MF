@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Search API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.search.api.tests
+Bundle-Vendor: Nuxeo
+

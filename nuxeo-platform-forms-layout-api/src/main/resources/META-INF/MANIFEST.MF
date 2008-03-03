@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Forms Layout API Fragment
+Bundle-SymbolicName: org.nuxeo.ecm.platform.forms.layout.api;singleton:=true
+Bundle-Vendor: Nuxeo

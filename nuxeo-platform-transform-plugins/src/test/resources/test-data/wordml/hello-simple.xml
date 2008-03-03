@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?mso-application progid="Word.Document"?>
+<w:wordDocument 
+	xmlns:w="http://schemas.microsoft.com/office/word/2003/wordml" 
+	xmlns:o="urn:schemas-microsoft-com:office:office"
+	xmlns:dt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"
+	xml:space="preserve">
+	<o:CustomDocumentProperties>
+		<o:HAG dt:dt="string">9 9999 99 99999</o:HAG>
+		<o:Revision dt:dt="string">00.00</o:Revision>
+		<o:DateCreation dt:dt="dateTime.tz">2006-03-19T22:00:00Z</o:DateCreation>
+		<o:TitreDocument dt:dt="string">SPECIFICATION TECHNIQUE</o:TitreDocument>
+		<o:CreateurDocument dt:dt="string"> </o:CreateurDocument>
+	</o:CustomDocumentProperties>
+</w:wordDocument>

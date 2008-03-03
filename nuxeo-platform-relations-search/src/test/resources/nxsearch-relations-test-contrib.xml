@@ -1,0 +1,34 @@
+<component name="org.nuxeo.ecm.platform.relations.search.contri">
+
+  <extension target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="resourceType">
+    <resourceType name="relations"
+      factoryClass="org.nuxeo.ecm.platform.relations.search.resources.indexing.RelationIndexableResourceFactory"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="resource">
+    <resource name="comments" type="relations">
+      <field name="foo" type="Text" analyzer="anal" indexed="true"
+          sortable="true" />
+      <field name="severeDate" type="date"/>
+      <field name="cred" type="int"/>
+    </resource>
+
+    <resource name="myrelations" type="relations">
+    </resource>
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+    point="indexableDocType">
+    <indexableDocType indexAllSchemas="true" name="Commentable">
+      <resource>comments</resource>
+    </indexableDocType>
+    <indexableDocType name="Article">
+      <resource>myrelations</resource>
+    </indexableDocType>
+  </extension>
+
+
+</component>

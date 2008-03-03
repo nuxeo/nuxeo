@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM PlacefulService
+Bundle-SymbolicName: org.nuxeo.ecm.platform.placeful.core;singleton:=true
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/nxplacefulservice-framework.xml
+Export-Package: org.nuxeo.ecm.platform.ec.placeful, org.nuxeo.ecm.platform.ec.placeful.interfaces

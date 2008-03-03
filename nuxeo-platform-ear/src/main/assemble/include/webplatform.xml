@@ -1,0 +1,20 @@
+<assembly>
+
+  <fileSet id="nuxeo-template">
+    <directory>src/main/resources</directory>
+    <excludes>
+      <exclude>**/.svn</exclude>
+      <exclude>config/default-versioning-config.xml</exclude>
+    </excludes>
+  </fileSet>
+
+  <fileSet id="nuxeo-template-webplatform">
+    <directory>src/main/resources_webplatform</directory>
+    <includes>
+      <include>**</include>
+    </includes>
+    <excludes>
+      <exclude>**/.svn</exclude>
+    </excludes>
+  </fileSet>
+</assembly>

@@ -1,0 +1,83 @@
+<assembly>
+
+
+  <fileSet id="nuxeo-template">
+    <directory>src/main/resources</directory>
+    <includes>
+      <include>config</include>
+      <include>config/nuxeo.properties</include>
+      <include>config/login-config.xml</include>
+      <include>config/platform-config.xml</include>
+      <include>config/mbeans/core-events-client-service.xml</include>
+      <include>datasources</include>
+      <include>datasources/nxsearch-compass-ds.xml</include>
+      <include>META-INF/**</include>
+      <include>OSGI-INF/**</include>
+    </includes>
+    <excludes>
+      <exclude>**/.svn</exclude>
+      <exclude>lib-fragments.xml</exclude>
+      <exclude>config/default-versioning-config.xml</exclude>
+      <!-- <exclude>config/fileManagerService-config-bundle.xml</exclude> -->
+		</excludes>
+  </fileSet>
+
+  <fileSet id="nuxeo-template-search">
+    <directory>src/main/resources_search</directory>
+    <includes>
+      <include>**</include>
+    </includes>
+    <excludes>
+      <exclude>**/.svn</exclude>
+    </excludes>
+  </fileSet>
+
+
+  <artifactSet extends="nuxeo-core">
+    <includes>
+      <artifact name="nuxeo-core-api" />
+      <artifact name="nuxeo-core-schema" />
+      <artifact name="nuxeo-core-query" />
+    </includes>
+  </artifactSet>
+
+
+  <artifactSet extends="nuxeo-platform">
+    <includes>
+      <artifact name="nuxeo-platform-api" />
+      <artifact name="nuxeo-platform-search-*" />
+      <artifact name="nuxeo-platform-transform-*" />
+      <artifact name="nuxeo-platform-events-api" />
+      <artifact name="nuxeo-platform-mimetype-*" />
+      <artifact name="nuxeo-platform-usermanager-api" />
+      <artifact name="nuxeo-platform-versioning-api" />
+      <artifact name="nuxeo-platform-login" />
+      <artifact name="nuxeo-platform-relations-api" />
+      <artifact name="nuxeo-platform-audit-api" />
+      <artifact name="nuxeo-platform-relations-search" />
+      <artifact name="nuxeo-platform-audit-search" />
+      <artifact name="nuxeo-platform-url-api" />
+      <artifact name="nuxeo-platform-types-api" />
+    </includes>
+    <excludes>
+      <artifact name="nuxeo-platform-search-core-listener" />
+      <!-- remove facade for mime-types -->
+      <artifact name="nuxeo-platform-mimetype-facade" />
+    </excludes>
+  </artifactSet>
+
+
+  <artifactSet extends="nuxeo-platform-unpacked">
+    <includes>
+      <artifact name="nuxeo-platform-search-compass-plugin" />
+    </includes>
+  </artifactSet>
+
+
+  <artifactSet id="nuxeo-web" />
+
+  <artifactSet id="nuxeo-themes" />
+
+
+</assembly>
+

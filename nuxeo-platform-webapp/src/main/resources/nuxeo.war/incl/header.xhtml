@@ -1,0 +1,28 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     >
+  <div>
+    <ui:insert>
+      <img src="img/nuxeo5_ep_logo.gif" alt="Nuxeo 5" width="247" height="80" />
+    </ui:insert>
+  </div>
+  <div>
+    <div>
+      <ui:insert name="user">
+	    <h:form>
+		  <h:outputText value="#{currentUser.name}" />
+		  <br />
+		  <h:commandLink value="#{messages['command.logout']}" action="#{loginLogoutAction.logout}" />
+           <!--  &nbsp; -->
+          <h:commandLink action="home" value="#{message['command.goHome']}" />
+	    </h:form>
+      </ui:insert>
+    </div>
+    <div>
+      <ui:insert name="search">
+          !!! Search (icone+field+unfold) !!!
+      </ui:insert>
+    </div>
+  </div>
+  <div style="clear:both"></div>
+</div>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.platform.archive.web">
+
+  <documentation>
+
+      NXArchive action contributions.
+
+      @version 1.0
+      @author <a href="mailto:bt@nuxeo.com">Bogdan Tatar</a>
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
+
+    <documentation>
+
+      Contribute a new action related to document archive.
+
+    </documentation>
+
+    <action id="TAB_CONTENT_ARCHIVE" link="/incl/tabs/document_archive.xhtml"
+      enabled="true" label="action.view.archive" icon="/icons/file.gif"
+      order="120">
+      <category>VIEW_ACTION_LIST</category>
+      <filter-id>view_content_archive</filter-id>
+      <filter-id>mutable_document</filter-id>
+    </action>
+
+  </extension>
+
+   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="view_content_archive">
+        <rule grant="false">
+          <type>WorkspaceRoot</type>
+          <type>Workspace</type>
+          <type>SectionRoot</type>
+          <type>Section</type>
+          <type>Domain</type>
+          <type>Server</type>
+        </rule>
+      </filter>
+
+   </extension>
+
+</component>

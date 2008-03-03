@@ -1,0 +1,47 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:t="http://myfaces.apache.org/tomahawk"><!--  Versioning management -->
+
+
+<br />
+
+  <h:outputText
+    value="#{currentDocumentIncrementationRules}" rendered="#{not empty currentDocumentIncrementationRules}"/>
+
+  <h:panelGrid columns="2" styleClass="dataInput" rendered="#{renderVersioningOptionsForCurrentDocument}"
+    columnClasses="labelColumn, fieldColumn">
+
+    <h:outputLabel for="versioningOptionInstanceId" rendered="#{renderVersioningOptionsForCurrentDocument}"
+      value="#{messages['label.versioning.selectVersioningOption']}" />
+
+    <h:panelGroup class="dataInputGroup">
+
+      <h:selectOneRadio id="versioningOptionInstanceId"
+        value="#{documentVersioning.versioningOptionInstanceId}"
+        required="true" layout="pageDirection"
+        validator="#{documentVersioning.validateOptionSelection}"
+        requiredMessage="#{messages['error.versioning.none_selected']}" >
+        <f:selectItems
+          value="#{documentVersioning.availableVersioningOptionsMap}" />
+      </h:selectOneRadio>
+      <h:message for="versioningOptionInstanceId" styleClass="errorMessage" />
+    </h:panelGroup>
+
+    <h:outputText value="" />
+    <h:outputText value="" />
+
+    <h:selectBooleanCheckbox id="createSnapshot" 
+      label="#{messages['label.versioning.createSnapshot']}" 
+      value="#{documentVersioning.createSnapshot}"
+      rendered="#{documentVersioning.displayCreateSnapshotOption}">
+    </h:selectBooleanCheckbox>
+    <h:outputLabel for="createSnapshot" 
+      rendered="#{documentVersioning.displayCreateSnapshotOption}">#{messages['label.versioning.createSnapshot']}</h:outputLabel>
+    <br/>
+      
+  </h:panelGrid>
+
+</div>

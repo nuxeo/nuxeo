@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.rendering">
+
+  <documentation>
+    A Rendering service is managing rendering engines
+
+    @author Bogdan Stefanescu <a href="mailto:bs@nuxeo.com" />
+
+    <pre>
+    <extension
+    target="org.nuxeo.ecm.platform.rendering"
+    point="engines">
+
+    <engine format="xhtml" class="org.nuxeo.MyEngine"/>
+
+    </extension>
+    </pre>
+  </documentation>
+
+
+  <implementation
+    class="org.nuxeo.ecm.platform.rendering.impl.RenderingServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.rendering.RenderingService" />
+  </service>
+
+  <extension-point name="engines">
+    <object
+      class="org.nuxeo.ecm.platform.rendering.impl.RenderingEngineDescriptor" />
+  </extension-point>
+
+</component>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<process-diagram name="tasksprocess_parallel" width="585" height="839">
+  <node name="start" x="0" y="0" width="140" height="40">
+    <transition name="review">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="review" x="0" y="0" width="140" height="40">
+    <transition name="validate">
+      <label x="5" y="-10"/>
+    </transition>
+  </node>
+  <node name="validated" x="0" y="0" width="140" height="40"/>
+</process-diagram>

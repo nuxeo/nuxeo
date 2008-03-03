@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<ejb-jar version="3.0" xmlns="http://java.sun.com/xml/ns/javaee">
+
+  <assembly-descriptor>
+    <interceptor-binding>
+      <ejb-name>*</ejb-name>
+      <interceptor-class>org.jboss.seam.ejb.SeamInterceptor</interceptor-class>
+    </interceptor-binding>
+  </assembly-descriptor>
+
+</ejb-jar>

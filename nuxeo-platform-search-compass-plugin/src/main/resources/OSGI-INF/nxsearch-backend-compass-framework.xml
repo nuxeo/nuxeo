@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.search.backend.compass.CompassBackend"
+  version="1.0">
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.core.search.backend.compass.CompassBackend"/>
+  </service>
+
+  <documentation> Compass Search Engne Backend
+
+    @version 1.0
+    @author <a href="mailto:gr@nuxeo.com">Georges Racinet</a>
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.search.backend.compass.CompassBackend"/>
+
+  <extension-point name="connection">
+
+    <documentation> Extension point for database connection.
+    This overrides the connection information that's specified
+    in main Compass configuration file.
+
+    FileConnectionDescriptor: use the standard Lucene file system storage.
+    Attribute: path. If relative, this will be from NXRuntime's home.
+
+    DefaultConnectionDescriptor: clears all contribution to the present
+    extension point, ie get back to what's specified in main Compass XML
+    configuration file.
+    </documentation>
+
+    <object
+      class="org.nuxeo.ecm.core.search.backend.compass.connection.FileConnectionDescriptor"/>
+
+    <object
+      class="org.nuxeo.ecm.core.search.backend.compass.connection.DefaultConnectionDescriptor"/>
+
+  </extension-point>
+
+</component>

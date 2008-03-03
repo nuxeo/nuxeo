@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+
+<component name="com.nuxeo.ecm.platform.archive.directories">
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+    point="directories">
+
+    <!-- Archive record management directories -->
+
+    <directory name="conservation_state">
+      <schema>vocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <table>conservation_state</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/conservation_state.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="conservation_type">
+      <schema>vocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <table>conservation_type</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/conservation_type.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="conservation_location">
+      <schema>vocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <table>conservation_location</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/conservation_location.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="restore_state">
+      <schema>vocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <table>restore_state</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/restore_state.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="restore_type">
+      <schema>vocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <table>restore_type</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/restore_type.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="restore_location">
+      <schema>vocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <table>restore_location</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/restore_location.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="modification_state">
+      <schema>vocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <table>modification_state</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/modification_state.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="modification_type">
+      <schema>vocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <table>modification_type</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/modification_type.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="modification_location">
+      <schema>vocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <table>modification_location</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/modification_location.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+    <directory name="archive_format">
+      <schema>vocabulary</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <table>archive_format</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/archive_format.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+  </extension>
+
+</component>

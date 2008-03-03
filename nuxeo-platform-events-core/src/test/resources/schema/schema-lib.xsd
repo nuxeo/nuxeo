@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<xs:schema
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:nx="http://www.nuxeo.org/ecm/schema">
+
+	<xs:simpleType name="myStringFromLib">
+	  <xs:restriction base="xs:string">
+	    <xs:pattern value="[a-z]"/>
+	  </xs:restriction>
+	</xs:simpleType>
+
+
+
+
+</xs:schema>
+
+

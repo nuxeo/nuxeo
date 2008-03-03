@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.versioning.rules">
+  <documentation>
+    Default versioning rules contributed to versioning service. These rules are
+    designated for default provided document types (File, Note).
+
+    @version 1.0
+    @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+  </documentation>
+
+  <require>org.nuxeo.ecm.platform.versioning.service.VersioningService</require>
+
+  <!-- Default versioning rules -->
+  <extension
+    target="org.nuxeo.ecm.platform.versioning.service.VersioningService"
+    point="rules">
+
+    <!-- this rule seems obsolete (?) -->
+    <versioningRuleWF name="sampleWFRule" workflowStateInitial="assigned"
+      workflowStateFinal="inprogress" action="inc_minor">
+    </versioningRuleWF>
+
+    <!-- this rule seems obsolete (?) -->
+    <versioningRuleEdit name="sampleEditRuleReview" action="query_workflow"
+      lifecycleState="review">
+
+    </versioningRuleEdit>
+
+    <versioningRuleEdit name="sampleEditRuleProject" action="ask_user"
+      lifecycleState="project">
+      <option value="no_inc" default="true" />
+      <option value="inc_minor" />
+      <option value="inc_major" />
+    </versioningRuleEdit>
+
+    <!-- valid state -->
+    <versioningRuleEdit name="DocEditRule_if_in_valid_state" action="ask_user"
+      lifecycleState="approved">
+      <option value="inc_minor" lifecycleTransition="backToProject" />
+      <option value="inc_major" lifecycleTransition="backToProject"
+        default="true" />
+    </versioningRuleEdit>
+
+    <!-- obsolete state -->
+    <versioningRuleEdit name="DocEditRule_if_in_obsolete_state" action="ask_user"
+      lifecycleState="obsolete">
+      <option value="inc_minor" lifecycleTransition="backToProject" />
+      <option value="inc_major" lifecycleTransition="backToProject"
+        default="true" />
+    </versioningRuleEdit>
+
+    <versioningRuleEdit name="sampleEditRuleAnyState" action="ask_user"
+      lifecycleState="*">
+      <includeDocType>File</includeDocType>
+      <includeDocType>Note</includeDocType>
+      <option value="no_inc" default="true" />
+      <option value="inc_minor" />
+      <option value="inc_major" />
+    </versioningRuleEdit>
+
+    <versioningRuleAuto name="sampleAutoRule" action="inc_minor"
+      lifecycleState="*">
+    </versioningRuleAuto>
+
+  </extension>
+
+</component>

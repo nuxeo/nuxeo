@@ -1,0 +1,188 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+<ui:include src="/incl/document_actions.xhtml"/>
+
+<h:form id="domain_content">
+
+<!--  For each contentRoot(workspaces and sections for now) a table with it's contents will be displayed -->
+  <t:dataTable id="dataTable_workspaces" var="row"
+    rowClasses="dataRowEven,dataRowOdd"
+    rendered="${contentRootsActions.workspacesTableModel.data.rowCount != 0}"
+    value="#{contentRootsActions.workspacesTableModel.data}"
+    preserveSort="true"
+    preserveDataModel="false"
+    styleClass="dataOutput">
+    <t:columns id="columns"
+      value="#{contentRootsActions.workspacesTableModel.columnHeaders}"
+      styleClass="#{columnHeader.styleClass}"
+      var="columnHeader">
+
+      <f:facet name="header">
+        <h:panelGroup>
+
+          <h:selectBooleanCheckbox rendered="${columnHeader.id=='c0'}"
+            value="#{columnHeader.allSelected}">
+            <a4j:support event="onclick"
+              onsubmit="onSelectAllCheckboxClick('domain_content:dataTable_workspaces', 'contentRootsActions', this.checked)"
+              oncomplete="enableCheckBoxesIn('domain_content:dataTable_workspaces')"
+              reRender="clipboard_button_copy, clipboard_button_paste, content_button_delete">
+              <a4j:ajaxListener type="org.ajax4jsf.ajax.ForceRender" />
+            </a4j:support>
+          </h:selectBooleanCheckbox>
+
+          <t:commandSortHeader rendered="${columnHeader.id!='c0'}"
+            columnName="#{columnHeader.label}"
+            arrow="false"
+            actionListener="#{contentRootsActions.workspacesTableModel.doSort}"
+            immediate="false">
+            <f:param name="columnLabel" value="#{columnHeader.label}" />
+            <f:facet name="ascending">
+              <t:graphicImage value="/icons/arrow_up.gif" rendered="true" border="0"/>
+            </f:facet>
+            <f:facet name="descending">
+              <t:graphicImage value="/icons/arrow_down.gif" rendered="true" border="0"/>
+            </f:facet>
+            <h:outputText rendered="${columnHeader.id!='c0'}"
+              value="#{messages[columnHeader.label]}" />
+           </t:commandSortHeader>
+
+        </h:panelGroup>
+      </f:facet>
+
+      <div id="#{contentRootsActions.workspacesTableModel.currentCell.cellId}" class="cell">
+
+        <!--  Selection checkbox -->
+        <h:selectBooleanCheckbox rendered="${columnHeader.id=='c0'}"
+          value="#{contentRootsActions.workspacesTableModel.currentCellDisplayedValue}">
+
+          <a4j:support event="onclick"
+            onsubmit="disableCheckBoxesIn('domain_content:dataTable_workspaces')"
+            oncomplete="enableCheckBoxesIn('domain_content:dataTable_workspaces')"
+            reRender="row, clipboard_button_copy, clipboard_button_paste, content_button_delete"
+            actionListener="#{contentRootsActions.workspacesTableModel.process}">
+            <a4j:ajaxListener type="org.ajax4jsf.ajax.ForceRender" />
+          </a4j:support>
+        </h:selectBooleanCheckbox>
+
+        <!--  Icon + Type -->
+        <t:graphicImage rendered="${columnHeader.id=='c1'}"
+          value="#{contentRootsActions.workspacesTableModel.currentCellDisplayedValue}"/>
+        <h:outputText rendered="${columnHeader.id=='c1'}"
+          value="#{messages[contentRootsActions.workspacesTableModel.currentCell.iconText]}">
+        </h:outputText>
+
+        <!--  Title -->
+        <h:commandLink rendered="${columnHeader.id=='c2'}"
+          value="#{contentRootsActions.workspacesTableModel.currentCellDisplayedValue}"
+          actionListener="#{contentRootsActions.workspacesTableModel.process}"
+          action="#{contentRootsActions.selectWorkspace}">
+        </h:commandLink>
+
+        <!--  Modification date -->
+        <h:outputText rendered="${columnHeader.id=='c4'}"
+          value="#{contentRootsActions.workspacesTableModel.currentCellDisplayedValue}" />
+
+        <!--  Author -->
+        <h:outputText rendered="${columnHeader.id=='c5'}"
+          value="#{contentRootsActions.workspacesTableModel.currentCellDisplayedValue}" />
+      </div>
+
+    </t:columns>
+  </t:dataTable>
+
+  <t:dataTable id="dataTable_sections" var="row"
+    rowClasses="dataRowEven,dataRowOdd"
+    rendered="${contentRootsActions.sectionsTableModel.data.rowCount != 0}"
+    value="#{contentRootsActions.sectionsTableModel.data}"
+    preserveSort="true"
+    preserveDataModel="false"
+    styleClass="dataOutput">
+    <t:columns id="columns"
+      value="#{contentRootsActions.sectionsTableModel.columnHeaders}"
+      styleClass="#{columnHeader.styleClass}"
+      var="columnHeader">
+
+      <f:facet name="header">
+        <h:panelGroup>
+
+          <h:selectBooleanCheckbox rendered="${columnHeader.id=='c0'}"
+            value="#{columnHeader.allSelected}">
+            <a4j:support event="onclick"
+              onsubmit="onSelectAllCheckboxClick('domain_content:dataTable_sections', 'contentRootsActions', this.checked)"
+              oncomplete="enableCheckBoxesIn('domain_content:dataTable_sections')"
+              reRender="clipboard_button_copy, clipboard_button_paste, content_button_delete">
+              <a4j:ajaxListener type="org.ajax4jsf.ajax.ForceRender" />
+            </a4j:support>
+          </h:selectBooleanCheckbox>
+
+          <t:commandSortHeader rendered="${columnHeader.id!='c0'}"
+            columnName="#{columnHeader.label}"
+            arrow="false"
+            actionListener="#{contentRootsActions.sectionsTableModel.doSort}"
+            immediate="false">
+            <f:param name="columnLabel" value="#{columnHeader.label}" />
+            <f:facet name="ascending">
+              <t:graphicImage value="/icons/arrow_up.gif" rendered="true" border="0"/>
+            </f:facet>
+            <f:facet name="descending">
+              <t:graphicImage value="/icons/arrow_down.gif" rendered="true" border="0"/>
+            </f:facet>
+            <h:outputText rendered="${columnHeader.id!='c0'}"
+              value="#{messages[columnHeader.label]}" />
+           </t:commandSortHeader>
+
+        </h:panelGroup>
+      </f:facet>
+
+      <div id="#{contentRootsActions.sectionsTableModel.currentCell.cellId}" class="cell">
+
+        <!--  Selection checkbox -->
+        <h:selectBooleanCheckbox rendered="${columnHeader.id=='c0'}"
+          value="#{contentRootsActions.sectionsTableModel.currentCellDisplayedValue}">
+
+          <a4j:support event="onclick"
+            onsubmit="disableCheckBoxesIn('domain_content:dataTable_sections')"
+            oncomplete="enableCheckBoxesIn('domain_content:dataTable_sections')"
+            reRender="row, clipboard_button_copy, clipboard_button_paste, content_button_delete"
+            actionListener="#{contentRootsActions.sectionsTableModel.process}">
+            <a4j:ajaxListener type="org.ajax4jsf.ajax.ForceRender" />
+          </a4j:support>
+        </h:selectBooleanCheckbox>
+
+        <!--  Icon + Type -->
+        <t:graphicImage rendered="${columnHeader.id=='c1'}"
+          value="#{contentRootsActions.sectionsTableModel.currentCellDisplayedValue}"/>
+        <h:outputText rendered="${columnHeader.id=='c1'}"
+          value="#{messages[contentRootsActions.sectionsTableModel.currentCell.iconText]}">
+        </h:outputText>
+
+        <!--  Title -->
+        <h:commandLink rendered="${columnHeader.id=='c2'}"
+          value="#{contentRootsActions.sectionsTableModel.currentCellDisplayedValue}"
+          actionListener="#{contentRootsActions.sectionsTableModel.process}"
+          action="#{contentRootsActions.selectSection}">
+        </h:commandLink>
+
+        <!--  Modification date -->
+        <h:outputText rendered="${columnHeader.id=='c4'}"
+          value="#{contentRootsActions.sectionsTableModel.currentCellDisplayedValue}" />
+
+        <!--  Author -->
+        <h:outputText rendered="${columnHeader.id=='c5'}"
+          value="#{contentRootsActions.sectionsTableModel.currentCellDisplayedValue}" />
+      </div>
+
+    </t:columns>
+  </t:dataTable>
+
+  <ui:include src="/incl/clipboard.xhtml" />
+
+</h:form>
+
+</div>

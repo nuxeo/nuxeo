@@ -1,0 +1,30 @@
+<m:message xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:m="http://jboss.com/products/seam/mail"
+           xmlns:f="http://java.sun.com/jsf/core"
+           xmlns:ui="http://java.sun.com/jsf/facelets"
+           xmlns:h="http://java.sun.com/jsf/html">
+
+  <m:from name="#{facesContext.externalContext.userPrincipal.firstName} #{facesContext.externalContext.userPrincipal.lastName}"
+          address="#{emailSenderAction.fromEmail}" />
+
+  <ui:repeat value="#{emailSenderAction.toEmail}" var="user">
+    <m:to name="#{user.firstName} #{user.lastName}">#{user.model['user']['email']}</m:to>
+  </ui:repeat>
+  <m:subject><h:outputText value="#{emailSenderAction.mailSubject}"/></m:subject>
+  <m:body>
+    <p><h:outputText value="#{emailSenderAction.mailContent}" escape="false"/></p>
+    <h:outputText value="#{messages['label.mail.before.document.link']}"/>
+    <f:verbatim>&amp;nbsp;</f:verbatim>
+
+    <h:outputLink value="#{emailSenderAction.currentDocumentFullUrl}" rendered="#{currentDocument!=null}">
+      <h:outputText value="#{messages['label.mail.document.link']}"/>
+    </h:outputLink>
+    <f:verbatim>&amp;nbsp;</f:verbatim>
+    <h:outputText value="#{messages['label.mail.after.document.link']}"/>
+
+<!--<f:facet name="alternative">
+      <h:outputText>Sorry, your mail reader doesn't support html.</h:outputText>
+    </f:facet>
+-->
+  </m:body>
+</m:message>

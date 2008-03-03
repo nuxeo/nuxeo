@@ -1,0 +1,108 @@
+<assembly>
+
+  <fileSet id="nuxeo-template">
+    <directory>src/main/resources</directory>
+    <excludes>
+      <exclude>datasources/**</exclude>
+      <exclude>**/.svn</exclude>
+      <exclude>lib-fragments.xml</exclude>
+      <exclude>config/commentService-config-bundle.xml</exclude>
+      <exclude>config/default-repository-config.xml</exclude>
+      <exclude>config/default-sql-directories-bundle.xml</exclude>
+      <exclude>config/default-versioning-directories-bunde.xml</exclude>
+      <exclude>config/default-versioning-config.xml</exclude>
+      <exclude>config/nxrelations-default-jena-bundle.xml</exclude>
+      <exclude>config/sql.properties</exclude>
+      <exclude>config/notification-config.xml</exclude>
+      <exclude>config/fileManagerService-config-bundle.xml</exclude>
+		</excludes>
+  </fileSet>
+
+  <fileSet id="nuxeo-template-web-stateless">
+    <directory>src/main/resources_web-stateless</directory>
+    <includes>
+      <include>**</include>
+    </includes>
+    <excludes>
+      <exclude>**/.svn</exclude>
+    </excludes>
+  </fileSet>
+
+  <artifactSet extends="nuxeo-core">
+    <excludes>
+      <artifact name="nuxeo-core-facade" />
+      <artifact name="nuxeo-core-jca" />
+      <artifact name="nuxeo-core-jcr-connector" />
+    </excludes>
+  </artifactSet>
+
+  <artifactSet extends="nuxeo-platform">
+    <includes>
+      <artifact group="org.nuxeo.ecm.platform" />
+      <artifact name="nuxeo-platform-remote-autoconf" />
+    </includes>
+    <excludes>
+      <artifact name="nuxeo-platform-audit-search"/>
+      <artifact name="nuxeo-platform-audit-core"/>
+      <artifact name="nuxeo-platform-audit-io"/>
+      <artifact name="nuxeo-platform-dublincore" />
+      <artifact name="nuxeo-platform-cache-server" />
+      <artifact name="nuxeo-platform-comment" />
+      <artifact name="nuxeo-platform-comment-core" />
+      <artifact name="nuxeo-platform-content-template-manager" />
+      <artifact name="nuxeo-platform-default-config" />
+      <artifact name="nuxeo-platform-directory-core" />
+      <artifact name="nuxeo-platform-directory-facade" />
+      <artifact name="nuxeo-platform-directory-ldap" />
+      <artifact name="nuxeo-platform-directory-multi" />
+      <artifact name="nuxeo-platform-directory-sql" />
+      <artifact name="nuxeo-platform-directory-types-contrib" />
+      <artifact name="nuxeo-platform-domsync-core" />
+      <artifact name="nuxeo-platform-events-core" />
+      <artifact name="nuxeo-platform-events-facade" />
+      <artifact name="nuxeo-platform-forum-core" />
+      <artifact name="nuxeo-platform-filemanager-core" />
+      <artifact name="nuxeo-platform-filemanager-facade" />
+      <artifact name="nuxeo-platform-io-core" />
+      <artifact name="nuxeo-platform-io-facade" />
+      <artifact name="nuxeo-platform-modifier" />
+      <artifact name="nuxeo-platform-notification-core" />
+      <artifact name="nuxeo-platform-notification-facade" />
+      <artifact name="nuxeo-platform-placeful-core" />
+      <artifact name="nuxeo-platform-placeful-facade" />
+      <artifact name="nuxeo-platform-publishing" />
+      <artifact name="nuxeo-platform-publishing-facade" />
+      <artifact name="nuxeo-platform-relations-default-config" />
+      <artifact name="nuxeo-platform-relations-search"/>
+      <artifact name="nuxeo-platform-relations-core"/>
+      <artifact name="nuxeo-platform-relations-facade"/>
+      <artifact name="nuxeo-platform-relations-io"/>
+      <artifact name="nuxeo-platform-relations-jena-plugin"/>
+      <artifact name="nuxeo-platform-scheduler-core" />
+      <artifact name="nuxeo-platform-search-*" file="!*search-api*"/>
+      <artifact name="nuxeo-platform-uidgen-core" />
+      <artifact name="nuxeo-platform-userdata" />
+      <artifact name="nuxeo-platform-userdata-core-contrib" />
+      <artifact name="nuxeo-platform-usermanager-core" />
+      <artifact name="nuxeo-platform-usermanager-facade" />
+      <artifact name="nuxeo-platform-versioning-core" />
+      <artifact name="nuxeo-platform-webapp-types" />
+      <artifact name="nuxeo-platform-workflow-core" />
+      <artifact name="nuxeo-platform-workflow-document" />
+      <artifact name="nuxeo-platform-workflow-document-facade" />
+      <artifact name="nuxeo-platform-workflow-facade" />
+      <artifact name="nuxeo-platform-workflow-jbpm" />
+      <artifact name="nuxeo-platform-workflow-jbpm-document-handlers" />
+
+      <artifact name="nuxeo-platform-archive-*" />
+      <!--
+      <artifact name="nuxeo-platform-imaging-transform" />
+      <artifact name="nuxeo-platform-mimetype-facade"/>
+      <artifact name="nuxeo-platform-url-facade" />
+       -->
+    </excludes>
+  </artifactSet>
+
+  <artifactSet id="nuxeo-platform-unpacked" />
+
+</assembly>

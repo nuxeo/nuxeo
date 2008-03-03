@@ -1,0 +1,26 @@
+<persistence>
+<!--
+   <persistence-unit name="nxplacefulservice" transaction-type="RESOURCE_LOCAL">
+     <jta-data-source>java:/nxplacefulservice</jta-data-source>
+     <provider>org.hibernate.ejb.HibernatePersistence</provider>
+     <properties>
+       <property name="hibernate.connection.url" value="jdbc:derby://localhost:1527/myDB;create=true;user=me;password=mine"/>
+       <property name="hibernate.max_fetch_depth" value="3"/>
+       <property name="hibernate.hbm2ddl.auto" value="update"/>
+       <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/>
+       <property name="hibernate.connection.driver_class" value="org.apache.derby.jdbc.ClientDriver"/>
+       <property name="hibernate.connection.password" value="mine"/>
+       <property name="hibernate.connection.username" value="me"/>
+     </properties>
+   </persistence-unit>
+
+   <persistence-unit name="nxplacefulservice">
+    <jta-data-source>java:/DefaultDS</jta-data-source>
+
+    <properties>
+      <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+      <property name="jboss.entity.manager.jndi.name" value="java:/nxplacefulservice2"/>
+    </properties>
+  </persistence-unit>
+-->
+</persistence>

@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.nuxeo.ecm.platform.relations.search
+Bundle-SymbolicName: org.nuxeo.ecm.platform.relations.search
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Export-Package: org.nuxeo.ecm.platform.relations.search
+Require-Bundle: org.nuxeo.ecm.relations.api,
+  org.nuxeo.ecm.platform.search.api
+Nuxeo-Component: OSGI-INF/nxsearch-contrib.xml

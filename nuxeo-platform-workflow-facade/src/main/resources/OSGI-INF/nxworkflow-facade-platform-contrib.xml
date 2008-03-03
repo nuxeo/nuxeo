@@ -1,0 +1,31 @@
+<component name="org.nuxeo.ecm.platform.workflow.facade.services"
+	version="1.0">
+
+	<documentation>
+		Expose the workflow facade services as a Nuxeo platform
+		services.
+
+		@version 1.0 @author
+		<a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+	</documentation>
+
+	<extension target="org.nuxeo.runtime.api.ServiceManagement"
+		point="services">
+
+		<documentation>
+			Expose the workflow facade services as a Nuxeo platform
+			services.
+		</documentation>
+
+		<server name="default">
+
+			<service
+				class="org.nuxeo.ecm.platform.workflow.api.client.wfmc.WAPI"
+				group="platform">
+				<locator>%WAPIBean</locator>
+			</service>
+
+		</server>
+
+	</extension>
+</component>

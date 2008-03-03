@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Archive Web Fragment
+Bundle-SymbolicName: org.nuxeo.ecm.platform.archive.web;singleton:=true
+Require-Bundle: org.nuxeo.ecm.actions,
+ org.nuxeo.ecm.platform.archive.ejb,
+ org.nuxeo.ecm.webapp.core
+Provide-Package: org.nuxeo.ecm.platform.archive.web.listener,
+ org.nuxeo.ecm.platform.archive.web.listener.ejb,
+ org.nuxeo.ecm.platform.archive.web.listener.events
+Nuxeo-Component: OSGI-INF/actions-contrib.xml
+Nuxeo-RequiredBy: org.nuxeo.ecm.war

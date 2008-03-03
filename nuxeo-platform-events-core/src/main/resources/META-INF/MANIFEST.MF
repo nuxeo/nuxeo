@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NXEvents
+Bundle-SymbolicName: org.nuxeo.ecm.platform.events
+Bundle-Localization: plugin
+Export-Package: org.nuxeo.ecm.platform.events,
+ org.nuxeo.ecm.platform.events.jms,
+ org.nuxeo.ecm.platform.events.listener,
+ org.nuxeo.ecm.platform.events.service
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.platform.events.api,
+ org.nuxeo.ecm.core.api
+Nuxeo-Component: OSGI-INF/nxevents-jms-service.xml,
+ OSGI-INF/events-contextdatacleaner-contrib.xml

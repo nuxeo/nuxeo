@@ -1,0 +1,25 @@
+<persistence>
+  <persistence-unit name="NXWorkflowDocument"
+    transaction-type="RESOURCE_LOCAL">
+    <class>org.nuxeo.ecm.platform.workflow.document.ejb.DocumentRefEntry</class>
+    <class>
+      org.nuxeo.ecm.platform.workflow.document.ejb.WorkflowInstanceRefEntry
+    </class>
+    <class>
+      org.nuxeo.ecm.platform.workflow.document.api.workitem.WorkItemsListEntry
+    </class>
+    <properties>
+      <!-- jdbc connection properties -->
+      <property name="hibernate.dialect">
+        org.hibernate.dialect.HSQLDialect
+      </property>
+      <property name="hibernate.connection.driver_class">
+        org.hsqldb.jdbcDriver
+      </property>
+      <property name="hibernate.connection.url">jdbc:hsqldb:mem:.</property>
+      <property name="hibernate.connection.username">sa</property>
+      <property name="hibernate.connection.password"></property>
+      <property name="hibernate.hbm2ddl.auto">create</property>
+    </properties>
+  </persistence-unit>
+</persistence>

@@ -1,0 +1,12 @@
+attributetype ( 1.3.6.1.4.1.4203.666.1.90
+      NAME 'mydate'
+      EQUALITY generalizedTimeMatch
+      ORDERING generalizedTimeOrderingMatch
+      SYNTAX 1.3.6.1.4.1.1466.115.121.1.24 )
+
+objectClass ( 1.3.6.1.4.1.4203.666.1.100
+      NAME 'testDatePerson'
+      DESC 'test Date Person'
+      SUP inetOrgPerson
+      STRUCTURAL
+      MAY ( mydate ) )

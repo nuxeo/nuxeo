@@ -1,0 +1,9 @@
+<assembly>
+
+  <include>include/commands.xml</include>
+  <include>include/commands-web-stateless.xml</include>
+  <include>include/nuxeo-all.xml</include>
+  <include>include/web-stateless.xml</include>
+
+</assembly>
+

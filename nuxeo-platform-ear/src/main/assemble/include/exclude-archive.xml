@@ -1,0 +1,15 @@
+<assembly>
+
+<!--
+To be used over a nuxeo assembly to excludes the search engine.
+Only the API is preserved
+-->
+
+<artifactSet extends="**">
+  <excludes>
+    <artifact name="nuxeo-platform-archive*" />
+  </excludes>
+</artifactSet>
+
+</assembly>
+
