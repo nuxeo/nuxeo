@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.facade.CoreServiceBindings" version="1.0">
+  <documentation>
+    The default core service bindings
+
+    @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+  </documentation>
+
+  <extension target="org.nuxeo.runtime.api.ServiceManagement" point="services">
+
+  <service class="org.nuxeo.ecm.core.api.repository.RepositoryManager" group="core">
+    <locator>%RepositoryManagerBean</locator>
+  </service>
+
+  <service class="org.nuxeo.ecm.core.api.security.PermissionProvider" group="core">
+    <locator>%PermissionProviderBean</locator>
+  </service>
+
+  <!--
+  The type provider service should be used only from remote
+  So we won't declare the binding here
+  -->
+  <!--service class="org.nuxeo.ecm.core.schema.TypeProvider" group="core"/>
+    <locator>%TypeProviderBean</locator>
+  </service-->
+
+  </extension>
+
+
+</component>

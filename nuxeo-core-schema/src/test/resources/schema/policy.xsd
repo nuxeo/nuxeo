@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://policy.policymatter.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:pm="http://policy.policymatter.com" elementFormDefault="qualified" attributeFormDefault="qualified">
+  <xsd:element name="STATEMENT" type="xsd:string" />
+  <xsd:element name="SUMMARY" type="xsd:string" />
+  <xsd:element name="TEXT" type="xsd:string" />
+  <xsd:simpleType name="version">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="(\d+).(\d+).(\d+)"></xsd:pattern>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:element name="ALT-ANSWER" type="xsd:string" />
+  <xsd:element name="CORRECT-ANSWER" type="xsd:string" />
+  <xsd:element name="QUESTION">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="pm:TEXT" minOccurs="1" maxOccurs="1" />
+        <xsd:element ref="pm:CORRECT-ANSWER" minOccurs="1" maxOccurs="1" />
+        <xsd:element maxOccurs="unbounded" minOccurs="1" ref="pm:ALT-ANSWER" />
+
+        <xsd:element name="EXPLANATION" type="xsd:string" minOccurs="0" maxOccurs="1"></xsd:element><xsd:element name='EXPLANATION' type="xsd:string" minOccurs='0' maxOccurs='1'></xsd:element></xsd:sequence>
+    </xsd:complexType>
+    <xsd:unique name="unique_answer">
+      <xsd:selector xpath="ALT-ANSWER"></xsd:selector>
+      <xsd:field xpath=".//ALT-ANSWER"></xsd:field>
+    </xsd:unique>
+  </xsd:element>
+  <xsd:element name="RULE">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="pm:SUMMARY" minOccurs="0" maxOccurs="1">
+          <xsd:annotation>
+            <xsd:documentation>The summary is now deprecated</xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element ref="pm:STATEMENT" />
+        <xsd:element maxOccurs="unbounded" minOccurs="0" ref="pm:QUESTION" />
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:string" use="required" />
+    </xsd:complexType>
+    <xsd:unique name="unique_question">
+      <xsd:selector xpath="QUESTION"></xsd:selector>
+      <xsd:field xpath="TEXT"></xsd:field>
+    </xsd:unique>
+  </xsd:element>
+  <xsd:element name="RULE-GROUP">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="unbounded" minOccurs="0" ref="pm:RULE" />
+        <xsd:element ref="pm:RULE-GROUP" minOccurs="0" maxOccurs="unbounded"></xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:string" use="required" />
+      <xsd:attribute name="description" type="xsd:string" use="optional"></xsd:attribute>
+    </xsd:complexType>
+    <xsd:unique name="unique_rule_name">
+      <xsd:selector xpath="RULE"></xsd:selector>
+      <xsd:field xpath="@name"></xsd:field>
+    </xsd:unique>
+  </xsd:element>
+  <xsd:element name="RULE-POOL">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+                <xsd:element ref="pm:RULE" minOccurs="0" maxOccurs="unbounded"></xsd:element>
+                <xsd:element maxOccurs="unbounded" minOccurs="0" ref="pm:RULE-GROUP"/>
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:string" use="required" />
+      <xsd:attribute name="version" type="pm:version" use="required" />
+    </xsd:complexType>
+    <xsd:unique name="unique_rule_group">
+      <xsd:selector xpath="RULE-GROUP"></xsd:selector>
+      <xsd:field xpath="@name"></xsd:field>
+    </xsd:unique>
+  </xsd:element>
+</xsd:schema>

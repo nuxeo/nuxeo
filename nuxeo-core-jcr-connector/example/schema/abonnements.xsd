@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://project.nuxeo.com/geide/schemas/abonnements/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:geide="http://project.nuxeo.com/geide/schemas/abonnements/">
+
+  <xs:complexType name="abonnement">
+    <xs:sequence>
+      <xs:element name="abonne" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" />
+      <xs:element name="support_diffusion" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" />
+      <xs:element name="date_diffusion" type="xs:date" minOccurs="0"
+        maxOccurs="unbounded" />
+      <xs:element name="nombre_exemplaires" type="xs:positiveInteger"
+        minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="localisation" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  	<xs:complexType name="abonnements">
+	  <xs:sequence>
+	    <xs:element name="item" type="geide:abonnement" minOccurs="0" maxOccurs="unbounded"/>
+	  </xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="stringList">
+	  	<xs:list itemType="xs:string"/>
+	</xs:simpleType>
+
+
+	<xs:element name="abonnement" type="geide:abonnement" />
+  	<xs:element name="abonnements" type="geide:abonnements" />
+
+	<xs:element name="authors" type="geide:stringList" />
+
+</xs:schema>
+
+

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.api.repository.impl.DocumentProviderManager" version="1.0">
+  <documentation>
+  Document cache service
+  @author Max Stepanov
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.api.repository.impl.DocumentProviderManager"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.api.repository.DocumentProvider" />
+  </service>
+
+</component>
+

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.listener.CoreEventListenerService">
+
+	<require>org.nuxeo.ecm.core.repository.RepositoryService</require>
+
+	<implementation class="org.nuxeo.ecm.core.listener.impl.CoreEventListenerServiceImpl"/>
+
+	<extension-point name="listener">
+		<object class="org.nuxeo.ecm.core.listener.extensions.CoreEventListenerDescriptor"/>
+	</extension-point>
+
+</component>

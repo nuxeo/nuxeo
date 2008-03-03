@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.repository.jcr.lifecycle.JCRLifeCycleManager">
+
+   <documentation>
+      JCR life cycle manager.
+
+      <p/>
+
+      This is the default Nuxeo core life cycle manager.
+
+      @version 1.0
+      @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+    </documentation>
+
+    <require>org.nuxeo.ecm.core.lifecycle.LifeCycleService</require>
+
+    <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+               point="lifecyclemanager">
+
+      <documentation>
+      JCR life cycle manager contribution.
+
+      <p/>
+
+      It stores the life cycle properties inside the JCR along with the document.
+
+    </documentation>
+
+      <lifecyclemanager name="jcrlifecyclemanager"
+                        class="org.nuxeo.ecm.core.repository.jcr.JCRLifeCycleManager"
+                        />
+    </extension>
+
+</component>

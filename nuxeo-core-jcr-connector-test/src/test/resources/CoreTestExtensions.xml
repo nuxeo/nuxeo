@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.test">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="test-lib" src="schema/test-lib.xsd" />
+    <schema name="book"  prefix="book" src="schema/book.xsd" />
+    <schema name="MySchema" prefix="my" src="schema/MySchema.xsd" />
+    <schema name="testList" src="schema/testList.xsd" prefix="testlist" />
+    <schema name="light-dublincore" src="schema/light-dublincore.xsd" />
+    <!-- test sharing namespace between schemas -->
+    <schema name="test-ns1" src="schema/ns1.xsd" prefix="ns"/>
+    <schema name="test-ns2" src="schema/ns2.xsd" prefix="ns"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="Book" extends="Folder">
+      <schema name="common" />
+      <schema name="light-dublincore" />
+      <schema name="book" />
+    </doctype>
+    <doctype name="MyDocType" extends="Document">
+      <schema name="common" />
+      <schema name="light-dublincore" />
+      <schema name="MySchema"/>
+      <schema name="testList" />
+    </doctype>
+    <doctype name="SharedNS">
+      <schema name="test-ns1" />
+      <schema name="test-ns2" />
+    </doctype>
+
+  </extension>
+
+</component>

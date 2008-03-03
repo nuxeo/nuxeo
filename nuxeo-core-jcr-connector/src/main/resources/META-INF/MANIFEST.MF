@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo JCR Connector
+Bundle-SymbolicName: org.nuxeo.ecm.core.jcr
+Bundle-Vendor: Nuxeo
+Fragment-Host: org.nuxeo.ecm.core;bundle-version="1.0.0"
+Bundle-Localization: bundle
+Bundle-ClassPath: .
+Export-Package: org.nuxeo.ecm.core.jcr,
+ org.nuxeo.ecm.core.jcr.api,
+ org.nuxeo.ecm.core.jcr.lifecycle,
+ org.nuxeo.ecm.core.jcr.model,
+ org.nuxeo.ecm.core.jcr.properties,
+ org.nuxeo.ecm.core.jcr.schema,
+ org.nuxeo.ecm.core.jcr.search,
+ org.nuxeo.ecm.core.jcr.testing,
+ org.nuxeo.ecm.core.jcr.versioning,
+ org.nuxeo.ecm.core.permissions,
+ org.apache.jackrabbit.core.persistence.bundle
+Nuxeo-Component: OSGI-INF/JCRLifeCycleManager.xml
+Require-Bundle: org.nuxeo.ecm.core

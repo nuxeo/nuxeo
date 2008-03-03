@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.api.CoreService" version="1.0">
+  <documentation>
+  The core service provides a way to register session factories.
+  Session factories are used by clients to open sessions on core repositories.
+  Each type of client may implement its factory.
+ 
+  For now there are 2 type of sessions:
+  - local sessions
+  - remote sessions (based on EJB remote interfaces)
+
+  @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.api.CoreService"/>
+
+  <extension-point name="sessionFactory">
+    <documentation>
+    Used to register new session factories. Contributions for this extension
+    point are of the form:
+    <factory class="..."/>
+    </documentation>
+  </extension-point>
+
+</component>

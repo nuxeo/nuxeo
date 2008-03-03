@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.api.repository.RepositoryManager" version="1.0.0">
+  <documentation>
+    Manage repositories. TODO: This should be merged with the repository service component
+    from core module
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.api.repository.RepositoryManagerImpl"/>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.core.api.repository.RepositoryManager"/>
+  </service>
+
+  <extension-point name="repositories">
+
+    <documentation>
+      Extension points for registering new repositories.
+      <p/>
+      Be aware that this extension point is not declaring repository backends but only
+      a client descriptor for repositories already registered in the system using
+      org.nuxeo.ecm.core.repository.RepositoryService#repository extension point
+      <p/>
+      In a future these 2 extension points may be merged.
+      <p/>
+      A repository is defined by an unique name (in the application) an optional label
+      and 0 or more properties that are dependent on the repository implementation
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.api.repository.Repository"/>
+
+  </extension-point>
+
+</component>

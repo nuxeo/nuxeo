@@ -1,0 +1,59 @@
+Access Control Architecture
+===========================
+
+Overview of the JSR-283 architecture
+------------------------------------
+
+JSR-283 (JCR 2) defines ACLs (Access Control Lists) and ACEs (Access
+Control Entries). An ACL is an ordered list of ACEs. An individual ACE
+describes a basic grant or deny, and is basically::
+
+  GRANT|DENY principal priviledges
+
+`principalid` is the id of a principal, there are special ones like
+`jcr:authenticated`, `jcr:unauthenticated`, `jcr:owner` and `jcr:all`. A
+principal can also be "inverted", which means that all principals except
+the ones specified
+
+`priviledges` is a list of priviledges, which represent basic
+permissions, for instance:
+
+  - `jcr:read`
+
+  - `jcr:writeProperties`
+
+  - `jcr:addChildNode`
+
+  - `jcr:removeChildNode`
+
+  - `jcr:write` (aggregate of `jcr:writeProperties`, `jcr:addChildNode`
+    and `jcr:removeChildNode`)
+
+  - `jcr:all` (aggregate of all priviledges)
+
+The ACLs are tied to JCR nodes using an Accesss Control Policy (ACP),
+which is a special property. An ACP specifies how the relevant ACL is
+found:
+
+  - as a special `jcr:acl` child of the ACP (equivalent to Zope 2 local
+    roles),
+
+  - as a JCR reference to an ACL somewhere else in the system,
+
+  - by inheriting the ACL from a given PATH,
+
+  - by default, if there is no ACP, by inheriting the ACL from the
+    parent.
+
+An ACP also has an 'owner' value, which is the one matched by the
+`jcr:owner` principal.
+
+Access control itself checks that a priviledge is available by checking
+ACEs in turn:
+
+ - if all requisite priviledges have been granted, access is allowed,
+
+ - if any requisite priviledge is denied, access is denied,
+
+ - if all ACEs are processed without reaching a conclusion, access is
+   denied.

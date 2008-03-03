@@ -1,0 +1,47 @@
+<project name="NXQL parser" default="generate" basedir=".">
+  <property file="build.properties"/>
+
+  <taskdef classname="JFlex.anttask.JFlexTask" name="jflex" />
+  <taskdef classname="java_cup.anttask.CUPTask" name="cup" />
+
+  <target name="build" depends="realclean,compile" />
+
+  <target name="run" depends="compile">
+    <java classname="NXQParser">
+      <arg line="NXQParser.java"/>
+      <arg line="NXQSymbol.java"/>
+      <arg line="parser.java"/>
+      <arg line="sym.java"/>
+      <arg line="NXQScanner.java"/>
+    </java>
+  </target>
+
+  <target name="compile" depends="generate">
+    <javac srcdir="." destdir="." />
+  </target>
+
+  <target name="scanner"> <jflex file="nxql.flex"/> </target>
+
+  <target name="cup">
+    <cup srcfile="${basedir}/nxql.cup" interface="yes" destdir="${project.dir}/${src_gen.dir}" force="true"/>
+  </target>
+
+	<target name="generate" depends="scanner,cup">
+
+	</target>
+
+  <target name="genclean">
+    <delete file="NXQScanner.java"/>
+    <delete file="sym.java" />
+    <delete file="parser.java" />
+  </target>
+
+  <target name="clean">
+    <delete>
+      <fileset dir="." includes="**/*~"/>
+      <fileset dir="." includes="**/*.class"/>
+    </delete>
+  </target>
+
+  <target name="realclean" depends="clean,genclean" />
+</project>

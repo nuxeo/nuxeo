@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.LifecycleCoreExtensions">
+
+  <documentation>
+    Nuxeo core life cycle contributions.
+
+    @version 1.0
+    @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+  </documentation>
+
+  <require>
+    org.nuxeo.ecm.core.repository.jcr.lifecycle.JCRLifeCycleManager
+  </require>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="lifecycle">
+
+    <documentation>
+
+      Nuxeo core default life cycle definition.
+
+    </documentation>
+
+    <lifecycle name="default" lifecyclemanager="jcrlifecyclemanager"
+      initial="project">
+      <transitions>
+        <transition name="approve" destinationState="approved">
+          <description>Approve the content</description>
+        </transition>
+        <transition name="obsolete" destinationState="obsolete">
+          <description>Content becomes obsolete</description>
+        </transition>
+        <transition name="delete" destinationState="deleted">
+          <description>Move document to trash (temporary delete)</description>
+        </transition>
+        <transition name="undelete" destinationState="project">
+          <description>Recover the document from trash</description>
+        </transition>
+        <transition name="backToProject" destinationState="project">
+          <description>Recover the document from trash</description>
+        </transition>
+      </transitions>
+      <states>
+        <state name="project" description="Default state">
+          <transitions>
+            <transition>approve</transition>
+            <transition>obsolete</transition>
+            <transition>delete</transition>
+          </transitions>
+        </state>
+        <state name="approved" description="Content has been validated">
+          <transitions>
+            <transition>delete</transition>
+            <transition>backToProject</transition>
+          </transitions>
+        </state>
+        <state name="obsolete" description="Content is obsolete">
+          <transitions>
+            <transition>delete</transition>
+            <transition>backToProject</transition>
+          </transitions>
+        </state>
+        <state name="deleted" description="Document is deleted">
+          <transitions>
+            <transition>undelete</transition>
+          </transitions>
+        </state>
+      </states>
+    </lifecycle>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+    point="types">
+
+    <documentation>
+
+      Nuxeo core default document types to life cycles mapping
+
+    </documentation>
+
+    <types>
+      <type name="File">default</type>
+      <type name="Note">default</type>
+      <type name="Calendar">default</type>
+      <type name="Folder">default</type>
+      <type name="Workspace">default</type>
+      <type name="Domain">default</type>
+      <type name="Root">default</type>
+      <type name="Section">default</type>
+      <type name="WorkspaceRoot">default</type>
+      <type name="SectionRoot">default</type>
+      <type name="TemplateRoot">default</type>
+    </types>
+  </extension>
+
+</component>

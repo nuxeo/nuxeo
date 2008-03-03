@@ -1,0 +1,158 @@
+=============================
+NXCore event / event listener
+=============================
+
+:Author: Julien Anguenot
+:Revision: $Id: $
+
+.. sectnum::    :depth: 6
+.. contents::   :depth: 2
+
+Prerequisite
+============
+
+  NXCore should try to minimize JBoss and JEE specific dependencies since we
+  would like to leverage its use within the Apogee core. Thus what we need is
+  a mechanism that allow other components relaying on NXCore to be able to get
+  events related to NXCore.
+
+Vocabulary
+===========
+
+ - action : something happening to a document.
+
+ - event  : entity generated and dispatched by NXCore when an action occurred
+            which includes meta information about the corresponding action for
+            which it has been generated.
+
+ - event listener : entity interested in getting NXCore events. This entity can
+                    be defined outside of NXCore.
+
+Needs
+=====
+
+  Actions are performed against documents during their life cycle which are
+  ,for instance, creation, modification, deletion, versionning etc...
+
+  Here, NXCore side, these actions are internal system operations. (See NXAudit
+  for other notification types including user based notifications)
+
+  Regarding this issue, NXCore must be able to send notifications while those
+  `actions` are performed during the document life cycle. These notifications
+  should include meta information about the related actions.
+
+  We need to have a system where events/notifications are sent within or
+  without the transaction, depending on system-wide or per-event configuration.
+  Event it might be necessary for a consumer reacting to an event to be able to
+  rollback the transaction if necessary.
+
+  We can already see here two kind of consumer, that we will call listener later
+  on, which are asynchronous and synchronous consumers.
+
+  For instance, If a document get modified NXCore will send a "modify" event.
+  NXRelation get the notification and try to create a relation on the document
+  (because NXRelation is configured to react like that). The relation cannot be
+  created thus NXRelation might mark the transaction for rollback.
+
+  It should be a possible configuration but not a mandatory one.
+
+  Another example, would be the logging service, NXAudit, interested to keep
+  track of what append to a document and maintain an activity record in a RDBMS.
+
+  What we need to keep in mind here is that we don't want the core to be slow
+  down by notifications it doesn't care itself. Thus, we will consider more
+  closely an asycnhronous event model as much as possible.
+
+ NXCore listeners model
+ =======================
+
+   NXCore will maintain internally a list of listeners. This list of listeners
+   will not take advantage of what JBoss nor JEE could provide regarding this
+   issue.
+
+   This listenerList has been extracted from the Eclipse project and is 'pure'
+   Java. You may check org.nuxeo.ecm.core.util.ListernerList for more
+  information.
+
+   For listeners aimed at being notified on document based events NXCore exposes
+   an interface : org.nuxeo.ecm.core.model.EventListener that specific
+   listeners must implement in order to register in the NXCore listeners list.
+
+   They are two kind of EventListener. Asynchronous and Synchronous listeners.
+
+   See ::
+
+      org.nuxeo.ecm.core.mode.event.SynchronousEventListener
+      org.nuxeo.ecm.core.mode.event.AsynchronousEventListener
+
+   Both interfaces above implement the EventListener marker interface.
+
+   For instance, a JMSEventListener can implement AsynchronousEventListener.
+   (See NXEvents for instance)
+
+Notifications hook
+==================
+
+  Need for an abstraction
+  ------------------------
+
+  Before and after performing an inner action, we will have to perform a
+  notification so that the interested listeners can get them. (i.e : addChild(),
+   removeChild() etc...)
+
+  We want this to be defined NXCore side since we might want to change the
+  JCR backend. That's why NXCore provides an actual listener model.
+
+  Here, Eclipse on the one hand and JBoss on the other hand will leverage the
+  use of listener by providing different EventListener's which will provide a
+  bridge to their actual event channels (i.e : JMS for JBoss and a custom
+  event channel in Eclipse RCP)
+
+  Repository notifications
+  -------------------------
+
+    The actual listener interfaces are defined NXCore side since we might want
+    to change the JCR backend.
+
+    The listeners list are registred on the repository itself for now. We will
+    see what we could do with the NXFramework service facilities later on.
+
+    Example of notification ::
+
+      Document doc = new Document()
+      Repository = NXCore.getRepository("demo");
+      repository.notifyEventListener("documentCreated", doc);
+
+   The actual event processing is delegating to the event listerner. None of
+   NXCore business.
+
+   Actual notifications
+   ---------------------
+
+     Here are the current event generating a notification :
+
+       - aboutToCreate / documentCreated
+       - aboutToRemove / documentRemoved
+
+NXCore as a consummer
+=====================
+
+  NXCore can be a consummer if it appears to be necessary. It can register an
+  event listener himself and deal with the events himself.
+
+TODO
+====
+
+  - More information transmitted to the listeners. We will probably need to
+  define a Event objects carrying out the document and more information.
+
+  - More notifications hook
+
+  - NXCoreEventListener so that NXCore can be a consummer.
+
+.. Emacs
+.. Local Variables:
+.. mode: rst
+.. End:
+.. Vim
+.. vim: set filetype=rst:

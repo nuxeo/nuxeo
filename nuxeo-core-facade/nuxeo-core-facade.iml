@@ -1,0 +1,1017 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module relativePaths="false" type="J2EE_EJB_MODULE" version="4"> 
+  <component name="FacetManager"> 
+    <facet type="ejb" name="nuxeo-core-facade"> 
+      <configuration> 
+        <descriptors> 
+          <deploymentDescriptor name="ejb-jar.xml" url="file://$MODULE_DIR$/src/main/resources/META-INF/ejb-jar.xml" optional="false" version="3.0"/> 
+        </descriptors>  
+        <ejbRoots> 
+          <root url="file://$MODULE_DIR$/src/main/java"/>  
+          <root url="file://$MODULE_DIR$/src/main/resources"/> 
+        </ejbRoots>  
+        <building> 
+          <setting name="EXPLODED_URL" value="file://$MODULE_DIR$/target/nuxeo-core-facade"/>  
+          <setting name="EXPLODED_ENABLED" value="false"/>  
+          <setting name="JAR_URL" value="file://"/>  
+          <setting name="JAR_ENABLED" value="false"/>  
+          <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false"/>  
+          <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false"/>  
+          <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="false"/>  
+          <setting name="RUN_EJB_VALIDATION" value="false"/> 
+        </building> 
+      </configuration> 
+    </facet>  
+    <facet type="ejb" name="nuxeo-core-facade"> 
+      <configuration> 
+        <descriptors> 
+          <deploymentDescriptor name="ejb-jar.xml" url="file://$MODULE_DIR$/src/main/resources/META-INF/ejb-jar.xml" optional="false" version="3.0"/> 
+        </descriptors>  
+        <ejbRoots> 
+          <root url="file://$MODULE_DIR$/src/main/java"/>  
+          <root url="file://$MODULE_DIR$/src/main/resources"/> 
+        </ejbRoots>  
+        <building> 
+          <setting name="EXPLODED_URL" value="file://$MODULE_DIR$/target/nuxeo-core-facade"/>  
+          <setting name="EXPLODED_ENABLED" value="false"/>  
+          <setting name="JAR_URL" value="file://"/>  
+          <setting name="JAR_ENABLED" value="false"/>  
+          <setting name="BUILD_MODULE_ON_FRAME_DEACTIVATION" value="false"/>  
+          <setting name="BUILD_EXTERNAL_DEPENDENCIES" value="false"/>  
+          <setting name="EXCLUDE_EXPLODED_DIRECTORY" value="false"/>  
+          <setting name="RUN_EJB_VALIDATION" value="false"/> 
+        </building>  
+        <packaging> 
+          <containerElement type="library" name="jbosssx" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/jbosssx-4.0.4.GA.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="ejb-api" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/ejb-api-3.0.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="persistence" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/persistence-3.0.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="jboss-transaction-client" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/jboss-transaction-client-4.0.4.GA.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="jboss-aspect-jdk50-client" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/jboss-aspect-jdk50-client-1.5.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="nuxeo-client" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/nuxeo-client-1.0-SNAPSHOT.jar"/> 
+          </containerElement>  
+          <containerElement type="module" name="nuxeo-runtime"> 
+            <attribute name="method" value="6"/>  
+            <attribute name="URI" value="/lib/nuxeo-runtime.jar"/> 
+          </containerElement>  
+          <containerElement type="module" name="nuxeo-common"> 
+            <attribute name="method" value="6"/>  
+            <attribute name="URI" value="/lib/nuxeo-common.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="commons-logging-api" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/commons-logging-api-1.1.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="opencsv" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/opencsv-1.7.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="jboss-common" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/jboss-common-4.0.4.GA.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="commons-jexl" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/commons-jexl-1.1.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="commons-logging" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/commons-logging-1.0.3.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="junit" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/junit-3.8.2.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="osgi-core" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/osgi-core-4.1.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="jboss-remoting" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/jboss-remoting-4.0.4.GA.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="concurrent" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/concurrent-1.3.4.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="jboss-client" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/jboss-client-4.0.2.jar"/> 
+          </containerElement>  
+          <containerElement type="module" name="nuxeo-runtime-osgi"> 
+            <attribute name="method" value="6"/>  
+            <attribute name="URI" value="/lib/nuxeo-runtime-osgi.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="nuxeo-apt-extensions" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/nuxeo-apt-extensions-1.0-SNAPSHOT.jar"/> 
+          </containerElement>  
+          <containerElement type="module" name="nuxeo-core-schema"> 
+            <attribute name="method" value="6"/>  
+            <attribute name="URI" value="/lib/nuxeo-core-schema.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="xsom" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/xsom-20060306.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="relaxngDatatype" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/relaxngDatatype-1.0.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="jboss-j2ee" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/jboss-j2ee-4.0.4.GA.jar"/> 
+          </containerElement>  
+          <containerElement type="module" name="nuxeo-core-api"> 
+            <attribute name="method" value="6"/>  
+            <attribute name="URI" value="/lib/nuxeo-core-api.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="dom4j" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/dom4j-1.6.1.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="xml-apis" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/xml-apis-1.0.b2.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="ejb3" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/ejb3-3.0-RC8.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="jnp-client" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/jnp-client-4.0.2.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="jboss-aop-jdk50" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/jboss-aop-jdk50-1.4.0.SP1.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="jsr250-api" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/jsr250-api-1.0.jar"/> 
+          </containerElement>  
+          <containerElement type="module" name="nuxeo-runtime-test"> 
+            <attribute name="method" value="6"/>  
+            <attribute name="URI" value="/lib/nuxeo-runtime-test.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="jmock" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/jmock-1.0.1.jar"/> 
+          </containerElement>  
+          <containerElement type="module" name="nuxeo-core-jcr-connector"> 
+            <attribute name="method" value="6"/>  
+            <attribute name="URI" value="/lib/nuxeo-core-jcr-connector.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="lucene-core" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/lucene-core-2.0.0.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="commons-collections" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/commons-collections-3.1.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="jackrabbit-text-extractors" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/jackrabbit-text-extractors-1.3.3.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="poi" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/poi-2.5.1-final-20040804.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="pdfbox" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/pdfbox-0.6.4.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="tm-extractors" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/tm-extractors-0.4.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="nekohtml" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/nekohtml-0.9.4.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="xercesImpl" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/xercesImpl-2.8.1.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="jcr" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/jcr-1.0.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="slf4j-api" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/slf4j-api-1.3.0.jar"/> 
+          </containerElement>  
+          <containerElement type="module" name="nuxeo-core"> 
+            <attribute name="method" value="6"/>  
+            <attribute name="URI" value="/lib/nuxeo-core.jar"/> 
+          </containerElement>  
+          <containerElement type="module" name="nuxeo-core-query"> 
+            <attribute name="method" value="6"/>  
+            <attribute name="URI" value="/lib/nuxeo-core-query.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="joda-time" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/joda-time-1.4.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="java-cup" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/java-cup-0.11a.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="jackrabbit-api" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/jackrabbit-api-1.3.3.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="slf4j-log4j12" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/slf4j-log4j12-1.3.0.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="log4j" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/log4j-1.2.13.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="jackrabbit-jcr-commons" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/jackrabbit-jcr-commons-1.3.3.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="jackrabbit-core" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/jackrabbit-core-1.3.3.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="geronimo-jta_1.0.1B_spec" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/geronimo-jta_1.0.1B_spec-1.0.1.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="derby" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/derby-10.2.1.6.jar"/> 
+          </containerElement>  
+          <containerElement type="library" name="jboss-annotations-ejb3" level="module"> 
+            <attribute name="method" value="2"/>  
+            <attribute name="URI" value="/lib/jboss-annotations-ejb3-3.0-RC8.jar"/> 
+          </containerElement> 
+        </packaging> 
+      </configuration> 
+    </facet> 
+  </component>  
+  <component name="NewModuleRootManager" inherit-compiler-output="false"> 
+    <output url="file://$MODULE_DIR$/target/classes"/>  
+    <exclude-output/>  
+    <output-test url="file://$MODULE_DIR$/target/test-classes"/>  
+    <content url="file://$MODULE_DIR$"> 
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false"/>
+      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true"/>
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" isTestSource="false"/>
+      <sourceFolder url="file://$MODULE_DIR$/src/test/resources" isTestSource="true"/>
+      <excludeFolder url="file://$MODULE_DIR$/target"/>
+    </content>  
+    <orderEntry type="inheritedJdk"/>  
+    <orderEntry type="sourceFolder" forTests="false"/>  
+    <orderEntry type="module" module-name="nuxeo-core-jcr-connector"/>  
+    <orderEntry type="module" module-name="nuxeo-core-schema"/>  
+    <orderEntry type="module" module-name="nuxeo-core-query"/>  
+    <orderEntry type="module" module-name="nuxeo-core"/>  
+    <orderEntry type="module" module-name="nuxeo-core-api"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jbosssx/4.0.4.GA/jbosssx-4.0.4.GA.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/javax/ejb/ejb-api/3.0/ejb-api-3.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/javax/persistence/persistence/3.0/persistence-3.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jboss-transaction-client/4.0.4.GA/jboss-transaction-client-4.0.4.GA.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jboss-aspect-jdk50-client/1.5/jboss-aspect-jdk50-client-1.5.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/nuxeo/ecm/client/nuxeo-client/1.0-SNAPSHOT/nuxeo-client-1.0-SNAPSHOT.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-runtime"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/net/sf/opencsv/opencsv/1.7/opencsv-1.7.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-common"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/commons-logging/commons-logging-api/1.1/commons-logging-api-1.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/osgi/osgi-core/4.1/osgi-core-4.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jboss-remoting/4.0.4.GA/jboss-remoting-4.0.4.GA.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jboss-common/4.0.4.GA/jboss-common-4.0.4.GA.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/commons-jexl/commons-jexl/1.1/commons-jexl-1.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/commons-logging/commons-logging/1.0.3/commons-logging-1.0.3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/junit/junit/3.8.2/junit-3.8.2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/concurrent/concurrent/1.3.4/concurrent-1.3.4.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jboss-client/4.0.2/jboss-client-4.0.2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-runtime-osgi"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/nuxeo/build/nuxeo-apt-extensions/1.0-SNAPSHOT/nuxeo-apt-extensions-1.0-SNAPSHOT.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/com/sun/xml/xsom/20060306/xsom-20060306.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/com/sun/xml/relaxngDatatype/1.0/relaxngDatatype-1.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jboss-j2ee/4.0.4.GA/jboss-j2ee-4.0.4.GA.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/ejb3/3.0-RC8/ejb3-3.0-RC8.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jnp-client/4.0.2/jnp-client-4.0.2.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jboss-aop-jdk50/1.4.0.SP1/jboss-aop-jdk50-1.4.0.SP1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/javax/annotation/jsr250-api/1.0/jsr250-api-1.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module" module-name="nuxeo-runtime-test"/>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jmock/jmock/1.0.1/jmock-1.0.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/lucene/lucene-core/2.0.0/lucene-core-2.0.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/commons-collections/commons-collections/3.1/commons-collections-3.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/jackrabbit/jackrabbit-text-extractors/1.3.3/jackrabbit-text-extractors-1.3.3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/poi/poi/2.5.1-final-20040804/poi-2.5.1-final-20040804.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/pdfbox/pdfbox/0.6.4/pdfbox-0.6.4.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/textmining/tm-extractors/0.4/tm-extractors-0.4.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/nekohtml/nekohtml/0.9.4/nekohtml-0.9.4.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/xerces/xercesImpl/2.8.1/xercesImpl-2.8.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jsr170/jcr/1.0/jcr-1.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/slf4j/slf4j-api/1.3.0/slf4j-api-1.3.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/joda-time/joda-time/1.4/joda-time-1.4.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/cup/java-cup/0.11a/java-cup-0.11a.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/jackrabbit/jackrabbit-api/1.3.3/jackrabbit-api-1.3.3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/javax/jcr/jcr/1.0/jcr-1.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/slf4j/slf4j-log4j12/1.3.0/slf4j-log4j12-1.3.0.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/jackrabbit/jackrabbit-jcr-commons/1.3.3/jackrabbit-jcr-commons-1.3.3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/jackrabbit/jackrabbit-core/1.3.3/jackrabbit-core-1.3.3.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/geronimo/specs/geronimo-jta_1.0.1B_spec/1.0.1/geronimo-jta_1.0.1B_spec-1.0.1.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/org/apache/derby/derby/10.2.1.6/derby-10.2.1.6.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntry type="module-library"> 
+      <library> 
+        <JAVADOC/>  
+        <SOURCES/>  
+        <CLASSES>
+          <root url="jar:///Users/fermigier/.m2/repository/jboss/jboss-annotations-ejb3/3.0-RC8/jboss-annotations-ejb3-3.0-RC8.jar!/"/>
+        </CLASSES>
+      </library> 
+    </orderEntry>  
+    <orderEntryProperties/> 
+  </component>  
+  <component name="copyright"> 
+    <Base> 
+      <setting name="state" value="2"/> 
+    </Base> 
+  </component>  
+  <component name="EjbModuleBuildComponent">
+    <setting name="EXPLODED_URL" value="file://$MODULE_DIR$/target/nuxeo-core-facade"/>
+  </component>
+  <component name="EjbModuleProperties">
+    <deploymentDescriptor version="2.x" name="ejb-jar.xml" optional="false" url="file://$MODULE_DIR$/src/main/resources/META-INF/ejb-jar.xml"/>
+    <containerElement type="library" level="module" name="jbosssx">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/jbosssx-4.0.4.GA.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/jboss/jbosssx/4.0.4.GA/jbosssx-4.0.4.GA.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="ejb-api">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/ejb-api-3.0.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/javax/ejb/ejb-api/3.0/ejb-api-3.0.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="persistence">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/persistence-3.0.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/javax/persistence/persistence/3.0/persistence-3.0.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="jboss-transaction-client">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/jboss-transaction-client-4.0.4.GA.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/jboss/jboss-transaction-client/4.0.4.GA/jboss-transaction-client-4.0.4.GA.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="jboss-aspect-jdk50-client">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/jboss-aspect-jdk50-client-1.5.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/jboss/jboss-aspect-jdk50-client/1.5/jboss-aspect-jdk50-client-1.5.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="nuxeo-client">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/nuxeo-client-1.0-SNAPSHOT.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/org/nuxeo/ecm/client/nuxeo-client/1.0-SNAPSHOT/nuxeo-client-1.0-SNAPSHOT.jar!/</url>
+    </containerElement>
+    <containerElement type="module" name="nuxeo-runtime">
+      <attribute name="method" value="6"/>
+      <attribute name="URI" value="/lib/nuxeo-runtime.jar"/>
+    </containerElement>
+    <containerElement type="module" name="nuxeo-common">
+      <attribute name="method" value="6"/>
+      <attribute name="URI" value="/lib/nuxeo-common.jar"/>
+    </containerElement>
+    <containerElement type="library" level="module" name="commons-logging-api">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/commons-logging-api-1.1.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/commons-logging/commons-logging-api/1.1/commons-logging-api-1.1.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="opencsv">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/opencsv-1.7.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/net/sf/opencsv/opencsv/1.7/opencsv-1.7.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="jboss-common">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/jboss-common-4.0.4.GA.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/jboss/jboss-common/4.0.4.GA/jboss-common-4.0.4.GA.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="commons-jexl">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/commons-jexl-1.1.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/commons-jexl/commons-jexl/1.1/commons-jexl-1.1.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="commons-logging">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/commons-logging-1.0.3.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/commons-logging/commons-logging/1.0.3/commons-logging-1.0.3.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="junit">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/junit-3.8.2.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/junit/junit/3.8.2/junit-3.8.2.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="osgi-core">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/osgi-core-4.1.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/org/osgi/osgi-core/4.1/osgi-core-4.1.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="jboss-remoting">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/jboss-remoting-4.0.4.GA.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/jboss/jboss-remoting/4.0.4.GA/jboss-remoting-4.0.4.GA.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="concurrent">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/concurrent-1.3.4.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/concurrent/concurrent/1.3.4/concurrent-1.3.4.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="jboss-client">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/jboss-client-4.0.2.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/jboss/jboss-client/4.0.2/jboss-client-4.0.2.jar!/</url>
+    </containerElement>
+    <containerElement type="module" name="nuxeo-runtime-osgi">
+      <attribute name="method" value="6"/>
+      <attribute name="URI" value="/lib/nuxeo-runtime-osgi.jar"/>
+    </containerElement>
+    <containerElement type="library" level="module" name="nuxeo-apt-extensions">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/nuxeo-apt-extensions-1.0-SNAPSHOT.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/org/nuxeo/build/nuxeo-apt-extensions/1.0-SNAPSHOT/nuxeo-apt-extensions-1.0-SNAPSHOT.jar!/</url>
+    </containerElement>
+    <containerElement type="module" name="nuxeo-core-schema">
+      <attribute name="method" value="6"/>
+      <attribute name="URI" value="/lib/nuxeo-core-schema.jar"/>
+    </containerElement>
+    <containerElement type="library" level="module" name="xsom">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/xsom-20060306.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/com/sun/xml/xsom/20060306/xsom-20060306.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="relaxngDatatype">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/relaxngDatatype-1.0.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/com/sun/xml/relaxngDatatype/1.0/relaxngDatatype-1.0.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="jboss-j2ee">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/jboss-j2ee-4.0.4.GA.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/jboss/jboss-j2ee/4.0.4.GA/jboss-j2ee-4.0.4.GA.jar!/</url>
+    </containerElement>
+    <containerElement type="module" name="nuxeo-core-api">
+      <attribute name="method" value="6"/>
+      <attribute name="URI" value="/lib/nuxeo-core-api.jar"/>
+    </containerElement>
+    <containerElement type="library" level="module" name="dom4j">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/dom4j-1.6.1.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="xml-apis">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/xml-apis-1.0.b2.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="ejb3">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/ejb3-3.0-RC8.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/jboss/ejb3/3.0-RC8/ejb3-3.0-RC8.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="jnp-client">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/jnp-client-4.0.2.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/jboss/jnp-client/4.0.2/jnp-client-4.0.2.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="jboss-aop-jdk50">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/jboss-aop-jdk50-1.4.0.SP1.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/jboss/jboss-aop-jdk50/1.4.0.SP1/jboss-aop-jdk50-1.4.0.SP1.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="jsr250-api">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/jsr250-api-1.0.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/javax/annotation/jsr250-api/1.0/jsr250-api-1.0.jar!/</url>
+    </containerElement>
+    <containerElement type="module" name="nuxeo-runtime-test">
+      <attribute name="method" value="6"/>
+      <attribute name="URI" value="/lib/nuxeo-runtime-test.jar"/>
+    </containerElement>
+    <containerElement type="library" level="module" name="jmock">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/jmock-1.0.1.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/jmock/jmock/1.0.1/jmock-1.0.1.jar!/</url>
+    </containerElement>
+    <containerElement type="module" name="nuxeo-core-jcr-connector">
+      <attribute name="method" value="6"/>
+      <attribute name="URI" value="/lib/nuxeo-core-jcr-connector.jar"/>
+    </containerElement>
+    <containerElement type="library" level="module" name="lucene-core">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/lucene-core-2.0.0.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/org/apache/lucene/lucene-core/2.0.0/lucene-core-2.0.0.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="commons-collections">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/commons-collections-3.1.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/commons-collections/commons-collections/3.1/commons-collections-3.1.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="jackrabbit-text-extractors">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/jackrabbit-text-extractors-1.3.3.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/org/apache/jackrabbit/jackrabbit-text-extractors/1.3.3/jackrabbit-text-extractors-1.3.3.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="poi">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/poi-2.5.1-final-20040804.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/poi/poi/2.5.1-final-20040804/poi-2.5.1-final-20040804.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="pdfbox">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/pdfbox-0.6.4.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/pdfbox/pdfbox/0.6.4/pdfbox-0.6.4.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="tm-extractors">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/tm-extractors-0.4.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/org/textmining/tm-extractors/0.4/tm-extractors-0.4.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="nekohtml">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/nekohtml-0.9.4.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/nekohtml/nekohtml/0.9.4/nekohtml-0.9.4.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="xercesImpl">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/xercesImpl-2.8.1.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/xerces/xercesImpl/2.8.1/xercesImpl-2.8.1.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="jcr">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/jcr-1.0.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/jsr170/jcr/1.0/jcr-1.0.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="slf4j-api">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/slf4j-api-1.3.0.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/org/slf4j/slf4j-api/1.3.0/slf4j-api-1.3.0.jar!/</url>
+    </containerElement>
+    <containerElement type="module" name="nuxeo-core">
+      <attribute name="method" value="6"/>
+      <attribute name="URI" value="/lib/nuxeo-core.jar"/>
+    </containerElement>
+    <containerElement type="module" name="nuxeo-core-query">
+      <attribute name="method" value="6"/>
+      <attribute name="URI" value="/lib/nuxeo-core-query.jar"/>
+    </containerElement>
+    <containerElement type="library" level="module" name="joda-time">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/joda-time-1.4.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/joda-time/joda-time/1.4/joda-time-1.4.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="java-cup">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/java-cup-0.11a.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/cup/java-cup/0.11a/java-cup-0.11a.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="jackrabbit-api">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/jackrabbit-api-1.3.3.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/org/apache/jackrabbit/jackrabbit-api/1.3.3/jackrabbit-api-1.3.3.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="jcr">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/jcr-1.0.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/javax/jcr/jcr/1.0/jcr-1.0.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="slf4j-log4j12">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/slf4j-log4j12-1.3.0.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/org/slf4j/slf4j-log4j12/1.3.0/slf4j-log4j12-1.3.0.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="log4j">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/log4j-1.2.13.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="jackrabbit-jcr-commons">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/jackrabbit-jcr-commons-1.3.3.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/org/apache/jackrabbit/jackrabbit-jcr-commons/1.3.3/jackrabbit-jcr-commons-1.3.3.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="jackrabbit-core">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/jackrabbit-core-1.3.3.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/org/apache/jackrabbit/jackrabbit-core/1.3.3/jackrabbit-core-1.3.3.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="geronimo-jta_1.0.1B_spec">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/geronimo-jta_1.0.1B_spec-1.0.1.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/org/apache/geronimo/specs/geronimo-jta_1.0.1B_spec/1.0.1/geronimo-jta_1.0.1B_spec-1.0.1.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="derby">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/derby-10.2.1.6.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/org/apache/derby/derby/10.2.1.6/derby-10.2.1.6.jar!/</url>
+    </containerElement>
+    <containerElement type="library" level="module" name="jboss-annotations-ejb3">
+      <attribute name="method" value="2"/>
+      <attribute name="URI" value="/lib/jboss-annotations-ejb3-3.0-RC8.jar"/>
+      <url>jar:///Users/fermigier/.m2/repository/jboss/jboss-annotations-ejb3/3.0-RC8/jboss-annotations-ejb3-3.0-RC8.jar!/</url>
+    </containerElement>
+  </component>
+</module>

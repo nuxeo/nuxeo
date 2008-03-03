@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.runtime.EventService" version="1.0">
+  <documentation>
+  An event notification service. Notifications are grouped by topics.
+  @author Bogdan Stefanescu (bs@nuxeo.com)
+  </documentation>
+
+  <implementation class="org.nuxeo.runtime.services.event.EventService"/>
+
+  <extension-point name="listeners">
+    <documentation>Enable clients to register event listeners to one or more topics</documentation>
+    <object class="org.nuxeo.runtime.services.event.ListenerDescriptor"/>
+  </extension-point>
+
+</component>
+

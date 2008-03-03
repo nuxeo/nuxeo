@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.security.test.override1">
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="permissions">
+
+    <permission name="CustomAtomicPerm" />
+
+    <permission name="CustomCompoundPerm" userVisible="true"
+      displayOrder="40">
+      <include>ReadWrite</include>
+      <include>CustomAtomicPerm</include>
+    </permission>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="permissionsVisibility">
+
+    <visibility>
+      <item order="40">CustomCompoundPerm</item>
+    </visibility>
+
+    <visibility type="Section">
+      <item show="true" order="10">Read</item>
+      <item show="true" order="100">Everything</item>
+    </visibility>
+
+  </extension>
+
+</component>

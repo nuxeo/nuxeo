@@ -1,0 +1,239 @@
+$Id: Transactions.txt 558 2006-06-14 00:25:13Z rspivak $
+
+Transactions
+============
+
+Usage of Jackrabbit resource adapter(JCA) allows us to use declarative
+transaction model within NX* products. (Just to mention - JCA allows also
+connection pool management by JBossAS).
+
+
+We can use transaction declaration annotation @TransactionAttribute for bean
+methods with one of the following attributes:
+
+- REQUIRED: The annotated method is executed within a transaction.
+  If the caller method is already inside a transaction, the transaction is
+  used; if not, a new transaction is generated.
+
+- MANDATORY: The annotated method must be invoked inside a transaction
+  (i.e., the caller must have a transaction already). Otherwise, an error is
+  thrown.
+
+- REQUIRESNEW: The annotated method is executed within a newly generated
+  transaction. If the caller method is already in a transaction, it is
+  suspended.
+
+- SUPPORTS: If the annotated method is called within a transaction,
+  the transaction is used. If it is called without a transaction, no
+  transaction will be created.
+
+- NOT_SUPPORTED: This attribute tells the container that the method being
+  invoked does not use transaction. If a transaction has already been started
+  it will be suspended until the method completes.
+
+If a method doesn't have transaction annotation it's assigned default property
+REQUIRED by EJB3 container.
+
+N.B:
+It's important to remember that runtime(unchecked) exception rollbacks current
+transaction, but application level exception DOES NOT.
+
+Example:
+------------------------------------------------------------------------------
+@TransactionAttribute(TransactionAttributeType.REQUIRED)
+public void placeFixedIncomeTrade(TradeData trade) throws Exception {
+    try {
+        ...
+        Placement placement = placementService.placeTrade(trade);
+        executionService.executeTrade(placement);
+    } catch (TradeExecutionException e) {
+        log.fatal(e);
+        throw e;
+    }
+}
+
+Here we have multiple updates within a single business unit of work. If we are
+in the middle of this method and a TradeExecutionException occurs, the
+container will commit all work done prior to the exception and propagate the
+exception to the caller.
+What this example illustrates is that the container will not mark the
+transaction for rollback on an application exception. Forgetting to handle
+application exceptions when using declarative transactions is a common source
+of data integrity problems in most applications.
+------------------------------------------------------------------------------
+
+So it's responsibility of developer to mark transaction for rollback when
+checked exception occurs. There are couple of ways to implement that:
+
+1) For Seam application we can use annotation @Rollback for method:
+
+@Rollback(ifOutcome={"failure", "not-found"})
+If outcome of method matches any of the listed outcomes, set the transaction
+to rollback when method completes.
+
+We need to catch application level exception and return corresponding
+outcome as a string value to indicate that transaction should be marked for
+rollback.
+
+
+2) Using setRollbackOnly() method on EJB context:
+
+Using Seam util package we can easiliy get ejb context in our Seam application.
+
+import org.jboss.seam.util.Transactions;
+
+...
+try {
+    // something goes here that may produce application level exception
+} catch (Exception e) {
+    Transactions.getEJBContext().setRollbackOnly();
+}
+...
+
+
+N.B:
+It is a good practice that transaction management is contained within
+the method that starts the transaction. Therefore, only the business method
+that started the transaction should invoke the setRollbackOnly() method.
+For Seam this means in majority of cases our action listeners' methods will
+handle transaction management(marking for rollback).
+
+
+3) The EJB3.0 specification contains @ApplicationException metadata annotation
+which tells the container whether it should automatically mark the transaction
+for rollback when the exception is thrown.
+
+@ApplicationException(rollback=true)
+public class MyApplicationException extends Exception {
+    ...
+}
+
+This way we don't need manually mark transaction for rollback, just throw
+exception. BUT because this annotation applies to a _class of exceptions_ that
+any method could throw, then any method that is called inside our business
+method may throw this exception and this will lead to marking transaction for
+rollback. This violates the best practice that only the method that started the
+transaction should be responsible for marking the transaction as rollback.
+If this annotation is used, no corrective action can be taken in the method
+responsible for managing the transaction. For example, if an SMTP email service
+method threw an exception containing this annotation, the entire transaction
+would be rolled back just because we couldn't send an email confirmation.
+Furthermore, use of this annotation with the rollback attribute mixes
+transaction management with exception handling.
+
+
+4) setRollBackOnly() alternative:
+We can throw javax.ejb.EJBException runtime exception to get the same
+behaviour as with setRollBackOnly() method. The disadvantage is that
+output provided when javax.ejb.EJBException has occured is a bit cryptic.
+
+The preferred way is to use (2) or (1). @Rollback interceptor may be slower as
+it makes additional checks like if type of component is JAVA_BEAN, for example.
+
+
+Jackrabbit and transactions:
+----------------------------
+
+Within the scope of a transaction, save() and other methods that act directly
+on the persistent workspace will not make changes visible to other sessions;
+this will only occur when the transaction is committed.
+However, even within the scope of a transaction, save() still performs
+validation and, if successful, clears pending changes from the Session.
+As well, refresh(false) still clears pending changes from the Session.
+When a transaction commits, it persists only those changes that have been
+saved; it DOES NOT automatically save pending changes and then commit them
+as well. After a commit, pending changes remain in the Session and may be
+saved and committed later.
+
+So in simple Seam application(we assume usage of Jackrabbit JCA, of course)
+without any additional declarations on method when we invoke method of
+action listener from web form, for example, transaction will be auto-started,
+it's responsiblity of our home-grown persistence layer/DAO then to call save()
+method on Session object on modification and when action listener method
+completes transaction will be auto-committed.
+
+The JTA transaction is thread-based. The transaction has to commit or rollback
+at the end of thread.
+In case we use also EntityManager:
+At the end of the thread, the transaction is committed;
+the data changes are flushed to the database; and EntityManager is destroyed.
+
+
+Conversation notion:
+------------------------
+There may be need to have long-lived EntityManager and Jackrabbit Session
+that survive multiple methods invocations and have commit changes in "batch"
+mode and not on every method's completion.
+
+1) EntityManager:
+
+We need to use extended type of persistence context by specifying the type
+attribute of the the @PersistenceContext injection annotation as
+PersistenceContextType.EXTENDED. It tells the container that the EntityManager
+object maintains its persistence context (i.e., the entity bean objects it
+manages) across multiple threads or method calls(for whole lifecyle of stateful
+session bean).
+For Seam application we need also to point corresponding phase listener in
+faces-config.xml:
+<lifecycle>
+  <phase-listener>
+    org.jboss.seam.jsf.SeamExtendedManagedPersistencePhaseListener
+  </phase-listener>
+</lifecycle>
+
+This solves the issue with persistence context, but still will commit database
+changes on every bean's method completion. To gain "batch" mode, for example,
+in stateful bean we should declare every method participating in conversation
+that makes changes to database or runs database query(EntityManager also flushes
+it's data before running next query) with NOT_SUPPORTED transaction attribute.
+This way we tell container NOT to commit at method's completion:
+
+@Stateful
+public class WizardAction implements Wizard {
+
+    @PersistenceContext(type=EXTENDED)
+    private EntityManager em;
+
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public String updateDetails() {
+        // changes to DB
+    }
+
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public String updateUser() {
+        // changes to DB
+    }
+
+    @Remove
+    public void destroy() {
+        em.flush();
+    }
+}
+
+And we put flush() in the @Remove method that is called when bean is destroyed,
+thus commiting all changes in batch.
+flush() may go into another method depending on application's logic.
+
+
+2) Jackrabbit:
+
+The main point is that we need to call save() method on Session even if
+transaction is used. If we don't call save() when transaction is present
+our changes won't be persisted.
+So manually defining in which methods of our persistence/DAO layer for
+Jackrabbit to call save() we can emulate "conversational" behaviour.
+This is, of course, not perfect, but for the moment i think there won't be too
+much conversational behaviour in our application and in some time we develop
+kind of entity manager for our JCR based content types.
+
+
+Other:
+-------------------
+
+REQUIRESNEW: This attribute is very useful for an activity that must be
+completed (i.e. committed) independent of the outcome of the surrounding
+transaction. One example of the use of this attribute is audit logging.
+
+SUPPORTS: Useful for query methods. If method with this transaction attribute
+is called withing transaction that made updates to database, for example, then
+query will see those changes.

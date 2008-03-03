@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.security.test.override2">
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="permissions">
+
+    <permission name="CustomAtomicPerm" />
+
+    <!-- show write in the UI at the beginning of the list and -->
+    <permission name="Write">
+      <include>CustomAtomicPerm</include>
+      <remove>Remove</remove>
+    </permission>
+
+    <!-- hide ReadWrite -->
+    <permission name="ReadWrite" userVisible="false" />
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="permissionsVisibility">
+
+    <!-- hide ReadWrite and show Write instead -->
+    <visibility>
+      <item show="true" order="0">Write</item>
+      <item show="false">ReadWrite</item>
+    </visibility>
+
+    <!-- custom visibility settings for the Section document type -->
+    <visibility type="Section">
+      <item order="10">Read</item>
+    </visibility>
+
+  </extension>
+
+</component>

@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Core IO
+Bundle-SymbolicName: org.nuxeo.ecm.core.io
+Bundle-Vendor: Nuxeo
+Export-Package: org.nuxeo.ecm.core.io,
+ org.nuxeo.ecm.core.io.exceptions,
+ org.nuxeo.ecm.core.io.impl,
+ org.nuxeo.ecm.core.io.impl.plugins
+Require-Bundle: org.nuxeo.runtime;visibility:=reexport,
+ org.nuxeo.ecm.core.api;visibility:=reexport
+
