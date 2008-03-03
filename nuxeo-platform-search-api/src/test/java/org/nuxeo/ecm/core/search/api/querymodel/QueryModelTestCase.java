@@ -63,6 +63,7 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
 
         openRepository();
 
+        // GR old-style lookup kept to ensure BBB, see NXP-2161
         QueryModelService service = (QueryModelService) Framework.getRuntime().getComponent(
                 QueryModelService.NAME);
 
@@ -87,6 +88,11 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
             QueryModelDescriptor descriptor) throws ClientException {
         DocumentModel documentModel = coreSession.createDocumentModel(descriptor.getDocType());
         return new QueryModel(descriptor, documentModel, null);
+    }
+
+    // NXP-2161
+    public void testModernLookup() throws Exception {
+        assertNotNull(Framework.getService(QueryModelService.class));
     }
 
     public void testStatelessQueryModel() throws ClientException {

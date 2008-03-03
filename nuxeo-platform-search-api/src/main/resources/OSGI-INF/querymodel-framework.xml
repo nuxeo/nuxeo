@@ -4,6 +4,10 @@
   <implementation
     class="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService" />
 
+  <service>
+    <provide interface="org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService" />
+  </service>
+
   <documentation>
     The QueryModel service registers QueryModelDescriptor instances that
     are used by the QueryModelActionsBean to build QueryModel instances
