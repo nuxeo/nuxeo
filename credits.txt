@@ -1,0 +1,39 @@
+Credits
+=======
+
+Code
+----
+
+This release contains code developed by the Nuxeo Team (Alain, Anahide,
+Bogdan S., Bogdan T., Brice, Catalin B., Dragos I., Drago M., Eric,
+Eugen, Florent, George, Georges, Julien A., Julien C., Laurent, Lise,
+Narcis, Olivier, Ruslan, Solen, Stefane, Tarek, Thierry, Tibo), the
+Unilog Team (Andreas, Florent, Jean-Paul), the Eurocis Team (Benjamin,
+Tony) and Jean-Marc from Chalmers University in Goteborg. Many more
+people have suggested improvement, spotted issues or contributed
+bugfixes on the mailing list.
+
+Translations
+------------
+
+German: Georges Racinet
+Italian: Mirto Silvio Busico
+Russian: Jane Smorodnik
+Arabic: Taieb Felfel
+Japanese: Damien Dupraz
+Spanish: Daniel Tellez
+
+Third-party libraries
+---------------------
+
+This release contains open source librairies developped by the JBoss Group, the
+Apache Foundation, Sun Microsystems, HP, the OSGi Alliance, the JMock project,
+the JFlex project, the Cup project, etc.
+
+Tools
+-----
+
+This project is developed using tools that include: Eclipse, JUnit, Ant, Maven,
+IDEA and TeamCity (thanks to free licenses donated by JetBrains), Jira, Hudson,
+YourKit Java Profiler (thanks to free licenses donated by YourKit), etc.
+

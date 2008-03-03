@@ -1,0 +1,29 @@
+#!/bin/sh
+# $Id: fixeclipse 25099 2007-09-18 23:13:08Z fguillaume $
+
+OLD_MAIN=target/classes
+NEW_MAIN=bin/main
+OLD_TEST=target/test-classes
+NEW_TEST=bin/test
+echo "Fixing eclipse classpath to use bin output directory instead of target..."
+find . -maxdepth 3 -name .classpath |
+    xargs grep -El "path=\"$OLD_MAIN\"|output=\"$OLD_TEST\"" |
+        while read i; do
+            echo "$i"
+            perl -pi -e "s,path=\"$OLD_MAIN\",path=\"$NEW_MAIN\"," "$i"
+            perl -pi -e "s,output=\"$OLD_TEST\",output=\"$NEW_TEST\"," "$i"
+        done
+echo "Done."
+
+echo "Replacing missing or badly generated files with .*.ok files..."
+find . -maxdepth 3 -name '.*.ok' |
+    while read file; do
+        newfile="${file%.ok}"
+        if diff -bB "$file" "$newfile" >/dev/null; then
+            : # same file
+        else
+            echo "$newfile"
+            cp -f "$file" "$newfile"
+        fi
+    done
+echo "Done."

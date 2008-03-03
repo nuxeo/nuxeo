@@ -1,0 +1,204 @@
+<?xml version="1.0"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-ecm</artifactId>
+    <version>5.1.4-SNAPSHOT</version>
+  </parent>
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>jboss-patch</artifactId>
+  <version>4.0.5.GA-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Nuxeo Platform: JBoss patch</name>
+  <description>Nuxeo Platform: JBoss patch.</description>
+
+  <properties>
+    <security.dirname>security.sar/META-INF</security.dirname>
+    <tomcat.dirname>jbossweb-tomcat55.sar</tomcat.dirname>
+    <jboss.server>${jboss.dir}/server/default</jboss.server>
+    <jboss.lib>${jboss.server}/lib</jboss.lib>
+    <jboss.conf>${jboss.server}/conf</jboss.conf>
+    <jboss.deploy>${jboss.server}/deploy</jboss.deploy>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>patch-jboss-config</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>transform</goal>
+            </goals>
+            <configuration>
+              <transformationSets>
+                <transformationSet>
+                  <dir>${jboss.conf}</dir>
+                  <includes>
+                    <include>log4j.xml</include>
+                  </includes>
+                  <stylesheet>src/main/xsl/log4j.xsl</stylesheet>
+                </transformationSet>
+              </transformationSets>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>prepare-transform</id>
+            <phase>generate-sources</phase><!-- this phase before generate-resources -->
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <echo message="Preparing log4j patching..." />
+                <!-- this dtd is needed for the transform to read the file correctly -->
+                <copy file="src/main/dtd/log4j.dtd" todir="${jboss.conf}"
+                  overwrite="true" />
+              </tasks>
+            </configuration>
+          </execution>
+          <execution>
+            <id>patch-jboss-config</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <tasks>
+                <echo message="Patching log4j config..." />
+                <copy
+                  file="${project.build.directory}/generated-resources/xml/xslt/log4j.xml"
+                  todir="${jboss.conf}" overwrite="true" />
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>patch-ear-deployer</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <tasks>
+                <echo message="Patching EAR deployer..." />
+                <copy file="${basedir}/src/main/xml/ear-deployer.xml"
+                  todir="${jboss.deploy}" overwrite="true" />
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>patch-launcher</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <tasks>
+                <echo message="Updating JBoss launcher..." />
+                <concat destfile="${jboss.dir}/bin/run.conf" append="true"
+                  fixlastline="true">
+                  <fileset file="java_opt" />
+                </concat>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <!-- Patch for EJB3. See http://jira.jboss.com/jira/browse/EJBTHREE-1017 -->
+          <execution>
+            <id>backup-ejb3</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <tasks>
+                <echo message="Backup EJB3..." />
+                <move file="${jboss.deploy}/ejb3.deployer/jboss-ejb3.jar"
+                  tofile="${jboss.deploy}/ejb3.deployer/jboss-ejb3.jar.bak" />
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>patch-jboss-myfaces-libraries</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>javax.faces</groupId>
+                  <artifactId>jsf-api</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>javax.faces</groupId>
+                  <artifactId>jsf-impl</artifactId>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>
+                ${jboss.deploy}/${tomcat.dirname}/jsf-libs
+              </outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>patch-jboss-libraries</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <!-- Required by NXThemes - because of class isolation we must deploy them to the common lib dir otherwise tomcat will throw class not found exceptions -->
+                <artifactItem>
+                  <groupId>javax.el</groupId>
+                  <artifactId>el-api</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>javax.el</groupId>
+                  <artifactId>el-ri</artifactId>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${jboss.lib}</outputDirectory>
+            </configuration>
+          </execution>
+          <!-- Patch for EJB3. See http://jira.jboss.com/jira/browse/EJBTHREE-1017 -->
+          <execution>
+            <id>patch-ejb3</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>jboss</groupId>
+                  <artifactId>jboss-ejb3</artifactId>
+                  <version>RC9-Patch-1</version>
+                  <destFileName>jboss-ejb3.jar</destFileName>
+                  <overWrite>false</overWrite>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${jboss.deploy}/ejb3.deployer/</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
