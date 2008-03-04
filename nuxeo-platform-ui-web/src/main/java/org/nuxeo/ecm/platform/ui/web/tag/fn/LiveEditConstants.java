@@ -153,4 +153,6 @@ public interface LiveEditConstants {
     public static final QName serverVersionTag = DocumentFactory.getInstance().createQName(
             "serverVersion");
 
+    public static final String URL_ENCODE_CHARSET = "UTF-8";
+
 }

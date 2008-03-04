@@ -21,6 +21,10 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -61,6 +65,12 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
         String repo = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");
         String fileName = (String) req.getAttributes().get("filename");
+        try {
+            fileName = URLDecoder.decode(fileName, URL_ENCODE_CHARSET);
+        } catch (UnsupportedEncodingException e) {
+            handleError(res, e);
+            return;
+        }
 
 
         if (repo == null || repo.equals("*")) {

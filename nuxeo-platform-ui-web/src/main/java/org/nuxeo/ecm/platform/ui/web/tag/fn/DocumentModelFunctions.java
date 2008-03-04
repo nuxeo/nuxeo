@@ -73,8 +73,6 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
     private static final String JSESSIONID = "JSESSIONID";
 
-    private static final String URL_ENCODE_CHARSET = "UTF-8";
-
     private static final String i18n_prefix = "%i18n";
 
     private static final String NXEDIT_URL_VIEW_ID = "nxliveedit.faces";
