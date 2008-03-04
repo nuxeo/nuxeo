@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.1.4-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.theme</groupId>
   <artifactId>nuxeo-theme-parent</artifactId>
-  <version>5.1.4-SNAPSHOT</version>
+  <version>5.2-SNAPSHOT</version>
   <name>Nuxeo Theme Parent</name>
   <packaging>pom</packaging>
   <description>
@@ -18,8 +18,8 @@
   </description>
 
   <properties>
-    <nuxeo.runtime.version>1.4.1-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.theme.version>5.1.4-SNAPSHOT</nuxeo.theme.version>
+    <nuxeo.runtime.version>1.5-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.theme.version>5.2-SNAPSHOT</nuxeo.theme.version>
   </properties>
 
   <modules>
@@ -49,12 +49,6 @@
       <timezone>+1</timezone>
     </developer>
   </developers>
-
-  <scm>
-    <connection>scm:svn:http://svn.nuxeo.org/nuxeo/org.nuxeo.theme/branches/5.1</connection>
-    <developerConnection>scm:svn:https://svn.nuxeo.org/nuxeo/org.nuxeo.theme/branches/5.1</developerConnection>
-    <url>https://svn.nuxeo.org/trac/nuxeo/browser/org.nuxeo.theme/branches/5.1</url>
-  </scm>
 
   <dependencyManagement>
     <dependencies>
