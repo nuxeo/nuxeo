@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.restAPI.BaseNuxeoRestlet;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.Request;
@@ -46,7 +47,8 @@ import org.restlet.data.Response;
  */
 @Name("uploadFileRestlet")
 @Scope(EVENT)
-public class UploadFileRestlet extends BaseNuxeoRestlet {
+public class UploadFileRestlet extends BaseNuxeoRestlet implements
+        LiveEditConstants {
 
     @In(create = true)
     protected NavigationContext navigationContext;
@@ -60,13 +62,13 @@ public class UploadFileRestlet extends BaseNuxeoRestlet {
         String docid = (String) req.getAttributes().get("docid");
         String fileName = (String) req.getAttributes().get("filename");
 
-        DocumentModel dm = null;
 
         if (repo == null || repo.equals("*")) {
             handleError(res, "you must specify a repository");
             return;
         }
 
+        DocumentModel dm = null;
         try {
             navigationContext.setCurrentServerLocation(new RepositoryLocation(
                     repo));
@@ -79,14 +81,27 @@ public class UploadFileRestlet extends BaseNuxeoRestlet {
             return;
         }
 
+        // find the names of the fields from the optional request parameters
+        // with fallback to defaults if none is provided
+        String schemaName = getQueryParamValue(req, SCHEMA, DEFAULT_SCHEMA);
+        String blobFieldName = getQueryParamValue(req, BLOB_FIELD,
+                DEFAULT_BLOB_FIELD);
+        String filenameFieldName = getQueryParamValue(req, FILENAME_FIELD,
+                DEFAULT_FILENAME_FIELD);
+
         try {
-            dm.setProperty("file", "filename", fileName);
             Blob blob = StreamingBlob.createFromStream(req.getEntity().getStream());
-            dm.setProperty("file", "content", blob);
+
+            // ask the mimetype service for the blob mimetype first according to
+            // filename extension with fallback to binary sniffing
             MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
             String mimetype = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
                     fileName, blob, "application/octet-stream");
             blob.setMimeType(mimetype);
+
+            // save the properties on the document model
+            dm.setProperty(schemaName, blobFieldName, blob);
+            dm.setProperty(schemaName, filenameFieldName, fileName);
 
             documentManager.saveDocument(dm);
             documentManager.save();
