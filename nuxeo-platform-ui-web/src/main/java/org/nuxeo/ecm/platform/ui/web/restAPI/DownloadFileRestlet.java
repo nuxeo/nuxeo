@@ -44,6 +44,12 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.OutputRepresentation;
 
+/**
+ * Restlet to help LiveEdit clients download the blob content of a document
+ * 
+ * @author Sun Tan <stan@nuxeo.com>
+ * @author Olivier Grisel <ogrisel@nuxeo.com>
+ */
 @Name("downloadFileRestlet")
 @Scope(EVENT)
 public class DownloadFileRestlet extends BaseNuxeoRestlet implements

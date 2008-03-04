@@ -38,57 +38,63 @@ import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
+/**
+ * Restlet to help LiveEdit clients update the blob content of a document
+ * 
+ * @author Sun Tan <stan@nuxeo.com>
+ * @author Olivier Grisel <ogrisel@nuxeo.com>
+ */
 @Name("uploadFileRestlet")
 @Scope(EVENT)
 public class UploadFileRestlet extends BaseNuxeoRestlet {
 
-	@In(create = true)
-	protected NavigationContext navigationContext;
+    @In(create = true)
+    protected NavigationContext navigationContext;
 
-	protected CoreSession documentManager;
+    protected CoreSession documentManager;
 
-	@Override
-	public void handle(Request req, Response res) {
+    @Override
+    public void handle(Request req, Response res) {
 
-		String repo = (String) req.getAttributes().get("repo");
-		String docid = (String) req.getAttributes().get("docid");
-		String fileName = (String) req.getAttributes().get("filename");
+        String repo = (String) req.getAttributes().get("repo");
+        String docid = (String) req.getAttributes().get("docid");
+        String fileName = (String) req.getAttributes().get("filename");
 
-		DocumentModel dm = null;
+        DocumentModel dm = null;
 
-		if (repo == null || repo.equals("*")) {
-			handleError(res, "you must specify a repository");
-			return;
-		}
+        if (repo == null || repo.equals("*")) {
+            handleError(res, "you must specify a repository");
+            return;
+        }
 
-		try {
-			navigationContext.setCurrentServerLocation(new RepositoryLocation(
-					repo));
-			documentManager = navigationContext.getOrCreateDocumentManager();
-			if (docid != null) {
-				dm = documentManager.getDocument(new IdRef(docid));
-			}
-		} catch (ClientException e) {
-			handleError(res, e);
-			return;
-		}
+        try {
+            navigationContext.setCurrentServerLocation(new RepositoryLocation(
+                    repo));
+            documentManager = navigationContext.getOrCreateDocumentManager();
+            if (docid != null) {
+                dm = documentManager.getDocument(new IdRef(docid));
+            }
+        } catch (ClientException e) {
+            handleError(res, e);
+            return;
+        }
 
-		try {
-			dm.setProperty("file", "filename", fileName);
-			Blob blob = StreamingBlob.createFromStream(req.getEntity().getStream());
+        try {
+            dm.setProperty("file", "filename", fileName);
+            Blob blob = StreamingBlob.createFromStream(req.getEntity().getStream());
             dm.setProperty("file", "content", blob);
             MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
             String mimetype = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
                     fileName, blob, "application/octet-stream");
             blob.setMimeType(mimetype);
-            
-			documentManager.saveDocument(dm);
-			documentManager.save();
 
-		} catch (Exception e) {
-			handleError(res, e);
-		}
+            documentManager.saveDocument(dm);
+            documentManager.save();
 
-	}
+        } catch (Exception e) {
+            handleError(res, e);
+        }
+
+    }
 
 }
