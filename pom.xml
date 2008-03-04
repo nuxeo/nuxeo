@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
-  <version>5.1.4-SNAPSHOT</version>
+  <version>5.2-SNAPSHOT</version>
   <!-- IMPORTANT: change this file version when it's modified -->
 
   <packaging>pom</packaging>
@@ -707,10 +707,10 @@
                 ${basedir}/src/site/resources/css/jdstyle.css
                 </stylesheetfile-->
               <windowtitle>
-                Nuxeo Enterprise Platform 5.1 API Documentation
+                Nuxeo Enterprise Platform 5.2 API Documentation
               </windowtitle>
-              <doctitle>Nuxeo Enterprise Platform 5.1 API Documentation</doctitle>
-              <header>Nuxeo Enterprise Platform 5.1</header>
+              <doctitle>Nuxeo Enterprise Platform 5.2 API Documentation</doctitle>
+              <header>Nuxeo Enterprise Platform 5.2</header>
               <links>
                 <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
                 <link>http://java.sun.com/javaee/5/docs/api/</link>
@@ -918,14 +918,6 @@
       <organizationUrl>http://www.nuxeo.com/en</organizationUrl>
     </developer>
   </developers>
-
-  <scm>
-    <connection>scm:svn:http://svn.nuxeo.org/nuxeo/nuxeo-ep/branches/5.1</connection>
-    <developerConnection>
-      scm:svn:https://svn.nuxeo.org/nuxeo/nuxeo-ep/branches/5.1
-    </developerConnection>
-    <url>http://svn.nuxeo.org/trac/nuxeo/browser/nuxeo-ep/branches/5.1</url>
-  </scm>
 
   <distributionManagement>
     <site>
