@@ -20,6 +20,9 @@
 package org.nuxeo.runtime.jboss.deployment;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -32,17 +35,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.imageio.stream.FileImageInputStream;
+
 import org.jboss.deployment.DeploymentException;
 import org.jboss.deployment.DeploymentInfo;
 import org.jboss.deployment.EARDeployer;
 import org.jboss.mx.util.MBeanProxyExt;
 import org.jboss.mx.util.MBeanServerLocator;
 import org.jboss.system.ServiceControllerMBean;
+import org.jboss.util.threadpool.ThreadPoolFullException;
 import org.nuxeo.common.collections.DependencyTree;
 import org.nuxeo.runtime.jboss.deployment.preprocessor.ContainerDescriptor;
 import org.nuxeo.runtime.jboss.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.jboss.deployment.preprocessor.FragmentDescriptor;
 import org.nuxeo.runtime.jboss.deployment.preprocessor.FragmentRegistry;
+import org.xml.sax.InputSource;
 
 
 /**
@@ -151,6 +158,7 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
             String url = di.localUrl.toString();
             url = url.replace(" ", "%20");
             File directory = new File(new URI(url));
+            loadSystemProperties(directory);
             processor = new DeploymentPreprocessor(directory);
             // initialize
             processor.init();
@@ -483,6 +491,22 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
                         + di.shortName, e);
             }
         }
+    }
+
+    public void loadSystemProperties(File dir) {
+        File file = new File(dir, "config/system.properties");
+        if (file.isFile()) {
+            InputStream in = null;
+            try {
+                in = new FileInputStream(file);
+                System.getProperties().load(in);
+            } catch (Throwable t) {
+                log.warn("Failed to load system properties", t);
+            } finally {
+                if (in != null) try {in.close(); } catch(IOException e) {}
+            }
+        }
+
     }
 
 }
