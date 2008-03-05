@@ -118,7 +118,7 @@ public class MessagePublisher {
 
 
     public void publish(Object content) throws JMSException {
-        Message msg = messageFactory.createMessage(session, content);
+        Message msg = messageFactory.createMessage(getSession(), content);
         getPublisher().publish(topic, msg);
     }
 

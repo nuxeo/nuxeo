@@ -65,7 +65,7 @@ public class CoreEventPublisher {
     private final TopicConnectionFactory getTopicConnectionFactory()
             throws NamingException {
         if (topicConnectionFactory == null) {
-            Context jndi = new InitialContext();
+            InitialContext jndi = new InitialContext();
             topicConnectionFactory = (TopicConnectionFactory) jndi.lookup(isXa
                     ? XA_TOPIC_CONNECTION_FACTORY : TOPIC_CONNECTION_FACTORY);
             if (coreEventsTopic == null) { // initialize the default topic too

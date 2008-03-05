@@ -19,27 +19,39 @@
 
 package org.nuxeo.ecm.core.api.operation;
 
-import java.io.Serializable;
-
 /**
- * This class is not thread safe
- * TODO: should remove this class -> the command itself may be used as the event
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface OperationEvent extends Serializable {
+public class MultiStatus extends Status {
 
-    public String getId();
+    private static final long serialVersionUID = 4645429673525324229L;
 
-    public ModificationSet getModifications();
+    protected Status[] children;
 
-    public String getRepositoryName();
+    public MultiStatus(int severity) {
+        super (severity);
+    }
 
-    public String getSessionId();
+    public MultiStatus(int severity, String message) {
+        super (severity, message);
+    }
 
-    public String getUserName();
+    public MultiStatus(int severity, Throwable exception) {
+        super (severity, exception);
+    }
 
-    public Object getDetails();
+    @Override
+    public boolean isMultiStatus() {
+        return true;
+    }
+
+    public void addStatus(Status status) {
+        //TODO
+    }
+
+    public Status[] getChildren() {
+        return children;
+    }
 
 }

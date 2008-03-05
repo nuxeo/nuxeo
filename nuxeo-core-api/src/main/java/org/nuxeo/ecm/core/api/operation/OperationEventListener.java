@@ -19,27 +19,12 @@
 
 package org.nuxeo.ecm.core.api.operation;
 
-import java.io.Serializable;
-
 /**
- * This class is not thread safe
- * TODO: should remove this class -> the command itself may be used as the event
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface OperationEvent extends Serializable {
+public interface OperationEventListener {
 
-    public String getId();
-
-    public ModificationSet getModifications();
-
-    public String getRepositoryName();
-
-    public String getSessionId();
-
-    public String getUserName();
-
-    public Object getDetails();
+    void handleEvent(OperationEvent event);
 
 }

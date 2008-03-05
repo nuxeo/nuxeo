@@ -28,6 +28,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.DocsQueryProviderDef;
 import org.nuxeo.ecm.core.api.operation.Operation;
+import org.nuxeo.ecm.core.api.operation.ProgressMonitor;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -1303,5 +1304,15 @@ public interface CoreSession {
      * @throws ClientException if any error occurs
      */
     public <T> T run(Operation<T> cmd) throws ClientException;
+
+    /**
+     * Run a command and notify the given monitor about the execution progress
+     * @param <T>
+     * @param op
+     * @param monitor
+     * @return
+     * @throws ClientException
+     */
+    public <T> T run(Operation<T> op, ProgressMonitor monitor) throws ClientException;
 
 }

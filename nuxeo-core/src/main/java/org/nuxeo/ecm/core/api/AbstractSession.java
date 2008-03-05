@@ -53,7 +53,9 @@ import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.operation.Operation;
+import org.nuxeo.ecm.core.api.operation.OperationHandler;
 import org.nuxeo.ecm.core.api.operation.ProgressMonitor;
+import org.nuxeo.ecm.core.api.operation.Status;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
@@ -98,7 +100,7 @@ import org.nuxeo.runtime.services.streaming.StreamManager;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class AbstractSession implements CoreSession,
-        SecurityConstants, Serializable {
+        SecurityConstants, OperationHandler, Serializable {
 
     public static final NuxeoPrincipal ANONYMOUS = new UserPrincipal(
             "anonymous");
@@ -117,8 +119,6 @@ public abstract class AbstractSession implements CoreSession,
     protected String repositoryName;
 
     protected Map<String, Serializable> sessionContext;
-
-    protected ProgressMonitor monitor = DefaultProgressMonitor.INSTANCE;
 
 
     /**
@@ -2414,13 +2414,43 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     public <T> T run(Operation<T> op) throws ClientException {
-        try {
-            return op.run(this, monitor, (Object[])null);
-        } catch (ClientException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ClientException(e);
+        return run(op, null);
+    }
+
+    public <T> T run(Operation<T> op, ProgressMonitor monitor) throws ClientException {
+        //double s = System.currentTimeMillis();
+        T result = op.run(this, this, monitor);
+        //System.out.println(">>>>> OPERATION "+op.getName()+" took: "+ ((System.currentTimeMillis()-s)/1000));
+        Status status = op.getStatus();
+        if (status.isOk()) {
+            return result;
+        } else {
+            Throwable t = status.getException();
+            if (t != null) {
+                if (t instanceof ClientException) {
+                    throw (ClientException)t;
+                } else {
+                    throw new ClientException(status.getMessage(), t);
+                }
+            } else {
+                String msg = status.getMessage();
+                if (msg == null) {
+                    msg = "Unknown Error";
+                }
+                throw new ClientException(msg);
+            }
         }
+    }
+
+    public void startOperation(Operation<?> operation) {
+        // TODO Auto-generated method stub
+        CoreEventListenerService service = NXCore.getCoreEventListenerService();
+        service.fireOperationStarted(operation);
+    }
+
+    public void endOperation(Operation<?> operation) {
+        CoreEventListenerService service = NXCore.getCoreEventListenerService();
+        service.fireOperationTerminated(operation);
     }
 
 }

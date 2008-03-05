@@ -20,6 +20,7 @@
 
 package org.nuxeo.ecm.core.jms;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -70,7 +71,7 @@ public class JMSEventListener extends AbstractEventListener implements
     public void operationTerminated(Operation<?> cmd) throws Exception {
         OperationEvent event = OperationEventFactory.createEvent(cmd);
         if (event != null) {
-            CoreEventPublisher.getInstance().publish(event);
+            publish(event);
         }
     }
 
@@ -189,6 +190,7 @@ public class JMSEventListener extends AbstractEventListener implements
             // remove duplicates TODO improve this
             String id = coreEvent.getEventId();
             if ((DocumentEventTypes.DOCUMENT_CREATED.equals(id))
+                    || DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(id)
                     || DocumentEventTypes.DOCUMENT_UPDATED.equals(id)) {
                 // stacked events are doc centric events
                 DocumentModel doc = (DocumentModel)coreEvent.getSource();
@@ -203,18 +205,30 @@ public class JMSEventListener extends AbstractEventListener implements
             }
         }
 
-        CoreEventPublisher.getInstance().publish(cmdEvents);
+        publish(cmdEvents);
     }
+
+
 
     private void sendEventToJMS(CoreEvent coreEvent) {
         OperationEvent event = OperationEventFactory.createEvent(coreEvent);
         if (event != null) {
             try {
-                CoreEventPublisher.getInstance().publish(event);
+                publish(event);
             } catch (JMSException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private final void publish(Serializable content) throws JMSException {
+
+        //System.out.println("========================================");
+        //System.out.println(">>>>>> BEFORE CALLING PUBLISH: "+System.currentTimeMillis());
+        CoreEventPublisher.getInstance().publish(content);
+        //EventPublisherExecutor.getInstance().publish(content);
+        //System.out.println(">>>>>> AFTER CALLING PUBLISH: "+System.currentTimeMillis());
+        //System.out.println("========================================");
     }
 
 }

@@ -19,13 +19,18 @@
 
 package org.nuxeo.ecm.core.api.operation;
 
+import java.io.Serializable;
+
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Modification {
+public class Modification implements Serializable {
+
+    private static final long serialVersionUID = 9222943443571217778L;
+
     public final static int ADD_CHILD = 1;
     public final static int REMOVE_CHILD = 2;
     public final static int ORDER_CHILD = 4;
