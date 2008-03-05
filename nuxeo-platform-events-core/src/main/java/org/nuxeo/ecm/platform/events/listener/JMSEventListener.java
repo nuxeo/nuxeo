@@ -37,11 +37,9 @@ import org.nuxeo.ecm.core.listener.AbstractEventListener;
 import org.nuxeo.ecm.core.listener.AsynchronousEventListener;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.platform.events.DocumentMessageFactory;
-import org.nuxeo.ecm.platform.events.EventFactory;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
 import org.nuxeo.ecm.platform.events.api.EventMessage;
-import org.nuxeo.ecm.platform.events.api.NXCoreEvent;
 import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
 import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
 import org.nuxeo.ecm.platform.events.api.impl.EventMessageImpl;
@@ -174,7 +172,7 @@ public class JMSEventListener extends AbstractEventListener implements
         }
     }
 
-    private EventCombo getJMSMessage(CoreEvent coreEvent) {
+    private EventMessage getJMSMessage(CoreEvent coreEvent) {
         Object source = coreEvent.getSource();
 
         EventMessage message = null;
@@ -191,9 +189,7 @@ public class JMSEventListener extends AbstractEventListener implements
             message = new EventMessageImpl();
             message.feed(coreEvent);
         }
-        NXCoreEvent event = EventFactory.createEvent(coreEvent);
-
-        return new EventCombo(event, message);
+        return message;
     }
 
     private void markDuplicatedMessages(List<EventMessage> eventMessages) {
@@ -228,16 +224,10 @@ public class JMSEventListener extends AbstractEventListener implements
     }
 
     protected void sendEventToJMS(List<CoreEvent> coreEvents) {
-
-        List<NXCoreEvent> nxCoreEvents = new ArrayList<NXCoreEvent>();
         List<EventMessage> eventMessages = new ArrayList<EventMessage>();
 
         for (CoreEvent coreEvent : coreEvents) {
-            EventCombo evtCombo = getJMSMessage(coreEvent);
-            eventMessages.add(evtCombo.getMessage());
-            if (evtCombo.getEvent() != null) {
-                nxCoreEvents.add(evtCombo.getEvent());
-            }
+            eventMessages.add(getJMSMessage(coreEvent));
         }
 
         // mark duplicated messages before sending
@@ -245,25 +235,17 @@ public class JMSEventListener extends AbstractEventListener implements
 
         DocumentMessageProducer service = getProducerService();
         if (service != null) {
-
             service.produceEventMessages(eventMessages);
-            if (!nxCoreEvents.isEmpty()) {
-                service.produceCoreEvents(nxCoreEvents);
-            }
-
         } else {
             log.error("JMSDocumentMessageProducer service not found !");
         }
     }
 
     private void sendEventToJMS(CoreEvent coreEvent) {
-        EventCombo evtCombo = getJMSMessage(coreEvent);
+        EventMessage evt = getJMSMessage(coreEvent);
         DocumentMessageProducer service = getProducerService();
         if (service != null) {
-            service.produce(evtCombo.getMessage());
-            if (evtCombo.getEvent() != null) {
-                service.produce(evtCombo.getEvent());
-            }
+            service.produce(evt);
         } else {
             log.error("JMSDocumentMessageProducer service not found !");
         }
