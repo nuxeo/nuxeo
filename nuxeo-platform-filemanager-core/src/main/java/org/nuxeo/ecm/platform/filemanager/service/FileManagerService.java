@@ -373,7 +373,6 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
             // writing the new document to the repository
             docModel = documentManager.createDocument(docModel);
-            // docModel = documentManager.saveDocument(docModel);
         }
 
         documentManager.save();

@@ -19,22 +19,45 @@
 
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
-import java.util.Date;
-import java.util.Random;
 import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.*;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
-import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 
+/**
+ * Import the string content of a blob as text for the content of the "note"
+ * field of a new Note document. If an existing document with the same title is
+ * found the existing Note document is updated instead.
+ * 
+ * @author Olivier Grisel <ogrisel@nuxeo.com>
+ */
 public class NotePlugin extends AbstractPlugin {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1073550562485540108L;
+
+    private static final String ICON_FIELD = "icon";
+
+    private static final String COMMON_SCHEMA = "common";
+
+    private static final String NOTE_FIELD = "note";
+
+    private static final String NOTE_SCHEMA = NOTE_FIELD;
+
+    private static final String TITLE_FIELD = "title";
+
+    private static final String DUBLINCORE_SCHEMA = "dublincore";
+
+    private static final String NOTE_TYPE = "Note";
 
     private static final Log log = LogFactory.getLog(NotePlugin.class);
 
@@ -44,48 +67,44 @@ public class NotePlugin extends AbstractPlugin {
 
         String filename = FileManagerUtils.fetchFileName(fullname);
 
-        DocumentModel docModel;
         String title = FileManagerUtils.fetchTitle(filename);
 
         // Looking if an existing Document with the same filename exists.
-        DocumentModel existing = FileManagerUtils.getExistingDocByTitle(
+        DocumentModel docModel = FileManagerUtils.getExistingDocByTitle(
                 documentManager, path, title);
 
-        if (overwrite && existing != null) {
-            docModel = existing;
+        if (overwrite && docModel != null) {
 
             // Do a checkin / checkout of the current version first
             DocumentRef docRef = docModel.getRef();
             VersionModel newVersion = new VersionModelImpl();
-            newVersion
-                    .setLabel(documentManager.generateVersionLabelFor(docRef));
+            newVersion.setLabel(documentManager.generateVersionLabelFor(docRef));
             documentManager.checkIn(docRef, newVersion);
             documentManager.checkOut(docRef);
 
-            docModel.setProperty("note", "note", content.getString());
+            // Update the content of the note with the content of the imported
+            // blob
+            docModel.setProperty(NOTE_SCHEMA, NOTE_FIELD, content.getString());
+
+            // Save changes back to the repository
+            docModel = documentManager.saveDocument(docModel);
         } else {
-            // Creating an unique identifier
-            Random random = new Random(new Date().getTime());
-            String docId = String.valueOf(random.nextLong());
+            // Create a new empty DocumentModel of type Note in memory
+            String docId = IdUtils.generateId(title);
+            docModel = documentManager.createDocumentModel(path, docId,
+                    NOTE_TYPE);
 
-            DocumentModelImpl document = new DocumentModelImpl(path, docId,
-                    "Note");
-            docModel = documentManager.createDocument(document);
+            // Update known attributes (title, note)
+            docModel.setProperty(DUBLINCORE_SCHEMA, TITLE_FIELD, title);
+            docModel.setProperty(NOTE_SCHEMA, NOTE_FIELD, content.getString());
 
-            // Updating known attributes (title, note)
-            docModel.setProperty("dublincore", "title", title);
-            docModel.setProperty("note", "note", content.getString());
-
-            // updating icon
-            Type noteType = typeService.getType("Note");
-            String iconPath = noteType.getIcon();
-            docModel.setProperty("common", "icon", iconPath);
+            // Create the new document in the repository
+            docModel = documentManager.createDocument(docModel);
         }
-        documentManager.saveDocument(docModel);
         documentManager.save();
 
-        log.debug("Created the Note: " + docModel.getName() + " with icon : "
-                + docModel.getProperty("common", "icon"));
+        log.debug("Created the Note: " + docModel.getName() + " with icon: "
+                + docModel.getProperty(COMMON_SCHEMA, ICON_FIELD));
         return docModel;
     }
 
