@@ -113,7 +113,7 @@ public class ListenerList {
         System.arraycopy(listeners, 0, newListeners, 0, oldSize);
         newListeners[oldSize] = listener;
         if (comparator != null) {
-            Arrays.sort(newListeners, comparator);
+            Arrays.sort(newListeners, (Comparator<Object>) comparator);
         }
         //atomic assignment
         listeners = newListeners;
