@@ -398,7 +398,7 @@ public class FictiveDocumentModel implements DocumentModel {
 
     @Override
     public DocumentModel clone() throws CloneNotSupportedException {
-    	throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new java.lang.UnsupportedOperationException("not implemented");
     }
 
     public void reset() {

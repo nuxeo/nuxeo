@@ -138,7 +138,7 @@ public interface PublishActions extends SelectDataModelListener {
      */
     void unPublishDocumentsFromCurrentSelection() throws ClientException;
 
-    /* Rux NXP-1879: Multiple types can be suitable for publishing. So use array instead 
+    /* Rux NXP-1879: Multiple types can be suitable for publishing. So use array instead
      * single element. Also better naming.
      */
     Set<String> getSectionRootTypes();

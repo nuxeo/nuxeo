@@ -236,7 +236,7 @@ public interface IOManager extends Serializable {
     void importExportedFile(String uri, DocumentLocation targetLocation,
             String docWriterFactoryClassName, Map<String, Object> wFactoryParams)
             throws ClientException;
-    
+
     void importFromStreamSource(String uri, DocumentLocation targetLocation,
             String docReaderFactoryClassName,
             Map<String, Object> rFactoryParams,

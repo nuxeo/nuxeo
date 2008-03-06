@@ -93,7 +93,7 @@ public final class SyndicationLocator {
         urlBuf.append(SYNDIC_PARAM_NAME);
         urlBuf.append("=");
         if (type!=null)
-        	urlBuf.append(encode(type));
+            urlBuf.append(encode(type));
 
         return urlBuf.toString();
     }
@@ -146,7 +146,7 @@ public final class SyndicationLocator {
         urlBuf.append(SYNDIC_PARAM_NAME);
         urlBuf.append("=");
         if (syndicType!=null)
-        	urlBuf.append(encode(syndicType));
+            urlBuf.append(encode(syndicType));
 
         return urlBuf.toString();
     }

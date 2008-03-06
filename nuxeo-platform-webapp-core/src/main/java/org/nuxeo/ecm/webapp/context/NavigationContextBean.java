@@ -787,7 +787,7 @@ public class NavigationContextBean implements NavigationContextLocal {
     }
 
     public String goHome() {
-	    resetCurrentContext();
+        resetCurrentContext();
         EventManager.raiseEventsOnGoingHome();
         return "home";
     }

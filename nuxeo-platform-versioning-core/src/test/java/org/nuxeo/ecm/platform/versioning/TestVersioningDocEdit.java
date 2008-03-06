@@ -162,7 +162,7 @@ public class TestVersioningDocEdit extends VersioningBaseTestCase {
         checkVersion(docModel, 1L, 0L);
 
         docModel = coreSession.saveDocument(docModel);
-        
+
         DocumentModel readDocModel = coreSession.getDocument(docModel.getRef());
         checkVersion(readDocModel, 1L, 1L);
 
@@ -181,7 +181,7 @@ public class TestVersioningDocEdit extends VersioningBaseTestCase {
         VersioningChangeListenerForTesting.setVersionsToCheck(1L, 1L, 2L, 0L);
 
         docModel = coreSession.saveDocument(docModel);
-        
+
         DocumentModel docVersion = coreSession.getVersions(docModel.getRef()).get(
                 0);
         checkVersion(docVersion, 1L, 1L);

@@ -59,14 +59,14 @@ import org.nuxeo.ecm.platform.search.ejb.local.SearchServiceLocal;
 
 /**
  * Search service session bean.
- * 
+ *
  * <p>
  * This session bean expects the Nuxeo Runtime core search service available
  * locally (i.e : same JVM).
  * </p>
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- * 
+ *
  */
 @Stateless
 @Remote(SearchServiceRemote.class)

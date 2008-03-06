@@ -85,14 +85,14 @@ public class DocumentManagerBusinessDelegate implements Serializable {
     public CoreSession getDocumentManager(RepositoryLocation serverLocation)
             throws ClientException {
 
-    	if (serverLocation==null)
-    	{
-    		// XXX TD : for some reasons the currentServerLocation is not always injected by Seam
-    		// typical reproduction case includes Seam remoting call
-    		// ==> pull from factory by hand !
-    		if (serverLocation==null)
-    			serverLocation = (RepositoryLocation) Component.getInstance("currentServerLocation",true);
-    	}
+        if (serverLocation==null)
+        {
+            // XXX TD : for some reasons the currentServerLocation is not always injected by Seam
+            // typical reproduction case includes Seam remoting call
+            // ==> pull from factory by hand !
+            if (serverLocation==null)
+                serverLocation = (RepositoryLocation) Component.getInstance("currentServerLocation",true);
+        }
 
         if (documentManager == null) {
             if (serverLocation == null) {
