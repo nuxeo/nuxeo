@@ -268,10 +268,11 @@ public class SearchActionsBean extends InputController implements
         }
         try {
             String page;
-            PagedDocumentsProvider resultsProvider = null;
+            PagedDocumentsProvider resultsProvider;
             // XXX : hack !!!
-            if (searchResults!=null)
+            if (searchResults != null) {
                 searchResults.reset();
+            }
 
             if (searchTypeId == SearchType.NXQL) {
                 if (nxql == null) {
@@ -317,13 +318,13 @@ public class SearchActionsBean extends InputController implements
 
             return page;
         } catch (SortNotSupportedException e) {
-            this.queryErrorMsg = e.getMessage();
+            queryErrorMsg = e.getMessage();
             log.debug("Search error: " + e.getMessage(), e);
             return ACTION_PAGE_SEARCH_QUERY_ERROR;
         } catch (ClientException e) {
             // Present to user: TODO we should make the difference between
             // QueryException and actual errors.
-            this.queryErrorMsg = e.getMessage();
+            queryErrorMsg = e.getMessage();
             log.debug("Search error: " + e.getMessage(), e);
             return ACTION_PAGE_SEARCH_QUERY_ERROR;
         }

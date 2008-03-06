@@ -254,7 +254,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             addTextElement(docInfo, docFieldNameTag, blobField);
             Element docFieldPathT = docInfo.addElement(docfieldPathTag);
             if (schema != null && blobField != null) {
-                docFieldPathT.setText(schema + "/" + blobField);
+                docFieldPathT.setText(schema + '/' + blobField);
             }
             addTextElement(docInfo, docfileNameTag, filename);
             addTextElement(docInfo, docTypeTag, docType);
@@ -354,7 +354,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             String value) {
         Element element = parent.addElement(newElementName);
         if (value != null) {
-            element.setText(value.toString());
+            element.setText(value);
         }
         return element;
     }
