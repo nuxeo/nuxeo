@@ -70,6 +70,9 @@ public class NXTransformBlobExtractor implements BlobExtractor {
 
         String res = "";
 
+        if (blob==null || blob.getLength()==0)
+            return "";
+
         String transformerName = desc.lookupTransformer(mimetype);
         if (transformerName != null) {
             Transformer transformer = getTransformService().getTransformerByName(
