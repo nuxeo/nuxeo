@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -60,6 +62,13 @@ public final class IndexableResourcesFactory implements Serializable {
 
     private static final Log log = LogFactory.getLog(IndexableResourcesFactory.class);
 
+
+    private static Map<String, IndexableResourceConf> resourceConfCache = new ConcurrentHashMap<String, IndexableResourceConf>();
+    private static Map<String, IndexableResourceConf> fullResourceConfCache = new ConcurrentHashMap<String, IndexableResourceConf>();
+    private static Map<String, IndexableDocType> indexableDocTypeCache = new ConcurrentHashMap<String, IndexableDocType>();
+
+
+
     // Utility class.
     private IndexableResourcesFactory() {
     }
@@ -82,12 +91,9 @@ public final class IndexableResourcesFactory implements Serializable {
             return null;
         }
 
-        // Get remote search service.
-        SearchService service = SearchServiceDelegate.getRemoteSearchService();
-
         // Ask resource configurations for this given doctype.
         String docType = dm.getType();
-        IndexableDocType docTypeConf = service.getIndexableDocTypeFor(docType);
+        IndexableDocType docTypeConf = getIndexableDocType(docType);
 
         // Compute base resources configuration (including automatique schema
         // setup)
@@ -115,8 +121,7 @@ public final class IndexableResourcesFactory implements Serializable {
         List<IndexableResource> resources = new ArrayList<IndexableResource>();
         if (resourceNames != null) {
             for (String resourceName : resourceNames) {
-                IndexableResourceConf conf = service.getIndexableResourceConfByName(
-                        resourceName, false);
+                IndexableResourceConf conf = getResourceConf(resourceName, false);
                 if (conf != null) {
 
                     log.debug("Found indexable resource configuration with name: "
@@ -136,8 +141,7 @@ public final class IndexableResourcesFactory implements Serializable {
                             continue;
                         }
 
-                        conf = service.getIndexableResourceConfByName(
-                                schemaName, true);
+                        conf = getResourceConf(schemaName, true);
 
                         // Check if the schema is an actual declared schema for
                         // this document model.
@@ -180,16 +184,15 @@ public final class IndexableResourcesFactory implements Serializable {
                 continue;
             }
 
-            IndexableResourceConf conf = service.getIndexableResourceConfByName(
-                    schemaName, true);
+            IndexableResourceConf conf = getResourceConf(schemaName, true);
             resources.add(new DocumentIndexableResourceImpl(dm, conf,
                     managedSessionId));
 
         }
 
         // Automatically add builtins
-        IndexableResourceConf builtinConf = service.getIndexableResourceConfByName(
-                BuiltinDocumentFields.DOC_BUILTINS_RESOURCE_NAME, false);
+        IndexableResourceConf builtinConf = getResourceConf(BuiltinDocumentFields.DOC_BUILTINS_RESOURCE_NAME, false);
+
         if (builtinConf != null) {
             resources.add(new DocumentBuiltinsIndexableResourceImpl(dm,
                     builtinConf, managedSessionId));
@@ -199,4 +202,57 @@ public final class IndexableResourcesFactory implements Serializable {
         return new IndexableResourcesImpl(computeResourcesGlobalKey(dm),
                 resources);
     }
+
+    // Caching methods
+    private static IndexableDocType getIndexableDocType(String type)
+    {
+        IndexableDocType res=indexableDocTypeCache.get(type);
+
+        if (res==null)
+        {
+            SearchService service = SearchServiceDelegate.getRemoteSearchService();
+            res = service.getIndexableDocTypeFor(type);
+
+            synchronized (indexableDocTypeCache) {
+                indexableDocTypeCache.put(type, res);
+            }
+        }
+
+        return res;
+    }
+
+    private static IndexableResourceConf getResourceConf(String resourceName,Boolean full)
+    {
+        IndexableResourceConf res=null;
+
+        if (full)
+        {
+            res = fullResourceConfCache.get(resourceName);
+        }
+        else
+        {
+            res = resourceConfCache.get(resourceName);
+        }
+
+        if (res==null)
+        {
+            SearchService service = SearchServiceDelegate.getRemoteSearchService();
+            res = service.getIndexableResourceConfByName(resourceName, full);
+            setIndexableResourceConfIntoCache(resourceName, full, res);
+        }
+
+        return res;
+    }
+
+    private static synchronized void setIndexableResourceConfIntoCache(String resourceName, Boolean full, IndexableResourceConf conf)
+    {
+        if (full)
+        {
+            fullResourceConfCache.put(resourceName, conf);
+
+        }
+        else
+            resourceConfCache.put(resourceName, conf);
+    }
+
 }

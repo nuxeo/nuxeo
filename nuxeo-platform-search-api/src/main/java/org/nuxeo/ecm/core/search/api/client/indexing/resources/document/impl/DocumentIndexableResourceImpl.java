@@ -96,6 +96,8 @@ public class DocumentIndexableResourceImpl extends
 
     protected Set<String> docSchemas;
 
+    protected DocumentModel targetDoc;
+
     protected Long flags = 0L; // XXX depends on DocumentModelImpl
 
     public DocumentIndexableResourceImpl() {
@@ -118,13 +120,27 @@ public class DocumentIndexableResourceImpl extends
         docName = dm.getName();
         // Life cycle
 
+        if (isBoundToIndexingThread()) {
 
-        if (isBoundToIndexingThread())
-        {
             // don't use the dm.getClient
             // 1 - session may be closed => it will create a leaked session
-            // 2 - sid asociated to the dm may be associated with a user with not enought rights
-            if (dm.isLifeCycleLoaded()) {
+            // 2 - sid asociated to the dm may be associated with a user with
+            // not enought rights
+            // => refetch a new DocumentModel from the core
+
+            try {
+                targetDoc = getCoreSession().getDocument(dm.getRef());
+            } catch (Exception e) {
+                log.warn("Unable to fetch document for indexing", e);
+            }
+
+            if (targetDoc != null) {
+                try {
+                    docCurrentLifeCycle = targetDoc.getCurrentLifeCycleState();
+                } catch (ClientException e) {
+                    log.warn("Cannot get life cycle ...", e);
+                }
+            } else {
                 try {
                     docCurrentLifeCycle = getCoreSession().getCurrentLifeCycleState(
                             dm.getRef());
@@ -133,14 +149,19 @@ public class DocumentIndexableResourceImpl extends
                 }
             }
 
-            try {
-                docAcp = getCoreSession().getACP(dm.getRef());
-            } catch (Exception e) {
-                log.warn("Cannot get ACP for indexing....");
+            if (targetDoc!=null)
+            {
+                docAcp = targetDoc.getACP();
             }
-        }
-        else
-        {
+            else
+            {
+                try {
+                    docAcp = getCoreSession().getACP(dm.getRef());
+                } catch (Exception e) {
+                    log.warn("Cannot get ACP for indexing....");
+                }
+            }
+        } else {
             if (dm.isLifeCycleLoaded()) {
                 try {
                     docCurrentLifeCycle = dm.getCurrentLifeCycleState();
@@ -150,9 +171,6 @@ public class DocumentIndexableResourceImpl extends
             }
             docAcp = dm.getACP();
         }
-
-
-
 
         // FACETS
 
@@ -250,9 +268,15 @@ public class DocumentIndexableResourceImpl extends
 
             if (docRef != null) {
                 try {
-                    // TODO extract here complex properties
-                    res = (Serializable) getCoreSession().getDataModelField(
+                    if (targetDoc!=null)
+                    {
+                        res = (Serializable) targetDoc.getProperty(schemaPrefix, fieldName);
+                    }
+                    else
+                    {
+                        res = (Serializable) getCoreSession().getDataModelField(
                             docRef, schemaPrefix, fieldName);
+                    }
                     if (split.length > 2) {
                         res = extractComplexProperty(res, split[2]);
                     }
