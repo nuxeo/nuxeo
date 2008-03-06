@@ -59,8 +59,9 @@ public class UnicityExtension  implements Serializable {
     }
 
     public Boolean getComputeDigest() {
-        if (enabled)
+        if (enabled) {
             return true;
+        }
         return computeDigest;
     }
 
