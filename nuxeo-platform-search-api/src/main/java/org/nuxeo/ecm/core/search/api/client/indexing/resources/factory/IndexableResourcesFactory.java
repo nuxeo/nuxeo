@@ -29,11 +29,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory.BuiltinDocumentFields;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
+import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingThread;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResource;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResources;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.document.impl.DocumentBuiltinsIndexableResourceImpl;
@@ -89,6 +91,26 @@ public final class IndexableResourcesFactory implements Serializable {
         if (dm == null) {
             log.error("No document model given.... Nothing to compute.");
             return null;
+        }
+
+        String sid = managedSessionId;
+        if (managedSessionId==null)
+        {
+            // called from ThreadPool
+            // => we need to refetch the dm from a new CoreSession
+
+            if (Thread.currentThread() instanceof IndexingThread) {
+                IndexingThread idxThread = (IndexingThread) Thread.currentThread();
+                String repositoryName=dm.getRepositoryName();
+                try {
+                    CoreSession session = idxThread.getCoreSession(repositoryName);
+                    sid=session.getSessionId();
+                    dm=session.getDocument(dm.getRef());
+                } catch (Exception e) {
+                    log.error("Unable to fetch CoreSession or DocumentModel from thread context", e);
+                    return null;
+                }
+            }
         }
 
         // Ask resource configurations for this given doctype.
@@ -149,9 +171,8 @@ public final class IndexableResourcesFactory implements Serializable {
                         Collection<String> lschemas = Arrays.asList(schemas);
                         if (lschemas.contains(schemaName)) {
                             resources.add(new DocumentIndexableResourceImpl(dm,
-                                    conf, managedSessionId));
+                                    conf, sid));
                         }
-
                     }
                     // :XXX: handle other cases.
                 } else {
@@ -186,7 +207,7 @@ public final class IndexableResourcesFactory implements Serializable {
 
             IndexableResourceConf conf = getResourceConf(schemaName, true);
             resources.add(new DocumentIndexableResourceImpl(dm, conf,
-                    managedSessionId));
+                    sid));
 
         }
 
@@ -195,7 +216,7 @@ public final class IndexableResourcesFactory implements Serializable {
 
         if (builtinConf != null) {
             resources.add(new DocumentBuiltinsIndexableResourceImpl(dm,
-                    builtinConf, managedSessionId));
+                    builtinConf, sid));
         }
 
         // Compute the global identifier.
