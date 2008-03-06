@@ -35,9 +35,11 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
 
     private static final long serialVersionUID = 1970555604877434479L;
 
-    protected String name;
+    protected final String name;
 
-    protected Version version;
+    protected final Version version;
+
+    protected final InvokerLocator locator;
 
     protected Properties properties;
 
@@ -50,8 +52,6 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
     protected String streamingLocator;
 
     protected String[] peers;
-
-    protected InvokerLocator locator;
 
     //TODO
     //protected ServiceLocator serviceLocator;
