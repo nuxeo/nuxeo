@@ -254,14 +254,6 @@
       </sourceMimeType>
     </plugin>
 
-    <plugin name="xml2text_jr"
-      class="org.nuxeo.ecm.platform.transform.plugin.jr.XMLToTextPlugin"
-      destinationMimeType="text/plain">
-      <sourceMimeType>
-        text/xml
-      </sourceMimeType>
-    </plugin>
-
     <plugin name="html2text_jr"
       class="org.nuxeo.ecm.platform.transform.plugin.jr.HtmlToTextPlugin"
       destinationMimeType="text/plain">
