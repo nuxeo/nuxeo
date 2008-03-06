@@ -46,7 +46,7 @@ import org.w3c.dom.traversal.TreeWalker;
 
 /**
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
- * 
+ *
  */
 public class Xml2TextPluginImpl extends AbstractPlugin {
 
@@ -84,6 +84,8 @@ public class Xml2TextPluginImpl extends AbstractPlugin {
 
         SAXReader reader = new SAXReader();
         reader.setMergeAdjacentText(true);
+        reader.setFeature("http://xml.org/sax/features/validation", false);
+        reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",false);
 
         Document dom4jDoc = reader.read(sourceIs);
 

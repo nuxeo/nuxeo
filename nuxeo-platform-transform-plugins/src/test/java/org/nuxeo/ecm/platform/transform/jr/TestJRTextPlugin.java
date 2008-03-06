@@ -12,6 +12,7 @@ import org.nuxeo.ecm.platform.transform.plugin.jr.ExcelToTextPlugin;
 import org.nuxeo.ecm.platform.transform.plugin.jr.HtmlToTextPlugin;
 import org.nuxeo.ecm.platform.transform.plugin.jr.OOoSimpleTextExtractor;
 import org.nuxeo.ecm.platform.transform.plugin.jr.XMLToTextPlugin;
+import org.nuxeo.ecm.platform.transform.plugin.xml.Xml2TextPluginImpl;
 import org.nuxeo.ecm.platform.transform.timer.SimpleTimer;
 
 public class TestJRTextPlugin extends AbstractPluginTestCase {
@@ -75,7 +76,7 @@ public class TestJRTextPlugin extends AbstractPluginTestCase {
     public void testSmallXML2textConversion() throws Exception {
         String path = "test-data/hello.xml";
 
-        XMLToTextPlugin plugin = (XMLToTextPlugin) service.getPluginByName("xml2text_jr");
+        Xml2TextPluginImpl plugin = (Xml2TextPluginImpl) service.getPluginByName("xml2text");
         SimpleTimer timer = new SimpleTimer();
         timer.start();
         List<TransformDocument> results = plugin.transform(null,
@@ -85,7 +86,7 @@ public class TestJRTextPlugin extends AbstractPluginTestCase {
 
         File textFile = getFileFromInputStream(
                 results.get(0).getBlob().getStream(), "txt");
-        assertEquals("text content", "Hello from a xml document !",
+        assertEquals("text content", "Hello from a xml  document  !",
                 DocumentTestUtils.readContent(textFile));
     }
 
