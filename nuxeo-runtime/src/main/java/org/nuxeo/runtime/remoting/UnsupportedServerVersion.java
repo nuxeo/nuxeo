@@ -33,11 +33,11 @@ public class UnsupportedServerVersion extends ConfigurationException {
     Version version;
 
     public UnsupportedServerVersion(Version version) {
-        super ("Unsupported server configuration version: "+version);
+        super("Unsupported server configuration version: "+version);
     }
 
     public UnsupportedServerVersion(Version version, String message) {
-        super ("Unsupported server configuration version: "+version+". "+message);
+        super("Unsupported server configuration version: "+version+". "+message);
     }
 
 
