@@ -41,17 +41,17 @@ public class Status implements Serializable {
 
     public Status(int severity) {
         this.severity = severity;
-        this.details = null;
+        details = null;
     }
 
     public Status(int severity, String message) {
         this.severity = severity;
-        this.details = message;
+        details = message;
     }
 
     public Status(int severity, Throwable exception) {
         this.severity = severity;
-        this.details = exception;
+        details = exception;
     }
 
     public int getSeverity() {
@@ -78,10 +78,13 @@ public class Status implements Serializable {
         return severity == WARNING;
     }
 
+    @SuppressWarnings({"ObjectEquality"})
     public String getMessage() {
-        if (details == null) return null;
-        return details.getClass() == String.class ? (String)details
-                : ((Throwable)details).getMessage();
+        if (details == null) {
+            return null;
+        }
+        return details.getClass() == String.class ? (String) details
+                : ((Throwable) details).getMessage();
     }
 
     public Throwable getException() {

@@ -52,11 +52,11 @@ public class DefaultOperationEvent implements OperationEvent {
     }
 
     public DefaultOperationEvent(CoreSession session, String id, ModificationSet modifs) {
-        this (session, id, modifs, null);
+        this(session, id, modifs, null);
     }
 
     public DefaultOperationEvent(CoreSession session, String id, ModificationSet modifs, Serializable details) {
-        this (session.getSessionId(), session.getRepositoryName(), session.getPrincipal().getName(), id, modifs, details);
+        this(session.getSessionId(), session.getRepositoryName(), session.getPrincipal().getName(), id, modifs, details);
     }
 
     public DefaultOperationEvent(String sessionId, String repositoryName, String principal, String id, ModificationSet modifs, Object details) {

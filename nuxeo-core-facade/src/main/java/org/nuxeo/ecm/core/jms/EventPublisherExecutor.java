@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.core.jms;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,7 +33,7 @@ public class EventPublisherExecutor {
     ExecutorService executor;
     MessagePublisher publisher;
 
-    private static EventPublisherExecutor INSTANCE = null;
+    private static EventPublisherExecutor INSTANCE;
 
     public static EventPublisherExecutor getInstance() {
         if (INSTANCE == null) {
@@ -48,9 +47,6 @@ public class EventPublisherExecutor {
         return INSTANCE;
     }
 
-    /**
-     *
-     */
     public EventPublisherExecutor() {
         // TODO Auto-generated constructor stub
     }
@@ -72,7 +68,8 @@ public class EventPublisherExecutor {
         executor.execute(new Runnable() {
             public void run() {
                 try {
-                    System.out.println("############ serial publishing from thread "+Thread.currentThread());
+                    System.out.println(
+                            "############ serial publishing from thread " + Thread.currentThread());
                     publisher.publish(content);
                 } catch (Exception e) {
                 e.printStackTrace(); //TODO

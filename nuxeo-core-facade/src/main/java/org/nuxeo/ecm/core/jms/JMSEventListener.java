@@ -93,10 +93,10 @@ public class JMSEventListener extends AbstractEventListener implements
 
         Map<String,?> info  =coreEvent.getInfo();
         // avoid to send blocked events
-        if (info != null && coreEvent.getInfo().get(BLOCK_JMS_PRODUCING)!=null
-                && (Boolean) coreEvent.getInfo().get(BLOCK_JMS_PRODUCING)== true)
-        {
-            log.debug("JMS forwarding disabled for event " + coreEvent.getEventId());
+        if (info != null && coreEvent.getInfo().get(BLOCK_JMS_PRODUCING) != null
+                && (Boolean) coreEvent.getInfo().get(BLOCK_JMS_PRODUCING)) {
+            log.debug(
+                    "JMS forwarding disabled for event " + coreEvent.getEventId());
             return;
         }
 
@@ -109,7 +109,7 @@ public class JMSEventListener extends AbstractEventListener implements
         } else {
             DocumentModel source = (DocumentModel) coreEvent.getSource();
             if (source!=null && source.getContextData(BLOCK_JMS_PRODUCING) != null
-                    && (Boolean) source.getContextData(BLOCK_JMS_PRODUCING) == true) {
+                    && (Boolean) source.getContextData(BLOCK_JMS_PRODUCING)) {
                 log.debug("JMS forwarding disabled for events on doc "
                         + source.getRef().toString() + "... skipping.");
                 return;
@@ -182,7 +182,6 @@ public class JMSEventListener extends AbstractEventListener implements
 
 
     protected void sendEventToJMS(List<CoreEvent> coreEvents) throws JMSException {
-
         ArrayList<OperationEvent> cmdEvents = new ArrayList<OperationEvent>();
         HashSet<DocumentRef> checkedDocs = new HashSet<DocumentRef>();
 
@@ -208,8 +207,6 @@ public class JMSEventListener extends AbstractEventListener implements
         publish(cmdEvents);
     }
 
-
-
     private void sendEventToJMS(CoreEvent coreEvent) {
         OperationEvent event = OperationEventFactory.createEvent(coreEvent);
         if (event != null) {
@@ -221,8 +218,7 @@ public class JMSEventListener extends AbstractEventListener implements
         }
     }
 
-    private final void publish(Serializable content) throws JMSException {
-
+    private void publish(Serializable content) throws JMSException {
         //System.out.println("========================================");
         //System.out.println(">>>>>> BEFORE CALLING PUBLISH: "+System.currentTimeMillis());
         CoreEventPublisher.getInstance().publish(content);

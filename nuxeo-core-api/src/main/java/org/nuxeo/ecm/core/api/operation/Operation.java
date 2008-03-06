@@ -86,7 +86,7 @@ public abstract class Operation<T> implements Serializable {
     protected Object data;
     protected Status status = Status.STATUS_OK;
     protected T result;
-    private ModificationSet modifs = null;
+    private ModificationSet modifs;
     protected transient Operation<?> parent;
     protected transient CoreSession session;
 
@@ -206,34 +206,43 @@ public abstract class Operation<T> implements Serializable {
         return session;
     }
 
-    public T run(CoreSession session, OperationHandler handler, ProgressMonitor monitor) {
+    public T run(CoreSession session, OperationHandler handler,
+            ProgressMonitor monitor) {
         if (isRunning()) {
             throw new IllegalStateException("Command was already executed");
         }
         this.session = session;
         result = null;
         start();
-        if (handler != null) handler.startOperation(this);
-        if (monitor != null) monitor.started(this);
+        if (handler != null) {
+            handler.startOperation(this);
+        }
+        if (monitor != null) {
+            monitor.started(this);
+        }
         try {
             result = doRun(monitor);
         } catch (Throwable t) {
             status = new Status(Status.ERROR, t);
         } finally {
-            if (handler != null) handler.endOperation(this);
+            if (handler != null) {
+                handler.endOperation(this);
+            }
             end();
-            if (monitor != null) monitor.terminated(this);
+            if (monitor != null) {
+                monitor.terminated(this);
+            }
         }
         return result;
     }
 
-    private final void start() {
+    private void start() {
         setFlags(RUNNING);
         parent = operation.get();
         operation.set(this);
     }
 
-    private final void end() {
+    private void end() {
         operation.set(parent);
         setFlags(TERMINATED);
     }
