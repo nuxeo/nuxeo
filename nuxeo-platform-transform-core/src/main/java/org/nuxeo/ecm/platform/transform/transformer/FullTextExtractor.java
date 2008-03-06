@@ -46,10 +46,9 @@ public class FullTextExtractor extends AbstractTransformer {
 
     private static final String TXT_MT = "text/plain";
 
-    private List<String> sourceMimeTypes=null;
+    private List<String> sourceMimeTypes;
 
-    private long getMaxSizeForAutodetectingMimeType()
-    {
+    private long getMaxSizeForAutodetectingMimeType() {
         // XXX : TODO get it from options
         return AUTO_DETECT_MT_MAX_SIZE;
     }
@@ -61,12 +60,11 @@ public class FullTextExtractor extends AbstractTransformer {
 
     @Override
     public List<String> getMimeTypeSources() {
-        if (sourceMimeTypes==null)
-        {
-            List<Plugin> plugins= getNXTransform().getPluginByDestinationMimeTypes(TXT_MT);
-            sourceMimeTypes= new ArrayList<String>();
-            for (Plugin plugin : plugins)
-            {
+        if (sourceMimeTypes == null) {
+            List<Plugin> plugins = getNXTransform().getPluginByDestinationMimeTypes(
+                    TXT_MT);
+            sourceMimeTypes = new ArrayList<String>();
+            for (Plugin plugin : plugins) {
                 sourceMimeTypes.addAll(plugin.getSourceMimeTypes());
             }
         }
@@ -83,51 +81,49 @@ public class FullTextExtractor extends AbstractTransformer {
 
         List<TransformDocument> results = new ArrayList<TransformDocument>();
 
-        for (TransformDocument source : sources)
-        {
-            TransformDocument output=null;
+        for (TransformDocument source : sources) {
             // get MT
             String mt = source.getBlob().getMimeType();
-            if (mt==null || mt.equals(UNDEFINED_MT))
-            {
+            if (mt == null || mt.equals(UNDEFINED_MT)) {
                 long blobSize = source.getBlob().getLength();
-                if (blobSize>getMaxSizeForAutodetectingMimeType())
-                {
-                    mt=UNDEFINED_MT;
-                }
-                else
-                {
+                if (blobSize > getMaxSizeForAutodetectingMimeType()) {
+                    mt = UNDEFINED_MT;
+                } else {
                     try {
                         // reset MT to force computation
                         source.getBlob().setMimeType(null);
-                        mt=source.getMimetype();
+                        mt = source.getMimetype();
                     } catch (Exception e) {
-                        mt=UNDEFINED_MT;
+                        mt = UNDEFINED_MT;
                     }
                 }
             }
 
-            if (!UNDEFINED_MT.equals(mt))
-            {
-                Plugin plugin = getNXTransform().getPluginByMimeTypes(mt, TXT_MT);
-                if (plugin!=null)
-                {
-                    Map<String, Serializable> mergedOptions = mergeOptionsFor(plugin,
-                            options != null ? options.get(plugin.getName()) : null);
+            TransformDocument output = null;
+            if (!UNDEFINED_MT.equals(mt)) {
+                Plugin plugin = getNXTransform().getPluginByMimeTypes(mt,
+                        TXT_MT);
+                if (plugin != null) {
+                    Map<String, Serializable> mergedOptions = mergeOptionsFor(
+                            plugin,
+                            options != null ? options.get(
+                                    plugin.getName()) : null);
 
                     TransformDocument[] input = new TransformDocument[1];
-                    input[0]=source;
+                    input[0] = source;
                     try {
-                        List<TransformDocument> outputs = plugin.transform(mergedOptions, input);
-                        output=outputs.get(0);
+                        List<TransformDocument> outputs = plugin.transform(
+                                mergedOptions, input);
+                        output = outputs.get(0);
                     } catch (Exception e) {
-                        log.error("Error in FullText extractor while calling plugin " + plugin.getName(), e);
+                        log.error(
+                                "Error in FullText extractor while calling plugin " + plugin.getName(),
+                                e);
                     }
                 }
             }
 
-            if (output==null)
-            {
+            if (output == null) {
                 output = new TransformDocumentImpl();
             }
 
