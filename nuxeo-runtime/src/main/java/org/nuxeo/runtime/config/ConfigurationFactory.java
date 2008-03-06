@@ -32,13 +32,14 @@ import org.nuxeo.runtime.remoting.UnsupportedServerVersion;
  */
 public abstract class ConfigurationFactory {
 
-    private static List<ConfigurationFactory>registry = new ArrayList<ConfigurationFactory>();
+    private static final List<ConfigurationFactory> registry = new ArrayList<ConfigurationFactory>();
 
     public static void registerFactory(ConfigurationFactory handler) {
         registry.add(handler);
     }
 
-    public static ConfigurationFactory getFactory(Version version) throws UnsupportedServerVersion {
+    public static ConfigurationFactory getFactory(Version version)
+            throws UnsupportedServerVersion {
         if (version == null) {
             version = Version.MIN;
         }

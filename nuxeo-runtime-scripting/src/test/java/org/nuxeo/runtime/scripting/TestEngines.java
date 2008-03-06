@@ -32,7 +32,7 @@ import javax.script.ScriptException;
 @SuppressWarnings({"UnnecessaryBoxing"})
 public class TestEngines extends TestCase {
 
-    private ScriptEngineManager factory = new ScriptEngineManager();
+    private final ScriptEngineManager factory = new ScriptEngineManager();
 
     public void testJRuby() throws ScriptException {
         // Create a JRuby engine.

@@ -41,10 +41,10 @@ public class AutoConfigurationService {
 
     ServerConfiguration config; // last loaded server config
 
-    ServiceManager serviceMgr;
-    LoginService loginMgr;
-    RemotingService remoting;
-    Version version = new Version(1,0,0);
+    final ServiceManager serviceMgr;
+    final LoginService loginMgr;
+    final RemotingService remoting;
+    final Version version = new Version(1,0,0);
 
     public AutoConfigurationService() {
         remoting = Framework.getLocalService(RemotingService.class);
@@ -71,7 +71,7 @@ public class AutoConfigurationService {
     }
 
     public void load(String protocol, String host, int port) throws Exception {
-        HashMap<String,String> params = new HashMap<String,String>();
+        Map<String,String> params = new HashMap<String,String>();
         params.put("datatype", "nuxeo");
         load (new InvokerLocator(protocol, host, port, "/", params));
     }
@@ -103,7 +103,8 @@ public class AutoConfigurationService {
 
 
     /**
-     * Get the currently connected e server config
+     * Gets the currently connected e server config.
+     *
      * @return the server config or null if no server was connected yet
      */
     public ServerConfiguration getServerConfiguration() {
