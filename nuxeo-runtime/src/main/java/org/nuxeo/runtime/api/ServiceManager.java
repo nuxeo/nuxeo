@@ -18,6 +18,7 @@
  */
 
 package org.nuxeo.runtime.api;
+
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public final class ServiceManager {
 
@@ -50,7 +51,6 @@ public final class ServiceManager {
     public static ServiceManager getInstance() {
         return instance;
     }
-
 
     public ServiceDescriptor[] getServiceDescriptors() {
         return services.values().toArray(new ServiceDescriptor[services.size()]);
@@ -89,7 +89,13 @@ public final class ServiceManager {
         String key = sd.getInstanceName();
         synchronized (services) {
             sd = services.remove(key);
-            sd.getGroup().removeService(sd);
+            if (sd == null) {
+                log.warn(String.format(
+                        "Cannot unregister service '%s': either already"
+                                + " unregistered or not registered at all", key));
+            } else {
+                sd.getGroup().removeService(sd);
+            }
         }
     }
 
@@ -129,7 +135,7 @@ public final class ServiceManager {
      * <li><code>glassfish://localhost:1234/org.nuxeo.ecm.platform.types.TypeManager</code> -
      * locate a service on glassfish</li>
      * </ul>
-     *
+     * 
      * @param serviceUri the service uri
      * @return the service
      * @throws Exception
