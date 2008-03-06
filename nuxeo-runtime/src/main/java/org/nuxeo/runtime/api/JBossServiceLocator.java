@@ -67,7 +67,7 @@ public class JBossServiceLocator extends JndiServiceLocator {
     }
 
     public String getDefaultSuffix() {
-    	return System.getProperty("jboss.home.dir") == null ? "/remote" : "/local"; // if not in jboss return "/remote"
+        return System.getProperty("jboss.home.dir") == null ? "/remote" : "/local"; // if not in jboss return "/remote"
     }
 
 }
