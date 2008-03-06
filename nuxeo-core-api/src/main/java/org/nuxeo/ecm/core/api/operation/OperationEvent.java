@@ -30,16 +30,16 @@ import java.io.Serializable;
  */
 public interface OperationEvent extends Serializable {
 
-    public String getId();
+    String getId();
 
-    public ModificationSet getModifications();
+    ModificationSet getModifications();
 
-    public String getRepositoryName();
+    String getRepositoryName();
 
-    public String getSessionId();
+    String getSessionId();
 
-    public String getUserName();
+    String getUserName();
 
-    public Object getDetails();
+    Object getDetails();
 
 }

@@ -1303,7 +1303,7 @@ public interface CoreSession {
      * @return the command result
      * @throws ClientException if any error occurs
      */
-    public <T> T run(Operation<T> cmd) throws ClientException;
+    <T> T run(Operation<T> cmd) throws ClientException;
 
     /**
      * Run a command and notify the given monitor about the execution progress
@@ -1313,6 +1313,6 @@ public interface CoreSession {
      * @return
      * @throws ClientException
      */
-    public <T> T run(Operation<T> op, ProgressMonitor monitor) throws ClientException;
+    <T> T run(Operation<T> op, ProgressMonitor monitor) throws ClientException;
 
 }

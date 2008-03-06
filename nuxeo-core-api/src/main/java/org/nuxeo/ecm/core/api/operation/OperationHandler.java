@@ -25,8 +25,8 @@ package org.nuxeo.ecm.core.api.operation;
  */
 public interface OperationHandler {
 
-    public void startOperation(Operation<?> operation);
+    void startOperation(Operation<?> operation);
 
-    public void endOperation(Operation<?> operation);
+    void endOperation(Operation<?> operation);
 
 }
