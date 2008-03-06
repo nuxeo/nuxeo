@@ -71,7 +71,7 @@ public class AutoConfigurationService {
     }
 
     public void load(String protocol, String host, int port) throws Exception {
-        HashMap<String,String> params = new HashMap<String,String>();
+        Map<String,String> params = new HashMap<String,String>();
         params.put("datatype", "nuxeo");
         load (new InvokerLocator(protocol, host, port, "/", params));
     }

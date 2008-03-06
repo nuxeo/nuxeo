@@ -29,6 +29,8 @@ import javax.naming.InitialContext;
  */
 public abstract class JndiServiceLocator implements ServiceLocator {
 
+    private static final long serialVersionUID = -8445946234540101788L;
+
     protected transient InitialContext context;
 
     /**

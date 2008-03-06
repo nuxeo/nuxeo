@@ -304,8 +304,9 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
     }
 
     /**
-     * Deploy a whole OSGI bundle.
-     * <p>The lookup is first done on symbolic name, as set in <code>MANIFEST.MF</code>
+     * Deploys a whole OSGI bundle.
+     * <p>
+     * The lookup is first done on symbolic name, as set in <code>MANIFEST.MF</code>
      * and then falls back to the bundle url (e.g., <code>nuxeo-platform-search-api</code>)
      * for backwards compatibility.
      *
@@ -324,7 +325,7 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
             return null;
         }
         Attributes attrs = manifest.getMainAttributes();
-        String name = (String) attrs.getValue("Bundle-SymbolicName");
+        String name = attrs.getValue("Bundle-SymbolicName");
         if (name == null) {
             return null;
         }
