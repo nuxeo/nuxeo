@@ -66,8 +66,7 @@ public class OperationEventFactory {
     }
 
     public static OperationEvent createEvent(CoreEvent coreEvent) {
-        CoreSession session = null;
-        Map<?,?> info = coreEvent.getInfo();
+        Map<String, ?> info = coreEvent.getInfo();
         String sessionId = null;
         DocumentModel doc = (DocumentModel)coreEvent.getSource();
         if (doc != null) {
@@ -76,27 +75,31 @@ public class OperationEventFactory {
         if (info != null) {
             sessionId = (String) info.get(CoreEventConstants.SESSION_ID);
         }
+        CoreSession session = null;
         if (sessionId != null) {
             session = CoreInstance.getInstance().getSession(sessionId);
         }
         if (session != null) {
             return createEvent(session, coreEvent);
         } else {
-            System.out.println("WARNING: may be a compatibility bug: session id could not be found. Ignoring ...");
+            System.out.println(
+                    "WARNING: may be a compatibility bug: session id could not be found. Ignoring ...");
             String repositoryName = null;
-            String principal = "system";
             if (doc != null) {
                 repositoryName = doc.getRepositoryName();
             }
+            String principal = "system";
             return createEvent(sessionId, repositoryName, principal, coreEvent);
         }
     }
 
     public static OperationEvent createEvent(CoreSession session, CoreEvent coreEvent) {
-        return createEvent(session.getSessionId(), session.getRepositoryName(), session.getPrincipal().getName(), coreEvent);
+        return createEvent(session.getSessionId(), session.getRepositoryName(),
+                session.getPrincipal().getName(), coreEvent);
     }
 
-    public static OperationEvent createEvent(String sessionId, String repository, String principal, CoreEvent coreEvent) {
+    public static OperationEvent createEvent(String sessionId, String repository, String principal,
+            CoreEvent coreEvent) {
         String id = coreEvent.getEventId();
         if (!acceptedEvents.contains(id)) {
             return null;
@@ -110,7 +113,8 @@ public class OperationEventFactory {
         DocumentRef docRef = docModel.getRef();
         Serializable details = null;
 
-        if (DocumentEventTypes.DOCUMENT_CREATED.equals(id) || DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(id)) {
+        if (DocumentEventTypes.DOCUMENT_CREATED.equals(id)
+                || DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(id)) {
             modifs.add(docRef, Modification.CREATE);
             //TODO getParentRef() is a PATH reference -> should put a ID ref!
             modifs.add(docModel.getParentRef(), Modification.ADD_CHILD);

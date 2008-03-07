@@ -68,7 +68,6 @@ public abstract class ComplexProperty extends AbstractProperty {
      * <p>
      * If you want to change the way a property is fetched / stored you must overwride this method.
      *
-     * @param name the child to return
      * @return the child. Cannot return null
      * @throws UnsupportedOperationException
      *

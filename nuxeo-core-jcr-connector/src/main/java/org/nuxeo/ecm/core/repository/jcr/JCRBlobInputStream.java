@@ -26,16 +26,14 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * This input stream is used to wrap the input stream that jackrabbit return for blob values so that
- * we can reset it at a higher level - to be able to read it more than once without refetching the blob from the
- * repository.
+ * we can reset it at a higher level - to be able to read it more than once without refetching the
+ * blob from the repository.
  * <p>
- * This fix issue NXP-2072
+ * This fixes issue NXP-2072. 
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  * @see JCRBlob#getStream()
- * @see NXP-2072
- *
  */
 public class JCRBlobInputStream extends InputStream {
 
