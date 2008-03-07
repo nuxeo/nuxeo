@@ -17,7 +17,7 @@
  * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
-package org.nuxeo.ecm.platform.uidgen.tests.generators;
+package org.nuxeo.ecm.platform.uidgen.generators;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;

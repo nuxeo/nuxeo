@@ -24,8 +24,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -36,14 +34,10 @@ import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.SchemaImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.ecm.platform.uidgen.tests.UIDGenFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestGen extends NXRuntimeTestCase {
-
-    final Log log = LogFactory.getLog(TestGen.class);
-
 
     @Override
     protected void setUp() throws Exception {
@@ -122,8 +116,6 @@ public class TestGen extends NXRuntimeTestCase {
 
         for (int i = 1; i < 100; i++) {
             String uid = generator.createUID(gdoc);
-
-            log.info("UID : " + uid);
 
             final int year = new GregorianCalendar().get(Calendar.YEAR);
             final String suffix = String.format("%05d", i);
