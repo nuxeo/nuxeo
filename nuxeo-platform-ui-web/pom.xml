@@ -266,7 +266,7 @@
                 <artifactItem>
                   <groupId>org.dojotoolkit</groupId>
                   <artifactId>custom_rhino</artifactId>
-                  <version>0.4.3</version>
+                  <version>0.9.0</version>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>
