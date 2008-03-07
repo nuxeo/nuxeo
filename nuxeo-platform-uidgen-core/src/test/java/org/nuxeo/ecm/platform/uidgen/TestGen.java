@@ -57,7 +57,7 @@ public class TestGen extends NXRuntimeTestCase {
         Framework.getLocalService(SchemaManager.class).registerSchema(sch);
     }
 
-    private DocumentModel createDocumentModel(String type) throws Exception {
+    private static DocumentModel createDocumentModel(String type) throws Exception {
         DocumentModelImpl docModel = new DocumentModelImpl(type);
         Map<String, Object> dcMap = new HashMap<String, Object>();
         dcMap.put("title", null);

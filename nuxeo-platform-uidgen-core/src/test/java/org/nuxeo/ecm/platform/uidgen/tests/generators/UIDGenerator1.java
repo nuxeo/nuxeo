@@ -49,8 +49,7 @@ public class UIDGenerator1 extends AbstractUIDGenerator {
         String n = String.format(NFORMAT, index);
 
         final String seqKey = getSequenceKey(doc);
-        String uid = seqKey + n;
 
-        return uid;
+        return seqKey + n;
     }
 }

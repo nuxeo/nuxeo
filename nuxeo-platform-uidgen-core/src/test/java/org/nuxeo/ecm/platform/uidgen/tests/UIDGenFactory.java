@@ -39,17 +39,12 @@ public final class UIDGenFactory {
     /**
      * Mockup generator factory.
      * Will instantiate a Generator based on document type.
-     *
-     * @param doc
-     * @param sequencer
-     * @return
      */
     public static UIDGenerator createGeneratorForDocType(String docTypeName,
             UIDSequencer sequencer) {
-
         final AbstractUIDGenerator generator = new UIDGenerator1();
         generator.setSequencer(sequencer);
-
         return generator;
     }
+
 }
