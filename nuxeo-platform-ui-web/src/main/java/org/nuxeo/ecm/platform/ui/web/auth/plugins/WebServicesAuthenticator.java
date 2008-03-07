@@ -82,7 +82,9 @@ public class WebServicesAuthenticator implements NuxeoAuthenticationPlugin {
         //store the URL prefix to skip as being called a webservice
         skipURL = parameters.get("URLSkip");
         log.debug("Configured URL to skip: " + skipURL);
-        if (skipURL == null) skipURL = "webservices/";
+        if (skipURL == null) {
+            skipURL = "webservices/";
+        }
         log.info("WebServices Authentication filter configured - " + skipURL);
     }
 

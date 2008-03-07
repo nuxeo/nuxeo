@@ -245,10 +245,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
     public static boolean hasPermission(DocumentModel document,
             String permission) throws ClientException {
-        if (document == null)
+        if (document == null) {
             return false;
+        }
         String sid = document.getSessionId();
-        CoreSession session = null;
+        CoreSession session;
         boolean sessionOpened = false;
 
         if (sid != null) {
@@ -651,12 +652,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             return "";
         }
         Session directory = null;
-        String schemaName = null;
         try {
             directory = getDirectoryService().open(directoryName);
             // XXX hack, directory entries have only one datamodel
             DocumentModel documentModel = directory.getEntry(id);
-            schemaName = documentModel.getDeclaredSchemas()[0];
+            String schemaName = documentModel.getDeclaredSchemas()[0];
             return (String) documentModel.getProperty(schemaName, "label");
         } catch (Exception e) {
             return "";

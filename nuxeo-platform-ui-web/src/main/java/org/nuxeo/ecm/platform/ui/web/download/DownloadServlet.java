@@ -91,7 +91,7 @@ public class DownloadServlet extends HttpServlet {
             session = getCoreSession(repoName);
 
             DocumentModel doc = session.getDocument(new IdRef(docId));
-            Blob blob = null;
+            Blob blob;
             if (fieldPath != null) {
                 blob = (Blob) DocumentModelUtils.getPropertyValue(doc,
                         DocumentModelUtils.decodePropertyName(fieldPath));
@@ -100,8 +100,9 @@ public class DownloadServlet extends HttpServlet {
                     blob = (Blob) DocumentModelUtils.getComplexPropertyValue(
                             doc, fieldPath);
                 }
-            } else
+            } else {
                 return;
+            }
 
             if (fileName == null || fileName.length() == 0) {
                 fileName = "file";
@@ -147,8 +148,9 @@ public class DownloadServlet extends HttpServlet {
                     // nothing to do
                 }
             }
-            if (in != null)
+            if (in != null) {
                 in.close();
+            }
         }
 
     }
