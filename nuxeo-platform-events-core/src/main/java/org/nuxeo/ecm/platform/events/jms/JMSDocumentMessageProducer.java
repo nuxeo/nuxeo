@@ -140,7 +140,6 @@ public final class JMSDocumentMessageProducer {
                     + connectionFactory.toString());
 
             connection = connectionFactory.createTopicConnection();
-
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
             log.trace("Connection and session are initialized !");
@@ -161,7 +160,6 @@ public final class JMSDocumentMessageProducer {
             }
 
             log.trace("Message in the pipe !");
-
             log.trace("House keeping");
 
         } catch (JMSException je) {
@@ -213,7 +211,6 @@ public final class JMSDocumentMessageProducer {
             log.trace("Found destination : " + destination.toString());
 
             MessageProducer messageProducer = session.createProducer(destination);
-
             ObjectMessage objectMessage = session.createObjectMessage(message);
 
             log.trace("Object Message generated");

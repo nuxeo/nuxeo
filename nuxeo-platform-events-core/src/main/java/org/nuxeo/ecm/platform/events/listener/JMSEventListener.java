@@ -79,10 +79,8 @@ public class JMSEventListener extends AbstractEventListener implements
 
     /**
      * Core event notification.
-     *
      * <p>
      * Gets core events and transmits them to a JMS as a DocumentMessage.
-     * </p>
      *
      * @param coreEvent instance fired at core layer
      */
