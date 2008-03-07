@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.Cookie;
@@ -48,6 +49,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
@@ -56,32 +58,32 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * The LiveEdit bootstrap procedure works as follows:
  * <ul>
- *
+ * 
  * <li>browsed page calls a JSF function from the DocumentModelFunctions class
  * (edit a document, create new document, etc.) to generate;</li>
- *
+ * 
  * <li>composing a specifc URL as result, triggering the bootstrap addon to
  * popup;</li>
- *
+ * 
  * <li>the addon come back with the URL composed allowing the present seam
  * component to create the bootstrap file. The file contains various data as
  * requested in the URL;</li>
- *
+ * 
  * <li>the XML file is now available to addon which presents it to the client
  * plugin.</li>
- *
+ * 
  * </ul>
- *
+ * 
  * Please refer to the specification files in nuxeo-platform-ws-jaxws/doc/ for
  * details on the format of the nxedit URLs and the XML bootstrap file.
- *
+ * 
  * @author Thierry Delprat NXP-1959 the bootstrap file is managing the 'create
  *         new document [from template]' case too. The URL is containing an
  *         action identifier.
  * @author Rux rdarlea@nuxeo.com
  * @author Olivier Grisel ogrisel@nuxeo.com (split url functions into JSF
  *         DocumentModelFunctions module)
- *
+ * 
  */
 @Scope(EVENT)
 @Name("liveEditHelper")
@@ -166,12 +168,11 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
      * URL composition tells the case and what to create. The strucuture is
      * depicted in the NXP-1881. Rux NXP-1959: add new tag on root level
      * describing the action: actionEdit, actionNew or actionFromTemplate.
-     *
+     * 
      * @return the bootstrap file content
-     * @throws IOException
-     * @throws ClientException
+     * @throws Exception
      */
-    public String getBootstrap() throws IOException, ClientException {
+    public String getBootstrap() throws Exception {
 
         String currentRepoID = documentManager.getRepositoryName();
 
@@ -254,11 +255,13 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             addTextElement(docInfo, docFieldNameTag, blobField);
             Element docFieldPathT = docInfo.addElement(docfieldPathTag);
             if (schema != null && blobField != null) {
-                docFieldPathT.setText(schema + "/" + blobField);
+                docFieldPathT.setText(schema + '/' + blobField);
             }
             addTextElement(docInfo, docfileNameTag, filename);
             addTextElement(docInfo, docTypeTag, docType);
             addTextElement(docInfo, docMimetypeTag, mimetype);
+            addTextElement(docInfo, docFileExtensionTag,
+                    getFileExtension(mimetype));
 
             Element docIsVersionT = docInfo.addElement(docIsVersionTag);
             Element docIsLockedT = docInfo.addElement(docIsLockedTag);
@@ -283,7 +286,10 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             if (templateSchema != null && templateBlobField != null) {
                 docFieldPathT.setText(templateSchema + "/" + templateBlobField);
             }
-
+            addTextElement(templateDocInfo, docMimetypeTag, mimetype);
+            addTextElement(templateDocInfo, docFileExtensionTag,
+                    getFileExtension(mimetype));
+            
             // Browser request related informations
             Element requestInfo = root.addElement(requestInfoTag);
             Cookie[] cookies = request.getCookies();
@@ -350,11 +356,24 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         }
     }
 
+    private String getFileExtension(String mimetype) throws Exception {
+        if (mimetype == null) {
+            return null;
+        }
+        MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
+        List<String> extensions = mimetypeRegistry.getExtensionsFromMimetypeName(mimetype);
+        if (extensions != null && !extensions.isEmpty()) {
+            return extensions.get(0);
+        } else {
+            return null;
+        }
+    }
+
     private static Element addTextElement(Element parent, QName newElementName,
             String value) {
         Element element = parent.addElement(newElementName);
         if (value != null) {
-            element.setText(value.toString());
+            element.setText(value);
         }
         return element;
     }

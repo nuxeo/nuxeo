@@ -174,7 +174,7 @@ public class MimetypeRegistryService extends DefaultComponent implements
         for (String key : mimetypeByNormalisedRegistry.keySet()) {
             MimetypeEntry mimetypeEntry = mimetypeByNormalisedRegistry.get(key);
             if (mimetypeEntry.getMimetypes().contains(mimetypeName)) {
-                extensions = mimetypeEntry.getExtensions();
+                extensions.addAll(mimetypeEntry.getExtensions());
             }
         }
         return extensions;
