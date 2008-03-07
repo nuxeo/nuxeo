@@ -28,11 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,8 +51,6 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
 import org.nuxeo.ecm.platform.audit.api.delegate.AuditLogsServiceDelegate;
 import org.nuxeo.ecm.platform.audit.web.listener.ContentHistoryActions;
-import org.nuxeo.ecm.platform.audit.web.listener.ejb.local.ContentHistoryActionsLocal;
-import org.nuxeo.ecm.platform.audit.web.listener.ejb.remote.ContentHistoryActionsRemote;
 import org.nuxeo.ecm.platform.audit.web.listener.events.EventNames;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 

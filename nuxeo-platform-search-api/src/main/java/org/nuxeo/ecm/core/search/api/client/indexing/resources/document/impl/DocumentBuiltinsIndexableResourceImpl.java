@@ -84,7 +84,7 @@ public class DocumentBuiltinsIndexableResourceImpl extends
         } else if (indexableDataName.equals(BuiltinDocumentFields.FIELD_DOC_FACETS)) {
             value = (Serializable) getDocFacets();
         } else if (indexableDataName.equals(BuiltinDocumentFields.FIELD_DOC_FLAGS)) {
-            value = (Serializable) getFlags();
+            value = getFlags();
         }
 
         log.debug("Indexing builtin : " + indexableDataName + " : " + value);

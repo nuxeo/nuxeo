@@ -67,7 +67,6 @@ import org.nuxeo.ecm.directory.DirectoryFieldMapper;
 import org.nuxeo.ecm.directory.EntrySource;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.ecm.directory.AbstractDirectory.EntryComparator;
 
 /**
  * This class represents a session against an LDAPDirectory.

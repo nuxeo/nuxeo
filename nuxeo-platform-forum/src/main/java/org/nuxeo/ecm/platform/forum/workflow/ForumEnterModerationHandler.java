@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.forum.workflow;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import org.jbpm.graph.exe.ExecutionContext;
