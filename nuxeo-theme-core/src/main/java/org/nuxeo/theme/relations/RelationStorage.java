@@ -27,7 +27,7 @@ public final class RelationStorage implements Registrable {
 
     private static final Map<Long, Relation> relationsMap = new HashMap<Long, Relation>();
 
-    private static final Map<List, List<Long>> relatesMap = new HashMap<List, List<Long>>();
+    private static final Map<List<String>, List<Long>> relatesMap = new HashMap<List<String>, List<Long>>();
 
     private static final String[][] WILDCARDS_MONADIC = { { "" } };
 

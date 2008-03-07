@@ -29,7 +29,7 @@ NXThemesStyleEditor.renderElement = function(id, area) {
       onComplete: function(req) {
         var temp = document.createElement("div");
         temp.innerHTML = req.responseText;
-        var elementList = $(temp).getElementsBySelector('#' + id);
+        var elementList = $(temp).select('#' + id);
         if (elementList.length > 0) {
           var element = elementList[0];
           var html = element.innerHTML;
@@ -45,7 +45,7 @@ NXThemesStyleEditor.renderElement = function(id, area) {
     var i = url.indexOf('?');
     if (i > 0) {
       var query_string = url.substr(i+1);
-      var query_params = $H(query_string.toQueryParams()).merge({'engine': 'fragments-only'});
+      var query_params = $H(query_string.toQueryParams()).update({'engine': 'fragments-only'});
       url = url.substr(0, i) + '?' + query_params.toQueryString();
     }
     new Ajax.Request(url, options);
@@ -69,7 +69,7 @@ NXThemesStyleEditor.setStyleSelector = function(selector) {
        selector, function(r) {
          NXThemes.getControllerById("style editor perspectives").switchTo("style properties");
          NXThemes.getViewById("style properties").refresh();
-       })
+       });
 };
 
 NXThemesStyleEditor.createStyle = function() {
@@ -201,7 +201,7 @@ NXThemes.registerWidgets({
   stylepreview: function(def) {
     var widget = NXThemes.Canvas.createNode({
       tag: 'div',
-      classes: 'nxthemesStylePreview'
+      classes: ['nxthemesStylePreview']
     });
     return new NXThemesStyleEditor.StylePreview(widget, def);
   }

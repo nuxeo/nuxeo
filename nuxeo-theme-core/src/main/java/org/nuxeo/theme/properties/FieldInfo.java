@@ -31,4 +31,6 @@ public @interface FieldInfo {
 
     boolean required() default false;
 
+    String source() default "";
+
 }

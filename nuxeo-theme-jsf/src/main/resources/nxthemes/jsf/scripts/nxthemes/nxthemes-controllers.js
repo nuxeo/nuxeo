@@ -1,4 +1,4 @@
-/*
+ /*
 
  NXThemes UI library - controllers
 
@@ -87,7 +87,7 @@ NXThemes.BehaviourController = Class.create();
 NXThemes.BehaviourController.prototype = Object.extend(new NXThemes.Controller(), {
 
   setup: function() {
-    this.handlers = {};
+    this.handlers = new Hash();
   },
 
   register: function(view) {
@@ -109,7 +109,7 @@ NXThemes.BehaviourController.prototype = Object.extend(new NXThemes.Controller()
             NXThemes.warn(controller.def.id +
               " controller: no handler '" + action_id + "' found for event: " + r.key + "." + event_name, view.widget);
           } else {
-            handlers[action_id] = handler.bindAsEventListener(info);
+            handlers.set(action_id, handler.bindAsEventListener(info));
             selector.each(function(el) {
                 Event.observe(el, event_name, handler);
             });
@@ -130,7 +130,7 @@ NXThemes.BehaviourController.prototype = Object.extend(new NXThemes.Controller()
         $H(r.value).each(function(s) {
           var event_name = s.key;
           var action_id = s.value;
-          var handler = handlers[action_id];
+          var handler = handlers.get(action_id);
           if (handler !== null) {
             selector.each(function(el) {
               Event.stopObserving(el, event_name, handler);
@@ -164,9 +164,9 @@ NXThemes.FormController.prototype = Object.extend(new NXThemes.Controller(), {
       var model = view.model;
       var widget = view.widget;
 
-      var form_data = {};
+      var form_data = new Hash();
       $A(Form.getInputs(widget)).each(function(i) {
-        form_data[i.name] = Form.Element.getValue(i);
+        form_data.set(i.name, Form.Element.getValue(i));
       });
 
       model.setData(form_data);
@@ -229,7 +229,7 @@ NXThemes.RemoteScriptingController.prototype = Object.extend(
         var views = this.views;
         views.entries().each(function(v) {
           var view = NXThemes.getViewById(v);
-          if (form.childOf(view.widget)) {
+          if (form.descendantOf(view.widget)) {
             _request(views, view, method, params);
           }
         });
@@ -265,7 +265,7 @@ NXThemes.RemoteScriptingController.prototype = Object.extend(
       var views = this.views;
       views.entries().each(function(v) {
         var view = NXThemes.getViewById(v);
-        if (target.childOf(view.widget)) {
+        if (target.descendantOf(view.widget)) {
           _request(views, view, method, params);
         }
       });
@@ -355,41 +355,13 @@ NXThemes.DragAndDropController.prototype = Object.extend(
 
     if (this.def.dragging.savePosition) {
       var positions = this.positions;
-      $H(this.positions).each(function(p) {
+      $H(positions).each(function(p) {
         var moved = $(p.key);
         if (moved !== null) {
           var position = p.value;
           $(moved).setStyle({left: position.x + 'px', top: position.y + 'px' });
         }
       });
-    }
-
-    var getElements = document.getElementsByClassName;
-
-    var shifting = this.def.shifting;
-    if (shifting) {
-      if (shifting.element) {
-        this._shiftablezones = getElements(shifting.element);
-      }
-      if (shifting.container) {
-        this._containerzones = getElements(shifting.container);
-      }
-    }
-    if (this.def.dropping) {
-      if (this.def.dropping.target) {
-        this._dropzones = getElements(this.def.dropping.target);
-      }
-    }
-
-    // set the mouse cursor on draggable zones
-    var cursor = this.def.dragging.cursor;
-    if (cursor) {
-      var draggable = this.def.dragging.handle || this.def.dragging.source;
-      if (draggable) {
-        getElements(draggable).each(function(e) {
-           Element.setStyle(e, {cursor: cursor});
-        });
-      }
     }
 
     this.dragEvent = this.dragEvent.bindAsEventListener(
@@ -405,34 +377,25 @@ NXThemes.DragAndDropController.prototype = Object.extend(
   },
 
   _findDraggable: function(e) {
-    var element = Event.element(e);
-    var handle = this.def.dragging.handle || '';
+    var el = Event.element(e);
+    var handle = this.def.dragging.handle;
     if (handle) {
-      if (!NXThemes._hasClassName(element, handle)) {
+      if (!NXThemes._thisOrParentHasClassName(el, handle)) {
          return null;
       }
     }
 
-    var source = this.def.dragging.source || '';
-    if (source === null) {
+    var element = this.def.dragging.element || '';
+    if (element === null) {
       return null;
     }
-    while(element.parentNode) {
-      if (NXThemes._hasClassName(element, source)) {
-        return element;
+    while(el.parentNode) {
+      if (NXThemes._hasClassName(el, element)) {
+        return el;
       }
-      element = element.parentNode;
+      el = el.parentNode;
     }
     return null;
-  },
-
-  _getVerticalSpeed: function(y) {
-    if (!this._previousY) {
-      this._previousY = y;
-    }
-    var speed = y - this._previousY;
-    this._previousY = y;
-    return speed;
   },
 
   _findNext: function(el) {
@@ -481,7 +444,6 @@ NXThemes.DragAndDropController.prototype = Object.extend(
   },
 
   dragEvent: function(e) {
-
     if (NXThemes.alreadyDragging) return false;
     if (!Event.isLeftClick(e)) return false;
     var draggable = this._findDraggable(e);
@@ -495,7 +457,24 @@ NXThemes.DragAndDropController.prototype = Object.extend(
 
     this.target = $(draggable);
 
-    var pos = Position.cumulativeOffset(draggable);
+    var shifting = this.def.shifting;
+    if (shifting) {
+      if (shifting.element) {
+        this._shiftablezones = $$('.' + shifting.element);
+      }
+      if (shifting.container) {
+        this.sourceContainer = $(draggable).up('.' + shifting.container);
+        this._containerzones = $$('.' + shifting.container);
+      }
+    }
+
+    if (this.def.dropping) {
+      if (this.def.dropping.target) {
+        this._dropzones = $$('.' + this.def.dropping.target);
+      }
+    }
+
+    var pos = draggable.cumulativeOffset();
     this.x0 = pos[0];
     this.y0 = pos[1];
 
@@ -521,10 +500,10 @@ NXThemes.DragAndDropController.prototype = Object.extend(
 
     if (dragging.feedback) {
       var feedback = NXThemes.Canvas.createNode({tag: 'div'});
-      Position.clone(draggable, feedback);
+      feedback.clonePosition(draggable);
       feedback.setStyle({
-        'text-align': draggable.getStyle('text-align'),
-        zIndex: parseInt(draggable.getStyle('z-index') || 0) +1
+        textAlign: draggable.getStyle('textAlign'),
+        zIndex: parseInt(draggable.getStyle('zIndex') || 0) +1
       });
       if (dragging.feedback.clone) {
         var clone = $(draggable.cloneNode(true));
@@ -548,12 +527,25 @@ NXThemes.DragAndDropController.prototype = Object.extend(
         this.moved = draggable;
       }
     }
-    this.dragged = draggable;
+    var dragged = this.dragged = draggable;
+
+    var source = dragging.source;
+    if (source) {
+      var dim = dragged.getDimensions();
+      var color = source.color || "#ccc";
+      dragged._savedBackgroundColor = dragged.style.backgroundColor;
+      dragged._savedBorderColor = dragged.style.borderColor;
+      dragged._savedHTML = dragged.innerHTML;
+      dragged.style.backgroundColor = color;
+      dragged.style.borderColor = color;
+      dragged.style.height = dim.height + 'px';
+      dragged.innerHTML = "";
+    }
 
     // hightlight the dragged element
-    var highlight = this.def.dragging.highlight;
+    var highlight = dragging.highlight;
     if (highlight) {
-      NXThemes.Effects.highlight(this.dragged, {color: highlight.color || 'yellow'});
+      NXThemes.Effects.get('highlight')(dragged, {color: highlight.color || 'yellow'});
     }
 
     this.moved.setStyle({position: 'absolute', cursor: 'move'});
@@ -563,7 +555,7 @@ NXThemes.DragAndDropController.prototype = Object.extend(
       var highlight = this.def.dropping.highlight;
       if (highlight && this._dropzones) {
         this._dropzones.each(function(el) {
-          NXThemes.Effects.activate(el,
+          NXThemes.Effects.get('activate')(el,
             {duration: highlight.duration || 1000, precision: 50}
           );
         });
@@ -580,7 +572,6 @@ NXThemes.DragAndDropController.prototype = Object.extend(
 
     if (startDragX != null && startDragY != null) {
       if (Math.abs(startDragX-x) < 4 && Math.abs(startDragY-y) < 4) {
-
         return false;
       } else {
         Event.stop(e);
@@ -600,17 +591,20 @@ NXThemes.DragAndDropController.prototype = Object.extend(
     var shifting = this.def.shifting;
     if (shifting) {
       var shifted = false;
-      var speed = this._getVerticalSpeed(y);
       this._shiftablezones.each(function(s) {
-        if (Position.within(s, x, y)) {
-          if (speed > 0) {
-            var target = this._findNext(s);
-          } else {
+        if (s.within(x, y)) {
+          var height = s.getHeight();
+          var position = s.cumulativeOffset();
+          var ys = position[1];
+          if (y < ys + height/3) {
             var target = s;
+          } else {
+            var target = this._findNext(s);
           }
+
           var parent = s.parentNode;
           parent.insertBefore(this.dragged, target);
-          this.droptarget = parent;
+          this.droptarget = $(s).up('.' +  shifting.container);
           shifted = true;
           return;
         };
@@ -618,7 +612,7 @@ NXThemes.DragAndDropController.prototype = Object.extend(
 
       if (!shifted && this._containerzones) {
         this._containerzones.each(function(s) {
-          if (Position.within(s, x, y)) {
+          if (s.within(x, y)) {
             s.appendChild(this.dragged);
             this.droptarget = s;
             return;
@@ -645,8 +639,8 @@ NXThemes.DragAndDropController.prototype = Object.extend(
     if (this.def.dragging.savePosition) {
       var id = dragged.getAttribute("id");
       if (id != null) {
-        var position = Position.page(dragged);
-        this.positions[id] = {x: position[0], y: position[1]};
+        var position = dragged.viewportOffset();
+        this.positions.set(id, {x: position[0], y: position[1]});
         NXThemes.setSessionData(this.getSessionId(), this.positions)
       }
     }
@@ -655,7 +649,7 @@ NXThemes.DragAndDropController.prototype = Object.extend(
     var dropzones = this._dropzones || [];
     if (this.def.dropping) {
       dropzones.each(function(d) {
-        if (Position.within(d, x, y)) {
+        if (d.within(x, y)) {
           inTarget = true;
           this.target = d;
         };
@@ -674,10 +668,19 @@ NXThemes.DragAndDropController.prototype = Object.extend(
         var action_handler = NXThemes.getAction(action_id);
         if (action_handler) action_handler({
           source: dragged,
+          sourceContainer: this.sourceContainer,
           target: this.droptarget || this.target,
           order: this._getOrder(dragged),
           controller: this
         });
+
+        var source = dragging.source;
+        if (source) {
+          dragged.style.height = null;
+          dragged.innerHTML = dragged._savedHTML;
+          dragged.style.backgroundColor = dragged._savedBackgroundColor;
+          dragged.style.borderColor = dragged._savedBorderColor;
+        }
       }
     }
 
@@ -695,15 +698,15 @@ NXThemes.DragAndDropController.prototype = Object.extend(
     if (this.def.dropping) {
       var highlight = this.def.dropping.highlight;
       if (highlight && this._dropzones) {
-        this._dropzones.each(function(el) {
-          NXThemes.Effects.deactivate(el,
+        dropzones.each(function(el) {
+          NXThemes.Effects.get('deactivate')(el,
             {duration: highlight.duration || 1000}
           );
         });
       }
       var zoomto = this.def.dropping.zoomto;
       if (zoomto) {
-        var pos = Position.cumulativeOffset(this.target);
+        var pos = this.target.cumulativeOffset();
         moved.moveTo({
           x: pos[0],
           y: pos[1],
@@ -717,8 +720,8 @@ NXThemes.DragAndDropController.prototype = Object.extend(
       $(moved).remove();
     }
 
-    if (this.dragged) {
-      this.dragged.setOpacity(1);
+    if (dragged) {
+      dragged.setOpacity(1);
     }
 
     if (moved) moved.setStyle({cursor: ''});
@@ -732,7 +735,7 @@ NXThemes.PerspectiveController.prototype = Object.extend(
   new NXThemes.Controller(), {
 
   setup: function() {
-    this._visible_views = {};
+    this._visible_views = new Hash();
     this.sessionid = this.getSessionId();
     this._current = null;
 
@@ -750,10 +753,10 @@ NXThemes.PerspectiveController.prototype = Object.extend(
     var view_id = view.hash();
     var current_perspective = this._current;
     $A(view.def.perspectives).each(function(p) {
-      if (!(p in visible)) {
-        visible[p] = new NXThemes.Set();
+      if (visible.keys().indexOf(p) == -1) {
+        visible.set(p, new NXThemes.Set());
       }
-      visible[p].add(view_id);
+      visible.get(p).add(view_id);
     });
   },
 
@@ -774,7 +777,7 @@ NXThemes.PerspectiveController.prototype = Object.extend(
 
   switchTo: function(perspective) {
     if (this._current == perspective) {
-      this._visible_views[perspective].each(function(v) {
+      this._visible_views.get(perspective).each(function(v) {
         NXThemes.getViewById(v).refresh();
       });
     }
@@ -782,7 +785,7 @@ NXThemes.PerspectiveController.prototype = Object.extend(
     this._current = perspective;
     this.setCurrentPerspective(perspective);
 
-    var to_show = this._visible_views[perspective];
+    var to_show = this._visible_views.get(perspective);
     var to_hide;
     if (to_show == null) {
       to_show = [];
@@ -801,7 +804,7 @@ NXThemes.PerspectiveController.prototype = Object.extend(
   },
 
   hide: function(perspective) {
-    var to_hide = this._visible_views[perspective] || [];
+    var to_hide = this._visible_views.get(perspective) || [];
     to_hide.each(function(v) { NXThemes.getViewById(v).hide(); });
   }
 
@@ -817,7 +820,7 @@ NXThemes.NodeExpander.prototype = Object.extend(new NXThemes.Controller(), {
 
   register: function(view) {
     var widget = view.widget;
-    $A(document.getElementsByClassName(this.def.childclass), widget).each(function(v) {
+    $A($$(this.def.childclass), widget).each(function(v) {
       $(v).hide();
     });
     Event.observe(widget, "click", this.clickEvent);
@@ -836,7 +839,7 @@ NXThemes.NodeExpander.prototype = Object.extend(new NXThemes.Controller(), {
 
     var fold = target.hasClassName("selected");
 
-    $A(document.getElementsByClassName(this.def.nodeclass), widget).each(function(v) {
+    $A($$(this.def.nodeclass), widget).each(function(v) {
       v.removeClassName("selected");
     });
     if (fold) {
@@ -850,15 +853,15 @@ NXThemes.NodeExpander.prototype = Object.extend(new NXThemes.Controller(), {
 
     var effect = this.def.effect;
     if (effect == 'slide') {
-      NXThemes.Effects.slidedown(node, {duration: 300, precision: 10});
+      NXThemes.Effects.get('slidedown')(node, {duration: 300, precision: 10});
     } else {
       node.show();
     }
 
-    $A(document.getElementsByClassName(this.def.childclass), widget).each(function(v) {
+    $A($$(this.def.childclass), widget).each(function(v) {
       if (v != node || (fold && v == node)) {
         if (effect == 'slide') {
-          NXThemes.Effects.slideup(v, {duration: 200, precision: 10});
+          NXThemes.Effects.get('slideup')(v, {duration: 200, precision: 10});
         } else {
           v.hide();
         }
@@ -895,7 +898,7 @@ NXThemes.WidgetSelector.prototype = Object.extend(
     var sessionid = this.sessionid;
     views.entries().each(function(v) {
       var view = NXThemes.getViewById(v);
-      if (target.childOf(view.widget)) {
+      if (target.descendantOf(view.widget)) {
         view.select();
         NXThemes.setSessionData(sessionid, view.def.id);
       } else {

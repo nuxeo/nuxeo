@@ -310,7 +310,7 @@ public class ThemeParser {
 
                     if (elementXPath != null
                             && (viewName == null || viewName.equals("*"))) {
-                        // try to guess the view name
+                        log.info("Style parser: trying to guess the view name for: " + elementXPath);
                         viewName = guessViewNameFor(doc, elementXPath);
                         if (viewName == null) {
                             if (!newStyles.containsKey(style)) {
@@ -382,7 +382,7 @@ public class ThemeParser {
                 s.setPropertiesFor("*", entry.getKey(), entry.getValue());
             }
             // if the style already inherits, preserve the inheritance
-            Style ancestor = (Style) themeManager.getAncestorFormatOf(parent);
+            Style ancestor = (Style) ThemeManager.getAncestorFormatOf(parent);
             if (ancestor != null) {
                 themeManager.makeFormatInherit(s, ancestor);
             }

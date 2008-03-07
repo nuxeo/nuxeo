@@ -176,6 +176,14 @@ public class EditorAction implements EditorActionLocal {
         return id;
     }
 
+    public void clearSelections() {
+        uiStates.setSelectedElement(null);
+        uiStates.setCurrentStyleSelector(null);
+        uiStates.setStyleCategory(null);
+        uiStates.setCurrentStyleLayer(null);
+        clearClipboard();
+    }
+
     public List<String> copyElements(final List<String> ids) {
         // Clear the clipboard before adding elements to it.
         clearClipboard();
@@ -215,7 +223,7 @@ public class EditorAction implements EditorActionLocal {
                 log.debug("Element to paste not found: " + id);
             } else {
                 boolean duplicateFormats = true;
-                if (themeManager.belongToSameTheme(element, destElement)) {
+                if (ThemeManager.belongToSameTheme(element, destElement)) {
                     duplicateFormats = false;
                 }
                 destElement.addChild(themeManager.duplicateElement(element,
@@ -336,7 +344,7 @@ public class EditorAction implements EditorActionLocal {
     }
 
     public void updateElementStyle(final String id, String viewName,
-            final String path, final Map propertyMap) {
+            final String path, final Map<Object, Object> propertyMap) {
         final Element element = getElementById(id);
         final Properties properties = new Properties();
         for (Object key : propertyMap.keySet()) {
@@ -402,7 +410,7 @@ public class EditorAction implements EditorActionLocal {
                 null));
     }
 
-    public void updateElementProperties(final String id, final Map propertyMap) {
+    public void updateElementProperties(final String id, final Map<Object, Object> propertyMap) {
         final Element element = getElementById(id);
         final Properties properties = new Properties();
         for (Object key : propertyMap.keySet()) {
@@ -418,7 +426,7 @@ public class EditorAction implements EditorActionLocal {
                 null));
     }
 
-    public void updateElementLayout(final Map propertyMap) {
+    public void updateElementLayout(final Map<Object, Object> propertyMap) {
         final Element element = uiStates.getSelectedElement();
         if (element != null) {
             Layout layout = (Layout) ElementFormatter.getFormatFor(element,
@@ -646,7 +654,7 @@ public class EditorAction implements EditorActionLocal {
             log.error("Theme not found: " + themeName);
             return false;
         }
-        themeManager.repairTheme(theme);
+        ThemeManager.repairTheme(theme);
         eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(theme, null));
         eventManager.notify(STYLES_MODIFIED_EVENT,
                 new EventContext(theme, null));
@@ -669,7 +677,7 @@ public class EditorAction implements EditorActionLocal {
 
     public boolean saveTheme(final String src) {
         try {
-            themeManager.saveTheme(src);
+            ThemeManager.saveTheme(src);
         } catch (ThemeIOException e) {
             log.error(e);
             return false;
@@ -709,7 +717,7 @@ public class EditorAction implements EditorActionLocal {
 
                 final Properties styleProperties = s.getPropertiesFor(viewName,
                         path);
-                final Enumeration propertyNames = Utils.getCssProperties().propertyNames();
+                final Enumeration<?> propertyNames = Utils.getCssProperties().propertyNames();
                 while (propertyNames.hasMoreElements()) {
                     final String propertyName = (String) propertyNames.nextElement();
                     String value = styleProperties.getProperty(propertyName);
@@ -718,7 +726,7 @@ public class EditorAction implements EditorActionLocal {
                     }
                     css.append(propertyName);
                     css.append(':');
-                    PresetType preset = themeManager.resolvePreset(value);
+                    PresetType preset = ThemeManager.resolvePreset(value);
                     if (preset != null) {
                         value = preset.getValue();
                     }

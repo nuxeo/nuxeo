@@ -19,14 +19,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.models.InfoPool;
 import org.nuxeo.theme.rendering.RenderingInfo;
-import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.views.AbstractView;
 import org.nuxeo.theme.views.ViewType;
 
@@ -34,20 +33,18 @@ public class JSFView extends AbstractView {
 
     private static final Log log = LogFactory.getLog(JSFView.class);
 
+    private static final Pattern firstTagPattern = Pattern.compile(
+            "<([a-zA-Z0-9:]*)[^>]*>", Pattern.DOTALL);
+
+    private static final String[] ALLOWED_TAGS = { "html", "body", "table",
+            "tr", "td", "div" };
+
     public String render(final RenderingInfo info) {
-        final  URL themeUrl = info.getThemeUrl();
         final ViewType viewType = getViewType();
         final String template = viewType.getTemplate();
 
-        final ResourceManager resourceManager = Manager.getResourceManager();
-        final InfoPool infoPool = Manager.getInfoPool();
-
-        for (String resource : viewType.getResources()) {
-            resourceManager.addResource(resource, themeUrl);
-        }
         String result = "";
         InputStream is = null;
-
         try {
             is = Thread.currentThread().getContextClassLoader().getResourceAsStream(
                     template);
@@ -85,8 +82,30 @@ public class JSFView extends AbstractView {
             }
         }
 
+        result = result.trim();
+
+        // Sanity check
+        final Matcher matcher = firstTagPattern.matcher(result);
+        if (matcher.find()) {
+            final String tag = matcher.group(1).toLowerCase();
+            boolean found = false;
+            for (int i = 0; i < ALLOWED_TAGS.length; i++) {
+                if (tag.equals(ALLOWED_TAGS[i])) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                log.warn(String.format(
+                        "First HTML tag of view template: %s (<%s>) not one of <html>, <body>, <div>, <table>, <tr>, <td>",
+                        template, tag));
+            }
+        } else {
+            log.warn("First HTML tag of view template: " + template
+                    + " not found");
+        }
+
         // place data structure references inside the template
-        final String infoId = infoPool.computeInfoId(info);
+        final String infoId = InfoPool.computeInfoId(info);
         result = result.replaceAll("nxthemesInfo.", String.format(
                 "nxthemesInfo.map.%s.", infoId));
 
@@ -95,5 +114,4 @@ public class JSFView extends AbstractView {
 
         return result;
     }
-
 }

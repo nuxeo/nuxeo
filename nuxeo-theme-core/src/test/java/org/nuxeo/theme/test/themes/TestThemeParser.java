@@ -38,9 +38,9 @@ public class TestThemeParser extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("nxthemes-core-service.xml");
-        deploy("nxthemes-core-contrib.xml");
-        deploy("fragment-config.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("fragment-config.xml");
 
         URL url = getClass().getClassLoader().getResource("theme.xml");
         ThemeParser.registerTheme(url);
@@ -119,7 +119,7 @@ public class TestThemeParser extends NXRuntimeTestCase {
 
     public void testCommonStylesWithInheritance() {
         // if the style already inherits make it inherit from a common style
-        // while preversing inheritance
+        // while preserving inheritance
         Style common2 = (Style) themeManager.getNamedObject(theme1.getName(),
                 "style", "common style 2");
         assertNotNull(common2);

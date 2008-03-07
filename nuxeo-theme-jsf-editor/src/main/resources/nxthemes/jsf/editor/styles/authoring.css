@@ -47,7 +47,7 @@ ins.model, ins.view, ins.controller {
 
 /* Contextual menu */
 .nxthemesContextMenu {
-  font: 11px arial;
+  font: 12px arial;
   border: 1px solid #333;
   background: #eeeeec url(/nuxeo/nxthemes-jsf-editor/img/context-menu-bg.png) top left repeat-y;
   color: #000;
@@ -365,7 +365,7 @@ div.nxthemesEditorFrame {
   font: 12px Arial, sans-serif;
   border: 1px solid #999;
   padding: 1em;
-  background-color: #f9f9f9;
+  background-color: #fcfcfc;
 }
 
 .nxthemesEmptyContainer {
@@ -452,17 +452,12 @@ div.nxthemesEditorFrame {
 .nxthemesCollapsible ul li {
   padding: 5px 4px 4px 23px;
   text-decoration: none;
-  font: 12px Arial, sans-serif;
+  font: 10px Arial, sans-serif;
   color: #000;
   cursor: pointer;
-  text-transform: capitalize;
+  text-transform: uppercase;
   background-image: url(/nuxeo/nxthemes-jsf-editor/img/menu-li.png);
   background-repeat: no-repeat;
-}
-
-.nxthemesCollapsible ul li:hover {
-  color: #600;
-  background-color: #fc3;
 }
 
 .nxthemesCollapsible ul li.selected {
@@ -471,17 +466,22 @@ div.nxthemesEditorFrame {
 }
 
 .nxthemesCollapsible ul ul li {
-  color: #000;
-  padding: 5px 4px 5px 22px;
+  color: #600;
+  padding: 3px 0px 3px 23px;
   z-index: 50;
-  background: #fff;
+  background: #ffefb9;
+  font-size: 9px;
 }
 
 .nxthemesCollapsible ul ul li:hover {
   cursor: move;
-  text-decoration: none;
-  color: #600;
-  background-color: #fc3;
+  color: #000;
+}
+
+.nxthemesCollapsible ul ul li img {
+  vertical-align: bottom;
+  margin-left: -20px;
+  padding-right: 1px;
 }
 
 /* Edit tabs used in the element editor */
@@ -677,11 +677,19 @@ div.nxthemesEditorFrame {
   padding: 0.2em;
 }
 
+.nxthemesForm div {
+  clear: both;
+}
+
 .nxthemesForm button {
   border-style: solid;
   border-width: 1px;
   border-color: #ccc #333 #333 #ccc;
+  background-color: #fff;
+  text-transform: uppercase;
   font: 12px Arial, sans-serif;
+  margin: 15px 0 0 0;
+  padding: 0px 3px;
 }
 
 .nxthemesForm button:hover {
@@ -747,7 +755,7 @@ div.nxthemesEditorFrame {
 }
 
 .nxthemesForm input:focus,.nxthemesForm textarea:focus,.nxthemesForm select:focus {
-  border: 1px solid #ee9;
+  border: 1px solid #fc3;
   background-color: #ffc;
   color: #300;
 }
@@ -1080,3 +1088,25 @@ img.nxthemesAlignSection:hover {
   text-align: center;
   border: 1px solid #999;
 }
+
+
+.nxthemesPageArea {
+  border: 1px solid #000;
+  background-color: #ffc;
+  padding: 0;
+  font: 12px Arial, sans-serif;
+}
+
+.nxthemesPageArea .title {
+  padding: 1px;
+  background-color: #fc0;
+  text-align: center;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.nxthemesPageArea .body {
+  padding: 5px;
+}
+
+

@@ -140,9 +140,9 @@ NXThemes.registerEffects({
       if (n.nodeType != 1) {
         continue;
       }
-      this.highlight(n, options);
+      //this['highlight'](n, options);
     }
-    Element.setStyle(node, {backgroundColor: color});
+    node.setStyle({backgroundColor: color});
   }
 
 });

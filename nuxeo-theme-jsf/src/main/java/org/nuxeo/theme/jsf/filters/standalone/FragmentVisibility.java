@@ -14,12 +14,12 @@
 
 package org.nuxeo.theme.jsf.filters.standalone;
 
-import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.rendering.RenderingInfo;
 import org.nuxeo.theme.rendering.StandaloneFilter;
+import org.nuxeo.theme.themes.ThemeManager;
 
 public final class FragmentVisibility extends StandaloneFilter {
 
@@ -28,7 +28,7 @@ public final class FragmentVisibility extends StandaloneFilter {
         final Element element = info.getElement();
         if (element.getElementType().getTypeName().equals("fragment")) {
             final Fragment fragment = (Fragment) element;
-            final PerspectiveType perspective = Manager.getThemeManager().getPerspectiveByUrl(
+            final PerspectiveType perspective = ThemeManager.getPerspectiveByUrl(
                     info.getThemeUrl());
             if (perspective != null) {
                 if (!fragment.isVisibleInPerspective(perspective)) {

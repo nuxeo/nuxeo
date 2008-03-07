@@ -56,6 +56,11 @@ public final class NegotiationSelector extends HttpServlet {
             response.addCookie(createCookie("nxthemes.engine", engine, root));
         }
 
+        final String mode = request.getParameter("mode");
+        if (mode != null) {
+            response.addCookie(createCookie("nxthemes.mode", mode, root));
+        }
+
         final String theme = request.getParameter("theme");
         if (theme != null) {
             response.addCookie(createCookie("nxthemes.theme", theme, root));

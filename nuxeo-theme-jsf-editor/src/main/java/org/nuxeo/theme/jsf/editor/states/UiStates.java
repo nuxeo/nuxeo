@@ -34,6 +34,7 @@ import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.jsf.negotiation.CookieManager;
+import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 
 @Stateful
@@ -92,7 +93,7 @@ public class UiStates implements UiStatesLocal {
         if (perspectiveName == null) {
             return null;
         }
-        return Manager.getPerspectiveManager().getPerspectiveByName(
+        return PerspectiveManager.getPerspectiveByName(
                 perspectiveName);
     }
 

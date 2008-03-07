@@ -124,7 +124,7 @@ public final class Resources extends HttpServlet implements Serializable {
                 }
                 writeResource(resource, out);
                 source = out.toString();
-                if (resourceName.endsWith(".js")) {
+                if (resourceName.endsWith(".js") && resource.isShrinkable()) {
                     source = JSUtils.compressSource(source);
                 }
                 themeManager.setResource(resourceName, source);

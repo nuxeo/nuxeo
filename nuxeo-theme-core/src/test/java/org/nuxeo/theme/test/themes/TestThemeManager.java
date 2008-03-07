@@ -51,9 +51,9 @@ public class TestThemeManager extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("nxthemes-core-service.xml");
-        deploy("nxthemes-core-contrib.xml");
-        deploy("fragment-config.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("fragment-config.xml");
         themeManager = Manager.getThemeManager();
         typeRegistry = Manager.getTypeRegistry();
     }
@@ -102,10 +102,10 @@ public class TestThemeManager extends NXRuntimeTestCase {
         Element cell = ElementFactory.create("cell");
         theme.addChild(page).addChild(section);
 
-        assertSame(theme, themeManager.getThemeOf(section));
-        assertSame(theme, themeManager.getThemeOf(page));
-        assertSame(theme, themeManager.getThemeOf(theme));
-        assertNull(themeManager.getThemeOf(cell));
+        assertSame(theme, ThemeManager.getThemeOf(section));
+        assertSame(theme, ThemeManager.getThemeOf(page));
+        assertSame(theme, ThemeManager.getThemeOf(theme));
+        assertNull(ThemeManager.getThemeOf(cell));
     }
 
     public void testBelongToSameThemef() {
@@ -120,12 +120,12 @@ public class TestThemeManager extends NXRuntimeTestCase {
         theme2.addChild(page21);
         theme2.addChild(page22);
 
-        assertTrue(themeManager.belongToSameTheme(page11, page12));
-        assertTrue(themeManager.belongToSameTheme(page21, page22));
-        assertFalse(themeManager.belongToSameTheme(page11, page21));
-        assertFalse(themeManager.belongToSameTheme(page11, page22));
-        assertFalse(themeManager.belongToSameTheme(page12, page21));
-        assertFalse(themeManager.belongToSameTheme(page12, page22));
+        assertTrue(ThemeManager.belongToSameTheme(page11, page12));
+        assertTrue(ThemeManager.belongToSameTheme(page21, page22));
+        assertFalse(ThemeManager.belongToSameTheme(page11, page21));
+        assertFalse(ThemeManager.belongToSameTheme(page11, page22));
+        assertFalse(ThemeManager.belongToSameTheme(page12, page21));
+        assertFalse(ThemeManager.belongToSameTheme(page12, page22));
     }
 
     public void testDuplicateElement() throws IOException {
@@ -238,7 +238,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
     public void testDuplicateFormatWithAncestors() {
         Style style = (Style) FormatFactory.create("style");
 
-        Style ancestor1= (Style) FormatFactory.create("style");
+        Style ancestor1 = (Style) FormatFactory.create("style");
         ancestor1.setName("common styles 1");
 
         Style ancestor2 = (Style) FormatFactory.create("style");
@@ -384,11 +384,10 @@ public class TestThemeManager extends NXRuntimeTestCase {
 
         PerspectiveType perspective = new PerspectiveType("default",
                 "default perspective");
-        PerspectiveManager perspectiveManager = Manager.getPerspectiveManager();
 
-        perspectiveManager.setVisibleInPerspective(theme, perspective);
-        perspectiveManager.setVisibleInPerspective(page, perspective);
-        perspectiveManager.setVisibleInPerspective(section, perspective);
+        PerspectiveManager.setVisibleInPerspective(theme, perspective);
+        PerspectiveManager.setVisibleInPerspective(page, perspective);
+        PerspectiveManager.setVisibleInPerspective(section, perspective);
 
         DefaultFormat widget0 = (DefaultFormat) FormatFactory.create("widget");
         themeManager.registerFormat(widget0);
@@ -422,12 +421,12 @@ public class TestThemeManager extends NXRuntimeTestCase {
         typeRegistry.register(preset2);
         assertEquals(
                 "#000 #fc0 #0f0 #fff",
-                themeManager.resolvePresets("#000 \"orange (colors)\" \"green (colors)\" #fff"));
+                ThemeManager.resolvePresets("#000 \"orange (colors)\" \"green (colors)\" #fff"));
         assertEquals("1px solid \"red\"",
-                themeManager.resolvePresets("1px solid \"red\""));
+                ThemeManager.resolvePresets("1px solid \"red\""));
         assertEquals("1px solid #fc0",
-                themeManager.resolvePresets("1px solid \"orange (colors)\""));
-        assertEquals("#fc0", themeManager.resolvePresets("\"orange (colors)\""));
+                ThemeManager.resolvePresets("1px solid \"orange (colors)\""));
+        assertEquals("#fc0", ThemeManager.resolvePresets("\"orange (colors)\""));
     }
 
 }
