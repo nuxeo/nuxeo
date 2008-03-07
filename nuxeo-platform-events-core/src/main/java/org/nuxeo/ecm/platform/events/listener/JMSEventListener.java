@@ -46,10 +46,8 @@ import org.nuxeo.ecm.platform.events.api.impl.EventMessageImpl;
 
 /**
  * JMS Core Event Listener.
- *
  * <p>
  * This is a bridge from Nuxeo Core events to JMS.
- * </p>
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
@@ -96,9 +94,10 @@ public class JMSEventListener extends AbstractEventListener implements
         // If not attached document model then not bound to a session : we
         // notify directly.
 
-        if (coreEvent.getInfo().get(EventMessage.BLOCK_JMS_PRODUCING)!=null && (Boolean) coreEvent.getInfo().get(EventMessage.BLOCK_JMS_PRODUCING)== true)
-        {
-            log.debug("JMS forwarding disabled for event " + coreEvent.getEventId());
+        if (coreEvent.getInfo().get(EventMessage.BLOCK_JMS_PRODUCING) != null
+                && (Boolean) coreEvent.getInfo().get(EventMessage.BLOCK_JMS_PRODUCING)) {
+            log.debug(
+                    "JMS forwarding disabled for event " + coreEvent.getEventId());
             return;
         }
 
@@ -107,8 +106,8 @@ public class JMSEventListener extends AbstractEventListener implements
             sendEventToJMS(coreEvent);
         } else {
             DocumentModel source = (DocumentModel) coreEvent.getSource();
-            if (source!=null && source.getContextData(EventMessage.BLOCK_JMS_PRODUCING) != null
-                    && (Boolean) source.getContextData(EventMessage.BLOCK_JMS_PRODUCING) == true) {
+            if (source != null && source.getContextData(EventMessage.BLOCK_JMS_PRODUCING) != null
+                    && (Boolean) source.getContextData(EventMessage.BLOCK_JMS_PRODUCING)) {
                 log.debug("JMS forwarding disabled for events on doc "
                         + source.getRef().toString() + "... skipping.");
                 return;
@@ -159,8 +158,7 @@ public class JMSEventListener extends AbstractEventListener implements
     }
 
     private void stackEvent(CoreEvent coreEvent) {
-        String sid = (String) coreEvent.getInfo().get(
-                CoreEventConstants.SESSION_ID);
+        String sid = (String) coreEvent.getInfo().get(CoreEventConstants.SESSION_ID);
 
         if (sid == null) {
             log.error("received an Document related event witout session id");
@@ -172,7 +170,7 @@ public class JMSEventListener extends AbstractEventListener implements
         }
     }
 
-    private EventMessage getJMSMessage(CoreEvent coreEvent) {
+    private static EventMessage getJMSMessage(CoreEvent coreEvent) {
         Object source = coreEvent.getSource();
 
         EventMessage message = null;
@@ -192,7 +190,7 @@ public class JMSEventListener extends AbstractEventListener implements
         return message;
     }
 
-    private void markDuplicatedMessages(List<EventMessage> eventMessages) {
+    private static void markDuplicatedMessages(List<EventMessage> eventMessages) {
         Map<String, List<DocumentMessage>> messagesToCheck = new HashMap<String, List<DocumentMessage>>();
 
         for (EventMessage message : eventMessages) {
@@ -201,8 +199,8 @@ public class JMSEventListener extends AbstractEventListener implements
             // all (n-1) messages are marked as duplicated
             // this avoids doing indexing several times for nothing
             // for now only CREATE and UPDATE messages are taken into account
-            if ((DocumentEventTypes.DOCUMENT_CREATED.equals(message.getEventId()))
-                    || ((DocumentEventTypes.DOCUMENT_UPDATED.equals(message.getEventId())))) {
+            if (DocumentEventTypes.DOCUMENT_CREATED.equals(message.getEventId())
+                    || DocumentEventTypes.DOCUMENT_UPDATED.equals(message.getEventId())) {
                 if (message instanceof DocumentMessage) {
                     DocumentMessage docMessage = (DocumentMessage) message;
                     if (docMessage.getRef() != null) {

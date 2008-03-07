@@ -34,18 +34,18 @@ public class MockJMSEventListener extends JMSEventListener {
 
     private DocumentMessageProducer service;
 
-    public void reset()
-    {
+    public void reset() {
         eventsStack.clear();
-        service=null;
+        service = null;
     }
 
-    public void fakeSendCoreMessage(String eventId, String sessionId, String docName)
-    {
+    public void fakeSendCoreMessage(String eventId, String sessionId,
+            String docName) {
         Map<String, Object> options = new HashMap<String, Object>();
         DocumentModelImpl doc = new DocumentModelImpl("File");
-        if (docName!=null)
+        if (docName != null) {
             doc.setPathInfo("/root/", docName);
+        }
         options.put(CoreEventConstants.SESSION_ID, sessionId);
         CoreEvent coreEvent = new CoreEventImpl(eventId, doc, options,
                 null, DocumentEventCategories.EVENT_DOCUMENT_CATEGORY, "fake");
@@ -53,15 +53,16 @@ public class MockJMSEventListener extends JMSEventListener {
         super.notifyEvent(coreEvent);
     }
 
+    @Override
     public DocumentMessageProducer getProducerService() {
-        if (service==null)
-            service= new MockMessageProducer();
+        if (service == null) {
+            service = new MockMessageProducer();
+        }
         return service;
     }
 
-    public int getStackedMessageCount(String sessionId)
-    {
-        return super.getStackForSessionId(sessionId).size();
+    public static int getStackedMessageCount(String sessionId) {
+        return getStackForSessionId(sessionId).size();
     }
 
 }

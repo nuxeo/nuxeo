@@ -173,7 +173,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
                  * the proxy document indicates,and then from that version we
                  * have to get to the root document.
                  */
-                boolean doDefaultSort = comparator == null ? true : false;
+                boolean doDefaultSort = comparator == null;
                 if (currentDocument.isProxy()) {
                     DocumentModel version = documentManager.getSourceDocument(currentDocument.getRef());
                     // logEntries =
@@ -245,14 +245,13 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         }
 
         for (LogEntry entry : logEntries) {
-            String newComment = null;
             String oldComment = entry.getComment();
             if (oldComment == null) {
                 continue;
             }
 
-            DocumentRef docRef = null;
-            RepositoryLocation repoLoc = null;
+            DocumentRef docRef;
+            RepositoryLocation repoLoc;
 
             try {
                 String repoName = oldComment.split(":")[0];
@@ -283,6 +282,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
             }
 
             // update comment
+            String newComment = null;
             if (entry.getEventId().equals("documentDuplicated")) {
                 newComment = "audit.duplicated_to";
             } else if (entry.getEventId().equals("documentCreatedByCopy")) {
@@ -297,7 +297,6 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
             } else {
                 logEntriesComments.put(entry.getId(), oldComment);
             }
-
         }
     }
 

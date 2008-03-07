@@ -111,9 +111,8 @@ public class RelationIndexableResourceFactory extends
 
         // builtins can be overriden by conf. Hence iterate over
         // the union of sets, and retrieve in right order
-        IndexableResourceDataConf field;
         for (String fieldName : fieldNames) {
-            field = null;
+            IndexableResourceDataConf field = null;
             if (confFields != null) {
                 field = confFields.get(fieldName);
             }

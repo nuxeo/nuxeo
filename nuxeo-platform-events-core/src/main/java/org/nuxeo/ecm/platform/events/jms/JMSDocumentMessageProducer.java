@@ -170,12 +170,15 @@ public final class JMSDocumentMessageProducer {
                     je);
         } finally {
             try {
-                if (messageProducer != null)
+                if (messageProducer != null) {
                     messageProducer.close();
-                if (session != null)
+                }
+                if (session != null) {
                     session.close();
-                if (connection != null)
+                }
+                if (connection != null) {
                     connection.close();
+                }
             } catch (JMSException je) {
                 log.error("An error during JMS cleanup", je);
             }

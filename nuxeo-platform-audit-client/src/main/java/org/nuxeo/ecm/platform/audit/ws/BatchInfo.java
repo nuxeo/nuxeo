@@ -25,11 +25,10 @@ public class BatchInfo {
 
     private int nextPage=1;
 
-    private String initialDateRange=null;
+    private String initialDateRange;
 
-    public BatchInfo(String dateRange)
-    {
-        this.initialDateRange=dateRange;
+    public BatchInfo(String dateRange) {
+        initialDateRange = dateRange;
     }
 
     public String getPageDateRange() {
@@ -52,8 +51,8 @@ public class BatchInfo {
         this.pageSize = pageSize;
     }
 
-    public void prepareNextCall()
-    {
-        nextPage+=1;
+    public void prepareNextCall() {
+        nextPage += 1;
     }
+
 }
