@@ -100,7 +100,6 @@ public interface VersionedActions extends StatefulBaseLifeCycle {
      * @return the next page
      * @throws ClientException
      */
-    @SuppressWarnings({"NonBooleanMethodNameMayNotStartWithQuestion"})
     String checkOut() throws ClientException;
 
     /**

@@ -225,13 +225,13 @@ public class DefaultActionFilter implements ActionFilter {
             ActionContext context, String[] groups) {
         NuxeoPrincipal principal = context.getCurrentPrincipal();
         if (principal == null) {
-        	return false;
+            return false;
         }
         List<String> principaGroups = principal.getGroups();
         for (String group : groups) {
-        	if (principaGroups.contains(group)) {
-        		return true;
-        	}
+            if (principaGroups.contains(group)) {
+                return true;
+            }
         }
         return false;
     }

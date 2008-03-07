@@ -65,15 +65,11 @@ public class RelationsTestHelper {
 
     public static DocumentModel createComment(DocumentModel docModel,
             DocumentModel comment) throws Exception {
-
-        CommentService csHelper = CommentServiceHelper.getCommentService();
-        DocumentModel createdComment = getCommentManager().createComment(
-                docModel, comment);
-        return createdComment;
+        return getCommentManager().createComment(docModel, comment);
     }
 
     public static CommentManager getCommentManager() throws Exception {
-        return (CommentManager) Framework.getService(CommentManager.class);
+        return Framework.getService(CommentManager.class);
     }
 
     public static void createRelation(DocumentModel doc1, DocumentModel doc2)
@@ -126,4 +122,5 @@ public class RelationsTestHelper {
         }
         return documentResource;
     }
+
 }

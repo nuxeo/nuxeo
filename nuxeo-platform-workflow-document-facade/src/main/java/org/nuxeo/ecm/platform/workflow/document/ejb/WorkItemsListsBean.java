@@ -94,7 +94,7 @@ public class WorkItemsListsBean implements WorkItemsListsManager {
     }
 
     @SuppressWarnings("unchecked")
-    public List<WorkItemsListEntry> getWorkItemListsForAll(String processName) 
+    public List<WorkItemsListEntry> getWorkItemListsForAll(String processName)
             throws WorkItemsListException {
         try {
             Query query = em.createNamedQuery("getWorkItemsListEntriesForAll");

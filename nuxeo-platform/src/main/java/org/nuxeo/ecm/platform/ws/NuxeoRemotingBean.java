@@ -119,7 +119,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
             return null;
         }
     }
-    
+
     public boolean hasPermission(String sid, String uuid, String permission)
             throws ClientException {
         WSRemotingSession rs = initSession(sid);

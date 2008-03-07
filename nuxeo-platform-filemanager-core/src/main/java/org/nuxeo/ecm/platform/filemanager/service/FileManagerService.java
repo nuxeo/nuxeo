@@ -587,6 +587,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return base64Digest;
     }
 
+    // FIXME: infinite recursion!
     public boolean isFileAlreadyPresentInPath(String path, Blob blob,
             Principal principal) {
         return isFileAlreadyPresentInPath(path, blob, principal);
@@ -605,18 +606,14 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         ComposedNXQueryImpl query = new ComposedNXQueryImpl(
                 SQLQueryParser.parse(nxql),
                 service.getSearchPrincipal(principal));
-        SearchPageProvider nxqlProvider;
-        nxqlProvider = new SearchPageProvider(service.searchQuery(query, 0,
-                maxResultsCount), false, null, nxql);
+        SearchPageProvider nxqlProvider = new SearchPageProvider(
+                service.searchQuery(query, 0, maxResultsCount), false, null, nxql);
 
         nbresult = nxqlProvider.getResultsCount();
-        if (nbresult != 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return nbresult == 0;
     }
 
+    // FIXME: infinite recursion
     public List<DocumentLocation> findExistingDocumentWithFile(String path,
             Blob blob, Principal principal) {
         return findExistingDocumentWithFile(path, blob, principal);
@@ -635,16 +632,14 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         ComposedNXQueryImpl query = new ComposedNXQueryImpl(
                 SQLQueryParser.parse(nxql),
                 service.getSearchPrincipal(principal));
-        SearchPageProvider nxqlProvider = null;
-        nxqlProvider = new SearchPageProvider(service.searchQuery(query, 0,
-                maxResultsCount), false, null, nxql);
+        SearchPageProvider nxqlProvider = new SearchPageProvider(
+                service.searchQuery(query, 0, maxResultsCount), false, null, nxql);
 
         nxqlProvider.getResultsCount();
         DocumentModelList documentModelList = nxqlProvider.getCurrentPage();
         List<DocumentLocation> docLocationList = new ArrayList<DocumentLocation>();
-        DocumentLocation docLocation;
         for (DocumentModel documentModel : documentModelList) {
-            docLocation = new DocumentLocationImpl(
+            DocumentLocation docLocation = new DocumentLocationImpl(
                     documentModel.getRepositoryName(), documentModel.getRef());
             docLocationList.add(docLocation);
         }

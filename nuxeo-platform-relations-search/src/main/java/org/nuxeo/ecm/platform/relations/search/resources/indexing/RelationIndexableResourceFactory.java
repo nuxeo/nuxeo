@@ -29,11 +29,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
-import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedData;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResource;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResources;
@@ -111,9 +106,8 @@ public class RelationIndexableResourceFactory extends
 
         // builtins can be overriden by conf. Hence iterate over
         // the union of sets, and retrieve in right order
-        IndexableResourceDataConf field;
         for (String fieldName : fieldNames) {
-            field = null;
+            IndexableResourceDataConf field = null;
             if (confFields != null) {
                 field = confFields.get(fieldName);
             }

@@ -38,7 +38,7 @@ public final class WSRemotingSessionServiceDelegate implements Serializable {
      * Returns the WS remoting session service.
      *
      * @return the WS remoting session service
-     * @throws WebServerInvoker
+     * @throws WSException
      */
     public static WSRemotingSessionManager getRemoteWSRemotingSessionManager()
             throws WSException {

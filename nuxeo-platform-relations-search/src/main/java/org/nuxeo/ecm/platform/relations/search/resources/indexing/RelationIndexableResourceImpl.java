@@ -65,8 +65,7 @@ public class RelationIndexableResourceImpl extends AbstractNXCoreIndexableResour
     private RelationManager relationManager;
 
     public RelationIndexableResourceImpl() {
-        super();
-      }
+    }
 
     private void initGraph() {
         try {
@@ -92,8 +91,7 @@ public class RelationIndexableResourceImpl extends AbstractNXCoreIndexableResour
     }
 
     private void initManager() {
-        relationManager = RelationSearchBusinessDelegate
-                                .getRelationManager();
+        relationManager = RelationSearchBusinessDelegate.getRelationManager();
     }
 
     public Serializable getValueFor(String indexableDataName)
@@ -231,11 +229,11 @@ public class RelationIndexableResourceImpl extends AbstractNXCoreIndexableResour
         }
 
         // try and convert
-        if (type.equals("int")) {
+        if ("int".equals(type)) {
             return new Integer(sValue);
         }
 
-        if (type.equals("date")) {
+        if ("date".equals(type)) {
             // Search Service expects Calendar, in turn because that's
             // what NXCore feeds him
             return RelationDate.getCalendar((Literal) node);
@@ -250,8 +248,7 @@ public class RelationIndexableResourceImpl extends AbstractNXCoreIndexableResour
                 .getResourceRepresentation(s.getNamespace(), s);
         if (repr instanceof DocumentModel) {
             DocumentModel docModel = (DocumentModel) repr;
-            return docModel.getRepositoryName()
-                    + ":" + docModel.getId();
+            return docModel.getRepositoryName() + ':' + docModel.getId();
         }
         return (Serializable) repr;
     }

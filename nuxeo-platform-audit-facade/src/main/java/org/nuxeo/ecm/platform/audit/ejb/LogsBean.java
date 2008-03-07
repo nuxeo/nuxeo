@@ -328,7 +328,6 @@ public class LogsBean implements Logs {
         // XXX : TODO
         removeOldEntriesBeforeSync("documentCreated", path);
         // now fetch from the core
-        CoreSession session;
         RepositoryManager rm;
         try {
             rm = Framework.getService(RepositoryManager.class);
@@ -341,6 +340,7 @@ public class LogsBean implements Logs {
             throw new AuditException("Can not find repository");
         }
 
+        CoreSession session;
         try {
             session = repo.open();
         } catch (Exception e1) {
@@ -355,7 +355,6 @@ public class LogsBean implements Logs {
 
     protected long syncNode(CoreSession session, DocumentModel node,
             boolean recurs) throws ClientException, AuditException {
-        long nbSynchedEntries = 0;
 
         List<LogEntry> entries = new ArrayList<LogEntry>();
         List<DocumentModel> folderishChildren = new ArrayList<DocumentModel>();
@@ -372,7 +371,7 @@ public class LogsBean implements Logs {
 
         // store entries
         addLogEntries(entries);
-        nbSynchedEntries += entries.size();
+        long nbSynchedEntries = entries.size();
         node = null;
         entries = null;
 

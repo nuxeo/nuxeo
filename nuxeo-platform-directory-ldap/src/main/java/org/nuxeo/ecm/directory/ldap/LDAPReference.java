@@ -434,11 +434,9 @@ public class LDAPReference extends AbstractReference {
                 NamingEnumeration<SearchResult> results = sourceSession.dirContext.search(
                         searchBaseDn, filterExpr, filterArgs, sctls);
 
-                Attributes attributes;
-                Object value;
                 while (results.hasMore()) {
-                    attributes = results.next().getAttributes();
-                    value = attributes.get(sourceSession.idAttribute).get();
+                    Attributes attributes = results.next().getAttributes();
+                    Object value = attributes.get(sourceSession.idAttribute).get();
                     sourceIds.add(value.toString());
                 }
             } catch (NamingException e) {

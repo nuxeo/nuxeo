@@ -201,7 +201,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
     @Create
     public void init()
     {
-    	Events.instance().raiseEvent(EventNames.WF_INIT);
+        Events.instance().raiseEvent(EventNames.WF_INIT);
     }
 
     public Map<String, String> getMessages() {

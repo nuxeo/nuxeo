@@ -54,7 +54,7 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
     public void testRegister() {
         getAuthService();
         assertNotNull(authService);
-        //Rux NXP-1972: webservices plugin also 
+        //Rux NXP-1972: webservices plugin also
         assertEquals(3, authService.getAuthChain().size());
         assertEquals("BASIC_AUTH", authService.getAuthChain().get(0));
 
@@ -67,5 +67,5 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
         assertTrue(plugin.getParameters().containsKey("LoginPage"));
         assertEquals("login.jsp", plugin.getParameters().get("LoginPage"));
     }
-    
+
 }

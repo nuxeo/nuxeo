@@ -140,8 +140,6 @@ public class CommentManagerActionsBean extends InputController implements
                 comment.setProperty("dublincore", "created", Calendar.getInstance());
             }
         }
-
-
         return comment;
     }
 
@@ -149,14 +147,14 @@ public class CommentManagerActionsBean extends InputController implements
             throws ClientException {
 
         try {
-
             comment = initializeComment(comment);
             UIComment parentComment = null;
             if (savedReplyCommentId != null) {
                 parentComment = commentMap.get(savedReplyCommentId);
             }
-            if (commentableDoc==null)
+            if (commentableDoc == null) {
                 commentableDoc = getCommentableDoc();
+            }
 
             DocumentModel newComment;
             if (parentComment != null) {
@@ -200,11 +198,8 @@ public class CommentManagerActionsBean extends InputController implements
         cleanContextVariable();
     }
 
-
-    private CommentableDocument getCommentableDoc()
-    {
-        if (commentableDoc==null)
-        {
+    private CommentableDocument getCommentableDoc() {
+        if (commentableDoc == null) {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             commentableDoc = currentDocument.getAdapter(CommentableDocument.class);
         }
@@ -319,7 +314,6 @@ public class CommentManagerActionsBean extends InputController implements
     }
 
     public String deleteComment(String commentId) throws ClientException {
-
         if ("".equals(commentId)) {
             log.error("No comment id to delete");
             return null;

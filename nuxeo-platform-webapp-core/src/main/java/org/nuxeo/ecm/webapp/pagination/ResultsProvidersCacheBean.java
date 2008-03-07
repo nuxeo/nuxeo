@@ -220,7 +220,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache {
     @Observer(value={ EventNames.DOCUMENT_CHILDREN_CHANGED }, create=false,inject=false)
     public void invalidateChildrenProvider()
     {
-    	invalidate(DocumentChildrenStdFarm.CHILDREN_BY_COREAPI);
+        invalidate(DocumentChildrenStdFarm.CHILDREN_BY_COREAPI);
     }
 
     public DocumentModelList getCurrentPageOf(String name)

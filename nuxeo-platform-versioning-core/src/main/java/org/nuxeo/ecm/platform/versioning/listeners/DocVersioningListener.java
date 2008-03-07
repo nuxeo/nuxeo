@@ -170,7 +170,7 @@ public class DocVersioningListener extends AbstractEventListener implements
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-                    
+
                 //} else if (eventId.equals(DOCUMENT_UPDATED)) {
                     // check options
                     final Map<String, ?> options = coreEvent.getInfo();

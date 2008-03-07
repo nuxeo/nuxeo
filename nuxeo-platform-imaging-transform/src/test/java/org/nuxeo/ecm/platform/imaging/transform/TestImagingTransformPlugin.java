@@ -181,8 +181,6 @@ public class TestImagingTransformPlugin extends NXRuntimeTestCase {
         ImageIcon im= new ImageIcon(image);
         image = ImageIO.read(result);
 
-
-
         ImageIcon im2= new ImageIcon(image);
         FileBlob blob2 = new FileBlob(getFileFromPath(path2));
         blob2.transferTo(file);

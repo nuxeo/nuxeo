@@ -122,9 +122,8 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
                 Context.PROVIDER_URL);
         NamingEnumeration<SearchResult> children = ctx.search(dn,
                 "(objectClass=*)", scts);
-        SearchResult child;
         while (children.hasMore()) {
-            child = children.next();
+            SearchResult child = children.next();
             String subDn = child.getName();
             if (!USE_EXTERNAL_TEST_LDAP_SERVER && subDn.endsWith(providerUrl)) {
                 subDn = subDn.substring(0, subDn.length()

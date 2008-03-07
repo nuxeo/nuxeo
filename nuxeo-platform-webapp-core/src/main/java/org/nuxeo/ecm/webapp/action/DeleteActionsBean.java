@@ -262,19 +262,22 @@ public class DeleteActionsBean extends InputController implements
 
         List<DocumentModel> realDocsToDelete = new ArrayList<DocumentModel>();
         for (DocumentModel doc : docsToDelete) {
-            if (!doc.isProxy())
+            if (!doc.isProxy()) {
                 realDocsToDelete.add(doc);
+            }
         }
 
-        if (realDocsToDelete.isEmpty())
+        if (realDocsToDelete.isEmpty()) {
             return false;
+        }
 
         // do simple filtering
         return checkDeletePermOnParents(realDocsToDelete);
     }
 
     public boolean getCanPurge() throws ClientException {
-        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
+        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
 
         if (docsToDelete == null || docsToDelete.isEmpty()) {
             return false;
@@ -387,8 +390,9 @@ public class DeleteActionsBean extends InputController implements
     public String deleteSelectionSections() throws ClientException {
         List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
 
-        if (docsToDelete == null || docsToDelete.isEmpty())
+        if (docsToDelete == null || docsToDelete.isEmpty()) {
             return null;
+        }
         boolean selectionContainsProxy = false;
         List<DocumentModel> nonProxyDocsToDelete = new ArrayList<DocumentModel>();
         for (DocumentModel doc : docsToDelete) {
@@ -399,8 +403,7 @@ public class DeleteActionsBean extends InputController implements
             }
         }
 
-        if (selectionContainsProxy)
-        {
+        if (selectionContainsProxy) {
             FacesMessage message = FacesMessages.createFacesMessage(
                     FacesMessage.SEVERITY_WARN, "can_not_delete_proxies", null);
             facesMessages.add(message);

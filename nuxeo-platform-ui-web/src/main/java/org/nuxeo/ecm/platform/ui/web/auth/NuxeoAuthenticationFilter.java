@@ -331,7 +331,6 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
 
         String targetPageURL = null;
-        CachableUserIdentificationInfo cachableUserIdent = null;
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         Principal principal = httpRequest.getUserPrincipal();
@@ -341,6 +340,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             // need to authenticate !
 
             // retrieve user & password
+            CachableUserIdentificationInfo cachableUserIdent = null;
             if (avoidReauthenticate) {
                 log.debug("Try getting authentication from cache");
                 cachableUserIdent = retrieveIdentityFromCache(httpRequest);

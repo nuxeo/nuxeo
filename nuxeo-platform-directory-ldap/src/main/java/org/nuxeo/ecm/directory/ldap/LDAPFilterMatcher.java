@@ -184,7 +184,7 @@ public class LDAPFilterMatcher {
         if (normalizer == null) {
             normalizer = new DefaultStringNormalizer();
         }
-        return (Normalizer) normalizer;
+        return normalizer;
     }
 
     /**
