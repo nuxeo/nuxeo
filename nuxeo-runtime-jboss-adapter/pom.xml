@@ -31,11 +31,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-jboss-extensions</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-common</artifactId>
       <scope>provided</scope>
