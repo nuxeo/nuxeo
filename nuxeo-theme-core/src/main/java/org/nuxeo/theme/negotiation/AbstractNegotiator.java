@@ -38,7 +38,7 @@ public abstract class AbstractNegotiator implements Negotiator {
                 negotiate("perspective"));
     }
 
-    public final String negotiate(String object) throws NegotiationException {
+    synchronized public final String negotiate(String object) throws NegotiationException {
         if (strategy == null) {
             throw new NegotiationException("No negotiation strategy is set.");
         }
