@@ -267,13 +267,13 @@ public class SearchActionsBean extends InputController implements
             log.debug("performing searchType: " + searchTypeId);
         }
         try {
-            String page;
-            PagedDocumentsProvider resultsProvider;
             // XXX : hack !!!
             if (searchResults != null) {
                 searchResults.reset();
             }
 
+            String page;
+            PagedDocumentsProvider resultsProvider;
             if (searchTypeId == SearchType.NXQL) {
                 if (nxql == null) {
                     log.warn("Direct NXQL search: no nxql query "
@@ -441,7 +441,6 @@ public class SearchActionsBean extends InputController implements
             throw new ClientException(
                     "DocumentManager not found in Seam context...");
         }
-
     }
 
     public String reset() throws ClientException {

@@ -55,7 +55,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.VersionModel;
@@ -192,7 +191,7 @@ public class NavigationContextBean implements NavigationContextLocal {
 
             ComposedNXQueryImpl q = new ComposedNXQueryImpl(
                     SQLQueryParser.parse("SELECT * FROM Document"),
-                    ss.getSearchPrincipal((NuxeoPrincipal) documentManager.getPrincipal()));
+                    ss.getSearchPrincipal(documentManager.getPrincipal()));
             ResultSet results;
             try {
                 results = ss.searchQuery(q, 0, 1);
