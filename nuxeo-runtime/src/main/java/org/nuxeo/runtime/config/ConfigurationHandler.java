@@ -53,15 +53,17 @@ public abstract class ConfigurationHandler {
         throw new UnsupportedServerVersion(version);
     }
 
-    public static ServerConfiguration loadConfig(InvokerLocator locator, Server server, String version) throws ConfigurationException, UnsupportedServerVersion {
+    public static ServerConfiguration loadConfig(InvokerLocator locator, Server server, String version)
+            throws ConfigurationException {
         return loadConfig(locator, server, Version.parseString(version));
     }
 
-    public static ServerConfiguration loadConfig(InvokerLocator locator, Server server, Version version) throws ConfigurationException, UnsupportedServerVersion {
+    public static ServerConfiguration loadConfig(InvokerLocator locator, Server server, Version version)
+            throws ConfigurationException {
         return ConfigurationHandler.getHandler(version).loadConfig(locator, server);
     }
 
-    public static ServerConfiguration buildConfig(Version version) throws ConfigurationException, UnsupportedServerVersion {
+    public static ServerConfiguration buildConfig(Version version) throws ConfigurationException {
         return ConfigurationHandler.getHandler(version).buildConfig();
     }
 
@@ -78,7 +80,8 @@ public abstract class ConfigurationHandler {
      * @param server the server proxy object
      * @return the configuration
      */
-    public abstract ServerConfiguration loadConfig(InvokerLocator locator, Server server) throws ConfigurationException;
+    public abstract ServerConfiguration loadConfig(InvokerLocator locator, Server server)
+            throws ConfigurationException;
 
     /**
      * Gets the configuration for the current running framework.

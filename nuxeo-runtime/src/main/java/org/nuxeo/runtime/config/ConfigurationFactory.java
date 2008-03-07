@@ -59,11 +59,13 @@ public abstract class ConfigurationFactory {
     public abstract Version getVersion();
 
     /**
-     * Load the configuration of the given remote server
+     * Loads the configuration of the given remote server.
+     *
      * @param locator the server locator
-     * @param server the server proxy object
+     * @param version
      * @return the configuration
      */
-    public abstract ServerConfiguration createConfiguration(InvokerLocator locator, Version version) throws ConfigurationException;
+    public abstract ServerConfiguration createConfiguration(InvokerLocator locator, Version version)
+            throws ConfigurationException;
 
 }

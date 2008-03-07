@@ -25,6 +25,7 @@ import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -73,7 +74,7 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
 
     private Set<URL> readUrls;
 
-    private HashMap<String, BundleFile> bundles;
+    private Map<String, BundleFile> bundles;
 
     @Override
     protected void setUp() throws Exception {
@@ -206,8 +207,9 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
 
     /**
      * Deploys a contribution file by looking for it in the class loader.
-     * <p>The first contribution file found by the class loader will be used.
-     * You have no guarantee in case of name collisions</p>
+     * <p>
+     * The first contribution file found by the class loader will be used.
+     * You have no guarantee in case of name collisions.
      *
      * @deprecated use the less ambiguous {@method deployContrib(bundleName, contrib)}
      * @param contrib the relative path to the contribution file
@@ -237,8 +239,8 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
      * deployContrib("nuxeo-core", "OSGI-INF/CoreExtensions.xml")
      * </code>
      *
-     * @param bundle The name of the bundle to peek the contrib in
-     * @param contrib The path to contrib in the bundle.
+     * @param bundle the name of the bundle to peek the contrib in
+     * @param contrib the path to contrib in the bundle.
      * @throws Exception
      */
     public void deployContrib(String bundle, String contrib) throws Exception {

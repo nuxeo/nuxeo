@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public final class ServiceManager {
 
@@ -135,7 +135,7 @@ public final class ServiceManager {
      * <li><code>glassfish://localhost:1234/org.nuxeo.ecm.platform.types.TypeManager</code> -
      * locate a service on glassfish</li>
      * </ul>
-     * 
+     *
      * @param serviceUri the service uri
      * @return the service
      * @throws Exception
