@@ -79,7 +79,7 @@ import org.nuxeo.runtime.model.Extension;
  * FileManager registry service.
  * <p>
  * This is the component to request to perform transformations. See API.
- *
+ * 
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
  *         Kalogeropoulos</a>
  */
@@ -481,7 +481,6 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         }
     }
 
-
     private void registerFileImporter(PluginExtension pluginExtension,
             Extension extension) throws Exception {
 
@@ -489,15 +488,11 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         List<String> filters = pluginExtension.getFilters();
         String className = pluginExtension.getClassName();
 
-        try {
-            Plugin plugin = (Plugin) extension.getContext().loadClass(className).newInstance();
-            plugin.setName(name);
-            plugin.setFilters(filters);
-            plugin.setFileManagerService(this);
-            fileImporters.put(name, plugin);
-        } catch (Exception e) {
-            throw new Exception(e);
-        }
+        Plugin plugin = (Plugin) extension.getContext().loadClass(className).newInstance();
+        plugin.setName(name);
+        plugin.setFilters(filters);
+        plugin.setFileManagerService(this);
+        fileImporters.put(name, plugin);
         log.info("registered file importer: " + name);
     }
 
@@ -691,14 +686,14 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             String docType) throws Exception {
         for (CreationContainerListProvider provider : creationContainerListProviders) {
             if (provider.accept(docType)) {
-                return provider.getCreationContainerList(documentManager, docType);
+                return provider.getCreationContainerList(documentManager,
+                        docType);
             }
         }
         return new DocumentModelListImpl();
     }
 
-    public String getDigestAlgorithm()
-    {
+    public String getDigestAlgorithm() {
         return digestAlgorithm;
     }
 
