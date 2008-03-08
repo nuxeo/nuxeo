@@ -820,7 +820,7 @@ NXThemes.NodeExpander.prototype = Object.extend(new NXThemes.Controller(), {
 
   register: function(view) {
     var widget = view.widget;
-    $A($$(this.def.childclass), widget).each(function(v) {
+    $A($$('.' + this.def.childclass), widget).each(function(v) {
       $(v).hide();
     });
     Event.observe(widget, "click", this.clickEvent);
@@ -839,7 +839,7 @@ NXThemes.NodeExpander.prototype = Object.extend(new NXThemes.Controller(), {
 
     var fold = target.hasClassName("selected");
 
-    $A($$(this.def.nodeclass), widget).each(function(v) {
+    $A($$('.' + this.def.nodeclass), widget).each(function(v) {
       v.removeClassName("selected");
     });
     if (fold) {
@@ -858,7 +858,7 @@ NXThemes.NodeExpander.prototype = Object.extend(new NXThemes.Controller(), {
       node.show();
     }
 
-    $A($$(this.def.childclass), widget).each(function(v) {
+    $A($$('.' + this.def.childclass), widget).each(function(v) {
       if (v != node || (fold && v == node)) {
         if (effect == 'slide') {
           NXThemes.Effects.get('slideup')(v, {duration: 200, precision: 10});
