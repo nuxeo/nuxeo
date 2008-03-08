@@ -850,10 +850,9 @@ public class UiManager implements UiManagerLocal {
         Style style = getStyleOfSelectedElement();
         final Style currentStyleLayer = uiStates.getCurrentStyleLayer();
         final List<StyleLayer> layers = new ArrayList<StyleLayer>();
-        final ThemeManager themeManager = Manager.getThemeManager();
         layers.add(new StyleLayer("This style", style.getUid(),
                 style == currentStyleLayer || currentStyleLayer == null));
-        for (Format ancestor : themeManager.listAncestorFormatsOf(style)) {
+        for (Format ancestor : ThemeManager.listAncestorFormatsOf(style)) {
             layers.add(1, new StyleLayer(ancestor.getName(), ancestor.getUid(),
                     ancestor == currentStyleLayer));
         }

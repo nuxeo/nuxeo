@@ -410,7 +410,8 @@ public class EditorAction implements EditorActionLocal {
                 null));
     }
 
-    public void updateElementProperties(final String id, final Map<Object, Object> propertyMap) {
+    public void updateElementProperties(final String id,
+            final Map<Object, Object> propertyMap) {
         final Element element = getElementById(id);
         final Properties properties = new Properties();
         for (Object key : propertyMap.keySet()) {
@@ -687,7 +688,6 @@ public class EditorAction implements EditorActionLocal {
     }
 
     public String renderCssPreview(final String cssPreviewId) {
-        final ThemeManager themeManager = Manager.getThemeManager();
         Style style = uiManager.getStyleOfSelectedElement();
         final Style currentStyleLayer = uiStates.getCurrentStyleLayer();
         if (currentStyleLayer != null) {
@@ -700,7 +700,7 @@ public class EditorAction implements EditorActionLocal {
         // TODO use Utils.styleToCss()
 
         List<Style> styles = new ArrayList<Style>();
-        for (Format ancestor : themeManager.listAncestorFormatsOf(style)) {
+        for (Format ancestor : ThemeManager.listAncestorFormatsOf(style)) {
             styles.add(0, (Style) ancestor);
         }
         styles.add(style);
