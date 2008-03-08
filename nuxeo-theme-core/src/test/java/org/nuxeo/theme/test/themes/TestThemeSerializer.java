@@ -43,6 +43,15 @@ public class TestThemeSerializer extends NXRuntimeTestCase {
         deployContrib("view-config.xml");
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        Manager.getRelationStorage().clear();
+        Manager.getPerspectiveManager().clear();
+        Manager.getTypeRegistry().clear();
+        Manager.getUidManager().clear();
+        super.tearDown();
+    }
+
     public void testSerializeTheme() throws Exception {
         Element theme = ElementFactory.create("theme");
         theme.setName("default");

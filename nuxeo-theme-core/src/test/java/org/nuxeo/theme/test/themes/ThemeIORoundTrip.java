@@ -37,6 +37,9 @@ public class ThemeIORoundTrip extends NXRuntimeTestCase {
     @Override
     public void tearDown() throws Exception {
         Manager.getRelationStorage().clear();
+        Manager.getPerspectiveManager().clear();
+        Manager.getTypeRegistry().clear();
+        Manager.getUidManager().clear();
         super.tearDown();
     }
 

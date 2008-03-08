@@ -249,8 +249,8 @@ public class TestThemeManager extends NXRuntimeTestCase {
 
         // Ancestors
         Style duplicate = (Style) themeManager.duplicateFormat(style);
-        assertSame(ancestor1, themeManager.getAncestorFormatOf(duplicate));
-        assertSame(ancestor2, themeManager.getAncestorFormatOf(ancestor1));
+        assertSame(ancestor1, ThemeManager.getAncestorFormatOf(duplicate));
+        assertSame(ancestor2, ThemeManager.getAncestorFormatOf(ancestor1));
     }
 
     public void testListFormats() {
@@ -332,19 +332,19 @@ public class TestThemeManager extends NXRuntimeTestCase {
         Style ancestor3 = new StyleFormat();
         ancestor3.setUid(4);
 
-        assertNull(themeManager.getAncestorFormatOf(style));
+        assertNull(ThemeManager.getAncestorFormatOf(style));
 
         themeManager.makeFormatInherit(style, ancestor1);
-        assertEquals(ancestor1, themeManager.getAncestorFormatOf(style));
-        assertTrue(themeManager.listAncestorFormatsOf(style).contains(ancestor1));
+        assertEquals(ancestor1, ThemeManager.getAncestorFormatOf(style));
+        assertTrue(ThemeManager.listAncestorFormatsOf(style).contains(ancestor1));
 
-        assertTrue(themeManager.listAncestorFormatsOf(ancestor2).isEmpty());
+        assertTrue(ThemeManager.listAncestorFormatsOf(ancestor2).isEmpty());
         themeManager.makeFormatInherit(ancestor1, ancestor2);
-        assertEquals(ancestor2, themeManager.getAncestorFormatOf(ancestor1));
+        assertEquals(ancestor2, ThemeManager.getAncestorFormatOf(ancestor1));
 
         // test transitivity
         themeManager.makeFormatInherit(ancestor2, ancestor3);
-        assertTrue(themeManager.listAncestorFormatsOf(style).contains(ancestor3));
+        assertTrue(ThemeManager.listAncestorFormatsOf(style).contains(ancestor3));
     }
 
     public void testStyleInheritanceCycles() {
@@ -361,18 +361,18 @@ public class TestThemeManager extends NXRuntimeTestCase {
 
         // a style cannot inherit from itself.
         themeManager.makeFormatInherit(style, style);
-        assertNull(themeManager.getAncestorFormatOf(style));
+        assertNull(ThemeManager.getAncestorFormatOf(style));
 
         // detect direct cycles
         themeManager.makeFormatInherit(style, ancestor1);
         themeManager.makeFormatInherit(ancestor1, style);
-        assertNull(themeManager.getAncestorFormatOf(ancestor1));
+        assertNull(ThemeManager.getAncestorFormatOf(ancestor1));
 
         // test cycle through transitivity
         themeManager.makeFormatInherit(ancestor1, ancestor2);
         themeManager.makeFormatInherit(ancestor2, ancestor3);
         themeManager.makeFormatInherit(ancestor3, ancestor1);
-        assertTrue(themeManager.listAncestorFormatsOf(ancestor3).isEmpty());
+        assertTrue(ThemeManager.listAncestorFormatsOf(ancestor3).isEmpty());
     }
 
     public void testDestroyElement() {

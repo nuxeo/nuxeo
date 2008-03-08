@@ -274,10 +274,10 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
         assertSame(cell1Style, cell2Style);
 
         // Make sure that inherited styles are preserved
-        assertSame(inheritedStyle, themeManager.getAncestorFormatOf(pageStyle));
-        assertSame(inheritedStyle, themeManager.getAncestorFormatOf(sectionStyle));
-        assertSame(inheritedStyle, themeManager.getAncestorFormatOf(cell2Style));
-        assertSame(inheritedStyle, themeManager.getAncestorFormatOf(cell1Style));
+        assertSame(inheritedStyle, ThemeManager.getAncestorFormatOf(pageStyle));
+        assertSame(inheritedStyle, ThemeManager.getAncestorFormatOf(sectionStyle));
+        assertSame(inheritedStyle, ThemeManager.getAncestorFormatOf(cell2Style));
+        assertSame(inheritedStyle, ThemeManager.getAncestorFormatOf(cell1Style));
     }
 
 }
