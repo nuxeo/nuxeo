@@ -56,7 +56,7 @@ import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 @DiscriminatorColumn(name = "DISCRIMINATOR", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("NXP")
 @EntityListeners(LogEntryCallbackListener.class)
-public class LogEntryImpl extends LogEntryBase implements LogEntry {
+public class LogEntryImpl extends LogEntryBase {
 
     private static final long serialVersionUID = 0L;
 

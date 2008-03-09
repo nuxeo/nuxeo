@@ -21,8 +21,6 @@ package org.nuxeo.ecm.directory;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
-
 /**
  * Base interface for references between directory fields.
  * <p>

@@ -110,7 +110,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
 
     private static final Object PT_CONNECTION = "connection";
 
-    private static Lock optimizerLock = new ReentrantLock();
+    private static final Lock optimizerLock = new ReentrantLock();
 
     private static final int OPTIMIZER_SAVE_INTERVAL = 5;
 
@@ -125,7 +125,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
 
     // @SuppressWarnings("unchecked")
     // protected final Map sessions = new ReferenceMap();
-    protected final Map sessions = new ConcurrentHashMap<String, CompassBackendSession>();
+    protected final Map<String, CompassBackendSession> sessions = new ConcurrentHashMap<String, CompassBackendSession>();
 
     // :XXX: move this to Nuxeo runtime to be sure it's loaded before any
     // modules that may initialze Lucene before this one. Though, we need to
@@ -138,23 +138,19 @@ public class CompassBackend extends AbstractSearchEngineBackend {
 
     /*
      * Should probably be done by base class, but NXSearch cannot be
-     * instantiated from there because it's with API
+     * instantiated from there because it's with API.
      */
     public CompassBackend() {
-        initSearchService();
+        searchService = (SearchServiceInternals) NXSearch.getSearchService();
     }
 
     public CompassBackend(String name) {
         super(name);
-        initSearchService();
+        searchService = (SearchServiceInternals) NXSearch.getSearchService();
     }
 
     public CompassBackend(String name, String configurationFileName) {
         super(name, configurationFileName);
-        initSearchService();
-    }
-
-    public void initSearchService() {
         searchService = (SearchServiceInternals) NXSearch.getSearchService();
     }
 

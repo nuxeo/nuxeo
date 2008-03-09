@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.search.api.backend.indexing.resources.impl.ResolvedRes
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.AbstractIndexableResourceFactory;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResource;
-import org.nuxeo.ecm.core.search.api.client.indexing.resources.factory.IndexableResourceFactory;
 import org.nuxeo.ecm.core.search.api.client.indexing.security.IndexingSecurityConstants;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceConf;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceDataConf;
@@ -52,7 +51,7 @@ import org.nuxeo.ecm.platform.relations.search.resources.indexing.api.BuiltinRel
  *
  */
 public class RelationIndexableResourceFactory extends
-        AbstractIndexableResourceFactory implements IndexableResourceFactory {
+        AbstractIndexableResourceFactory {
 
     private static final long serialVersionUID = -2103767785989950281L;
 
@@ -66,10 +65,10 @@ public class RelationIndexableResourceFactory extends
      * relations are their own ids, mostly
      */
     public IndexableResource createIndexableResourceFrom(
-            Serializable targetResourceId, IndexableResourceConf conf, String sid) throws IndexingException {
-        if (targetResourceId instanceof Statement) {
+            Serializable targetResource, IndexableResourceConf conf, String sid) throws IndexingException {
+        if (targetResource instanceof Statement) {
             return new RelationIndexableResourceImpl(
-                    (Statement) targetResourceId, conf);
+                    (Statement) targetResource, conf);
         }
 
         throw new IndexingException("Unrecognized target resource");
@@ -77,10 +76,10 @@ public class RelationIndexableResourceFactory extends
 
     /**
      * Do the resolution.
-     * <p> As far as field are concerned, builtin fields {@link RelationBuiltinFields}
+     * <p>
+     * As far as field are concerned, builtin fields {@link RelationBuiltinFields}
      * can be overriden by the resource conf. Just specify explicitely in configuration.
-     * Otherwise the default from the class applies
-     * </p>
+     * Otherwise the default from the class applies.
      */
     public ResolvedResource resolveResourceFor(IndexableResource resource)
             throws IndexingException {

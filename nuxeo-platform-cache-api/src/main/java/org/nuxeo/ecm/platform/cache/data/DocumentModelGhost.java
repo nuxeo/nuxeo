@@ -65,20 +65,20 @@ public class DocumentModelGhost implements DocumentModel {
     // private static final Logger log =
     // Logger.getLogger(DocumentModelGhost.class);
 
-    protected String sid;
+    protected final String sid;
 
-    protected DocumentRef ref;
+    protected final DocumentRef ref;
 
-    protected String type;
+    protected final String type;
 
     // protected String[] declaredSchemas;
 
-    protected String id;
+    protected final String id;
 
-    protected Path path;
+    protected final Path path;
 
     //
-    protected DocumentRef parentRef;
+    protected final DocumentRef parentRef;
 
     // cache the reference to DocumentModel object available in the cache
     private DocumentModel documentModel;

@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class BatchHelper {
 
-    private static Map<String, BatchInfo> pageInfo = new ConcurrentHashMap<String, BatchInfo>();
+    private static final Map<String, BatchInfo> pageInfo = new ConcurrentHashMap<String, BatchInfo>();
 
     public static BatchInfo getBatchInfo(String sessionId, String dateRange) {
         if (!pageInfo.containsKey(sessionId)) {
