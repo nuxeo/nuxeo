@@ -102,7 +102,6 @@ public class MethodValueExpression extends ValueExpression implements
     @Override
     public Object getValue(ELContext arg0) {
         // invoke method instead of resolving value
-        Object res;
         try {
             return methodExpression.invoke(arg0, paramTypesClasses);
         }

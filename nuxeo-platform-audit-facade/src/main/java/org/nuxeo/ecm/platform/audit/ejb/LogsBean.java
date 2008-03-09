@@ -217,7 +217,6 @@ public class LogsBean implements Logs {
         if (eventIds == null || eventIds.length == 0) {
             throw new AuditException("You must give a not null eventId");
         }
-        log.debug("queryLogs() whereClause=" + eventIds);
         Class<LogEntry> klass = getLogEntryClass();
 
         List<LogEntry> results = new ArrayList<LogEntry>();
@@ -266,7 +265,6 @@ public class LogsBean implements Logs {
         if (eventIds == null || eventIds.length == 0) {
             throw new AuditException("You must give a not null eventId");
         }
-        log.debug("queryLogs() whereClause=" + eventIds);
         Class<LogEntry> klass = getLogEntryClass();
 
         List<LogEntry> results = new ArrayList<LogEntry>();

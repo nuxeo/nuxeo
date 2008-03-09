@@ -75,25 +75,26 @@ public final class SyndicationLocator {
         /*if (null == type) {
             throw new IllegalArgumentException("null feedType");
         }*/
-        final StringBuffer urlBuf = new StringBuffer();
+        final StringBuilder urlBuf = new StringBuilder();
         urlBuf.append(URL_PREFIX_DOCUMENT);
         urlBuf.append(DOC_PARAM_NAME);
-        urlBuf.append("=");
+        urlBuf.append('=');
         if (serverLocation != null) {
             urlBuf.append(encode(serverLocation.getName()));
         } else {
             urlBuf.append("null");
         }
-        urlBuf.append("/");
+        urlBuf.append('/');
         urlBuf.append(docRef.type());
-        urlBuf.append(":");
+        urlBuf.append(':');
         urlBuf.append(encode(docRef.reference().toString()));
 
-        urlBuf.append("&");
+        urlBuf.append('&');
         urlBuf.append(SYNDIC_PARAM_NAME);
-        urlBuf.append("=");
-        if (type!=null)
+        urlBuf.append('=');
+        if (type != null) {
             urlBuf.append(encode(type));
+        }
 
         return urlBuf.toString();
     }
@@ -106,16 +107,16 @@ public final class SyndicationLocator {
         if (null == docRef) {
             throw new IllegalArgumentException("null docRef");
         }
-        final StringBuffer urlBuf = new StringBuffer();
+        final StringBuilder urlBuf = new StringBuilder();
 
         if (serverLocation != null) {
             urlBuf.append(encode(serverLocation.getName()));
         } else {
             urlBuf.append("null");
         }
-        urlBuf.append("/");
+        urlBuf.append('/');
         urlBuf.append(docRef.type());
-        urlBuf.append(":");
+        urlBuf.append(':');
         urlBuf.append(encode(docRef.reference().toString()));
 
         return urlBuf.toString();
@@ -131,22 +132,23 @@ public final class SyndicationLocator {
         if (null == searchType) {
             throw new IllegalArgumentException("null searchType");
         }
-        final StringBuffer urlBuf = new StringBuffer();
+        final StringBuilder urlBuf = new StringBuilder();
         urlBuf.append(URL_PREFIX_SEARCH);
         urlBuf.append(QUERY_PARAM_NAME);
-        urlBuf.append("=");
+        urlBuf.append('=');
         urlBuf.append(encode(searchQuery));
 
-        urlBuf.append("&");
+        urlBuf.append('&');
         urlBuf.append(SEARCHTYPE_PARAM_NAME);
-        urlBuf.append("=");
+        urlBuf.append('=');
         urlBuf.append(encode(searchType));
 
-        urlBuf.append("&");
+        urlBuf.append('&');
         urlBuf.append(SYNDIC_PARAM_NAME);
-        urlBuf.append("=");
-        if (syndicType!=null)
+        urlBuf.append('=');
+        if (syndicType != null) {
             urlBuf.append(encode(syndicType));
+        }
 
         return urlBuf.toString();
     }
@@ -177,7 +179,7 @@ public final class SyndicationLocator {
     public static String getFullSyndicationUrl(String syndicationType,
             String documentLocation, Map<String, String> param) {
 
-        final StringBuffer url = new StringBuffer();
+        final StringBuilder url = new StringBuilder();
 
         url.append(documentLocation);
 
@@ -190,10 +192,10 @@ public final class SyndicationLocator {
         Set<String> keys = param.keySet();
         for (String key : keys) {
             url.append(key);
-            url.append("=");
+            url.append('=');
             //url.append(encode(param.get(key)));
             url.append(param.get(key));
-            url.append("&");
+            url.append('&');
         }
         return url.toString();
     }

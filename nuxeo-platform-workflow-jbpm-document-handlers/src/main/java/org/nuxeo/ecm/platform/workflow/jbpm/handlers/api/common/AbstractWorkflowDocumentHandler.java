@@ -341,8 +341,7 @@ public abstract class AbstractWorkflowDocumentHandler {
      */
     protected String getLifeCycleTransitionToDestinationState(
             ExecutionContext ec) {
-        String transition = (String) ec.getVariable(WorkflowConstants.LIFE_CYCLE_TRANSITION_TO_DESTINATION_STATE);
-        return transition;
+        return (String) ec.getVariable(WorkflowConstants.LIFE_CYCLE_TRANSITION_TO_DESTINATION_STATE);
     }
 
     /**
@@ -355,10 +354,10 @@ public abstract class AbstractWorkflowDocumentHandler {
      */
     protected Collection<String> getDocumentAllowedStateTransitions(
             ExecutionContext ec) throws Exception {
-        Collection<String> ats;
         WorkflowDocumentLifeCycleManager wfLifeCycleManager = getLifeCycleManager(ec);
         DocumentRef docRef = getDocumentRef(ec);
-        ats = wfLifeCycleManager.getAllowedStateTransitions(docRef);
+        Collection<String> ats = wfLifeCycleManager.getAllowedStateTransitions(
+                docRef);
         return ats;
     }
 

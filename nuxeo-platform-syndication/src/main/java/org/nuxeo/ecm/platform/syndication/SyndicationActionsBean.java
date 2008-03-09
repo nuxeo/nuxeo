@@ -386,9 +386,8 @@ public class SyndicationActionsBean extends InputController implements
         }
 
         FeedItemAdapter feedItemAdapt = new FeedItemAdapter();
-        List<FeedItem> feedItems;
 
-        feedItems = feedItemAdapt.toFeedItemList(docList);
+        List<FeedItem> feedItems = feedItemAdapt.toFeedItemList(docList);
 
         SyndFeed feed = getSyndFeed(feedItems);
         initializeFeedForSearch(feed);
@@ -399,12 +398,11 @@ public class SyndicationActionsBean extends InputController implements
             FeedException, ParseException {
 
         FeedItemAdapter feedItemAdapt = new FeedItemAdapter();
-        List<FeedItem> feedItems;
 
         DocumentRef document = getSyndicationRoot(docRef).getRef();
         DocumentModelList allChilds = getRealDocuments(documentManager.getChildren(document));
 
-        feedItems = feedItemAdapt.toFeedItemList(allChilds);
+        List<FeedItem> feedItems = feedItemAdapt.toFeedItemList(allChilds);
 
         // Sort items by update date or if not, by publication date
         Collections.sort(feedItems, Collections.reverseOrder());

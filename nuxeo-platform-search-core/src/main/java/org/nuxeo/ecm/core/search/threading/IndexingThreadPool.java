@@ -158,7 +158,7 @@ public final class IndexingThreadPool {
     protected static void execute(AbstractIndexingTask r)
             throws IndexingException {
         if (searchService != null) {
-            ((AbstractIndexingTask) r).setSearchService(searchService);
+            r.setSearchService(searchService);
         }
         synchronized (tpExec) {
             // Should be safe to use this here with the synchronized kw.

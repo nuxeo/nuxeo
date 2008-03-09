@@ -296,7 +296,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
                 session.add(schemasBuilder.toResource());
             }
             if (!userTxn
-                    || (session.countWaitingResources() >= getMaxIndexingDocBatchSize())) {
+                    || session.countWaitingResources() >= getMaxIndexingDocBatchSize()) {
                 session.saveAndCommit(userTxn);
                 if (userTxn){
                     doOptimize();
@@ -309,8 +309,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         }
     }
 
-    private void markForRecycling()
-    {
+    private void markForRecycling() {
         Thread thread = Thread.currentThread();
         if (thread instanceof IndexingThread) {
             IndexingThread idxThread = (IndexingThread) thread;
@@ -333,10 +332,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
     @SuppressWarnings("unchecked")
     public void index(ResolvedResources resources) throws IndexingException {
 
-        boolean newTxn = false;
         boolean activeTxn = false;
-        boolean userTxn;
-        CompassBackendSession session;
 
         try {
             activeTxn = Transactions.isTransactionActiveOrMarkedRollback();
@@ -344,6 +340,8 @@ public class CompassBackend extends AbstractSearchEngineBackend {
             throw new IndexingException(e);
         }
 
+        boolean userTxn;
+        CompassBackendSession session;
         if (isBoundToIndexingThread()) {
 
             // AYNCHRONOUS INDEXING
@@ -358,15 +356,16 @@ public class CompassBackend extends AbstractSearchEngineBackend {
 
             session = (CompassBackendSession) sessions.get(sid);
 
-            if (session == null)
+            if (session == null) {
                 throw new IndexingException(
                         "CompassBackend session is null for thread "
                                 + thread.toString());
+            }
 
             try {
                 if (!activeTxn) {
                     Transactions.getUserTransaction().begin();
-                    newTxn = true;
+                    boolean newTxn = true;
                 }
                 session.begin(getCompass());
             } catch (Exception e) {
@@ -389,7 +388,6 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         } finally {
             // Nothing to do
         }
-
     }
 
     private void doOptimize() {
@@ -858,11 +856,10 @@ public class CompassBackend extends AbstractSearchEngineBackend {
     protected void saveSession(CompassBackendSession cs)
             throws IndexingException {
 
-        boolean userTxn = false;
-
         try {
             boolean activeTxn = Transactions.isTransactionActiveOrMarkedRollback();
-            if ((!activeTxn)) {
+            boolean userTxn = false;
+            if (!activeTxn) {
                 Transactions.getUserTransaction().begin();
                 userTxn = true;
             } else if (activeTxn && isBoundToIndexingThread()) {
@@ -898,7 +895,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
     }
 
     /**
-     * Compute the statistical maximum batch size
+     * Computes the statistical maximum batch size.
      *
      * @return
      */
@@ -906,8 +903,9 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         long configuredSize = getIndexingDocBatchSize();
         long nbThreads = searchService.getNumberOfIndexingThreads();
 
-        if (nbThreads == 0)
+        if (nbThreads == 0) {
             return configuredSize;
+        }
 
         long queueSize = searchService.getIndexingWaitingQueueSize();
 
@@ -920,8 +918,9 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         if (max < configuredSize) {
             log.debug("reducing batch size to " + max);
             return max;
-        } else
+        } else {
             return configuredSize;
+        }
     }
 
     public void saveAllSessions() throws IndexingException {

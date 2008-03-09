@@ -22,7 +22,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -88,7 +87,6 @@ public class FeedItemAdapter {
      * Converts a DocumentModelList to a List of FeedItem.
      *
      * @param docList
-     * @param serverLocation used to get the right URL of each feedItem
      * @return
      * @throws ParseException
      * @throws ClientException

@@ -95,7 +95,6 @@ public class DocumentModelGhost implements DocumentModel {
      * DocumentModel, this shallow is what is bundled within the direct response
      * from server.
      *
-     * @param docRef
      */
     public DocumentModelGhost(@NotNull DocumentRef ref, String sid, @NotNull String type,
             String[] declaredSchemas, @NotNull String id, @NotNull Path path,
@@ -387,7 +386,7 @@ public class DocumentModelGhost implements DocumentModel {
     }
 
     /**
-     * @see DocumentModel#copyContent()
+     * @see DocumentModel#copyContent(DocumentModel)
      */
     public void copyContent(DocumentModel sourceDoc) {
         getDM().copyContent(sourceDoc);

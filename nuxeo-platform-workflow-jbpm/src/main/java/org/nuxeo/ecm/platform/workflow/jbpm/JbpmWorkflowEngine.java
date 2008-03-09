@@ -989,8 +989,6 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
             WMWorkItemDefinition workItemDefinition,
             Map<String, Serializable> attrs) throws WMWorkflowException {
 
-        WMWorkItemInstance workItem;
-
         // Task aware activityDefinition ?
         if (!activityInstance.getActivityDefinition().isTaskAwareActivity()) {
             throw new WMWorkflowException("Path does not support task !");
@@ -1072,7 +1070,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
 
         ctx.getContext().save(pi);
 
-        workItem = WAPIGenerator.createWorkItemInstance(eti);
+        WMWorkItemInstance workItem = WAPIGenerator.createWorkItemInstance(eti);
 
         ctx.closeContext();
         return workItem;

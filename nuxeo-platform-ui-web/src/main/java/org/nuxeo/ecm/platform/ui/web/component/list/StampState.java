@@ -166,7 +166,6 @@ final class StampState implements Externalizable {
         if (stamp.isTransient()) {
             return null;
         }
-        Object[] state = new Object[3];
 
         // because base components use shallow copies in their saveState method,
         // need to copy separately properties that are likely to change as well
@@ -185,6 +184,7 @@ final class StampState implements Externalizable {
             selfState[3] = evh.isLocalValueSet();
             selfState[4] = evh.isValid();
         }
+        Object[] state = new Object[3];
         state[0] = selfState;
 
         int facetCount = stamp.getFacets().size();

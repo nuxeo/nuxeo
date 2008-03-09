@@ -116,7 +116,7 @@ public class SeamRestletFilter extends Filter {
             Restlet next = getNext();
             Restlet seamRestlet = (Restlet) SeamComponentCallHelper.getSeamComponentByRef(next);
             if (seamRestlet == null) {
-                final String errMsg = "Cannot get seam component for restlet ";
+                final String errMsg = "Cannot get Seam component for restlet ";
                 log.error(errMsg + next);
                 response.setEntity(errMsg, MediaType.TEXT_PLAIN);
             } else {
@@ -125,7 +125,7 @@ public class SeamRestletFilter extends Filter {
                 } catch (Exception e) {
                     log.error("Restlet handling error", e);
                     response.setEntity(
-                            "Error while calling seam aware Restlet: "
+                            "Error while calling Seam aware Restlet: "
                                     + e.getMessage(), MediaType.TEXT_PLAIN);
                 }
             }
