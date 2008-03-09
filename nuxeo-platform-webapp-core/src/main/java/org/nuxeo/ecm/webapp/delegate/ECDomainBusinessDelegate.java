@@ -34,7 +34,6 @@ import org.jboss.seam.annotations.Unwrap;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.interfaces.ejb.ECDomain;
 import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
-import org.nuxeo.ecm.webapp.shield.ErrorHandlingInterceptor;
 import org.nuxeo.runtime.api.Framework;
 
 /**

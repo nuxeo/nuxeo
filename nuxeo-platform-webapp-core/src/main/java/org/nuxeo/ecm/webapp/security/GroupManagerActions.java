@@ -21,14 +21,10 @@ package org.nuxeo.ecm.webapp.security;
 
 import java.util.List;
 
-import javax.annotation.security.PermitAll;
 import javax.ejb.Local;
-import javax.ejb.Remove;
 import javax.faces.model.SelectItem;
 
-import org.jboss.seam.annotations.Destroy;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 
 /**
  * Provides user manager related operations.

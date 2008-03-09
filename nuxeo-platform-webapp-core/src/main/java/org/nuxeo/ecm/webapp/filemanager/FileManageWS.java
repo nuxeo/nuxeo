@@ -636,7 +636,7 @@ public class FileManageWS extends InputController implements
         if (depth == path.length - 1) {
             map.put(key, value);
         } else {
-            Map<String, Object> subMap = (HashMap<String, Object>) map.get(key);
+            Map<String, Object> subMap = (Map<String, Object>) map.get(key);
             if (subMap == null) {
                 subMap = new HashMap<String, Object>();
                 map.put(path[depth], subMap);
@@ -664,9 +664,9 @@ public class FileManageWS extends InputController implements
 
         Map<String, Object> propertiesMap = createDataMap(properties);
 
-        Map<String, Object> fileMap = (HashMap<String, Object>) propertiesMap.get("file");
-        Map<String, Object> contentMap = (HashMap<String, Object>) fileMap.get("content");
-        Map<String, Object> dublincoreMap = (HashMap<String, Object>) propertiesMap.get("dublincore");
+        Map<String, Object> fileMap = (Map<String, Object>) propertiesMap.get("file");
+        Map<String, Object> contentMap = (Map<String, Object>) fileMap.get("content");
+        Map<String, Object> dublincoreMap = (Map<String, Object>) propertiesMap.get("dublincore");
 
         document.setProperty("dublincore", "description",
                 dublincoreMap.get("description"));
