@@ -27,6 +27,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-types-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-filemanager-api</artifactId>
     </dependency>
     <dependency>
@@ -81,6 +85,7 @@
       <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-fragments</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-annotations</artifactId>
@@ -115,7 +120,6 @@
       <artifactId>jboss-j2ee</artifactId>
       <scope>provided</scope>
     </dependency>
-
 
     <dependency>
       <groupId>javax.ejb</groupId>
