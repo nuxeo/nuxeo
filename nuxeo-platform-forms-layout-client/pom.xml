@@ -12,21 +12,6 @@
   <description />
 
   <dependencies>
-    <!-- EL + JSF + facelets deps -->
-    <dependency>
-      <groupId>javax.el</groupId>
-      <artifactId>el-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.faces</groupId>
-      <artifactId>jsf-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.facelets</groupId>
-      <artifactId>jsf-facelets</artifactId>
-      <scope>provided</scope>
-    </dependency>
     <!-- Nuxeo deps -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -45,11 +30,28 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-ui-web</artifactId>
     </dependency>
+
+    <!-- EL + JSF + facelets deps -->
+    <dependency>
+      <groupId>javax.el</groupId>
+      <artifactId>el-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.faces</groupId>
+      <artifactId>jsf-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.facelets</groupId>
+      <artifactId>jsf-facelets</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <!--  dep on tomahawk for html tag -->
     <dependency>
       <groupId>org.apache.myfaces.tomahawk</groupId>
       <artifactId>tomahawk</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
