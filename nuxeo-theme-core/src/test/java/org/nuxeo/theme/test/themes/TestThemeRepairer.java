@@ -130,6 +130,49 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
         assertEquals("red", styleProperties.get("color"));
     }
 
+    public void testStyleProperties() {
+        ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
+        Element page = ElementFactory.create("page");
+        Element section = ElementFactory.create("section");
+
+        theme.addChild(page).addChild(section);
+
+        Widget widget = (Widget) FormatFactory.create("widget");
+        widget.setName("section frame");
+        themeManager.registerFormat(widget);
+        ElementFormatter.setFormat(section, widget);
+
+        Style style = (Style) FormatFactory.create("style");
+        themeManager.registerFormat(style);
+
+        Layout layout = (Layout) FormatFactory.create("layout");
+        themeManager.registerFormat(layout);
+
+        Properties styleProperties = new Properties();
+        // Disallowed style properties
+        styleProperties.setProperty("color", "red");
+        styleProperties.setProperty("font-size", "11px");
+        // Allowed properties
+        styleProperties.setProperty("border-top", "1px solid #ccc");
+        styleProperties.setProperty("border-left", "1px dashed #ccc");
+        styleProperties.setProperty("border-right", "none");
+        styleProperties.setProperty("border-bottom", "2px solid #000");
+        style.setPropertiesFor("section frame", "", styleProperties);
+        ElementFormatter.setFormat(section, style);
+
+        ThemeRepairer.repair(theme);
+
+        // Disallowed style properties are removed
+        assertNull(style.getProperty("color"));
+        assertNull(style.getProperty("font-size"));
+
+        // Allowed style properties are preserved
+        assertEquals("1px solid #ccc", styleProperties.get("border-top"));
+        assertEquals("1px dashed #ccc", styleProperties.get("border-left"));
+        assertEquals("none", styleProperties.get("border-right"));
+        assertEquals("2px solid #000", styleProperties.get("border-bottom"));
+    }
+
     public void testCleanupEmptyStylePaths() {
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
