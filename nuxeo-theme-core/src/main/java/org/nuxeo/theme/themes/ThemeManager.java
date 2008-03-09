@@ -239,7 +239,7 @@ public final class ThemeManager implements Registrable {
     public void setNamedObject(final String themeName, final String realm,
             final Identifiable object) {
         if (!namedObjects.containsKey(themeName)) {
-            namedObjects.put(themeName, new HashMap<String, Integer>());
+            namedObjects.put(themeName, new LinkedHashMap<String, Integer>());
         }
         final String name = object.getName();
         if (name == null) {
