@@ -248,10 +248,12 @@ public class ThemeSerializer {
             for (String viewName : style.getSelectorViewNames()) {
                 for (String path : style.getPathsForView(viewName)) {
                     org.w3c.dom.Element domSelector = doc.createElement("selector");
-                    domSelector.setAttribute("path", Utils.cleanUp(path));
+                    path = Utils.cleanUp(path);
+                    domSelector.setAttribute("path", path);
                     if (!"*".equals(viewName)) {
                         domSelector.setAttribute("view", viewName);
                     }
+
                     for (Map.Entry<Object, Object> entry : style.getPropertiesFor(
                             viewName, path).entrySet()) {
                         org.w3c.dom.Element domProperty = doc.createElement((String) entry.getKey());
@@ -266,6 +268,16 @@ public class ThemeSerializer {
                         }
                         domSelector.appendChild(domProperty);
                     }
+
+                    // Set selector description
+                    String selectorDescription = style.getSelectorDescription(
+                            path, viewName);
+                    if (selectorDescription != null) {
+                        System.out.println(selectorDescription);
+                        domElement.appendChild(doc.createComment(String.format(
+                                " %s ", selectorDescription)));
+                    }
+
                     domElement.appendChild(domSelector);
                 }
             }

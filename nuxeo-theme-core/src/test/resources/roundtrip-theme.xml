@@ -63,6 +63,7 @@
       </selector>
     </style>
     <style name="default colors">
+      <!-- Tables -->
       <selector path=".iconColumn">
         <width>20px</width>
         <text-align>center</text-align>
@@ -90,11 +91,13 @@
         <vertical-align>top</vertical-align>
         <text-align>center</text-align>
       </selector>
+      <!-- Box -->
       <selector path="div">
         <color>brown</color>
       </selector>
     </style>
     <style name="default fonts">
+      <!-- Level 3 header -->
       <selector path="h3">
         <color>green</color>
       </selector>
@@ -106,6 +109,7 @@
     </style>
     <!-- style for the fragment -->
     <style element="page[1]/section[1]/cell[2]/fragment[2]" inherit="default fonts">
+      <!-- Level 1 header for main region -->
       <selector path="h1" view="facelet region">
         <color>red</color>
         <font-size>1.2em</font-size>

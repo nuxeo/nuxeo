@@ -308,9 +308,16 @@ public class ThemeParser {
                         viewName = viewAttr.getNodeValue();
                     }
 
+                    String selectorDescription = getCommentAssociatedTo(selectorNode);
+                    if (selectorDescription != null) {
+                        style.setSelectorDescription(path, viewName,
+                                selectorDescription);
+                    }
+
                     if (elementXPath != null
                             && (viewName == null || viewName.equals("*"))) {
-                        log.info("Style parser: trying to guess the view name for: " + elementXPath);
+                        log.info("Style parser: trying to guess the view name for: "
+                                + elementXPath);
                         viewName = guessViewNameFor(doc, elementXPath);
                         if (viewName == null) {
                             if (!newStyles.containsKey(style)) {
