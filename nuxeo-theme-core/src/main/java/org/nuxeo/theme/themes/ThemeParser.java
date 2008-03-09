@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -62,6 +61,8 @@ public class ThemeParser {
     private static final Log log = LogFactory.getLog(ThemeParser.class);
 
     private static final String DOCROOT_NAME = "theme";
+
+    private static final XPath xpath = XPathFactory.newInstance().newXPath();
 
     public static String registerTheme(URL url) {
         String themeName = null;
@@ -137,9 +138,7 @@ public class ThemeParser {
             }
 
             parseLayout(theme, baseNode);
-
             themeManager.registerTheme(theme);
-
             return themeName;
 
         } catch (Exception e) {
@@ -151,8 +150,7 @@ public class ThemeParser {
     private static void parseLayout(final Element parent, Node node)
             throws Exception {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        for (String formatName : Manager.getTypeRegistry().getTypeNames(
-                TypeFamily.FORMAT)) {
+        for (String formatName : typeRegistry.getTypeNames(TypeFamily.FORMAT)) {
             Object format = node.getUserData(formatName);
             if (format != null) {
                 ElementFormatter.setFormat(parent, (Format) format);
@@ -217,15 +215,13 @@ public class ThemeParser {
             }
 
             parent.addChild(elem);
-
             parseLayout(elem, n);
         }
     }
 
     private static void parseFormats(final ThemeElement theme,
             org.w3c.dom.Element doc, Node node) {
-        XPath xpath = XPathFactory.newInstance().newXPath();
-
+        Node baseNode = getBaseNode(doc);
         String themeName = theme.getName();
         ThemeManager themeManager = Manager.getThemeManager();
 
@@ -322,7 +318,7 @@ public class ThemeParser {
                         if (viewName == null) {
                             if (!newStyles.containsKey(style)) {
                                 newStyles.put(style,
-                                        new HashMap<String, Properties>());
+                                        new LinkedHashMap<String, Properties>());
                             }
                             newStyles.get(style).put(path,
                                     getPropertiesFromNode(selectorNode));
@@ -347,25 +343,13 @@ public class ThemeParser {
 
             themeManager.registerFormat(format);
             if (elementXPath != null) {
-                Node baseNode = getBaseNode(doc);
-                if (baseNode != null) {
-                    try {
-                        if ("".equals(elementXPath)) {
-                            baseNode.setUserData(nodeName, format, null);
-                        } else {
-                            NodeList elements = (NodeList) xpath.evaluate(
-                                    elementXPath, baseNode,
-                                    XPathConstants.NODESET);
-                            for (int i = 0; i < elements.getLength(); i++) {
-                                elements.item(i).setUserData(nodeName, format,
-                                        null);
-                            }
-                        }
-                    } catch (XPathExpressionException e) {
-                        log.warn("Could not parse the path: " + elementXPath);
+                if ("".equals(elementXPath)) {
+                    baseNode.setUserData(nodeName, format, null);
+                } else {
+                    for (Node element : getNodesByXPath(baseNode, elementXPath)) {
+                        element.setUserData(nodeName, format, null);
                     }
                 }
-
             }
         }
 
@@ -400,7 +384,6 @@ public class ThemeParser {
     }
 
     private static void parseProperties(org.w3c.dom.Element doc, Node node) {
-        XPath xpath = XPathFactory.newInstance().newXPath();
         NamedNodeMap attributes = node.getAttributes();
         String elementXPath = attributes.getNamedItem("element").getNodeValue();
 
@@ -463,7 +446,6 @@ public class ThemeParser {
     }
 
     private static Node getBaseNode(org.w3c.dom.Element doc) {
-        XPath xpath = XPathFactory.newInstance().newXPath();
         Node baseNode = null;
         try {
             baseNode = (Node) xpath.evaluate('/' + DOCROOT_NAME + "/layout",
@@ -522,4 +504,19 @@ public class ThemeParser {
         return null;
     }
 
+    private static List<Node> getNodesByXPath(Node baseNode, String elementXPath) {
+        final List<Node> nodes = new ArrayList<Node>();
+        if (elementXPath != null) {
+            try {
+                NodeList elementNodes = (NodeList) xpath.evaluate(elementXPath,
+                        baseNode, XPathConstants.NODESET);
+                for (int i = 0; i < elementNodes.getLength(); i++) {
+                    nodes.add(elementNodes.item(i));
+                }
+            } catch (XPathExpressionException e) {
+                log.warn("Could not parse the path: " + elementXPath);
+            }
+        }
+        return nodes;
+    }
 }
