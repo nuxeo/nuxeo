@@ -20,10 +20,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
-      <artifactId>nuxeo-theme-fragments</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-jsf</artifactId>
     </dependency>
 
