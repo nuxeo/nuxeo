@@ -99,6 +99,11 @@
         <color>green</color>
       </selector>
     </style>
+    <style inherit="default fonts" name="special fonts">
+      <selector path="h3">
+        <color>blue</color>
+      </selector>
+    </style>
     <!-- style for the fragment -->
     <style element="page[1]/section[1]/cell[2]/fragment[2]" inherit="default fonts">
       <selector path="h1" view="facelet region">
