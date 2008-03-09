@@ -40,17 +40,17 @@ public class DefaultProvider implements DefaultProviderLocal {
 
     private static final Log log = LogFactory.getLog(DefaultProvider.class);
 
-    private transient Map<String, List<Widget>> widgetsByRegion = new HashMap<String, List<Widget>>();
+    private final Map<String, List<Widget>> widgetsByRegion = new HashMap<String, List<Widget>>();
 
-    private transient Map<String, Widget> widgetsByUid = new HashMap<String, Widget>();
+    private final Map<String, Widget> widgetsByUid = new HashMap<String, Widget>();
 
-    private transient Map<String, String> regionsByUid = new HashMap<String, String>();
+    private final Map<String, String> regionsByUid = new HashMap<String, String>();
 
-    private transient Map<Widget, Map<String, String>> preferencesByWidget = new HashMap<Widget, Map<String, String>>();
+    private final Map<Widget, Map<String, String>> preferencesByWidget = new HashMap<Widget, Map<String, String>>();
 
-    private transient Map<Widget, Map<String, WidgetData>> dataByWidget = new HashMap<Widget, Map<String, WidgetData>>();
+    private final Map<Widget, Map<String, WidgetData>> dataByWidget = new HashMap<Widget, Map<String, WidgetData>>();
 
-    private transient Map<Widget, WidgetState> statesByWidget = new HashMap<Widget, WidgetState>();
+    private final Map<Widget, WidgetState> statesByWidget = new HashMap<Widget, WidgetState>();
 
     private int counter = 0;
 

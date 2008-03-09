@@ -28,7 +28,7 @@ public final class VocabularyManager implements Registrable {
 
     private static final Log log = LogFactory.getLog(VocabularyManager.class);
 
-    private Map<String, Vocabulary> vocabularies = new HashMap<String, Vocabulary>();
+    private final Map<String, Vocabulary> vocabularies = new HashMap<String, Vocabulary>();
 
     public List<VocabularyItem> getItems(String name) {
         VocabularyType vocabularyType = (VocabularyType) Manager.getTypeRegistry().lookup(

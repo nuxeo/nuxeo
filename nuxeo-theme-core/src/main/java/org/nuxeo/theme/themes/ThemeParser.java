@@ -469,7 +469,7 @@ public class ThemeParser {
 
     private static String getCommentAssociatedTo(Node node) {
         Node n = node;
-        do {
+        while (true) {
             n = n.getPreviousSibling();
             if (n == null) {
                 break;
@@ -480,7 +480,7 @@ public class ThemeParser {
             if (n.getNodeType() == Node.COMMENT_NODE) {
                 return n.getNodeValue().trim();
             }
-        } while (n != null);
+        }
         return null;
     }
 

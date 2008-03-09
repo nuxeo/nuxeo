@@ -19,11 +19,11 @@ import org.nuxeo.theme.nodes.NodeTypeFamily;
 
 public final class RegionModel extends AbstractModel {
 
-    public String name = null;
+    public String name;
 
-    public String provider = null;
+    public String provider;
 
-    public String decoration = null;
+    public String decoration;
 
     public RegionModel() {
     }

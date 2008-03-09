@@ -21,7 +21,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public final class ProviderType {
 
     @XNode("@name")
-    private String name = null;
+    private String name;
 
     @XNode("description")
     private String description;

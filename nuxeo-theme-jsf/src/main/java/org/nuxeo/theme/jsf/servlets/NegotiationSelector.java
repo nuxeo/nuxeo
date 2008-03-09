@@ -33,8 +33,7 @@ public final class NegotiationSelector extends HttpServlet {
 
     @Override
     protected void doGet(final HttpServletRequest request,
-            final HttpServletResponse response) throws ServletException,
-            IOException {
+            final HttpServletResponse response) throws IOException {
         doPost(request, response);
     }
 

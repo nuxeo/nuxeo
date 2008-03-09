@@ -34,7 +34,7 @@ public class FieldIO {
             String name = (String) names.nextElement();
             String value = properties.getProperty(name);
 
-            Class<? extends Object> c = object.getClass();
+            Class<?> c = object.getClass();
             Field field = c.getField(name);
             Class<?> fieldType = field.getType();
             Type fieldGenericType = field.getGenericType();

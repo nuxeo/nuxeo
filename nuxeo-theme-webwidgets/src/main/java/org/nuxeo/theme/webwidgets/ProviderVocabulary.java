@@ -22,9 +22,6 @@ import org.nuxeo.theme.vocabularies.VocabularyItem;
 
 public final class ProviderVocabulary implements Vocabulary {
 
-    public ProviderVocabulary() {
-    }
-
     public List<VocabularyItem> getItems() {
         List<VocabularyItem> items = new ArrayList<VocabularyItem>();
         for (String name : Manager.getProviderNames()) {

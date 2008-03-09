@@ -104,7 +104,7 @@ public class TestElementRenderer extends NXRuntimeTestCase {
 
     private String getFileContent(String name) {
         InputStream is = null;
-        StringBuffer content = new StringBuffer();
+        StringBuilder content = new StringBuilder();
         try {
             is = getClass().getClassLoader().getResourceAsStream(name);
             if (is != null) {

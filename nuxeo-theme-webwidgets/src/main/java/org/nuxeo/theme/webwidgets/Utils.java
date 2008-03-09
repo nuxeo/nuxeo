@@ -101,13 +101,12 @@ public final class Utils {
 
     public static String extractMetadata(String html, String name) {
         Matcher matcher = metadataPattern.matcher(html);
-        String content = null;
         while (matcher.find()) {
             if (matcher.group(1).equals(name)) {
                 return matcher.group(2);
             }
         }
-        return content;
+        return null;
     }
 
     public static String extractIcon(String html) {
@@ -120,7 +119,6 @@ public final class Utils {
 
     public static List<WidgetFieldType> extractSchema(String source) {
         final List<WidgetFieldType> schema = new ArrayList<WidgetFieldType>();
-        ByteArrayInputStream in = null;
 
         source = scriptPattern.matcher(source).replaceAll("");
         source = stylePattern.matcher(source).replaceAll("");
@@ -129,6 +127,7 @@ public final class Utils {
 
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         final Document document;
+        ByteArrayInputStream in = null;
         try {
             in = new ByteArrayInputStream(source.getBytes());
             final DocumentBuilder db = dbf.newDocumentBuilder();
@@ -151,7 +150,7 @@ public final class Utils {
         if (nodes.getLength() != 1) {
             return schema;
         }
-        final Node node = (Node) nodes.item(0);
+        final Node node = nodes.item(0);
         final NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             final Node n = childNodes.item(i);
@@ -221,7 +220,7 @@ public final class Utils {
                 Reader in = null;
                 try {
                     in = new BufferedReader(new InputStreamReader(is));
-                    final StringBuffer sb = new StringBuffer();
+                    final StringBuilder sb = new StringBuilder();
                     int ch;
                     while ((ch = in.read()) > -1) {
                         sb.append((char) ch);
@@ -256,7 +255,7 @@ public final class Utils {
         try {
             final InputStream in = url.openStream();
             final ByteArrayOutputStream os = new ByteArrayOutputStream();
-            byte buffer[] = new byte[1024];
+            byte[] buffer = new byte[1024];
             int i;
             while ((i = in.read(buffer)) != -1) {
                 os.write(buffer, 0, i);

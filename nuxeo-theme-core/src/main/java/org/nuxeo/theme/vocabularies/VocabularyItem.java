@@ -21,8 +21,7 @@ public final class VocabularyItem {
     private String label = "";
 
     public VocabularyItem(String value) {
-        this.value = value;
-        this.label = value;
+        this(value, value);
     }
 
     public VocabularyItem(String value, String label) {

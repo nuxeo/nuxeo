@@ -37,9 +37,9 @@ public final class NegotiationType implements Type {
     public String strategy;
 
     @XNodeList(value = "scheme", type = ArrayList.class, componentType = String.class)
-    private List<String> schemeClassNames = null;
+    private List<String> schemeClassNames;
 
-    private List<Scheme> schemes = null;
+    private List<Scheme> schemes;
 
 
     public String getTypeName() {

@@ -85,8 +85,6 @@ public class UiManager implements UiManagerLocal {
 
     private static final Log log = LogFactory.getLog(UiManager.class);
 
-    private static final long serialVersionUID = 1L;
-
     private static final String PREVIEW_PROPERTIES_RESOURCE = "/nxthemes/jsf/editor/styles/previews.properties";
 
     private static final boolean RESOLVE_PRESETS = false;
@@ -112,7 +110,7 @@ public class UiManager implements UiManagerLocal {
 
     public String startEditor() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        ExternalContext externalContext = (ExternalContext) facesContext.getExternalContext();
+        ExternalContext externalContext = facesContext.getExternalContext();
         final HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
         final String referrer = request.getHeader("referer");
         if (referrer == null) {
@@ -152,7 +150,7 @@ public class UiManager implements UiManagerLocal {
     /* Fragments and views */
     public static class FragmentInfo {
 
-        private FragmentType fragmentType = null;
+        private FragmentType fragmentType;
 
         public FragmentInfo(FragmentType fragmentType) {
             this.fragmentType = fragmentType;
@@ -475,11 +473,11 @@ public class UiManager implements UiManagerLocal {
             return fieldProperties;
         }
 
-        final Class<? extends Object> c = selectedElement.getClass();
+        final Class<?> c = selectedElement.getClass();
         final Enumeration<?> names = properties.propertyNames();
         while (names.hasMoreElements()) {
             final String name = (String) names.nextElement();
-            final String value = (String) properties.getProperty(name);
+            final String value = properties.getProperty(name);
             fieldProperties.add(new FieldProperty(name, value.trim(),
                     getFieldInfo(c, name)));
         }
@@ -689,7 +687,7 @@ public class UiManager implements UiManagerLocal {
                 IGNORE_VIEW_NAME, IGNORE_CLASSNAME, INDENT);
     }
 
-    private FieldInfo getFieldInfo(final Class<? extends Object> c,
+    private FieldInfo getFieldInfo(final Class<?> c,
             final String name) {
         try {
             return c.getField(name).getAnnotation(FieldInfo.class);
@@ -916,7 +914,7 @@ public class UiManager implements UiManagerLocal {
     }
 
     /* Private API */
-    private static String getDefaultTheme() {
+    private String getDefaultTheme() {
         String defaultTheme = "";
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         final String applicationPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();

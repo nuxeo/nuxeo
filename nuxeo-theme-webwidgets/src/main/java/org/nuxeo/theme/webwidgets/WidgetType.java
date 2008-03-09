@@ -181,8 +181,8 @@ public final class WidgetType {
             data.put("metas", metas);
 
             final List<Map<String, Object>> preferences = new ArrayList<Map<String, Object>>();
-            for (WidgetFieldType schema : getSchema()) {
-                preferences.add(schema.getInfo());
+            for (WidgetFieldType wft : schema) {
+                preferences.add(wft.getInfo());
             }
             data.put("preferences", preferences);
 

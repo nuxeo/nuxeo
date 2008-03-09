@@ -56,7 +56,7 @@ public class FragmentVisibility extends StandaloneFilter {
                 return info;
             }
 
-            if (viewMode.equals("fragment") || viewMode.equals("layout")) {
+            if ("fragment".equals(viewMode) || "layout".equals(viewMode)) {
                 StringBuilder content = new StringBuilder();
                 content.append("<div class=\"nxthemesFragment\">");
                 content.append(String.format("%s / %s",

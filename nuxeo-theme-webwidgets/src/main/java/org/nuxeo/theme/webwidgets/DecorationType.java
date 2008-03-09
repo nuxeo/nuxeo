@@ -27,7 +27,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public final class DecorationType {
 
     @XNode("@name")
-    private String name = null;
+    private String name;
 
     @XNodeList(value = "resource", type = String[].class, componentType = String.class)
     public String[] resources;

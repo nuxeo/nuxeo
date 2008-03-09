@@ -43,7 +43,7 @@ public final class Utils {
 
     public static String getFileContent(String name) {
         InputStream is = null;
-        StringBuffer content = new StringBuffer();
+        StringBuilder content = new StringBuilder();
         try {
             is = Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
             Reader in = null;

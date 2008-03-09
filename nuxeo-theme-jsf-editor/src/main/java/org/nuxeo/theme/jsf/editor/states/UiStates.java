@@ -46,19 +46,19 @@ public class UiStates implements UiStatesLocal {
 
     private List<String> clipboardElements = new ArrayList<String>();
 
-    private Element selectedElement = null;
+    private Element selectedElement;
 
-    private String currentStyleSelector = null;
+    private String currentStyleSelector;
 
-    private String styleCategory = null;
+    private String styleCategory;
 
-    private String presetGroup = null;
+    private String presetGroup;
 
-    private String styleEditMode = null;
+    private String styleEditMode;
 
     private String stylePropertyCategory = "";
 
-    private Style styleLayer = null;
+    private Style styleLayer;
 
     private String applicationPath = "";
 

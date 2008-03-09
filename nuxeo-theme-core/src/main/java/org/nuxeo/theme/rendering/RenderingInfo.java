@@ -34,7 +34,7 @@ public class RenderingInfo implements Info, Identifiable {
 
     private Element element;
 
-    private Format format = null;
+    private Format format;
 
     private Integer uid;
 

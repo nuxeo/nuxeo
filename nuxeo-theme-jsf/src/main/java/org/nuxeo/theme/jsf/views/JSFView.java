@@ -89,8 +89,8 @@ public class JSFView extends AbstractView {
         if (matcher.find()) {
             final String tag = matcher.group(1).toLowerCase();
             boolean found = false;
-            for (int i = 0; i < ALLOWED_TAGS.length; i++) {
-                if (tag.equals(ALLOWED_TAGS[i])) {
+            for (String allowedTag : ALLOWED_TAGS) {
+                if (tag.equals(allowedTag)) {
                     found = true;
                 }
             }

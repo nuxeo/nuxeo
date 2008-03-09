@@ -246,8 +246,7 @@ public class ThemeService extends DefaultComponent {
                 if (!viewDefs.isEmpty()) {
                     Map<String, ViewDef> oldViewDefs = oldApplication.getViewDefs();
                     for (Map.Entry<String, ViewDef> entry : viewDefs.entrySet()) {
-                        oldViewDefs.put((String) entry.getKey(),
-                                (ViewDef) entry.getValue());
+                        oldViewDefs.put(entry.getKey(), entry.getValue());
                     }
                 }
             }

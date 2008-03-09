@@ -30,11 +30,9 @@ public final class RegionFragment extends AbstractFragment {
     public String defaultSrc = "";
 
     public RegionFragment() {
-        super();
     }
 
     public RegionFragment(String name, String defaultBody, String defaultSrc) {
-        super();
         this.name = name;
         this.defaultBody = defaultBody;
         this.defaultSrc = defaultSrc;

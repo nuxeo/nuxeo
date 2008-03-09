@@ -23,10 +23,10 @@ import org.nuxeo.theme.types.TypeFamily;
 public final class ShortcutType implements Type {
 
     @XNode("@key")
-    private String key = null;
+    private String key;
 
     @XNode("@target")
-    private String target = null;
+    private String target;
 
 
     public TypeFamily getTypeFamily() {

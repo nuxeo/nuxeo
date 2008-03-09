@@ -61,7 +61,7 @@ public final class ViewType implements Type {
     @XNodeList(value = "resource", type = String[].class, componentType = String.class)
     public String[] resources;
 
-    private View view = null;
+    private View view;
 
     public ViewType() {
     }

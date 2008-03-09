@@ -21,16 +21,16 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public final class ViewDef {
 
     @XNode("theme")
-    private String theme = null;
+    private String theme;
 
     @XNode("engine")
-    private String engine = null;
+    private String engine;
 
     @XNode("mode")
-    private String mode = null;
+    private String mode;
 
     @XNode("perspective")
-    private String perspective = null;
+    private String perspective;
 
 
     public String getEngine() {

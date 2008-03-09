@@ -46,8 +46,7 @@ public final class Styles extends HttpServlet implements Serializable {
 
     @Override
     protected void doGet(final HttpServletRequest request,
-            final HttpServletResponse response) throws ServletException,
-            IOException {
+            final HttpServletResponse response) throws IOException {
         doPost(request, response);
     }
 

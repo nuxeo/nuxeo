@@ -124,6 +124,7 @@ public final class RelationStorage implements Registrable {
         } else if (arity == 3) {
             wildcards = WILDCARDS_TRIADIC;
         }
+        assert wildcards != null;
 
         for (String[] wildcard : wildcards) {
             List<String> indexString = new ArrayList<String>();

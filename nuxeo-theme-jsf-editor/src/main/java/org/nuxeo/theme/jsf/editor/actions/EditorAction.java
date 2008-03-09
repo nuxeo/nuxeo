@@ -241,11 +241,8 @@ public class EditorAction implements EditorActionLocal {
         final Element element = getElementById(id);
         final Element parent = (Element) element.getParent();
 
-        if (element instanceof ThemeElement) {
-            themeManager.destroyElement((ThemeElement) element);
-
-        } else if (element instanceof PageElement) {
-            themeManager.destroyElement((PageElement) element);
+        if (element instanceof ThemeElement || element instanceof PageElement) {
+            themeManager.destroyElement(element);
 
         } else if (element instanceof CellElement) {
             if (element.hasSiblings()) {

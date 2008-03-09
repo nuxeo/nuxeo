@@ -18,7 +18,7 @@ public enum WidgetState {
 
     DEFAULT("*"), SHADED("shaded");
 
-    String state;
+    final String state;
 
     WidgetState(String state) {
         this.state = state;

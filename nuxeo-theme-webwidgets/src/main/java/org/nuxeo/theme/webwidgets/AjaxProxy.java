@@ -37,8 +37,7 @@ public final class AjaxProxy extends HttpServlet implements Serializable {
 
     @Override
     protected void doGet(final HttpServletRequest request,
-            final HttpServletResponse response) throws ServletException,
-            IOException {
+            final HttpServletResponse response) throws IOException {
         doPost(request, response);
     }
 
@@ -67,13 +66,13 @@ public final class AjaxProxy extends HttpServlet implements Serializable {
             response.setDateHeader("Expires", now + new Long(lifetime) * 1000L);
         }
 
-        String content = "";
         URL url = null;
         try {
             url = new URL(sourceUrl);
         } catch (MalformedURLException e) {
             log.error("Incorrect URL: " + sourceUrl);
         }
+        String content = "";
         if (url != null) {
             content = Utils.fetchUrl(url);
         }

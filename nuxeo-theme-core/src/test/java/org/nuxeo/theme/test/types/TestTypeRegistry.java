@@ -25,9 +25,9 @@ public class TestTypeRegistry extends NXRuntimeTestCase {
 
     private TypeRegistry typeRegistry;
 
-    private PresetType preset1 = null;
+    private PresetType preset1;
 
-    private PresetType preset2 = null;
+    private PresetType preset2;
 
     @Override
     public void setUp() throws Exception {

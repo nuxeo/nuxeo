@@ -16,9 +16,9 @@ package org.nuxeo.theme.webwidgets;
 
 public class DefaultWidget implements Widget {
 
-    private String name;
+    private final String name;
 
-    private String uid;
+    private final String uid;
 
     public DefaultWidget(final String name, final String uid) {
         this.name = name;

@@ -33,7 +33,7 @@ public class DummyRenderingInfo extends RenderingInfo {
 
     private Model model;
 
-    private Format format = null;
+    private Format format;
 
     private boolean dirty = false;
 

@@ -61,9 +61,7 @@ public class Manager implements ManagerLocal {
             return null;
         }
         String componentName = providerType.getComponentName();
-        Provider provider = (Provider) Component.getInstance(componentName,
-                true);
-        return provider;
+        return (Provider) Component.getInstance(componentName, true);
     }
 
     public static ProviderType getProviderType(String name) {

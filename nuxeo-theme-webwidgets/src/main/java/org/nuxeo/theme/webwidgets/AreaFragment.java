@@ -29,12 +29,10 @@ public final class AreaFragment extends AbstractFragment {
     public String decoration = "default";
 
     public AreaFragment() {
-        super();
     }
 
     public AreaFragment(String name, String provider, String security,
             String decoration) {
-        super();
         this.name = name;
         this.provider = provider;
         this.decoration = decoration;

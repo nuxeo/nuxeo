@@ -39,7 +39,7 @@ public class TestManager extends NXRuntimeTestCase {
 
     public void testGetProviderNames() {
         assertTrue(Manager.getProviderNames().contains("test"));
-        assertTrue(Manager.getProviderNames().size() == 1);
+        assertEquals(1, Manager.getProviderNames().size());
     }
 
     public void testGetProviderType() {
@@ -61,9 +61,7 @@ public class TestManager extends NXRuntimeTestCase {
                 widgetType.getIcon());
 
         assertEquals("content", widgetType.getBody());
-
         assertEquals("\nalert('test &');\n\n", widgetType.getScripts());
-
         assertEquals("\nh2 {color: red;}\n", widgetType.getStyles());
 
         List<WidgetFieldType> schema = widgetType.getSchema();
