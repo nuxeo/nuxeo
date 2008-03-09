@@ -273,7 +273,6 @@ public class ThemeSerializer {
                     String selectorDescription = style.getSelectorDescription(
                             path, viewName);
                     if (selectorDescription != null) {
-                        System.out.println(selectorDescription);
                         domElement.appendChild(doc.createComment(String.format(
                                 " %s ", selectorDescription)));
                     }
