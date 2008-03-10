@@ -44,7 +44,7 @@ public class EJBExceptionHandler implements Serializable {
      * @return
      */
     @SuppressWarnings({"ThrowableInstanceNeverThrown"})
-    public ClientException wrapException(Throwable exception) {
+    public static ClientException wrapException(Throwable exception) {
         ClientException clientException;
 
         if (null == exception) {

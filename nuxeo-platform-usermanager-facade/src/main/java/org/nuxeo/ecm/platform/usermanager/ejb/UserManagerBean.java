@@ -45,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- * 
+ *
  */
 @Stateful
 @SerializedConcurrentAccess
@@ -56,8 +56,6 @@ public class UserManagerBean implements UserManager, Serializable {
     private static final long serialVersionUID = -6069414600987521155L;
 
     private static final Log log = LogFactory.getLog(UserManagerBean.class);
-
-    private static final EJBExceptionHandler exceptionHandler = new EJBExceptionHandler();
 
     private String defaultGroup;
 
@@ -87,7 +85,7 @@ public class UserManagerBean implements UserManager, Serializable {
         try {
             return getUserManager().checkUsernamePassword(username, password);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -100,7 +98,7 @@ public class UserManagerBean implements UserManager, Serializable {
             return getUserManager().getAvailablePrincipals();
         } catch (Throwable e) {
             log.error("getAvailablePrincipals failed", e);
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -108,7 +106,7 @@ public class UserManagerBean implements UserManager, Serializable {
         try {
             return getUserManager().getPrincipal(username);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -120,7 +118,7 @@ public class UserManagerBean implements UserManager, Serializable {
         try {
             getUserManager().createGroup(group);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -129,7 +127,7 @@ public class UserManagerBean implements UserManager, Serializable {
         try {
             getUserManager().createPrincipal(principal);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -138,7 +136,7 @@ public class UserManagerBean implements UserManager, Serializable {
         try {
             getUserManager().updatePrincipal(principal);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -146,7 +144,7 @@ public class UserManagerBean implements UserManager, Serializable {
         try {
             getUserManager().deleteGroup(group);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -155,7 +153,7 @@ public class UserManagerBean implements UserManager, Serializable {
         try {
             getUserManager().deletePrincipal(principal);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -163,7 +161,7 @@ public class UserManagerBean implements UserManager, Serializable {
         try {
             return getUserManager().getAvailableGroups();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -171,7 +169,7 @@ public class UserManagerBean implements UserManager, Serializable {
         try {
             getUserManager().updateGroup(group);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -180,7 +178,7 @@ public class UserManagerBean implements UserManager, Serializable {
         try {
             return getUserManager().searchPrincipals(name);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -189,7 +187,7 @@ public class UserManagerBean implements UserManager, Serializable {
         try {
             return getUserManager().searchByMap(filter, pattern);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -197,7 +195,7 @@ public class UserManagerBean implements UserManager, Serializable {
         try {
             return getUserManager().searchGroups(pattern);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -205,7 +203,7 @@ public class UserManagerBean implements UserManager, Serializable {
         try {
             return getUserManager().getGroup(groupName);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -213,7 +211,7 @@ public class UserManagerBean implements UserManager, Serializable {
         try {
             return getUserManager().getModelForUser(name);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -318,7 +316,7 @@ public class UserManagerBean implements UserManager, Serializable {
         try {
             return getUserManager().getGroupsInGroup(parentId);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -326,7 +324,7 @@ public class UserManagerBean implements UserManager, Serializable {
         try {
             return getUserManager().getTopLevelGroups();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -334,7 +332,7 @@ public class UserManagerBean implements UserManager, Serializable {
         try {
             return getUserManager().getUsersInGroup(groupId);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
