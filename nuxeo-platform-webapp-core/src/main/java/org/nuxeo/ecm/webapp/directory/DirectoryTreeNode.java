@@ -28,12 +28,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.myfaces.custom.tree2.TreeNode;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
-import org.nuxeo.ecm.core.api.AlreadyConnectedException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
-import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -92,8 +90,7 @@ public class DirectoryTreeNode implements TreeNode {
     }
 
     @SuppressWarnings("unchecked")
-    public String selectNode() throws AlreadyConnectedException,
-            ClientException, ECInvalidParameterException {
+    public String selectNode() throws ClientException, ECInvalidParameterException {
         lookupQueryModel();
         String fieldName = config.getFieldName();
         String schemaName = config.getSchemaName();

@@ -52,9 +52,9 @@ public class ExportRepresentation extends OutputRepresentation {
 
     protected boolean exportAsZip = false;
 
-    protected CoreSession documentManager;
+    protected final CoreSession documentManager;
 
-    protected DocumentModel root;
+    protected final DocumentModel root;
 
     public ExportRepresentation(boolean exportAsTree, boolean exportAsZip,
             CoreSession documentManager, DocumentModel root) {

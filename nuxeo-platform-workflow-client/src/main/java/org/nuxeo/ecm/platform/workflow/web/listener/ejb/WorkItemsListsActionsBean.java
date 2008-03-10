@@ -96,7 +96,7 @@ public class WorkItemsListsActionsBean extends InputController implements
     @Create
     public void init()
     {
-    	Events.instance().raiseEvent(EventNames.WF_INIT);
+        Events.instance().raiseEvent(EventNames.WF_INIT);
     }
 
 

@@ -28,8 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.service.CommentService;
-import org.nuxeo.ecm.platform.comment.service.CommentServiceHelper;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
@@ -65,15 +63,11 @@ public class RelationsTestHelper {
 
     public static DocumentModel createComment(DocumentModel docModel,
             DocumentModel comment) throws Exception {
-
-        CommentService csHelper = CommentServiceHelper.getCommentService();
-        DocumentModel createdComment = getCommentManager().createComment(
-                docModel, comment);
-        return createdComment;
+        return getCommentManager().createComment(docModel, comment);
     }
 
     public static CommentManager getCommentManager() throws Exception {
-        return (CommentManager) Framework.getService(CommentManager.class);
+        return Framework.getService(CommentManager.class);
     }
 
     public static void createRelation(DocumentModel doc1, DocumentModel doc2)
@@ -126,4 +120,5 @@ public class RelationsTestHelper {
         }
         return documentResource;
     }
+
 }

@@ -118,9 +118,6 @@ public interface LiveEditConstants {
     static final QName docMimetypeTag = DocumentFactory.getInstance().createQName(
             "mimetype");
 
-    static final QName docFileExtensionTag = DocumentFactory.getInstance().createQName(
-            "fileExtension");
-
     static final QName docIsVersionTag = DocumentFactory.getInstance().createQName(
             "isVersion");
 

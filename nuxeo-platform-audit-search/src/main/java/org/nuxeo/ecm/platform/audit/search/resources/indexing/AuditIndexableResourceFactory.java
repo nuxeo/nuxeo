@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableR
  *
  */
 public class AuditIndexableResourceFactory extends
-        AbstractIndexableResourceFactory implements IndexableResourceFactory {
+        AbstractIndexableResourceFactory {
 
     private static final long serialVersionUID = 1L;
 

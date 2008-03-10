@@ -50,8 +50,6 @@ public class ExportRestlet extends BaseNuxeoRestlet {
     public void handle(Request req, Response res) {
         boolean exportAsTree;
         boolean exportAsZip;
-        CoreSession documentManager;
-        DocumentModel root;
 
         String action = req.getResourceRef().getSegments().get(4);
         if (action.equals("exportTree")) {
@@ -84,6 +82,8 @@ public class ExportRestlet extends BaseNuxeoRestlet {
             return;
         }
 
+        CoreSession documentManager;
+        DocumentModel root;
         try {
             navigationContext.setCurrentServerLocation(new RepositoryLocation(
                     repo));

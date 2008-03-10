@@ -52,7 +52,7 @@ public final class Functions {
     private static final String FULLNAMES_MAP_KEY = Functions.class.getName()
             + ".FULLNAMES_MAP";
 
-    static Map<String, String> mapOfDateLength = new HashMap<String, String>() {
+    static final Map<String, String> mapOfDateLength = new HashMap<String, String>() {
         {
             put("short", String.valueOf(DateFormat.SHORT));
             put("medium", String.valueOf(DateFormat.MEDIUM));

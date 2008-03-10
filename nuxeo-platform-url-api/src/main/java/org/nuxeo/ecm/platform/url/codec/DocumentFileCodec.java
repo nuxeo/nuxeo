@@ -40,11 +40,9 @@ import org.nuxeo.ecm.platform.url.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentLocation;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
-import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
 import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
 
-public class DocumentFileCodec extends AbstractDocumentViewCodec implements
-        DocumentViewCodec {
+public class DocumentFileCodec extends AbstractDocumentViewCodec {
 
     public static final String PREFIX = "nxfile";
 

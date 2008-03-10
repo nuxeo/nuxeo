@@ -122,7 +122,7 @@ public class IndexingDocumentModelPrefetchedListener extends
         DocumentModel dm = (DocumentModel) ob;
 
         if (dm.getContextData(EventMessage.BLOCK_SYNC_INDEXING) != null
-                && (Boolean) dm.getContextData(EventMessage.BLOCK_SYNC_INDEXING) == true) {
+                && (Boolean) dm.getContextData(EventMessage.BLOCK_SYNC_INDEXING)) {
             log.debug("sync indexing is blocked for doc " + dm.getRef().toString());
             return;
         }

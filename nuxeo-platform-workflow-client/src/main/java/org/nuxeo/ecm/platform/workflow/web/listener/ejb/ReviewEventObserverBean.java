@@ -95,7 +95,7 @@ public class ReviewEventObserverBean implements ReviewEventObserver {
     @Observer( value={ EventNames.WF_INIT }, create=true, inject=false)
     public void init()
     {
-    	log.debug("WF Seam Event Observer created");
+        log.debug("WF Seam Event Observer created");
     }
 
     @Observer( value={ EventNames.DOCUMENT_CHANGED }, create=false)
