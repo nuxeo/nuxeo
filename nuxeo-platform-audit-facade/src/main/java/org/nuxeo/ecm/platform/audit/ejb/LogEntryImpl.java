@@ -38,7 +38,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntryBase;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 

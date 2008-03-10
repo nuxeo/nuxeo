@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResource
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.AbstractIndexableResourceFactory;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResource;
-import org.nuxeo.ecm.core.search.api.client.indexing.resources.factory.IndexableResourceFactory;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceConf;
 
 /**
@@ -45,9 +44,9 @@ public class AuditIndexableResourceFactory extends
     }
 
     public IndexableResource createIndexableResourceFrom(
-            Serializable targetResourceId, IndexableResourceConf conf,
+            Serializable targetResource, IndexableResourceConf conf,
             String sid) throws IndexingException {
-        return new AuditIndexableResourceImpl((Long) targetResourceId);
+        return new AuditIndexableResourceImpl((Long) targetResource);
     }
 
     public ResolvedResource resolveResourceFor(IndexableResource resource)

@@ -29,7 +29,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Calendar;
 
@@ -86,7 +85,6 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
     // Not used?
     public SummaryEntry(String uuid, String title, String modifiedDate,
             String filename, String version) {
-
         this.uuid = uuid;
         this.title = title;
         this.modifiedDate = modifiedDate;
@@ -97,7 +95,6 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
     // Used in ClipBoardActionBean
     public SummaryEntry(String uuid, String title, Date modifiedDate,
             String filename, String version, SummaryEntry parent) {
-
         this.uuid = uuid;
         this.title = title;
         if (modifiedDate != null) {
@@ -110,7 +107,6 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
 
     // Used in ClipBoardActionBean
     public SummaryEntry(DocumentModel doc) {
-
         uuid = doc.getRef().toString();
         title = (String) doc.getProperty("dublincore", "title");
         documentRef = doc.getRef();
@@ -134,7 +130,6 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
     }
 
     public SummaryEntry() {
-
     }
 
     public String getUuid() {

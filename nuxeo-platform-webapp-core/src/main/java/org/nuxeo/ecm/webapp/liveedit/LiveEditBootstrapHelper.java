@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webapp.liveedit;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Enumeration;
@@ -58,32 +57,32 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * The LiveEdit bootstrap procedure works as follows:
  * <ul>
- * 
+ *
  * <li>browsed page calls a JSF function from the DocumentModelFunctions class
  * (edit a document, create new document, etc.) to generate;</li>
- * 
+ *
  * <li>composing a specifc URL as result, triggering the bootstrap addon to
  * popup;</li>
- * 
+ *
  * <li>the addon come back with the URL composed allowing the present seam
  * component to create the bootstrap file. The file contains various data as
  * requested in the URL;</li>
- * 
+ *
  * <li>the XML file is now available to addon which presents it to the client
  * plugin.</li>
- * 
+ *
  * </ul>
- * 
+ *
  * Please refer to the specification files in nuxeo-platform-ws-jaxws/doc/ for
  * details on the format of the nxedit URLs and the XML bootstrap file.
- * 
+ *
  * @author Thierry Delprat NXP-1959 the bootstrap file is managing the 'create
  *         new document [from template]' case too. The URL is containing an
  *         action identifier.
  * @author Rux rdarlea@nuxeo.com
  * @author Olivier Grisel ogrisel@nuxeo.com (split url functions into JSF
  *         DocumentModelFunctions module)
- * 
+ *
  */
 @Scope(EVENT)
 @Name("liveEditHelper")
@@ -168,7 +167,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
      * URL composition tells the case and what to create. The strucuture is
      * depicted in the NXP-1881. Rux NXP-1959: add new tag on root level
      * describing the action: actionEdit, actionNew or actionFromTemplate.
-     * 
+     *
      * @return the bootstrap file content
      * @throws Exception
      */
@@ -289,7 +288,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             addTextElement(templateDocInfo, docMimetypeTag, mimetype);
             addTextElement(templateDocInfo, docFileExtensionTag,
                     getFileExtension(mimetype));
-            
+
             // Browser request related informations
             Element requestInfo = root.addElement(requestInfoTag);
             Cookie[] cookies = request.getCookies();

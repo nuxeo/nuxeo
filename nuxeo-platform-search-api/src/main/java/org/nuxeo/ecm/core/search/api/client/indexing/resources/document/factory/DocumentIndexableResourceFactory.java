@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.AbstractIndexableResourceFactory;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResource;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.document.impl.DocumentIndexableResourceImpl;
-import org.nuxeo.ecm.core.search.api.client.indexing.resources.factory.IndexableResourceFactory;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceConf;
 
 /**
