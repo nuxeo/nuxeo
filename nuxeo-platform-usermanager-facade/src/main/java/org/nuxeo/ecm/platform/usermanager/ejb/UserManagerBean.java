@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.usermanager.ejb;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +30,7 @@ import javax.ejb.Local;
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
 import javax.ejb.Remote;
+import javax.ejb.Remove;
 import javax.ejb.Stateful;
 
 import org.apache.commons.logging.Log;
@@ -43,17 +45,19 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- *
+ * 
  */
 @Stateful
 @SerializedConcurrentAccess
 @Remote(UserManager.class)
 @Local(UserManagerLocal.class)
-public class UserManagerBean implements UserManager {
+public class UserManagerBean implements UserManager, Serializable {
+
+    private static final long serialVersionUID = -6069414600987521155L;
 
     private static final Log log = LogFactory.getLog(UserManagerBean.class);
 
-    private final EJBExceptionHandler exceptionHandler = new EJBExceptionHandler();
+    private static final EJBExceptionHandler exceptionHandler = new EJBExceptionHandler();
 
     private String defaultGroup;
 
@@ -62,9 +66,6 @@ public class UserManagerBean implements UserManager {
     @PostActivate
     @PostConstruct
     public void initialize() {
-        // UserService userService = (UserService) Framework.getRuntime()
-        // .getComponent(UserService.NAME);
-        // userManager = userService.getUserManager();
         getUserManager();
     }
 
@@ -111,8 +112,8 @@ public class UserManagerBean implements UserManager {
         }
     }
 
+    @Remove
     public void remove() {
-        // TODO Auto-generated method stub
     }
 
     public void createGroup(NuxeoGroup group) throws ClientException {
