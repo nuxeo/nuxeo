@@ -27,13 +27,6 @@
     </dependency>
     
     <dependency>
-      <groupId>org.nuxeo.common</groupId>
-      <artifactId>nuxeo-common</artifactId>
-      <version>${nuxeo.common.version}</version>
-    </dependency>
-    
-
-    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-search-test</artifactId>
       <scope>test</scope>

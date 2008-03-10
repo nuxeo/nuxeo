@@ -55,7 +55,7 @@ public class ForumEnterModerationHandler extends
                     ti.start();
                     log.debug("Moderation : Creating and starting task ="
                             + ti.getId() + " for assignee : " + moderator);
-                    ti.setActorId((String)moderator);
+                    ti.setActorId((String) moderator);
                 }
             }
         }

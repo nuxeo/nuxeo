@@ -13,15 +13,4 @@
   <description>Nuxeo Enterprise Platform: Workflow Service API.
   </description>
 
-  <dependencies>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime</artifactId>
-    </dependency>
-  </dependencies>
-
 </project>

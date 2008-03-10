@@ -44,7 +44,7 @@ import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
  * @author <a href="mailto:npaslaru@nuxeo.com">Paslaru Narcis</a>
  */
 @Local
-// XXX shouldn't be here : Seam remoting bug
+// FIXME shouldn't be here : Seam remoting bug
 public interface PublishActions extends SelectDataModelListener {
 
     String SECTIONS_DOCUMENT_TREE = "SECTIONS_DOCUMENT_TREE";

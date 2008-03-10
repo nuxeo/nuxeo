@@ -29,6 +29,7 @@
       <artifactId>nuxeo-platform-transform-core</artifactId>
       <type>ejb</type>
     </dependency>
+
     <dependency>
       <groupId>pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
@@ -87,8 +88,9 @@
           <groupId>poi</groupId>
           <artifactId>poi</artifactId>
         </exclusion>
-      </exclusions> 
+      </exclusions>
     </dependency>
+
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>

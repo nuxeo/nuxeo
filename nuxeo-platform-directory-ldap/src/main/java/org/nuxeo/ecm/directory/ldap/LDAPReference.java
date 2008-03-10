@@ -751,7 +751,7 @@ public class LDAPReference extends AbstractReference {
             }
             Attribute attrToRemove = new BasicAttribute(attributeId);
 
-            NamingEnumeration<? extends Object> oldAttrs = oldAttr.getAll();
+            NamingEnumeration<?> oldAttrs = oldAttr.getAll();
             String targetBaseDn = pseudoNormalizeDn(targetDirectory.getConfig().getSearchBaseDn());
             while (oldAttrs.hasMore()) {
                 String dn = pseudoNormalizeDn(oldAttrs.next().toString());

@@ -27,6 +27,7 @@
       <artifactId>nuxeo-platform-comment-web</artifactId>
       <type>ejb</type>
     </dependency>
+ 
     <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb</artifactId>

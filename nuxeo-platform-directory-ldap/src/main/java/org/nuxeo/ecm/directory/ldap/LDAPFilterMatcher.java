@@ -49,7 +49,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
  */
 public class LDAPFilterMatcher {
 
-    private FilterParser parser;
+    private final FilterParser parser;
 
     // lazily initialized normalizer for the substring match
     private Normalizer normalizer;

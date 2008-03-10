@@ -25,7 +25,7 @@ public class BatchInfo {
 
     private int nextPage=1;
 
-    private String initialDateRange;
+    private final String initialDateRange;
 
     public BatchInfo(String dateRange) {
         initialDateRange = dateRange;

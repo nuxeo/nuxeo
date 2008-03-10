@@ -32,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.Session;
@@ -68,7 +67,7 @@ public final class DirectoryHelper {
                 log.error("Can't find Directory Service",e);
             }
         }
-        service=dirService;
+        service = dirService;
     }
 
     public static DirectoryHelper instance() {

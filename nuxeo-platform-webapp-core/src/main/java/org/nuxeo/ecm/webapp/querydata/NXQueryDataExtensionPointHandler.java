@@ -28,7 +28,7 @@ import org.nuxeo.runtime.api.Framework;
 @Deprecated
 public class NXQueryDataExtensionPointHandler {
 
-    protected static Log log = LogFactory.getLog(NXQueryDataExtensionPointHandler.class);
+    protected static final Log log = LogFactory.getLog(NXQueryDataExtensionPointHandler.class);
 
     /**
      * Get the NXTransformBean EJB remotely performing a JNDI lookup.

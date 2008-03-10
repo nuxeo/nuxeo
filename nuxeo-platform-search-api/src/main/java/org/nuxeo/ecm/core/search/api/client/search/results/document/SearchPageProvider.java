@@ -108,7 +108,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
 
     private SchemaManager typeManager;
 
-    private static Map<String, String> prefix2SchemaNameCache = new HashMap<String, String>();
+    private static final Map<String, String> prefix2SchemaNameCache = new HashMap<String, String>();
 
     /**
      * Constructor to create a sortable provider. Note that a provider can be

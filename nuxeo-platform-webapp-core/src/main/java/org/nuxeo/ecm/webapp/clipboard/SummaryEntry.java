@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Calendar;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -123,7 +124,7 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
         }
 
         if (date != null) {
-            modifiedDate = DATE_PARSER.format(((GregorianCalendar) date).getTime());
+            modifiedDate = DATE_PARSER.format(((Calendar) date).getTime());
         }
         filename = (String) doc.getProperty("file", "filename");
     }

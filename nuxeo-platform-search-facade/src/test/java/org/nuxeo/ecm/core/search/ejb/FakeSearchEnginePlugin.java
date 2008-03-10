@@ -35,8 +35,7 @@ import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
  */
-public class FakeSearchEnginePlugin extends AbstractSearchEngineBackend
-        implements SearchEngineBackend {
+public class FakeSearchEnginePlugin extends AbstractSearchEngineBackend {
 
     private static final long serialVersionUID = -9160814888437944361L;
 

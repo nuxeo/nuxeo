@@ -170,13 +170,12 @@ public class CommentManagerActionsBean extends InputController implements
 
         } catch (Throwable t) {
             log.error("failed to add comment", t);
-            log.error(t.getStackTrace().toString());
+            log.error(t.getStackTrace());
             throw EJBExceptionHandler.wrapException(t);
         }
     }
 
     public String addComment() throws ClientException {
-
         DocumentModel myComment = documentManager.createDocumentModel("Comment");
 
         myComment.setProperty("comment", "author", principal.getName());

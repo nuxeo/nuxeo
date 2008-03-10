@@ -34,7 +34,7 @@ import org.nuxeo.runtime.model.ComponentName;
  */
 public interface DirectoryService {
 
-    static final ComponentName NAME = new ComponentName(
+    ComponentName NAME = new ComponentName(
                 "org.nuxeo.ecm.directory.DirectoryServiceImpl");
 
     List<String> getDirectoryNames() throws ClientException;
@@ -72,4 +72,5 @@ public interface DirectoryService {
      * @throws DirectoryException
      */
     String getParentDirectoryName(String directoryName) throws DirectoryException;
+
 }
