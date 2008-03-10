@@ -71,8 +71,6 @@ public class EJBExceptionHandler implements Serializable {
                 }
             }
         }
-
-        log.info("Exception wrapped...");
         return clientException;
     }
 }
