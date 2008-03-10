@@ -32,11 +32,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 
-import java.awt.FlowLayout;
-import java.awt.LayoutManager;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
