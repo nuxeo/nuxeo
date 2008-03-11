@@ -96,6 +96,8 @@ public class CompassBackend extends AbstractSearchEngineBackend {
 
     private static final Log log = LogFactory.getLog(CompassBackend.class);
 
+    private static final int BATCH_SIZE_MARGIN = 10;
+
     /*
      * TODO Temporary harcoded stuff that has to become dynamic
      */
@@ -112,9 +114,9 @@ public class CompassBackend extends AbstractSearchEngineBackend {
 
     private static Lock optimizerLock = new ReentrantLock();
 
-    private static final int OPTIMIZER_SAVE_INTERVAL = 5;
+    private static final int OPTIMIZER_SAVE_INTERVAL = 20;
 
-    private int optimize_try = 0;
+    private static int optimize_try = 0;
 
     // Default compass session
     protected Compass compass;
@@ -295,10 +297,9 @@ public class CompassBackend extends AbstractSearchEngineBackend {
             if (schemasBuilder != null) {
                 session.add(schemasBuilder.toResource());
             }
-            if (!userTxn
-                    || (session.countWaitingResources() >= getMaxIndexingDocBatchSize())) {
+            if (!userTxn || mustCommitNow(session.countWaitingResources())) {
                 session.saveAndCommit(userTxn);
-                if (userTxn){
+                if (userTxn) {
                     doOptimize();
                     markForRecycling();
                 }
@@ -309,8 +310,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         }
     }
 
-    private void markForRecycling()
-    {
+    private void markForRecycling() {
         Thread thread = Thread.currentThread();
         if (thread instanceof IndexingThread) {
             IndexingThread idxThread = (IndexingThread) thread;
@@ -396,8 +396,8 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         if (optimizerLock.tryLock()) {
             try {
                 optimize_try += 1;
-                if (optimize_try >= OPTIMIZER_SAVE_INTERVAL) {
-                    optimize_try=0;
+                if ((optimize_try >= OPTIMIZER_SAVE_INTERVAL) && (getCompass().getSearchEngineOptimizer().needOptimization())) {
+                    optimize_try = 0;
                     log.debug("Running optimizer");
                     getCompass().getSearchEngineOptimizer().optimize();
                     log.debug("Optimizer ended");
@@ -881,47 +881,41 @@ public class CompassBackend extends AbstractSearchEngineBackend {
             throw new IndexingException(e);
         }
 
-        /*
-         * if (cs.isSessionOpened() && cs.isTransactionStarted()) { try {
-         * cs.clean();
-         *
-         * cs.initCompass(createCompass()); cs.openSession();
-         * cs.beginTransaction();
-         *
-         * cs.save();
-         *
-         * cs.getCompassTxn().commit(); cs.getCompassSession().close(); } catch
-         * (Exception e) { log.error("Fail to flush a compass session", e); }
-         * finally { cs.commitOrRollbackUTransaction(); } }
-         */
-
     }
 
-    /**
-     * Compute the statistical maximum batch size
-     *
-     * @return
-     */
-    protected long getMaxIndexingDocBatchSize() {
-        long configuredSize = getIndexingDocBatchSize();
-        long nbThreads = searchService.getNumberOfIndexingThreads();
+    protected boolean mustCommitNow(int queuedNonComitedResources) {
+        int configuredSize = getIndexingDocBatchSize();
 
-        if (nbThreads == 0)
-            return configuredSize;
+        // max batch size reached => comit
+        if (queuedNonComitedResources >= configuredSize)
+            return true;
+
+        long nbThreads = searchService.getNumberOfIndexingThreads();
+        if (nbThreads == 0) {
+            log.debug("reducing batch size to " + queuedNonComitedResources);
+            return true;
+        }
 
         long queueSize = searchService.getIndexingWaitingQueueSize();
 
-        long max = queueSize / nbThreads;
-        if (max == 0) {
-            log.debug("reducing batch size to 1");
-            return 1;
+        long maxLeft = queueSize / nbThreads;
+        if (maxLeft == 0) {
+            log.debug("reducing batch size to " + queuedNonComitedResources);
+            return true;
         }
 
-        if (max < configuredSize) {
-            log.debug("reducing batch size to " + max);
-            return max;
-        } else
-            return configuredSize;
+        // theoritical batch size
+        long idealBatchSize = queuedNonComitedResources + maxLeft;
+        // compute margin
+        long margin = idealBatchSize - configuredSize;
+
+        // if not enought margin then do the commit right now
+        if (margin < BATCH_SIZE_MARGIN) {
+            log.debug("reducing batch size to " + queuedNonComitedResources);
+            return true;
+        }
+
+        return false;
     }
 
     public void saveAllSessions() throws IndexingException {
