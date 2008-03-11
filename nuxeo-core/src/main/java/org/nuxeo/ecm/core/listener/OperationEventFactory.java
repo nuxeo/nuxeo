@@ -133,6 +133,8 @@ public class OperationEventFactory {
             modifs.add(srcParent, Modification.REMOVE_CHILD);
             modifs.add(docModel.getParentRef(), Modification.ADD_CHILD);
             modifs.add(docRef, Modification.MOVE);
+        } else if (DocumentEventTypes.DOCUMENT_UPDATED.equals(id)) {
+            modifs.add(docRef, Modification.CONTENT);
         }
 
         return new DefaultOperationEvent(sessionId, repository, principal, id, modifs, details);
