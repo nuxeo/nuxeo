@@ -15,8 +15,8 @@
     Compass and Lucene as indexing and search engine.</description>
 
   <properties>
-    <compass.version>1.1.1</compass.version>
-    <lucene.version>2.0.0</lucene.version>
+    <compass.version>1.2.1</compass.version>
+    <lucene.version>2.2.0</lucene.version>
   </properties>
 
   <dependencies>
