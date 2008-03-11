@@ -30,7 +30,7 @@
 
     <transaction commitBeforeCompletion="true"
       factory="org.compass.core.transaction.JTASyncTransactionFactory">
-      <batchInsertSettings maxBufferedDocs="100" />
+      <batchInsertSettings maxBufferedDocs="100" mergeFactor="50"/>
     </transaction>
 
     <converters>
@@ -51,7 +51,7 @@
         analyzerClass="org.nuxeo.ecm.core.search.backend.compass.LowerWhitespaceAnalyzer" />
       <analyzer name="french" type="CustomAnalyzer"
         analyzerClass="org.apache.lucene.analysis.fr.FrenchAnalyzer"/>
-      <optimizer scheduleInterval="300" schedule="false"/>
+      <optimizer scheduleInterval="300" schedule="false" mergeFactor="50"/>
     </searchEngine>
 
     <mappings>

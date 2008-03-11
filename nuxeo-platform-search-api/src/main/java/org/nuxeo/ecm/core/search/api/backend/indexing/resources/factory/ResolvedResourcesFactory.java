@@ -343,7 +343,7 @@ public class ResolvedResourcesFactory implements Serializable {
                             resources.getId(), resource, resolvedDatas));
                 } finally {
                     // Disconnect inner core session
-                    docResource.closeCoreSession();
+                    //docResource.closeCoreSession();
                 }
             } else {
                 // Generic code using factory

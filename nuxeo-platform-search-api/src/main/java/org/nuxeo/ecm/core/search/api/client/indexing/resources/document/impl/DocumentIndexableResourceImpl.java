@@ -96,6 +96,8 @@ public class DocumentIndexableResourceImpl extends
 
     protected Set<String> docSchemas;
 
+    protected DocumentModel targetDoc;
+
     protected Long flags = 0L; // XXX depends on DocumentModelImpl
 
     public DocumentIndexableResourceImpl() {
@@ -116,43 +118,20 @@ public class DocumentIndexableResourceImpl extends
         isDocVersion = dm.isVersion();
         isDocProxy = dm.isProxy();
         docName = dm.getName();
+
+        // dm has been reloaded from new core session if called from IndexingThread
+        targetDoc = dm;
+
         // Life cycle
 
-
-        if (isBoundToIndexingThread())
-        {
-            // don't use the dm.getClient
-            // 1 - session may be closed => it will create a leaked session
-            // 2 - sid asociated to the dm may be associated with a user with not enought rights
-            if (dm.isLifeCycleLoaded()) {
-                try {
-                    docCurrentLifeCycle = getCoreSession().getCurrentLifeCycleState(
-                            dm.getRef());
-                } catch (Exception e) {
-                    log.warn("Cannot get life cycle ...");
-                }
-            }
-
+        if (dm.isLifeCycleLoaded()) {
             try {
-                docAcp = getCoreSession().getACP(dm.getRef());
-            } catch (Exception e) {
-                log.warn("Cannot get ACP for indexing....");
+                docCurrentLifeCycle = dm.getCurrentLifeCycleState();
+            } catch (ClientException e) {
+                log.warn("Cannot get additionial document model properties.");
             }
         }
-        else
-        {
-            if (dm.isLifeCycleLoaded()) {
-                try {
-                    docCurrentLifeCycle = dm.getCurrentLifeCycleState();
-                } catch (ClientException e) {
-                    log.warn("Cannot get additionial document model properties.");
-                }
-            }
-            docAcp = dm.getACP();
-        }
-
-
-
+        docAcp = dm.getACP();
 
         // FACETS
 
@@ -250,9 +229,15 @@ public class DocumentIndexableResourceImpl extends
 
             if (docRef != null) {
                 try {
-                    // TODO extract here complex properties
-                    res = (Serializable) getCoreSession().getDataModelField(
+                    if (targetDoc!=null)
+                    {
+                        res = (Serializable) targetDoc.getProperty(schemaPrefix, fieldName);
+                    }
+                    else
+                    {
+                        res = (Serializable) getCoreSession().getDataModelField(
                             docRef, schemaPrefix, fieldName);
+                    }
                     if (split.length > 2) {
                         res = extractComplexProperty(res, split[2]);
                     }

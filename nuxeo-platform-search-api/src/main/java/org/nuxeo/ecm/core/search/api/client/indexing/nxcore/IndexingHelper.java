@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory.BuiltinDocumentFields;
@@ -103,7 +104,8 @@ public final class IndexingHelper {
         docModel=null;
 
         try {
-            for (DocumentModel child : session.getChildrenIterator(ref)) {
+            DocumentModelList children = session.getChildren(ref);
+            for (DocumentModel child : children) {
                 recursiveIndex(child, session, service);
             }
         } catch (Exception e) {
