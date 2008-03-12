@@ -47,10 +47,6 @@ public class EventPublisherExecutor {
         return INSTANCE;
     }
 
-    public EventPublisherExecutor() {
-        // TODO Auto-generated constructor stub
-    }
-
     public void start() throws Exception {
         publisher = CoreEventPublisher.getInstance().createPublisher();
         executor = Executors.newSingleThreadExecutor();

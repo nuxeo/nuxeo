@@ -44,7 +44,7 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleEventTypes;
  */
 public class OperationEventFactory {
 
-    private static Set<String> acceptedEvents = new HashSet<String>();
+    private static final Set<String> acceptedEvents = new HashSet<String>();
 
     static {
         acceptedEvents.add(DocumentEventTypes.DOCUMENT_UPDATED);

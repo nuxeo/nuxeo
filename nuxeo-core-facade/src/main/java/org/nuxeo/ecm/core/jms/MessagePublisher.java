@@ -40,19 +40,21 @@ import javax.naming.NamingException;
 public class MessagePublisher {
 
     protected Topic topic;
-    protected TopicConnectionFactory factory;
+    protected final TopicConnectionFactory factory;
+    protected MessageFactory messageFactory = MessageFactory.DEFAULT;
+
     private TopicConnection connection;
     private TopicSession session;
     private TopicPublisher publisher;
-    protected MessageFactory messageFactory = MessageFactory.DEFAULT;
 
 
     public MessagePublisher(Topic topic, TopicConnectionFactory factory) {
-        this.factory = factory;
         this.topic = topic;
+        this.factory = factory;
     }
 
     public MessagePublisher(Topic topic, TopicConnectionFactory factory, MessageFactory messageFactory) {
+        this.topic = topic;
         this.factory = factory;
         this.messageFactory = messageFactory;
     }
@@ -73,9 +75,9 @@ public class MessagePublisher {
 
     public void setMessageFactory(MessageFactory factory) {
         if (factory == null) {
-            this.messageFactory = MessageFactory.DEFAULT;
+            messageFactory = MessageFactory.DEFAULT;
         } else {
-            this.messageFactory = factory;
+            messageFactory = factory;
         }
     }
 
@@ -139,13 +141,16 @@ public class MessagePublisher {
     }
 
 
-    public final static MessagePublisher createPublisher(String connectionFactory, String topic) throws NamingException, JMSException {
+    public static MessagePublisher createPublisher(String connectionFactory, String topic)
+            throws NamingException {
         return createPublisher(connectionFactory, topic, null);
     }
 
-    public final static MessagePublisher createPublisher(String connectionFactoryName, String topicName, MessageFactory messageFactory) throws NamingException, JMSException {
+    public static MessagePublisher createPublisher(String connectionFactoryName, String topicName,
+            MessageFactory messageFactory) throws NamingException {
         Context jndi = new InitialContext();
-        TopicConnectionFactory factory = (TopicConnectionFactory) jndi.lookup(connectionFactoryName);
+        TopicConnectionFactory factory = (TopicConnectionFactory) jndi.lookup(
+                connectionFactoryName);
         Topic topic = (Topic) jndi.lookup(topicName);
         return new MessagePublisher(topic, factory, messageFactory);
     }

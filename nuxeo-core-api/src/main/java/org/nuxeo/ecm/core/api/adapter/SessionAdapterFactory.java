@@ -31,7 +31,7 @@ public abstract class SessionAdapterFactory<T> {
 
     public abstract T getAdapter(CoreSession session);
 
-    static Map<String, SessionAdapterFactory<?>> adapters = new java.util.Hashtable<String, SessionAdapterFactory<?>>();
+    static final Map<String, SessionAdapterFactory<?>> adapters = new java.util.Hashtable<String, SessionAdapterFactory<?>>();
 
     public static void registerAdapter(String itf, SessionAdapterFactory<?> adapter) {
         adapters.put(itf, adapter);

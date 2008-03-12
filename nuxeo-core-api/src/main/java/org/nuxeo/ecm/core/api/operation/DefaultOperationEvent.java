@@ -55,16 +55,19 @@ public class DefaultOperationEvent implements OperationEvent {
         this(session, id, modifs, null);
     }
 
-    public DefaultOperationEvent(CoreSession session, String id, ModificationSet modifs, Serializable details) {
-        this(session.getSessionId(), session.getRepositoryName(), session.getPrincipal().getName(), id, modifs, details);
+    public DefaultOperationEvent(CoreSession session, String id, ModificationSet modifs,
+            Serializable details) {
+        this(session.getSessionId(), session.getRepositoryName(), session.getPrincipal().getName(),
+                id, modifs, details);
     }
 
-    public DefaultOperationEvent(String sessionId, String repositoryName, String principal, String id, ModificationSet modifs, Object details) {
-        this.modifications = modifs;
-        this.id = id;
-        this.repository = repositoryName;
+    public DefaultOperationEvent(String sessionId, String repositoryName, String principal,
+            String id, ModificationSet modifs, Object details) {
         this.sessionId = sessionId;
+        this.repository = repositoryName;
         this.userName = principal;
+        this.id = id;
+        this.modifications = modifs;
         this.details = details;
     }
 

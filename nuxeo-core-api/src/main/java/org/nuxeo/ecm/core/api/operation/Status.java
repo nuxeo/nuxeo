@@ -36,8 +36,8 @@ public class Status implements Serializable {
 
     public static final Status STATUS_OK = new Status(OK, "Ok");
 
-    protected int severity;
-    private Serializable details;
+    protected final int severity;
+    private final Serializable details;
 
     public Status(int severity) {
         this.severity = severity;

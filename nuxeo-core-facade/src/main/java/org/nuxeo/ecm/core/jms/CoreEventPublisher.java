@@ -53,6 +53,7 @@ public class CoreEventPublisher {
     private Topic coreEventsTopic;
 
     private static CoreEventPublisher instance = new CoreEventPublisher();
+
     public static CoreEventPublisher getInstance() {
         return instance;
     }
@@ -62,7 +63,7 @@ public class CoreEventPublisher {
         coreEventsTopic = null;
     }
 
-    private final TopicConnectionFactory getTopicConnectionFactory()
+    private TopicConnectionFactory getTopicConnectionFactory()
             throws NamingException {
         if (topicConnectionFactory == null) {
             InitialContext jndi = new InitialContext();

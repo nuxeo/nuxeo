@@ -35,11 +35,13 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  */
 public abstract class Operation<T> implements Serializable {
 
-    private static ThreadLocal<Operation<?>> operation = new ThreadLocal<Operation<?>>(); // the current command
+    private static final long serialVersionUID = -9191284967153046156L;
+
+    // the current command
+    private static final ThreadLocal<Operation<?>> operation = new ThreadLocal<Operation<?>>();
 
     public final static String START_EVENT = "commandStarted";
     public final static String TERMINATE_EVENT = "commandTerminated";
-
 
     /**
      * Operation flags.
@@ -74,15 +76,16 @@ public abstract class Operation<T> implements Serializable {
      */
     // mask for user flags
     public static final int USER_FLAGS = 0XFFFF00;
+
     /**
      * A convenience method to compute the correct user flag from the 0 based representation of that bit
      * @param n
      * @return
      */
-    public static final int USER_FLAG(int n) { return n << 8; }
+    public static int USER_FLAG(int n) { return n << 8; }
 
-    protected String name;
-    protected int flags = NONE;
+    protected final String name;
+    protected int flags;
     protected Object data;
     protected Status status = Status.STATUS_OK;
     protected T result;
@@ -90,6 +93,15 @@ public abstract class Operation<T> implements Serializable {
     protected transient Operation<?> parent;
     protected transient CoreSession session;
 
+
+    protected Operation(String name, int flags) {
+        this.name = name;
+        this.flags = flags;
+    }
+
+    protected Operation(String name) {
+        this(name, NONE);
+    }
 
     public static Operation<?> getCurrent() {
         return operation.get();
@@ -102,7 +114,7 @@ public abstract class Operation<T> implements Serializable {
         } else if (cmd.parent == null) {
             return new Operation<?>[] {cmd};
         } else {
-            ArrayList<Operation<?>> cmds = new ArrayList<Operation<?>>();
+            List<Operation<?>> cmds = new ArrayList<Operation<?>>();
             cmd.fillCommandStack(cmds);
             return cmds.toArray(new Operation<?>[cmds.size()]);
         }
@@ -115,21 +127,11 @@ public abstract class Operation<T> implements Serializable {
         } else if (cmd.parent == null) {
             return new Operation<?>[] {cmd};
         } else {
-            ArrayList<Operation<?>> cmds = new ArrayList<Operation<?>>();
+            List<Operation<?>> cmds = new ArrayList<Operation<?>>();
             cmd.fillCommandStack(cmds);
             return cmds.toArray(new Operation<?>[cmds.size()]);
         }
     }
-
-    public Operation(String name) {
-        this.name = name;
-    }
-
-    public Operation(String name, int flags) {
-        this.name = name;
-        this.flags = flags;
-    }
-
 
     /**
      * @return the status.

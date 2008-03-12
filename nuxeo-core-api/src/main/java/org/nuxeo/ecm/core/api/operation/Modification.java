@@ -47,7 +47,7 @@ public class Modification implements Serializable {
     public final static int UPDATE_MODIFICATION =CONTENT | SECURITY | STATE;
 
     public int type;
-    public DocumentRef ref;
+    public final DocumentRef ref;
 
     public Modification(DocumentRef ref, int type) {
         this.ref = ref;
@@ -100,7 +100,7 @@ public class Modification implements Serializable {
 
     @Override
     public String toString() {
-        return ref+" ["+type+"]";
+        return ref + " [" + type + ']';
     }
 
 }
