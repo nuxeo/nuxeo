@@ -68,7 +68,7 @@ public class ListenerList {
     /**
      * Used to order listeners
      */
-    private Comparator<?> comparator;
+    private final Comparator<?> comparator;
 
 
     /**
