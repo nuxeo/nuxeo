@@ -53,6 +53,8 @@ public final class CoreEventConstants {
 
     public static final String NEW_ACP = "newACP";
 
+    public static final String REORDERED_CHILD = "reorderedChild";
+
     // Constant utility class
     private CoreEventConstants() {
     }

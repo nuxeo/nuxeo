@@ -2405,8 +2405,21 @@ public abstract class AbstractSession implements CoreSession,
     public void orderBefore(DocumentRef parent, String src, String dest)
             throws ClientException {
         try {
+            if ((src == null) || (src.equals(dest))) {
+                return;
+            }
             Document doc = resolveReference(parent);
             doc.orderBefore(src, dest);
+            Map<String, Object> options = new HashMap<String, Object>();
+
+            // send event on container passing the reordered child as parameter
+            DocumentModel docModel = readModel(doc, null);
+            String comment = src;
+            options.put(CoreEventConstants.DOCUMENT, doc);
+            options.put(CoreEventConstants.REORDERED_CHILD, src);
+            notifyEvent(DocumentEventTypes.DOCUMENT_CHILDREN_ORDER_CHANGED,
+                    docModel, options, null, comment, true);
+
         } catch (DocumentException e) {
             throw new ClientException("Failed to resolve documents: " + src+", "+dest, e);
         }

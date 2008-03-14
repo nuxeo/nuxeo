@@ -87,6 +87,8 @@ public final class DocumentEventTypes {
 
     public static final String SESSION_SAVED = "sessionSaved";
 
+    public static final String DOCUMENT_CHILDREN_ORDER_CHANGED = "childrenOrderChanged";
+
     /** This event is too general and should be used with care. */
     public static final String ABOUT_TO_CHECKOUT = "aboutToCheckout";
 
