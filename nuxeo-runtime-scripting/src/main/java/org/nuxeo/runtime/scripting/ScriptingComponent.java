@@ -76,12 +76,13 @@ public class ScriptingComponent extends DefaultComponent implements ScriptingSer
 
         // start remote scripting service
         Boolean isServer = (Boolean) context.getPropertyValue("isServer", Boolean.TRUE);
-        if (isServer) {
-            server = new ScriptingServerImpl(this);
-            RemotingService remoting = (RemotingService) Framework.getRuntime().getComponent(RemotingService.NAME);
-            TransporterServer transporterServer = remoting.getTransporterServer();
-            transporterServer.addHandler(server, ScriptingServer.class.getName());
-        }
+//TODO: server functionality should be removed
+//        if (isServer) {
+//            server = new ScriptingServerImpl(this);
+//            RemotingService remoting = (RemotingService) Framework.getRuntime().getComponent(RemotingService.NAME);
+//            TransporterServer transporterServer = remoting.getTransporterServer();
+//            transporterServer.addHandler(server, ScriptingServer.class.getName());
+//        }
     }
 
     @Override
