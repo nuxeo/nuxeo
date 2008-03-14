@@ -44,7 +44,6 @@ import org.nuxeo.ecm.platform.transform.interfaces.Transformer;
 import org.nuxeo.ecm.platform.transform.service.TransformService;
 
 
-
 /**
  * Tests the Document Modifier component.
  *

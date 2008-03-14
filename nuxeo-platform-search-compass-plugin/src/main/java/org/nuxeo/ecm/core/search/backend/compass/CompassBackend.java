@@ -112,7 +112,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
 
     private static final Object PT_CONNECTION = "connection";
 
-    private static Lock optimizerLock = new ReentrantLock();
+    private static final Lock optimizerLock = new ReentrantLock();
 
     private static final int OPTIMIZER_SAVE_INTERVAL = 20;
 
@@ -127,7 +127,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
 
     // @SuppressWarnings("unchecked")
     // protected final Map sessions = new ReferenceMap();
-    protected final Map sessions = new ConcurrentHashMap<String, CompassBackendSession>();
+    protected final Map<String, CompassBackendSession> sessions = new ConcurrentHashMap<String, CompassBackendSession>();
 
     // :XXX: move this to Nuxeo runtime to be sure it's loaded before any
     // modules that may initialze Lucene before this one. Though, we need to
@@ -299,7 +299,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
             }
             if (!userTxn || mustCommitNow(session.countWaitingResources())) {
                 session.saveAndCommit(userTxn);
-                if (userTxn) {
+                if (userTxn){
                     doOptimize();
                     markForRecycling();
                 }
@@ -333,7 +333,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
     @SuppressWarnings("unchecked")
     public void index(ResolvedResources resources) throws IndexingException {
 
-        boolean newTxn = false;
+
         boolean activeTxn = false;
         boolean userTxn;
         CompassBackendSession session;
@@ -358,15 +358,15 @@ public class CompassBackend extends AbstractSearchEngineBackend {
 
             session = (CompassBackendSession) sessions.get(sid);
 
-            if (session == null)
+            if (session == null) {
                 throw new IndexingException(
                         "CompassBackend session is null for thread "
                                 + thread.toString());
+            }
 
             try {
                 if (!activeTxn) {
                     Transactions.getUserTransaction().begin();
-                    newTxn = true;
                 }
                 session.begin(getCompass());
             } catch (Exception e) {
@@ -389,7 +389,6 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         } finally {
             // Nothing to do
         }
-
     }
 
     private void doOptimize() {
@@ -397,7 +396,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
             try {
                 optimize_try += 1;
                 if ((optimize_try >= OPTIMIZER_SAVE_INTERVAL) && (getCompass().getSearchEngineOptimizer().needOptimization())) {
-                    optimize_try = 0;
+                    optimize_try=0;
                     log.debug("Running optimizer");
                     getCompass().getSearchEngineOptimizer().optimize();
                     log.debug("Optimizer ended");
@@ -858,11 +857,10 @@ public class CompassBackend extends AbstractSearchEngineBackend {
     protected void saveSession(CompassBackendSession cs)
             throws IndexingException {
 
-        boolean userTxn = false;
-
         try {
             boolean activeTxn = Transactions.isTransactionActiveOrMarkedRollback();
-            if ((!activeTxn)) {
+            boolean userTxn = false;
+            if (!activeTxn) {
                 Transactions.getUserTransaction().begin();
                 userTxn = true;
             } else if (activeTxn && isBoundToIndexingThread()) {
@@ -891,6 +889,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
             return true;
 
         long nbThreads = searchService.getNumberOfIndexingThreads();
+
         if (nbThreads == 0) {
             log.debug("reducing batch size to " + queuedNonComitedResources);
             return true;
@@ -914,7 +913,6 @@ public class CompassBackend extends AbstractSearchEngineBackend {
             log.debug("reducing batch size to " + queuedNonComitedResources);
             return true;
         }
-
         return false;
     }
 

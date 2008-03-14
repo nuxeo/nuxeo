@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.imaging.core;
 
 import it.tidalwave.image.EditableImage;
 import it.tidalwave.image.Quality;
-import it.tidalwave.image.jai.CropJAIOp;
 import it.tidalwave.image.java2d.ImplementationFactoryJ2D;
 import it.tidalwave.image.op.ConvertToBufferedImageOp;
 import it.tidalwave.image.op.CropOp;

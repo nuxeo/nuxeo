@@ -42,7 +42,7 @@ import org.nuxeo.ecm.platform.workflow.impl.WAPIImpl;
 @Stateless
 @Remote(WAPIRemote.class)
 @Local(WAPILocal.class)
-public class WAPIBean extends WAPIImpl implements WAPI {
+public class WAPIBean extends WAPIImpl {
 
     private static final long serialVersionUID = -8777528285898381216L;
 
@@ -52,6 +52,7 @@ public class WAPIBean extends WAPIImpl implements WAPI {
     @Resource
     EJBContext context;
 
+    @Override
     public Principal getParticipant() {
         Principal principal;
         try {

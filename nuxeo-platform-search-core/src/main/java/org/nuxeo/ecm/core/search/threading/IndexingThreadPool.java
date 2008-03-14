@@ -47,29 +47,27 @@ public final class IndexingThreadPool {
 
     private static final Log log = LogFactory.getLog(IndexingThreadPool.class);
 
-    private static int MAX_POOL_SIZE = 10;
-
-    private static int MIN_POOL_SIZE = 5;
+    private static final int MIN_POOL_SIZE = 5;
 
     // Here, idle threads waiting for work if IndexingTask pool is full, will
     // wait for the among time specified. Keep this large so that we won't loose
     // tasks;
     private static final long THREAD_KEEP_ALIVE = 5000L;
 
+    private static final int DEFAULT_QUEUE_SIZE = 100;
+
     private static final ThreadPoolExecutor tpExec;
 
     private static final ThreadPoolExecutor reindexExec;
 
-    private static final int DEFAULT_QUEUE_SIZE = 100;
-
-    private static transient SearchService searchService;
+    private static SearchService searchService;
 
     static {
         // Thread pool aught to be on the node which holds the search service.
-        MAX_POOL_SIZE = NXSearch.getSearchService().getNumberOfIndexingThreads();
+        int maxPoolSize = NXSearch.getSearchService().getNumberOfIndexingThreads();
         log.info("Indexing thread pool will be initialized with a size pool @ "
-                + MAX_POOL_SIZE);
-        tpExec = new ThreadPoolExecutor(MIN_POOL_SIZE, MAX_POOL_SIZE,
+                + maxPoolSize);
+        tpExec = new ThreadPoolExecutor(MIN_POOL_SIZE, maxPoolSize,
                 THREAD_KEEP_ALIVE, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(DEFAULT_QUEUE_SIZE),
                 new IndexingThreadFactory());
@@ -158,7 +156,7 @@ public final class IndexingThreadPool {
     protected static void execute(AbstractIndexingTask r)
             throws IndexingException {
         if (searchService != null) {
-            ((AbstractIndexingTask) r).setSearchService(searchService);
+            r.setSearchService(searchService);
         }
         synchronized (tpExec) {
             // Should be safe to use this here with the synchronized kw.

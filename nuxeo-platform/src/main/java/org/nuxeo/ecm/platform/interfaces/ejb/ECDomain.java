@@ -35,6 +35,7 @@ import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
  *
  */
 public interface ECDomain {
+
     /**
      * Removes the instance from the container once the client has no more
      * business with it.
@@ -50,9 +51,8 @@ public interface ECDomain {
      * @return
      * @throws ECInvalidParameterException
      * @throws ClientException
-     * @throws NoSuchRepositoryException
-     * @throws DocumentException
      */
     List<DocumentModel> getDomains(CoreSession handle)
             throws ECInvalidParameterException, ClientException;
+
 }

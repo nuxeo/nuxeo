@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.AbstractIndexableResourceFactory;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResource;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.document.impl.DocumentIndexableResourceImpl;
-import org.nuxeo.ecm.core.search.api.client.indexing.resources.factory.IndexableResourceFactory;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceConf;
 
 /**
@@ -37,7 +36,7 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableR
  *
  */
 public class DocumentIndexableResourceFactory extends
-        AbstractIndexableResourceFactory implements IndexableResourceFactory {
+        AbstractIndexableResourceFactory {
 
     private static final long serialVersionUID = 1L;
 
@@ -46,9 +45,9 @@ public class DocumentIndexableResourceFactory extends
     }
 
     public IndexableResource createIndexableResourceFrom(
-            Serializable targetResourceId, IndexableResourceConf conf,
+            Serializable targetResource, IndexableResourceConf conf,
             String sid) throws IndexingException {
-        // TODO refactore the IndexableResourcesFactory.
+        // TODO refactor the IndexableResourcesFactory.
         return null;
     }
 
