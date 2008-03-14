@@ -42,7 +42,7 @@ import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 @Remote
 public interface UserManagerActions extends StatefulBaseLifeCycle {
 
-    void initialize();
+    void initialize() throws ClientException;
 
     String createUser() throws ClientException;
 
