@@ -19,7 +19,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -32,13 +34,15 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="ogrisel@nuxeo.com">Olivier Grisel</a>
- *
+ * 
  */
 public class QueryModelTestCase extends RepositoryOSGITestCase {
 
     protected QueryModel statelessModel;
 
     protected QueryModel statelessModelWithSort;
+
+    private QueryModel statelessModelWithListParam;
 
     protected QueryModel statefulModel;
 
@@ -82,6 +86,10 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
         statelessModelWithSort = new QueryModel(
                 service.getQueryModelDescriptor("statelessModelWithSort"), null);
 
+        statelessModelWithListParam = new QueryModel(
+                service.getQueryModelDescriptor("statelessModelWithListParam"),
+                null);
+
     }
 
     protected QueryModel initializeStatefulQueryModel(
@@ -121,6 +129,30 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
         SortInfo sortInfo = descriptor.getDefaultSortInfo(documentModel);
         assertEquals(query, descriptor.getQuery(new Object[0], sortInfo));
         assertEquals(query, descriptor.getQuery((Object[]) null, sortInfo));
+    }
+
+    // NXP-2195
+    public void testStatelessModelWithListParam() throws ClientException {
+        QueryModelDescriptor descriptor = statelessModelWithListParam.getDescriptor();
+        assertTrue(descriptor.isStateless());
+        assertFalse(descriptor.isStateful());
+        String query = "SELECT * FROM Document WHERE ecm:primaryType IN ('File', 'Folder')";
+
+        // test String[] param
+        String[] typeArray = { "File", "Folder" };
+        assertEquals(query, descriptor.getQuery(new Object[] { typeArray }));
+
+        // test List<String> param
+        List<String> typeList = Arrays.asList(typeArray);
+        assertEquals(query, descriptor.getQuery(new Object[] { typeList }));
+
+        // test empty param
+        query = "SELECT * FROM Document WHERE ecm:primaryType IN ()";
+        typeArray = new String[0];
+        assertEquals(query, descriptor.getQuery(new Object[] { typeArray }));
+        typeList = Arrays.asList(typeArray);
+        assertEquals(query, descriptor.getQuery(new Object[] { typeList }));
+
     }
 
     public void testSerialization() throws Exception {
