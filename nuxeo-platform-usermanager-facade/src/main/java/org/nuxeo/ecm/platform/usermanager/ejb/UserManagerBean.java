@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.usermanager.ejb;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,9 +50,7 @@ import org.nuxeo.runtime.api.Framework;
 @SerializedConcurrentAccess
 @Remote(UserManager.class)
 @Local(UserManagerLocal.class)
-public class UserManagerBean implements UserManager, Serializable {
-
-    private static final long serialVersionUID = -6069414600987521155L;
+public class UserManagerBean implements UserManager {
 
     private static final Log log = LogFactory.getLog(UserManagerBean.class);
 
