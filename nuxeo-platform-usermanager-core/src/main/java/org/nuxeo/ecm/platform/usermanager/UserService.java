@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -42,14 +43,14 @@ public class UserService extends DefaultComponent {
 
     private UserManager userManager;
 
-    public UserManager getUserManager() {
+    public UserManager getUserManager() throws ClientException {
         if (userManager == null) {
             recomputeUserManager(false);
         }
         return userManager;
     }
 
-    protected void recomputeUserManager(boolean lazy) {
+    protected void recomputeUserManager(boolean lazy) throws ClientException {
         if (lazy && userManager == null) {
             return;
         }
@@ -70,21 +71,21 @@ public class UserService extends DefaultComponent {
         if (userManager == null) {
             // which means we'll always keep the first registered class
             if (descriptors.isEmpty()) {
-                throw new RuntimeException(
+                throw new ClientException(
                         "No contributions registered for the userManager");
             }
             Class<?> klass = merged.userManagerClass;
             if (klass == null) {
-                throw new RuntimeException(
+                throw new ClientException(
                         "No class specified for the userManager");
             }
             try {
                 userManager = (UserManager) klass.newInstance();
             } catch (InstantiationException e) {
-                throw new RuntimeException("Failed to instantiate class "
+                throw new ClientException("Failed to instantiate class "
                         + klass, e);
             } catch (IllegalAccessException e) {
-                throw new RuntimeException("Failed to instantiate class "
+                throw new ClientException("Failed to instantiate class "
                         + klass, e);
             }
         }
@@ -109,10 +110,13 @@ public class UserService extends DefaultComponent {
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter.getName().equals(UserManager.class.getName())) {
-            return adapter.cast(getUserManager());
-        } else {
-            return null;
+            try {
+                return adapter.cast(getUserManager());
+            } catch (ClientException e) {
+                log.error("error fetching UserManager: ", e);
+            }
         }
+        return null;
     }
 
     @Override
@@ -127,14 +131,16 @@ public class UserService extends DefaultComponent {
 
     @Override
     public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+            String extensionPoint, ComponentInstance contributor)
+            throws ClientException {
         descriptors.add((UserManagerDescriptor) contribution);
         recomputeUserManager(true);
     }
 
     @Override
     public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+            String extensionPoint, ComponentInstance contributor)
+            throws ClientException {
         descriptors.remove(contribution);
         recomputeUserManager(true);
     }

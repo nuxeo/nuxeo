@@ -73,7 +73,6 @@ public class UserManagerBean implements UserManager, Serializable {
         if (userManager == null) {
             userManager = Framework.getLocalService(UserManager.class);
         }
-
         return userManager;
     }
 
@@ -91,8 +90,13 @@ public class UserManagerBean implements UserManager, Serializable {
         }
     }
 
-    public boolean validatePassword(String password) {
-        return getUserManager().validatePassword(password);
+    public boolean validatePassword(String password) throws ClientException {
+        try {
+            return getUserManager().validatePassword(password);
+        } catch (Throwable e) {
+            log.error("getAvailablePrincipals failed", e);
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
     public List<NuxeoPrincipal> getAvailablePrincipals() throws ClientException {
@@ -222,95 +226,192 @@ public class UserManagerBean implements UserManager, Serializable {
     }
 
     public void setDefaultGroup(String defaultGroup) {
+
         this.defaultGroup = defaultGroup;
     }
 
-    public void setRootLogin(String defaultRootLogin) {
-        getUserManager().setRootLogin(defaultRootLogin);
+    public void setRootLogin(String defaultRootLogin) throws ClientException {
+        try {
+            getUserManager().setRootLogin(defaultRootLogin);
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public void setUserSortField(String sortField) {
-        getUserManager().setUserSortField(sortField);
+    public void setUserSortField(String sortField) throws ClientException {
+        try {
+            getUserManager().setUserSortField(sortField);
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public String getUserSortField() {
-        return getUserManager().getUserSortField();
+    public String getUserSortField() throws ClientException {
+        try {
+            return getUserManager().getUserSortField();
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public void setGroupSortField(String sortField) {
-        getUserManager().setGroupSortField(sortField);
+    public void setGroupSortField(String sortField) throws ClientException {
+        try {
+            getUserManager().setGroupSortField(sortField);
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public String getUserListingMode() {
-        return getUserManager().getUserListingMode();
+    public String getUserListingMode() throws ClientException {
+        try {
+            return getUserManager().getUserListingMode();
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public void setUserListingMode(String userListingMode) {
-        getUserManager().setUserListingMode(userListingMode);
+    public void setUserListingMode(String userListingMode)
+            throws ClientException {
+        try {
+            getUserManager().setUserListingMode(userListingMode);
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public String getGroupListingMode() {
-        return getUserManager().getGroupListingMode();
+    public String getGroupListingMode() throws ClientException {
+        try {
+            return getUserManager().getGroupListingMode();
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public void setGroupListingMode(String groupListingMode) {
-        getUserManager().setGroupListingMode(groupListingMode);
+    public void setGroupListingMode(String groupListingMode)
+            throws ClientException {
+        try {
+            getUserManager().setGroupListingMode(groupListingMode);
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public void setUserDirectoryName(String userDirectoryName) {
-        getUserManager().setUserDirectoryName(userDirectoryName);
+    public void setUserDirectoryName(String userDirectoryName)
+            throws ClientException {
+        try {
+            getUserManager().setUserDirectoryName(userDirectoryName);
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public String getUserDirectoryName() {
-        return getUserManager().getUserDirectoryName();
+    public String getUserDirectoryName() throws ClientException {
+        try {
+            return getUserManager().getUserDirectoryName();
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public void setUserEmailField(String userEmailField) {
-        getUserManager().setUserEmailField(userEmailField);
+    public void setUserEmailField(String userEmailField) throws ClientException {
+        try {
+            getUserManager().setUserEmailField(userEmailField);
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public String getUserEmailField() {
-        return getUserManager().getUserEmailField();
+    public String getUserEmailField() throws ClientException {
+        try {
+            return getUserManager().getUserEmailField();
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public void setUserSearchFields(Set<String> userSearchFields) {
-        getUserManager().setUserSearchFields(userSearchFields);
+    public void setUserSearchFields(Set<String> userSearchFields)
+            throws ClientException {
+        try {
+            getUserManager().setUserSearchFields(userSearchFields);
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public Set<String> getUserSearchFields() {
-        return getUserManager().getUserSearchFields();
+    public Set<String> getUserSearchFields() throws ClientException {
+        try {
+            return getUserManager().getUserSearchFields();
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public void setGroupDirectoryName(String groupDirectoryName) {
-        getUserManager().setGroupDirectoryName(groupDirectoryName);
+    public void setGroupDirectoryName(String groupDirectoryName)
+            throws ClientException {
+        try {
+            getUserManager().setGroupDirectoryName(groupDirectoryName);
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public String getGroupDirectoryName() {
-        return getUserManager().getGroupDirectoryName();
+    public String getGroupDirectoryName() throws ClientException {
+        try {
+            return getUserManager().getGroupDirectoryName();
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public void setGroupMembersField(String groupMembersField) {
-        getUserManager().setGroupMembersField(groupMembersField);
+    public void setGroupMembersField(String groupMembersField)
+            throws ClientException {
+        try {
+            getUserManager().setGroupMembersField(groupMembersField);
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public String getGroupMembersField() {
-        return getUserManager().getGroupMembersField();
+    public String getGroupMembersField() throws ClientException {
+        try {
+            return getUserManager().getGroupMembersField();
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public void setGroupSubGroupsField(String groupSubGroupsField) {
-        getUserManager().setGroupSubGroupsField(groupSubGroupsField);
+    public void setGroupSubGroupsField(String groupSubGroupsField)
+            throws ClientException {
+        try {
+            getUserManager().setGroupSubGroupsField(groupSubGroupsField);
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public String getGroupSubGroupsField() {
-        return getUserManager().getGroupSubGroupsField();
+    public String getGroupSubGroupsField() throws ClientException {
+        try {
+            return getUserManager().getGroupSubGroupsField();
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public void setGroupParentGroupsField(String groupParentGroupsField) {
-        getUserManager().setGroupParentGroupsField(groupParentGroupsField);
+    public void setGroupParentGroupsField(String groupParentGroupsField)
+            throws ClientException {
+        try {
+            getUserManager().setGroupParentGroupsField(groupParentGroupsField);
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public String getGroupParentGroupsField() {
-        return getUserManager().getGroupParentGroupsField();
+    public String getGroupParentGroupsField() throws ClientException {
+        try {
+            return getUserManager().getGroupParentGroupsField();
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
     public List<String> getGroupsInGroup(String parentId)
@@ -338,38 +439,52 @@ public class UserManagerBean implements UserManager, Serializable {
         }
     }
 
-    public Boolean areGroupsReadOnly() {
+    public Boolean areGroupsReadOnly() throws ClientException {
         try {
             return getUserManager().areGroupsReadOnly();
         } catch (Throwable e) {
-            log.debug("Error while getting userManager.areGroupsReadOnly()", e);
-            return Boolean.FALSE;
+            throw exceptionHandler.wrapException(e);
         }
     }
 
-    public Boolean areUsersReadOnly() {
+    public Boolean areUsersReadOnly() throws ClientException {
         try {
             return getUserManager().areUsersReadOnly();
         } catch (Throwable e) {
-            log.debug("Error while getting userManager.areUsersReadOnly()", e);
-            return Boolean.FALSE;
+            throw exceptionHandler.wrapException(e);
         }
     }
 
-    public Pattern getUserPasswordPattern() {
-        return getUserManager().getUserPasswordPattern();
+    public Pattern getUserPasswordPattern() throws ClientException {
+        try {
+            return getUserManager().getUserPasswordPattern();
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public void setUserPasswordPattern(Pattern userPasswordPattern) {
-        getUserManager().setUserPasswordPattern(userPasswordPattern);
+    public void setUserPasswordPattern(Pattern userPasswordPattern) throws ClientException {
+        try {
+            getUserManager().setUserPasswordPattern(userPasswordPattern);
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public void setAnonymousUser(Map<String, String> anonymousUser) {
-        getUserManager().setAnonymousUser(anonymousUser);
+    public void setAnonymousUser(Map<String, String> anonymousUser) throws ClientException {
+        try {
+            getUserManager().setAnonymousUser(anonymousUser);
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
-    public String getAnonymousUserId() {
-        return getUserManager().getAnonymousUserId();
+    public String getAnonymousUserId() throws ClientException {
+        try {
+            return getUserManager().getAnonymousUserId();
+        } catch (Throwable e) {
+            throw exceptionHandler.wrapException(e);
+        }
     }
 
 }
