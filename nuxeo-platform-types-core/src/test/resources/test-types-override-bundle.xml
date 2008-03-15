@@ -5,7 +5,7 @@
   <extension target="org.nuxeo.ecm.platform.types.TypeService"
     point="types">
 
-    <type id="MyDocType" coretype="CoreDocumentType2">
+    <type id="MyDocType">
       <label>type label 2</label>
       <icon>type icon 2</icon>
       <default-view>default_view2</default-view>
@@ -33,7 +33,7 @@
 
     <type id="MyOtherDocType" remove="true" />
 
-    <type id="DocTypeWithLayout" coretype="CoreDocumentType">
+    <type id="DocTypeWithLayout">
       <label>overridden doc type, but layout left unchanged</label>
     </type>
 

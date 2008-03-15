@@ -302,7 +302,7 @@ public class ClipboardActionsBean extends InputController implements
         Collection<Type> allowed = typeManager.getAllowedSubTypes(destFolder.getType());
         Collection<String> allowedList = new ArrayList<String>();
         for (Type allowedType : allowed) {
-            allowedList.add(allowedType.getCoreType());
+            allowedList.add(allowedType.getId());
         }
 
         DocumentRef destFolderRef = destFolder.getRef();
@@ -394,7 +394,7 @@ public class ClipboardActionsBean extends InputController implements
         Collection<Type> allowedTypes = typeManager.getAllowedSubTypes(parent.getType());
         List<String> allowedTypesNames = new LinkedList<String>();
         for (Type tip : allowedTypes) {
-            allowedTypesNames.add(tip.getCoreType());
+            allowedTypesNames.add(tip.getId());
         }
         for (DocumentModel doc : documents) {
             if (allowedTypesNames.contains(doc.getType())) {
@@ -580,7 +580,7 @@ public class ClipboardActionsBean extends InputController implements
             List<String> pasteTypesName = documentsListsManager.getWorkingListTypes(listName);
             Collection<Type> allowed = typeManager.getAllowedSubTypes(pasteTarget.getType());
             for (Type allowedType : allowed) {
-                if (pasteTypesName.contains(allowedType.getCoreType())) {
+                if (pasteTypesName.contains(allowedType.getId())) {
                     return true;
                 }
             }
@@ -621,7 +621,7 @@ public class ClipboardActionsBean extends InputController implements
             Collection<Type> allowed = typeManager.getAllowedSubTypes(destFolder.getType());
             Collection<String> allowedList = new ArrayList<String>();
             for (Type allowedType : allowed) {
-                allowedList.add(allowedType.getCoreType());
+                allowedList.add(allowedType.getId());
             }
             for (DocumentModel docModel : documentsListsManager.getWorkingList(listName)) {
                 DocumentRef sourceFolderRef = docModel.getParentRef();
