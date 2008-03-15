@@ -790,11 +790,24 @@ public class ClipboardActionsBean extends InputController implements
             BufferedInputStream buffi = new BufferedInputStream(
                     content.getStream(), BUFFER);
 
-            ZipEntry entry = new ZipEntry(path + fileName);
+            // Workaround to deal with duplicate file names.
+            int tryCount = 0;
+            while (true) {
+                try {
+                    ZipEntry entry;
+                    if (tryCount == 0) {
+                        entry = new ZipEntry(path + fileName);
+                    } else {
+                        entry = new ZipEntry(path + fileName + '(' + tryCount + ')');
+                    }
+                    out.putNextEntry(entry);
+                    break;
+                } catch (ZipException e) {
+                    tryCount++;
+                }
+            }
 
-            out.putNextEntry(entry);
             int count = buffi.read(data, 0, BUFFER);
-
             while (count != -1) {
                 out.write(data, 0, count);
                 count = buffi.read(data, 0, BUFFER);
