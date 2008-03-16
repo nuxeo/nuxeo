@@ -92,9 +92,9 @@ public final class DirectoryHelper {
     public DirectorySelectItem getSelectItem(String directoryName, Map<String, Object> filter) {
         List<DirectorySelectItem> items = getSelectItems(directoryName, filter);
         if (items.size() > 1) {
-            throw new RuntimeException("Too many entries found in directory " + directoryName);
+            throw new IllegalStateException("More than one entry found in directory " + directoryName);
         } else if (items.isEmpty()) {
-            throw new RuntimeException("Entry not found in directory " + directoryName + " filter=" + filter);
+            throw new IllegalStateException("Entry not found in directory " + directoryName + " filter=" + filter);
         }
         return items.get(0);
     }

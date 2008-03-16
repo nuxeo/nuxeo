@@ -45,9 +45,7 @@ public class ImagingServiceBean implements ImagingService {
 
     private ImagingService service;
 
-    /**
-     *
-     */
+
     public ImagingServiceBean() {
         try {
             service = Framework.getLocalService(ImagingService.class);

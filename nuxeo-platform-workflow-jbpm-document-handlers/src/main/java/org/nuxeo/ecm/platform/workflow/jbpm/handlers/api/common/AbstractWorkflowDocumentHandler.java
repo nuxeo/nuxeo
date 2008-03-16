@@ -104,7 +104,7 @@ public abstract class AbstractWorkflowDocumentHandler {
         if (repositoryUri != null) {
             return lifecycleBD.getWorkflowDocumentLifeCycleManager(repositoryUri);
         } else {
-            throw new Exception("No repository URI.... Cancelling...");
+            throw new IllegalStateException("No repository URI.... Cancelling...");
         }
     }
 
@@ -121,7 +121,7 @@ public abstract class AbstractWorkflowDocumentHandler {
         if (repositoryUri != null) {
             return coreDocBD.getDocumentManager(repositoryUri, null);
         } else {
-            throw new Exception("No repository URI.... Cancelling...");
+            throw new IllegalStateException("No repository URI.... Cancelling...");
         }
     }
 
@@ -159,7 +159,7 @@ public abstract class AbstractWorkflowDocumentHandler {
         if (repositoryUri != null) {
             return secuBD.getWorkflowSecurityManager(repositoryUri);
         } else {
-            throw new Exception("No repository URI... Cancelling....");
+            throw new IllegalStateException("No repository URI... Cancelling....");
         }
     }
 

@@ -619,7 +619,7 @@ public class ChainSelect extends UIInput {
                 items = DirectoryHelper.getSelectItems(directoryValues, filter);
             }
             if (items == null) {
-                throw new RuntimeException(String.format(
+                throw new IllegalStateException(String.format(
                         "Item not found: directoryName=%s, filter=%s",
                         directoryName, filter));
             }
