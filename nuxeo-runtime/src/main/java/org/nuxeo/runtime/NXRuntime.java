@@ -86,7 +86,7 @@ public final class NXRuntime {
         if (runtime != null) {
             return runtime;
         } else {
-            throw new RuntimeException("Runtime was not initialized");
+            throw new IllegalStateException("Runtime was not initialized");
         }
     }
 
@@ -108,7 +108,7 @@ public final class NXRuntime {
         if (runtime == null) {
             setRuntime(instance);
         } else {
-            throw new RuntimeException("Runtime was already initialized");
+            throw new IllegalStateException("Runtime was already initialized");
         }
     }
 

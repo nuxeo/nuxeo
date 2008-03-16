@@ -74,12 +74,12 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
      */
     public static DeploymentInfo getEARDeployment() {
         if (instance == null) {
-            throw new RuntimeException("JBossOSGiAdapter was not initialized");
+            throw new IllegalStateException("JBossOSGiAdapter was not initialized");
         }
         try {
             return instance.getDeploymentInfo().parent;
         } catch (Throwable t) {
-            throw new RuntimeException(t);
+            throw new IllegalStateException(t);
         }
     }
 
@@ -230,7 +230,7 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
             }
         } catch (Exception e) {
             e.printStackTrace(); // TODO
-            throw new RuntimeException("NXRuntime deployment failed", e);
+            throw new IllegalStateException("NXRuntime deployment failed", e);
         }
     }
 

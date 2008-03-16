@@ -33,7 +33,6 @@ public class TestEventService extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib("EventService.xml");
         deployContrib("ListenerExtension.xml");
     }
 
