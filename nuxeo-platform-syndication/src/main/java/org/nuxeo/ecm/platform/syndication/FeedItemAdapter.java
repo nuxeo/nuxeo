@@ -47,8 +47,7 @@ public class FeedItemAdapter {
      * @throws ParseException
      * @throws ClientException
      */
-    public FeedItem toFeedItem(DocumentModel doc) throws ParseException,
-            ClientException {
+    public FeedItem toFeedItem(DocumentModel doc) throws ParseException {
 
         FeedItem feedIt = new FeedItem();
 

@@ -97,8 +97,7 @@ public class ResolvedResourcesFactory implements Serializable {
      * @param resource a document indexable resource.
      * @return a resolved data instance.
      */
-    private static ResolvedData computeFulltext(IndexableResources resources)
-            throws IndexingException {
+    private static ResolvedData computeFulltext(IndexableResources resources) {
 
         String value = "";
         String analyzer = "default";

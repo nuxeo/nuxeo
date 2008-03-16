@@ -201,7 +201,7 @@ public class SyndicationActionsBean extends InputController implements
      * @throws IOException
      * @throws FeedException
      */
-    private void writeFeed(SyndFeed feed) throws IOException, FeedException {
+    private void writeFeed(SyndFeed feed) {
 
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();

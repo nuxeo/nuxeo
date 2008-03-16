@@ -162,9 +162,6 @@ public class DocVersioningListener extends AbstractEventListener implements
                     } catch (VersioningException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
-                    } catch (DocumentException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
                     } catch (ClientException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -314,7 +311,7 @@ public class DocVersioningListener extends AbstractEventListener implements
      * @throws DocumentException
      */
     private static boolean isIncOptionUserSelected(DocumentModel doc)
-            throws VersioningException, DocumentException, ClientException {
+            throws VersioningException, ClientException {
 
         final String logPrefix = "<isIncOptionUserSelected> ";
 

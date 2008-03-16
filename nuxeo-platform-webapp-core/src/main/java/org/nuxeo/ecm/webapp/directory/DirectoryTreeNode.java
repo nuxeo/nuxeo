@@ -90,7 +90,7 @@ public class DirectoryTreeNode implements TreeNode {
     }
 
     @SuppressWarnings("unchecked")
-    public String selectNode() throws ClientException, ECInvalidParameterException {
+    public String selectNode() throws ClientException {
         lookupQueryModel();
         String fieldName = config.getFieldName();
         String schemaName = config.getSchemaName();

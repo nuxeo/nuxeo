@@ -196,7 +196,7 @@ public class TestVersioningDocEdit extends VersioningBaseTestCase {
     }
 
     // FIXME
-    public void XXXtestDefinedRules() throws DocumentException, ClientException {
+    public void XXXtestDefinedRules() throws ClientException {
         DocumentModel rootDM = coreSession.getRootDocument();
 
         DocumentModel childFile = coreSession.createDocumentModel(

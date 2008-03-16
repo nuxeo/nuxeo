@@ -137,7 +137,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
     @Destroy
     @Remove
     @PermitAll
-    public void remove() throws ClientException {
+    public void remove() {
         log.debug("Destroying seam component...");
         if (documentManager != null) {
             documentManager.destroy();

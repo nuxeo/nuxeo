@@ -98,8 +98,7 @@ public final class IndexingThreadPool {
         execute(new IndexingTask(resources));
     }
 
-    public static void reindexAll(DocumentModel dm, Boolean recursive)
-            throws IndexingException {
+    public static void reindexAll(DocumentModel dm, Boolean recursive) {
         Runnable r = new ReindexingAllTask(dm, recursive);
         if (searchService != null) {
             ((AbstractIndexingTask) r).setSearchService(searchService);
@@ -107,11 +106,10 @@ public final class IndexingThreadPool {
         synchronized (reindexExec) {
             reindexExec.execute(r);
         }
-
     }
 
     public static void reindexAll(DocumentModel dm, Boolean recursive,
-            boolean fulltext) throws IndexingException {
+            boolean fulltext) {
         Runnable r = new ReindexingAllTask(dm, recursive, fulltext);
         if (searchService != null) {
             ((AbstractIndexingTask) r).setSearchService(searchService);
@@ -125,8 +123,7 @@ public final class IndexingThreadPool {
         return reindexExec.getActiveCount() > 0;
     }
 
-    public static void reindexAll(ResolvedResources resources)
-            throws IndexingException {
+    public static void reindexAll(ResolvedResources resources) {
         Runnable r = new ReindexingAllTask(resources);
         if (searchService != null) {
             ((AbstractIndexingTask) r).setSearchService(searchService);

@@ -662,17 +662,17 @@ public class ChainSelect extends UIInput {
      * This structure is needed to keep data for dynamically generated
      * components.
      */
-    public static class NestedChainSelectComponentInfo {
+    static class NestedChainSelectComponentInfo {
 
-        public String directoryName;
+        String directoryName;
 
-        public VocabularyEntryList directoryValues;
+        VocabularyEntryList directoryValues;
 
-        public boolean displayObsoleteEntries;
+        boolean displayObsoleteEntries;
 
-        public boolean localize;
+        boolean localize;
 
-        public String display;
+        String display;
 
     }
 

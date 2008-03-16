@@ -157,8 +157,7 @@ public abstract class AbstractWorkflowDocumentHandler {
             throws Exception {
         String repositoryUri = getDocumentRepositoryLocationURI(ec);
         if (repositoryUri != null) {
-            WorkflowDocumentSecurityManager manager = secuBD.getWorkflowSecurityManager(repositoryUri);
-            return manager;
+            return secuBD.getWorkflowSecurityManager(repositoryUri);
         } else {
             throw new Exception("No repository URI... Cancelling....");
         }
@@ -246,8 +245,7 @@ public abstract class AbstractWorkflowDocumentHandler {
      * @return the principal name
      * @throws Exception
      */
-    protected String getProcessInstanceCreator(ExecutionContext ec)
-            throws Exception {
+    protected String getProcessInstanceCreator(ExecutionContext ec) {
         return (String) getProcessInstance(ec).getContextInstance().getVariable(
                 WorkflowConstants.WORKFLOW_CREATOR);
     }
@@ -260,7 +258,7 @@ public abstract class AbstractWorkflowDocumentHandler {
      * @throws Exception
      */
     protected String getProcessInstanceDocumentModificationPolicy(
-            ExecutionContext ec) throws Exception {
+            ExecutionContext ec) {
         return (String) getProcessInstance(ec).getContextInstance().getVariable(
                 WorkflowConstants.DOCUMENT_MODIFICATION_POLICY);
     }
@@ -273,7 +271,7 @@ public abstract class AbstractWorkflowDocumentHandler {
      * @throws Exception
      */
     protected String getProcessInstanceDocumentVersioningPolicy(
-            ExecutionContext ec) throws Exception {
+            ExecutionContext ec) {
         return (String) getProcessInstance(ec).getContextInstance().getVariable(
                 WorkflowConstants.DOCUMENT_VERSIONING_POLICY);
     }
@@ -285,8 +283,7 @@ public abstract class AbstractWorkflowDocumentHandler {
      * @return the current review level. Default is 0 if not found.
      * @throws Exception
      */
-    protected int getProcessInstanceCurrentReviewLevel(ExecutionContext ec)
-            throws Exception {
+    protected int getProcessInstanceCurrentReviewLevel(ExecutionContext ec) {
         Object value = getProcessInstance(ec).getContextInstance().getVariable(
                 WorkflowConstants.WORKFLOW_REVIEW_LEVEL);
         if (value != null) {
@@ -356,9 +353,7 @@ public abstract class AbstractWorkflowDocumentHandler {
             ExecutionContext ec) throws Exception {
         WorkflowDocumentLifeCycleManager wfLifeCycleManager = getLifeCycleManager(ec);
         DocumentRef docRef = getDocumentRef(ec);
-        Collection<String> ats = wfLifeCycleManager.getAllowedStateTransitions(
-                docRef);
-        return ats;
+        return wfLifeCycleManager.getAllowedStateTransitions(docRef);
     }
 
     /**
@@ -400,8 +395,7 @@ public abstract class AbstractWorkflowDocumentHandler {
             throws Exception {
         DocumentRef docRef = getDocumentRef(ec);
         WorkflowDocumentLifeCycleManager manager = getLifeCycleManager(ec);
-        String state = manager.getCurrentLifeCycleState(docRef);
-        return state;
+        return manager.getCurrentLifeCycleState(docRef);
     }
 
     /**
@@ -461,8 +455,7 @@ public abstract class AbstractWorkflowDocumentHandler {
      * @return the process instance name
      * @throws Exception
      */
-    protected String getProcessInstanceName(ExecutionContext ec)
-            throws Exception {
+    protected String getProcessInstanceName(ExecutionContext ec) {
         return getProcessInstance(ec).getProcessDefinition().getName();
     }
 

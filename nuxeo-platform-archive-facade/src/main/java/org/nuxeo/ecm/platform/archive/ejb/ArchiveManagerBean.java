@@ -106,8 +106,7 @@ public class ArchiveManagerBean implements ArchiveManager {
                 query.setParameter(name, value);
             }
         }
-        List<ArchiveRecord> records = (List<ArchiveRecord>) query.getResultList();
-        return records;
+        return (List<ArchiveRecord>) query.getResultList();
     }
 
 }

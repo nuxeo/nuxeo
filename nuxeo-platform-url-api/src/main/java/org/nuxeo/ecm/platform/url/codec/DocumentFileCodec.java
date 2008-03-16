@@ -153,10 +153,8 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
 
                 final DocumentLocation docLoc = new DocumentLocationImpl(
                         server, docRef);
-                final DocumentView docView = new DocumentViewImpl(docLoc, null,
-                        params);
 
-                return docView;
+                return new DocumentViewImpl(docLoc, null, params);
             }
         }
 
@@ -164,8 +162,7 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
     }
 
     public static String getBlobPropertyName(DocumentView docView) {
-        String propertyPath = docView.getParameter(FILE_PROPERTY_PATH_KEY);
-        return propertyPath;
+        return docView.getParameter(FILE_PROPERTY_PATH_KEY);
     }
 
     public static Blob getBlob(DocumentModel doc, DocumentView docView) {

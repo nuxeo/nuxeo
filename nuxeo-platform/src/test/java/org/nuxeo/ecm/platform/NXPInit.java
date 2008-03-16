@@ -71,7 +71,7 @@ public abstract class NXPInit extends TestCase {
         super.tearDown();
     }
 
-    protected void _loadTestingConfiguration() throws IOException {
+    protected void _loadTestingConfiguration() {
         System.setProperty("java.security.auth.login.config",
                 Thread.currentThread().getContextClassLoader().getResource("nuxeo_jaas.config").getPath());
         System.setProperty("java.security.policy",

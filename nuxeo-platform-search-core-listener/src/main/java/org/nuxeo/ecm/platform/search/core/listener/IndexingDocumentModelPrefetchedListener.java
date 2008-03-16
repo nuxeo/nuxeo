@@ -202,8 +202,7 @@ public class IndexingDocumentModelPrefetchedListener extends
         }
     }
 
-    public static IndexableResources computeResourcesFor(DocumentModel dm)
-            throws IndexingException {
+    public static IndexableResources computeResourcesFor(DocumentModel dm) {
         return IndexableResourcesFactory.computeResourcesFor(dm,
                 dm.getSessionId());
     }

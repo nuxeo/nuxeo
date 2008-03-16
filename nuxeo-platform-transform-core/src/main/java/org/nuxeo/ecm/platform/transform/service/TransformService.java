@@ -206,11 +206,7 @@ public class TransformService extends DefaultComponent implements
 
         TransformDocument[] tds = new TransformDocument[blobs.length];
         for (int i=0; i < blobs.length; i++) {
-            try {
-                tds[i] = new TransformDocumentImpl(blobs[i]);
-            } catch (IOException ioe) {
-                throw new TransformException(ioe);
-            }
+            tds[i] = new TransformDocumentImpl(blobs[i]);
         }
 
         return transform(transformerName, options,tds);

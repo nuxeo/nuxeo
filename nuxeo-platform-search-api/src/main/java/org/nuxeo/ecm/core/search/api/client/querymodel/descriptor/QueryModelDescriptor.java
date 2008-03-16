@@ -119,8 +119,7 @@ public class QueryModelDescriptor {
         return getQuery(model, null);
     }
 
-    public SortInfo getDefaultSortInfo(DocumentModel model)
-            throws ClientException {
+    public SortInfo getDefaultSortInfo(DocumentModel model) {
         if (isStateful()) {
             if (sortColumnField == null || sortAscendingField == null) {
                 return null;

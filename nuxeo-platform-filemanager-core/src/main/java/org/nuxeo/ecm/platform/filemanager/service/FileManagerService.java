@@ -79,7 +79,7 @@ import org.nuxeo.runtime.model.Extension;
  * FileManager registry service.
  * <p>
  * This is the component to request to perform transformations. See API.
- * 
+ *
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
  *         Kalogeropoulos</a>
  */
@@ -464,7 +464,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     private void registerUnicityOptions(UnicityExtension unicityExtension,
-            Extension extension) throws Exception {
+            Extension extension) {
         if (unicityExtension.getAlgo() != null) {
             digestAlgorithm = unicityExtension.getAlgo();
         }
@@ -554,9 +554,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     private void unregisterCreationContainerListProvider(
-            CreationContainerListProviderDescriptor ccListProviderDescriptor)
-            throws Exception {
-
+            CreationContainerListProviderDescriptor ccListProviderDescriptor) {
         String name = ccListProviderDescriptor.getName();
         CreationContainerListProvider providerToRemove = null;
         for (CreationContainerListProvider provider : creationContainerListProviders) {

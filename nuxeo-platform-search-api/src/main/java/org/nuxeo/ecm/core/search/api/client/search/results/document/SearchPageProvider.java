@@ -346,8 +346,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
         return schemaName;
     }
 
-    protected DocumentModelList constructDocumentModels()
-            throws SearchException {
+    protected DocumentModelList constructDocumentModels() {
         if (searchResults == null) {
             return EMPTY;
         }

@@ -308,7 +308,7 @@ public class FileManageActionsBean extends InputController implements
     }
 
     // TODO: this method is weird! What is it doing?
-    public String delCopyWithId(String docId) throws ClientException {
+    public String delCopyWithId(String docId) {
         try {
             String debug = "deleting copyId " + docId;
             if (docId.startsWith("pasteRef_")) {

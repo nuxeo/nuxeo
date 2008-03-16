@@ -137,7 +137,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    private static InputStream getTestFile(String filePath) throws Exception {
+    private static InputStream getTestFile(String filePath) {
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(
                 filePath);
     }
@@ -155,11 +155,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
 
     private static void feedGraph(String filePath, Graph graph) throws Exception {
         assertSame(0L, graph.size());
-        try {
-            graph.read(getTestFile(filePath), null, null);
-        } catch (Exception err) {
-            err.printStackTrace();
-        }
+        graph.read(getTestFile(filePath), null, null);
         assertNotSame(0L, graph.size());
     }
 

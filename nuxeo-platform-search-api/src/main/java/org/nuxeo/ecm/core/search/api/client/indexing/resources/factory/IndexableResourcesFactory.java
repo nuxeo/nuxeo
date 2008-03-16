@@ -78,8 +78,7 @@ public final class IndexableResourcesFactory implements Serializable {
         return dm.getId();
     }
 
-    public static IndexableResources computeResourcesFor(DocumentModel dm)
-            throws IndexingException {
+    public static IndexableResources computeResourcesFor(DocumentModel dm) {
         return computeResourcesFor(dm, null);
     }
 

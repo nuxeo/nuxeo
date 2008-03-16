@@ -782,8 +782,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         }
     }
 
-    protected NativeQuery convertToNativeQuery(ComposedNXQuery query)
-            throws SearchException {
+    protected NativeQuery convertToNativeQuery(ComposedNXQuery query) {
         return new CompassNativeQuery(query.getQuery(), name,
                 query.getSearchPrincipal());
     }
@@ -835,12 +834,11 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         // Hack for IndexManager to not be created to avoid thread leak
         // conf.getSettings().setFloatSetting(LuceneEnvironment.SearchEngineIndex.INDEX_MANAGER_SCHEDULE_INTERVAL,
         // -1f);
-        Compass cps = conf.buildCompass();
 
-        return cps;
+        return conf.buildCompass();
     }
 
-    protected boolean isBoundToIndexingThread() {
+    protected static boolean isBoundToIndexingThread() {
         return Thread.currentThread() instanceof IndexingThread;
     }
 
@@ -885,8 +883,9 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         int configuredSize = getIndexingDocBatchSize();
 
         // max batch size reached => comit
-        if (queuedNonComitedResources >= configuredSize)
+        if (queuedNonComitedResources >= configuredSize) {
             return true;
+        }
 
         long nbThreads = searchService.getNumberOfIndexingThreads();
 

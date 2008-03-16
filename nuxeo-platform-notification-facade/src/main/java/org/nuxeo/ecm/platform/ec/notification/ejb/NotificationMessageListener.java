@@ -278,7 +278,7 @@ public class NotificationMessageListener implements MessageListener {
     }
 
     private void sendNotificationSignalForUser(Notification notification,
-            String subscriptor, DocumentMessage message) throws ClientException {
+            String subscriptor, DocumentMessage message) {
 
         log.debug("Producing notification message...........");
 

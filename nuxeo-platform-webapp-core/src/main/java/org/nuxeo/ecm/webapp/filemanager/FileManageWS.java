@@ -302,8 +302,7 @@ public class FileManageWS extends InputController implements
         return navigationContext.getCurrentDocument();
     }
 
-    public void _setChangeableDocument(DocumentModel documentModel)
-            throws ClientException {
+    public void _setChangeableDocument(DocumentModel documentModel) {
         navigationContext.setChangeableDocument(documentModel);
         // navigationContext.setCurrentDocument(documentModel);
     }

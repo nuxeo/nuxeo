@@ -285,7 +285,7 @@ public class ArchiveManagerActionsBean implements ArchiveManagerActions {
         }
     }
 
-    public void initializeArchiveManager() throws Exception {
+    public void initializeArchiveManager() {
         log.debug("Initializing ...");
     }
 

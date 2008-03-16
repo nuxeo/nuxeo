@@ -164,8 +164,7 @@ public final class Functions {
         }
     }
 
-    public static String dateFormater(String formatLength)
-            throws ClientException {
+    public static String dateFormater(String formatLength) {
 
         // A map to store temporary available date format
 
@@ -189,8 +188,7 @@ public final class Functions {
     }
 
     // method to format date and time considering user's local
-    public static String dateAndTimeFormater(String formatLength)
-            throws ClientException {
+    public static String dateAndTimeFormater(String formatLength) {
 
         // A map to store temporary available date format
 
@@ -207,13 +205,11 @@ public final class Functions {
 
         // return the date pattern
         return format.toPattern();
-
     }
 
     // method to format date and time in the standard short format
     public static String basicDateAndTimeFormater() throws ClientException {
         return dateAndTimeFormater("short");
-
     }
 
 }

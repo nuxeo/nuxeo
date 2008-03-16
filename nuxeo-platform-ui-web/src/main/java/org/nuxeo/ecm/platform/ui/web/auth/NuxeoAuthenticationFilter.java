@@ -234,8 +234,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     }
 
     private Boolean switchUser(ServletRequest request,
-            ServletResponse response, FilterChain chain) throws IOException,
-            ServletException {
+            ServletResponse response, FilterChain chain) throws IOException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         String deputyLogin = (String) httpRequest.getAttribute(NXAuthContants.SWITCH_USER_KEY);
