@@ -385,7 +385,12 @@ public class ThemeParser {
 
     private static void parseProperties(org.w3c.dom.Element doc, Node node) {
         NamedNodeMap attributes = node.getAttributes();
-        String elementXPath = attributes.getNamedItem("element").getNodeValue();
+        Node elementAttr = attributes.getNamedItem("element");
+        if (elementAttr == null) {
+            log.error("<properties> node has no 'element' attribute.");
+            return;
+        }
+        String elementXPath = elementAttr.getNodeValue();
 
         Node baseNode = getBaseNode(doc);
         Node element = null;
