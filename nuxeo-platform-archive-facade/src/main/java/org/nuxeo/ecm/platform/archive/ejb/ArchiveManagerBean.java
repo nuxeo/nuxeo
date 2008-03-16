@@ -53,7 +53,7 @@ public class ArchiveManagerBean implements ArchiveManager {
     private static final Log log = LogFactory.getLog(ArchiveManager.class);
 
     @PersistenceContext(unitName = "nxarchive")
-    private EntityManager em;
+    private transient EntityManager em;
 
     @SuppressWarnings("unchecked")
     public List<ArchiveRecord> getArchiveRecordsByDocUID(String docUID) {

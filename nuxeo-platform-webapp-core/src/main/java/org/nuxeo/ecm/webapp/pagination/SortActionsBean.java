@@ -41,13 +41,14 @@ import org.nuxeo.ecm.webapp.base.InputController;
 @Scope(ScopeType.CONVERSATION)
 public class SortActionsBean extends InputController implements SortActions, Serializable {
 
+    private static final long serialVersionUID = 6824092797019313562L;
     private static final Log log = LogFactory.getLog(SortActionsBean.class);
 
     @RequestParameter("sortColumn")
     private String newSortColumn;
 
     @In(required = false, create = true)
-    private ResultsProvidersCache resultsProvidersCache;
+    private transient ResultsProvidersCache resultsProvidersCache;
 
     @RequestParameter("providerName")
     private String providerName;

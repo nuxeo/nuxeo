@@ -79,7 +79,7 @@ public class LogsBean implements Logs {
     private static final Log log = LogFactory.getLog(LogsBean.class);
 
     @PersistenceContext(unitName = "NXAudit")
-    private EntityManager em;
+    private transient EntityManager em;
 
     public void addLogEntries(List<LogEntry> entries) throws AuditException {
         try {

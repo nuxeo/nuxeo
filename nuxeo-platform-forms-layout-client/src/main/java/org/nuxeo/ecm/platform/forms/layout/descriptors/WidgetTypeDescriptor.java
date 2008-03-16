@@ -34,8 +34,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("widgetType")
 public class WidgetTypeDescriptor {
 
-    private static final long serialVersionUID = -1103282762604890858L;
-
     @XNode("@name")
     String name;
 

@@ -83,7 +83,9 @@ public class DeleteActionsBean extends InputController implements
         DeleteActions, Serializable, SelectDataModelListener,
         ResultsProviderFarm {
 
-    class PathComparator implements Comparator<DocumentModel> {
+    private static class PathComparator implements Comparator<DocumentModel>, Serializable {
+
+        private static final long serialVersionUID = -6449747704324789701L;
 
         public int compare(DocumentModel o1, DocumentModel o2) {
             return o1.getPathAsString().compareTo(o2.getPathAsString());
@@ -137,7 +139,7 @@ public class DeleteActionsBean extends InputController implements
 
     // Imported from Navigation context - used to get the deleted sub-documents
     @In(create = true)
-    private ResultsProvidersCache resultsProvidersCache;
+    private transient ResultsProvidersCache resultsProvidersCache;
 
     @Out(required = false)
     @Deprecated

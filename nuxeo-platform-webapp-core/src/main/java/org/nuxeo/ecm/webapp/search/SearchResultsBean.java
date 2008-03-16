@@ -71,6 +71,8 @@ import au.com.bytecode.opencsv.CSVWriter;
 @Transactional
 public class SearchResultsBean extends InputController implements SearchResults, Serializable {
 
+    private static final long serialVersionUID = 7823660685121811606L;
+
     private static final Log log = LogFactory.getLog(SearchResultsBean.class);
 
     private static final String SEARCH_DOCUMENT_LIST = "SEARCH_DOCUMENT_LIST";
@@ -90,7 +92,7 @@ public class SearchResultsBean extends InputController implements SearchResults,
     private String newSortColumn;
 
     @In(required = false, create = true)
-    private ResultsProvidersCache resultsProvidersCache;
+    private transient ResultsProvidersCache resultsProvidersCache;
 
     @In(create = true)
     private transient ClipboardActions clipboardActions;

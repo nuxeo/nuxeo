@@ -114,7 +114,7 @@ public class SearchActionsBean extends InputController implements
     private transient SearchBusinessDelegate searchDelegate;
 
     @In(required = false)
-    private Principal currentUser;
+    private transient Principal currentUser;
 
     @In(required=false, create=false)
     SearchResultsBean searchResults;

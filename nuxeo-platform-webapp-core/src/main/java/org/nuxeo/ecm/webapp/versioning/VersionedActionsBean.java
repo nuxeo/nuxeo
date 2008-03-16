@@ -65,6 +65,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 public class VersionedActionsBean extends InputController implements
         VersionedActions, Serializable {
 
+    private static final long serialVersionUID = -5994196072812025648L;
     private static final Log log = LogFactory.getLog(VersionedActionsBean.class);
 
     @In(create = true)

@@ -74,10 +74,10 @@ import org.nuxeo.ecm.webapp.table.row.TableRow;
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
  *
  */
-
 @Name("contentRootsActions")
 @Scope(SESSION)
 @Deprecated
+@SuppressWarnings({"ALL"})
 public class ContentRootsActionsBean extends InputController implements
         ContentRootsActions {
     private static final Log log = LogFactory.getLog(ContentRootsActionsBean.class);

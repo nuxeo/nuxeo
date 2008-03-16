@@ -50,6 +50,9 @@ import org.w3c.dom.traversal.TreeWalker;
  */
 public class Xml2TextPluginImpl extends AbstractPlugin {
 
+    private static final long serialVersionUID = -8395742119156169742L;
+
+    @Override
     public List<TransformDocument> transform(Map<String, Serializable> options,
             TransformDocument... sources) throws Exception {
         final List<TransformDocument> results = super.transform(options,

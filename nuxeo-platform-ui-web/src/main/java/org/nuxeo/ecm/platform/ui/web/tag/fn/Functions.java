@@ -59,6 +59,8 @@ public final class Functions {
             put("long", String.valueOf(DateFormat.LONG));
             put("full", String.valueOf(DateFormat.FULL));
         }
+
+        private static final long serialVersionUID = 8465772256977862352L;
     };
 
     // Utility class.

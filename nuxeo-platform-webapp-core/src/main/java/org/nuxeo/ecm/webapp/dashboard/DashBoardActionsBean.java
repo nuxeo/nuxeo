@@ -89,7 +89,7 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 @Scope(SESSION)
 @Install(precedence = FRAMEWORK)
 public class DashBoardActionsBean extends InputController implements
-        DashboardActions, ResultsProviderFarm {
+        DashboardActions {
 
     private static final long serialVersionUID = 7737098220471277412L;
 
