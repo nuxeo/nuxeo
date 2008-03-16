@@ -22,6 +22,9 @@ package org.nuxeo.ecm.webapp.pagination;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.io.Serializable;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.event.PhaseId;
@@ -59,7 +62,6 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * This compononent maintains a cache of {@link PagedDocumentsProvider}
  * instances.
- * </p>
  * <p>
  * It's also capable of instantiating the cache by calling provider farms: other
  * Seam components that also implement the ResultsProviderFarm interface.
@@ -69,7 +71,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("resultsProvidersCache")
 @Scope(ScopeType.CONVERSATION)
-public class ResultsProvidersCacheBean implements ResultsProvidersCache {
+public class ResultsProvidersCacheBean implements ResultsProvidersCache, Serializable {
 
     private static final Log log = LogFactory.getLog(ResultsProvidersCacheBean.class);
 
@@ -77,9 +79,9 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache {
     protected transient FacesMessages facesMessages;
 
     @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
+    protected transient ResourcesAccessor resourcesAccessor;
 
-    private transient HashMap<String, PagedDocumentsProvider> resultsProvidersCache;
+    private transient Map<String, PagedDocumentsProvider> resultsProvidersCache;
 
     /**
      * Used to indicate that providers have already been refreshed within this
@@ -87,7 +89,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache {
      */
     @In(required = false)
     @Out(scope = ScopeType.EVENT, required = false)
-    private transient HashSet<String> cleanProviders;
+    private transient Set<String> cleanProviders;
 
     // ----- lifecycle methods ------
     /**
@@ -180,9 +182,9 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache {
         return provider;
     }
 
-
     /**
-     * Return an empty provider with the expected actual type for given name
+     * Returns an empty provider with the expected actual type for given name.
+     *
      * @param name
      * @return the empty provider
      * @throws ClientException
@@ -217,9 +219,8 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache {
         resultsProvidersCache.remove(name);
     }
 
-    @Observer(value={ EventNames.DOCUMENT_CHILDREN_CHANGED }, create=false,inject=false)
-    public void invalidateChildrenProvider()
-    {
+    @Observer(value = {EventNames.DOCUMENT_CHILDREN_CHANGED}, create = false, inject = false)
+    public void invalidateChildrenProvider() {
         invalidate(DocumentChildrenStdFarm.CHILDREN_BY_COREAPI);
     }
 

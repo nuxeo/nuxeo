@@ -61,7 +61,7 @@ public class WebServicesAuthenticator implements NuxeoAuthenticationPlugin {
 
     public List<String> getUnAuthenticatedURLPrefix() {
         //skip webservices URL
-        ArrayList<String> prefixes = new ArrayList<String>();
+        List<String> prefixes = new ArrayList<String>();
         prefixes.add(skipURL);
         return prefixes;
     }

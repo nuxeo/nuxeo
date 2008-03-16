@@ -63,7 +63,7 @@ public class TestAuthPlugins extends NXRuntimeTestCase {
     public void testServiceParameters() {
         getAuthService();
         AuthenticationPluginDescriptor plugin = authService.getDescriptor("FORM_AUTH");
-        assertTrue(plugin.getParameters().size() > 0);
+        assertTrue(!plugin.getParameters().isEmpty());
         assertTrue(plugin.getParameters().containsKey("LoginPage"));
         assertEquals("login.jsp", plugin.getParameters().get("LoginPage"));
     }

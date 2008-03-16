@@ -60,16 +60,17 @@ public class ChainSelect extends UIInput {
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(ChainSelect.class);
 
+    // Direct access from ChainSelectStatus
     Map<Integer, NestedChainSelectComponentInfo> compInfos = new HashMap<Integer, NestedChainSelectComponentInfo>();
 
     /**
      * The keys of the selected items in chain controls.
      */
-    List<String> keyList = new ArrayList<String>();
+    private List<String> keyList = new ArrayList<String>();
 
     private String onchange;
 
-    private HashMap<String, DirectorySelectItem>[] optionList;
+    private Map<String, DirectorySelectItem>[] optionList;
 
     private Integer size;
 
@@ -365,7 +366,7 @@ public class ChainSelect extends UIInput {
         return optionList[index];
     }
 
-    public void setOptions(int index, HashMap<String, DirectorySelectItem> opts) {
+    public void setOptions(int index, Map<String, DirectorySelectItem> opts) {
         optionList[index] = opts;
     }
 
@@ -661,7 +662,8 @@ public class ChainSelect extends UIInput {
      * This structure is needed to keep data for dynamically generated
      * components.
      */
-    public class NestedChainSelectComponentInfo {
+    public static class NestedChainSelectComponentInfo {
+
         public String directoryName;
 
         public VocabularyEntryList directoryValues;

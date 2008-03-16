@@ -67,9 +67,9 @@ public class ThreadActionBean extends InputController implements ThreadAction {
 
     private static final Log log = LogFactory.getLog(ThreadActionBean.class);
 
-    protected final String schema = "thread";
+    protected static final String schema = "thread";
 
-    protected final String type = "Thread";
+    protected static final String type = "Thread";
 
     protected boolean principalIsAdmin;
 

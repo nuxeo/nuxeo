@@ -435,7 +435,7 @@ public class PostActionBean extends InputController implements PostAction {
     }
 
     public List<String> getModeratorsOnParentThread() {
-        ArrayList<String> moderators = (ArrayList<String>) getParentThread().getProperty(
+        List<String> moderators = (List<String>) getParentThread().getProperty(
                 "thread", "moderators");
         if (moderators != null) {
             return moderators;

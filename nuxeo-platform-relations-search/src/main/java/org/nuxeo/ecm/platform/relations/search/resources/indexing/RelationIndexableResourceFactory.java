@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -94,7 +95,7 @@ public class RelationIndexableResourceFactory extends
         Map<String, IndexableResourceDataConf> builtinFields
             = BuiltinRelationsFields.getIndexableFields();
 
-        HashSet<String> fieldNames = new HashSet<String>();
+        Set<String> fieldNames = new HashSet<String>();
         if (confFields != null) {
             fieldNames.addAll(confFields.keySet());
         }

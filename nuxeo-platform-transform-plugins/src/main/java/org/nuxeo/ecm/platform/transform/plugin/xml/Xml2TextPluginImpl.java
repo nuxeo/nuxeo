@@ -146,7 +146,7 @@ public class Xml2TextPluginImpl extends AbstractPlugin {
     /**
      * filters the elements of the XML document
      */
-    class AllElementsFilter implements NodeFilter {
+    static class AllElementsFilter implements NodeFilter {
         public short acceptNode(Node n) {
             if (n.getNodeType() > 0) {
                 return FILTER_ACCEPT;
