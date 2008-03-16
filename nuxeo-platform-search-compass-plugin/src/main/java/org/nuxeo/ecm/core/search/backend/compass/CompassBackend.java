@@ -356,7 +356,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
                 throw new IndexingException(e);
             }
 
-            session = (CompassBackendSession) sessions.get(sid);
+            session = sessions.get(sid);
 
             if (session == null) {
                 throw new IndexingException(

@@ -42,7 +42,6 @@ import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;

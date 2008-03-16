@@ -405,7 +405,7 @@ public class UserManagerActionsBean extends InputController implements
             DocumentModelImpl entry = new DocumentModelImpl(null, userType.getId(), "",
                     null, null, null, new String[] { schemaName }, null);
             entry.addDataModel(dm);
-            ((NuxeoPrincipalImpl) newUser).setModel(entry);
+            newUser.setModel(entry);
             newUser.getRoles().add("regular");
             sessionContext.set("newUser", newUser);
             return "create_user";

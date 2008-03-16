@@ -476,7 +476,7 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
 
         // Test doc resources metadata
 
-        docRes = (DocumentIndexableResource) oneRes;
+        docRes = oneRes;
         assertEquals(dm.getRef(), docRes.getDocRef());
         assertEquals(dm.getParentRef(), docRes.getDocParentRef());
         assertEquals(dm.getType(), docRes.getDocType());

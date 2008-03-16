@@ -89,7 +89,7 @@ public abstract class NXPInit extends TestCase {
         SecurityAssociationHandler handler = new SecurityAssociationHandler();
         SimplePrincipal user = new SimplePrincipal("q");
         handler.setSecurityInfo(user, "q".toCharArray());
-        loginContext = new LoginContext("nuxeo.ecm", (CallbackHandler) handler);
+        loginContext = new LoginContext("nuxeo.ecm", handler);
 
         loginContext.login();
         authenticatedSubject = loginContext.getSubject();

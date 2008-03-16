@@ -77,7 +77,7 @@ public class QueryModelDescriptor {
     /**
      * used for stateless qm a sortable qm is one that does not have an ORDER BY
      * clause, so that a query with sortInfo can append them
-     * 
+     *
      * @deprecated - do not use an ORDER BY clause in the pattern, use
      *             defaultSortColumn and defaultSortAscending
      */
@@ -175,24 +175,24 @@ public class QueryModelDescriptor {
 
     /**
      * Return the string literal in a form ready to embed in an NXQL statement.
-     * TODO remove this once we work on org.nuxeo.core, v 1.4
-     * 
+     *
      * @param s
      * @return
      */
+    // TODO remove this once we work on org.nuxeo.core, v 1.4
     public static String prepareStringLiteral(String s) {
         return "'" + s.replaceAll("'", "\\\\'") + "'";
     }
 
     private static void appendQuotedStringList(StringBuilder queryBuilder,
             List<? extends Object> listParam) {
-        queryBuilder.append("(");
+        queryBuilder.append('(');
         List<String> quotedParam = new ArrayList<String>(listParam.size());
         for (int j = 0; j < listParam.size(); j++) {
             quotedParam.add(prepareStringLiteral(listParam.get(j).toString()));
         }
         queryBuilder.append(StringUtils.join(quotedParam, ", "));
-        queryBuilder.append(")");
+        queryBuilder.append(')');
     }
 
     @SuppressWarnings("unchecked")
@@ -290,9 +290,8 @@ public class QueryModelDescriptor {
      * Init the escaper object for stateful query models.
      * <p>
      * This is meant to be called at extension point contribution registration
-     * time
-     * </p>
-     * 
+     * time.
+     *
      * @param context surrounding context, used to load the correct class.
      */
     public void initEscaper(RuntimeContext context) {

@@ -31,7 +31,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.workflow.api.client.ejb.local.WAPILocal;
 import org.nuxeo.ecm.platform.workflow.api.client.ejb.remote.WAPIRemote;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WAPI;
 import org.nuxeo.ecm.platform.workflow.impl.WAPIImpl;
 
 /**

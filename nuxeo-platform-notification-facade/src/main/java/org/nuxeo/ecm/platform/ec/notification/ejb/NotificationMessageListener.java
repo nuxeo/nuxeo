@@ -376,7 +376,7 @@ public class NotificationMessageListener implements MessageListener {
             mail.put("principalAuthor", author);
         }
 
-        mail.put("document", (DocumentModel) docMessage);
+        mail.put("document", docMessage);
         String subject = notif.getSubject() == null ? "Notification"
                 : notif.getSubject();
         subject = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix()
