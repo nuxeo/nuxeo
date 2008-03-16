@@ -31,9 +31,9 @@ import java.util.Arrays;
 public abstract class AbstractCreationContainerListProvider implements
         CreationContainerListProvider {
 
-    String name = "";
+    private String name = "";
 
-    String[] docTypes;
+    private String[] docTypes;
 
     public boolean accept(String docType) throws Exception {
         if (docTypes == null || docTypes.length == 0) {
@@ -69,6 +69,11 @@ public abstract class AbstractCreationContainerListProvider implements
             return name != null && name.equals(provider.getName());
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
     }
 
 }

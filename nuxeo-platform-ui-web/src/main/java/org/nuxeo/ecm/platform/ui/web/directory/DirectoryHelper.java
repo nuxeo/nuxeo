@@ -32,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.Session;
@@ -68,7 +67,7 @@ public final class DirectoryHelper {
                 log.error("Can't find Directory Service",e);
             }
         }
-        service=dirService;
+        service = dirService;
     }
 
     public static DirectoryHelper instance() {
@@ -158,11 +157,6 @@ public final class DirectoryHelper {
         return instance().service;
     }
 
-    /**
-     * @param directoryValues
-     * @param parentValue
-     * @return
-     */
     public static List<DirectorySelectItem> getSelectItems(
             VocabularyEntryList directoryValues, Map<String, Object> filter) {
         List<DirectorySelectItem> list = new ArrayList<DirectorySelectItem>();
@@ -238,10 +232,11 @@ public final class DirectoryHelper {
     }
 
     /**
-     * Return the entry with given id from specified directory.
-     *
-     * method to use from components, since JSF base class that we extend don't allow
+     * Returns the entry with given id from specified directory.
+     * <p>
+     * <ethod to use from components, since JSF base class that we extend don't allow
      * to throw proper exceptions.
+     *
      * @param directoryName
      * @param entryId
      * @return the entry, or null in case of exception in callees.

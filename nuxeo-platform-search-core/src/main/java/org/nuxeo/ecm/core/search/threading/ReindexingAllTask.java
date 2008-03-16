@@ -16,7 +16,7 @@ public class ReindexingAllTask extends IndexingTask {
 
     private static final Log log = LogFactory.getLog(ReindexingAllTask.class);
 
-    private static int DEFAULT_DOC_BATCH_SIZE = 50;
+    private static final int DEFAULT_DOC_BATCH_SIZE = 50;
 
     public ReindexingAllTask(DocumentModel dm, Boolean recursive) {
         super(dm, recursive);

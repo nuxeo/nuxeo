@@ -47,7 +47,7 @@ public class TemplateItemDescriptor  implements Serializable {
     @XNode("@description")
     private String description;
 
-    // Declared as ArrayList to be serializable.    
+    // Declared as ArrayList to be serializable.
     @XNodeList(value = "acl/ace", type = ArrayList.class, componentType = ACEDescriptor.class)
     public ArrayList<ACEDescriptor> acl;
 

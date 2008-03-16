@@ -112,7 +112,7 @@ public class UIDGeneratorService extends DefaultComponent {
 
             // set sequencerFactory as field to be invoked lazy
             // TODO handle nicely invokation exceptions below
-            this.sequencerFactory = (UIDSequencerFactory) extension.getContext().loadClass(
+            sequencerFactory = (UIDSequencerFactory) extension.getContext().loadClass(
                     className).newInstance();
         } else {
             log.warn("extension not handled: " + extPoint);
@@ -124,7 +124,7 @@ public class UIDGeneratorService extends DefaultComponent {
             return sequencer;
         }
 
-        this.sequencer = sequencerFactory.createUIDSequencer();
+        sequencer = sequencerFactory.createUIDSequencer();
         log.info("Sequencer instantiated successfully: " + sequencer);
 
         return sequencer;
@@ -159,7 +159,7 @@ public class UIDGeneratorService extends DefaultComponent {
     }
 
     /**
-     * Register given UIDGenerator for the given document types. If there is
+     * Registers given UIDGenerator for the given document types. If there is
      * already a generator registered for one of document type it will be
      * discarded (and replaced with the new generator)
      *

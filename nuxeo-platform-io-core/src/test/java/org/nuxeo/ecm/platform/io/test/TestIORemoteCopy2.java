@@ -119,7 +119,7 @@ public class TestIORemoteCopy2 extends NXRuntimeTestCase {
         assertNotNull(coreSession2);
 
         // get ioService from the first server
-        ioService = (IOManager) Framework.getService(IOManager.class);
+        ioService = Framework.getService(IOManager.class);
         assertNotNull(ioService);
 
         remoteIOManager = Framework.getService(IOManager.class, "remote");

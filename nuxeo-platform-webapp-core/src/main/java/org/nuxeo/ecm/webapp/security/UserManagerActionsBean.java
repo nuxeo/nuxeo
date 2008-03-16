@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.io.Serializable;
 
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
@@ -73,7 +74,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 @Name("userManagerActions")
 @Scope(CONVERSATION)
 public class UserManagerActionsBean extends InputController implements
-        UserManagerActions {
+        UserManagerActions, Serializable {
 
     private static final Log log = LogFactory.getLog(UserManagerActionsBean.class);
 

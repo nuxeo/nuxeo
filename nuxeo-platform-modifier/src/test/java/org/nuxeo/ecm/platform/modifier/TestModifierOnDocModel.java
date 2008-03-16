@@ -122,8 +122,6 @@ public class TestModifierOnDocModel extends AbstractPluginTestCase {
                 rootDM.getPathAsString(), "testfile1", "File");
         childFile = coreSession.createDocument(childFile);
 
-        childFile.setProperty("common", "description", "some file description");
-
         childFile.setProperty("uid", "uid", "TEST0001");
         childFile.setProperty("uid", "major_version", 2L);
         childFile.setProperty("uid", "minor_version", 15L);
