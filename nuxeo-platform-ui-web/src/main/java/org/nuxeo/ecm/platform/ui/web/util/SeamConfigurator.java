@@ -35,17 +35,13 @@ import org.jboss.seam.core.Init;
 @Startup
 public class SeamConfigurator implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 178687658975L;
 
-    @In(value="org.jboss.seam.core.init")
-    Init init;
+    @In(value = "org.jboss.seam.core.init")
+    transient Init init;
 
     @Create
-    public void init()
-    {
+    public void init() {
         init.setJbpmInstalled(false);
     }
 

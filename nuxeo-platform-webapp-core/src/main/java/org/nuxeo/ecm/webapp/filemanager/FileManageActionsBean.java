@@ -72,7 +72,7 @@ import sun.misc.BASE64Decoder;
 @Local(FileManageActionsLocal.class)
 @Remote(FileManageActions.class)
 public class FileManageActionsBean extends InputController implements
-        FileManageActionsLocal, FileManageActions {
+        FileManageActionsLocal {
 
     private static final Log log = LogFactory.getLog(FileManageActionsBean.class);
 
@@ -104,7 +104,7 @@ public class FileManageActionsBean extends InputController implements
     @In(create = true)
     protected PublishActions publishActions;
 
-    protected transient FileManager fileManager;
+    protected FileManager fileManager;
 
     protected FileManager getFileManagerService() throws ClientException {
         if (fileManager == null) {

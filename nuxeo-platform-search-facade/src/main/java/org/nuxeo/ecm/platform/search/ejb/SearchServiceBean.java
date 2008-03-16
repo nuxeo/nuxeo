@@ -80,7 +80,7 @@ public class SearchServiceBean implements SearchService {
     private transient SearchService service;
 
     @Resource
-    EJBContext context;
+    transient EJBContext context;
 
     private SearchService getSearchService() {
         if (service == null) {

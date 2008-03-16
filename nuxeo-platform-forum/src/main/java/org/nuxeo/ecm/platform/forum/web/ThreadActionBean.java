@@ -74,19 +74,19 @@ public class ThreadActionBean extends InputController implements ThreadAction {
     protected boolean principalIsAdmin;
 
     @In(create = true)
-    protected Principal currentUser;
+    protected transient Principal currentUser;
 
     @In(create = true)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true)
-    protected DocumentActions documentActions;
+    protected transient DocumentActions documentActions;
 
     @In(create = true)
     protected PrincipalListManager principalListManager;
 
     @In(create = true)
-    protected CommentManagerActions commentManagerActions;
+    protected transient CommentManagerActions commentManagerActions;
 
     @In(create = true)
     protected PostAction postAction;

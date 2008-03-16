@@ -118,7 +118,7 @@ public class VocabularyActionsBean implements VocabularyActions {
     protected transient FacesMessages facesMessages;
 
     @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
+    protected transient ResourcesAccessor resourcesAccessor;
 
     @Begin(join = true)
     @Create

@@ -98,10 +98,10 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     private static final Log log = LogFactory.getLog(LiveEditBootstrapHelper.class);
 
     @In(required = true, create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @RequestParameter
     private String action;

@@ -98,16 +98,16 @@ public class PostActionBean extends InputController implements PostAction {
     protected WorkflowBeansDelegate workflowBeansDelegate;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected Principal currentUser;
+    protected transient Principal currentUser;
 
     @In(create = true)
-    protected CommentManagerActions commentManagerActions;
+    protected transient CommentManagerActions commentManagerActions;
 
     @In(create = true)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true)
     protected ThreadAction threadAction;

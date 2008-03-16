@@ -79,11 +79,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
     private static final String NXEDIT_URL_SCHEME = "nxedit";
 
-    private static transient MimetypeRegistry mimetypeService;
+    private static MimetypeRegistry mimetypeService;
 
-    private static transient TypeManager typeManagerService;
+    private static TypeManager typeManagerService;
 
-    private static transient DirectoryService dirService;
+    private static DirectoryService dirService;
 
     // static cache of default viewId per document type shared all among threads
     private static final Map<String, String> defaultViewCache = Collections.synchronizedMap(new HashMap<String, String>());

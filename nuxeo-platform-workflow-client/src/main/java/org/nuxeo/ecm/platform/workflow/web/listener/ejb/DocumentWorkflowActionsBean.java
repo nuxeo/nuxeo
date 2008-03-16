@@ -121,16 +121,16 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
     protected transient CoreSession documentManager;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected WebActions webActions;
+    protected transient WebActions webActions;
 
     @In(create = true)
-    protected Principal currentUser;
+    protected transient Principal currentUser;
 
     @In(create = true)
-    protected UserManager userManager;
+    protected transient UserManager userManager;
 
     @In(create = true)
     protected Map<String, String> messages;
@@ -187,8 +187,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
 
 
     @Create
-    public void init()
-    {
+    public void init() {
         Events.instance().raiseEvent(EventNames.WF_INIT);
     }
 

@@ -65,7 +65,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
     protected RepositoryLocation currentServerLocation;
 
     @In(create=true, required = false)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     protected RepositoryLocation oldLocation;
 

@@ -50,7 +50,7 @@ public class WAPIBean extends WAPIImpl {
     private static final Log log = LogFactory.getLog(WAPIBean.class);
 
     @Resource
-    EJBContext context;
+    transient EJBContext context;
 
     @Override
     public Principal getParticipant() {
