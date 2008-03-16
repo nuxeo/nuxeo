@@ -20,6 +20,7 @@
 package org.nuxeo.runtime;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import junit.framework.AssertionFailedError;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -27,14 +28,19 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class RuntimeInitializationTest extends NXRuntimeTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    public void testContributions() throws Exception {
         deployContrib("MyComp1.xml");
         deployContrib("MyComp2.xml");
     }
 
-    public void testContributions() {
+    public void testContributionsWithDuplicateComponent() throws Exception {
+        deployContrib("MyComp1.xml");
+        deployContrib("MyComp2.xml");
+        try {
+            deployContrib("CopyOfMyComp2.xml");
+            fail("An exception should have been raised.");
+        } catch (AssertionFailedError e) {
+            // OK.
+        }
     }
-
 }
