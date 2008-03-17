@@ -52,13 +52,15 @@ public final class Functions {
     private static final String FULLNAMES_MAP_KEY = Functions.class.getName()
             + ".FULLNAMES_MAP";
 
-    static Map<String, String> mapOfDateLength = new HashMap<String, String>() {
+    static final Map<String, String> mapOfDateLength = new HashMap<String, String>() {
         {
             put("short", String.valueOf(DateFormat.SHORT));
             put("medium", String.valueOf(DateFormat.MEDIUM));
             put("long", String.valueOf(DateFormat.LONG));
             put("full", String.valueOf(DateFormat.FULL));
         }
+
+        private static final long serialVersionUID = 8465772256977862352L;
     };
 
     // Utility class.
@@ -162,8 +164,7 @@ public final class Functions {
         }
     }
 
-    public static String dateFormater(String formatLength)
-            throws ClientException {
+    public static String dateFormater(String formatLength) {
 
         // A map to store temporary available date format
 
@@ -187,8 +188,7 @@ public final class Functions {
     }
 
     // method to format date and time considering user's local
-    public static String dateAndTimeFormater(String formatLength)
-            throws ClientException {
+    public static String dateAndTimeFormater(String formatLength) {
 
         // A map to store temporary available date format
 
@@ -205,13 +205,11 @@ public final class Functions {
 
         // return the date pattern
         return format.toPattern();
-
     }
 
     // method to format date and time in the standard short format
     public static String basicDateAndTimeFormater() throws ClientException {
         return dateAndTimeFormater("short");
-
     }
 
 }

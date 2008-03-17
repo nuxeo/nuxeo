@@ -112,13 +112,12 @@ public class RelationIndexer {
         // (rdf) Resource representation of incoming object
         List<IndexableResources> allIndexableResources =
             new LinkedList<IndexableResources>();
-        List<IndexableResource> iResources;
         for (Resource r : relationManager.getAllResources(object)) {
             for (IndexableResourceConf conf : getResourceConfs(object)) {
                 try {
                     for (Statement statement :
                             getStatements(conf.getName(), r)) {
-                        iResources = new LinkedList<IndexableResource>();
+                        List<IndexableResource> iResources = new LinkedList<IndexableResource>();
 //                      iResources.add(getOpenAcp()); TODO
                       iResources.add(factory.createIndexableResourceFrom(
                                       statement, conf, coreSessionId));
@@ -139,13 +138,12 @@ public class RelationIndexer {
         return allIndexableResources;
     }
 
-
-    private Set<Statement> getStatements(String graphName, Resource r)
+    private static Set<Statement> getStatements(String graphName, Resource r)
                 throws ClientException {
         RelationManager relationManager =
             RelationSearchBusinessDelegate.getRelationManager();
 
-        HashSet<Statement> res = new HashSet<Statement>();
+        Set<Statement> res = new HashSet<Statement>();
         res.addAll(relationManager.getStatements(graphName,
                 new StatementImpl(r, null, null)));
         res.addAll(relationManager.getStatements(graphName,
@@ -162,7 +160,7 @@ public class RelationIndexer {
         }
     }
 
-    private String computeResourcesGlobalKey(Statement statement,
+    private static String computeResourcesGlobalKey(Statement statement,
             Serializable object, List<IndexableResource> resources) {
         // TODO good enough ?
         return String.format("%d", statement.hashCode());

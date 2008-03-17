@@ -434,11 +434,9 @@ public class LDAPReference extends AbstractReference {
                 NamingEnumeration<SearchResult> results = sourceSession.dirContext.search(
                         searchBaseDn, filterExpr, filterArgs, sctls);
 
-                Attributes attributes;
-                Object value;
                 while (results.hasMore()) {
-                    attributes = results.next().getAttributes();
-                    value = attributes.get(sourceSession.idAttribute).get();
+                    Attributes attributes = results.next().getAttributes();
+                    Object value = attributes.get(sourceSession.idAttribute).get();
                     sourceIds.add(value.toString());
                 }
             } catch (NamingException e) {
@@ -753,7 +751,7 @@ public class LDAPReference extends AbstractReference {
             }
             Attribute attrToRemove = new BasicAttribute(attributeId);
 
-            NamingEnumeration<? extends Object> oldAttrs = oldAttr.getAll();
+            NamingEnumeration<?> oldAttrs = oldAttr.getAll();
             String targetBaseDn = pseudoNormalizeDn(targetDirectory.getConfig().getSearchBaseDn());
             while (oldAttrs.hasMore()) {
                 String dn = pseudoNormalizeDn(oldAttrs.next().toString());

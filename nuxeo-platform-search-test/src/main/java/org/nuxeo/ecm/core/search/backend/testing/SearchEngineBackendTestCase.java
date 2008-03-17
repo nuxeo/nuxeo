@@ -90,7 +90,7 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
         assertEquals(ENGINE_NAME, backend.getName());
     }
 
-    public SearchEngineBackend getBackend() throws Exception {
+    public SearchEngineBackend getBackend() {
         return getSearchServiceInternals().getSearchEngineBackendByName(
                 ENGINE_NAME);
     }

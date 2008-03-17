@@ -77,7 +77,7 @@ public class TestMultiThreadingFSDir extends NXRuntimeTestCase {
         return (SearchServiceInternals) service;
     }
 
-    public SearchEngineBackend getBackend() throws Exception {
+    public SearchEngineBackend getBackend() {
         return getSearchServiceInternals().getSearchEngineBackendByName(
                 ENGINE_NAME);
     }

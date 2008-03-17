@@ -113,7 +113,7 @@ public class TestRelationService extends NXRuntimeTestCase {
         assertEquals(2, resources.size());
 
         // Check local names and extract namespaces
-        HashSet<String> nameSpaces = new HashSet<String>();
+        Set<String> nameSpaces = new HashSet<String>();
         for (Resource res : resources) {
             assertTrue(res instanceof QNameResource);
             QNameResource qn = (QNameResource) res;
@@ -121,7 +121,7 @@ public class TestRelationService extends NXRuntimeTestCase {
             nameSpaces.add(qn.getNamespace());
         }
 
-        HashSet<String> expectedNameSpaces = new HashSet<String>();
+        Set<String> expectedNameSpaces = new HashSet<String>();
         expectedNameSpaces.addAll(
                 Arrays.asList("http://nuxeo.org/nxrelations/test2/",
                     "http://nuxeo.org/nxrelations/test/"));

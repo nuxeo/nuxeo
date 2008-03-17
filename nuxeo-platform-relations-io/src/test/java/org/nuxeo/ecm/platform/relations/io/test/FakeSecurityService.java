@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.relations.io.test;
 
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.runtime.model.ComponentName;
-import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>

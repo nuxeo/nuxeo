@@ -47,10 +47,10 @@ public class UserSessionBean implements Serializable, UserSession {
 
     private static final long serialVersionUID = 7639281445209754L;
 
-    private Principal currentUser;
+    private transient Principal currentUser;
 
     @Resource
-    transient EJBContext context;
+    private transient EJBContext context;
 
     @Factory(value = "currentUser", scope = SESSION)
     public Principal getCurrentUser() throws Exception {

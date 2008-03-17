@@ -102,7 +102,7 @@ public class MassEditActionsBean extends InputController implements
     protected transient ClipboardActions clipboardActions;
 
     @In(create = true)
-    protected DocumentVersioning documentVersioning;
+    protected transient DocumentVersioning documentVersioning;
 
     @Out(required = false)
     FictiveDocumentModel fictiveDocumentModel;

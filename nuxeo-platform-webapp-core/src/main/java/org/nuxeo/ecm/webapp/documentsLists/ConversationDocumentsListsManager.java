@@ -67,8 +67,7 @@ public class ConversationDocumentsListsManager extends BaseDocumentsListsManager
     // Event listener
     @Observer(value = {EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED},
             create = false)
-    public void refreshLists(DocumentModel selectedDocument)
-            throws ClientException {
+    public void refreshLists(DocumentModel selectedDocument) {
 
         if (lastDocumentRef != null
                 && lastDocumentRef.equals(selectedDocument.getRef())) {
