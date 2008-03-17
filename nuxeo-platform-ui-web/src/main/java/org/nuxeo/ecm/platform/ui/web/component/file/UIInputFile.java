@@ -551,7 +551,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
             writer.endElement("td");
             writer.startElement("td", this);
             writer.writeAttribute("class", "fieldColumn", null);
-            html = "<label for=\"%s\">%s</label>";
+            html = "<label for=\"%s\" style=\"float:left\">%s</label>";
             String label = (String) ComponentUtils.getAttributeValue(this,
                     radioChoice + "Label", null);
             if (label == null) {

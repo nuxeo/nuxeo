@@ -493,6 +493,7 @@
       <selector path=".radioColumn">
         <width>8px</width>
         <padding>0 0 0 5px</padding>
+        <vertical-align>top</vertical-align>
       </selector>
       <selector path=".focusColumn">
         <background-color>#ddeeff</background-color>
@@ -880,6 +881,7 @@
       </selector>
       <selector path=".fieldColumn img">
         <margin-right>4px</margin-right>
+        <margin-left>4px</margin-left>
         <vertical-align>top</vertical-align>
       </selector>
       <selector path=".relationCreateFieldColumn table, .fieldColumn table, .workflowFieldColumn table">
@@ -1088,10 +1090,8 @@
         <margin>0 0 0 2px</margin>
         <padding>0</padding>
       </selector>
-        <selector path="table.dataInput td.fieldColumn label">
-        <padding-top>5px</padding-top>
+      <selector path="table.dataInput td.fieldColumn label">
         <vertical-align>top</vertical-align>
-        <margin-top>5px</margin-top>
       </selector>
     </style>
     <style name="common style 2">
