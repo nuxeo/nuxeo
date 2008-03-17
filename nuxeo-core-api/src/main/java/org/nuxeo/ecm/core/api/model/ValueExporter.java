@@ -60,7 +60,7 @@ public class ValueExporter implements PropertyVisitor {
     }
 
     public Object visit(MapProperty property, Object arg) throws PropertyException {
-        Serializable value = null;
+        Serializable value;
         if (property.isContainer()) {
             value = new HashMap<String, Serializable>();
         } else {
@@ -76,7 +76,7 @@ public class ValueExporter implements PropertyVisitor {
     }
 
     public Object visit(ListProperty property, Object arg) throws PropertyException {
-        Serializable value = null;
+        Serializable value;
         if (property.isContainer()) {
             value = new ArrayList<Serializable>();
         } else {

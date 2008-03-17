@@ -20,17 +20,38 @@
 package org.nuxeo.ecm.core.api.operation;
 
 /**
- * A progress monitor is notified by a command avout the command progress
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ProgressMonitor {
+public class MultiStatus extends Status {
 
-    void started(Operation<?> cmd);
+    private static final long serialVersionUID = 4645429673525324229L;
 
-    void done(Operation<?> cmd, int percent);
+    protected Status[] children;
 
-    void terminated(Operation<?> cmd);
+    public MultiStatus(int severity) {
+        super (severity);
+    }
+
+    public MultiStatus(int severity, String message) {
+        super (severity, message);
+    }
+
+    public MultiStatus(int severity, Throwable exception) {
+        super (severity, exception);
+    }
+
+    @Override
+    public boolean isMultiStatus() {
+        return true;
+    }
+
+    public void addStatus(Status status) {
+        //TODO
+    }
+
+    public Status[] getChildren() {
+        return children;
+    }
 
 }

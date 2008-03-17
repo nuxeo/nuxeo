@@ -126,7 +126,7 @@ public class Repository implements Serializable {
     }
 
     public CoreSession open(Map<String, Serializable> context) throws Exception {
-        CoreSession session = null;
+        CoreSession session;
         if (group != null) {
             ServiceManager mgr = Framework.getLocalService(ServiceManager.class);
             ServiceGroup sg = mgr.getGroup(group);

@@ -20,6 +20,7 @@
 
 package org.nuxeo.ecm.core.jms;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -70,7 +71,7 @@ public class JMSEventListener extends AbstractEventListener implements
     public void operationTerminated(Operation<?> cmd) throws Exception {
         OperationEvent event = OperationEventFactory.createEvent(cmd);
         if (event != null) {
-            CoreEventPublisher.getInstance().publish(event);
+            publish(event);
         }
     }
 
@@ -92,10 +93,10 @@ public class JMSEventListener extends AbstractEventListener implements
 
         Map<String,?> info  =coreEvent.getInfo();
         // avoid to send blocked events
-        if (info != null && coreEvent.getInfo().get(BLOCK_JMS_PRODUCING)!=null
-                && (Boolean) coreEvent.getInfo().get(BLOCK_JMS_PRODUCING)== true)
-        {
-            log.debug("JMS forwarding disabled for event " + coreEvent.getEventId());
+        if (info != null && coreEvent.getInfo().get(BLOCK_JMS_PRODUCING) != null
+                && (Boolean) coreEvent.getInfo().get(BLOCK_JMS_PRODUCING)) {
+            log.debug(
+                    "JMS forwarding disabled for event " + coreEvent.getEventId());
             return;
         }
 
@@ -108,7 +109,7 @@ public class JMSEventListener extends AbstractEventListener implements
         } else {
             DocumentModel source = (DocumentModel) coreEvent.getSource();
             if (source!=null && source.getContextData(BLOCK_JMS_PRODUCING) != null
-                    && (Boolean) source.getContextData(BLOCK_JMS_PRODUCING) == true) {
+                    && (Boolean) source.getContextData(BLOCK_JMS_PRODUCING)) {
                 log.debug("JMS forwarding disabled for events on doc "
                         + source.getRef().toString() + "... skipping.");
                 return;
@@ -181,7 +182,6 @@ public class JMSEventListener extends AbstractEventListener implements
 
 
     protected void sendEventToJMS(List<CoreEvent> coreEvents) throws JMSException {
-
         ArrayList<OperationEvent> cmdEvents = new ArrayList<OperationEvent>();
         HashSet<DocumentRef> checkedDocs = new HashSet<DocumentRef>();
 
@@ -189,6 +189,7 @@ public class JMSEventListener extends AbstractEventListener implements
             // remove duplicates TODO improve this
             String id = coreEvent.getEventId();
             if ((DocumentEventTypes.DOCUMENT_CREATED.equals(id))
+                    || DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(id)
                     || DocumentEventTypes.DOCUMENT_UPDATED.equals(id)) {
                 // stacked events are doc centric events
                 DocumentModel doc = (DocumentModel)coreEvent.getSource();
@@ -203,18 +204,27 @@ public class JMSEventListener extends AbstractEventListener implements
             }
         }
 
-        CoreEventPublisher.getInstance().publish(cmdEvents);
+        publish(cmdEvents);
     }
 
     private void sendEventToJMS(CoreEvent coreEvent) {
         OperationEvent event = OperationEventFactory.createEvent(coreEvent);
         if (event != null) {
             try {
-                CoreEventPublisher.getInstance().publish(event);
+                publish(event);
             } catch (JMSException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void publish(Serializable content) throws JMSException {
+        //System.out.println("========================================");
+        //System.out.println(">>>>>> BEFORE CALLING PUBLISH: "+System.currentTimeMillis());
+        CoreEventPublisher.getInstance().publish(content);
+        //EventPublisherExecutor.getInstance().publish(content);
+        //System.out.println(">>>>>> AFTER CALLING PUBLISH: "+System.currentTimeMillis());
+        //System.out.println("========================================");
     }
 
 }

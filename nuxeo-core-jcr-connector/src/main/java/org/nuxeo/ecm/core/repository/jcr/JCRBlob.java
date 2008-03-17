@@ -212,9 +212,9 @@ public class JCRBlob extends StreamBlob {
      * Do not return the jackrabbit stream directly. Wrap it inside a JCRBlobInputStream to be able to
      * reset the stream and read it more than once.
      * <p>
-     * Fix for NXP-2072
+     * Fix for NXP-2072. See also NXP-2072.
+     *
      * @see JCRBlobInputStream
-     * @see NXP-2072
      */
     public InputStream getStream() throws IOException {
         return new JCRBlobInputStream(this);
@@ -270,8 +270,7 @@ public class JCRBlob extends StreamBlob {
         return false;
     }
 
-    public static void setContent(Node node, Blob value)
-            throws DocumentException {
+    public static void setContent(Node node, Blob value) throws DocumentException {
         // TODO: move this into JCRContentSource ?
         InputStream in = null;
         try {
