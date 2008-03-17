@@ -42,7 +42,6 @@ public class TestJMSProducerService extends NXRuntimeTestCase {
         super.setUp();
 
         /** NXCore descriptors * */
-        deployContrib("EventService.xml");
         deployContrib("CoreService.xml");
         deployContrib("TypeService.xml");
         deployContrib("RepositoryService.xml");

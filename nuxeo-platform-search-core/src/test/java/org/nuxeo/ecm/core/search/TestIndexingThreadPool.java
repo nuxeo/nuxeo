@@ -53,11 +53,7 @@ public class TestIndexingThreadPool extends RepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("ServiceManagement.xml");
-        deployContrib("LoginComponent.xml");
         deployContrib("RepositoryManager.xml");
-
-        deployContrib("EventService.xml");
 
         deployContrib("CoreService.xml");
         deployContrib("TypeService.xml");

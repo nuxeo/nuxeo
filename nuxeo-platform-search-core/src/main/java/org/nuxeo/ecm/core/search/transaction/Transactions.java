@@ -11,12 +11,26 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 /**
- * Utility class used to encapsulate Transactions.
- * Code borrowed from JBoss Seam 1.1.5
+ * Utility class used to encapsulate Transactions. Code borrowed from JBoss Seam
+ * 1.1.5
  *
  */
 public class Transactions {
+
+    /**
+     * Boolean set for tests where there is no active transaction
+     */
+    private static boolean test = false;
+
     private static String userTransactionName = "UserTransaction";
+
+    public static boolean isTest() {
+        return test;
+    }
+
+    public static void setTest(boolean test) {
+        Transactions.test = test;
+    }
 
     public static void setTransactionRollbackOnly() throws SystemException,
             NamingException {
@@ -73,22 +87,34 @@ public class Transactions {
 
     private static void setUTRollbackOnly() throws SystemException,
             NamingException {
+        if (test) {
+            return;
+        }
         getUserTransaction().setRollbackOnly();
     }
 
     private static boolean isUTTransactionActive() throws SystemException,
             NamingException {
+        if (test) {
+            return false;
+        }
         return getUserTransaction().getStatus() == STATUS_ACTIVE;
     }
 
     private static boolean isUTTransactionActiveOrMarkedRollback()
             throws SystemException, NamingException {
+        if (test) {
+            return false;
+        }
         int status = getUserTransaction().getStatus();
         return status == STATUS_ACTIVE || status == STATUS_MARKED_ROLLBACK;
     }
 
     private static boolean isUTTransactionMarkedRollback()
             throws SystemException, NamingException {
+        if (test) {
+            return false;
+        }
         return getUserTransaction().getStatus() == STATUS_MARKED_ROLLBACK;
     }
 

@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -33,15 +35,14 @@ import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 @XObject("type")
 public class Type implements Serializable {
 
-    public static final String[] EMPTY_ACTIONS = new String[0];
+    private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 7476664051885051988L;
+    private static final Log log = LogFactory.getLog(Type.class);
+
+    public static final String[] EMPTY_ACTIONS = new String[0];
 
     @XNode("@id")
     protected String id;
-
-    @XNode("@coretype")
-    protected String coreType;
 
     @XNode("icon")
     protected String icon;
@@ -90,12 +91,17 @@ public class Type implements Serializable {
         this.actions = actions;
     }
 
+    /**
+     * @deprecated Use {@link #getId} instead.
+     */
+    @Deprecated
     public String getCoreType() {
-        return coreType;
+        return id;
     }
 
+    @XNode("@coretype")
     public void setCoreType(String coreType) {
-        this.coreType = coreType;
+        log.debug("doctype: " + coreType + ": 'coretype' attribute is deprecated");
     }
 
     public String getIcon() {
