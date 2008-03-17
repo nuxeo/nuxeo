@@ -159,6 +159,14 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         assertEquals("obsolete", workState.getName());
         transitions = workState.getAllowedStateTransitions();
         assertEquals(0, transitions.size());
+
+
+        LifeCycleTransition transition = lifeCycle.getTransitionByName("approve");
+        assertNotNull(transition);
+
+        String destinationName = lifeCycle.getTransitionByName("approve").getDestinationStateName();
+        assertEquals("approved",destinationName);
+
     }
 
     public void testLifeCycleTypesMappingRegistration() {
@@ -182,6 +190,47 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
     public void testTypeLifeCycleMapping() {
         String lifeCycleName = lifeCycleService.getLifeCycleNameFor("File");
         assertEquals("default", lifeCycleName);
+    }
+
+    public void testLifeCycleReverse() {
+
+        deployContrib("LifeCycleManagerReverseTestExtensions.xml");
+
+        LifeCycle lifeCycle = lifeCycleService.getLifeCycleByName("defaultReverse");
+
+        // work state
+        LifeCycleState workState = lifeCycle.getStateByName("work");
+        assertEquals("work", workState.getName());
+        Collection<String> transitions = workState.getAllowedStateTransitions();
+        assertEquals(3, transitions.size());
+        assertTrue(transitions.contains("approve"));
+        assertTrue(transitions.contains("cancel"));
+        assertTrue(transitions.contains("obsolete"));
+
+        // approved state
+        workState = lifeCycle.getStateByName("approved");
+        transitions = workState.getAllowedStateTransitions();
+        assertEquals(1, transitions.size());
+        assertTrue(transitions.contains("obsolete"));
+
+        // reject state
+        workState = lifeCycle.getStateByName("cancelled");
+        assertEquals("cancelled", workState.getName());
+        transitions = workState.getAllowedStateTransitions();
+        assertEquals(1, transitions.size());
+        assertTrue(transitions.contains("backToWork"));
+
+        // obsolete state
+        workState = lifeCycle.getStateByName("obsolete");
+        assertEquals("obsolete", workState.getName());
+        transitions = workState.getAllowedStateTransitions();
+        assertEquals(0, transitions.size());
+
+
+        LifeCycleTransition transition = lifeCycle.getTransitionByName("approve");
+        assertNotNull(transition);
+        String destinationName = transition.getDestinationStateName();
+        assertEquals("approved",destinationName);
     }
 
 }

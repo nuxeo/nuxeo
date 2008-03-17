@@ -36,6 +36,8 @@ import org.w3c.dom.NodeList;
  */
 public class LifeCycleTransitionConfiguration {
 
+    private static final String TAG_LIFECYCLE = "lifecycle";
+
     private static final String TAG_TRANSITIONS = "transitions";
 
     private static final String TAG_TRANSITION = "transition";
@@ -57,9 +59,15 @@ public class LifeCycleTransitionConfiguration {
         Collection<LifeCycleTransition> transitions = new ArrayList<LifeCycleTransition>();
 
         NodeList transitionsElements = element.getElementsByTagName(TAG_TRANSITIONS);
-        Element transitionsElement;
+        Element transitionsElement=null;
         if (transitionsElements.getLength() > 0) {
-            transitionsElement = (Element) transitionsElements.item(0);
+            // NXP-1472 : don't get the first element, but the first one attached to <lifecycle>
+            for (int i = 0 ; i<transitionsElements.getLength(); i++)
+            {
+                transitionsElement = (Element) transitionsElements.item(i);
+                if (TAG_LIFECYCLE.equals(transitionsElement.getParentNode().getNodeName()))
+                    break;
+            }
         } else {
             return transitions;
         }
