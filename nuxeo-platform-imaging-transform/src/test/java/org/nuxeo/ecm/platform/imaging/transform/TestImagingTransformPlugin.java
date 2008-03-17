@@ -32,11 +32,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 
-import java.awt.FlowLayout;
-import java.awt.LayoutManager;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -180,8 +176,6 @@ public class TestImagingTransformPlugin extends NXRuntimeTestCase {
         assertTrue("Original image size != (0,0)", width > 0 && height > 0);
         ImageIcon im= new ImageIcon(image);
         image = ImageIO.read(result);
-
-
 
         ImageIcon im2= new ImageIcon(image);
         FileBlob blob2 = new FileBlob(getFileFromPath(path2));

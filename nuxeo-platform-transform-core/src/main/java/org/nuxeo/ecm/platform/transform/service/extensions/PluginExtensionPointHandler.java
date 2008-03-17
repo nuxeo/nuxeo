@@ -122,7 +122,7 @@ public class PluginExtensionPointHandler extends
     }
 
     private static void unregisterOne(PluginExtension pluginExtension,
-            Extension extension) throws Exception {
+            Extension extension) {
         String name = pluginExtension.getName();
         getNXTransform().unregisterPlugin(name);
     }

@@ -94,8 +94,8 @@ public class WorkflowBeansDelegateBean implements WorkflowBeansDelegate {
     @Create
     public void init()
     {
-    	initializeBD();
-    	Events.instance().raiseEvent(EventNames.WF_INIT);
+        initializeBD();
+        Events.instance().raiseEvent(EventNames.WF_INIT);
     }
 
     public WorkflowBeansDelegateBean() {

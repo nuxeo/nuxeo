@@ -236,11 +236,11 @@ public class RelationIndexableResourceImpl extends
         }
 
         // try and convert
-        if (type.equals("int")) {
+        if ("int".equals(type)) {
             return new Integer(sValue);
         }
 
-        if (type.equals("date")) {
+        if ("date".equals(type)) {
             // Search Service expects Calendar, in turn because that's
             // what NXCore feeds him
             return RelationDate.getCalendar((Literal) node);

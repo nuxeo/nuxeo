@@ -74,4 +74,9 @@ public class RepositoryLocation implements Serializable,
         return name.equals(otherRepo.name);
     }
 
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
+    }
+
 }

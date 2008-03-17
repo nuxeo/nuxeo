@@ -61,7 +61,7 @@ public final class IndexingHelper {
     }
 
     private static void index(DocumentModel docModel, CoreSession session,
-            SearchService service) throws IndexingException, ClientException {
+            SearchService service) throws IndexingException {
         if (log.isDebugEnabled()) {
             log.debug("indexing: " + docModel.getPath());
         }
@@ -87,8 +87,7 @@ public final class IndexingHelper {
     }
 
     private static void recursiveIndex(DocumentModel docModel,
-            CoreSession session, SearchService service)
-            throws IndexingException, ClientException {
+            CoreSession session, SearchService service) {
 
         try {
             index(docModel, session, service);

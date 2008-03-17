@@ -138,7 +138,7 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
     }
 
     protected ActionContext createActionContext() {
-    	return currentActionContext;
+        return currentActionContext;
     }
 
     @Deprecated

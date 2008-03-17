@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
