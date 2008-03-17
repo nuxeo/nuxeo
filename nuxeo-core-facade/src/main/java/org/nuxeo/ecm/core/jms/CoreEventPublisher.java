@@ -53,6 +53,7 @@ public class CoreEventPublisher {
     private Topic coreEventsTopic;
 
     private static CoreEventPublisher instance = new CoreEventPublisher();
+
     public static CoreEventPublisher getInstance() {
         return instance;
     }
@@ -62,10 +63,10 @@ public class CoreEventPublisher {
         coreEventsTopic = null;
     }
 
-    private final TopicConnectionFactory getTopicConnectionFactory()
+    private TopicConnectionFactory getTopicConnectionFactory()
             throws NamingException {
         if (topicConnectionFactory == null) {
-            Context jndi = new InitialContext();
+            InitialContext jndi = new InitialContext();
             topicConnectionFactory = (TopicConnectionFactory) jndi.lookup(isXa
                     ? XA_TOPIC_CONNECTION_FACTORY : TOPIC_CONNECTION_FACTORY);
             if (coreEventsTopic == null) { // initialize the default topic too

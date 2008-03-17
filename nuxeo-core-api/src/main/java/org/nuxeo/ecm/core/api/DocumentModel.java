@@ -585,16 +585,18 @@ public interface DocumentModel extends Serializable {
     Property getProperty(String xpath) throws PropertyException;
 
     /**
-     * Get a property value given a xpath
-     * @param path
+     * Gets a property value given a xpath.
+     *
+     * @param xpath
      * @return
      * @throws PropertyException
      */
     Serializable getPropertyValue(String xpath) throws PropertyException;
 
     /**
-     * Set a p[roperty value given a xpath
-     * @param path
+     * Sets a property value given a xpath.
+     * 
+     * @param xpath
      * @param value
      * @throws PropertyException
      */

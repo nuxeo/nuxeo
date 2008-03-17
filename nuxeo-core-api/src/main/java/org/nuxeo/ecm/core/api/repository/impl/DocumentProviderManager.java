@@ -51,6 +51,22 @@ public class DocumentProviderManager extends DefaultComponent implements Documen
         return session;
     }
 
+    public void removeDocumentFromCache(String id) {
+        cache.remove(id);
+    }
+
+    public void removeDocumentFromCache(DocumentRef ref) {
+        String docId;
+        if (ref instanceof IdRef) {
+            docId = ((IdRef)ref).value;
+        } else {
+            docId = refs.remove(ref);
+        }
+        if (docId != null) {
+            removeDocumentFromCache(docId);
+        }
+    }
+
     public DocumentModel getCachedDocument(String id) {
         return cache.get(id);
     }
