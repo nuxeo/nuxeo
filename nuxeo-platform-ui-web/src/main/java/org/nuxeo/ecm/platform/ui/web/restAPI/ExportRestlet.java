@@ -22,6 +22,8 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import static org.jboss.seam.ScopeType.STATELESS;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Map;
 
 import org.jboss.seam.annotations.In;
@@ -31,11 +33,22 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.io.DocumentPipe;
+import org.nuxeo.ecm.core.io.DocumentReader;
+import org.nuxeo.ecm.core.io.DocumentWriter;
+import org.nuxeo.ecm.core.io.impl.DocumentPipeImpl;
+import org.nuxeo.ecm.core.io.impl.plugins.DocumentTreeReader;
+import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
+import org.nuxeo.ecm.core.io.impl.plugins.SingleDocumentReader;
+import org.nuxeo.ecm.core.io.impl.plugins.XMLDocumentTreeWriter;
+import org.nuxeo.ecm.core.io.impl.plugins.XMLDocumentWriter;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
 
 import com.noelios.restlet.http.HttpConstants;
 
@@ -50,44 +63,29 @@ public class ExportRestlet extends BaseNuxeoRestlet {
     public void handle(Request req, Response res) {
         boolean exportAsTree;
         boolean exportAsZip;
-        CoreSession documentManager;
-        DocumentModel root;
-
         String action = req.getResourceRef().getSegments().get(4);
         if (action.equals("exportTree")) {
             exportAsTree = true;
             exportAsZip = true;
-        } else if (action.equals("exportSingle")) {
+        } else { // "export", "exportSingle"
             exportAsTree = false;
-            exportAsZip = false;
-        } else if (action.equals("export")) {
-            exportAsTree = false;
-            exportAsZip = false;
-        } else {
-            exportAsTree = false;
-            exportAsZip = false;
-        }
-
-        String format = req.getResourceRef().getQueryAsForm().getFirstValue(
-                "format");
-        if ("xml".equalsIgnoreCase(format)) {
-            exportAsZip = false;
-        } else if ("zip".equalsIgnoreCase(format)) {
-            exportAsZip = true;
+            String format = req.getResourceRef().getQueryAsForm().getFirstValue(
+                    "format").toLowerCase();
+            exportAsZip = "zip".equals(format);
         }
 
         String repo = (String) req.getAttributes().get("repo");
-        String docid = (String) req.getAttributes().get("docid");
-
         if (repo == null || repo.equals("*")) {
             handleError(res, "you must specify a repository");
             return;
         }
 
+        DocumentModel root;
+        String docid = (String) req.getAttributes().get("docid");
         try {
             navigationContext.setCurrentServerLocation(new RepositoryLocation(
                     repo));
-            documentManager = navigationContext.getOrCreateDocumentManager();
+            CoreSession documentManager = navigationContext.getOrCreateDocumentManager();
             if (docid == null || docid.equals("*")) {
                 root = documentManager.getRootDocument();
             } else {
@@ -113,8 +111,62 @@ public class ExportRestlet extends BaseNuxeoRestlet {
             attributes.put(HttpConstants.ATTRIBUTE_HEADERS, headers);
         }
 
-        res.setEntity(new ExportRepresentation(exportAsTree, exportAsZip,
-                documentManager, root));
+        MediaType mediaType = exportAsZip ? MediaType.APPLICATION_ZIP
+                : MediaType.TEXT_XML;
+        Representation entity = makeRepresentation(mediaType, root,
+                exportAsTree, exportAsZip);
+
+        res.setEntity(entity);
     }
 
+    protected Representation makeRepresentation(MediaType mediaType,
+            DocumentModel root, final boolean exportAsTree,
+            final boolean exportAsZip) {
+
+        return new ExportRepresentation(mediaType, root) {
+
+            @Override
+            protected DocumentPipe makePipe() {
+                if (exportAsTree) {
+                    return new DocumentPipeImpl(10);
+                } else {
+                    return new DocumentPipeImpl();
+                }
+            }
+
+            @Override
+            protected DocumentReader makeDocumentReader(
+                    CoreSession documentManager, DocumentModel root)
+                    throws ClientException {
+                DocumentReader documentReader;
+                if (exportAsTree) {
+                    documentReader = new DocumentTreeReader(documentManager,
+                            root, false);
+                    if (!exportAsZip) {
+                        ((DocumentTreeReader) documentReader).setInlineBlobs(true);
+                    }
+                } else {
+                    documentReader = new SingleDocumentReader(documentManager,
+                            root);
+                }
+                return documentReader;
+            }
+
+            @Override
+            protected DocumentWriter makeDocumentWriter(
+                    OutputStream outputStream) throws IOException {
+                DocumentWriter documentWriter;
+                if (exportAsZip) {
+                    documentWriter = new NuxeoArchiveWriter(outputStream);
+                } else {
+                    if (exportAsTree) {
+                        documentWriter = new XMLDocumentTreeWriter(outputStream);
+                    } else {
+                        documentWriter = new XMLDocumentWriter(outputStream);
+                    }
+                }
+                return documentWriter;
+            }
+        };
+    }
 }
