@@ -112,7 +112,7 @@ public class RelationsTestHelper {
 
     }
 
-    private static QNameResource getDocumentResource(DocumentModel document) {
+    private static QNameResource getDocumentResource(DocumentModel document) throws Exception {
         QNameResource documentResource = null;
         if (document != null) {
             documentResource = (QNameResource) relationManager.getResource(
