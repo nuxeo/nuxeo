@@ -51,8 +51,8 @@ import org.nuxeo.ecm.platform.relations.search.resources.indexing.api.RelationIn
  * @author <a href="mailto:gr@nuxeo.com">Georges Racinet</a>
  *
  */
-public class RelationIndexableResourceImpl extends AbstractNXCoreIndexableResource
-        implements RelationIndexableResource {
+public class RelationIndexableResourceImpl extends
+        AbstractNXCoreIndexableResource implements RelationIndexableResource {
 
     private static final long serialVersionUID = -5490252027860954273L;
 
@@ -66,12 +66,12 @@ public class RelationIndexableResourceImpl extends AbstractNXCoreIndexableResour
 
     public RelationIndexableResourceImpl() {
         super();
-      }
+    }
 
     private void initGraph() {
         try {
-            graph = RelationSearchBusinessDelegate.getRelationManager()
-                        .getGraphByName(name);
+            graph = RelationSearchBusinessDelegate.getRelationManager().getGraphByName(
+                    name);
         } catch (ClientException e) {
             log.error("Couldn't find graph with name " + name);
         }
@@ -80,7 +80,7 @@ public class RelationIndexableResourceImpl extends AbstractNXCoreIndexableResour
     public RelationIndexableResourceImpl(Statement statement) {
         this.statement = statement;
         initManager();
-//        initGraph();
+        // initGraph();
     }
 
     public RelationIndexableResourceImpl(Statement statement,
@@ -88,12 +88,11 @@ public class RelationIndexableResourceImpl extends AbstractNXCoreIndexableResour
         this.statement = statement;
         this.configuration = configuration;
         initManager();
-//        initGraph();
+        // initGraph();
     }
 
     private void initManager() {
-        relationManager = RelationSearchBusinessDelegate
-                                .getRelationManager();
+        relationManager = RelationSearchBusinessDelegate.getRelationManager();
     }
 
     public Serializable getValueFor(String indexableDataName)
@@ -101,7 +100,7 @@ public class RelationIndexableResourceImpl extends AbstractNXCoreIndexableResour
         login();
 
         if (indexableDataName.equals(BuiltinRelationsFields.SUBJECT_URI)) {
-            Subject s  = statement.getSubject();
+            Subject s = statement.getSubject();
             if (s.isResource()) {
                 return ((Resource) s).getUri();
             } else {
@@ -110,7 +109,7 @@ public class RelationIndexableResourceImpl extends AbstractNXCoreIndexableResour
         }
 
         if (indexableDataName.equals(BuiltinRelationsFields.SUBJECT_URI_LOCAL)) {
-            Subject s  = statement.getSubject();
+            Subject s = statement.getSubject();
             if (s.isQNameResource()) {
                 return ((QNameResource) s).getLocalName();
             } else {
@@ -119,7 +118,7 @@ public class RelationIndexableResourceImpl extends AbstractNXCoreIndexableResour
         }
 
         if (indexableDataName.equals(BuiltinRelationsFields.SUBJECT_URI_NAMESPACE)) {
-            Subject s  = statement.getSubject();
+            Subject s = statement.getSubject();
             if (s.isQNameResource()) {
                 return ((QNameResource) s).getNamespace();
             } else {
@@ -137,7 +136,7 @@ public class RelationIndexableResourceImpl extends AbstractNXCoreIndexableResour
         }
 
         if (indexableDataName.equals(BuiltinRelationsFields.OBJECT_URI_LOCAL)) {
-            Node o  = statement.getObject();
+            Node o = statement.getObject();
             if (o.isQNameResource()) {
                 return ((QNameResource) o).getLocalName();
             } else {
@@ -146,7 +145,7 @@ public class RelationIndexableResourceImpl extends AbstractNXCoreIndexableResour
         }
 
         if (indexableDataName.equals(BuiltinRelationsFields.OBJECT_URI_NAMESPACE)) {
-            Node o  = statement.getObject();
+            Node o = statement.getObject();
             if (o.isQNameResource()) {
                 return ((QNameResource) o).getNamespace();
             } else {
@@ -156,8 +155,9 @@ public class RelationIndexableResourceImpl extends AbstractNXCoreIndexableResour
 
         if (indexableDataName.equals(BuiltinRelationsFields.PREDICATE_URI)) {
             return statement.getPredicate().getUri();
-        }        if (indexableDataName.equals(BuiltinRelationsFields.OBJECT_URI_LOCAL)) {
-            Node o  = statement.getObject();
+        }
+        if (indexableDataName.equals(BuiltinRelationsFields.OBJECT_URI_LOCAL)) {
+            Node o = statement.getObject();
             if (o.isQNameResource()) {
                 return ((QNameResource) o).getLocalName();
             } else {
@@ -167,13 +167,12 @@ public class RelationIndexableResourceImpl extends AbstractNXCoreIndexableResour
 
         if (indexableDataName.equals(BuiltinRelationsFields.SUBJECT)) {
             // TODO: literals and blank
-            Subject s  = statement.getSubject();
+            Subject s = statement.getSubject();
             if (!s.isQNameResource()) {
                 return "";
             }
             return getIndexingRepresentation((QNameResource) s);
         }
-
 
         if (indexableDataName.equals(BuiltinRelationsFields.OBJECT)) {
             // TODO: literals and blank
@@ -187,20 +186,26 @@ public class RelationIndexableResourceImpl extends AbstractNXCoreIndexableResour
         // fallback to properties
         // TODO crawler on big map is definitely not optimal
         if (graph == null) {
-       //     return null;
+            // return null;
         }
 
         Map<Resource, Node[]> properties = statement.getProperties();
         for (Resource predicate : properties.keySet()) {
-            if (! predicate.isQNameResource()) {
+            if (!predicate.isQNameResource()) {
                 continue;
             }
             QNameResource qnr = (QNameResource) predicate;
-            if (indexableDataName.equals(relationManager
-                     .getResourceRepresentation(qnr.getNamespace(), qnr))) {
+            Object resourceRepr = null;
+            try {
+                resourceRepr = relationManager.getResourceRepresentation(
+                        qnr.getNamespace(), qnr);
+            } catch (ClientException e) {
+                log.error(e);
+            }
+            if (indexableDataName.equals(resourceRepr)) {
                 return extractPropertyValue(
-                        getConfiguration().getIndexableFields().get(indexableDataName),
-                        properties.get(predicate));
+                        getConfiguration().getIndexableFields().get(
+                                indexableDataName), properties.get(predicate));
             }
         }
 
@@ -216,7 +221,7 @@ public class RelationIndexableResourceImpl extends AbstractNXCoreIndexableResour
             return null;
         }
         Node node = nodes[0];
-        if (! node.isLiteral()) {
+        if (!node.isLiteral()) {
             return null; // TODO
         }
 
@@ -245,15 +250,19 @@ public class RelationIndexableResourceImpl extends AbstractNXCoreIndexableResour
 
     }
 
-    private Serializable getIndexingRepresentation(QNameResource s) {
-        Object repr = relationManager
-                .getResourceRepresentation(s.getNamespace(), s);
-        if (repr instanceof DocumentModel) {
-            DocumentModel docModel = (DocumentModel) repr;
-            return docModel.getRepositoryName()
-                    + ":" + docModel.getId();
+    private Serializable getIndexingRepresentation(QNameResource s)
+            throws IndexingException {
+        try {
+            Object repr = relationManager.getResourceRepresentation(
+                    s.getNamespace(), s);
+            if (repr instanceof DocumentModel) {
+                DocumentModel docModel = (DocumentModel) repr;
+                return docModel.getRepositoryName() + ":" + docModel.getId();
+            }
+            return (Serializable) repr;
+        } catch (ClientException e) {
+            throw new IndexingException(e);
         }
-        return (Serializable) repr;
     }
 
     // For unit tests

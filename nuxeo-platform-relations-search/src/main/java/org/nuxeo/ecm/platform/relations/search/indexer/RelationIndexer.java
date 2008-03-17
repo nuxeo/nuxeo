@@ -17,7 +17,7 @@
  * $Id$
  */
 
- package org.nuxeo.ecm.platform.relations.search.indexer;
+package org.nuxeo.ecm.platform.relations.search.indexer;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -47,8 +47,8 @@ import org.nuxeo.ecm.platform.relations.search.resources.indexing.RelationIndexa
 import org.nuxeo.ecm.platform.relations.search.resources.indexing.api.ResourceType;
 
 /**
- * This indexer takes an object as input and indexes all relations
- * of which the object is the subject.
+ * This indexer takes an object as input and indexes all relations of which the
+ * object is the subject.
  *
  *
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
@@ -58,18 +58,19 @@ import org.nuxeo.ecm.platform.relations.search.resources.indexing.api.ResourceTy
 public class RelationIndexer {
 
     private static final Log log = LogFactory.getLog(RelationIndexer.class);
-    private static final IndexableResourceFactory factory
-        = new RelationIndexableResourceFactory();
 
-     /**
+    private static final IndexableResourceFactory factory = new RelationIndexableResourceFactory();
+
+    /**
      *
      * Currently handles incoming DocumentModel instances only
+     *
      * @param object
      * @return the set of indexable resource configurations
      * @throws IndexingException
      */
     public Set<IndexableResourceConf> getResourceConfs(Serializable object)
-                throws IndexingException {
+            throws IndexingException {
         if (!(object instanceof DocumentModel)) {
             throw new IndexingException("Can handle only DocumentModel for now");
         }
@@ -87,8 +88,8 @@ public class RelationIndexer {
         Set<IndexableResourceConf> res = new HashSet<IndexableResourceConf>();
 
         for (String candidate : docTypeConf.getResources()) {
-            IndexableResourceConf conf =
-                service.getIndexableResourceConfByName(candidate, false);
+            IndexableResourceConf conf = service.getIndexableResourceConfByName(
+                    candidate, false);
             if (conf == null) {
                 continue;
             }
@@ -99,9 +100,9 @@ public class RelationIndexer {
         return res;
     }
 
-    public List<IndexableResources> extractResources(Serializable object) throws IndexingException {
-        RelationManager relationManager =
-            RelationSearchBusinessDelegate.getRelationManager();
+    public List<IndexableResources> extractResources(Serializable object)
+            throws IndexingException {
+        RelationManager relationManager = RelationSearchBusinessDelegate.getRelationManager();
 
         String coreSessionId = null;
         if (object instanceof DocumentModel) {
@@ -110,54 +111,56 @@ public class RelationIndexer {
 
         // Each possible relations for all possible
         // (rdf) Resource representation of incoming object
-        List<IndexableResources> allIndexableResources =
-            new LinkedList<IndexableResources>();
+        List<IndexableResources> allIndexableResources = new LinkedList<IndexableResources>();
         List<IndexableResource> iResources;
-        for (Resource r : relationManager.getAllResources(object)) {
-            for (IndexableResourceConf conf : getResourceConfs(object)) {
-                try {
-                    for (Statement statement :
-                            getStatements(conf.getName(), r)) {
-                        iResources = new LinkedList<IndexableResource>();
-//                      iResources.add(getOpenAcp()); TODO
-                      iResources.add(factory.createIndexableResourceFrom(
-                                      statement, conf, coreSessionId));
-                      allIndexableResources.add(new IndexableResourcesImpl(
-                            computeResourcesGlobalKey(statement, object,
-                                    iResources),
-                                iResources));
-                    }
-                } catch (ClientException e) {
-                    throw new IndexingException(
-                                "Failed to retrieve statements" +
-                                " in graph " + conf.getName() +
-                                " for resource " + r.getUri(),
-                                 e);
+        Set<Resource> allResources = null;
+        try {
+            allResources = relationManager.getAllResources(object);
+        } catch (ClientException e) {
+            throw new IndexingException(e);
+        }
+        if (allResources != null) {
+            for (Resource r : allResources) {
+                for (IndexableResourceConf conf : getResourceConfs(object)) {
+                    try {
+                        for (Statement statement : getStatements(
+                                conf.getName(), r)) {
+                            iResources = new LinkedList<IndexableResource>();
+                            // iResources.add(getOpenAcp()); TODO
+                            iResources.add(factory.createIndexableResourceFrom(
+                                    statement, conf, coreSessionId));
+                            allIndexableResources.add(new IndexableResourcesImpl(
+                                    computeResourcesGlobalKey(statement,
+                                            object, iResources), iResources));
+                        }
+                    } catch (ClientException e) {
+                        throw new IndexingException(
+                                "Failed to retrieve statements" + " in graph "
+                                        + conf.getName() + " for resource "
+                                        + r.getUri(), e);
                     }
                 }
             }
+        }
         return allIndexableResources;
     }
 
-
     private Set<Statement> getStatements(String graphName, Resource r)
-                throws ClientException {
-        RelationManager relationManager =
-            RelationSearchBusinessDelegate.getRelationManager();
+            throws ClientException {
+        RelationManager relationManager = RelationSearchBusinessDelegate.getRelationManager();
 
         HashSet<Statement> res = new HashSet<Statement>();
-        res.addAll(relationManager.getStatements(graphName,
-                new StatementImpl(r, null, null)));
-        res.addAll(relationManager.getStatements(graphName,
-                new StatementImpl(null, null, r)));
+        res.addAll(relationManager.getStatements(graphName, new StatementImpl(
+                r, null, null)));
+        res.addAll(relationManager.getStatements(graphName, new StatementImpl(
+                null, null, r)));
         return res;
     }
 
     public void index(Serializable object) throws IndexingException {
-        SearchService searchService =
-            RelationSearchBusinessDelegate.getSearchService();
+        SearchService searchService = RelationSearchBusinessDelegate.getSearchService();
 
-        for (IndexableResources aggregated: extractResources(object)) {
+        for (IndexableResources aggregated : extractResources(object)) {
             searchService.index(aggregated, false); // No full text
         }
     }
@@ -169,14 +172,13 @@ public class RelationIndexer {
     }
 
     public void unIndexStatements(Collection<Statement> statements)
-        throws IndexingException {
+            throws IndexingException {
         // TODO we have potential collision risks with other aliases
         // we should lift ambiguities
-        SearchService service
-            = RelationSearchBusinessDelegate.getSearchService();
-        for (Statement statement: statements) {
-            service.deleteAggregatedResources(
-                    computeResourcesGlobalKey(statement, null, null));
+        SearchService service = RelationSearchBusinessDelegate.getSearchService();
+        for (Statement statement : statements) {
+            service.deleteAggregatedResources(computeResourcesGlobalKey(
+                    statement, null, null));
         }
     }
 
@@ -184,20 +186,17 @@ public class RelationIndexer {
             Collection<Statement> statements, String coreSessionId)
             throws IndexingException {
 
-        SearchService service
-            = RelationSearchBusinessDelegate.getSearchService();
-        IndexableResourceConf iConf
-            = service.getIndexableResourceConfByName(graphName, false);
+        SearchService service = RelationSearchBusinessDelegate.getSearchService();
+        IndexableResourceConf iConf = service.getIndexableResourceConfByName(
+                graphName, false);
 
         for (Statement statement : statements) {
-            LinkedList<IndexableResource> iResources
-                = new LinkedList<IndexableResource>();
-//          iResources.add(getOpenAcp()); TODO
-            iResources.add(factory.createIndexableResourceFrom(
-                              statement, iConf, coreSessionId));
-            service.index(new IndexableResourcesImpl(
-                    computeResourcesGlobalKey(statement, null, iResources),
-                    iResources), false);
+            LinkedList<IndexableResource> iResources = new LinkedList<IndexableResource>();
+            // iResources.add(getOpenAcp()); TODO
+            iResources.add(factory.createIndexableResourceFrom(statement,
+                    iConf, coreSessionId));
+            service.index(new IndexableResourcesImpl(computeResourcesGlobalKey(
+                    statement, null, iResources), iResources), false);
         }
     }
 }
