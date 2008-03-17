@@ -222,8 +222,14 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
 
     protected DocumentRef getDocumentRef(RelationManager relManager,
             QNameResource resource) {
-        Object object = relManager.getResourceRepresentation(
-                resource.getNamespace(), resource);
+        Object object = null;
+        try {
+            object = relManager.getResourceRepresentation(
+                    resource.getNamespace(), resource);
+        } catch (ClientException e) {
+            log.error("Error while retrieving DocumentRef for resource "
+                    + resource, e);
+        }
         if (object instanceof DocumentModel) {
             return ((DocumentModel) object).getRef();
         }
@@ -311,6 +317,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
         }
     }
 
+    @Override
     public void getResourcesAsXML(OutputStream out, IOResources resources) {
         if (!(resources instanceof IORelationResources)) {
             return;

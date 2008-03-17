@@ -33,6 +33,10 @@ import org.nuxeo.ecm.platform.types.TypeView;
  */
 public interface TypeInfo {
 
+    /**
+     * @deprecated Use {@link #getId} instead.
+     */
+    @Deprecated
     String getCoreType();
 
     String getIcon();

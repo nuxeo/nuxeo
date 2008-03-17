@@ -94,7 +94,7 @@ public class TestRelationService extends NXRuntimeTestCase {
         }
     }
 
-    public void testGetResourceOK() {
+    public void testGetResourceOK() throws Exception {
         Object resourceLike = new DummyResourceLike("test");
         Resource resource = service.getResource(
                 "http://nuxeo.org/nxrelations/test/", resourceLike);
@@ -106,14 +106,14 @@ public class TestRelationService extends NXRuntimeTestCase {
         assertEquals("test", qnameres.getLocalName());
     }
 
-    public void testGetAllResourcesFor() {
+    public void testGetAllResourcesFor() throws Exception {
         Object o = new DummyResourceLike("test");
         Set<Resource> resources = service.getAllResources(o);
         assertNotNull(resources);
         assertEquals(2, resources.size());
 
         // Check local names and extract namespaces
-        HashSet<String> nameSpaces = new HashSet<String>();
+        Set<String> nameSpaces = new HashSet<String>();
         for (Resource res : resources) {
             assertTrue(res instanceof QNameResource);
             QNameResource qn = (QNameResource) res;
@@ -122,28 +122,28 @@ public class TestRelationService extends NXRuntimeTestCase {
         }
 
         HashSet<String> expectedNameSpaces = new HashSet<String>();
-        expectedNameSpaces.addAll(
-                Arrays.asList("http://nuxeo.org/nxrelations/test2/",
-                    "http://nuxeo.org/nxrelations/test/"));
+        expectedNameSpaces.addAll(Arrays.asList(
+                "http://nuxeo.org/nxrelations/test2/",
+                "http://nuxeo.org/nxrelations/test/"));
 
         assertEquals(expectedNameSpaces, nameSpaces);
     }
 
-    public void testGetResourceNoImpl() {
+    public void testGetResourceNoImpl() throws Exception {
         Object resourceLike = new DummyResourceLike("test");
         Resource resource = service.getResource(
                 "http://nuxeo.org/nxrelations/test-dummy/", resourceLike);
         assertNull(resource);
     }
 
-    public void testGetResourceUnexistent() {
+    public void testGetResourceUnexistent() throws Exception {
         Object resourceLike = new DummyResourceLike("test");
         Resource resource = service.getResource(
                 "http://nuxeo.org/nxrelations/unexistent/", resourceLike);
         assertNull(resource);
     }
 
-    public void testGetResourceRepresentationOK() {
+    public void testGetResourceRepresentationOK() throws Exception {
         Resource resource = new QNameResourceImpl(
                 "http://nuxeo.org/nxrelations/test/", "test");
         Object object = service.getResourceRepresentation(
@@ -153,7 +153,7 @@ public class TestRelationService extends NXRuntimeTestCase {
         assertEquals("test", ((DummyResourceLike) object).getId());
     }
 
-    public void testGetResourceRepresentationNoImpl() {
+    public void testGetResourceRepresentationNoImpl() throws Exception {
         Resource resource = new QNameResourceImpl(
                 "http://nuxeo.org/nxrelations/test-dummy/", "test");
         Object object = service.getResourceRepresentation(
@@ -161,7 +161,7 @@ public class TestRelationService extends NXRuntimeTestCase {
         assertNull(object);
     }
 
-    public void testGetResourceRepresentationUnexistent() {
+    public void testGetResourceRepresentationUnexistent() throws Exception {
         Resource resource = new QNameResourceImpl(
                 "http://nuxeo.org/nxrelations/unexistent/", "test");
         Object object = service.getResourceRepresentation(

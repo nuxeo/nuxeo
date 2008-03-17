@@ -4,7 +4,7 @@
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 
-    <type id="MyDocType" coretype="CoreDocumentType">
+    <type id="MyDocType">
       <label>type label</label>
       <icon>type icon</icon>
       <default-view>default_view</default-view>
@@ -38,9 +38,9 @@
       </actions>
     </type>
 
-    <type id="MyOtherDocType" coretype="CoreDocumentType" />
+    <type id="MyOtherDocType" />
 
-    <type id="DocTypeWithLayout" coretype="CoreDocumentType">
+    <type id="DocTypeWithLayout">
       <label>doc type with layout</label>
       <!-- old layout definition -->
       <layout>

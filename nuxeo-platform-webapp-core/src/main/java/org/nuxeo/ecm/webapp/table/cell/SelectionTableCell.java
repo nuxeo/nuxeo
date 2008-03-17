@@ -33,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
 public class SelectionTableCell extends AbstractTableCell {
     private static final long serialVersionUID = 4088427422628939576L;
 
-    private static Log log = LogFactory.getLog(SelectionTableCell.class);
+    private static final Log log = LogFactory.getLog(SelectionTableCell.class);
 
     protected Boolean selected;
 

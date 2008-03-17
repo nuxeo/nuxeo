@@ -60,14 +60,11 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
         sch.addField(QName.valueOf("atelier_emetteur"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
         Framework.getLocalService(SchemaManager.class).registerSchema(sch);
 
-        deploy("CoreEventListenerService.xml");
-        deploy("RepositoryService.xml");
         deploy("nxuidgenerator-bundle.xml");
         deploy("nxuidgenerator-bundle-contrib.xml");
-
     }
 
-    private CoreEventListenerService getListenerService() {
+    private static CoreEventListenerService getListenerService() {
         return NXCore.getCoreEventListenerService();
     }
 
@@ -84,7 +81,7 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
-    private DocumentModel createDocumentModel(String type) throws Exception {
+    private static DocumentModel createDocumentModel(String type) {
         DocumentModelImpl docModel = new DocumentModelImpl(type);
         Map<String, Object> dcMap = new HashMap<String, Object>();
         dcMap.put("title", null);

@@ -20,10 +20,12 @@
 package org.nuxeo.ecm.core.search.api.client.querymodel.descriptor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -117,8 +119,7 @@ public class QueryModelDescriptor {
         return getQuery(model, null);
     }
 
-    public SortInfo getDefaultSortInfo(DocumentModel model)
-            throws ClientException {
+    public SortInfo getDefaultSortInfo(DocumentModel model) {
         if (isStateful()) {
             if (sortColumnField == null || sortAscendingField == null) {
                 return null;
@@ -173,15 +174,27 @@ public class QueryModelDescriptor {
 
     /**
      * Return the string literal in a form ready to embed in an NXQL statement.
-     * TODO remove this once we work on org.nuxeo.core, v 1.4
      *
      * @param s
      * @return
      */
+    // TODO remove this once we work on org.nuxeo.core, v 1.4
     public static String prepareStringLiteral(String s) {
         return "'" + s.replaceAll("'", "\\\\'") + "'";
     }
 
+    private static void appendQuotedStringList(StringBuilder queryBuilder,
+            List<? extends Object> listParam) {
+        queryBuilder.append('(');
+        List<String> quotedParam = new ArrayList<String>(listParam.size());
+        for (int j = 0; j < listParam.size(); j++) {
+            quotedParam.add(prepareStringLiteral(listParam.get(j).toString()));
+        }
+        queryBuilder.append(StringUtils.join(quotedParam, ", "));
+        queryBuilder.append(')');
+    }
+
+    @SuppressWarnings("unchecked")
     public String getQuery(Object[] params, SortInfo sortInfo)
             throws ClientException {
         if (!isStateless()) {
@@ -199,11 +212,19 @@ public class QueryModelDescriptor {
             String[] queryStrList = (pattern + ' ').split("\\?");
             queryBuilder = new StringBuilder(queryStrList[0]);
             for (int i = 0; i < params.length; i++) {
-                String queryParam = params[i].toString();
-                // TODO will escape everything as if it where a string
-                // which is ok for dates but wrong for integers
-                // TODO replug escaper from SQLQueryParser
-                queryBuilder.append(prepareStringLiteral(queryParam));
+                if (params[i] instanceof String[]) {
+                    appendQuotedStringList(queryBuilder,
+                            Arrays.asList((String[]) params[i]));
+                } else if (params[i] instanceof List) {
+                    appendQuotedStringList(queryBuilder,
+                            (List<? extends Object>) params[i]);
+                } else {
+                    String queryParam = params[i].toString();
+                    // TODO will escape everything as if it where a string
+                    // which is ok for dates but wrong for integers
+                    // TODO replug escaper from SQLQueryParser
+                    queryBuilder.append(prepareStringLiteral(queryParam));
+                }
                 queryBuilder.append(queryStrList[i + 1]);
             }
         }
@@ -268,8 +289,7 @@ public class QueryModelDescriptor {
      * Init the escaper object for stateful query models.
      * <p>
      * This is meant to be called at extension point contribution registration
-     * time
-     * </p>
+     * time.
      *
      * @param context surrounding context, used to load the correct class.
      */

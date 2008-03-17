@@ -91,6 +91,7 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 import org.nuxeo.ecm.webapp.security.PrincipalListManager;
+import org.nuxeo.ecm.webapp.security.UserSession;
 import org.nuxeo.ecm.webapp.versioning.DocumentVersioning;
 import org.nuxeo.runtime.api.Framework;
 
@@ -116,28 +117,28 @@ public class PublishActionsBean extends InputController implements
     protected static final String DOMAIN_SECTIONS = "DOMAIN_SECTIONS";
 
     @In(create = true)
-    protected WebActions webActions;
+    protected transient WebActions webActions;
 
     @In(create = true)
-    protected DocumentVersioning documentVersioning;
+    protected transient DocumentVersioning documentVersioning;
 
     @In(create = true)
-    transient CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true)
-    NuxeoPrincipal currentUser;
+    protected NuxeoPrincipal currentUser;
 
     @In(create = true)
-    protected DocumentsListsManager documentsListsManager;
+    protected transient DocumentsListsManager documentsListsManager;
 
     @In(create = true)
-    protected DeleteActions deleteActions;
+    protected transient DeleteActions deleteActions;
 
     @In(create = true)
     protected PrincipalListManager principalListManager;
 
     @In
-    protected org.nuxeo.ecm.webapp.security.UserSession userSession;
+    protected transient UserSession userSession;
 
     @In(create = true)
     protected transient QueryModelActions queryModelActions;

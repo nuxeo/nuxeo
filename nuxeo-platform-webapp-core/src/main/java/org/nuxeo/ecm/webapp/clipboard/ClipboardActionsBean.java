@@ -121,9 +121,9 @@ public class ClipboardActionsBean extends InputController implements
 
     private transient List<DocumentsListDescriptor> descriptorsForAvailableLists;
 
-    private Boolean canEditSelectedDocs = null;
+    private Boolean canEditSelectedDocs;
 
-    private transient Map<String, List<Action>> actionCache = null;
+    private transient Map<String, List<Action>> actionCache;
 
     // @Observer({EventNames.DOCUMENT_SELECTION_CHANGED})
     public void releaseClipboardableDocuments() {
@@ -302,7 +302,7 @@ public class ClipboardActionsBean extends InputController implements
         Collection<Type> allowed = typeManager.getAllowedSubTypes(destFolder.getType());
         Collection<String> allowedList = new ArrayList<String>();
         for (Type allowedType : allowed) {
-            allowedList.add(allowedType.getCoreType());
+            allowedList.add(allowedType.getId());
         }
 
         DocumentRef destFolderRef = destFolder.getRef();
@@ -394,7 +394,7 @@ public class ClipboardActionsBean extends InputController implements
         Collection<Type> allowedTypes = typeManager.getAllowedSubTypes(parent.getType());
         List<String> allowedTypesNames = new LinkedList<String>();
         for (Type tip : allowedTypes) {
-            allowedTypesNames.add(tip.getCoreType());
+            allowedTypesNames.add(tip.getId());
         }
         for (DocumentModel doc : documents) {
             if (allowedTypesNames.contains(doc.getType())) {
@@ -580,7 +580,7 @@ public class ClipboardActionsBean extends InputController implements
             List<String> pasteTypesName = documentsListsManager.getWorkingListTypes(listName);
             Collection<Type> allowed = typeManager.getAllowedSubTypes(pasteTarget.getType());
             for (Type allowedType : allowed) {
-                if (pasteTypesName.contains(allowedType.getCoreType())) {
+                if (pasteTypesName.contains(allowedType.getId())) {
                     return true;
                 }
             }
@@ -621,7 +621,7 @@ public class ClipboardActionsBean extends InputController implements
             Collection<Type> allowed = typeManager.getAllowedSubTypes(destFolder.getType());
             Collection<String> allowedList = new ArrayList<String>();
             for (Type allowedType : allowed) {
-                allowedList.add(allowedType.getCoreType());
+                allowedList.add(allowedType.getId());
             }
             for (DocumentModel docModel : documentsListsManager.getWorkingList(listName)) {
                 DocumentRef sourceFolderRef = docModel.getParentRef();
@@ -790,11 +790,24 @@ public class ClipboardActionsBean extends InputController implements
             BufferedInputStream buffi = new BufferedInputStream(
                     content.getStream(), BUFFER);
 
-            ZipEntry entry = new ZipEntry(path + fileName);
+            // Workaround to deal with duplicate file names.
+            int tryCount = 0;
+            while (true) {
+                try {
+                    ZipEntry entry;
+                    if (tryCount == 0) {
+                        entry = new ZipEntry(path + fileName);
+                    } else {
+                        entry = new ZipEntry(path + fileName + '(' + tryCount + ')');
+                    }
+                    out.putNextEntry(entry);
+                    break;
+                } catch (ZipException e) {
+                    tryCount++;
+                }
+            }
 
-            out.putNextEntry(entry);
             int count = buffi.read(data, 0, BUFFER);
-
             while (count != -1) {
                 out.write(data, 0, count);
                 count = buffi.read(data, 0, BUFFER);

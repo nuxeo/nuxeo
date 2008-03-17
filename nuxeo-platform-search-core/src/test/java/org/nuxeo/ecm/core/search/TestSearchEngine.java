@@ -66,8 +66,6 @@ public class TestSearchEngine extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deploy("EventService.xml");
-
         deploy("CoreService.xml");
         deploy("TypeService.xml");
         deploy("SecurityService.xml");

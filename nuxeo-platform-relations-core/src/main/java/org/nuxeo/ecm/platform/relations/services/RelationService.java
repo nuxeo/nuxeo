@@ -297,7 +297,7 @@ public class RelationService extends DefaultComponent implements
         }
     }
 
-    protected Graph createGraph(String name) throws ClientException {
+    protected Graph createGraph(String name) {
         GraphDescription graphDescription = graphDescriptionRegistry.get(name);
         if (graphDescription == null) {
             throw new RuntimeException(String.format(
@@ -333,7 +333,8 @@ public class RelationService extends DefaultComponent implements
         return registeredGraph;
     }
 
-    public Resource getResource(String namespace, Object object) {
+    public Resource getResource(String namespace, Object object)
+            throws ClientException {
         ResourceAdapter adapter = getResourceAdapterForNamespace(namespace);
         if (adapter == null) {
             log.error("Could not find adapter for namespace " + namespace);
@@ -343,7 +344,7 @@ public class RelationService extends DefaultComponent implements
         }
     }
 
-    public Set<Resource> getAllResources(Object object) {
+    public Set<Resource> getAllResources(Object object) throws ClientException {
         // TODO OPTIM implement reverse map in registerContribution
         Set<Resource> res = new HashSet<Resource>();
         for (String ns : resourceAdapterRegistry.keySet()) {
@@ -362,7 +363,8 @@ public class RelationService extends DefaultComponent implements
         return res;
     }
 
-    public Object getResourceRepresentation(String namespace, Resource resource) {
+    public Object getResourceRepresentation(String namespace, Resource resource)
+            throws ClientException {
         ResourceAdapter adapter = getResourceAdapterForNamespace(namespace);
         if (adapter == null) {
             log.error("Could not find adapter for namespace " + namespace);

@@ -46,25 +46,32 @@ public interface RelationManager extends Serializable {
 
     /**
      * Gets a resource given a namespace and an object.
-     * <p>There can be several resources with different namespaces
-     * associated to an incoming object. A document can for instance
-     * be used to refer to itself as a precise version as well as to
-     * the set of all versions.
+     * <p>
+     * There can be several resources with different namespaces associated to an
+     * incoming object. A document can for instance be used to refer to itself
+     * as a precise version as well as to the set of all versions.
      * </p>
+     *
+     * @throws ClientException
      */
-    Resource getResource(String namespace, Object object);
+    Resource getResource(String namespace, Object object)
+            throws ClientException;
 
     /**
      * Computes all resources corresponding to the given object
      *
      * @return the resources as a set
+     * @throws ClientException
      */
-    Set<Resource> getAllResources(Object object);
+    Set<Resource> getAllResources(Object object) throws ClientException;
 
     /**
      * Gets an object representing this resource given a namespace.
+     *
+     * @throws ClientException
      */
-    Object getResourceRepresentation(String namespace, Resource resource);
+    Object getResourceRepresentation(String namespace, Resource resource)
+            throws ClientException;
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#add

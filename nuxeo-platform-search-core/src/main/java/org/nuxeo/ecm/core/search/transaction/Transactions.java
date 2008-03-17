@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.core.search.transaction;
 
 import static javax.transaction.Status.STATUS_ACTIVE;
@@ -11,12 +30,24 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 /**
- * Utility class used to encapsulate Transactions.
- * Code borrowed from JBoss Seam 1.1.5
+ * Utility class used to encapsulate Transactions. Code borrowed from JBoss Seam
+ * 1.1.5
  *
  */
 public class Transactions {
+    /**
+     * Boolean set for tests where there is no active transaction
+     */
+    private static boolean test = false;
+
     private static String userTransactionName = "UserTransaction";
+    public static boolean isTest() {
+        return test;
+    }
+
+    public static void setTest(boolean test) {
+        Transactions.test = test;
+    }
 
     public static void setTransactionRollbackOnly() throws SystemException,
             NamingException {
@@ -73,22 +104,34 @@ public class Transactions {
 
     private static void setUTRollbackOnly() throws SystemException,
             NamingException {
+        if (test) {
+            return;
+        }
         getUserTransaction().setRollbackOnly();
     }
 
     private static boolean isUTTransactionActive() throws SystemException,
             NamingException {
+        if (test) {
+            return false;
+        }
         return getUserTransaction().getStatus() == STATUS_ACTIVE;
     }
 
     private static boolean isUTTransactionActiveOrMarkedRollback()
             throws SystemException, NamingException {
+        if (test) {
+            return false;
+        }
         int status = getUserTransaction().getStatus();
         return status == STATUS_ACTIVE || status == STATUS_MARKED_ROLLBACK;
     }
 
     private static boolean isUTTransactionMarkedRollback()
             throws SystemException, NamingException {
+        if (test) {
+            return false;
+        }
         return getUserTransaction().getStatus() == STATUS_MARKED_ROLLBACK;
     }
 

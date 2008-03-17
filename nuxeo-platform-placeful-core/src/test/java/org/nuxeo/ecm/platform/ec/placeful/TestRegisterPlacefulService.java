@@ -35,12 +35,11 @@ public class TestRegisterPlacefulService extends NXRuntimeTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         deploy("nxplacefulservice-framework.xml");
-        deploy("documentadapters-contrib.xml");
         deploy("nxplacefulservice-configs-contrib.xml");
         placefulService = (PlacefulService) runtime.getComponent(PlacefulServiceImpl.ID);
     }
 
-    public void testResgistration() {
+    public void testRegistration() {
         Map<String, String> registry = placefulService.getAnnotationRegistry();
 
         assertEquals(2, registry.size());

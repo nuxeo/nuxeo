@@ -69,13 +69,13 @@ public class WorkItemsListsActionsBean extends InputController implements
     private static final Log log = LogFactory.getLog(WorkItemsListsActionsBean.class);
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected WebActions webActions;
+    protected transient WebActions webActions;
 
     @In(create = true)
-    protected Principal currentUser;
+    protected transient Principal currentUser;
 
     @In(create = true, required = false)
     protected ProcessModel reviewModel;
@@ -96,7 +96,7 @@ public class WorkItemsListsActionsBean extends InputController implements
     @Create
     public void init()
     {
-    	Events.instance().raiseEvent(EventNames.WF_INIT);
+        Events.instance().raiseEvent(EventNames.WF_INIT);
     }
 
 

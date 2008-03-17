@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.mimetype;
   import java.io.FileInputStream;
   import java.io.InputStream;
 
-  import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
   import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
   import org.nuxeo.runtime.test.NXRuntimeTestCase;
   import org.nuxeo.common.utils.FileUtils;

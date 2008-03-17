@@ -61,8 +61,6 @@ public class WorkflowDocumentLifeCycleBean extends AbstractWorkflowDocumentManag
             getDocumentManager().save();
         } catch (ClientException ce) {
             throw new WorkflowDocumentLifeCycleException(ce);
-        } catch (NamingException wlce) {
-            throw new WorkflowDocumentLifeCycleException(wlce);
         }
         return res;
     }
@@ -75,8 +73,6 @@ public class WorkflowDocumentLifeCycleBean extends AbstractWorkflowDocumentManag
                     docRef);
         } catch (ClientException ce) {
             throw new WorkflowDocumentLifeCycleException(ce);
-        } catch (NamingException wlce) {
-            throw new WorkflowDocumentLifeCycleException(wlce);
         }
         return allowedStateTransitions;
     }
@@ -89,8 +85,6 @@ public class WorkflowDocumentLifeCycleBean extends AbstractWorkflowDocumentManag
                     docRef);
         } catch (ClientException ce) {
             throw new WorkflowDocumentLifeCycleException(ce);
-        } catch (NamingException wlce) {
-            throw new WorkflowDocumentLifeCycleException(wlce);
         }
         return currentLifeCycleState;
     }
@@ -102,8 +96,6 @@ public class WorkflowDocumentLifeCycleBean extends AbstractWorkflowDocumentManag
             lifeCyclePolicy = getDocumentManager().getLifeCyclePolicy(docRef);
         } catch (ClientException ce) {
             throw new WorkflowDocumentLifeCycleException(ce);
-        } catch (NamingException e) {
-            throw new WorkflowDocumentLifeCycleException(e);
         }
         return lifeCyclePolicy;
     }

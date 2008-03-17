@@ -21,9 +21,7 @@ package org.nuxeo.ecm.platform.relation.ejb;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -91,16 +89,30 @@ public class RelationManagerBean implements RelationManager {
         }
     }
 
-    public Object getResourceRepresentation(String namespace, Resource resource) {
-        return service.getResourceRepresentation(namespace, resource);
+    public Object getResourceRepresentation(String namespace, Resource resource)
+            throws ClientException {
+        try {
+            return service.getResourceRepresentation(namespace, resource);
+        } catch (Throwable t) {
+            throw EJBExceptionHandler.wrapException(t);
+        }
     }
 
-    public Resource getResource(String namespace, Object object) {
-        return service.getResource(namespace, object);
+    public Resource getResource(String namespace, Object object)
+            throws ClientException {
+        try {
+            return service.getResource(namespace, object);
+        } catch (Throwable t) {
+            throw EJBExceptionHandler.wrapException(t);
+        }
     }
 
-    public Set<Resource> getAllResources(Object object) {
-        return service.getAllResources(object);
+    public Set<Resource> getAllResources(Object object) throws ClientException {
+        try {
+            return service.getAllResources(object);
+        } catch (Throwable t) {
+            throw EJBExceptionHandler.wrapException(t);
+        }
     }
 
     public void add(String graphName, List<Statement> statements)

@@ -34,7 +34,7 @@ public interface UserManager {
     boolean checkUsernamePassword(String username, String password)
             throws ClientException;
 
-    boolean validatePassword(String password);
+    boolean validatePassword(String password) throws ClientException;
 
     List<NuxeoPrincipal> getAvailablePrincipals() throws ClientException;
 
@@ -76,25 +76,25 @@ public interface UserManager {
 
     void setDefaultGroup(String defaultGroup);
 
-    void setRootLogin(String defaultRootLogin);
+    void setRootLogin(String defaultRootLogin) throws ClientException;
 
-    void setUserSortField(String sortField);
+    void setUserSortField(String sortField) throws ClientException;
 
-    String getUserListingMode();
+    String getUserListingMode() throws ClientException;
 
-    void setUserListingMode(String userListingMode);
+    void setUserListingMode(String userListingMode) throws ClientException;
 
-    String getUserSortField();
+    String getUserSortField() throws ClientException;
 
-    Pattern getUserPasswordPattern();
+    Pattern getUserPasswordPattern() throws ClientException;
 
-    void setUserPasswordPattern(Pattern userPasswordPattern);
+    void setUserPasswordPattern(Pattern userPasswordPattern) throws ClientException;
 
-    String getGroupListingMode();
+    String getGroupListingMode() throws ClientException;
 
-    void setGroupListingMode(String groupListingMode);
+    void setGroupListingMode(String groupListingMode) throws ClientException;
 
-    void setGroupSortField(String sortField);
+    void setGroupSortField(String sortField) throws ClientException;
 
     DocumentModel getModelForUser(String name) throws ClientException;
 
@@ -144,115 +144,131 @@ public interface UserManager {
      * Sets the user directory name.
      *
      * @param userDirectoryName the user directory name.
+     * @throws ClientException 
      */
-    void setUserDirectoryName(String userDirectoryName);
+    void setUserDirectoryName(String userDirectoryName) throws ClientException;
 
     /**
      * Gets the user directory name.
      *
      * @return the user directory name.
+     * @throws ClientException 
      */
-    String getUserDirectoryName();
+    String getUserDirectoryName() throws ClientException;
 
     /**
      * Sets the user email field.
      *
      * @param userEmailField the email field.
+     * @throws ClientException 
      */
-    void setUserEmailField(String userEmailField);
+    void setUserEmailField(String userEmailField) throws ClientException;
 
     /**
      * Gets the user email field.
      *
      * @return the user email field.
+     * @throws ClientException 
      */
-    String getUserEmailField();
+    String getUserEmailField() throws ClientException;
 
     /**
      * Sets the user search fields, the fields to use when a fulltext search is
      * done.
      *
      * @param userSearchFields the search fields.
+     * @throws ClientException 
      */
-    void setUserSearchFields(Set<String> userSearchFields);
+    void setUserSearchFields(Set<String> userSearchFields) throws ClientException;
 
     /**
      * Gets the user search fields, the fields to use when a fulltext search is
      * done.
      *
      * @return the search fields.
+     * @throws ClientException 
      */
-    Set<String> getUserSearchFields();
+    Set<String> getUserSearchFields() throws ClientException;
 
     /**
      * Sets the group directory name.
      *
      * @param groupDirectoryName the user directory name.
+     * @throws ClientException 
      */
-    void setGroupDirectoryName(String groupDirectoryName);
+    void setGroupDirectoryName(String groupDirectoryName) throws ClientException;
 
     /**
      * Gets the group directory name.
      *
      * @return the group directory name.
+     * @throws ClientException 
      */
-    String getGroupDirectoryName();
+    String getGroupDirectoryName() throws ClientException;
 
     /**
      * Sets the group members field.
      *
      * @param groupMembersField the members field.
+     * @throws ClientException 
      */
-    void setGroupMembersField(String groupMembersField);
+    void setGroupMembersField(String groupMembersField) throws ClientException;
 
     /**
      * Gets the group members field.
      *
      * @return the group members field.
+     * @throws ClientException 
      */
-    String getGroupMembersField();
+    String getGroupMembersField() throws ClientException;
 
     /**
      * Sets the group sub-groups field.
      *
      * @param groupSubGroupsField the sub-groups field.
+     * @throws ClientException 
      */
-    void setGroupSubGroupsField(String groupSubGroupsField);
+    void setGroupSubGroupsField(String groupSubGroupsField) throws ClientException;
 
     /**
      * Gets the group sub-groups field.
      *
      * @return the sub-groups field.
+     * @throws ClientException 
      */
-    String getGroupSubGroupsField();
+    String getGroupSubGroupsField() throws ClientException;
 
     /**
      * Sets the group parentGroups field.
      *
      * @param groupParentGroupsField the parentGroups field.
+     * @throws ClientException 
      */
-    void setGroupParentGroupsField(String groupParentGroupsField);
+    void setGroupParentGroupsField(String groupParentGroupsField) throws ClientException;
 
     /**
      * Gets the group parent-groups field.
      *
      * @return the parent-groups field.
+     * @throws ClientException 
      */
-    String getGroupParentGroupsField();
+    String getGroupParentGroupsField() throws ClientException;
 
     /**
      * Sets the anonymous user properties.
      *
      * @param anonymousUser the anonymous user properties.
+     * @throws ClientException 
      */
-    void setAnonymousUser(Map<String, String> anonymousUser);
+    void setAnonymousUser(Map<String, String> anonymousUser) throws ClientException;
 
     /**
      * Gets the anonymous user id.
      *
      * @return the anonymous user id, or null if none is defined.
+     * @throws ClientException 
      */
-    String getAnonymousUserId();
+    String getAnonymousUserId() throws ClientException;
 
     /**
      * The key in the anonymous user map that hold its id.

@@ -118,7 +118,7 @@ public class SearchMessageListener implements MessageListener {
 
             Boolean duplicatedMessage = (Boolean) doc.getEventInfo().get(
                     EventMessage.DUPLICATED);
-            if (duplicatedMessage != null && duplicatedMessage == true) {
+            if (duplicatedMessage != null && duplicatedMessage) {
                 log.debug("Message " + eventId
                         + " is marked as duplicated, ignoring");
                 return;

@@ -28,11 +28,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.io.Serializable;
 
-import javax.annotation.security.PermitAll;
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
-import javax.ejb.Remove;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -42,7 +41,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Seam;
 import org.jboss.seam.annotations.Create;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -76,8 +74,9 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 @Name("userManagerActions")
 @Scope(CONVERSATION)
 public class UserManagerActionsBean extends InputController implements
-        UserManagerActions {
+        UserManagerActions, Serializable {
 
+    private static final long serialVersionUID = 2160735474991874750L;
     private static final Log log = LogFactory.getLog(UserManagerActionsBean.class);
 
     private static final String ALL = "all";
@@ -89,10 +88,10 @@ public class UserManagerActionsBean extends InputController implements
     public static final String VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789";
 
     @In(create = true)
-    protected UserManager userManager;
+    protected transient UserManager userManager;
 
     @In(create = true)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     protected String searchString = "";
     protected String searchUsername = "";
@@ -143,7 +142,7 @@ public class UserManagerActionsBean extends InputController implements
 
 
     @Create
-    public void initialize() {
+    public void initialize() throws ClientException {
         log.info("Initializing...");
         principal = (NuxeoPrincipal) FacesContext.getCurrentInstance()
                 .getExternalContext().getUserPrincipal();
@@ -406,7 +405,7 @@ public class UserManagerActionsBean extends InputController implements
             DocumentModelImpl entry = new DocumentModelImpl(null, userType.getId(), "",
                     null, null, null, new String[] { schemaName }, null);
             entry.addDataModel(dm);
-            ((NuxeoPrincipalImpl) newUser).setModel(entry);
+            newUser.setModel(entry);
             newUser.getRoles().add("regular");
             sessionContext.set("newUser", newUser);
             return "create_user";

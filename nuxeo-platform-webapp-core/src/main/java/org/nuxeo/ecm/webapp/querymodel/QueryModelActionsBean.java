@@ -22,15 +22,10 @@ package org.nuxeo.ecm.webapp.querymodel;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.security.PermitAll;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import static org.jboss.seam.ScopeType.CONVERSATION;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
