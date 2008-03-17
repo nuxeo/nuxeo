@@ -253,6 +253,81 @@
 
     </decoration>
 
+
+    <decoration name="frameless">
+      <resource>nxthemes-webwidgets-default-decorations.css</resource>
+
+      <panel-decoration mode="*">%REGION_BODY%</panel-decoration>
+
+      <panel-decoration mode="web-widgets">
+        <div class="nxthemesDefaultWebWidgetPanelTitle">
+          %REGION_NAME%
+        </div>
+        <div class="nxthemesDefaultWebWidgetPanelBody">
+          %REGION_BODY%
+        </div>
+      </panel-decoration>
+
+      <widget-decoration mode="*/*">
+        <div id="%BODY_AREA%">%WIDGET_BODY%</div>
+      </widget-decoration>
+
+      <widget-decoration mode="web-widgets/*">
+        <div
+          class="nxthemesDefaultWebWidgetTitle %DRAG_AREA%">
+          <div class="nxthemesDefaultWebWidgetActions">
+            <span onclick="%ACTION_EDIT_PREFERENCES%">
+              Edit
+            </span>
+            <span onclick="%ACTION_SHADE_WINDOW%">
+              <img
+                src="/nuxeo/nxthemes-web-widgets/images/window-shade.png"
+                width="16" height="16" />
+            </span>
+            <span onclick="%ACTION_DELETE_WIDGET%">
+              <img
+                src="/nuxeo/nxthemes-web-widgets/images/window-close.png"
+                width="16" height="16" />
+            </span>
+          </div>
+          <span id="%ICON_AREA%">[ ]</span>
+          <span id="%TITLE_AREA%">%WIDGET_NAME%</span>
+        </div>
+        <div class="nxthemesDefaultWebWidgetBody">
+          <div id="%BODY_AREA%">%WIDGET_BODY%</div>
+          <div class="nxthemesDefaultWebWidgetFooter">
+            Widget by
+            <strong>%WIDGET_AUTHOR%</strong>
+            : %WIDGET_DESCRIPTION%
+          </div>
+        </div>
+      </widget-decoration>
+
+      <widget-decoration mode="web-widgets/shaded">
+        <div
+          class="nxthemesDefaultWebWidgetTitle %DRAG_AREA%">
+          <div class="nxthemesDefaultWebWidgetActions">
+            <span onclick="%ACTION_UNSHADE_WINDOW%">
+              <img
+                src="/nuxeo/nxthemes-web-widgets/images/window-unshade.png"
+                width="16" height="16" />
+            </span>
+            <span onclick="%ACTION_DELETE_WIDGET%">
+              <img
+                src="/nuxeo/nxthemes-web-widgets/images/window-close.png"
+                width="16" height="16" />
+            </span>
+          </div>
+          <span id="%ICON_AREA%">[ ]</span>
+          <span id="%TITLE_AREA%">%WIDGET_NAME%</span>
+        </div>
+        <div id="%BODY_AREA%" style="display: none">...</div>
+      </widget-decoration>
+
+    </decoration>
+
+
+
   </extension>
 
   <extension target="org.nuxeo.theme.services.ThemeService"
