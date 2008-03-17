@@ -62,6 +62,13 @@ public interface VersioningManager {
     VersionIncEditOptions getVersionIncEditOptions(DocumentModel docModel) throws VersioningException,
             ClientException, DocumentException;
 
+    /**
+     * Get the label for the current version of a document, for the UI.
+     *
+     * @param document the document
+     * @return the version label
+     * @throws ClientException
+     */
     String getVersionLabel(DocumentModel document) throws ClientException;
 
     /**

@@ -728,7 +728,7 @@ public class VersioningService extends DefaultComponent implements
         long major = getValidVersionNumber(doc, majorPropName);
         long minor = getValidVersionNumber(doc, minorPropName);
 
-        return String.format("%02d.%02d", major, minor);
+        return major + "." + minor;
     }
 
     /**
