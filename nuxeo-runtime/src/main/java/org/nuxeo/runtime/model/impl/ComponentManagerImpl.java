@@ -136,8 +136,11 @@ public class ComponentManagerImpl implements ComponentManager {
     public final void _register(RegistrationInfoImpl ri) {
         ComponentName name = ri.getName();
         if (isRegistered(name)) {
-            //log.warn("Component was already registered: " + name);
-            throw new IllegalStateException("Component was already registered: " + name);
+            log.warn("Component was already registered: " + name);
+            // TODO avoid throwing an exception here - for now runtime components are registered twice
+            // When this will be fixed we can thrown an error here
+            return;
+            //throw new IllegalStateException("Component was already registered: " + name);
         }
 
         ri.manager = this;
