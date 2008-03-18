@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.DocsQueryProviderDef;
+import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.operation.Operation;
 import org.nuxeo.ecm.core.api.operation.ProgressMonitor;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -1314,5 +1315,34 @@ public interface CoreSession {
      * @throws ClientException
      */
     <T> T run(Operation<T> op, ProgressMonitor monitor) throws ClientException;
+
+    /**
+     * Internal method - it is used internally by {@link DocumentModel#refresh()}
+     * <p>
+     * Get fresh data from a document given a description of what kind of data should be refecthed.
+     * <p>
+     * The refresh information is specified using a bit mask. See {@link DocumentModel} for all accepted flags.
+     * <p>
+     * When the flag {@link DocumentModel#REFRESH_CONTENT_IF_LOADED} is specified a third argument must be passed
+     * representing the schema names for document parts to refresh. This argument is ignored if the flag is not specified or
+     * no schema names are provided
+     * <p>
+     * The result is an array defined as follows:
+     * <ul>
+     * <li> on index 0 - the prefetch data
+     * <li> on index 1 - the lock state info
+     * <li> on index 2 - the life cycle state info
+     * <li> on index 3 - the life cycle policy
+     * <li> on index 4 - hte ACP
+     * <li> on index 5 - an array of {@link DocumentPart} objects
+     * </ul>
+     * @param ref the document reference
+     * @param refreshFlags refresh flags as defined in {@link DocumentModel}
+     * @param schemas the schema names if a partial content refresh is required
+     * @return an array containing the refreshed data - this array will always have 5 elements.
+     *
+     * @throws ClientException
+     */
+    Object[] refreshDocument(DocumentRef ref, int refreshFlags, String[] schemas) throws ClientException;
 
 }
