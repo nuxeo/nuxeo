@@ -43,8 +43,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
     protected transient CoreSession documentManager;
 
     public CoreSession getDocumentManager(String repositoryUri,
-            Map<String, Serializable> sessionContext) throws NamingException,
-            ClientException {
+            Map<String, Serializable> sessionContext) throws ClientException {
         log.info("<getDocumentManager>");
 
         // first destroy if needed
@@ -61,7 +60,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
         return documentManager;
     }
 
-    public void remove() throws ClientException {
+    public void remove() {
         // TODO: removing the session produces a failure on the next new session
         // open - need to investigate why
         //CoreInstance.getInstance().close(documentManager);

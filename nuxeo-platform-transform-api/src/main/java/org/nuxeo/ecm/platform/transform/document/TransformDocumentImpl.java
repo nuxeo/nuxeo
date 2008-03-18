@@ -59,11 +59,11 @@ public class TransformDocumentImpl implements TransformDocument {
         blob = new StringBlob("");
     }
 
-    public TransformDocumentImpl(Blob blob) throws IOException {
+    public TransformDocumentImpl(Blob blob) {
         this.blob = blob;
     }
 
-    public TransformDocumentImpl(Blob blob, String mimetype) throws IOException {
+    public TransformDocumentImpl(Blob blob, String mimetype) {
         this.blob = blob;
         this.mimetype = mimetype;
     }

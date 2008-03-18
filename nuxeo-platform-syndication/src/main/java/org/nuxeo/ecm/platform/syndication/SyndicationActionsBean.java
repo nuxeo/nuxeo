@@ -31,14 +31,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.RequestParameter;
-import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -55,7 +53,6 @@ import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.ecm.webapp.base.InputController;
-import org.nuxeo.ecm.webapp.delegate.DocumentManagerBusinessDelegate;
 import org.nuxeo.ecm.webapp.search.SearchActions;
 import org.nuxeo.ecm.webapp.search.SearchType;
 import org.nuxeo.runtime.api.Framework;
@@ -204,7 +201,7 @@ public class SyndicationActionsBean extends InputController implements
      * @throws IOException
      * @throws FeedException
      */
-    private void writeFeed(SyndFeed feed) throws IOException, FeedException {
+    private void writeFeed(SyndFeed feed) {
 
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
@@ -280,9 +277,6 @@ public class SyndicationActionsBean extends InputController implements
     /**
      *
      * @param feed the SyndFeed to initialize
-     * @param searchQuery the search query, fulltext or NXSQL, depending on
-     *            param type
-     * @param searchType the type of the search
      */
 
     private void initializeFeedForSearch(SyndFeed feed) {
@@ -386,9 +380,8 @@ public class SyndicationActionsBean extends InputController implements
         }
 
         FeedItemAdapter feedItemAdapt = new FeedItemAdapter();
-        List<FeedItem> feedItems;
 
-        feedItems = feedItemAdapt.toFeedItemList(docList);
+        List<FeedItem> feedItems = feedItemAdapt.toFeedItemList(docList);
 
         SyndFeed feed = getSyndFeed(feedItems);
         initializeFeedForSearch(feed);
@@ -399,12 +392,11 @@ public class SyndicationActionsBean extends InputController implements
             FeedException, ParseException {
 
         FeedItemAdapter feedItemAdapt = new FeedItemAdapter();
-        List<FeedItem> feedItems;
 
         DocumentRef document = getSyndicationRoot(docRef).getRef();
         DocumentModelList allChilds = getRealDocuments(documentManager.getChildren(document));
 
-        feedItems = feedItemAdapt.toFeedItemList(allChilds);
+        List<FeedItem> feedItems = feedItemAdapt.toFeedItemList(allChilds);
 
         // Sort items by update date or if not, by publication date
         Collections.sort(feedItems, Collections.reverseOrder());

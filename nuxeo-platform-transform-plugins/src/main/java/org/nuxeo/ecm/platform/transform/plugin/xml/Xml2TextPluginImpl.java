@@ -50,6 +50,9 @@ import org.w3c.dom.traversal.TreeWalker;
  */
 public class Xml2TextPluginImpl extends AbstractPlugin {
 
+    private static final long serialVersionUID = -8395742119156169742L;
+
+    @Override
     public List<TransformDocument> transform(Map<String, Serializable> options,
             TransformDocument... sources) throws Exception {
         final List<TransformDocument> results = super.transform(options,
@@ -71,7 +74,6 @@ public class Xml2TextPluginImpl extends AbstractPlugin {
     }
 
     /**
-     * @param results
      * @param sourceIs
      * @return
      * @throws DocumentException
@@ -119,7 +121,7 @@ public class Xml2TextPluginImpl extends AbstractPlugin {
         AllElementsFilter allelements = new AllElementsFilter();
         Node sourceRoot = srcDoc.getLastChild();
         DocumentTraversal sourceImpl = (DocumentTraversal) srcDoc;
-        TreeWalker tw = (TreeWalker) sourceImpl.createTreeWalker(sourceRoot,
+        TreeWalker tw = sourceImpl.createTreeWalker(sourceRoot,
                 NodeFilter.SHOW_ALL, allelements, true);
         walk(tw, writer);
     }
@@ -144,10 +146,11 @@ public class Xml2TextPluginImpl extends AbstractPlugin {
     /**
      * filters the elements of the XML document
      */
-    class AllElementsFilter implements NodeFilter {
+    static class AllElementsFilter implements NodeFilter {
         public short acceptNode(Node n) {
-            if (n.getNodeType() > 0)
+            if (n.getNodeType() > 0) {
                 return FILTER_ACCEPT;
+            }
             return FILTER_SKIP;
         }
     }
@@ -179,4 +182,5 @@ public class Xml2TextPluginImpl extends AbstractPlugin {
             e.printStackTrace();
         }
     }
+
 }
