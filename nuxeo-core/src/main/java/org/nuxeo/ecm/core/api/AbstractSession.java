@@ -33,8 +33,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.text.html.HTMLDocument.HTMLReader.PreAction;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
@@ -49,7 +47,6 @@ import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
-import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocsQueryProviderDef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelIteratorImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
@@ -446,6 +443,9 @@ public abstract class AbstractSession implements CoreSession,
                     null, null, true);
 
             Document doc = getSession().copy(srcDoc, dstDoc, name);
+            if (doc.isLocked()) { // if we copy a locked document - the new document will be locked too! - fixing this
+                doc.unlock();
+            }
 
             Map<String, Object> options = new HashMap<String, Object>();
 
