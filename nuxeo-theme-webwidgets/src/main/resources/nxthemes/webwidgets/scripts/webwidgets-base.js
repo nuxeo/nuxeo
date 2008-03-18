@@ -1,5 +1,5 @@
 
-NXThemesWebWidgets = new Hash();
+NXThemesWebWidgets = {};
 NXThemesWebWidgets.modules = new Hash();
 NXThemesWebWidgets.widgets = new Hash();
 NXThemesWebWidgets.decorations = new Hash();
@@ -69,12 +69,12 @@ NXThemesWebWidgets.WebWidget.prototype = {
     var widget = this;
     var widget_mode = this._mode;
     var decoration = widget._decoration;
-    var decorations = NXThemesWebWidgets.decorations.get(decoration);
-    if (decorations) {
-      var template = decorations[widget_mode];
+    var widget_decoration = widget.getDecoration(decoration);
+    if (widget_decoration) {
+      var template = widget_decoration[widget_mode];
       if (template == null) {
         var default_state_mode = widget_mode.split('/')[0] + '/*';
-        template = decorations[default_state_mode];
+        template = widget_decoration[default_state_mode];
       }
       widget.decorate(template, widget_mode);
       widget.draw();
@@ -82,13 +82,14 @@ NXThemesWebWidgets.WebWidget.prototype = {
       var url = "/nuxeo/nxthemes-webwidgets-decoration/?decoration=" + encodeURIComponent(decoration);
       var options = {
         method: 'get',
+        asynchronous: false,
         onComplete: function(req) {
-          var decorations = req.responseText.evalJSON(true);
-          NXThemesWebWidgets.decorations.set(decoration, decorations);
-          var template = decorations[widget_mode];
-          if (template == null) {
+          var widget_decoration = req.responseText.evalJSON(true);
+          widget.setDecoration(decoration, widget_decoration)
+          var template = widget_decoration[widget_mode];
+          if (template === null) {
             var default_state_mode = widget_mode.split('/')[0] + '/*';
-            template = decorations[default_state_mode];
+            template = widget_decoration[default_state_mode];
           }
           widget.decorate(template, widget_mode);
           widget.draw();
@@ -96,6 +97,14 @@ NXThemesWebWidgets.WebWidget.prototype = {
       };
       new Ajax.Request(url, options);
     }
+  },
+
+  getDecoration: function(decoration) {
+    return NXThemesWebWidgets.decorations.get(decoration);
+  },
+
+  setDecoration: function(decoration, decorations) {
+    NXThemesWebWidgets.decorations.set(decoration, decorations)
   },
 
   decorate: function(html, widget_mode) {
