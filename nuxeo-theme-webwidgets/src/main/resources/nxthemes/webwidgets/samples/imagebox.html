@@ -12,6 +12,8 @@
   <preference name="alt" type="text" label="Alternate text" defaultValue="" />
   <preference name="width" type="text" label="Width" defaultValue="" />
   <preference name="height" type="text" label="Height" defaultValue="" />
+  <preference name="link" type="text" label="Link" defaultValue="" />
+  <preference name="caption" type="text" label="Caption" defaultValue="" />
 </widget:preferences>
 
 <script type="text/javascript">
@@ -23,7 +25,9 @@ ImageBox.display = function() {
   var width = widget.getValue('width');
   var alt = widget.getValue('alt');
   var height = widget.getValue('height');
-
+  var link = widget.getValue('link');
+  var caption = widget.getValue('caption');
+    
   if (src) {
     img.src = src;
     if (width) {
@@ -33,7 +37,21 @@ ImageBox.display = function() {
       img.height = height;
     }
     img.alt = alt;
-    widget.setBody(img);
+    
+    if (link) {
+      img.setStyle({'border': 'none'});
+      var a = widget.createElement('a');
+      a.href = link;
+      a.appendChild(img);
+      widget.setBody(a);
+    } else {
+      widget.setBody(img);
+    }
+    
+    if (caption) {
+      widget.addBody('<div><small>' + caption + '</small></div>');
+    }
+    
   } else {
     widget.setBody('<p>Please set the image source.</p>');
   }
