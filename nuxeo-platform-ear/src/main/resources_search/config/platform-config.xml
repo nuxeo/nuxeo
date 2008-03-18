@@ -59,6 +59,7 @@
     </server>
 
     <server class="org.nuxeo.runtime.api.JBossServiceLocator">
+      <property name="suffix">/remote</property>
       <group>platform</group>
       <property name="java.naming.factory.initial">org.jnp.interfaces.NamingContextFactory</property>
       <property name="java.naming.provider.url">jnp://nxplatformserver:1099</property>
@@ -66,6 +67,7 @@
     </server>
 
     <server class="org.nuxeo.runtime.api.JBossServiceLocator">
+      <property name="suffix">/remote</property>
       <group>core</group>
       <property name="java.naming.factory.initial">org.jnp.interfaces.NamingContextFactory</property>
       <property name="java.naming.provider.url">jnp://nxcoreserver:1099</property>
@@ -110,7 +112,7 @@
     </service>
 
   </extension>
-  
+
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
              point="provider">
     <provider group="core" />
