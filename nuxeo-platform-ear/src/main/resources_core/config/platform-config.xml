@@ -42,11 +42,13 @@
     </server>
     <server class="org.nuxeo.runtime.api.JBossServiceLocator">
       <group>platform</group>
+      <property name="suffix">/remote</property>
       <property name="java.naming.factory.initial">org.jnp.interfaces.NamingContextFactory</property>
       <property name="java.naming.provider.url">jnp://nxplatformserver:1099</property>
       <property name="java.naming.factory.url.pkgs">org.jboss.naming:org.jnp.interfaces</property>
     </server>
     <server class="org.nuxeo.runtime.api.JBossServiceLocator">
+      <property name="suffix">/remote</property>
       <group>search</group>
       <group>platform/search</group>
       <group>platform/transform</group>
