@@ -393,7 +393,7 @@ public class MassEditActionsBean extends InputController implements
             Type t = getDocumentType(docModel);
 
             fieldWidgets[i] = t.getLayout();
-            log.debug("Doc type: " + t.getCoreType() + ", fieldWidgets[" + i
+            log.debug("Doc type: " + t.getId() + ", fieldWidgets[" + i
                     + "]= " + Arrays.asList(fieldWidgets[i]));
             i++;
         }

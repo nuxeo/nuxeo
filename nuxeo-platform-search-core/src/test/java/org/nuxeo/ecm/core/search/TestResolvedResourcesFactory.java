@@ -78,10 +78,7 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         super.setUp();
 
         //deploy("ServiceManagement.xml");
-        deploy("LoginComponent.xml");
         deploy("RepositoryManager.xml");
-
-        deploy("EventService.xml");
 
         deploy("CoreService.xml");
         deploy("TypeService.xml");

@@ -5,4 +5,4 @@ syntax:glob
 bin
 target
 *~
-*~
+*.orig

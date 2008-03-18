@@ -40,7 +40,6 @@ import javax.faces.event.ActionEvent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -160,7 +159,7 @@ public class RelationActionsBean extends InputController implements
 
     protected String searchKeywords;
 
-    public DocumentModel getDocumentModel(Node node) {
+    public DocumentModel getDocumentModel(Node node) throws ClientException {
         if (node.isQNameResource()) {
             QNameResource resource = (QNameResource) node;
             Object o = relationManager.getResourceRepresentation(
@@ -183,7 +182,8 @@ public class RelationActionsBean extends InputController implements
         return documentResource;
     }
 
-    public QNameResource getDocumentResource(DocumentModel document) {
+    public QNameResource getDocumentResource(DocumentModel document)
+            throws ClientException {
         QNameResource documentResource = null;
         if (document != null) {
             documentResource = (QNameResource) relationManager.getResource(
@@ -192,7 +192,8 @@ public class RelationActionsBean extends InputController implements
         return documentResource;
     }
 
-    protected List<StatementInfo> getStatementsInfo(List<Statement> statements) {
+    protected List<StatementInfo> getStatementsInfo(List<Statement> statements)
+            throws ClientException {
         if (statements == null) {
             return null;
         }
@@ -269,7 +270,7 @@ public class RelationActionsBean extends InputController implements
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
             EventNames.CONTENT_ROOT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_CHANGED }, create = false, inject=false)
+            EventNames.DOCUMENT_CHANGED }, create = false, inject = false)
     public void resetStatements() {
         incomingStatements = null;
         incomingStatementsInfo = null;

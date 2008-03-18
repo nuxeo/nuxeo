@@ -109,10 +109,6 @@ public class TypeService extends DefaultComponent implements TypeManager {
     }
 
     public static Type mergeTypes(Type oldType, Type newType) {
-        String coreType = newType.getCoreType();
-        if (coreType != null) {
-            oldType.setCoreType(coreType);
-        }
         String icon = newType.getIcon();
         if (icon != null) {
             oldType.setIcon(icon);

@@ -8,9 +8,9 @@
 
     <queryModel name="DOMAIN_SECTIONS">
       <pattern>
-        SELECT * FROM Document WHERE ecm:path STARTSWITH ? and ecm:primaryType = ? AND ecm:mixinType != 'HiddenInNavigation'
+        SELECT * FROM Document WHERE ecm:path STARTSWITH ? and ecm:primaryType = ? AND ecm:mixinType != 'HiddenInNavigation' AND ecm:currentLifeCycleState != 'deleted'
       </pattern>
-      
+
       <sortable value="true" defaultSortColumn="ecm:path"
         defaultSortAscending="true" />
     </queryModel>

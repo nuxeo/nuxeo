@@ -58,9 +58,13 @@ public class TypeInfoAdapter implements TypeInfo {
         return null;
     }
 
+    /**
+     * @deprecated Use {@link #getId} instead.
+     */
+    @Deprecated
     public String getCoreType() {
         if (type != null) {
-            return type.getCoreType();
+            return type.getId();
         }
 
         return null;

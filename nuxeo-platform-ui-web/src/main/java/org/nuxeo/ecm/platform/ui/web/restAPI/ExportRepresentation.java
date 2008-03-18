@@ -26,90 +26,110 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.DocumentWriter;
-import org.nuxeo.ecm.core.io.impl.DocumentPipeImpl;
-import org.nuxeo.ecm.core.io.impl.plugins.DocumentTreeReader;
-import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
-import org.nuxeo.ecm.core.io.impl.plugins.SingleDocumentReader;
-import org.nuxeo.ecm.core.io.impl.plugins.XMLDocumentTreeWriter;
-import org.nuxeo.ecm.core.io.impl.plugins.XMLDocumentWriter;
+import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.MediaType;
 import org.restlet.resource.OutputRepresentation;
 
 /**
  * Facelet resource representation that calls a {@link DocumentPipe} using the
  * facelet's output stream for the document writer's output.
+ * <p>
+ * This abstract method must be subclassed to implement {@link #makePipe},
+ * {@link #makeDocumentReader} and {@link #makeDocumentWriter}.
  *
  * @author Florent Guillaume
  */
-public class ExportRepresentation extends OutputRepresentation {
+public abstract class ExportRepresentation extends OutputRepresentation {
 
     private static final Log log = LogFactory.getLog(ExportRepresentation.class);
 
-    protected boolean exportAsTree = false;
+    protected String repositoryName;
 
-    protected boolean exportAsZip = false;
+    protected String rootId;
 
-    protected CoreSession documentManager;
-
-    protected DocumentModel root;
-
-    public ExportRepresentation(boolean exportAsTree, boolean exportAsZip,
-            CoreSession documentManager, DocumentModel root) {
-        super(exportAsZip ? MediaType.APPLICATION_ZIP : MediaType.TEXT_XML);
-        this.exportAsTree = exportAsTree;
-        this.exportAsZip = exportAsZip;
-        this.documentManager = documentManager;
-        this.root = root;
+    public ExportRepresentation(MediaType mediaType, DocumentModel root) {
+        super(mediaType);
+        repositoryName = root.getRepositoryName();
+        rootId = root.getId();
     }
+
+    /**
+     * Create a {@link DocumentPipe} adequate for the number of documents needed
+     * by the export.
+     *
+     * @return the document pipe.
+     */
+    protected abstract DocumentPipe makePipe();
+
+    /**
+     * Create a {@ DocumentReader} for the export.
+     *
+     * @param documentManager a session
+     * @param root the root of the export
+     * @return the document reader
+     * @throws Exception
+     */
+    protected abstract DocumentReader makeDocumentReader(
+            CoreSession documentManager, DocumentModel root) throws Exception;
+
+    /**
+     * Create a {@ DocumentWriter} for the export.
+     *
+     * @param outputStream the stream to use
+     * @return the document writer
+     * @throws Exception
+     */
+    protected abstract DocumentWriter makeDocumentWriter(
+            OutputStream outputStream) throws Exception;
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
+        Repository repository;
+        try {
+            repository = Framework.getService(RepositoryManager.class).getRepository(
+                    repositoryName);
+        } catch (Exception e) {
+            log.error("Could not get the repository", e);
+            throw new IOException();
+        }
+        CoreSession documentManager;
+        try {
+            documentManager = repository.open();
+        } catch (Exception e) {
+            log.error("Could not open the repository", e);
+            throw new IOException();
+        }
         DocumentReader documentReader = null;
         DocumentWriter documentWriter = null;
         try {
-            DocumentPipe pipe;
-            if (exportAsTree) {
-                pipe = new DocumentPipeImpl(10);
-            } else {
-                pipe = new DocumentPipeImpl();
-            }
-
-            if (exportAsTree) {
-                documentReader = new DocumentTreeReader(documentManager, root,
-                        false);
-                if (!exportAsZip) {
-                    ((DocumentTreeReader) documentReader).setInlineBlobs(true);
-                }
-            } else {
-                documentReader = new SingleDocumentReader(documentManager, root);
-            }
+            DocumentModel root = documentManager.getDocument(new IdRef(rootId));
+            documentReader = makeDocumentReader(documentManager, root);
+            documentWriter = makeDocumentWriter(outputStream);
+            DocumentPipe pipe = makePipe();
             pipe.setReader(documentReader);
-
-            if (exportAsZip) {
-                documentWriter = new NuxeoArchiveWriter(outputStream);
-            } else {
-                if (exportAsTree) {
-                    documentWriter = new XMLDocumentTreeWriter(outputStream);
-                } else {
-                    documentWriter = new XMLDocumentWriter(outputStream);
-                }
-            }
             pipe.setWriter(documentWriter);
-
             pipe.run();
-
         } catch (Exception e) {
             log.error("Error during export", e);
-            throw new IOException(); // stupid IOException has no cause
+            throw new IOException();
         } finally {
             if (documentReader != null) {
                 documentReader.close();
             }
             if (documentWriter != null) {
                 documentWriter.close();
+            }
+            try {
+                repository.close(documentManager);
+            } catch (Exception e) {
+                log.error("Could not close the session", e);
+                throw new IOException();
             }
         }
     }

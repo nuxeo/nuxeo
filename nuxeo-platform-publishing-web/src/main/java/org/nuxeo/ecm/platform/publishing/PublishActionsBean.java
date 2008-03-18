@@ -84,6 +84,7 @@ import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelRow;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
+import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
 import org.nuxeo.ecm.platform.workflow.api.client.events.EventNames;
 import org.nuxeo.ecm.webapp.action.DeleteActions;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -91,7 +92,6 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 import org.nuxeo.ecm.webapp.security.PrincipalListManager;
-import org.nuxeo.ecm.webapp.versioning.DocumentVersioning;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -119,7 +119,7 @@ public class PublishActionsBean extends InputController implements
     protected WebActions webActions;
 
     @In(create = true)
-    protected DocumentVersioning documentVersioning;
+    protected transient VersioningManager versioningManager;
 
     @In(create = true)
     transient CoreSession documentManager;
@@ -279,7 +279,7 @@ public class PublishActionsBean extends InputController implements
             // iterate on section tree
             for (DocumentModelTreeNode node : sections) {
                 if (node.getDocument().getRef().equals(pProxy.getParentRef())) {
-                    String versionLabel = documentVersioning.getVersionLabel(pProxy);
+                    String versionLabel = versioningManager.getVersionLabel(pProxy);
                     node.setVersion(versionLabel);
                     existingPublishedProxy.put(
                             pProxy.getParentRef().toString(), pProxy);

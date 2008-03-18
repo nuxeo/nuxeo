@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.core.search.api.client.search.results.document.SearchPageProvider;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceConf;
+import org.nuxeo.ecm.core.search.transaction.Transactions;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -81,12 +82,21 @@ public class TestSearchServiceIntegration extends RepositoryOSGITestCase {
 
         openRepository();
         sservice = Framework.getService(SearchService.class);
+        // set test mode for transactions management within search backend
+        Transactions.setTest(true);
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        // set test mode for transactions management within search backend
+        Transactions.setTest(false);
+        super.tearDown();
     }
 
     private SearchPageProvider query(String query) throws Exception {
         SQLQuery nxqlQuery = SQLQueryParser.parse(query);
-        ResultSet rs = sservice.searchQuery(
-                new ComposedNXQueryImpl(nxqlQuery), 0, 100);
+        ResultSet rs = sservice.searchQuery(new ComposedNXQueryImpl(nxqlQuery),
+                0, 100);
         return new SearchPageProvider(rs);
     }
 
@@ -207,7 +217,7 @@ public class TestSearchServiceIntegration extends RepositoryOSGITestCase {
             // blob = (Blob) fileContent;
             // assertEquals("text/plain", blob.getMimeType());
             // // here again the blob content should be empty
-            //            assertEquals("", blob.getString());
+            // assertEquals("", blob.getString());
         }
     }
 

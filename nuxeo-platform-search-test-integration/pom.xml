@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -10,8 +12,9 @@
 
   <artifactId>nuxeo-platform-search-test-integration</artifactId>
   <name>Nuxeo Search Service - API</name>
-  <description>Nuxeo Enterprise Platform: Integration tests for the search
-    service</description>
+  <description>
+    Nuxeo Enterprise Platform: Integration tests for the search service
+  </description>
 
   <dependencies>
     <dependency>
@@ -72,9 +75,7 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <excludes>
-            <exclude>**/TestSearchServiceIntegration.class</exclude>
-          </excludes>
+          <excludes></excludes>
         </configuration>
       </plugin>
     </plugins>
