@@ -35,7 +35,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
-import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.api.ECM;
@@ -66,7 +65,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
     protected RepositoryLocation currentServerLocation;
 
     @In(create=true, required = false)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     protected RepositoryLocation oldLocation;
 
@@ -85,14 +84,15 @@ public class DocumentManagerBusinessDelegate implements Serializable {
     public CoreSession getDocumentManager(RepositoryLocation serverLocation)
             throws ClientException {
 
-    	if (serverLocation==null)
-    	{
-    		// XXX TD : for some reasons the currentServerLocation is not always injected by Seam
-    		// typical reproduction case includes Seam remoting call
-    		// ==> pull from factory by hand !
-    		if (serverLocation==null)
-    			serverLocation = (RepositoryLocation) Component.getInstance("currentServerLocation",true);
-    	}
+        if (serverLocation == null) {
+            // XXX TD : for some reasons the currentServerLocation is not always injected by Seam
+            // typical reproduction case includes Seam remoting call
+            // ==> pull from factory by hand !
+            if (serverLocation == null) {
+                serverLocation = (RepositoryLocation) Component.getInstance(
+                        "currentServerLocation", true);
+            }
+        }
 
         if (documentManager == null) {
             if (serverLocation == null) {
@@ -137,7 +137,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
     @Destroy
     @Remove
     @PermitAll
-    public void remove() throws ClientException {
+    public void remove() {
         log.debug("Destroying seam component...");
         if (documentManager != null) {
             documentManager.destroy();

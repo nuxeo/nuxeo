@@ -125,7 +125,7 @@ public class ConversionActionBean extends InputController implements
                 name = name.replace(sub, "pdf");
             }
 
-            if (resultingDocs.size() == 0) {
+            if (resultingDocs.isEmpty()) {
                 log.error("Transform service didn't return any resulting documents which is not normal.");
                 return "pdf_generation_error";
             }

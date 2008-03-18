@@ -30,12 +30,7 @@ import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 public class DBAnnotatableDocumentAdapterFactory implements DocumentAdapterFactory {
 
     public Object getAdapter(DocumentModel doc, Class iface)  {
-        try {
-            return new DBAnnotatableDocumentAdapter(doc);
-        } catch (ClientException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return new DBAnnotatableDocumentAdapter(doc);
     }
 
 }

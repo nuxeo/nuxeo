@@ -56,7 +56,6 @@ public class BrowseRestlet extends BaseNuxeoRestlet {
     public void handle(Request req, Response res)  {
         String repo = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");
-        DocumentModel dm=null;
         DOMDocumentFactory domfactory = new DOMDocumentFactory();
 
         DOMDocument result = (DOMDocument) domfactory.createDocument();
@@ -76,6 +75,7 @@ public class BrowseRestlet extends BaseNuxeoRestlet {
                 serversNode.appendChild(server);
             }
         } else {
+            DocumentModel dm;
             try {
                 navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
                 documentManager = navigationContext.getOrCreateDocumentManager();

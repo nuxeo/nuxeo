@@ -35,6 +35,7 @@ public class EJBExceptionHandler implements Serializable {
 
     private static final long serialVersionUID = 3571163516248088734L;
 
+    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(EJBExceptionHandler.class);
 
     /**
@@ -43,8 +44,7 @@ public class EJBExceptionHandler implements Serializable {
      * @param exception
      * @return
      */
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
-    public ClientException wrapException(Throwable exception) {
+    public static ClientException wrapException(Throwable exception) {
         ClientException clientException;
 
         if (null == exception) {

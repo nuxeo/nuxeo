@@ -79,7 +79,7 @@ import org.nuxeo.runtime.model.Extension;
  * FileManager registry service.
  * <p>
  * This is the component to request to perform transformations. See API.
- * 
+ *
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
  *         Kalogeropoulos</a>
  */
@@ -464,7 +464,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     private void registerUnicityOptions(UnicityExtension unicityExtension,
-            Extension extension) throws Exception {
+            Extension extension) {
         if (unicityExtension.getAlgo() != null) {
             digestAlgorithm = unicityExtension.getAlgo();
         }
@@ -554,9 +554,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     private void unregisterCreationContainerListProvider(
-            CreationContainerListProviderDescriptor ccListProviderDescriptor)
-            throws Exception {
-
+            CreationContainerListProviderDescriptor ccListProviderDescriptor) {
         String name = ccListProviderDescriptor.getName();
         CreationContainerListProvider providerToRemove = null;
         for (CreationContainerListProvider provider : creationContainerListProviders) {
@@ -587,6 +585,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return base64Digest;
     }
 
+    // FIXME: infinite recursion!
     public boolean isFileAlreadyPresentInPath(String path, Blob blob,
             Principal principal) {
         return isFileAlreadyPresentInPath(path, blob, principal);
@@ -596,7 +595,6 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     public boolean isFileAlreadyPresentInPath(String path, String digest,
             Principal principal) throws SearchException, QueryException {
         int maxResultsCount = 15;
-        long nbresult = -1;
         // TODO: OG: we should use an overridable query model instead of
         // hardcoding the NXQL query
         String nxql = "SELECT * FROM Document WHERE file:content:digest = "
@@ -605,18 +603,14 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         ComposedNXQueryImpl query = new ComposedNXQueryImpl(
                 SQLQueryParser.parse(nxql),
                 service.getSearchPrincipal(principal));
-        SearchPageProvider nxqlProvider;
-        nxqlProvider = new SearchPageProvider(service.searchQuery(query, 0,
-                maxResultsCount), false, null, nxql);
+        SearchPageProvider nxqlProvider = new SearchPageProvider(
+                service.searchQuery(query, 0, maxResultsCount), false, null, nxql);
 
-        nbresult = nxqlProvider.getResultsCount();
-        if (nbresult != 0) {
-            return false;
-        } else {
-            return true;
-        }
+        long nbresult = nxqlProvider.getResultsCount();
+        return nbresult == 0;
     }
 
+    // FIXME: infinite recursion
     public List<DocumentLocation> findExistingDocumentWithFile(String path,
             Blob blob, Principal principal) {
         return findExistingDocumentWithFile(path, blob, principal);
@@ -635,16 +629,14 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         ComposedNXQueryImpl query = new ComposedNXQueryImpl(
                 SQLQueryParser.parse(nxql),
                 service.getSearchPrincipal(principal));
-        SearchPageProvider nxqlProvider = null;
-        nxqlProvider = new SearchPageProvider(service.searchQuery(query, 0,
-                maxResultsCount), false, null, nxql);
+        SearchPageProvider nxqlProvider = new SearchPageProvider(
+                service.searchQuery(query, 0, maxResultsCount), false, null, nxql);
 
         nxqlProvider.getResultsCount();
         DocumentModelList documentModelList = nxqlProvider.getCurrentPage();
         List<DocumentLocation> docLocationList = new ArrayList<DocumentLocation>();
-        DocumentLocation docLocation;
         for (DocumentModel documentModel : documentModelList) {
-            docLocation = new DocumentLocationImpl(
+            DocumentLocation docLocation = new DocumentLocationImpl(
                     documentModel.getRepositoryName(), documentModel.getRef());
             docLocationList.add(docLocation);
         }

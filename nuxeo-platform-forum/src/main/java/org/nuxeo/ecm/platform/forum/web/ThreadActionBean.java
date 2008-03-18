@@ -67,26 +67,26 @@ public class ThreadActionBean extends InputController implements ThreadAction {
 
     private static final Log log = LogFactory.getLog(ThreadActionBean.class);
 
-    protected final String schema = "thread";
+    protected static final String schema = "thread";
 
-    protected final String type = "Thread";
+    protected static final String type = "Thread";
 
     protected boolean principalIsAdmin;
 
     @In(create = true)
-    protected Principal currentUser;
+    protected transient Principal currentUser;
 
     @In(create = true)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true)
-    protected DocumentActions documentActions;
+    protected transient DocumentActions documentActions;
 
     @In(create = true)
     protected PrincipalListManager principalListManager;
 
     @In(create = true)
-    protected CommentManagerActions commentManagerActions;
+    protected transient CommentManagerActions commentManagerActions;
 
     @In(create = true)
     protected PostAction postAction;

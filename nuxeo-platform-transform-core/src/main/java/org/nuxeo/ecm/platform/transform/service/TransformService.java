@@ -122,32 +122,28 @@ public class TransformService extends DefaultComponent implements
         return pluginsRegistry.getObjectByName(name);
     }
 
-    public Plugin getPluginByMimeTypes(String sourceMT, String destinationMT)
-    {
-        for (String pluginName : pluginsRegistry.getKeys())
-        {
+    public Plugin getPluginByMimeTypes(String sourceMT, String destinationMT) {
+        for (String pluginName : pluginsRegistry.getKeys()) {
             Plugin plugin = pluginsRegistry.getObjectByName(pluginName);
 
-            if (plugin.getSourceMimeTypes().contains(sourceMT))
-            {
-                if (plugin.getDestinationMimeType().contains(destinationMT))
+            if (plugin.getSourceMimeTypes().contains(sourceMT)) {
+                if (plugin.getDestinationMimeType().contains(destinationMT)) {
                     return plugin;
+                }
             }
         }
-        log.debug("Can not find registred plugin for transforming " + sourceMT + " to " + destinationMT);
+        log.debug(
+                "Can not find registred plugin for transforming " + sourceMT + " to " + destinationMT);
         return null;
     }
 
-    public List<Plugin> getPluginByDestinationMimeTypes( String destinationMT)
-    {
+    public List<Plugin> getPluginByDestinationMimeTypes(String destinationMT) {
         List<Plugin> result = new ArrayList<Plugin>();
 
-        for (String pluginName : pluginsRegistry.getKeys())
-        {
+        for (String pluginName : pluginsRegistry.getKeys()) {
             Plugin plugin = pluginsRegistry.getObjectByName(pluginName);
 
-            if (plugin.getDestinationMimeType().contains(destinationMT))
-            {
+            if (plugin.getDestinationMimeType().contains(destinationMT)) {
                 result.add(plugin);
             }
         }
@@ -155,13 +151,11 @@ public class TransformService extends DefaultComponent implements
     }
 
     public Transformer getTransformerByName(String name) {
-        Transformer transformer= transformersRegistry.getObjectByName(name);
-        if (transformer==null)
-        {
+        Transformer transformer = transformersRegistry.getObjectByName(name);
+        if (transformer == null) {
             // try a create a dummy transformer that simply wraps a single Plugin
             Plugin plugin = getPluginByName(name);
-            if (plugin!=null)
-            {
+            if (plugin != null) {
                 transformer = new TransformerImpl();
                 transformer.setName(name);
                 List<String> chain = new ArrayList<String>();
@@ -212,11 +206,7 @@ public class TransformService extends DefaultComponent implements
 
         TransformDocument[] tds = new TransformDocument[blobs.length];
         for (int i=0; i < blobs.length; i++) {
-            try {
-                tds[i] = new TransformDocumentImpl(blobs[i]);
-            } catch (IOException ioe) {
-                throw new TransformException(ioe);
-            }
+            tds[i] = new TransformDocumentImpl(blobs[i]);
         }
 
         return transform(transformerName, options,tds);
