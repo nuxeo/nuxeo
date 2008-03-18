@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Local;
@@ -65,7 +67,7 @@ public class DirectoryManagerBean implements DirectoryManager {
 
     private transient DirectoryService directoryService;
 
-    private long sessionIdCounter = 0L;
+    private AtomicLong sessionIdCounter = new AtomicLong(0);
 
     @PostActivate
     @PostConstruct
@@ -310,7 +312,7 @@ public class DirectoryManagerBean implements DirectoryManager {
     public Session open(String directoryName) throws DirectoryException {
         try {
             Session session = getService().open(directoryName);
-            long id = sessionIdCounter++;
+            long id =sessionIdCounter.incrementAndGet();
             sessionMap.put(id, session);
             sessionDirectoryNames.put(id, directoryName);
             return new DirectoryClientImpl(id);

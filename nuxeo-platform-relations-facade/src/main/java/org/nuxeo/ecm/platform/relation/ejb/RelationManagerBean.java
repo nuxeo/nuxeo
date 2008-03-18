@@ -30,6 +30,7 @@ import javax.ejb.PostActivate;
 import javax.ejb.Remote;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,10 +53,9 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
  */
-@Stateful
+@Stateless
 @Local(RelationManagerLocal.class)
 @Remote(RelationManagerRemote.class)
-@SerializedConcurrentAccess
 public class RelationManagerBean implements RelationManager {
 
     private static final long serialVersionUID = -4778456059717447736L;

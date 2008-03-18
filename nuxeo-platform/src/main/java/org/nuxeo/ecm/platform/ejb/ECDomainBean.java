@@ -21,14 +21,8 @@ package org.nuxeo.ecm.platform.ejb;
 
 import java.util.List;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -44,18 +38,8 @@ import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
  *
  * @author Razvan Caraghin
  */
-@Stateful
-@Local(ECDomainLocal.class)
-@Remote(ECDomain.class)
-@SerializedConcurrentAccess
-public class ECDomainBean implements ECDomain {
-
-    private static final Log log = LogFactory.getLog(ECDomainBean.class);
-
-    @Remove
-    public void remove() {
-        log.debug("Instance removed.");
-    }
+@Stateless
+public class ECDomainBean implements ECDomain, ECDomainLocal {
 
     public List<DocumentModel> getDomains(CoreSession handle)
             throws ECInvalidParameterException, ClientException {
@@ -73,6 +57,9 @@ public class ECDomainBean implements ECDomain {
         } catch (Throwable t) {
             throw EJBExceptionHandler.wrapException(t);
         }
+    }
+
+    public void remove() {
     }
 
 }

@@ -23,18 +23,10 @@ import java.util.Set;
 
 import javax.ejb.Local;
 import javax.ejb.Remote;
-import javax.ejb.Stateful;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.workflow.document.api.ejb.local.WorkflowDocumentRelationLocal;
 import org.nuxeo.ecm.platform.workflow.document.api.ejb.remote.WorkflowDocumentRelationRemote;
@@ -46,27 +38,16 @@ import org.nuxeo.ecm.platform.workflow.document.api.relation.WorkflowDocumentRel
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-@Stateful
+@Stateless
 @Local(WorkflowDocumentRelationLocal.class)
 @Remote(WorkflowDocumentRelationRemote.class)
-@TransactionManagement(TransactionManagementType.CONTAINER)
 public class WorkflowDocumentRelationBean implements
-        WorkflowDocumentRelationManager {
+        WorkflowDocumentRelationManager, WorkflowDocumentRelationLocal, WorkflowDocumentRelationRemote {
 
     private static final long serialVersionUID = -5599951695752823920L;
 
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(WorkflowDocumentRelationBean.class);
-
-    protected EntityManager em;
-
-    @PersistenceUnit(unitName = "NXWorkflowDocument")
-    protected EntityManagerFactory emf;
-
     @PersistenceContext(unitName = "NXWorkflowDocument")
-    public void setEntityManager(EntityManager em) {
-        this.em = em;
-    }
+    protected EntityManager em;
 
     public DocumentRef[] getDocumentRefsFor(String pid) {
 
@@ -112,7 +93,6 @@ public class WorkflowDocumentRelationBean implements
         return workflowInstanceIds;
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void createDocumentWorkflowRef(DocumentRef coreDocRef,
             String workflowInstanceId) throws WorkflowDocumentRelationException {
 
@@ -140,7 +120,6 @@ public class WorkflowDocumentRelationBean implements
         em.flush();
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void deleteDocumentWorkflowRef(DocumentRef coreDocRef, String pid)
             throws WorkflowDocumentRelationException {
 
@@ -196,6 +175,14 @@ public class WorkflowDocumentRelationBean implements
             e.printStackTrace();
         }
         return workflowInstanceRef;
+    }
+
+    public EntityManager getEntityManager() {
+        return em;
+    }
+
+    public void setEntityManager(EntityManager em) {
+        this.em = em;
     }
 
 }

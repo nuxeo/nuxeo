@@ -48,7 +48,6 @@ public interface ECServer {
      * @throws DocumentException
      *
      */
-    @Remove
     void remove() throws ClientException;
 
     /**

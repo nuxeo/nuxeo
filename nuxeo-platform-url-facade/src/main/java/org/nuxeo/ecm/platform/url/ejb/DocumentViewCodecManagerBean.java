@@ -21,9 +21,10 @@ package org.nuxeo.ecm.platform.url.ejb;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Local;
+import javax.ejb.PostActivate;
 import javax.ejb.Remote;
 import javax.ejb.Remove;
-import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
  */
-@Stateful
+@Stateless
 @Local(DocumentViewCodecManagerLocal.class)
 @Remote(DocumentViewCodecManagerRemote.class)
 public class DocumentViewCodecManagerBean implements DocumentViewCodecManager {
@@ -51,6 +52,7 @@ public class DocumentViewCodecManagerBean implements DocumentViewCodecManager {
     private DocumentViewCodecManager service;
 
     @PostConstruct
+    @PostActivate
     public void initialize() {
         try {
             // get Runtime service
