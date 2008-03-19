@@ -472,9 +472,9 @@ NXThemesEditor.loadTheme = function(src) {
       });
 };
 
-NXThemesEditor.saveTheme = function(src) {
+NXThemesEditor.saveTheme = function(src, indent) {
     Seam.Component.getInstance("nxthemesEditorAction").saveTheme(
-       src,
+       src, indent,
       function(r) {
         var msg = r ? "Theme saved." : "The theme could not be saved.";
         NXThemes.getViewById("theme manager").refresh();

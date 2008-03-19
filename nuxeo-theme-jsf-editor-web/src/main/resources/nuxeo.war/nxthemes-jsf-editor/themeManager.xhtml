@@ -45,7 +45,7 @@ window.scrollTo(0,0);
       </td>
       <td class="action">
         <h:outputLink value="javascript:void(0)"
-            onclick="NXThemesEditor.saveTheme('#{theme.src}')"
+            onclick="NXThemesEditor.saveTheme('#{theme.src}', 2)"
             rendered="#{theme.saveable}">
               <h:graphicImage value="/nxthemes-jsf-editor/img/theme-save.png" width="16" height="16" />
               <h:outputText value="save" />

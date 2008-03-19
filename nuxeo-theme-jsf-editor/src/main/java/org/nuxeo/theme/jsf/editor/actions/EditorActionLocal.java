@@ -129,7 +129,7 @@ public interface EditorActionLocal {
     boolean loadTheme(String src);
 
     @WebRemote
-    boolean saveTheme(String src);
+    boolean saveTheme(String src, int indent);
 
     @WebRemote
     String renderCssPreview(String cssPreviewId);

@@ -673,9 +673,9 @@ public class EditorAction implements EditorActionLocal {
         return true;
     }
 
-    public boolean saveTheme(final String src) {
+    public boolean saveTheme(final String src, final int indent) {
         try {
-            ThemeManager.saveTheme(src);
+            ThemeManager.saveTheme(src, indent);
         } catch (ThemeIOException e) {
             log.error(e);
             return false;

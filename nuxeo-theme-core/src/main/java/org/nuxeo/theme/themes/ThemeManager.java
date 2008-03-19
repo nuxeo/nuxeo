@@ -522,7 +522,7 @@ public final class ThemeManager implements Registrable {
         }
     }
 
-    public static void saveTheme(final String src) throws ThemeIOException {
+    public static void saveTheme(final String src, final int indent) throws ThemeIOException {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         ThemeDescriptor themeDescriptor = (ThemeDescriptor) typeRegistry.lookup(
                 TypeFamily.THEME, src);
@@ -547,7 +547,7 @@ public final class ThemeManager implements Registrable {
         ThemeSerializer serializer = new ThemeSerializer();
         String themeName = themeDescriptor.getName();
         ThemeElement theme = Manager.getThemeManager().getThemeByName(themeName);
-        final String xml = serializer.serializeToXml(theme);
+        final String xml = serializer.serializeToXml(theme, indent);
 
         if (os != null) {
             try {
