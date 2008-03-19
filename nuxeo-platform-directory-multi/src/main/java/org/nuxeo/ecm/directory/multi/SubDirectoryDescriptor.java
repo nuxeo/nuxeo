@@ -35,11 +35,15 @@ public class SubDirectoryDescriptor {
     @XNode("@name")
     public String name;
 
+    @XNode("optional")
+    public final Boolean isOptional = false;
+
     @XNodeList(value = "field", type = FieldDescriptor[].class, componentType = FieldDescriptor.class)
     public FieldDescriptor[] fields;
 
     @Override
     public String toString() {
-        return String.format("{subdirectory name=%s fields=%s", name, Arrays.toString(fields));
+        return String.format("{subdirectory name=%s fields=%s", name,
+                Arrays.toString(fields));
     }
 }

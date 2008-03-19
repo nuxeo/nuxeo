@@ -3,6 +3,6 @@
   targetNamespace="http://www.nuxeo.org/ecm/schemas/test">
 
   <xs:element name="uid" type="xs:string" />
-  <xs:element name="foo" type="xs:string" />
+  <xs:element name="foo" type="xs:string" default="defaultFooValue" />
 
 </xs:schema>
