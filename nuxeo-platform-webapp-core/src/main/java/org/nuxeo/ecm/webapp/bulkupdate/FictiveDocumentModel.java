@@ -405,4 +405,12 @@ public class FictiveDocumentModel implements DocumentModel {
         throw new java.lang.UnsupportedOperationException("not implemented");
     }
 
+    public void refresh() throws ClientException {
+        throw new java.lang.UnsupportedOperationException("not implemented");
+    }
+
+    public void refresh(int refreshFlags, String[] schemas)
+            throws ClientException {
+        throw new java.lang.UnsupportedOperationException("not implemented");
+    }
 }

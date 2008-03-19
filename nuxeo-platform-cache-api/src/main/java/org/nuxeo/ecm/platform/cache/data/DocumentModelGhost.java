@@ -492,4 +492,13 @@ public class DocumentModelGhost implements DocumentModel {
         getDM().reset();
     }
 
+    public void refresh() throws ClientException {
+        getDM().refresh();
+    }
+
+    public void refresh(int refreshFlags, String[] schemas)
+            throws ClientException {
+        getDM().refresh(refreshFlags, schemas);
+    }
+
 }
