@@ -929,11 +929,11 @@
   </developers>
 
   <scm>
-    <connection>scm:svn:http://svn.nuxeo.org/nuxeo/nuxeo-ep/branches/5.1</connection>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo</connection>
     <developerConnection>
-      scm:svn:https://svn.nuxeo.org/nuxeo/nuxeo-ep/branches/5.1
+      scm:hg:https://hg.nuxeo.org/nuxeo
     </developerConnection>
-    <url>http://svn.nuxeo.org/trac/nuxeo/browser/nuxeo-ep/branches/5.1</url>
+    <url>http://hg.nuxeo.org/nuxeo/</url>
   </scm>
 
   <distributionManagement>
