@@ -39,6 +39,30 @@
       <groupId>jboss</groupId>
       <artifactId>jboss-cache</artifactId>
     </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>ejb3</artifactId>
+      <version>3.0-RC8</version>
+    </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-aop-jdk50</artifactId>
+      <version>1.4.0.SP1</version>
+    </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-remoting</artifactId>
+    </dependency>
+        <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-aspect-jdk50-client</artifactId>
+      <version>1.5</version>
+    </dependency>
+    <dependency>
+    	<groupId>javax.ejb</groupId>
+    	<artifactId>ejb-api</artifactId>
+    	<scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
