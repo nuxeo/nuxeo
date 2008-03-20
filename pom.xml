@@ -910,9 +910,9 @@
   </dependencies>
 
   <scm>
-    <connection>scm:svn:http://svn.nuxeo.org/nuxeo/org.nuxeo.ecm.platform/branches/5.1</connection>
-    <developerConnection>scm:svn:https://svn.nuxeo.org/nuxeo/org.nuxeo.ecm.platform/branches/5.1</developerConnection>
-    <url>https://svn.nuxeo.org/trac/nuxeo/browser/org.nuxeo.ecm.platform/branches/5.1</url>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-platform</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-platform</developerConnection>
+    <url>http://hg.nuxeo.org/nuxeo/nuxeo-platform</url>
   </scm>
 
 </project>
