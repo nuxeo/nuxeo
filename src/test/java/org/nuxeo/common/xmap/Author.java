@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.xmap;
+package org.nuxeo.common.xmap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
