@@ -51,6 +51,12 @@
     </developer>
   </developers>
 
+  <scm>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-theme</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-theme</developerConnection>
+    <url>http://hg.nuxeo.org/nuxeo/nuxeo-theme</url>
+  </scm>
+
   <dependencyManagement>
     <dependencies>
       <dependency>

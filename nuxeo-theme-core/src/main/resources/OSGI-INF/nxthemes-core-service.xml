@@ -31,10 +31,12 @@
 
       The XML syntax is:
 
-      <fragment name="fragment name">
-        <class>org.nuxeo.theme.fragments.FragmentClass</class>
-        <model-type>model type</model-type>
-      </fragment>
+      <code>
+        <fragment name="fragment name">
+          <class>org.nuxeo.theme.fragments.FragmentClass</class>
+          <model-type>model type</model-type>
+        </fragment>
+      </code>
 
       where:
       - 'class' is the Java class implementing org.nuxeo.themes.fragments.Fragment
@@ -51,9 +53,11 @@
 
       The XML syntax is:
 
-      <model name="model name">
-        <class>org.nuxeo.theme.models.ModelClass</class>
-      </model>
+      <code>
+        <model name="model name">
+          <class>org.nuxeo.theme.models.ModelClass</class>
+        </model>
+      </code>
 
       where:
       - 'class' is the Java class implementing org.nuxeo.themes.models.Model.
@@ -83,10 +87,12 @@
 
       The XML syntax is:
 
-      <standalone-filter name="filter name">
-        <engine>engine name</engine>
-        <class>org.nuxeo.theme.filters.FilterClass</class>
-      </standalone-filter>
+      <code>
+        <standalone-filter name="filter name">
+          <engine>engine name</engine>
+          <class>org.nuxeo.theme.filters.FilterClass</class>
+        </standalone-filter>
+      </code>
 
       where:
       - 'engine' is the name of the Engine for which the Filter will be applied. (Optional)
@@ -101,10 +107,12 @@
 
       The XML syntax is:
 
-      <event-listener>
-        <event>event name</event>
-        <handler>org.nuxeo.theme.EventHandler</handler>
-      </event-listener>
+      <code>
+        <event-listener>
+          <event>event name</event>
+          <handler>org.nuxeo.theme.EventHandler</handler>
+        </event-listener>
+      </code>
 
       where:
       - 'event' is the name of the Event
@@ -119,10 +127,12 @@
 
       The XML syntax is:
 
-      <resource name="resourcename.xxx">
-        <path>path/to/resource.xxx</path>
-        <require>other-resource.xxx</require>
-      </resource>
+      <code>
+        <resource name="resourcename.xxx">
+          <path>path/to/resource.xxx</path>
+          <require>other-resource.xxx</require>
+        </resource>
+      </code>
 
       where:
       - 'name' is the name of the Resource. Supported extensions are '.js', '.css' and '.json'.
@@ -159,9 +169,11 @@
 
     The XML syntax is:
 
-    <perspective name="perspective_name">
-      <title>Perspective title</title>
-    </perspective>
+    <code>
+      <perspective name="perspective_name">
+        <title>Perspective title</title>
+      </perspective>
+    </code>
 
     where:
     - 'name' is the name of perspective (lower-case alpha-numeric characters, underscores and hyphens)
@@ -181,7 +193,9 @@
 
     The XML syntax is:
 
-    <shortcut key="k" target="/target.faces?..." />
+    <code>
+      <shortcut key="k" target="/target.faces?..." />
+    </code>
 
     where:
     - 'key' is the shortcut key..
@@ -198,7 +212,9 @@
 
       The XML syntax is:
 
-      <palette name="palette name" src="palette source" category="category" />
+      <code>
+        <palette name="palette name" src="palette source" category="category" />
+      </code>
 
       where:
       - 'name' is the name of the Palette.
