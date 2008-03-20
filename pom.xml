@@ -81,9 +81,9 @@
   </dependencyManagement>
 
   <scm>
-    <connection>scm:svn:https://svn.nuxeo.org/nuxeo/org.nuxeo.runtime/branches/1.4</connection>
-    <developerConnection>scm:svn:https://svn.nuxeo.org/nuxeo/org.nuxeo.runtime/branches/1.4</developerConnection>
-    <url>https://svn.nuxeo.org/trac/nuxeo/browser/org.nuxeo.runtime/branches/1.4</url>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-runtime</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-runtime</developerConnection>
+    <url>http://hg.nuxeo.org/nuxeo/nuxeo-runtime</url>
   </scm>
 
   <developers>
