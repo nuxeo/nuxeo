@@ -51,9 +51,9 @@
   </developers>
 
   <scm>
-    <connection>scm:svn:http://svn.nuxeo.org/nuxeo/org.nuxeo.theme/branches/5.1</connection>
-    <developerConnection>scm:svn:https://svn.nuxeo.org/nuxeo/org.nuxeo.theme/branches/5.1</developerConnection>
-    <url>https://svn.nuxeo.org/trac/nuxeo/browser/org.nuxeo.theme/branches/5.1</url>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-theme</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-theme</developerConnection>
+    <url>http://hg.nuxeo.org/nuxeo/nuxeo-theme</url>
   </scm>
 
   <dependencyManagement>
