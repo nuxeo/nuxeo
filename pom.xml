@@ -50,9 +50,9 @@
   </profiles>
 
   <scm>
-    <connection>scm:svn:http://svn.nuxeo.org/nuxeo/org.nuxeo.ecm.core/branches/1.4</connection>
-    <developerConnection>scm:svn:https://svn.nuxeo.org/nuxeo/org.nuxeo.ecm.core/branches/1.4</developerConnection>
-    <url>https://svn.nuxeo.org/trac/nuxeo/browser/org.nuxeo.ecm.core/branches/1.4</url>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-core</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-core</developerConnection>
+    <url>http://hg.nuxeo.org/nuxeo/nuxeo-core</url>
   </scm>
 
   <dependencyManagement>
