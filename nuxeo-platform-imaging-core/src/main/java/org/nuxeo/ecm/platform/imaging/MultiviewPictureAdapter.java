@@ -93,12 +93,11 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
     }
 
     public static PictureView mapToView(Map<String, Object> map) {
-        Object o = null;
         PictureView view = new PictureViewImpl();
         view.setTitle((String) map.get(PictureView.FIELD_TITLE));
         view.setDescription((String) map.get(PictureView.FIELD_DESCRIPTION));
         view.setTag((String) map.get(PictureView.FIELD_TAG));
-        o = map.get(PictureView.FIELD_WIDTH);
+        Object o = map.get(PictureView.FIELD_WIDTH);
         if (o != null) {
             view.setWidth(((Number) o).intValue());
         }
@@ -132,8 +131,8 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
         return collection.toArray(new PictureView[collection.size()]);
     }
 
-    public PictureView getView(String title) {
-        return views.get(title);
+    public PictureView getView(String name) {
+        return views.get(name);
     }
 
     public void removeView(String name) {

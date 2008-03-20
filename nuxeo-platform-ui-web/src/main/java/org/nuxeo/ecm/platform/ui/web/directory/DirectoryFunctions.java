@@ -36,9 +36,8 @@ public final class DirectoryFunctions {
 
     /**
      *
-     * @param data comma separated values that will be used to create a list
+     * @param data comma-separated values that will be used to create a list
      *            of structures containing an index also
-     * @param type
      * @return
      */
     public static List<CSLData> getCSLData(String data) {
@@ -71,4 +70,5 @@ public final class DirectoryFunctions {
 
         return items.length;
     }
+
 }
