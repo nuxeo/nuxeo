@@ -121,14 +121,13 @@ public class DateParser {
      */
     private static Date parseUsingMask(String[] masks, String sDate) {
         sDate = (sDate != null) ? sDate.trim() : null;
-        ParsePosition pp;
         Date d = null;
         for (int i = 0; d == null && i < masks.length; i++) {
             DateFormat df = new SimpleDateFormat(masks[i], Locale.US);
             //df.setLenient(false);
             df.setLenient(true);
             try {
-                pp = new ParsePosition(0);
+                ParsePosition pp = new ParsePosition(0);
                 d = df.parse(sDate, pp);
                 if (pp.getIndex() != sDate.length()) {
                     d = null;

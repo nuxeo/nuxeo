@@ -35,11 +35,11 @@ public class RepositoryInstanceHandler implements InvocationHandler {
 
     private final Repository repository;
     private CoreSession session;
-    private RepositoryExceptionHandler exceptionHandler;
+    private final RepositoryExceptionHandler exceptionHandler;
 
 
     public RepositoryInstanceHandler(Repository repository) {
-        this (repository, null);
+        this(repository, null);
     }
 
     public RepositoryInstanceHandler(Repository repository, RepositoryExceptionHandler exceptionHandler) {

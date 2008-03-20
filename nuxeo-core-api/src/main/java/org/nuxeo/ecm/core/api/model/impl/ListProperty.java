@@ -182,7 +182,7 @@ public class ListProperty extends AbstractProperty {
         if (value == null) { // IGNORE null values - properties will be considered PHANTOMS
             return;
         }
-        List<Serializable> list = null;
+        List<Serializable> list;
         if (value.getClass().isArray()) { // accept also arrays
             list = (List<Serializable>)PrimitiveArrays.toList(value);
         } else {

@@ -20,17 +20,13 @@
 package org.nuxeo.ecm.core.api.operation;
 
 /**
- * A progress monitor is notified by a command avout the command progress
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ProgressMonitor {
+public interface OperationHandler {
 
-    void started(Operation<?> cmd);
+    void startOperation(Operation<?> operation);
 
-    void done(Operation<?> cmd, int percent);
-
-    void terminated(Operation<?> cmd);
+    void endOperation(Operation<?> operation);
 
 }
