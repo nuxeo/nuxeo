@@ -930,9 +930,7 @@
 
   <scm>
     <connection>scm:hg:http://hg.nuxeo.org/nuxeo</connection>
-    <developerConnection>
-      scm:hg:https://hg.nuxeo.org/nuxeo
-    </developerConnection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo</developerConnection>
     <url>http://hg.nuxeo.org/nuxeo/</url>
   </scm>
 
