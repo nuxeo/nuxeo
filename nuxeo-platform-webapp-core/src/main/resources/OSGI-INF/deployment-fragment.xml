@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-
 <fragment>
-
 
   <extension target="application#MODULE">
 
@@ -176,6 +174,7 @@
       <supported-locale>ar</supported-locale>
       <supported-locale>ru</supported-locale>
       <supported-locale>ja</supported-locale>
+      <supported-locale>vn</supported-locale>
     </locale-config>
     <message-bundle>messages</message-bundle>
 
