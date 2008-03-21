@@ -1,9 +1,16 @@
 #!/usr/bin/python
 import os
 import sys
-from lxml.etree import iterparse
-from lxml.etree import ElementTree
 from optparse import OptionParser
+try:
+    # lxml is better since it does not rip the comments off
+    from lxml.etree import iterparse
+    from lxml.etree import ElementTree
+except ImportError:
+    # fallback to default ElementTree in standard lib
+    from xml.etree.ElementTree import iterparse
+    from xml.etree.ElementTree import ElementTree
+
 
 def edit_files(options, blacklist = ('.svn',)):
     """Recursively scan xml files and update the given properties"""
@@ -59,7 +66,7 @@ def edit_files(options, blacklist = ('.svn',)):
 
             if changed:
                 # last element is the tree itself: serialize it
-                ElementTree(elem).write_c14n(filename)
+                ElementTree(elem).write(filename)
                 print filename, 'updated'
 
 if __name__ == "__main__":

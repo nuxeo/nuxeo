@@ -16,7 +16,7 @@
         (e.g. registered namespaces, custom node types, etc.)
         -->
         <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
-          <param name="path" value="${rep.home}/repository"></param>
+          <param name="path" value="${rep.home}/repository"/>
         </FileSystem>
         <!--
         security configuration
@@ -31,7 +31,7 @@
           </AccessManager>
           <LoginModule class="org.apache.jackrabbit.core.security.SimpleLoginModule">
             <!-- anonymous user name ('anonymous' is the default value) -->
-            <param name="anonymousId" value="anonymous"></param>
+            <param name="anonymousId" value="anonymous"/>
             <!--
               default user name to be used instead of the anonymous user
               when no login credentials are provided (unset by default)
@@ -43,7 +43,7 @@
         <!--
         location of workspaces root directory and name of default workspace
         -->
-        <Workspaces defaultWorkspace="default" rootPath="${rep.home}/workspaces"></Workspaces>
+        <Workspaces defaultWorkspace="default" rootPath="${rep.home}/workspaces"/>
         <!--
         workspace configuration template:
         used to create the initial workspace if there's no workspace yet
@@ -54,7 +54,7 @@
             class: FQN of class implementing the FileSystem interface
           -->
           <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
-            <param name="path" value="${wsp.home}"></param>
+            <param name="path" value="${wsp.home}"/>
           </FileSystem>
 
           <!--
@@ -65,13 +65,13 @@
           -->
 
           <PersistenceManager class="org.apache.jackrabbit.core.persistence.bundle.PostgreSQLPersistenceManager">
-            <param name="driver" value="org.postgresql.Driver"></param>
-            <param name="url" value="jdbc:postgresql://localhost:5432/nuxeo"></param>
-            <param name="user" value="nuxeo"></param>
-            <param name="password" value="myPr3c1ous"></param>
-            <param name="schema" value="postgresql"></param>
-            <param name="schemaObjectPrefix" value="jcr_${wsp.name}_"></param>
-            <param name="externalBLOBs" value="false"></param>
+            <param name="driver" value="org.postgresql.Driver"/>
+            <param name="url" value="jdbc:postgresql://localhost:5432/nuxeo"/>
+            <param name="user" value="nuxeo"/>
+            <param name="password" value="myPr3c1ous"/>
+            <param name="schema" value="postgresql"/>
+            <param name="schemaObjectPrefix" value="jcr_${wsp.name}_"/>
+            <param name="externalBLOBs" value="false"/>
           </PersistenceManager>
 
           <!--
@@ -79,7 +79,7 @@
             class: FQN of class implementing the QueryHandler interface
           -->
           <SearchIndex class="org.apache.jackrabbit.core.query.lucene.SearchIndex">
-            <param name="path" value="${wsp.home}/index"></param>
+            <param name="path" value="${wsp.home}/index"/>
           </SearchIndex>
         </Workspace>
 
@@ -92,7 +92,7 @@
             persistence manager
           -->
           <FileSystem class="org.apache.jackrabbit.core.fs.local.LocalFileSystem">
-            <param name="path" value="${rep.home}/version"></param>
+            <param name="path" value="${rep.home}/version"/>
           </FileSystem>
 
           <!--
@@ -105,13 +105,13 @@
           -->
 
           <PersistenceManager class="org.apache.jackrabbit.core.persistence.bundle.PostgreSQLPersistenceManager">
-            <param name="driver" value="org.postgresql.Driver"></param>
-            <param name="url" value="jdbc:postgresql://localhost:5432/nuxeo"></param>
-            <param name="user" value="nuxeo"></param>
-            <param name="password" value="myPr3c1ous"></param>
-            <param name="schema" value="postgresql"></param>
-            <param name="schemaObjectPrefix" value="jcr_ver_"></param>
-            <param name="externalBLOBs" value="false"></param>
+            <param name="driver" value="org.postgresql.Driver"/>
+            <param name="url" value="jdbc:postgresql://localhost:5432/nuxeo"/>
+            <param name="user" value="nuxeo"/>
+            <param name="password" value="myPr3c1ous"/>
+            <param name="schema" value="postgresql"/>
+            <param name="schemaObjectPrefix" value="jcr_ver_"/>
+            <param name="externalBLOBs" value="false"/>
           </PersistenceManager>
         </Versioning>
 
@@ -120,7 +120,7 @@
         (/jcr:system tree, contains mainly versions)
         -->
         <SearchIndex class="org.apache.jackrabbit.core.query.lucene.SearchIndex">
-          <param name="path" value="${rep.home}/repository/index"></param>
+          <param name="path" value="${rep.home}/repository/index"/>
         </SearchIndex>
       </Repository>
     </repository>
