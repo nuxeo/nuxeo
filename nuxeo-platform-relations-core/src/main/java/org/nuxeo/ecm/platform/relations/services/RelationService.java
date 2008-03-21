@@ -297,7 +297,7 @@ public class RelationService extends DefaultComponent implements
         }
     }
 
-    protected Graph createGraph(String name) throws ClientException {
+    protected Graph createGraph(String name) {
         GraphDescription graphDescription = graphDescriptionRegistry.get(name);
         if (graphDescription == null) {
             throw new RuntimeException(String.format(
