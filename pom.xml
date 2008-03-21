@@ -421,6 +421,11 @@
         <artifactId>shared-ldap-constants</artifactId>
         <version>0.9.7</version>
       </dependency>
+      <dependency>
+        <groupId>postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>8.2-507.jdbc3</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
