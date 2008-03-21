@@ -22,10 +22,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Calendar;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -48,8 +47,7 @@ public class FeedItemAdapter {
      * @throws ParseException
      * @throws ClientException
      */
-    public FeedItem toFeedItem(DocumentModel doc) throws ParseException,
-            ClientException {
+    public FeedItem toFeedItem(DocumentModel doc) throws ParseException {
 
         FeedItem feedIt = new FeedItem();
 
@@ -73,9 +71,9 @@ public class FeedItemAdapter {
         feedIt.setLink(DocumentModelFunctions.documentUrl(null, doc, null,
                 null, true));
 
-        Date creationDate = ((GregorianCalendar) doc.getProperty("dublincore",
+        Date creationDate = ((Calendar) doc.getProperty("dublincore",
                 "created")).getTime();
-        Date updateDate = ((GregorianCalendar) doc.getProperty("dublincore",
+        Date updateDate = ((Calendar) doc.getProperty("dublincore",
                 "modified")).getTime();
 
         feedIt.setPublishedDate(DATE_PARSER.parse(DATE_PARSER.format(creationDate)));
@@ -88,7 +86,6 @@ public class FeedItemAdapter {
      * Converts a DocumentModelList to a List of FeedItem.
      *
      * @param docList
-     * @param serverLocation used to get the right URL of each feedItem
      * @return
      * @throws ParseException
      * @throws ClientException

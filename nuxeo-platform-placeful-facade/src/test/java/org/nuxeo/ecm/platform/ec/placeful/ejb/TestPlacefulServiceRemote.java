@@ -117,7 +117,7 @@ public class TestPlacefulServiceRemote extends TestCase {
         CoreInstance.getInstance().close(remote);
     }
 
-    protected void _uninitializeRemoteHandle() throws DocumentException {
+    protected void _uninitializeRemoteHandle() {
         if (null != remote) {
             remote.destroy();
             remote = null;

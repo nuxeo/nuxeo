@@ -105,9 +105,10 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet {
             RestletFileUpload fu = new RestletFileUpload();
             fu.setFileItemFactory(new DiskFileItemFactory());
             String fileNameCharset = getHttpRequest(req).getHeader("FileNameCharset");
-            if (fileNameCharset!=null)
+            if (fileNameCharset != null) {
                 fu.setHeaderEncoding(fileNameCharset);
-            List<FileItem> fiList = null;
+            }
+            List<FileItem> fiList;
             try {
                 fiList = fu.parseRequest(req);
             } catch (FileUploadException e) {

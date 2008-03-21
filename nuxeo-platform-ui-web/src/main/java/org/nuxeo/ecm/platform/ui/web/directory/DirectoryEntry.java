@@ -32,8 +32,6 @@ public class DirectoryEntry {
 
     public static final String XVOCABULARY = "xvocabulary";
 
-    private static final long serialVersionUID = 1L;
-
     private final String parent;
 
     private final String id;

@@ -194,8 +194,7 @@ public class UserDataManager {
         CoreSession systemSession;
         try {
             Framework.login();
-            RepositoryManager manager = Framework
-                    .getService(RepositoryManager.class);
+            RepositoryManager manager = Framework.getService(RepositoryManager.class);
             systemSession = manager.getRepository(
                     userSession.getRepositoryName()).open();
         } catch (Exception e) {

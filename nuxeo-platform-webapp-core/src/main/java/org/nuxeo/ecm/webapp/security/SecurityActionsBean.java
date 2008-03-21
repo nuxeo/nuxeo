@@ -172,7 +172,7 @@ public class SecurityActionsBean extends InputController implements
      * @throws ECInvalidParameterException
      */
     protected UserPermissionsTableModel reconstructTableModel()
-            throws ClientException, ECInvalidParameterException {
+            throws ClientException {
         List<TableColHeader> headers = new ArrayList<TableColHeader>();
 
         TableColHeader header = new CheckBoxColHeader(

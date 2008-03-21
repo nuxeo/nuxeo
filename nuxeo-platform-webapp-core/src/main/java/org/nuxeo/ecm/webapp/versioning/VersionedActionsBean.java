@@ -25,18 +25,14 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
-import javax.annotation.security.PermitAll;
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.Create;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -49,7 +45,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -57,7 +52,6 @@ import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.w3c.dom.ranges.DocumentRange;
 
 /**
  * Deals with versioning actions.
@@ -69,8 +63,9 @@ import org.w3c.dom.ranges.DocumentRange;
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
 public class VersionedActionsBean extends InputController implements
-        VersionedActions {
+        VersionedActions, Serializable {
 
+    private static final long serialVersionUID = -5994196072812025648L;
     private static final Log log = LogFactory.getLog(VersionedActionsBean.class);
 
     @In(create = true)

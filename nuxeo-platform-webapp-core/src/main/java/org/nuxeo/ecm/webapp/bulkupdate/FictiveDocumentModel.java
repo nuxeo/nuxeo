@@ -398,11 +398,19 @@ public class FictiveDocumentModel implements DocumentModel {
 
     @Override
     public DocumentModel clone() throws CloneNotSupportedException {
-    	throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new java.lang.UnsupportedOperationException("not implemented");
     }
 
     public void reset() {
         throw new java.lang.UnsupportedOperationException("not implemented");
     }
 
+    public void refresh() throws ClientException {
+        throw new java.lang.UnsupportedOperationException("not implemented");
+    }
+
+    public void refresh(int refreshFlags, String[] schemas)
+            throws ClientException {
+        throw new java.lang.UnsupportedOperationException("not implemented");
+    }
 }

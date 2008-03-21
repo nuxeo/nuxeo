@@ -54,7 +54,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * A test/sample class for remote copying of documents and resources.
- *
+ * <p>
  * Warning : this test is deactivated from autorun unit tests as it needs a particular configuration
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
