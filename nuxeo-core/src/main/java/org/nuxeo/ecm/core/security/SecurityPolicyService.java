@@ -29,12 +29,6 @@ import org.nuxeo.ecm.core.model.Document;
 /**
  * Service checking permissions for pluggable policies.
  *
- * <p>
- * The security service checks this service for a security access. This access
- * is defined iterating over pluggable policies in a defined order. If access is
- * not specified, security service applies its default policy.
- * </p>
- *
  * @author Anahide Tchertchian
  */
 public interface SecurityPolicyService extends Serializable {
@@ -42,9 +36,19 @@ public interface SecurityPolicyService extends Serializable {
     /**
      * Checks given permission for doc and principal.
      *
-     * @param doc
-     * @param principal
-     * @param permission
+     * <p>
+     * The security service checks this service for a security access. This
+     * access is defined iterating over pluggable policies in a defined order.
+     * If access is not specified, security service applies its default policy.
+     * </p>
+     *
+     * @param doc the document to check
+     * @param mergedAcp merged acp resolved for this document
+     * @param principal principal to check
+     * @param permission permission to check
+     * @param resolvedPermissions permissions or groups of permissions
+     *            containing permission
+     * @param principalsToCheck principals (groups) to check for principal
      * @return access: true, false, or nothing. When nothing is returned,
      *         following policies or default core security are applied.
      * @throws SecurityException

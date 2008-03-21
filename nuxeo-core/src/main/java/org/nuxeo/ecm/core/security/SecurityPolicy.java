@@ -36,12 +36,13 @@ public interface SecurityPolicy {
     /**
      * Checks given permission for doc and principal.
      *
-     * @param doc
-     * @param mergedAcp TODO
-     * @param principal
-     * @param permission
-     * @param resolvedPermissions
-     * @param principalsToCheck
+     * @param doc the document to check
+     * @param mergedAcp merged acp resolved for this document
+     * @param principal principal to check
+     * @param permission permission to check
+     * @param resolvedPermissions permissions or groups of permissions
+     *            containing permission
+     * @param principalsToCheck principals (groups) to check for principal
      * @return access: true, false, or nothing. When nothing is returned,
      *         following policies or default core security are applied.
      * @throws SecurityException
