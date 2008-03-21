@@ -22,6 +22,10 @@ package org.nuxeo.ecm.core.security;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.model.Document;
 
+/**
+ * @deprecated use {@link SecurityPolicy} instead
+ */
+@Deprecated
 public interface CorePolicyService {
 
     boolean checkPolicy(Document doc, NuxeoPrincipal principal,

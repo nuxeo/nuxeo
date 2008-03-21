@@ -27,6 +27,7 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
+@Deprecated
 public class PolicyServiceImpl extends DefaultComponent implements
         PolicyService {
 
