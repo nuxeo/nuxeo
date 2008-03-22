@@ -40,8 +40,8 @@ public abstract class Operation<T> implements Serializable {
     // the current command
     private static final ThreadLocal<Operation<?>> operation = new ThreadLocal<Operation<?>>();
 
-    public final static String START_EVENT = "commandStarted";
-    public final static String TERMINATE_EVENT = "commandTerminated";
+    public static final String START_EVENT = "commandStarted";
+    public static final String TERMINATE_EVENT = "commandTerminated";
 
     /**
      * Operation flags.
@@ -50,21 +50,21 @@ public abstract class Operation<T> implements Serializable {
      */
 
     // No flags are set - operation was not yet started
-    public final static int NONE = 0;
+    public static final int NONE = 0;
 
     // set if operation is running (bit 0)
-    public final static int RUNNING = 1;
+    public static final int RUNNING = 1;
     // set if operation completed (bit 1)
-    public final static int TERMINATED = 2;
+    public static final int TERMINATED = 2;
 
     // an internal operation - not triggered directly by clients
-    public final static int INTERNAL = 4;
+    public static final int INTERNAL = 4;
     // priority flag - if set this operation is urgent (should not be queued, neither it's completion notification)
-    public final static int URGENT = 8;
+    public static final int URGENT = 8;
     // this operation may run asynchronously - this is a hint
-    public final static int ASYNC = 16;
+    public static final int ASYNC = 16;
     // operation completion notification should not be sent over JMS
-    public final static int BLOCK_JMS = 32;
+    public static final int BLOCK_JMS = 32;
     // Whether or not the data field contains keyed data.
     public static final int KEYED_DATA = 64;
     // reserved by the core for future use
@@ -250,7 +250,7 @@ public abstract class Operation<T> implements Serializable {
     }
 
     public List<Operation<?>> getCommandStack() {
-        ArrayList<Operation<?>> cmds = new ArrayList<Operation<?>>();
+        List<Operation<?>> cmds = new ArrayList<Operation<?>>();
         fillCommandStack(cmds);
         return cmds;
     }

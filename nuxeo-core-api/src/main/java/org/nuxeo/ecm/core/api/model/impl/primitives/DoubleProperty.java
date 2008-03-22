@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -59,38 +60,38 @@ public class DoubleProperty extends ScalarProperty {
         throw new PropertyConversionException(value.getClass(), Double.class);
     }
 
+    @NotNull
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {
         if (value == null || Double.class == toType) {
-            return (T)value;
+            return (T) value;
         }
-        Double v = (Double)value;
+        Double v = (Double) value;
         if (toType == Integer.class) {
-            return (T)new Integer(v.intValue());
+            return (T) new Integer(v.intValue());
         }
         if (toType == String.class) {
-            return (T)v.toString();
+            return (T) v.toString();
         }
         if (toType == Long.class) {
-            return (T)new Long(v.longValue());
+            return (T) new Long(v.longValue());
         }
         if (toType == Float.class) {
-            return (T)new Float(v.floatValue());
+            return (T) new Float(v.floatValue());
         }
         if (toType == Short.class) {
-            return (T)new Short(v.shortValue());
+            return (T) new Short(v.shortValue());
         }
         if (toType == Byte.class) {
-            return (T)new Byte(v.byteValue());
+            return (T) new Byte(v.byteValue());
         }
         throw new PropertyConversionException(value.getClass(), toType);
     }
 
     @Override
-    public Object newInstance() throws InstantiationException,
-            IllegalAccessException {
-        return new Double(0);
+    public Object newInstance() {
+        return (double) 0;
     }
 
 }

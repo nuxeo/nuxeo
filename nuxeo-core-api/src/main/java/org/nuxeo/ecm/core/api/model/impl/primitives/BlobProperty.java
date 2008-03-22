@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.model.impl.osm.ObjectAdapterManager;
 import org.nuxeo.ecm.core.api.model.impl.osm.ObjectMappingError;
 import org.nuxeo.ecm.core.api.model.impl.osm.ObjectProperty;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -86,6 +87,7 @@ public class BlobProperty extends ObjectProperty {
 //        }
     }
 
+    @NotNull
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {
@@ -99,8 +101,7 @@ public class BlobProperty extends ObjectProperty {
     }
 
     @Override
-    public Object newInstance() throws InstantiationException,
-            IllegalAccessException {
+    public Object newInstance() {
         return new ByteArrayInputStream("".getBytes()); // TODO not serializable
     }
 

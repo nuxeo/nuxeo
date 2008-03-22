@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -61,21 +62,21 @@ public class DateProperty extends ScalarProperty {
         throw new PropertyConversionException(value.getClass(), Calendar.class);
     }
 
+    @NotNull
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {
         if (value == null || toType == Calendar.class) {
-            return (T)value;
+            return (T) value;
         }
         if (toType == Date.class) {
-            return (T)((Calendar)value).getTime();
+            return (T) ((Calendar) value).getTime();
         }
         throw new PropertyConversionException(value.getClass(), toType);
     }
 
     @Override
-    public Object newInstance() throws InstantiationException,
-            IllegalAccessException {
+    public Object newInstance() {
         return Calendar.getInstance();
     }
 

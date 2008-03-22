@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.JavaTypes;
 import org.nuxeo.ecm.core.schema.types.ListType;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -73,6 +74,7 @@ public class ArrayProperty extends ScalarProperty {
         throw new PropertyConversionException(value.getClass(), Object[].class, getPath());
     }
 
+    @NotNull
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {
@@ -85,8 +87,7 @@ public class ArrayProperty extends ScalarProperty {
     }
 
     @Override
-    public Object newInstance() throws InstantiationException,
-            IllegalAccessException {
+    public Object newInstance() {
         return new Serializable[0];
     }
 

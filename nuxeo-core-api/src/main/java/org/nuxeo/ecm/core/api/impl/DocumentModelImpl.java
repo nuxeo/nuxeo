@@ -1462,6 +1462,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         getProperty(path).setValue(value);
     }
 
+    @Override
     public DocumentModel clone() throws CloneNotSupportedException {
         DocumentModelImpl dm = (DocumentModelImpl)super.clone();
 //        dm.id =id;

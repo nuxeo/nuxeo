@@ -43,7 +43,7 @@ public class BlobObjectAdapter extends DynamicObjectAdapter {
         super(Blob.class);
     }
 
-    public Object create(Map<String, Object> value) throws PropertyException {
+    public Object create(Map<String, Object> value) {
         String mimeType = (String) value.get("mime-type");
         String encoding = (String) value.get("encoding");
 //        long length = -1;

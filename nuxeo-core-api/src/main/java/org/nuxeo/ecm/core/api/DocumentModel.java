@@ -70,23 +70,23 @@ import org.nuxeo.ecm.core.schema.DocumentType;
  */
 public interface DocumentModel extends Serializable {
 
-    public final static int REFRESH_LOCK = 1;
-    public final static int REFRESH_LIFE_CYCLE = 2;
-    public final static int REFRESH_PREFETCH = 4;
-    public final static int REFRESH_ACP_IF_LOADED = 8; // refresh now only if already loaded
-    public final static int REFRESH_ACP_LAZY = 16; // refresh later in lazy mode
-    public final static int REFRESH_ACP = 32; // refresh now
-    public final static int REFRESH_CONTENT_IF_LOADED = 64; // refresh now only if already loaded
-    public final static int REFRESH_CONTENT_LAZY = 128; // refresh later in lazy mode
-    public final static int REFRESH_CONTENT = 256; // refresh now
-    public final static int REFRESH_STATE = REFRESH_LIFE_CYCLE | REFRESH_LOCK;
-    public final static int REFRESH_IF_LOADED = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP_IF_LOADED | REFRESH_CONTENT_IF_LOADED;
-    public final static int REFRESH_LAZY = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP_LAZY | REFRESH_CONTENT_LAZY;
-    public final static int REFRESH_ALL = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP | REFRESH_CONTENT;
-    public final static int REFRESH_DEFAULT = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP_IF_LOADED | REFRESH_CONTENT_LAZY;
+    int REFRESH_LOCK = 1;
+    int REFRESH_LIFE_CYCLE = 2;
+    int REFRESH_PREFETCH = 4;
+    int REFRESH_ACP_IF_LOADED = 8; // refresh now only if already loaded
+    int REFRESH_ACP_LAZY = 16; // refresh later in lazy mode
+    int REFRESH_ACP = 32; // refresh now
+    int REFRESH_CONTENT_IF_LOADED = 64; // refresh now only if already loaded
+    int REFRESH_CONTENT_LAZY = 128; // refresh later in lazy mode
+    int REFRESH_CONTENT = 256; // refresh now
+    int REFRESH_STATE = REFRESH_LIFE_CYCLE | REFRESH_LOCK;
+    int REFRESH_IF_LOADED = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP_IF_LOADED | REFRESH_CONTENT_IF_LOADED;
+    int REFRESH_LAZY = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP_LAZY | REFRESH_CONTENT_LAZY;
+    int REFRESH_ALL = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP | REFRESH_CONTENT;
+    int REFRESH_DEFAULT = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP_IF_LOADED | REFRESH_CONTENT_LAZY;
 
     /**
-     * Get the document type object.
+     * Gets the document type object.
      *
      * @return the document type object
      */
@@ -625,13 +625,6 @@ public interface DocumentModel extends Serializable {
     long getFlags();
 
     /**
-     * Clone operation
-     * @return
-     * @throws CloneNotSupportedException
-     */
-    DocumentModel clone() throws CloneNotSupportedException;
-
-    /**
      * Clear any prefetched or cached document data. This will force the document to lazy update
      * it's data when required.
      */
@@ -674,7 +667,8 @@ public interface DocumentModel extends Serializable {
     void refresh(int refreshFlags, String[] schemas) throws ClientException;
 
     /**
-     * Same as {@link DocumentModel#refresh(REFRESH_DEFAULT)}
+     * Same as {@code DocumentModel.refresh(REFRESH_DEFAULT)}.
+     *
      * @throws ClientException
      */
     void refresh() throws ClientException;

@@ -29,6 +29,8 @@ import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A document property.
@@ -323,7 +325,8 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * is a map or a list.
      * <p>
      * Container properties don't have a scalar values. Container values are computed each time they are
-     * requested - by calling on of the <code>getValue</code> methods - by collecting the values of the child properties.
+     * requested - by calling on of the <code>getValue</code> methods - by collecting
+     * the values of the child properties.
      *
      * @return true if scalar false otherwise
      */
@@ -408,7 +411,8 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      *
      * @param value the value to set
      *
-     * @throws {@link InvalidPropertyValueException} if the given value type is not compatible with the expected value type
+     * @throws {@link InvalidPropertyValueException} if the given value type
+     * is not compatible with the expected value type
      */
     void setValue(Object value) throws PropertyException;
 
@@ -418,9 +422,9 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * <p>
      * Normalized values are of the java type that correspond to the field type
      *
-     * @return the property value, or null if {@link Property#isNull()} return
-     *         true
+     * @return the property value
      */
+    @NotNull
     Serializable getValue() throws PropertyException;
 
     /**
@@ -430,10 +434,10 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * <p>
      * If conversion is not supported a runtime exception will be triggered.
      *
-     * @return the property value or null if {@link Property#isNull()} return
-     *         true
+     * @return the property value
      * @throws TODO
      */
+    @NotNull
     <T> T getValue(Class<T> type) throws PropertyException;
 
     /**
@@ -447,34 +451,36 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     /**
      * Gets the child property having the given name.
      * <p>
-     * If the property is a scalar this will return allways null
+     * If the property is a scalar, this will return allways null.
      * <p>
-     * The given name should be the full name (i.e. prefixed name if any prefix exists)
+     * The given name should be the full name (i.e. prefixed name if any prefix exists).
      * <p>
-     * If a non prefixed name is given the first child property having the given local name will be returned
+     * If a non prefixed name is given, the first child property having the given
+     * local name will be returned.
      * <p>
      * Relative paths are not resolved. THis method is intended to lookup direct childs.
-     * For path lookups use {@link Property#resolvePath(String)} instead
+     * For path lookups use {@link Property#resolvePath(String)} instead.
+     *
      * @param name the child property name (the full name including the prefix if any)
      * @return the child property if any null if no child property with that name is found or if the property is a scalar
      * @throws {@link UnsupportedOperationException} if the property is a scalar property (doesn't have children)
      * @throws {@link PropertyNotFoundException} if the child property is not found in the type definition
      */
-    Property get(String name) throws PropertyNotFoundException, UnsupportedOperationException;
+    Property get(String name) throws PropertyNotFoundException;
 
     /**
      * Set the child property value
      * <p>
-     * Thsi method will mark the child value as dirty for existing values
-     * and in the case of map properties it will mark phantom properties as new properties
+     * This method will mark the child value as dirty for existing values
+     * and, in the case of map properties, it will mark phantom properties as new properties.
      *
-     * @param name
+     * @param name the child property name (the full name including the prefix if any)
      * @param value the new value
      * @return the property that was set
      * @throws {@link UnsupportedOperationException} if the property is a scalar property (doesn't have children)
      * @throws {@link PropertyNotFoundException} if the child property is not found in the type definition
      */
-    Property set(String name, Object value) throws  PropertyException;
+    Property set(String name, Object value) throws PropertyException;
 
     /**
      * Get the child property given it's index. This operation is mandatory for List properties.
@@ -482,13 +488,14 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      *  If this method is not supported an {@link UnsupportedOperationException} must be thrown
      * <p>
      * Relative paths are not resolved. THis method is intended to lookup direct childs.
-     * For path lookups use {@link Property#resolvePath(String)} instead
-     * @param name the child property name (the full name including the prefix if any)
+     * For path lookups, use {@link Property#resolvePath(String)} instead.
+     *
+     * @param index
      * @return the child property if any null if no child property with that name is found or if the property is a scalar
      * @throws {@link UnsupportedOperationException} if the property is a scalar property (doesn't have children)
      * @throws {@link PropertyNotFoundException} if the child property is not found in the type definition
      */
-    Property get(int index) throws PropertyNotFoundException, UnsupportedOperationException;
+    Property get(int index) throws PropertyNotFoundException;
 
     /**
      * Sets a child property value given its index. This method is required only for List properties.
@@ -498,7 +505,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * This method will mark the child value as dirty for existing values
      * and in the case of map properties it will mark phantom properties as new properties.
      *
-     * @param name
+     * @param index
      * @param value the new value
      * @return the property that was set
      * @throws {@link UnsupportedOperationException} if the property is a scalar property (doesn't have children)
@@ -572,7 +579,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * @param property the move it before this property
      * @throws UnsupportedOperationException if the operation is not supported by the target property
      */
-    void moveTo(int index) throws UnsupportedOperationException;
+    void moveTo(int index);
 
     /**
      * Same as {@link Property#resolvePath(Path)} but with a string path as argument.
@@ -685,6 +692,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * @throws PropertyConversionException If the conversion cannot be made
      * because of type incompatibilities
      */
+    @NotNull
     <T> T convertTo(Serializable value, Class<T> toType) throws PropertyConversionException;
 
     /**
@@ -719,10 +727,10 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * or can be considered as an emtpy value. For example for the {@link String} type the empty value
      * will be the empty string ""
      *
-     * @return the empty instance the empty instance
+     * @return the empty instance the empty instance, or null for some implementations
      */
-    Object newInstance() throws InstantiationException, IllegalAccessException;
-
+    @Nullable
+    Object newInstance();
 
     /**
      * Method that implement the visitor pattern.
