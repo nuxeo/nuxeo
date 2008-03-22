@@ -110,7 +110,8 @@ public class SecurityService extends DefaultComponent {
         return permissionProvider;
     }
 
-    public void invalidateCache(Session session, String username) {
+    // Never used. Remove ?
+    public static void invalidateCache(Session session, String username) {
         session.getRepository().getSecurityManager().invalidateCache(session);
     }
 
@@ -188,7 +189,7 @@ public class SecurityService extends DefaultComponent {
         }
     }
 
-    protected String[] getPrincipalsToCheck(NuxeoPrincipal principal) {
+    protected static String[] getPrincipalsToCheck(NuxeoPrincipal principal) {
         List<String> userGroups = principal.getAllGroups();
         if (userGroups == null) {
             return new String[] { principal.getName() };
@@ -292,13 +293,13 @@ public class SecurityService extends DefaultComponent {
 
         addChildrenToSecuritySummary(doc, result);
         // TODO: change API to use boolean instead
-        if (includeParents.booleanValue()) {
+        if (includeParents) {
             addParentsToSecurirySummary(doc, result);
         }
         return result;
     }
 
-    private SecuritySummaryEntry createSecuritySummaryEntry(Document doc)
+    private static SecuritySummaryEntry createSecuritySummaryEntry(Document doc)
             throws DocumentException {
         return new SecuritySummaryEntryImpl(new IdRef(doc.getUUID()),
                 new PathRef(doc.getPath()),

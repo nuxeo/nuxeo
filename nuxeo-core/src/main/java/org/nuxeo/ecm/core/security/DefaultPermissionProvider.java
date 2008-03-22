@@ -140,7 +140,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         return null;
     }
 
-    synchronized protected void computeMergedGroups() {
+    protected synchronized void computeMergedGroups() {
         if (mergedPermissions == null) {
             computeMergedPermissions();
         }
@@ -204,7 +204,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
                 new String[mergedPermissions.size()]);
     }
 
-    synchronized protected void computeMergedPermissions() {
+    protected synchronized void computeMergedPermissions() {
         mergedPermissions = new HashMap<String, MergedPermissionDescriptor>();
         for (PermissionDescriptor pd : registeredPermissions) {
             MergedPermissionDescriptor mpd = mergedPermissions.get(pd.getName());
@@ -217,7 +217,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         }
     }
 
-    synchronized public void registerDescriptor(
+    public synchronized void registerDescriptor(
             PermissionDescriptor descriptor) throws Exception {
         // check that all included permission have previously been registered
         Set<String> alreadyRegistered = new HashSet<String>();
@@ -241,7 +241,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         registeredPermissions.add(descriptor);
     }
 
-    synchronized public void unregisterDescriptor(
+    public synchronized void unregisterDescriptor(
             PermissionDescriptor descriptor) {
         int lastOccurence = registeredPermissions.lastIndexOf(descriptor);
         if (lastOccurence != -1) {
@@ -253,14 +253,14 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         }
     }
 
-    synchronized public void registerDescriptor(
+    public synchronized void registerDescriptor(
             PermissionVisibilityDescriptor descriptor) throws Exception {
         // invalidate cached merged descriptors
         mergedPermissionsVisibility = null;
         registeredPermissionsVisibility.add(descriptor);
     }
 
-    synchronized public void unregisterDescriptor(
+    public synchronized void unregisterDescriptor(
             PermissionVisibilityDescriptor descriptor) throws Exception {
         int lastOccurence = registeredPermissionsVisibility.lastIndexOf(descriptor);
         if (lastOccurence != -1) {

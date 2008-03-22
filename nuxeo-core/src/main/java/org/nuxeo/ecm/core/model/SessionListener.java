@@ -24,7 +24,7 @@ package org.nuxeo.ecm.core.model;
  * @author bstefanescu
  *
  */
-public interface SessionListener {
+public interface                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     SessionListener {
 
     /**
      * The session is about to be closed.

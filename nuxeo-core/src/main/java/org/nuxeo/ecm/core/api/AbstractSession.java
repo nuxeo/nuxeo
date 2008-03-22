@@ -2009,15 +2009,14 @@ public abstract class AbstractSession implements CoreSession,
         String currentLifeCycleState;
         try {
             Document doc = resolveReference(docRef);
-            try {
-                checkPermission(doc, READ_LIFE_CYCLE);
-                currentLifeCycleState = doc.getCurrentLifeCycleState();
-            } catch (LifeCycleException e) {
-                ClientException ce = new ClientException(
-                        "Failed to get life cycle " + docRef, e);
-                ce.fillInStackTrace();
-                throw ce;
-            }
+
+            checkPermission(doc, READ_LIFE_CYCLE);
+            currentLifeCycleState = doc.getCurrentLifeCycleState();
+        } catch (LifeCycleException e) {
+            ClientException ce = new ClientException(
+                    "Failed to get life cycle " + docRef, e);
+            ce.fillInStackTrace();
+            throw ce;
         } catch (DocumentException e) {
             throw new ClientException("Failed to get content data " + docRef, e);
         }
@@ -2028,15 +2027,14 @@ public abstract class AbstractSession implements CoreSession,
         String lifecyclePolicy;
         try {
             Document doc = resolveReference(docRef);
-            try {
-                checkPermission(doc, READ_LIFE_CYCLE);
-                lifecyclePolicy = doc.getLifeCyclePolicy();
-            } catch (LifeCycleException e) {
-                ClientException ce = new ClientException(
-                        "Failed to get life cycle policy" + docRef, e);
-                ce.fillInStackTrace();
-                throw ce;
-            }
+
+            checkPermission(doc, READ_LIFE_CYCLE);
+            lifecyclePolicy = doc.getLifeCyclePolicy();
+        } catch (LifeCycleException e) {
+            ClientException ce = new ClientException(
+                    "Failed to get life cycle policy" + docRef, e);
+            ce.fillInStackTrace();
+            throw ce;
         } catch (DocumentException e) {
             throw new ClientException("Failed to get content data " + docRef, e);
         }
@@ -2045,37 +2043,35 @@ public abstract class AbstractSession implements CoreSession,
 
     public boolean followTransition(DocumentRef docRef, String transition)
             throws ClientException {
-        boolean operationResult = false;
+        boolean operationResult;
         try {
             Document doc = resolveReference(docRef);
-            try {
-                checkPermission(doc, WRITE_LIFE_CYCLE);
-                String formerStateName = doc.getCurrentLifeCycleState();
-                operationResult = doc.followTransition(transition);
+            checkPermission(doc, WRITE_LIFE_CYCLE);
+            String formerStateName = doc.getCurrentLifeCycleState();
+            operationResult = doc.followTransition(transition);
 
-                if (operationResult) {
-                    // Construct a map holding meta information about the event.
-                    Map<String, Object> options = new HashMap<String, Object>();
-                    options.put(LifeCycleEventTypes.OPTION_NAME_FROM,
-                            formerStateName);
-                    options.put(LifeCycleEventTypes.OPTION_NAME_TO,
-                            doc.getCurrentLifeCycleState());
-                    options.put(LifeCycleEventTypes.OPTION_NAME_TRANSITION,
-                            transition);
-                    options.put(CoreEventConstants.DOCUMENT, doc);
-                    DocumentModel docModel = readModel(doc, null);
-                    notifyEvent(LifeCycleEventTypes.LIFECYCLE_TRANSITION_EVENT,
-                            docModel, options,
-                            DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY,
-                            null, true);
-                }
-            } catch (LifeCycleException e) {
-                ClientException ce = new ClientException(
-                        "Unable to follow transition <" + transition
-                                + "> for document : " + docRef, e);
-                ce.fillInStackTrace();
-                throw ce;
+            if (operationResult) {
+                // Construct a map holding meta information about the event.
+                Map<String, Object> options = new HashMap<String, Object>();
+                options.put(LifeCycleEventTypes.OPTION_NAME_FROM,
+                        formerStateName);
+                options.put(LifeCycleEventTypes.OPTION_NAME_TO,
+                        doc.getCurrentLifeCycleState());
+                options.put(LifeCycleEventTypes.OPTION_NAME_TRANSITION,
+                        transition);
+                options.put(CoreEventConstants.DOCUMENT, doc);
+                DocumentModel docModel = readModel(doc, null);
+                notifyEvent(LifeCycleEventTypes.LIFECYCLE_TRANSITION_EVENT,
+                        docModel, options,
+                        DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY,
+                        null, true);
             }
+        } catch (LifeCycleException e) {
+            ClientException ce = new ClientException(
+                    "Unable to follow transition <" + transition
+                            + "> for document : " + docRef, e);
+            ce.fillInStackTrace();
+            throw ce;
         } catch (DocumentException e) {
             throw new ClientException("Failed to get content data " + docRef, e);
         }
@@ -2087,16 +2083,15 @@ public abstract class AbstractSession implements CoreSession,
         Collection<String> allowedStateTransitions;
         try {
             Document doc = resolveReference(docRef);
-            try {
-                checkPermission(doc, READ_LIFE_CYCLE);
-                allowedStateTransitions = doc.getAllowedStateTransitions();
-            } catch (LifeCycleException e) {
-                ClientException ce = new ClientException(
-                        "Unable to get allowed state transitions for document : "
-                                + docRef, e);
-                ce.fillInStackTrace();
-                throw ce;
-            }
+
+            checkPermission(doc, READ_LIFE_CYCLE);
+            allowedStateTransitions = doc.getAllowedStateTransitions();
+        } catch (LifeCycleException e) {
+            ClientException ce = new ClientException(
+                    "Unable to get allowed state transitions for document : "
+                            + docRef, e);
+            ce.fillInStackTrace();
+            throw ce;
         } catch (DocumentException e) {
             throw new ClientException("Failed to get content data " + docRef, e);
         }
@@ -2499,7 +2494,7 @@ public abstract class AbstractSession implements CoreSession,
                 }
                 Field[] fields = info.getFields();
                 if (fields != null) {
-                    HashMap<String, Serializable> prefetch = new HashMap<String, Serializable>();
+                    Map<String, Serializable> prefetch = new HashMap<String, Serializable>();
                     //TODO : should use documentpartreader
                     for (Field field : fields) {
                         Object value = doc.getPropertyValue(field.getName().getPrefixedName());
