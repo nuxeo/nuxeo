@@ -672,4 +672,10 @@ public interface DocumentModel extends Serializable {
      * @throws ClientException
      */
     void refresh() throws ClientException;
+
+    /**
+     * Clone operation. Must be made public instead of just protected as in Object.
+     */
+    DocumentModel clone() throws CloneNotSupportedException;
+
 }
