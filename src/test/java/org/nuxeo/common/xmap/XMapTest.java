@@ -21,8 +21,6 @@ package org.nuxeo.common.xmap;
 
 import java.net.URL;
 
-import org.nuxeo.common.xmap.XMap;
-
 import junit.framework.TestCase;
 
 /**
