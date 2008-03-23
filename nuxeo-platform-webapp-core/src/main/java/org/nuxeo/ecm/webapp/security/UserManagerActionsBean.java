@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.security;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,7 +29,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.io.Serializable;
 
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
@@ -167,7 +167,7 @@ public class UserManagerActionsBean extends InputController implements
                 allUsers = Collections.emptyList();
                 users = Collections.emptyList();
                 searchOverflow = true;
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 throw EJBExceptionHandler.wrapException(t);
             }
         }
@@ -186,7 +186,7 @@ public class UserManagerActionsBean extends InputController implements
         try {
             sessionContext.set("selectedUser", selectedUser);
             return "view_user";
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw EJBExceptionHandler.wrapException(t);
         }
     }
@@ -199,7 +199,7 @@ public class UserManagerActionsBean extends InputController implements
             refreshPrincipal(selectedUser);
             sessionContext.set("selectedUser", selectedUser);
             return "view_user";
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw EJBExceptionHandler.wrapException(t);
         }
     }
@@ -231,7 +231,7 @@ public class UserManagerActionsBean extends InputController implements
             refreshPrincipal(selectedUser);
             sessionContext.set("selectedUser", selectedUser);
             return "edit_user";
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw EJBExceptionHandler.wrapException(t);
         }
     }
@@ -250,7 +250,7 @@ public class UserManagerActionsBean extends InputController implements
             Events.instance().raiseEvent(EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
 
             return viewUsers();
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw EJBExceptionHandler.wrapException(t);
         }
     }
@@ -343,7 +343,7 @@ public class UserManagerActionsBean extends InputController implements
             }
             userManager.updatePrincipal(selectedUser);
             return viewUser(selectedUser.getName());
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw EJBExceptionHandler.wrapException(t);
         }
     }
@@ -386,7 +386,7 @@ public class UserManagerActionsBean extends InputController implements
             facesMessages.add(FacesMessage.SEVERITY_WARN, message);
             return null;
 
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw EJBExceptionHandler.wrapException(t);
         }
     }
@@ -409,7 +409,7 @@ public class UserManagerActionsBean extends InputController implements
             newUser.getRoles().add("regular");
             sessionContext.set("newUser", newUser);
             return "create_user";
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw EJBExceptionHandler.wrapException(t);
         }
     }
@@ -450,7 +450,12 @@ public class UserManagerActionsBean extends InputController implements
         }
 
         if (SEARCH_ONLY.equals(userListingMode)) {
-            if (StringUtils.isEmpty(searchString) && StringUtils.isEmpty(searchUsername) && StringUtils.isEmpty(searchFirstname) && StringUtils.isEmpty(searchLastname) && StringUtils.isEmpty(searchEmail) && StringUtils.isEmpty(searchCompany)) {
+            if (StringUtils.isEmpty(searchString)
+                    && StringUtils.isEmpty(searchUsername)
+                    && StringUtils.isEmpty(searchFirstname)
+                    && StringUtils.isEmpty(searchLastname)
+                    && StringUtils.isEmpty(searchEmail)
+                    && StringUtils.isEmpty(searchCompany)) {
                 allUsers = Collections.emptyList();
                 users = Collections.emptyList();
                 return "view_users";

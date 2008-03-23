@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.webapp.action;
 
-import static org.jboss.seam.ScopeType.STATELESS;
 import static org.jboss.seam.ScopeType.EVENT;
+import static org.jboss.seam.ScopeType.STATELESS;
 
 import java.io.Serializable;
 

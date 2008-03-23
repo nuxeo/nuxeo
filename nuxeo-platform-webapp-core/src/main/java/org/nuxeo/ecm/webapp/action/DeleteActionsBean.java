@@ -256,7 +256,8 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public boolean getCanDeleteSections() throws ClientException {
-        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
 
         if (docsToDelete == null || docsToDelete.isEmpty()) {
             return false;
@@ -390,7 +391,8 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public String deleteSelectionSections() throws ClientException {
-        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
 
         if (docsToDelete == null || docsToDelete.isEmpty()) {
             return null;
@@ -688,7 +690,8 @@ public class DeleteActionsBean extends InputController implements
             throws ClientException {
 
         DocumentModelList documents = getCurrentDocumentDeletedChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(
                 DocumentActions.CHILDREN_DOCUMENT_LIST, documents,
                 selectedDocuments);
