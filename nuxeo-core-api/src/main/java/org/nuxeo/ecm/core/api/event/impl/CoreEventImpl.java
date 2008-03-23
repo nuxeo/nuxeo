@@ -63,16 +63,6 @@ public class CoreEventImpl implements CoreEvent {
         this.comment = comment;
     }
 
-
-
-    public boolean isComposite() {
-        return false;
-    }
-
-    public List<CoreEvent> getNestedEvents() {
-        return null;
-    }
-
     public String getEventId() {
         return eventId;
     }
