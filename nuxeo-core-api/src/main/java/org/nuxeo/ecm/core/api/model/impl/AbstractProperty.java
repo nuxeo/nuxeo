@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.api.model.impl;
 import java.io.Serializable;
 import java.util.Iterator;
 
+import org.jetbrains.annotations.NotNull;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
@@ -31,7 +32,6 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

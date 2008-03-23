@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.core.api.adapter;
 
-import java.util.Map;
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 

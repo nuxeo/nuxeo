@@ -49,7 +49,7 @@ public class TestSecurity extends NXRuntimeTestCase {
 
     private static final Log log = LogFactory.getLog(TestSecurity.class);
 
-    private final static String REPO_NAME="default";
+    private static final String REPO_NAME="default";
 
     CoreSession remote;
 

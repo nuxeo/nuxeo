@@ -24,13 +24,13 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.jetbrains.annotations.NotNull;
 import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.JavaTypes;
 import org.nuxeo.ecm.core.schema.types.ListType;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

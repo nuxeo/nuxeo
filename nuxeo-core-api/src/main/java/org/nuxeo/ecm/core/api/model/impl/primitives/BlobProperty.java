@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.api.model.impl.primitives;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 
+import org.jetbrains.annotations.NotNull;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
@@ -31,7 +32,6 @@ import org.nuxeo.ecm.core.api.model.impl.osm.ObjectAdapterManager;
 import org.nuxeo.ecm.core.api.model.impl.osm.ObjectMappingError;
 import org.nuxeo.ecm.core.api.model.impl.osm.ObjectProperty;
 import org.nuxeo.ecm.core.schema.types.Field;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

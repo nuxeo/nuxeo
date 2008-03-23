@@ -25,12 +25,12 @@ import java.io.InputStream;
 import java.io.Serializable;
 
 import org.jboss.util.property.PropertyError;
+import org.jetbrains.annotations.NotNull;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
 import org.nuxeo.ecm.core.schema.types.Field;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

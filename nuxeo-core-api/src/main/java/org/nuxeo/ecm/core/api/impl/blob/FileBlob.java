@@ -83,9 +83,7 @@ public class FileBlob extends DefaultStreamBlob implements Serializable {
                 in.close();
             } catch (IOException e) {
             }
-            if (out != null) {
-                out.close();
-            }
+            out.close();
         }
     }
 
@@ -132,9 +130,7 @@ public class FileBlob extends DefaultStreamBlob implements Serializable {
                 }
             }
         } finally {
-            if (out != null) {
-                out.close();
-            }
+            out.close();
         }
     }
 
@@ -167,6 +163,7 @@ public class FileBlob extends DefaultStreamBlob implements Serializable {
                 file.delete();
             }
         }
+        super.finalize();
     }
 
 }

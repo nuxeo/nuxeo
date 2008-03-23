@@ -20,9 +20,9 @@ package org.nuxeo.ecm.core.listener;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.Nullable;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.operation.Operation;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Repository listener.

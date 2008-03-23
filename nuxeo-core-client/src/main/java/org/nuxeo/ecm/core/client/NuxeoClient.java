@@ -389,7 +389,7 @@ public final class NuxeoClient {
         return repo;
     }
 
-    public void releaseRepository(RepositoryInstance repo) throws Exception {
+    public void releaseRepository(RepositoryInstance repo) {
         try {
             repo.close();
         } finally {

@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.osm.DynamicObjectAdapter;
 import org.nuxeo.runtime.services.streaming.ByteArraySource;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
