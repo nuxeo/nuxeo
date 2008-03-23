@@ -1528,7 +1528,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         Object[] result = getClient().refreshDocument(ref, refreshFlags, schemas);
 
         if ((refreshFlags & REFRESH_PREFETCH) != 0) {
-            prefetch = (HashMap<String,Serializable>)result[0];
+            prefetch = (HashMap<String, Serializable>) result[0];
         }
         if ((refreshFlags & REFRESH_LOCK) != 0) {
             lock = (String)result[1];
@@ -1544,11 +1544,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             isACPLoaded = true;
         }
         dataModels.clear();
-        if ((refreshFlags & (REFRESH_CONTENT)) != 0) {
-            DocumentPart[] parts = (DocumentPart[])result[5];
+        if ((refreshFlags & REFRESH_CONTENT) != 0) {
+            DocumentPart[] parts = (DocumentPart[]) result[5];
             if (parts != null) {
-                for (int i=0; i<parts.length; i++) {
-                    DataModelImpl dm = new DataModelImpl(parts[i]);
+                for (DocumentPart part : parts) {
+                    DataModelImpl dm = new DataModelImpl(part);
                     dataModels.put(dm.getSchema(), dm);
                 }
             }

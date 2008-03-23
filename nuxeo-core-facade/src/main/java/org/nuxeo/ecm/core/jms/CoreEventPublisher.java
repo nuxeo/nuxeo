@@ -52,7 +52,7 @@ public class CoreEventPublisher {
     private TopicConnectionFactory topicConnectionFactory;
     private Topic coreEventsTopic;
 
-    private static CoreEventPublisher instance = new CoreEventPublisher();
+    private static final CoreEventPublisher instance = new CoreEventPublisher();
 
     public static CoreEventPublisher getInstance() {
         return instance;
@@ -76,7 +76,7 @@ public class CoreEventPublisher {
         return topicConnectionFactory;
     }
 
-    private final Topic getDefaultTopic() throws NamingException {
+    private Topic getDefaultTopic() throws NamingException {
         if (coreEventsTopic == null) {
             Context jndi = new InitialContext();
             coreEventsTopic = (Topic) jndi.lookup(CORE_EVENTS_TOPIC);

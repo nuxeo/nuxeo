@@ -59,6 +59,7 @@ public class JMSEventListener extends AbstractEventListener implements
     /**
      * @deprecated this is only used for compatibility
      */
+    @Deprecated
     static final String BLOCK_JMS_PRODUCING = "BLOCK_JMS_PRODUCING";
 
 
@@ -84,6 +85,7 @@ public class JMSEventListener extends AbstractEventListener implements
      *
      * @param coreEvent instance fired at core layer
      */
+    @Override
     public void handleEvent(CoreEvent coreEvent) {
         //TODO: this should be refactored after operation are integrated into core
         Operation<?> cmd = Operation.getCurrent();
