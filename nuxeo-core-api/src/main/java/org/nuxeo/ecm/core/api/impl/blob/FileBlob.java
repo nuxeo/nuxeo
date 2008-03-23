@@ -83,14 +83,15 @@ public class FileBlob extends DefaultStreamBlob implements Serializable {
                 in.close();
             } catch (IOException e) {
             }
-            out.close();
+            if (out != null) {
+                out.close();
+            }
         }
     }
 
     public File getFile() {
         return file;
     }
-
 
     @Override
     public long getLength() {
@@ -130,7 +131,9 @@ public class FileBlob extends DefaultStreamBlob implements Serializable {
                 }
             }
         } finally {
-            out.close();
+            if (out != null) {
+                out.close();
+            }
         }
     }
 
