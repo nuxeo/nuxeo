@@ -110,6 +110,7 @@ public class IndexingDocumentModelPrefetchedListener extends
         return typeManager;
     }
 
+    @Override
     public void notifyEvent(CoreEvent event) throws Exception {
 
         String eventId = event.getEventId();
