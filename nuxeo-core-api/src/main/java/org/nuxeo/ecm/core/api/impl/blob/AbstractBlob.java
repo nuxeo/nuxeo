@@ -90,7 +90,9 @@ public abstract class AbstractBlob implements Blob {
             out = new FileOutputStream(file);
             transferTo(out);
         } finally {
-            out.close();
+            if (out != null) {
+                out.close();
+            }
         }
     }
 

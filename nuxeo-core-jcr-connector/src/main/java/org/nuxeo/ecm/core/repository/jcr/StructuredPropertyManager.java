@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
  */
 public class StructuredPropertyManager {
 
-    private final static Map<String, PropertyAccessor> registry = new HashMap<String, PropertyAccessor>();
+    private static final Map<String, PropertyAccessor> registry = new HashMap<String, PropertyAccessor>();
 
     // Utility class.
     private StructuredPropertyManager() {

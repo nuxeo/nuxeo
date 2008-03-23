@@ -28,11 +28,11 @@ import javax.jcr.RepositoryException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.repository.jcr.versioning.VersioningService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.repository.jcr.JCRDocument;
 import org.nuxeo.ecm.core.repository.jcr.JCRSession;
 import org.nuxeo.ecm.core.repository.jcr.NodeConstants;
+import org.nuxeo.ecm.core.repository.jcr.versioning.VersioningService;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;
 import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
 
