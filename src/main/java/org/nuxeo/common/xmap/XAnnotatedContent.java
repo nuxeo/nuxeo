@@ -19,6 +19,8 @@
 
 package org.nuxeo.common.xmap;
 
+import java.io.IOException;
+
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
@@ -27,8 +29,6 @@ import org.w3c.dom.ranges.DocumentRange;
 import org.w3c.dom.ranges.Range;
 
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-
-import java.io.IOException;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

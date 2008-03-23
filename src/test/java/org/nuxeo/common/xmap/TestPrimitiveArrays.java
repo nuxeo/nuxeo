@@ -22,9 +22,9 @@ package org.nuxeo.common.xmap;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.nuxeo.common.collections.PrimitiveArrays;
-
 import junit.framework.TestCase;
+
+import org.nuxeo.common.collections.PrimitiveArrays;
 
 public class TestPrimitiveArrays extends TestCase {
     private Collection myColl;
