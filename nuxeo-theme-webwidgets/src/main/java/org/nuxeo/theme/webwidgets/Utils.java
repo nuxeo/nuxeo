@@ -250,7 +250,7 @@ public final class Utils {
         return content;
     }
 
-    static public String fetchUrl(URL url) {
+    public static String fetchUrl(URL url) {
         String content = null;
         try {
             final InputStream in = url.openStream();

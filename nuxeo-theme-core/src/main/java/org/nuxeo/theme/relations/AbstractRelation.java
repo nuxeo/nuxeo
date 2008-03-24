@@ -23,7 +23,7 @@ public abstract class AbstractRelation implements Relation {
 
     private Predicate predicate;
 
-    public AbstractRelation(Predicate predicate) {
+    protected AbstractRelation(Predicate predicate) {
         this.predicate = predicate;
         relates = new ArrayList<Relate>();
     }

@@ -16,6 +16,7 @@ package org.nuxeo.theme.webwidgets;
 
 import org.nuxeo.theme.fragments.AbstractFragment;
 import org.nuxeo.theme.properties.FieldInfo;
+import org.nuxeo.theme.models.Model;
 
 public final class AreaFragment extends AbstractFragment {
 
@@ -39,7 +40,7 @@ public final class AreaFragment extends AbstractFragment {
     }
 
     @Override
-    public org.nuxeo.theme.models.Model getModel() {
+    public Model getModel() {
         return new RegionModel(name, provider, decoration);
     }
 

@@ -50,7 +50,7 @@ public final class NegotiationType implements Type {
         return TypeFamily.NEGOTIATION;
     }
 
-    synchronized public List<Scheme> getSchemes() {
+    public synchronized List<Scheme> getSchemes() {
         if (schemes == null && schemeClassNames != null) {
             schemes = new ArrayList<Scheme>();
             for (String schemeClassName : schemeClassNames) {

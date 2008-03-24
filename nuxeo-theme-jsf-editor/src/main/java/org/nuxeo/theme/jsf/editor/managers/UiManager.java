@@ -150,7 +150,7 @@ public class UiManager implements UiManagerLocal {
     /* Fragments and views */
     public static class FragmentInfo {
 
-        private FragmentType fragmentType;
+        private final FragmentType fragmentType;
 
         public FragmentInfo(FragmentType fragmentType) {
             this.fragmentType = fragmentType;

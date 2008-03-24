@@ -39,6 +39,7 @@ public class JSFView extends AbstractView {
     private static final String[] ALLOWED_TAGS = { "html", "body", "table",
             "tr", "td", "div" };
 
+    @Override
     public String render(final RenderingInfo info) {
         final ViewType viewType = getViewType();
         final String template = viewType.getTemplate();

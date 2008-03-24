@@ -166,7 +166,7 @@ public class Manager implements ManagerLocal {
     /*
      * Widget preferences
      */
-    static public Map<String, String> getWidgetPreferences(Provider provider,
+    public static Map<String, String> getWidgetPreferences(Provider provider,
             Widget widget) {
         Map<String, String> widgetPreferences = new HashMap<String, String>();
         if (provider.canRead()) {
@@ -188,7 +188,7 @@ public class Manager implements ManagerLocal {
         return widgetPreferences;
     }
 
-    static public void setWidgetPreferences(Provider provider, Widget widget,
+    public static void setWidgetPreferences(Provider provider, Widget widget,
             Map<String, String> preferences) {
         if (!provider.canWrite()) {
             return;
@@ -244,7 +244,7 @@ public class Manager implements ManagerLocal {
         provider.setWidgetState(widget, WidgetState.DEFAULT);
     }
 
-    static public WidgetState getWidgetState(Provider provider, Widget widget) {
+    public static WidgetState getWidgetState(Provider provider, Widget widget) {
         if (provider.canRead()) {
             WidgetState state = provider.getWidgetState(widget);
             if (state != null) {
