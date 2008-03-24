@@ -34,8 +34,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -70,7 +70,6 @@ import org.nuxeo.ecm.directory.sql.repository.Update;
  * @author glefter@nuxeo.com
  *
  */
-
 public class SQLSession implements Session, EntrySource {
 
     @SuppressWarnings("unused")

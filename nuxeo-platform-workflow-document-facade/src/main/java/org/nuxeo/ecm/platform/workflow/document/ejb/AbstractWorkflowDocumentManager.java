@@ -23,7 +23,6 @@ import java.rmi.RemoteException;
 
 import javax.ejb.EJBException;
 import javax.ejb.SessionSynchronization;
-import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

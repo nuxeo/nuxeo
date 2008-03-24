@@ -33,9 +33,6 @@ import org.nuxeo.ecm.platform.transform.timer.SimpleTimer;
 
 public class FullTextExtractor extends AbstractTransformer {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 19879898996L;
 
     private static final Log log = LogFactory.getLog(FullTextExtractor.class);
@@ -86,7 +83,7 @@ public class FullTextExtractor extends AbstractTransformer {
             String mt = source.getBlob().getMimeType();
             if (mt == null || mt.equals(UNDEFINED_MT)) {
                 long blobSize = source.getBlob().getLength();
-                if (blobSize > getMaxSizeForAutodetectingMimeType()) {
+                if (blobSize > AUTO_DETECT_MT_MAX_SIZE) {
                     mt = UNDEFINED_MT;
                 } else {
                     try {

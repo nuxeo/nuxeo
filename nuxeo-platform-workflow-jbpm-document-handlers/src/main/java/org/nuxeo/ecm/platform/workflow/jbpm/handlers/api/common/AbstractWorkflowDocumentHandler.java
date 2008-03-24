@@ -129,7 +129,7 @@ public abstract class AbstractWorkflowDocumentHandler {
      * Returns the document message producer bean.
      *
      * @return an EJB proxy
-     * @throws NamingException
+     * @throws Exception
      */
     protected DocumentMessageProducer getDocumentMessageProducer()
             throws Exception {
@@ -139,7 +139,7 @@ public abstract class AbstractWorkflowDocumentHandler {
     /**
      * Returns the workflow api bean.
      *
-     * @return en EJB proxy
+     * @return an EJB proxy
      * @throws Exception
      */
     protected WAPI getWAPI() throws Exception {
@@ -150,7 +150,7 @@ public abstract class AbstractWorkflowDocumentHandler {
      * Returns the workflow document security manager bean.
      *
      * @param ec the jbpm execution context
-     * @return en EJB proxy
+     * @return an EJB proxy
      * @throws Exception
      */
     protected WorkflowDocumentSecurityManager getSecuManager(ExecutionContext ec)
@@ -506,8 +506,7 @@ public abstract class AbstractWorkflowDocumentHandler {
      * @return a process info map.
      * @throws Exception
      */
-    protected Map<String, Serializable> getInfoMap(ExecutionContext ec)
-            throws Exception {
+    protected Map<String, Serializable> getInfoMap(ExecutionContext ec) {
         Map<String, Serializable> infos = new HashMap<String, Serializable>();
         infos.put(WorkflowConstants.WORKFLOW_CREATOR,
                 getProcessInstanceCreator(ec));
