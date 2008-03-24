@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,469 +12,361 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: NXTransformExtensionPointHandler.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.syndication;
 
-import java.io.IOException;
-import java.text.ParseException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.ejb.Remove;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.Factory;
-import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-import org.nuxeo.ecm.platform.ui.web.rest.RestURLMaker;
-import org.nuxeo.ecm.platform.ui.web.util.BadDocumentUriException;
-import org.nuxeo.ecm.platform.ui.web.util.DocumentLocator;
-import org.nuxeo.ecm.platform.url.api.DocumentLocation;
-import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
-import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.search.SearchActions;
+import org.nuxeo.ecm.webapp.search.SearchActionsBean;
 import org.nuxeo.ecm.webapp.search.SearchType;
-import org.nuxeo.runtime.api.Framework;
 
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
-import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedOutput;
 
 /**
+ * Syndication bean. This Seam component is used to:
+ * <ol>
+ * <li>find the syndication URL of the current document or current search,</li>
+ * <li>retrieve the actual feed for a URL.</li>
+ * </ol>
+ * In the first case, we are called in the context of an existing Seam
+ * conversation, so an existing navigationContext can be looked up.
+ * <p>
+ * In the second case, the conversation is a new one.
  *
- * @author bchaffangeon
- *
+ * @author Florent Guillaume
  */
-//@Stateless
 @Name("syndication")
-public class SyndicationActionsBean extends InputController implements
-        SyndicationActions {
-
-    public static final String DOC_PARAM_NAME = "docRef";
-
-    public static final String SYNDIC_PARAM_NAME = "feedType";
-
-    public static final String QUERY_PARAM_NAME = "searchQuery";
-
-    public static final String SEARCHTYPE_PARAM_NAME = "searchType";
+@Scope(ScopeType.EVENT)
+public class SyndicationActionsBean implements SyndicationActions {
 
     private static final Log log = LogFactory.getLog(SyndicationActionsBean.class);
 
-    private static final String MIME_TYPE = "application/xml; charset=UTF-8";
+    public static final String RSS_TYPE = "rss_2.0";
 
-    private static final String SYNDICATE_CATEGORY = "SYNDICATION_LINKS";
+    public static final String ATOM_TYPE = "atom_0.3";
 
-    private static final String RSS_TYPE = "rss_2.0";
-
-    private static final String ATOM_TYPE = "atom_0.3";
-
-    private static final String DEFAULT_SEARCH_TYPE = SearchType.KEYWORDS.name();
-
-    private static final String DEFAULT_SYNDICATION_TYPE = RSS_TYPE;
-
-    @In(create = true, required = false)
-    private CoreSession documentManager;
-
-    @In(create = true)
-    private WebActions webActions;
-
-    @In(create = true, required = false)
-    private SearchActions searchActions;
-
-    @In(create = true)
-    private RestURLMaker URLMaker;
-
-    @RequestParameter
-    private String docRef;
-
-    @RequestParameter
-    private String feedType;
-
-    @RequestParameter
-    private String searchType;
-
-    @RequestParameter
-    private String searchQuery;
-
-    @RequestParameter
-    private String providerName;
-
-    // TODO unused
-    @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
-    public List<Action> getActionsForSyndication() {
-        return webActions.getActionsList(SYNDICATE_CATEGORY);
-    }
+    public static final String DEFAULT_TYPE = RSS_TYPE;
 
     /**
-     * Called by URL for document-based syndication.
-     *
-     * @throws ClientException
-     * @throws ParseException
-     * @throws FeedException
-     * @throws IOException
+     * Document reference, of the form {@code reponame/documentid}. The
+     * deprecated format {@code reponame/1:documentid} is also supported.
+     */
+    @RequestParameter
+    protected String docRef;
+
+    protected static final String DOCREF_KEY = "docRef";
+
+    /**
+     * Feed type, see ROME documentation. Usually {@code rss_2.0} or
+     * {@code atom_0.3}.
+     */
+    @RequestParameter
+    protected String feedType;
+
+    protected static final String FEEDTYPE_KEY = "feedType";
+
+    /**
+     * The search query, expressed in NXQL.
+     */
+    @RequestParameter
+    protected String searchQuery;
+
+    protected static final String SEARCHQUERY_KEY = "searchQuery";
+
+    protected static final String DOCUMENT_SYNDICATION_PATH = "getSyndicationDocument.faces";
+
+    /**
+     * Called by rss reader for document-based syndication.
      */
     @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
-    public void getSyndicationDocument() throws IOException, FeedException,
-            ParseException, ClientException {
-
-        log.debug("Syndication URL called for document");
+    public void getSyndicationDocument() throws ClientException {
         if (docRef == null || "".equals(docRef)) {
-            log.info("No docRef in request parameter : syndication for current document");
-            log.debug("Trying to syndicate current document");
-            DocumentRef ref = navigationContext.getCurrentDocument().getRef();
-            docRef = navigationContext.getCurrentServerLocation().getName();
-            docRef += "/";
-            docRef += ref.type();
-            docRef += ":";
-            docRef += ref;
+            throw new IllegalArgumentException("Missing docRef");
         }
         if (feedType == null || "".equals(feedType)) {
-            log.info("No syndication type in request parameter : set by default to"
-                    + DEFAULT_SYNDICATION_TYPE);
-            feedType = DEFAULT_SYNDICATION_TYPE;
+            feedType = DEFAULT_TYPE;
         }
-        syndicateDocument();
+
+        /*
+         * Parse docRef into serverLocation and docId
+         */
+        String[] split = docRef.split("/", 2);
+        if (split.length != 2) {
+            throw new IllegalArgumentException("Invalid docRef");
+        }
+        String serverLocation = split[0];
+        String docId = split[1];
+        if (docId.startsWith("1:")) {
+            // deprecated docRef syntax, with DocumentRef type (IdRef assumed)
+            docId = docId.substring(2);
+            docRef = serverLocation + '/' + docId;
+        }
+        IdRef idRef = new IdRef(docId);
+
+        // Create a navigationContext from scratch with the proper server
+        // location
+        NavigationContext navigationContext = (NavigationContext) Component.getInstance(
+                "navigationContext", true);
+        navigationContext.setCurrentServerLocation(new RepositoryLocation(
+                serverLocation));
+        CoreSession documentManager = navigationContext.getOrCreateDocumentManager();
+        DocumentModel doc;
+        try {
+            doc = documentManager.getDocument(idRef);
+        } catch (DocumentSecurityException e) {
+            sendForbidden();
+            return;
+        }
+
+        /*
+         * Feed definition
+         */
+        SyndFeed feed = new SyndFeedImpl();
+        feed.setFeedType(feedType);
+        String title = (String) doc.getProperty("dublincore", "title");
+        if (title == null || "".equals(title)) {
+            title = " ";
+        }
+        feed.setTitle(title);
+        String description = (String) doc.getProperty("dublincore",
+                "description");
+        if (description == null || "".equals(description)) {
+            description = " ";
+        }
+        feed.setDescription(description);
+
+        feed.setLink(getFeedUrl(DOCUMENT_SYNDICATION_PATH, DOCREF_KEY, docRef,
+                feedType));
+
+        /*
+         * Feed entries
+         */
+        List<FeedItem> feedItems = getFeedItems(documentManager.getChildren(idRef));
+        // Sort items by update date or if not, by publication date
+        Collections.sort(feedItems, Collections.reverseOrder());
+        feed.setEntries(feedItems);
+
+        writeFeed(feed);
     }
 
+    private static final String SEARCH_SYNDICATION_PATH = "getSyndicationSearch.faces";
+
     /**
-     * Called by URL for search-based syndication.
-     *
-     * @throws ClientException
-     * @throws ParseException
-     * @throws FeedException
-     * @throws IOException
+     * Called by rss reader for search-based syndication.
      */
     @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
-    public void getSyndicationSearch() throws ClientException, IOException,
-            FeedException, ParseException, ECInvalidParameterException {
-
-        log.debug("Syndication URL called for search results");
-        if (providerName == null || "".equals(providerName)) {
-            // XXX : Quick fix
-            log.warn("No providerName in request parameter, using SIMPLE_SEARCH");
-            providerName="SIMPLE_SEARCH";
-            //throw new ClientException("no providerName in request parameter");
-        }
+    public void getSyndicationSearch() throws ClientException {
         if (searchQuery == null || "".equals(searchQuery)) {
-            log.debug("No search query in request parameter");
+            // throw new IllegalArgumentException("Missing searchQuery");
             searchQuery = "";
         }
-        if (searchType == null || "".equals(searchType)) {
-            log.debug("No search type in request parameter : set by default to"
-                    + DEFAULT_SEARCH_TYPE);
-            searchType = DEFAULT_SEARCH_TYPE;
-        }
+        searchQuery = searchQuery.replace('\n', ' ').replaceAll(" +", " ");
         if (feedType == null || "".equals(feedType)) {
-            log.debug("No syndication type in request parameter : set by default to"
-                    + DEFAULT_SYNDICATION_TYPE);
-            feedType = DEFAULT_SYNDICATION_TYPE;
+            feedType = DEFAULT_TYPE;
         }
-        syndicateSearch(providerName);
+
+        /*
+         * Perform the search
+         */
+        SearchActions searchActions = (SearchActions) Component.getInstance(
+                "searchActions", true);
+        searchActions.setSearchTypeId(SearchType.NXQL.name());
+        searchActions.setNxql(searchQuery);
+        try {
+            searchActions.performSearch();
+        } catch (ECInvalidParameterException e) {
+            throw new ClientException(e);
+        }
+        List<DocumentModel> docList = searchActions.getResultDocuments(SearchActionsBean.PROV_NXQL);
+        if (docList == null) {
+            docList = Collections.emptyList();
+        }
+
+        /*
+         * Feed definition
+         */
+        SyndFeed feed = new SyndFeedImpl();
+        feed.setFeedType(feedType);
+        feed.setTitle("Search results");
+        feed.setDescription("Query: " + searchQuery);
+        feed.setLink(getFeedUrl(SEARCH_SYNDICATION_PATH, SEARCHQUERY_KEY,
+                searchQuery, feedType));
+
+        /*
+         * Feed entries
+         */
+        List<FeedItem> feedItems = getFeedItems(docList);
+        feed.setEntries(feedItems);
+
+        writeFeed(feed);
     }
 
     /**
-     * Writes the feed in Servlet Response.
+     * Get feed items given a document list.
      *
-     * @param feed
-     * @throws IOException
-     * @throws FeedException
+     * @param docs the documents
+     * @return the feed items
+     * @throws ClientException
      */
-    private void writeFeed(SyndFeed feed) {
+    protected List<FeedItem> getFeedItems(List<DocumentModel> docs)
+            throws ClientException {
+        return FeedItemAdapter.toFeedItemList(docs);
+    }
 
+    protected static String urlencode(String string) {
+        try {
+            return URLEncoder.encode(string, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // cannot happen for UTF-8
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected static String getFeedUrl(String path, String key, String value,
+            String feedType) {
+        StringBuilder url = new StringBuilder();
+        url.append(BaseURL.getBaseURL());
+        url.append(path);
+        url.append('?');
+        url.append(key);
+        url.append("=");
+        url.append(urlencode(value));
+        url.append("&");
+        url.append(FEEDTYPE_KEY);
+        url.append("=");
+        if (feedType != null) {
+            url.append(urlencode(feedType));
+        }
+        return url.toString();
+    }
+
+    protected void writeFeed(SyndFeed feed) {
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
-
-        log.debug("Writing feed with type " + feedType);
-        // log.debug(feed);
-
-        response.setContentType(MIME_TYPE);
-        SyndFeedOutput output = new SyndFeedOutput();
+        response.setContentType("application/xml; charset=UTF-8");
         try {
-            output.output(feed, response.getWriter());
+            new SyndFeedOutput().output(feed, response.getWriter());
         } catch (Exception e) {
-            log.error("Unable to output feed :" + e.getMessage());
-            log.debug(e.getStackTrace().toString());
+            log.error("Unable to output feed", e);
         }
         context.responseComplete();
     }
 
-    /**
-     * Creates the feed.
-     *
-     * @param items
-     * @return
-     */
-    protected SyndFeed getSyndFeed(List<FeedItem> items) {
-        SyndFeed feed = new SyndFeedImpl();
-        feed.setEntries(items);
-        return feed;
+    protected void sendForbidden() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        context.responseComplete();
     }
 
     /**
-     * @param feed is the SyndFeed to initialize
-     * @return the initialized SyndFeed used for Document syndication
-     * @throws ClientException
+     * Called by templates to get a documents feed URL.
      */
-    public SyndFeed initializeFeedForDocument(SyndFeed feed)
-            throws ClientException {
-
-        log.debug("Initializing feed for document syndication");
-
-        DocumentRef document = getSyndicationRoot(docRef).getRef();
-        DocumentModel docModel = documentManager.getDocument(document);
-
-        feed.setFeedType(feedType);
-        String feedTitle =(String) docModel.getProperty("dublincore", "title");
-        if (feedTitle==null || "".equals(feedTitle))
-        {
-            feedTitle=" ";
-        }
-        feed.setTitle(feedTitle);
-
-        String documentLocation = URLMaker.getDocumentBaseUrl();
-        Map<String, String> param = new HashMap<String, String>();
-
-        param.put(DOC_PARAM_NAME,
-                SyndicationLocator.getSyndicationDocumentUrl(navigationContext));
-        param.put(SYNDIC_PARAM_NAME, feedType);
-
-        feed.setLink(SyndicationLocator.getFullSyndicationDocumentUrl(
-                documentLocation, param));
-
-        String description = (String) docModel.getProperty("dublincore",
-                "description");
-        if (description != null) {
-            feed.setDescription(description);
-        } else {
-            feed.setDescription(" ");
-        }
-
-        return feed;
-    }
-
-    /**
-     *
-     * @param feed the SyndFeed to initialize
-     */
-
-    private void initializeFeedForSearch(SyndFeed feed) {
-        log.debug("Initializing feed for search results syndication");
-        feed.setFeedType(feedType);
-        feed.setTitle("Search results");
-        feed.setDescription("Query : " + searchQuery);
-
-        String documentLocation = URLMaker.getDocumentBaseUrl();
-
-        Map<String, String> param = new HashMap<String, String>();
-
-        param.put(QUERY_PARAM_NAME, searchQuery);
-        param.put(SEARCHTYPE_PARAM_NAME, searchType);
-        param.put(SYNDIC_PARAM_NAME, feedType);
-
-        /*
-         * feed.setLink(SyndicationLocator.getFullSyndicationDocumentUrl(
-         * documentLocation, param));
-         */
-
-        feed.setLink(SyndicationLocator.getFullSyndicationSearchUrl(
-                documentLocation, param));
-    }
-
-    @Factory(value="fullSyndicationDocumentUrl", scope=ScopeType.EVENT)
+    @Factory(value = "fullSyndicationDocumentUrl", scope = ScopeType.EVENT)
     public String getFullSyndicationDocumentUrl() {
-        return SyndicationLocator.getFullSyndicationDocumentUrl(
-                navigationContext, null);
+        return getCurrentDocumentSyndicationUrl(null);
     }
 
+    /**
+     * @deprecated Unused
+     */
+    @Deprecated
     public String getFullSyndicationDocumentUrlInRss() {
-        return SyndicationLocator.getFullSyndicationDocumentUrl(
-                navigationContext, RSS_TYPE);
+        return getCurrentDocumentSyndicationUrl(RSS_TYPE);
     }
 
+    /**
+     * @deprecated Unused
+     */
+    @Deprecated
     public String getFullSyndicationDocumentUrlInAtom() {
-        return SyndicationLocator.getFullSyndicationDocumentUrl(
-                navigationContext, ATOM_TYPE);
+        return getCurrentDocumentSyndicationUrl(ATOM_TYPE);
+    }
+
+    protected static String getCurrentDocumentSyndicationUrl(String feedType) {
+        NavigationContext navigationContext = (NavigationContext) Component.getInstance(
+                "navigationContext", true);
+        String serverLocation = navigationContext.getCurrentServerLocation().getName();
+        String docId = navigationContext.getCurrentDocument().getId();
+        String docRef = serverLocation + '/' + docId;
+        return getFeedUrl(DOCUMENT_SYNDICATION_PATH, DOCREF_KEY, docRef,
+                feedType);
     }
 
     /**
-     * Returns the right document to syndicate, provided in URL.
+     * Called by templates to get a search feed URL.
      */
-    private DocumentModel getSyndicationRoot(String url) throws ClientException {
-
-        final DocumentLocation docLoc;
-        try {
-            docLoc = DocumentLocator.parseDocRef(url);
-        } catch (BadDocumentUriException e) {
-            log.error("Cannot get document ref from uri " + url + ". "
-                    + e.getMessage(), e);
-            return null;
-        }
-
-        documentManager = getDocumentManager(docLoc.getServerLocationName());
-        return documentManager.getDocument(docLoc.getDocRef());
-    }
-
-    @Remove
-    public void destroy() {
-        log.debug("Removing Seam component: syndication");
-    }
-
-    protected DocumentViewCodecManager getDocumentViewCodecService()
-            throws ClientException {
-        try {
-            return Framework.getService(DocumentViewCodecManager.class);
-        } catch (Exception e) {
-            throw new ClientException(
-                    "Could not get DocumentViewCodec service", e);
-        }
-    }
-
-    public void syndicateSearch(String providerName) throws ClientException,
-            IOException, FeedException, ParseException,
-            ECInvalidParameterException {
-
-        // TODO GR: searchActions should be restricted for direct through
-        // the-web interaction with the user.
-        // The syndication bean should fire its Search Service requests
-        // directly
-
-        searchActions.setSearchTypeId(searchType);
-        searchActions.setNxql(searchQuery);
-        searchActions.performSearch();
-        log.debug("Trying to syndicate search results with param : searchType="
-                + searchType + ", query=" + searchQuery);
-        log.debug("Results number : "
-                + Integer.toString(searchActions.getResultDocuments(
-                        providerName).size()));
-
-        // Get the result search
-        DocumentModelList docList = new DocumentModelListImpl();
-
-        if (searchActions.getResultDocuments(providerName) != null
-                && !searchActions.getResultDocuments(providerName).isEmpty()) {
-
-            docList = getRealDocuments(new DocumentModelListImpl(
-                    searchActions.getResultDocuments(providerName)));
-        }
-
-        FeedItemAdapter feedItemAdapt = new FeedItemAdapter();
-
-        List<FeedItem> feedItems = feedItemAdapt.toFeedItemList(docList);
-
-        SyndFeed feed = getSyndFeed(feedItems);
-        initializeFeedForSearch(feed);
-        writeFeed(feed);
-    }
-
-    public void syndicateDocument() throws ClientException, IOException,
-            FeedException, ParseException {
-
-        FeedItemAdapter feedItemAdapt = new FeedItemAdapter();
-
-        DocumentRef document = getSyndicationRoot(docRef).getRef();
-        DocumentModelList allChilds = getRealDocuments(documentManager.getChildren(document));
-
-        List<FeedItem> feedItems = feedItemAdapt.toFeedItemList(allChilds);
-
-        // Sort items by update date or if not, by publication date
-        Collections.sort(feedItems, Collections.reverseOrder());
-
-        // Write full feed
-        SyndFeed feed = getSyndFeed(feedItems);
-        initializeFeedForDocument(feed);
-        writeFeed(feed);
-    }
-
-    /**
-     * Get the real document instead of a document with a null session id.
-     * Because in that case, we can't get any information about the doc.
-     */
-    private DocumentModelList getRealDocuments(DocumentModelList childs)
-            throws ClientException {
-        DocumentModelList allChilds = new DocumentModelListImpl();
-        for (DocumentModel child : childs) {
-            if (child.getRef() != null) {
-                String repoName = child.getRepositoryName();
-                documentManager = getDocumentManager(repoName);
-                allChilds.add(documentManager.getDocument(child.getRef()));
-            }
-        }
-        return allChilds;
-    }
-
-    @Factory(value="fullSyndicationSearchUrl", scope=ScopeType.EVENT)
+    @Factory(value = "fullSyndicationSearchUrl", scope = ScopeType.EVENT)
     public String getFullSyndicationSearchUrl() {
-        return SyndicationLocator.getFullSyndicationSearchUrl(
-                navigationContext, searchActions.getLatestNxql(),
-                SearchType.NXQL.name(), null);
+        return getSearchSyndicationUrl(null);
     }
 
-    public String getFullSyndicationSearchUrlInAtom() {
-        return SyndicationLocator.getFullSyndicationSearchUrl(
-                navigationContext, searchActions.getLatestNxql(),
-                SearchType.NXQL.name(), ATOM_TYPE);
-    }
-
+    /**
+     * @deprecated Unused
+     */
+    @Deprecated
     public String getFullSyndicationSearchUrlInRss() {
-        return SyndicationLocator.getFullSyndicationSearchUrl(
-                navigationContext, searchActions.getLatestNxql(),
-                SearchType.NXQL.name(), RSS_TYPE);
+        return getSearchSyndicationUrl(RSS_TYPE);
     }
 
-
-    private CoreSession getDocumentManager(String repositoryName) throws ClientException
-    {
-        if (navigationContext.getCurrentServerLocation() == null) {
-            navigationContext.setCurrentServerLocation(new RepositoryLocation(
-                    repositoryName));
-        }
-
-        if (documentManager == null || !documentManager.getRepositoryName().equals(repositoryName)) {
-            documentManager = navigationContext.getOrCreateDocumentManager();
-        }
-
-        return documentManager;
+    /**
+     * @deprecated Unused
+     */
+    @Deprecated
+    public String getFullSyndicationSearchUrlInAtom() {
+        return getSearchSyndicationUrl(ATOM_TYPE);
     }
 
-    /*
-    private CoreSession getDocumentManager() throws ClientException {
-        if (documentManager == null) {
-            documentManager = (CoreSession) Component.getInstance(
-                    "documentManager", true);
+    protected static String getSearchSyndicationUrl(String feedType) {
+        SearchActions searchActions = (SearchActions) Component.getInstance(
+                "searchActions", true);
+        String searchQuery = searchActions.getLatestNxql();
+        if (searchQuery == null) {
+            throw new IllegalArgumentException("null searchQuery");
         }
-        if (documentManager==null)
-        {
-            DocumentManagerBusinessDelegate documentManagerBD = (DocumentManagerBusinessDelegate) Contexts.lookupInStatefulContexts("documentManager");
-            if (documentManagerBD == null) {
-                documentManagerBD = new DocumentManagerBusinessDelegate();
-            }
-            RepositoryLocation serverLoc = getEditedRepositoryLocation();
-            documentManager = documentManagerBD.getDocumentManager(serverLoc);
-            Contexts.getConversationContext().set("currentServerLocation", serverLoc);
-        }
-        return documentManager;
+        searchQuery = searchQuery.replace('\n', ' ').replaceAll(" +", " ");
+        return getFeedUrl(SEARCH_SYNDICATION_PATH, SEARCHQUERY_KEY,
+                searchQuery, feedType);
     }
-    */
+
+    /**
+     * @deprecated Unused
+     */
+    @Deprecated
+    @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
+    public List<Action> getActionsForSyndication() {
+        WebActions webActions = (WebActions) Component.getInstance(
+                "webActions", true);
+        return webActions.getActionsList("SYNDICATION_LINKS");
+    }
 }
