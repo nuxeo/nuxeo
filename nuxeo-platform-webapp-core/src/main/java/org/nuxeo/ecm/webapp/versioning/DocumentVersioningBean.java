@@ -205,7 +205,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
                     VersioningDocument docVer = tempDoc.getAdapter(VersioningDocument.class);
                     String minorVer = docVer.getMinorVersion().toString();
                     String majorVer = docVer.getMajorVersion().toString();
-                    model.setDescription(majorVer.concat(".").concat(minorVer));
+                    model.setDescription(majorVer + '.' + minorVer);
                 }
             }
 

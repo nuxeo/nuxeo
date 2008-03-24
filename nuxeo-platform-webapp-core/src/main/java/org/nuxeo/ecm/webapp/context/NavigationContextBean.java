@@ -544,7 +544,7 @@ public class NavigationContextBean implements NavigationContextLocal {
 
     @Factory(value = "currentDocument", scope = EVENT)
     public DocumentModel factoryCurrentDocument() {
-        return getCurrentDocument();
+        return currentDocument;
     }
 
     @Factory(value = "changeableDocument", scope = EVENT)
@@ -912,12 +912,12 @@ public class NavigationContextBean implements NavigationContextLocal {
      * @see NavigationContext#getCurrentDocumentFullUrl()
      */
     public String getCurrentDocumentFullUrl() {
-        if (null == getCurrentDocument()) {
+        if (null == currentDocument) {
             log.error("current document is null");
             return null;
         }
         return DocumentLocator.getFullDocumentUrl(getCurrentServerLocation(),
-                getCurrentDocument().getRef());
+                currentDocument.getRef());
     }
 
     // start a new conversation if needed, join main if possible

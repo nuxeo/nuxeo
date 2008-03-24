@@ -108,8 +108,8 @@ import org.nuxeo.runtime.api.Framework;
 @Name("FileManageWS")
 @Scope(ScopeType.CONVERSATION)
 @SerializedConcurrentAccess
-@Remote(org.nuxeo.ecm.webapp.filemanager.FileManageActionsRemote.class)
-@Local(org.nuxeo.ecm.webapp.filemanager.FileManageWSLocal.class)
+@Remote(FileManageActionsRemote.class)
+@Local(FileManageWSLocal.class)
 @WebService(name = "FileManageInterface", serviceName = "FileManageService")
 @SOAPBinding(style = Style.DOCUMENT)
 public class FileManageWS extends InputController implements

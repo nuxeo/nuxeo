@@ -132,9 +132,9 @@ public class DashBoardActionsBean extends InputController implements
     @In(create = true)
     protected transient ResultsProvidersCache resultsProvidersCache;
 
-    transient protected Collection<DashBoardItem> dashboardItems;
+    protected transient Collection<DashBoardItem> dashboardItems;
 
-    transient protected Collection<DocumentProcessItem> documentProcessItems;
+    protected transient Collection<DocumentProcessItem> documentProcessItems;
 
     @RequestParameter("sortColumn")
     protected String newSortColumn;
