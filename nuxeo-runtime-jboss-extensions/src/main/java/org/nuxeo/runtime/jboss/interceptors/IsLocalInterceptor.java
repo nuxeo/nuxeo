@@ -44,8 +44,9 @@ public class IsLocalInterceptor extends org.jboss.ejb3.remoting.IsLocalIntercept
         return bindAddr;
     }
 
-    public Object invoke(Invocation invocation) throws Throwable
-    {
+    @SuppressWarnings({"ProhibitedExceptionDeclared"})
+    @Override
+    public Object invoke(Invocation invocation) throws Throwable {
         InvokerLocator locator = (InvokerLocator)invocation.getMetaData(InvokeRemoteInterceptor.REMOTING,
                 InvokeRemoteInterceptor.INVOKER_LOCATOR); // "REMOTING", "INVOKER_LOCATOR"
         if (locator != null) {

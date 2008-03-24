@@ -22,10 +22,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -72,7 +73,7 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
 
     private StandaloneBundleLoader bundleLoader;
 
-    private Set<URL> readUrls;
+    private Set<URI> readUris;
 
     private Map<String, BundleFile> bundles;
 
@@ -94,12 +95,12 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
         if (workingDir != null) {
             FileUtils.deleteTree(workingDir);
         }
-        readUrls = null;
+        readUris = null;
         bundles = null;
         super.tearDown();
     }
 
-    private synchronized String generateId() {
+    private static synchronized String generateId() {
         long stamp = System.currentTimeMillis();
         counter ++;
         return Long.toHexString(stamp) + '-'
@@ -160,7 +161,7 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
             sb.append('\n');
         }
         log.debug(sb.toString());
-        readUrls = new HashSet<URL>();
+        readUris = new HashSet<URI>();
         bundles = new HashMap<String, BundleFile>();
     }
 
@@ -341,11 +342,12 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
             return bundleFile;
         }
         for (URL url: urls) {
-            if (readUrls.contains(url)) {
+            URI uri = url.toURI();
+            if (readUris.contains(uri)) {
                 continue;
             }
-            File file = new File(url.toURI());
-            readUrls.add(url);
+            File file = new File(uri);
+            readUris.add(uri);
             try {
                 if (file.isDirectory()) {
                     bundleFile = new DirectoryBundleFile(file);

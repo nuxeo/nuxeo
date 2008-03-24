@@ -43,7 +43,7 @@ import org.nuxeo.runtime.services.streaming.StreamingService;
  */
 public class ConfigurationFactory1 extends ConfigurationFactory {
 
-    public final static Version VERSION = new Version(1, 0, 0);
+    public static final Version VERSION = new Version(1, 0, 0);
 
     @Override
     public Version getVersion() {
@@ -87,12 +87,12 @@ public class ConfigurationFactory1 extends ConfigurationFactory {
         return config;
     }
 
-    public ServiceDescriptor[] getServiceBindings() {
+    public static ServiceDescriptor[] getServiceBindings() {
         ServiceManager sm = Framework.getLocalService(ServiceManager.class);
         return sm.getServiceDescriptors();
     }
 
-    public ServiceHost[] getServiceHosts(String host) throws ConfigurationException {
+    public ServiceHost[] getServiceHosts(String host) {
         ServiceManager sm = Framework.getLocalService(ServiceManager.class);
         ServiceHost[] serviceHosts = sm.getServers();
         for (ServiceHost shost : serviceHosts) {
@@ -116,7 +116,7 @@ public class ConfigurationFactory1 extends ConfigurationFactory {
         return serviceHosts;
     }
 
-    private void updateLocalHostJndiProps(ServiceHost host) {
+    private static void updateLocalHostJndiProps(ServiceHost host) {
         Properties runtimeProps = Framework.getRuntime().getProperties();
         Properties props = AutoConfigurationService.readJndiProperties(runtimeProps);
         if (!props.isEmpty()) {

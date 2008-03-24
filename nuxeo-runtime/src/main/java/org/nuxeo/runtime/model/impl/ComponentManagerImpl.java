@@ -221,7 +221,8 @@ public class ComponentManagerImpl implements ComponentManager {
             for (RegistrationInfoImpl dep : deps) {
                 try {
                     dep.unresolve();
-                    // TODO ------------- keep waiting comp. in the registry - otherwise the unresolved comp will never be unregistered
+                    // TODO ------------- keep waiting comp. in the registry -
+                    // otherwise the unresolved comp will never be unregistered
                     // add a blocking dependence on me
                     if (dep.waitsFor == null) {
                         dep.waitsFor = new HashSet<ComponentName>();
@@ -242,7 +243,7 @@ public class ComponentManagerImpl implements ComponentManager {
         try {
             if (registry.remove(ri.name) == null) {
                 // may be a pending component
-                //TODO -> put pendings in the registry
+                //TODO -> put pending components in the registry
             }
             ri.unregister();
         } catch (Exception e) {

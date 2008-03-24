@@ -202,9 +202,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         try {
             loadProperties(in);
         } finally {
-            if (in != null) {
-                in.close();
-            }
+            in.close();
         }
     }
 

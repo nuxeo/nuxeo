@@ -175,7 +175,7 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
             buf.append(bundle.getBundleId()).append(": ")
                     .append(bundle.getSymbolicName()).append(" [ state: ")
                     .append(bundle.getState());
-            double tm = ((BundleImpl)bundle).getStartupTime();
+            double tm = bundle.getStartupTime();
             buf.append("; startup time: ").append(tm/1000);
             total += tm;
             buf.append(" ]\n");

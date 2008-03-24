@@ -25,7 +25,7 @@ import java.util.List;
 import org.jboss.remoting.InvokerLocator;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.remoting.Server;
-import org.nuxeo.runtime.remoting.UnsupportedServerVersion;
+import org.nuxeo.runtime.remoting.UnsupportedServerVersionException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -40,7 +40,7 @@ public abstract class ConfigurationHandler {
     }
 
     public static ConfigurationHandler getHandler(Version version)
-            throws UnsupportedServerVersion {
+            throws UnsupportedServerVersionException {
         if (version == null) {
             version = Version.MIN;
         }
@@ -50,7 +50,7 @@ public abstract class ConfigurationHandler {
                 return cl;
             }
         }
-        throw new UnsupportedServerVersion(version);
+        throw new UnsupportedServerVersionException(version);
     }
 
     public static ServerConfiguration loadConfig(InvokerLocator locator, Server server, String version)

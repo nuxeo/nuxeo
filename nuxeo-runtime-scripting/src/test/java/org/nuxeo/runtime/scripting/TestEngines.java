@@ -19,11 +19,11 @@
 
 package org.nuxeo.runtime.scripting;
 
-import junit.framework.TestCase;
-
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+
+import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

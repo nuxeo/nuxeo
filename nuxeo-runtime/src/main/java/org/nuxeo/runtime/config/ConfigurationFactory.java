@@ -24,7 +24,7 @@ import java.util.List;
 
 import org.jboss.remoting.InvokerLocator;
 import org.nuxeo.runtime.Version;
-import org.nuxeo.runtime.remoting.UnsupportedServerVersion;
+import org.nuxeo.runtime.remoting.UnsupportedServerVersionException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -39,7 +39,7 @@ public abstract class ConfigurationFactory {
     }
 
     public static ConfigurationFactory getFactory(Version version)
-            throws UnsupportedServerVersion {
+            throws UnsupportedServerVersionException {
         if (version == null) {
             version = Version.MIN;
         }
@@ -49,7 +49,7 @@ public abstract class ConfigurationFactory {
                 return cf;
             }
         }
-        throw new UnsupportedServerVersion(version);
+        throw new UnsupportedServerVersionException(version);
     }
 
     public boolean accept(Version v) {
