@@ -421,6 +421,11 @@
         <artifactId>shared-ldap-constants</artifactId>
         <version>0.9.7</version>
       </dependency>
+      <dependency>
+        <groupId>postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>8.2-507.jdbc3</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -890,6 +895,72 @@
         </snapshotRepository>
       </distributionManagement>
     </profile>
+    <!-- build number using build time stamp for apogee -->
+     <profile>
+      <id>timestamp-rev-in-mf</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>buildnumber-maven-plugin</artifactId>
+            <version>1.0-beta-1</version>
+            <executions>
+              <execution>
+                <phase>validate</phase>
+                <goals>
+                  <goal>create</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <format>{0,date,yyyyMMdd-HHmmss}</format>
+              <items>
+                <item>timestamp</item>
+              </items>
+              <doCheck>false</doCheck>
+              <doUpdate>false</doUpdate>
+            </configuration>
+          </plugin>
+        </plugins>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-ejb-plugin</artifactId>
+              <version>2.1</version>
+              <configuration>
+                <ejbVersion>3.0</ejbVersion>
+                <archive>
+                  <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+                  <manifestEntries>
+                    <Bundle-Version>${eclipseVersion}-t${buildNumber}</Bundle-Version>
+                    <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                  </manifestEntries>
+                </archive>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-jar-plugin</artifactId>
+              <version>2.2</version>
+              <configuration>
+                <archive>
+                  <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+                  <manifestEntries>
+                    <Bundle-Version>${eclipseVersion}-t${buildNumber}</Bundle-Version>
+                    <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                  </manifestEntries>
+                </archive>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+    
     <!-- activating the build number generation in plugins manifest for apogee -->
     <profile>
       <id>svn-rev-in-mf</id>
@@ -962,6 +1033,12 @@
       <organizationUrl>http://www.nuxeo.com/en</organizationUrl>
     </developer>
   </developers>
+
+  <scm>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo</developerConnection>
+    <url>http://hg.nuxeo.org/nuxeo/</url>
+  </scm>
 
   <distributionManagement>
     <site>

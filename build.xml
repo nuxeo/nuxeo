@@ -261,7 +261,7 @@
     </copy>
     <copy todir="${jboss.deploy}/lib" failonerror="false" overwrite="true">
       <fileset
-        file="${basedir}/${postgresql.config}/lib/*.jar" />
+        file="nuxeo-platform/nuxeo-platform-ear/target/postgresql-jdbc-lib/*.jar" />
     </copy>
     <!-- XXX: find a way not to depend on the version number of nxsearch compass -->
     <copy
