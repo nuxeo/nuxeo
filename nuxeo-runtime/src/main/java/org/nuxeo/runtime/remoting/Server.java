@@ -126,7 +126,7 @@ public interface  Server {
      *
      * @return
      */
-    java.util.Properties getProperties();
+    Properties getProperties();
 
     // ---- remote resource loading ---------
 

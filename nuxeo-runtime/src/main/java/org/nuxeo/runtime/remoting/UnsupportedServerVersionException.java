@@ -22,23 +22,21 @@ package org.nuxeo.runtime.remoting;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.config.ConfigurationException;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
- */
-public class UnsupportedServerVersion extends ConfigurationException {
+/** @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> */
+public class UnsupportedServerVersionException extends ConfigurationException {
 
     private static final long serialVersionUID = 7632769314648547250L;
 
-    Version version;
+    private final Version version;
 
-    public UnsupportedServerVersion(Version version) {
-        super("Unsupported server configuration version: "+version);
+    public UnsupportedServerVersionException(Version version) {
+        super("Unsupported server configuration version: " + version);
+        this.version = version;
     }
 
-    public UnsupportedServerVersion(Version version, String message) {
-        super("Unsupported server configuration version: "+version+". "+message);
+    public UnsupportedServerVersionException(Version version, String message) {
+        super("Unsupported server configuration version: " + version + ". " + message);
+        this.version = version;
     }
-
 
 }
