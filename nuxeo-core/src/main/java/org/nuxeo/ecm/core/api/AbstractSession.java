@@ -186,7 +186,9 @@ public abstract class AbstractSession implements CoreSession,
                     Principal ctxPrincipal = (Principal) sessionContext.get("principal");
                     try {
                         // change current principal to give all right to the handler
-                        //FIXME : this should be fixed by using SystemPrincipal -> we must synchronize this with SecurityService check
+                        // FIXME : this should be fixed by using SystemPrincipal
+                        // -> we must synchronize this with SecurityService
+                        // check
                         sessionContext.put("principal", new SimplePrincipal("system"));
                         handler.initializeRepository(this);
                         try {
@@ -685,7 +687,7 @@ public abstract class AbstractSession implements CoreSession,
             name = IdUtils.generateStringId();
         }
         if (parent.hasChild(name)) {
-            name = name + '.' + String.valueOf(System.currentTimeMillis());
+            name += '.' + String.valueOf(System.currentTimeMillis());
         }
         return name;
     }

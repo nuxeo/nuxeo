@@ -49,7 +49,8 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
 
     private Map<String, Set<String>> mergedGroups;
 
-    private final List<PermissionVisibilityDescriptor> registeredPermissionsVisibility = new LinkedList<PermissionVisibilityDescriptor>();
+    private final List<PermissionVisibilityDescriptor> registeredPermissionsVisibility
+            = new LinkedList<PermissionVisibilityDescriptor>();
 
     private Map<String, PermissionVisibilityDescriptor> mergedPermissionsVisibility;
 

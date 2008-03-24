@@ -59,16 +59,15 @@ public class EventPublisherExecutor {
         publisher = null;
     }
 
-    public void publish(final Object content)
-            throws JMSException {
+    public void publish(final Object content) throws JMSException {
         executor.execute(new Runnable() {
             public void run() {
                 try {
-                    System.out.println(
-                            "############ serial publishing from thread " + Thread.currentThread());
+                    System.out.println("############ serial publishing from thread "
+                                    + Thread.currentThread());
                     publisher.publish(content);
                 } catch (Exception e) {
-                e.printStackTrace(); //TODO
+                    e.printStackTrace(); // TODO
                 }
             }
         });

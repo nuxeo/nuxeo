@@ -22,9 +22,8 @@ package org.nuxeo.ecm.core.model;
  * Listener to be notified about events in session life cycle.
  *
  * @author bstefanescu
- *
  */
-public interface                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     SessionListener {
+public interface SessionListener {
 
     /**
      * The session is about to be closed.
@@ -36,14 +35,14 @@ public interface                                                                
     /**
      * The session was closed.
      *
-     * @param session
+     * @param session the session
      */
     void sessionClosed(Session session);
 
     /**
      * The session was started.
      *
-     * @param session
+     * @param session the session
      */
     void sessionStarted(Session session);
 

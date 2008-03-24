@@ -200,7 +200,7 @@ public class JCRSecurityManager implements SecurityManager {
         }
     }
 
-    private void collectACLs(ACP acp, Node acpNode) throws SecurityException {
+    private static void collectACLs(ACP acp, Node acpNode) throws SecurityException {
         try {
             NodeIterator it = acpNode.getNodes();
             while (it.hasNext()) {
