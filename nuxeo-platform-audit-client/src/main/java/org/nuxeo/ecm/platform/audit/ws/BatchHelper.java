@@ -26,6 +26,10 @@ public class BatchHelper {
 
     private static final Map<String, BatchInfo> pageInfo = new ConcurrentHashMap<String, BatchInfo>();
 
+    // Utility class.
+    private BatchHelper() {
+    }
+
     public static BatchInfo getBatchInfo(String sessionId, String dateRange) {
         if (!pageInfo.containsKey(sessionId)) {
             pageInfo.put(sessionId, new BatchInfo(dateRange));
