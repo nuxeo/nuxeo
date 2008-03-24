@@ -36,6 +36,9 @@ public class RepositoryLocation implements Serializable,
     protected final String name;
 
     public RepositoryLocation(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Null repository location");
+        }
         this.name = name;
     }
 
@@ -56,6 +59,11 @@ public class RepositoryLocation implements Serializable,
             return false;
         }
         return name.equals(((RepositoryLocation) other).name);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.name.hashCode();
     }
 
     /**

@@ -23,6 +23,9 @@ package org.nuxeo.ecm.webapp.delegate;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJBAccessException;
@@ -31,10 +34,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
 import org.jboss.seam.annotations.Destroy;
-import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
+import org.jboss.seam.contexts.Lifecycle;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.Repository;
@@ -60,12 +63,10 @@ public class DocumentManagerBusinessDelegate implements Serializable {
 
     private static final Log log = LogFactory.getLog(DocumentManagerBusinessDelegate.class);
 
-    protected CoreSession documentManager;
-
-    protected RepositoryLocation documentManagerServerLocation;
-
-    @In(create = true, required = false)
-    protected transient RepositoryLocation currentServerLocation;
+    /**
+     * Map holding the open session for each repository location.
+     */
+    protected Map<RepositoryLocation, CoreSession> sessions = new HashMap<RepositoryLocation, CoreSession>();
 
     public void initialize() {
         log.debug("Seam component initialized...");
@@ -73,63 +74,79 @@ public class DocumentManagerBusinessDelegate implements Serializable {
 
     @Unwrap
     public CoreSession getDocumentManager() throws ClientException {
+        /*
+         * Explicit lookup, as this method is the only user of the Seam
+         * component. Also, in some cases (Seam remoting), it seems that the
+         * injection is not done correctly.
+         */
+        RepositoryLocation currentServerLocation = (RepositoryLocation) Component.getInstance("currentServerLocation");
         return getDocumentManager(currentServerLocation);
     }
 
     public CoreSession getDocumentManager(RepositoryLocation serverLocation)
             throws ClientException {
 
-        // XXX TD : for some reasons the currentServerLocation is not always
-        // injected by Seam
-        // typical reproduction case includes Seam remoting call
-        // ==> pull from factory by hand
         if (serverLocation == null) {
-            serverLocation = (RepositoryLocation) Component.getInstance("currentServerLocation");
-            if (serverLocation == null) {
-                // serverLocation (factory in ServerContextBean) is set through
-                // navigationContext, which itself injects documentManager, so
-                // it will be null the first time
-                return null;
-            }
+            /*
+             * currentServerLocation (factory in ServerContextBean) is set
+             * through navigationContext, which itself injects documentManager,
+             * so it will be null the first time.
+             */
+            return null;
         }
 
-        if (documentManager == null || documentManagerServerLocation == null ||
-                !documentManagerServerLocation.equals(serverLocation)) {
+        CoreSession session = sessions.get(serverLocation);
+        if (session == null) {
+            if (Lifecycle.isDestroying()) {
+                /*
+                 * During Seam component destroy phases, we don't want to
+                 * recreate a core session just for injection. This happens
+                 * during logout when the session context is destroyed; we don't
+                 * want to cause EJB calls in this case as the authentication
+                 * wouldn't work.
+                 */
+                return null;
+            }
+            String serverName = serverLocation.getName();
             try {
                 RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-                Repository repository = repositoryManager.getRepository(serverLocation.getName());
-                documentManager = repository.open();
-                documentManagerServerLocation = serverLocation;
-                log.trace("documentManager retrieved for server " +
-                        serverLocation.getName());
+                Repository repository = repositoryManager.getRepository(serverName);
+                session = repository.open();
+                log.debug("Opened session for repository " + serverName);
             } catch (Exception e) {
-                throw new ClientException("Error opening repository", e);
+                throw new ClientException(
+                        "Error opening session for repository " + serverName, e);
             }
+            sessions.put(serverLocation, session);
         }
-        return documentManager;
+        return session;
     }
 
     @Destroy
     @PermitAll
     public void remove() {
-        if (documentManager == null) {
-            return;
+        for (Entry<RepositoryLocation, CoreSession> entry : sessions.entrySet()) {
+            String serverName = entry.getKey().getName();
+            CoreSession session = entry.getValue();
+            try {
+                RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
+                Repository repository = repositoryManager.getRepository(serverName);
+                repository.close(session);
+                log.debug("Closed session for repository " + serverName);
+            } catch (EJBAccessException e) {
+                /*
+                 * CoreInstance.close tries to call coreSession.getSessionId()
+                 * which makes another EJB call; don't log an error for this.
+                 *
+                 * XXX but this means we don't close the session correctly
+                 */
+                log.debug("EJBAccessException while closing session for repository " +
+                        serverName);
+            } catch (Exception e) {
+                log.error("Error closing session for repository " + serverName,
+                        e);
+            }
         }
-        try {
-            RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-            Repository repository = repositoryManager.getRepository(documentManagerServerLocation.getName());
-            repository.close(documentManager);
-        } catch (EJBAccessException e) {
-            // CoreInstance.close tries to call coreSession.getSessionId()
-            // which makes another EJB call; don't log an error for this.
-            // XXX but this means we don't close the session correctly
-            log.debug("EJBAccessException while closing documentManager");
-        } catch (Exception e) {
-            log.error("Error closing documentManager", e);
-        } finally {
-            documentManager = null;
-            documentManagerServerLocation = null;
-        }
+        sessions.clear();
     }
-
 }
