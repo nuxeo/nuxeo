@@ -21,9 +21,7 @@ package org.nuxeo.ecm.platform.relations.io.test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -139,7 +137,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    private static InputStream getTestFile(String filePath) throws Exception {
+    private static InputStream getTestFile(String filePath) {
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(
                 filePath);
     }
@@ -157,11 +155,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
 
     private static void feedGraph(String filePath, Graph graph) throws Exception {
         assertSame(0L, graph.size());
-        try {
-            graph.read(getTestFile(filePath), null, null);
-        } catch (Exception err) {
-            err.printStackTrace();
-        }
+        graph.read(getTestFile(filePath), null, null);
         assertNotSame(0L, graph.size());
     }
 

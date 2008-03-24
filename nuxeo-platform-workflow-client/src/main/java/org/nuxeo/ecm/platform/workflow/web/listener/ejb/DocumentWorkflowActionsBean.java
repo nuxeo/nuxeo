@@ -33,17 +33,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.Create;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -90,20 +84,14 @@ import org.nuxeo.ecm.platform.workflow.web.adapter.ProcessModel;
 import org.nuxeo.ecm.platform.workflow.web.api.DocumentTaskActions;
 import org.nuxeo.ecm.platform.workflow.web.api.DocumentWorkflowActions;
 import org.nuxeo.ecm.platform.workflow.web.api.WorkflowBeansDelegate;
-import org.nuxeo.ecm.platform.workflow.web.api.ejb.remote.DocumentWorkflowActionsRemote;
-import org.nuxeo.ecm.platform.workflow.web.listener.ejb.local.DocumentWorkflowActionsLocal;
 import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 
 /**
  * Workflow actions bean.
- *
  * <p>
  * Deals with a document workflow related actions.
- * </p>
- *
  * <p>
  * The tasks do have a dedicated action listener.
- * </p>
  *
  * @See org.nuxeo.ecm.platform.workflow.web.listener.DocumentTaskActionsBean
  *
@@ -133,16 +121,16 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
     protected transient CoreSession documentManager;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected WebActions webActions;
+    protected transient WebActions webActions;
 
     @In(create = true)
-    protected Principal currentUser;
+    protected transient Principal currentUser;
 
     @In(create = true)
-    protected UserManager userManager;
+    protected transient UserManager userManager;
 
     @In(create = true)
     protected Map<String, String> messages;
@@ -199,9 +187,8 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
 
 
     @Create
-    public void init()
-    {
-    	Events.instance().raiseEvent(EventNames.WF_INIT);
+    public void init() {
+        Events.instance().raiseEvent(EventNames.WF_INIT);
     }
 
     public Map<String, String> getMessages() {
@@ -390,8 +377,6 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
     protected WMProcessInstance endWorkflow(String wid)
             throws WMWorkflowException {
 
-        WMProcessInstance workflowInstance;
-
         // Unlink the document to the process
         // :XXX: We might want to do that using JMS in the future.
         WorkflowDocumentRelationManager wDoc = workflowBeansDelegate.getWorkflowDocumentBean();
@@ -419,6 +404,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
 
         log.info("Deny WF rights ............ DONE");
 
+        WMProcessInstance workflowInstance;
         try {
             workflowInstance = wapi.terminateProcessInstance(wid);
         } catch (WMWorkflowException we) {
@@ -585,7 +571,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
         String[] directiveIds = (String[]) variables.get(WorkflowConstants.WORKFLOW_DIRECTIVES);
         if (directiveIds != null) {
             for (String directiveId : directiveIds) {
-                String label = getMessages().get(directiveId);
+                String label = messages.get(directiveId);
                 workItemDirectives.add(new SelectItem(directiveId,
                         label != null ? label : directiveId));
             }
@@ -797,7 +783,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
 
         if (transitions != null) {
             for (String transition : transitions) {
-                String label = getMessages().get(transition);
+                String label = messages.get(transition);
                 availableStateTransitionsMap.put(label != null ? label
                         : transition, transition);
             }
@@ -827,7 +813,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
                 // Reverse order for f:selectItems.
                 String id = definition.getId();
                 String name = definition.getName();
-                String label = getMessages().get(name);
+                String label = messages.get(name);
                 workflowDefinitionsMap.put(label != null ? label : name, id);
                 // Cache for further faster lookup
                 workflowDefCache.put(id, name);
@@ -850,7 +836,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
         props.add(WorkflowDocumentModificationConstants.WORKFLOW_DOCUMENT_MODIFICATION_NOT_ALLOWED);
 
         for (String prop : props) {
-            String label = getMessages().get(prop);
+            String label = messages.get(prop);
             reviewModificationPropertiesMap.put(label != null ? label : prop,
                     prop);
         }
@@ -873,7 +859,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
         props.add(WorkflowDocumentVersioningPolicyConstants.WORKFLOW_DOCUMENT_VERSIONING_NO_INCREMENT);
 
         for (String prop : props) {
-            String label = getMessages().get(prop);
+            String label = messages.get(prop);
             reviewVersioningPropertiesMap.put(label != null ? label : prop,
                     prop);
         }

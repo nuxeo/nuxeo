@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -59,8 +57,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class TestListener extends RepositoryTestCase {
-
-    private static final Log log = LogFactory.getLog(TestListener.class);
 
     private static final String ENGINE_NAME = "compass";
 
@@ -183,10 +179,8 @@ public class TestListener extends RepositoryTestCase {
         prefetchInfo.put("dc.modified", new GregorianCalendar());
         prefetchInfo.put("dc.contributors", new String[0]);
         prefetchInfo.put("sp.securityLevel", Long.valueOf(3));
-        if (prefetchInfo != null) {
-            for (String k : prefetchInfo.keySet()) {
-                dm.prefetchProperty(k, prefetchInfo.get(k));
-            }
+        for (String k : prefetchInfo.keySet()) {
+            dm.prefetchProperty(k, prefetchInfo.get(k));
         }
 
         assertFalse(dm.getPrefetch().isEmpty());

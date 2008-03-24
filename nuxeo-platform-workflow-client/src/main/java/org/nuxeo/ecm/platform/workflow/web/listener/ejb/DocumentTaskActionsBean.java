@@ -116,16 +116,16 @@ public class DocumentTaskActionsBean extends InputController implements
     protected ProcessModel reviewModel;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected WebActions webActions;
+    protected transient WebActions webActions;
 
     @In(create = true)
-    protected UserManager userManager;
+    protected transient UserManager userManager;
 
     @In(create = true)
-    protected Principal currentUser;
+    protected transient Principal currentUser;
 
     @In(create = true)
     protected PrincipalListManager principalListManager;
@@ -134,10 +134,10 @@ public class DocumentTaskActionsBean extends InputController implements
     protected Map<String, String> messages;
 
     @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
+    protected transient ResourcesAccessor resourcesAccessor;
 
     @In(create = true)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     protected List<WMWorkItemInstance> documentTasks;
 

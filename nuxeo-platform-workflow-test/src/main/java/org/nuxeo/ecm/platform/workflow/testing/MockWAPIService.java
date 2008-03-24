@@ -75,7 +75,7 @@ public class MockWAPIService extends DefaultComponent {
         this.wapi = wapi;
     }
 
-    public class MockDocumentMessageProducer implements DocumentMessageProducer {
+    private static class MockDocumentMessageProducer implements DocumentMessageProducer {
 
         public void produce(DocumentMessage message) {
         }
