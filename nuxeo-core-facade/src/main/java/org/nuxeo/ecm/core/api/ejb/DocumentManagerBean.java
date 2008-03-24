@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJBContext;
 import javax.ejb.Local;
 import javax.ejb.PostActivate;
@@ -88,6 +89,7 @@ public class DocumentManagerBean extends AbstractSession {
 
     @Override
     @Remove
+    @PermitAll
     public void destroy() {
         log.debug("@Remove");
         super.destroy();
