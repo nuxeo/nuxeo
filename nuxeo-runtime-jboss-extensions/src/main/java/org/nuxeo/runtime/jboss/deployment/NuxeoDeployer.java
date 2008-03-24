@@ -435,8 +435,6 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
             if (k2 == null) {
                 k2 = -1;
             }
-
-            //System.out.println("######### "+name1 +" ["+o1.shortName+":"+k1+"]"+" < "+name2+" ["+o2.shortName+":"+k2+"]"+" = "+(k1-k2 < 0));
             return k1 - k2;
         }
 

@@ -17,14 +17,25 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.test_multi_ejb;
+package org.nuxeo.runtime.multiejb;
+
+import javax.ejb.Local;
+import javax.ejb.Remote;
+import javax.ejb.Stateless;
+
+import org.nuxeo.runtime.jboss.interceptors.IsLocalInterceptor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface MyTestMBean {
+@Stateless
+@Local(Multi.class)
+@Remote(Multi.class)
+public class MultiBean implements Multi{
 
-    public String getResult();
+    public String getMessage() {
+        return "I am MultiBean running on: "+IsLocalInterceptor.getBindAddr();
+    }
 
 }

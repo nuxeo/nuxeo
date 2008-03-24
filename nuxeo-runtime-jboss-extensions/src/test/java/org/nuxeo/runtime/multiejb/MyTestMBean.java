@@ -17,14 +17,14 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.test_multi_ejb;
+package org.nuxeo.runtime.multiejb;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Multi {
+public interface MyTestMBean {
 
-    public String getMessage();
+    String getResult();
 
 }

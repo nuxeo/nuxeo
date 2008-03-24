@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.test_multi_ejb;
+package org.nuxeo.runtime.multiejb;
 
 import java.util.Properties;
 
@@ -31,10 +31,9 @@ import javax.naming.NamingException;
  */
 public class MyTest implements MyTestMBean {
 
-
     public Context getRemoteContext(String ip) throws NamingException {
         Properties env = new Properties();
-        env.put("java.naming.provider.url", "jnp://"+ip+":1099");
+        env.put("java.naming.provider.url", "jnp://" + ip + ":1099");
         env.put("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
         env.put("java.naming.factory.url.pkgs", "org.jboss.naming:org.jnp.interfaces");
         return new InitialContext(env);
@@ -59,4 +58,5 @@ public class MyTest implements MyTestMBean {
         }
         return msg;
     }
+
 }
