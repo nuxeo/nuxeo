@@ -134,7 +134,6 @@ public class DocumentManagerBean extends AbstractSession {
         }
     }
 
-
     @Override
     public Principal getPrincipal() {
         Principal principal;
