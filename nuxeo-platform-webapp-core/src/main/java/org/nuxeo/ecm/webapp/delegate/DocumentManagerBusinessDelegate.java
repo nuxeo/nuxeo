@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,20 +12,20 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Razvan Caraghin
+ *     Olivier Grisel
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.webapp.delegate;
-
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
 
 import javax.annotation.security.PermitAll;
-import javax.ejb.Remove;
+import javax.ejb.EJBAccessException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,113 +35,100 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
-import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.platform.api.ECM;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.runtime.api.Framework;
 
 /**
- * Acquires a {@link DocumentManager} handle and sticks it into the Seam
- * context.
+ * Acquires a {@link CoreSession} connection.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
- *
+ * @author Razvan Caraghin
+ * @author Olivier Grisel
+ * @author Thierry Delprat
+ * @author Florent Guillaume
  */
 @Name("documentManager")
 @Scope(CONVERSATION)
 @NuxeoJavaBeanErrorHandler
 public class DocumentManagerBusinessDelegate implements Serializable {
 
-    private static final long serialVersionUID = 7531855222619160585L;
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(DocumentManagerBusinessDelegate.class);
 
     protected CoreSession documentManager;
 
-    @In(create=true, required = false)
-    protected RepositoryLocation currentServerLocation;
+    protected RepositoryLocation documentManagerServerLocation;
 
-    @In(create=true, required = false)
-    protected NavigationContext navigationContext;
+    @In(create = true, required = false)
+    protected transient RepositoryLocation currentServerLocation;
 
-    protected RepositoryLocation oldLocation;
-
-    //@Create
     public void initialize() {
         log.debug("Seam component initialized...");
     }
 
-    //@Begin(join=true)
     @Unwrap
     public CoreSession getDocumentManager() throws ClientException {
-        //log.debug("Getting Document Manager");
         return getDocumentManager(currentServerLocation);
     }
 
     public CoreSession getDocumentManager(RepositoryLocation serverLocation)
             throws ClientException {
 
-    	if (serverLocation==null)
-    	{
-    		// XXX TD : for some reasons the currentServerLocation is not always injected by Seam
-    		// typical reproduction case includes Seam remoting call
-    		// ==> pull from factory by hand !
-    		if (serverLocation==null)
-    			serverLocation = (RepositoryLocation) Component.getInstance("currentServerLocation",true);
-    	}
-
-        if (documentManager == null) {
+        // XXX TD : for some reasons the currentServerLocation is not always
+        // injected by Seam
+        // typical reproduction case includes Seam remoting call
+        // ==> pull from factory by hand
+        if (serverLocation == null) {
+            serverLocation = (RepositoryLocation) Component.getInstance("currentServerLocation");
             if (serverLocation == null) {
-                log.warn("documentManager could not be retrieved because location is null");
+                // serverLocation (factory in ServerContextBean) is set through
+                // navigationContext, which itself injects documentManager, so
+                // it will be null the first time
                 return null;
-            } else {
-                try {
-                    documentManager = ECM.getPlatform().openRepository(
-                            serverLocation.getName());
-                    oldLocation = serverLocation;
-                    log.debug("documentManager retrieved");
-                    return documentManager;
-                } catch (Exception e) {
-                    final String errMsg = "Error opening repository "
-                            + e.getMessage();
-                    log.error(errMsg, e);
-                    throw new ClientException(errMsg);
-                }
-            }
-        } else {
-            // check if the existing DM instance is suitable
-            if (null != oldLocation
-                    && 0 == oldLocation.compareTo(serverLocation)) {
-                return documentManager;
-            } else {
-                try {
-                    documentManager = ECM.getPlatform().openRepository(
-                            serverLocation.getName());
-                    oldLocation = serverLocation;
-                    log.debug("documentManager retrieved");
-                    return documentManager;
-                } catch (Exception e) {
-                    final String errMsg = "Error opening repository "
-                            + e.getMessage();
-                    log.error(errMsg, e);
-                    throw new ClientException(errMsg);
-                }
             }
         }
+
+        if (documentManager == null || documentManagerServerLocation == null ||
+                !documentManagerServerLocation.equals(serverLocation)) {
+            try {
+                RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
+                Repository repository = repositoryManager.getRepository(serverLocation.getName());
+                documentManager = repository.open();
+                documentManagerServerLocation = serverLocation;
+                log.trace("documentManager retrieved for server " +
+                        serverLocation.getName());
+            } catch (Exception e) {
+                throw new ClientException("Error opening repository", e);
+            }
+        }
+        return documentManager;
     }
 
     @Destroy
-    @Remove
     @PermitAll
-    public void remove() throws ClientException {
-        log.debug("Destroying seam component...");
-        if (documentManager != null) {
-            documentManager.destroy();
+    public void remove() {
+        if (documentManager == null) {
+            return;
+        }
+        try {
+            RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
+            Repository repository = repositoryManager.getRepository(documentManagerServerLocation.getName());
+            repository.close(documentManager);
+        } catch (EJBAccessException e) {
+            // CoreInstance.close tries to call coreSession.getSessionId()
+            // which makes another EJB call; don't log an error for this.
+            // XXX but this means we don't close the session correctly
+            log.debug("EJBAccessException while closing documentManager");
+        } catch (Exception e) {
+            log.error("Error closing documentManager", e);
+        } finally {
             documentManager = null;
+            documentManagerServerLocation = null;
         }
     }
 
