@@ -571,7 +571,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
         String[] directiveIds = (String[]) variables.get(WorkflowConstants.WORKFLOW_DIRECTIVES);
         if (directiveIds != null) {
             for (String directiveId : directiveIds) {
-                String label = getMessages().get(directiveId);
+                String label = messages.get(directiveId);
                 workItemDirectives.add(new SelectItem(directiveId,
                         label != null ? label : directiveId));
             }
@@ -783,7 +783,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
 
         if (transitions != null) {
             for (String transition : transitions) {
-                String label = getMessages().get(transition);
+                String label = messages.get(transition);
                 availableStateTransitionsMap.put(label != null ? label
                         : transition, transition);
             }
@@ -813,7 +813,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
                 // Reverse order for f:selectItems.
                 String id = definition.getId();
                 String name = definition.getName();
-                String label = getMessages().get(name);
+                String label = messages.get(name);
                 workflowDefinitionsMap.put(label != null ? label : name, id);
                 // Cache for further faster lookup
                 workflowDefCache.put(id, name);
@@ -836,7 +836,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
         props.add(WorkflowDocumentModificationConstants.WORKFLOW_DOCUMENT_MODIFICATION_NOT_ALLOWED);
 
         for (String prop : props) {
-            String label = getMessages().get(prop);
+            String label = messages.get(prop);
             reviewModificationPropertiesMap.put(label != null ? label : prop,
                     prop);
         }
@@ -859,7 +859,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
         props.add(WorkflowDocumentVersioningPolicyConstants.WORKFLOW_DOCUMENT_VERSIONING_NO_INCREMENT);
 
         for (String prop : props) {
-            String label = getMessages().get(prop);
+            String label = messages.get(prop);
             reviewVersioningPropertiesMap.put(label != null ? label : prop,
                     prop);
         }

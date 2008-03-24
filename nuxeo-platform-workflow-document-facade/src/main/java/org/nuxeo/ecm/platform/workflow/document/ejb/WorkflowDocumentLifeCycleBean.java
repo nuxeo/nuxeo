@@ -24,7 +24,6 @@ import java.util.Collection;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateful;
-import javax.naming.NamingException;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentRef;
