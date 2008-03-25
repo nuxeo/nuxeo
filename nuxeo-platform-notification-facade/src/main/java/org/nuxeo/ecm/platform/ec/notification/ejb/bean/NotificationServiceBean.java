@@ -146,7 +146,7 @@ public class NotificationServiceBean implements NotificationManager {
             String freemarkerTemplateName, String subject, String comment,
             NuxeoPrincipal sender, List<String> sendTo) {
         Map<String, Object> infoMap = new HashMap<String, Object>();
-        infoMap.put("doc", doc);
+        infoMap.put("document", doc);
         infoMap.put("subject", subject);
         infoMap.put("comment", comment);
         infoMap.put("sender", sender);
