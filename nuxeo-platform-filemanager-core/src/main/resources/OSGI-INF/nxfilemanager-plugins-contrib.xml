@@ -17,7 +17,6 @@
     <plugin name="Noteplugin"
       class="org.nuxeo.ecm.platform.filemanager.service.extension.NotePlugin">
       <filter>text/plain</filter>
-      <filter>text/rtf</filter>
       <filter>text/html</filter>
       <filter>application/xhtml+xml</filter>
       <filter>application/xml</filter>
