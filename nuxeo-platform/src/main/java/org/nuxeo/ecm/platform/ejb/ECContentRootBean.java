@@ -26,6 +26,7 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,23 +46,16 @@ import org.nuxeo.ecm.platform.interfaces.local.ECContentRootLocal;
  * @author Razvan Caraghin
  *
  */
-@Stateful
-@Local(ECContentRootLocal.class)
-@Remote(ECContentRoot.class)
-@SerializedConcurrentAccess
-public class ECContentRootBean implements ECContentRoot {
+@Stateless
+public class ECContentRootBean implements ECContentRoot, ECContentRootLocal {
 
     private static final Log log = LogFactory.getLog(ECContentRootBean.class);
 
-    protected final FacetFilter facetFilter = new FacetFilter("HiddenInNavigation", false);
-
-    @Remove
-    public void remove() {
-        log.debug("Instance removed.");
-    }
+    public void remove() {}
 
     public List<DocumentModel> getContentRootChildren(String documentType,
             DocumentRef docRef, CoreSession handle) throws ClientException {
+        FacetFilter facetFilter = new FacetFilter("HiddenInNavigation", false);
         try {
             assert null != docRef;
             assert null != handle;
@@ -108,6 +102,7 @@ public class ECContentRootBean implements ECContentRoot {
 
     public List<DocumentModel> getContentRootDocuments(DocumentRef docRef,
             CoreSession handle) throws ClientException {
+        FacetFilter facetFilter = new FacetFilter("HiddenInNavigation", false);
         try {
             assert null != docRef;
             assert null != handle;

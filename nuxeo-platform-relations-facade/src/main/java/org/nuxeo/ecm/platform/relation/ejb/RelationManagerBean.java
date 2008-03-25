@@ -30,6 +30,7 @@ import javax.ejb.PostActivate;
 import javax.ejb.Remote;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,10 +53,9 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
  */
-@Stateful
+@Stateless
 @Local(RelationManagerLocal.class)
 @Remote(RelationManagerRemote.class)
-@SerializedConcurrentAccess
 public class RelationManagerBean implements RelationManager {
 
     private static final long serialVersionUID = -4778456059717447736L;
@@ -64,7 +64,6 @@ public class RelationManagerBean implements RelationManager {
 
     private transient RelationManager service;
 
-    @PostActivate
     @PostConstruct
     public void initialize() {
         try {
@@ -75,10 +74,7 @@ public class RelationManagerBean implements RelationManager {
         }
     }
 
-    @Remove
-    public void remove() {
-        service = null;
-    }
+    public void remove() {}
 
     // TODO: maybe hack here to get graph in a cleaner way
     public Graph getGraphByName(String name) throws ClientException {

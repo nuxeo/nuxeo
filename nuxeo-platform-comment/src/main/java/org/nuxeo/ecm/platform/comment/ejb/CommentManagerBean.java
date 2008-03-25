@@ -25,14 +25,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJBContext;
 import javax.ejb.Local;
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
 import javax.ejb.Remote;
-import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
@@ -44,36 +39,26 @@ import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  *
  */
-@Stateful
-@SerializedConcurrentAccess
+@Stateless
 @Remote(CommentManager.class)
 @Local(CommentManagerLocal.class)
 // XXX AT: this bean is never called...
 public class CommentManagerBean implements CommentManager {
-
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(CommentManagerBean.class);
 
     @Resource
     EJBContext context;
 
     private CommentManager commentManager;
 
-    @PostActivate
     @PostConstruct
     public void initialize() {
         CommentService commentService = CommentServiceHelper.getCommentService();
         commentManager = commentService.getCommentManager();
     }
 
-    @PrePassivate
-    public void cleanup() {
-        commentManager = null;
-    }
+    public void cleanup() {}
 
-    public void remove() {
-        // TODO Auto-generated method stub
-    }
+    public void remove() {}
 
     public DocumentModel createComment(DocumentModel docModel,
             String comment) throws ClientException {

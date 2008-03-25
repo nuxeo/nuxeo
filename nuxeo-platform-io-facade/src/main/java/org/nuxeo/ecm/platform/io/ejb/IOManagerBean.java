@@ -27,9 +27,10 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Local;
+import javax.ejb.PostActivate;
 import javax.ejb.Remote;
 import javax.ejb.Remove;
-import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-@Stateful
+@Stateless
 @Local(IOManagerLocal.class)
 @Remote(IOManagerRemote.class)
 public class IOManagerBean implements IOManager {
@@ -71,10 +72,7 @@ public class IOManagerBean implements IOManager {
         }
     }
 
-    @Remove
-    public void remove() {
-        service = null;
-    }
+    public void remove() {}
 
     public void addAdapter(String name, IOResourceAdapter adapter)
             throws ClientException {

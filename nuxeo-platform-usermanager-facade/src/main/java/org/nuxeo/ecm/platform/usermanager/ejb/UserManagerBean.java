@@ -30,11 +30,10 @@ import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
 import javax.ejb.Remote;
 import javax.ejb.Remove;
-import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -46,19 +45,15 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  *
  */
-@Stateful
-@SerializedConcurrentAccess
+@Stateless
 @Remote(UserManager.class)
 @Local(UserManagerLocal.class)
 public class UserManagerBean implements UserManager {
 
     private static final Log log = LogFactory.getLog(UserManagerBean.class);
 
-    private String defaultGroup;
-
     private transient UserManager userManager;
 
-    @PostActivate
     @PostConstruct
     public void initialize() {
         getUserManager();
@@ -72,10 +67,7 @@ public class UserManagerBean implements UserManager {
         return userManager;
     }
 
-    @PrePassivate
-    public void cleanup() {
-        userManager = null;
-    }
+    public void cleanup() {}
 
     public boolean checkUsernamePassword(String username, String password)
             throws ClientException {
@@ -112,9 +104,7 @@ public class UserManagerBean implements UserManager {
         }
     }
 
-    @Remove
-    public void remove() {
-    }
+    public void remove() {}
 
     public void createGroup(NuxeoGroup group) throws ClientException {
         try {
@@ -218,11 +208,11 @@ public class UserManagerBean implements UserManager {
     }
 
     public String getDefaultGroup() {
-        return defaultGroup;
+        return getUserManager().getDefaultGroup();
     }
 
     public void setDefaultGroup(String defaultGroup) {
-        this.defaultGroup = defaultGroup;
+        getUserManager().setDefaultGroup(defaultGroup);
     }
 
     public void setRootLogin(String defaultRootLogin) throws ClientException {

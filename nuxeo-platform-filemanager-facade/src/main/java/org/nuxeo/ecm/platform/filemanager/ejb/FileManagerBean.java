@@ -25,7 +25,7 @@ import java.io.Serializable;
 
 import javax.ejb.Local;
 import javax.ejb.Remote;
-import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,7 +52,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
  *         Kalogeropoulos</a>
  */
-@Stateful
+@Stateless
 @Local(FileManagerLocal.class)
 @Remote(FileManager.class)
 public class FileManagerBean implements FileManager {
