@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Razvan Caraghin
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.platform.util;
@@ -22,44 +22,32 @@ package org.nuxeo.ecm.platform.util;
 import java.io.Serializable;
 
 /**
- * TODO: move to another package. Represents a repository location.
+ * Represents a repository location. TODO: move to another package.
  *
  * @author Razvan Caraghin
- *
+ * @author Thierry Delprat
+ * @author Florent Guillaume
  */
 public class RepositoryLocation implements Serializable,
         Comparable<RepositoryLocation> {
 
-    private static final long serialVersionUID = 503609836034456298L;
+    private static final long serialVersionUID = -4802281621945117577L;
 
     protected final String name;
 
-    private Boolean enabled = false;
-
     public RepositoryLocation(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Null repository location");
+        }
         this.name = name;
-    }
-
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    // TODO: never called. Remove and make field final?
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
     }
 
     public String getName() {
         return name;
     }
 
-    // FIXME: doesn't implement the compareTo contract.
     public int compareTo(RepositoryLocation o) {
-        if (name.equalsIgnoreCase(o.name)) {
-            return 0;
-        } else {
-            return -1;
-        }
+        return name.compareTo(o.name);
     }
 
     @Override
@@ -70,8 +58,26 @@ public class RepositoryLocation implements Serializable,
         if (!(other instanceof RepositoryLocation)) {
             return false;
         }
-        RepositoryLocation otherRepo = (RepositoryLocation) other;
-        return name.equals(otherRepo.name);
+        return name.equals(((RepositoryLocation) other).name);
     }
 
+    @Override
+    public int hashCode() {
+        return this.name.hashCode();
+    }
+
+    /**
+     * @deprecated Unused
+     */
+    @Deprecated
+    public Boolean getEnabled() {
+        return Boolean.FALSE;
+    }
+
+    /**
+     * @deprecated Unused
+     */
+    @Deprecated
+    public void setEnabled(Boolean enabled) {
+    }
 }

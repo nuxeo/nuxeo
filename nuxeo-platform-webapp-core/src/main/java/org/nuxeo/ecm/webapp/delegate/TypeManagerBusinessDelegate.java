@@ -92,7 +92,5 @@ public class TypeManagerBusinessDelegate implements Serializable {
             //typeManager.remove();
             typeManager = null;
         }
-
-        log.info("Destroyed the seam component...");
     }
 }

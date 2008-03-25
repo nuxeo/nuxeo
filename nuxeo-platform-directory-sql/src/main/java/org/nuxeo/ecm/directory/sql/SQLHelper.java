@@ -36,6 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.dialect.Dialect;
@@ -198,9 +199,26 @@ public class SQLHelper {
         }
     }
 
+    private String formatColumnValues(String[] columnValues) {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("[");
+        if (columnValues != null) {
+            int i = 0;
+            List<String> values = new ArrayList<String>();
+            for (String columnValue : columnValues) {
+                values.add(String.format("%s: %s", i, columnValue));
+                i++;
+            }
+            buffer.append(StringUtils.join(values.iterator(), ", "));
+        }
+        buffer.append("]");
+        return buffer.toString();
+    }
+
     private void loadData() throws DirectoryException {
         log.debug("loading data file: " + dataFileName);
         CSVReader csvReader = null;
+        String[] columnValues = null;
         try {
             InputStream is = getClass().getClassLoader().getResourceAsStream(
                     dataFileName);
@@ -229,7 +247,6 @@ public class SQLHelper {
 
             PreparedStatement ps = connection.prepareStatement(insertSql);
 
-            String[] columnValues = null;
             while ((columnValues = csvReader.readNext()) != null) {
                 if (columnValues.length <= 1) {
                     // skip empty lines
@@ -237,7 +254,8 @@ public class SQLHelper {
                 }
                 if (columnValues.length != columnNames.length) {
                     log.error("invalid column count while reading csv file: "
-                            + dataFileName);
+                            + dataFileName + ", values: "
+                            + formatColumnValues(columnValues));
                     continue;
                 }
                 for (int i = 0; i < columnNames.length; i++) {
@@ -255,24 +273,31 @@ public class SQLHelper {
                         try {
                             ps.setInt(i + 1, Integer.parseInt(value));
                         } catch (NumberFormatException e) {
-                            throw new DirectoryException(String.format(
-                                    "failed to set column '%s' on table '%s'",
-                                    column.getName(), table.getName()), e);
+                            throw new DirectoryException(
+                                    String.format(
+                                            "failed to set column '%s' on table '%s', values: %s",
+                                            column.getName(), table.getName(),
+                                            formatColumnValues(columnValues)),
+                                    e);
                         }
                         break;
                     case Types.TIMESTAMP:
                         try {
                             ps.setTimestamp(i + 1, Timestamp.valueOf(value));
                         } catch (IllegalArgumentException e) {
-                            throw new DirectoryException(String.format(
-                                    "failed to set column '%s' on table '%s'",
-                                    column.getName(), table.getName()), e);
+                            throw new DirectoryException(
+                                    String.format(
+                                            "failed to set column '%s' on table '%s', values: %s",
+                                            column.getName(), table.getName(),
+                                            formatColumnValues(columnValues)),
+                                    e);
                         }
                         break;
                     default:
                         throw new DirectoryException(
                                 "unrecognized column type: "
-                                        + column.getSqlType());
+                                        + column.getSqlType() + ", values: "
+                                        + formatColumnValues(columnValues));
                     }
                 }
                 ps.execute();
@@ -283,8 +308,9 @@ public class SQLHelper {
                     + dataFileName, e);
         } catch (SQLException e) {
             throw new DirectoryException(String.format(
-                    "Table '%s' initialization failed: %s", table.getName(),
-                    e.getMessage()), e);
+                    "Table '%s' initialization failed: %s, values: %s",
+                    table.getName(), e.getMessage(),
+                    formatColumnValues(columnValues)), e);
         } finally {
             try {
                 csvReader.close();

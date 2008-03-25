@@ -39,16 +39,14 @@
           <h:panelGroup
             rendered="#{!immutable and onlineEditable and isLiveEditable}">
             <h:outputText value=" | " />
-
-            <h:commandLink action="#{FileManageWS.edit}"
+            
+            <!-- TODO: factorize rendered logics in a dedicated component: NXP-2190 -->
+            
+            <h:outputLink
+              value="#{nxd:liveEditUrl(changeableDocument, widget.fieldDefinitions[0].schemaName, widget.fieldDefinitions[0].fieldName, widget.fieldDefinitions[1].fieldName)}"
               rendered="#{documentActions.writeRight}">
-              <f:param name="fileFieldFullName"
-                value="#{widget.fieldDefinitions[0].propertyName}" />
-              <f:param name="filename" value="#{field_1}" />
-              <f:param name="filenameFieldFullName"
-                value="#{widget.fieldDefinitions[1].propertyName}" />
               <h:outputText value="#{messages['label.document.directEdit']}" />
-            </h:commandLink>
+            </h:outputLink> 
 
           </h:panelGroup>
         </nxu:methodResult>

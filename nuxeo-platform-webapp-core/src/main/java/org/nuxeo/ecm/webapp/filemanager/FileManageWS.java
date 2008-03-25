@@ -186,7 +186,9 @@ public class FileManageWS extends InputController implements
     /**
      * This method is called from a page action link to generate a file used by
      * client IE plugin
+     * @deprecated use nxd:liveEditUrl function defined in DocumentModelFunctions instead
      */
+    @Deprecated
     public String edit() throws ClientException {
 
         final String logPrefix = "<edit> ";

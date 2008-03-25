@@ -74,7 +74,7 @@ public class RelationsTestHelper {
     }
 
     public static CommentManager getCommentManager() throws Exception {
-        return (CommentManager) Framework.getService(CommentManager.class);
+        return Framework.getService(CommentManager.class);
     }
 
     public static void createRelation(DocumentModel doc1, DocumentModel doc2)

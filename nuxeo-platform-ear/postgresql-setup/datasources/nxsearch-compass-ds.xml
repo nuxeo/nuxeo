@@ -11,6 +11,5 @@
     <check-valid-connection-sql>;</check-valid-connection-sql>
   </local-tx-datasource> 
 
-</datasources>
-<!-- The following is kept as a sample for
+</datasources><!-- The following is kept as a sample for
 easy live edition. It is NOT used in the default app. -->

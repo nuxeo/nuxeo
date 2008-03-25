@@ -71,19 +71,13 @@
             <h:panelGroup rendered="#{!immutable and onlineEditable and isLiveEditable}">
             <h:outputText value=" | " />
 
-          <nxh:outputLink value="#{liveEditHelper.getEditURL()}"
-              rendered="false">
-              <h:outputText value="#{messages['label.document.directEdit']}" />
-          </nxh:outputLink>
-
-
-            <h:commandLink action="#{FileManageWS.edit}"
+            <!-- TODO: factorize rendered logics in a dedicated component: NXP-2190 -->
+            
+            <h:outputLink
+              value="#{nxd:liveEditUrl(changeableDocument, field.schemaName, field.fieldName, 'filename')}"
               rendered="#{documentActions.writeRight}">
-              <f:param name="fileFieldFullName" value="#{field.fullName}" />
-              <f:param name="filename" value="#{currentDocument.file.filename}" />
-              <f:param name="filenameFieldFullName" value="file:filename" />
               <h:outputText value="#{messages['label.document.directEdit']}" />
-            </h:commandLink>
+            </h:outputLink> 
 
             </h:panelGroup>
           </nxu:methodResult>
