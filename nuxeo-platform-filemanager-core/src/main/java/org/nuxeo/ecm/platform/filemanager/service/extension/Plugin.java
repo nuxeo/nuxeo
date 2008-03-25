@@ -104,4 +104,9 @@ public interface Plugin extends Serializable {
             String path, boolean overwrite, String filename,
             TypeManager typeService) throws ClientException, IOException;
 
+
+    boolean isEnabled();
+
+    void setEnabled(boolean enabled);
+
 }

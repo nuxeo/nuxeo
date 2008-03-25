@@ -36,6 +36,9 @@ public class PluginExtension implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @XNode("@enabled")
+    Boolean enabled = true;
+
     @XNode("@name")
     protected String name;
 
@@ -80,4 +83,8 @@ public class PluginExtension implements Serializable {
         this.filters = filters;
     }
 
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
 }
