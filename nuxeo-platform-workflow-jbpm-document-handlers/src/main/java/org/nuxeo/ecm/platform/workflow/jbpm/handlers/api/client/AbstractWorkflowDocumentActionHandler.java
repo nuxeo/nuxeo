@@ -35,6 +35,8 @@ import org.nuxeo.ecm.platform.workflow.jbpm.handlers.api.common.AbstractWorkflow
 public abstract class AbstractWorkflowDocumentActionHandler extends
         AbstractWorkflowDocumentHandler implements ActionHandler {
 
+    private static final long serialVersionUID = -745177382248193359L;
+
     protected AbstractWorkflowDocumentActionHandler() {
     }
 

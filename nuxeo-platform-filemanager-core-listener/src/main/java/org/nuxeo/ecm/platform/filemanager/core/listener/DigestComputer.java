@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.platform.filemanager.core.listener;
 
 import java.io.IOException;
@@ -23,7 +42,7 @@ public class DigestComputer extends AbstractEventListener {
 
     private Boolean initDone = false;
 
-    private List<String> xpathFields = null;
+    private List<String> xpathFields;
 
     private String digestAlgo = "sha-256";
 
@@ -49,18 +68,20 @@ public class DigestComputer extends AbstractEventListener {
     }
 
     public void notifyEvent(CoreEvent coreEvent) throws Exception {
-
-        if (!initIfNeeded())
+        if (!initIfNeeded()) {
             return;
+        }
 
-        if (!activateDigestComputation)
+        if (!activateDigestComputation) {
             return;
+        }
 
         Object source = coreEvent.getSource();
         if (source instanceof DocumentModel) {
             DocumentModel doc = (DocumentModel) source;
-            if (doc.isProxy())
+            if (doc.isProxy()) {
                 return;
+            }
             String evt = coreEvent.getEventId();
             if (DocumentEventTypes.ABOUT_TO_CREATE.equals(evt)
                     || DocumentEventTypes.BEFORE_DOC_UPDATE.equals(evt)) {
@@ -71,10 +92,9 @@ public class DigestComputer extends AbstractEventListener {
 
     private void addDigestToDocument(DocumentModel doc) {
         for (String xpathField : xpathFields) {
-
             Property blobProp = null;
             try {
-                blobProp = (Property) doc.getProperty(xpathField);
+                blobProp = doc.getProperty(xpathField);
             } catch (PropertyException e) {
                 log.debug("Property " + xpathField
                         + " not found on doc, skipping");
@@ -105,8 +125,7 @@ public class DigestComputer extends AbstractEventListener {
             dis.read();
         }
         byte[] b = md.digest();
-        String base64Digest = Base64.encodeBytes(b);
-        return base64Digest;
+        return Base64.encodeBytes(b);
     }
 
 }

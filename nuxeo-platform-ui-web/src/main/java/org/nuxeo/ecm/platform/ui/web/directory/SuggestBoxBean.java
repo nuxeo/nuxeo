@@ -89,7 +89,7 @@ public class SuggestBoxBean {
 
     // ToDo, remove this function and use filters in the directory service
     // instead.
-    public static void substractTab(String input) throws Exception {
+    public static void substractTab(String input) {
         List<Map<String, String>> tmp = new ArrayList<Map<String, String>>();
         for (Map<String, String> map : tempLabel) {
             String label = map.get("label");

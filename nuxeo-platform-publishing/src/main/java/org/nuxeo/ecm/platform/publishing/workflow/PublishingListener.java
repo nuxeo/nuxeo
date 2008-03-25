@@ -86,7 +86,7 @@ public class PublishingListener implements MessageListener {
 
     private PublishingService publishingService;
 
-    private PublishingService getPublishingService() throws Exception {
+    private PublishingService getPublishingService() {
         if (publishingService == null) {
             publishingService = (PublishingService) Framework.getRuntime().getComponent(
                     PublishingServiceImpl.NAME);

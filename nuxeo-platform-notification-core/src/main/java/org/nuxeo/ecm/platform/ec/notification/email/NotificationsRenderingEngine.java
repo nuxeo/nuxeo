@@ -23,15 +23,12 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import org.nuxeo.ecm.platform.ec.notification.email.templates.NuxeoTemplatesLoader;
 import org.nuxeo.ecm.platform.rendering.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.RenderingException;
 import org.nuxeo.ecm.platform.rendering.RenderingResult;
 import org.nuxeo.ecm.platform.rendering.impl.DefaultRenderingResult;
 import org.nuxeo.ecm.platform.rendering.template.DocumentRenderingEngine;
 import org.nuxeo.ecm.platform.rendering.template.FreemarkerRenderingJob;
-
-import freemarker.template.Configuration;
 
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>

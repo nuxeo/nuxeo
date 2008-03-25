@@ -60,11 +60,10 @@ import org.nuxeo.ecm.webapp.security.SecurityActions;
 /**
  * Action listener that deals with operations with the workspaces.
  * <p>
- * This action listener handles the Workspace creation wizard.
+ * This action listener handles the workspace creation wizard.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
-
 @Name("workspaceActions")
 @Scope(CONVERSATION)
 public class WorkspaceActionsBean extends InputController implements
@@ -76,13 +75,6 @@ public class WorkspaceActionsBean extends InputController implements
 
     @In(create = true)
     private CoreSession documentManager;
-
-    @In(required = false)
-    private DocumentModel currentDomain;
-
-    private Blob logo;
-
-    private DocumentModel logoHolder;
 
     @In(create = true)
     private Principal currentUser;
@@ -125,7 +117,6 @@ public class WorkspaceActionsBean extends InputController implements
 
     @Create
     public void initialize() throws ClientException {
-        logo = null;
     }
 
     @Destroy
