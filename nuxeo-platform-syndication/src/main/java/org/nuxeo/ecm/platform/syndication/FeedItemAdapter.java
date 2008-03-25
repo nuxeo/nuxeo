@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: NXTransformExtensionPointHandler.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Brice Chaffangeon
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.syndication;
 
@@ -26,39 +25,43 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 
 /**
- * @author bchaffangeon
- *
+ * @author Brice Chaffangeon
+ * @author Florent Guillaume
  */
 public class FeedItemAdapter {
 
-    private static final DateFormat DATE_PARSER = new SimpleDateFormat(
+    private FeedItemAdapter() {
+    }
+
+    protected static final DateFormat DATE_PARSER = new SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss");
 
     /**
-     * Converts a DocumentModel to a FeedItem.
+     * Convert a {@link DocumentModel} to a {@link FeedItem}.
      *
-     * @param doc DocumentModel to convert
-     * @return a FeedItem, ready to be syndicate by ROME
-     * @throws ParseException
+     * @param doc the document model to convert
+     * @return a feed item, ready to be syndicate by ROME
+     * @throws ClientException
      */
-    public FeedItem toFeedItem(DocumentModel doc) throws ParseException {
+    public static FeedItem toFeedItem(DocumentModel doc) throws ClientException {
 
         FeedItem feedIt = new FeedItem();
 
-        String title = (String) doc.getProperty("dublincore", "title");
-        feedIt.setTitle(title);
-
+        feedIt.setTitle((String) doc.getProperty("dublincore", "title"));
         feedIt.setDescription((String) doc.getProperty("dublincore",
                 "description"));
 
-        //List<String> contributors = Arrays.asList((String[]) doc.getProperty("dublincore", "contributors"));
-        // direct cast fails for some ResultDocuments returned by search service !!!
-        List<String> contributors = new ArrayList<String>();
-        Object [] contribs = (Object []) doc.getProperty("dublincore", "contributors");
+        // List<String> contributors = Arrays.asList((String[])
+        // doc.getProperty("dublincore", "contributors"));
+        // direct cast fails for some ResultDocuments returned by search service
+        Object[] contribs = (Object[]) doc.getProperty("dublincore",
+                "contributors");
+        List<String> contributors = new ArrayList<String>(contribs.length);
         for (Object contrib : contribs) {
             contributors.add((String) contrib);
         }
@@ -74,22 +77,26 @@ public class FeedItemAdapter {
         Date updateDate = ((Calendar) doc.getProperty("dublincore",
                 "modified")).getTime();
 
-        feedIt.setPublishedDate(DATE_PARSER.parse(DATE_PARSER.format(creationDate)));
-        feedIt.setUpdatedDate(DATE_PARSER.parse(DATE_PARSER.format(updateDate)));
+        try {
+            feedIt.setPublishedDate(DATE_PARSER.parse(DATE_PARSER.format(creationDate)));
+            feedIt.setUpdatedDate(DATE_PARSER.parse(DATE_PARSER.format(updateDate)));
+        } catch (ParseException e) {
+            throw new ClientException(e);
+        }
 
         return feedIt;
     }
 
     /**
-     * Converts a DocumentModelList to a List of FeedItem.
+     * Convert a list of {@link DocumentModel}s to a list of {@link FeedItem}s.
      *
-     * @param docList
-     * @return
-     * @throws ParseException
+     * @param docList the list of document models
+     * @return the list of feed items
+     * @throws ClientException
      */
-    public List<FeedItem> toFeedItemList(List<DocumentModel> docList)
-            throws ParseException {
-        List<FeedItem> feedItems = new ArrayList<FeedItem>();
+    public static List<FeedItem> toFeedItemList(List<DocumentModel> docList)
+            throws ClientException {
+        List<FeedItem> feedItems = new ArrayList<FeedItem>(docList.size());
         for (DocumentModel doc : docList) {
             feedItems.add(toFeedItem(doc));
         }
