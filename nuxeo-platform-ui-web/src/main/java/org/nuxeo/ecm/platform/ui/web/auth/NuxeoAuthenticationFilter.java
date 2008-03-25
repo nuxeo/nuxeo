@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,10 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Thierry Delprat
+ *     Bogdan Stefanescu
+ *     Anahide Tchertchian
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.platform.ui.web.auth;
@@ -54,7 +55,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
-import org.nuxeo.ecm.platform.api.login.SystemSession;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
@@ -68,13 +68,21 @@ import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * Servlet filter handling Nuxeo authentication (JAAS + EJB).
+ * <p>
+ * Also handles logout.
+ *
+ * @author Thierry Delprat
+ * @author Bogdan Stefanescu
+ * @author Anahide Tchertchian
+ * @author Florent Guillaume
+ */
 public class NuxeoAuthenticationFilter implements Filter {
 
-    protected static final String EJB_LOGIN_DOMAIN = "nuxeo-system-login";
+    // protected static final String EJB_LOGIN_DOMAIN = "nuxeo-system-login";
 
     protected static final String LOGIN_DOMAIN = "nuxeo-ecm-web";
-
-    // protected static final String LOGIN_DOMAIN = "nuxeo-ecm";
 
     public static final String START_PAGE_SAVE_KEY = "Nuxeo5_Start_Page";
 
@@ -84,7 +92,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     private static final Log log = LogFactory.getLog(NuxeoAuthenticationFilter.class);
 
-    protected final Boolean avoidReauthenticate = true;
+    protected final boolean avoidReauthenticate = true;
 
     protected PluggableAuthenticationService service;
 
@@ -93,68 +101,61 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected static List<String> validStartURLs;
 
     public void destroy() {
-        // TODO Auto-generated method stub
     }
 
-    protected static DocumentMessageProducer getMessageProducer()
-            throws Exception {
-        return Framework.getService(DocumentMessageProducer.class);
-    }
-
-    protected static Boolean sendAuthenticationEvent(
+    protected static boolean sendAuthenticationEvent(
             UserIdentificationInfo userInfo, String eventId, String comment) {
-        SystemSession ss = new SystemSession();
-        // login
-        try {
-            ss.login();
-        } catch (LoginException e1) {
-            log.error("Unable to log in in order to log Login event"
-                    + e1.getMessage());
-            return false;
-        }
 
-        DocumentMessageProducer producer = null;
-
+        LoginContext loginContext = null;
         try {
-            producer = getMessageProducer();
-        } catch (Exception e) {
-            log.error("Unable to get JMS message producer: " + e.getMessage());
             try {
-                ss.logout();
-            } catch (LoginException le) {
+                loginContext = Framework.login();
+            } catch (LoginException e) {
+                log.error("Unable to log in in order to log Login event" +
+                        e.getMessage());
                 return false;
             }
-            return false;
+
+            DocumentMessageProducer producer;
+            try {
+                producer = Framework.getService(DocumentMessageProducer.class);
+            } catch (Exception e) {
+                log.error("Unable to get JMS message producer: " +
+                        e.getMessage());
+                return false;
+            }
+
+            // XXX : Catch all errors to be sure to logout
+
+            Map<String, Serializable> props = new HashMap<String, Serializable>();
+            DocumentModel dm = new DocumentMessageImpl();
+
+            props.put("AuthenticationPlugin", userInfo.getAuthPluginName());
+            props.put("LoginPlugin", userInfo.getLoginPluginName());
+
+            Principal systemPrincipal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
+
+            CoreEvent event = new CoreEventImpl(eventId, dm, props,
+                    systemPrincipal, LOGIN_JMS_CATEGORY, comment);
+
+            DocumentMessage msg = new DocumentMessageImpl(dm, event);
+
+            producer.produce(msg);
+
+            return true;
+        } finally {
+            if (loginContext != null) {
+                try {
+                    loginContext.logout();
+                } catch (LoginException e) {
+                    log.error("Unable to logout: " + e.getMessage());
+                }
+            }
         }
-
-        // XXX : Catch all errors to be sure to logout
-
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
-        DocumentModel dm = new DocumentMessageImpl();
-
-        props.put("AuthenticationPlugin", userInfo.getAuthPluginName());
-        props.put("LoginPlugin", userInfo.getLoginPluginName());
-
-        Principal systemPrincipal = (Principal) ss.getLoginContext().getSubject().getPrincipals().toArray()[0];
-
-        CoreEvent event = new CoreEventImpl(eventId, dm, props,
-                systemPrincipal, LOGIN_JMS_CATEGORY, comment);
-
-        DocumentMessage msg = new DocumentMessageImpl(dm, event);
-
-        producer.produce(msg);
-
-        try {
-            ss.logout();
-        } catch (LoginException e) {
-            return false;
-        }
-
-        return true;
     }
 
-    protected Boolean logAuthenticationAttempt(UserIdentificationInfo userInfo,
-            Boolean success) {
+    protected boolean logAuthenticationAttempt(UserIdentificationInfo userInfo,
+            boolean success) {
 
         String userName = userInfo.getUserName();
         if (userName == null || userName.length() == 0) {
@@ -165,18 +166,18 @@ public class NuxeoAuthenticationFilter implements Filter {
         String comment;
         if (success) {
             eventId = "loginSuccess";
-            comment = userName + " successfully logged in using "
-                    + userInfo.getAuthPluginName() + "Authentication";
+            comment = userName + " successfully logged in using " +
+                    userInfo.getAuthPluginName() + "Authentication";
         } else {
             eventId = "loginFailed";
-            comment = userName + " failed to authenticate using "
-                    + userInfo.getAuthPluginName() + "Authentication";
+            comment = userName + " failed to authenticate using " +
+                    userInfo.getAuthPluginName() + "Authentication";
         }
 
         return sendAuthenticationEvent(userInfo, eventId, comment);
     }
 
-    protected Boolean logLogout(UserIdentificationInfo userInfo) {
+    protected boolean logLogout(UserIdentificationInfo userInfo) {
         String userName = userInfo.getUserName();
         if (userName == null || userName.length() == 0) {
             userName = userInfo.getToken();
@@ -206,7 +207,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
             Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
             cachableUserIdent.setPrincipal(principal);
-            cachableUserIdent.setAlreadyAuthenticated(true);
+            cachableUserIdent.setAlreadyAuthenticated(Boolean.TRUE);
             // re-set the userName since for some SSO based on token,
             // the userName is not known before login is completed
             cachableUserIdent.getUserInfo().setUserName(principal.getName());
@@ -223,7 +224,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         // store user ident
         cachableUserIdent.setLoginContext(loginContext);
-        Boolean createSession = needSessionSaving(cachableUserIdent.getUserInfo());
+        boolean createSession = needSessionSaving(cachableUserIdent.getUserInfo());
         HttpSession session = httpRequest.getSession(createSession);
         if (session != null) {
             session.setAttribute(NXAuthContants.USERIDENT_KEY,
@@ -233,8 +234,9 @@ public class NuxeoAuthenticationFilter implements Filter {
         return cachableUserIdent.getPrincipal();
     }
 
-    private Boolean switchUser(ServletRequest request,
-            ServletResponse response, FilterChain chain) throws IOException {
+    private boolean switchUser(ServletRequest request,
+            ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         String deputyLogin = (String) httpRequest.getAttribute(NXAuthContants.SWITCH_USER_KEY);
@@ -248,8 +250,8 @@ public class NuxeoAuthenticationFilter implements Filter {
         try {
             cachableUserIdent.getLoginContext().logout();
         } catch (LoginException e1) {
-            log.error("Error while logout from main identity :"
-                    + e1.getMessage());
+            log.error("Error while logout from main identity :" +
+                    e1.getMessage());
         }
 
         // destroy session
@@ -292,10 +294,10 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         // flag redirect to not be catched by URLPolicy
         request.setAttribute(URLPolicyService.DISABLE_REDIRECT_REQUEST_KEY,
-                true);
+                Boolean.TRUE);
         String baseURL = BaseURL.getBaseURL(request);
-        ((HttpServletResponse) response).sendRedirect(baseURL
-                + DEFAULT_START_PAGE);
+        ((HttpServletResponse) response).sendRedirect(baseURL +
+                DEFAULT_START_PAGE);
 
         return true;
     }
@@ -305,7 +307,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         String tokenPage = getRequestedPage(request);
         if (tokenPage.equals(NXAuthContants.SWITCH_USER_PAGE)) {
-            Boolean result = switchUser(request, response, chain);
+            boolean result = switchUser(request, response, chain);
             if (result) {
                 return;
             }
@@ -330,6 +332,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
 
         String targetPageURL = null;
+        CachableUserIdentificationInfo cachableUserIdent = null;
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         Principal principal = httpRequest.getUserPrincipal();
@@ -339,20 +342,18 @@ public class NuxeoAuthenticationFilter implements Filter {
             // need to authenticate !
 
             // retrieve user & password
-            CachableUserIdentificationInfo cachableUserIdent = null;
             if (avoidReauthenticate) {
                 log.debug("Try getting authentication from cache");
                 cachableUserIdent = retrieveIdentityFromCache(httpRequest);
             }
 
-            if (cachableUserIdent == null
-                    || cachableUserIdent.getUserInfo() == null) {
+            if (cachableUserIdent == null ||
+                    cachableUserIdent.getUserInfo() == null) {
                 UserIdentificationInfo userIdent = handleRetrieveIdentity(
                         httpRequest, httpResponse);
-                if ((userIdent == null || !userIdent.containsValidIdentity())
-                        && !bypassAuth(httpRequest)) {
-                    Boolean res = handleLoginPrompt(httpRequest, httpResponse,
-                            false);
+                if ((userIdent == null || !userIdent.containsValidIdentity()) &&
+                        !bypassAuth(httpRequest)) {
+                    boolean res = handleLoginPrompt(httpRequest, httpResponse);
                     if (res) {
                         return;
                     }
@@ -367,7 +368,6 @@ public class NuxeoAuthenticationFilter implements Filter {
                             userIdent);
                     principal = doAuthenticate(cachableUserIdent, httpRequest);
                     if (principal != null) {
-                        String principalName = principal.getName();
                         // Do the propagation too ????
                         propagateUserIdentificationInformation(cachableUserIdent);
                         // setPrincipalToSession(httpRequest, principal);
@@ -375,8 +375,8 @@ public class NuxeoAuthenticationFilter implements Filter {
 
                         httpRequest.setAttribute(NXAuthContants.LOGIN_ERROR,
                                 "authentication.failed");
-                        Boolean res = handleLoginPrompt(httpRequest,
-                                httpResponse, true);
+                        boolean res = handleLoginPrompt(httpRequest,
+                                httpResponse);
                         if (res) {
                             return;
                         }
@@ -388,7 +388,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
                 String requestedPage = getRequestedPage(httpRequest);
                 if (requestedPage.equals(NXAuthContants.LOGOUT_PAGE)) {
-                    Boolean redirected = handleLogout(request, response,
+                    boolean redirected = handleLogout(request, response,
                             cachableUserIdent);
                     if (redirected) {
                         return;
@@ -455,8 +455,8 @@ public class NuxeoAuthenticationFilter implements Filter {
         service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
                 PluggableAuthenticationService.NAME);
         if (service == null) {
-            log.error("Unable to get Service "
-                    + PluggableAuthenticationService.NAME);
+            log.error("Unable to get Service " +
+                    PluggableAuthenticationService.NAME);
             throw new ServletException(
                     "Can't initialize Nuxeo Pluggable Authentication Service");
         }
@@ -533,7 +533,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         return requestedPage;
     }
 
-    protected static Boolean isStartPageValid(String startPage) {
+    protected static boolean isStartPageValid(String startPage) {
         for (String prefix : validStartURLs) {
             if (startPage.startsWith(prefix)) {
                 return true;
@@ -542,7 +542,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         return false;
     }
 
-    protected Boolean handleLogout(ServletRequest request,
+    protected boolean handleLogout(ServletRequest request,
             ServletResponse response,
             CachableUserIdentificationInfo cachedUserInfo) {
         logLogout(cachedUserInfo.getUserInfo());
@@ -568,7 +568,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             logoutPlugin = (NuxeoAuthenticationPluginLogoutExtension) authPlugin;
         }
 
-        Boolean redirected = false;
+        boolean redirected = false;
         if (logoutPlugin != null) {
             redirected = logoutPlugin.handleLogout(
                     (HttpServletRequest) request,
@@ -578,12 +578,12 @@ public class NuxeoAuthenticationFilter implements Filter {
         if (!redirected) {
             String baseURL = BaseURL.getBaseURL(request);
             try {
-                ((HttpServletResponse) response).sendRedirect(baseURL
-                        + DEFAULT_START_PAGE);
+                ((HttpServletResponse) response).sendRedirect(baseURL +
+                        DEFAULT_START_PAGE);
                 redirected = true;
             } catch (IOException e) {
-                log.error("Unable to redirect to default start page after logout : "
-                        + e.getMessage());
+                log.error("Unable to redirect to default start page after logout : " +
+                        e.getMessage());
             }
         }
 
@@ -610,7 +610,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         final Object password = userInfo.getPassword().toCharArray();
         final Object cred = userInfo;
-        final Boolean useLP = userInfo.getLoginPluginName() != null;
+        final boolean useLP = userInfo.getLoginPluginName() != null;
         final Principal prin = cachableUserIdent.getPrincipal();
         final Subject subj = cachableUserIdent.getLoginContext().getSubject();
 
@@ -656,7 +656,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     }
 
     protected boolean handleLoginPrompt(HttpServletRequest httpRequest,
-            HttpServletResponse httpResponse, Boolean hasError) {
+            HttpServletResponse httpResponse) {
 
         String baseURL = BaseURL.getBaseURL(httpRequest);
 
@@ -687,8 +687,8 @@ public class NuxeoAuthenticationFilter implements Filter {
         for (String pluginName : service.getAuthChain()) {
             NuxeoAuthenticationPlugin plugin = service.getPlugin(pluginName);
             if (plugin != null) {
-                log.debug("Trying to retrieve userIndetification using plugin "
-                        + pluginName);
+                log.debug("Trying to retrieve userIndetification using plugin " +
+                        pluginName);
                 userIdent = plugin.handleRetrieveIdentity(httpRequest,
                         httpResponse);
                 if (userIdent != null && userIdent.containsValidIdentity()) {
@@ -707,8 +707,8 @@ public class NuxeoAuthenticationFilter implements Filter {
                     break;
                 }
             } else {
-                log.error("Auth plugin " + pluginName
-                        + " can not be retrieved from service");
+                log.error("Auth plugin " + pluginName +
+                        " can not be retrieved from service");
             }
         }
 
@@ -719,9 +719,9 @@ public class NuxeoAuthenticationFilter implements Filter {
             if (session != null) {
                 CachableUserIdentificationInfo savedUserInfo = retrieveIdentityFromCache(httpRequest);
                 if (savedUserInfo != null) {
-                    log.debug("Found User identity in cache :"
-                            + savedUserInfo.getUserInfo().getUserName() + '/'
-                            + savedUserInfo.getUserInfo().getPassword());
+                    log.debug("Found User identity in cache :" +
+                            savedUserInfo.getUserInfo().getUserName() + '/' +
+                            savedUserInfo.getUserInfo().getPassword());
                     userIdent = new UserIdentificationInfo(
                             savedUserInfo.getUserInfo());
                     savedUserInfo.setPrincipal(null);
@@ -734,7 +734,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         return userIdent;
     }
 
-    protected Boolean needSessionSaving(UserIdentificationInfo userInfo) {
+    protected boolean needSessionSaving(UserIdentificationInfo userInfo) {
         String pluginName = userInfo.getAuthPluginName();
 
         AuthenticationPluginDescriptor desc = service.getDescriptor(pluginName);

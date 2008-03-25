@@ -91,8 +91,6 @@ public class ActionManagerBusinessDelegate implements Serializable {
             actionManager.remove();
             actionManager = null;
         }
-
-        log.info("Destroyed the seam component...");
     }
 
 }

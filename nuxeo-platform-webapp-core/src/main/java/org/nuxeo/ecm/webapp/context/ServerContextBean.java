@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
  */
 
 package org.nuxeo.ecm.webapp.context;
@@ -31,28 +29,26 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
-@Name("serverLocator")
-@Scope(CONVERSATION)
-@Install(precedence=FRAMEWORK)
 /**
  * Externalize serverLocation Factory to avoid NavigationContext reentrant calls
+ *
+ * @author Thierry Delprat
  */
+@Name("serverLocator")
+@Scope(CONVERSATION)
+@Install(precedence = FRAMEWORK)
 public class ServerContextBean implements Serializable {
 
-    private static final long serialVersionUID = 9768768768761L;
+    private static final long serialVersionUID = 1L;
 
     private RepositoryLocation currentServerLocation;
-
 
     @Factory(value = "currentServerLocation", scope = EVENT)
     public RepositoryLocation getCurrentServerLocation() {
         return currentServerLocation;
     }
 
-
-    public void setRepositoryLocation(RepositoryLocation serverLocation)
-    {
-        this.currentServerLocation=serverLocation;
+    public void setRepositoryLocation(RepositoryLocation serverLocation) {
+        this.currentServerLocation = serverLocation;
     }
-
 }

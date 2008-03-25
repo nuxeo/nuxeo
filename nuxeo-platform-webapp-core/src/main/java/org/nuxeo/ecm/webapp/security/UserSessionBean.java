@@ -24,13 +24,8 @@ import static org.jboss.seam.ScopeType.SESSION;
 import java.io.Serializable;
 import java.security.Principal;
 
-import javax.annotation.Resource;
-import javax.ejb.EJBContext;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
 import javax.faces.context.FacesContext;
 
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.Name;
@@ -39,27 +34,18 @@ import org.jboss.seam.annotations.Startup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 @Startup
-@Stateful
 @Name("userSession")
 @Scope(SESSION)
-@SerializedConcurrentAccess
 public class UserSessionBean implements Serializable, UserSession {
 
     private static final long serialVersionUID = 7639281445209754L;
 
-    private transient Principal currentUser;
-
-    @Resource
-    private transient EJBContext context;
+    private Principal currentUser;
 
     @Factory(value = "currentUser", scope = SESSION)
     public Principal getCurrentUser() throws Exception {
         if (currentUser == null) {
-            if (FacesContext.getCurrentInstance() != null) {
-                currentUser = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
-            } else {
-                return context.getCallerPrincipal();
-            }
+            currentUser = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
         }
         return currentUser;
     }
@@ -74,7 +60,6 @@ public class UserSessionBean implements Serializable, UserSession {
     }
 
     @Destroy
-    @Remove
     public void destroy() {
     }
 

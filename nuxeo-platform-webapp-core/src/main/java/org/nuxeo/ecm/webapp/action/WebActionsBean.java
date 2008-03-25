@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Eugen Ionica
+ *     Anahide Tchertchian
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.webapp.action;
@@ -31,6 +31,7 @@ import javax.ejb.PrePassivate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.Component;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -45,7 +46,6 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkflowException;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
@@ -54,8 +54,9 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  * Implements specific behavior to handle special mechanism of the documents
  * tabbed content.
  *
- * @author eionica@nuxeo.com
- * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ * @author Eugen Ionica
+ * @author Anahide Tchertchian
+ * @author Florent Guillaume
  */
 @Name("webActions")
 @Scope(CONVERSATION)
@@ -65,7 +66,7 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
 
     private static final Log log = LogFactory.getLog(WebActionsBean.class);
 
-    @In(required=false,create=true)
+    @In(required = false, create = true)
     private ActionContext currentActionContext;
 
     @In(required = true, create = true)
@@ -73,9 +74,6 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
 
     @In(required = true, create = true)
     private transient ActionContextProvider actionContextProvider;
-
-    @In(create = true, required = false)
-    private transient CoreSession documentManager;
 
     @In(create = true)
     private transient NavigationContext navigationContext;
@@ -147,7 +145,7 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
     }
 
     @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED,
-            EventNames.LOCATION_SELECTION_CHANGED }, create = false, inject=false)
+            EventNames.LOCATION_SELECTION_CHANGED }, create = false, inject = false)
     public void resetTabList() {
         tabsActionsList = null;
         currentTabAction = null;
@@ -251,17 +249,17 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
 
     public void setCurrentTabId(String tabId) {
         boolean set = false;
-        if ((tabId!=null) && (!NULL_TAB_ID.equals(tabId))) {
-           List<Action> tabsList = getTabsList();
-           if (tabsList != null) {
-               for (Action a : tabsList) {
-                   if (a.getId().equals(tabId)) {
-                       setCurrentTabAction(a);
-                       set = true;
-                       break;
-                   }
-               }
-           }
+        if ((tabId != null) && (!NULL_TAB_ID.equals(tabId))) {
+            List<Action> tabsList = getTabsList();
+            if (tabsList != null) {
+                for (Action a : tabsList) {
+                    if (a.getId().equals(tabId)) {
+                        setCurrentTabAction(a);
+                        set = true;
+                        break;
+                    }
+                }
+            }
         }
         if (!set && (tabId == null || NULL_TAB_ID.equals(tabId))) {
             setCurrentTabAction((Action) null);
@@ -323,14 +321,13 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
         // }
     }
 
-    public String getCurrentLifeCycleState() throws WMWorkflowException {
-        // :XXX: ensure invalidation and check if not null before recomputing.
-        String currentLifeCycleState;
-        try {
-            currentLifeCycleState = documentManager.getCurrentLifeCycleState(navigationContext.getCurrentDocument().getRef());
-        } catch (ClientException ce) {
-            throw new WMWorkflowException(ce.getMessage());
-        }
-        return currentLifeCycleState;
+    /**
+     * @deprecated Unused
+     */
+    @Deprecated
+    public String getCurrentLifeCycleState() throws ClientException {
+        // only user of documentManager in this bean, look it up by hand
+        CoreSession documentManager = (CoreSession) Component.getInstance("documentManager");
+        return documentManager.getCurrentLifeCycleState(navigationContext.getCurrentDocument().getRef());
     }
 }
