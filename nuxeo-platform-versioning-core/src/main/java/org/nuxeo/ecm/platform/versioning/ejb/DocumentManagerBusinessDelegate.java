@@ -22,8 +22,6 @@ package org.nuxeo.ecm.platform.versioning.ejb;
 import java.io.Serializable;
 import java.util.Map;
 
-import javax.naming.NamingException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;

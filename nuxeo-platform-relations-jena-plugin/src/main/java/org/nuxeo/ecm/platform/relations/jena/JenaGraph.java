@@ -1056,7 +1056,7 @@ class ConnectionFixInvocationHandler implements InvocationHandler {
 
     private final Connection connection;
 
-    public ConnectionFixInvocationHandler(Connection connection) {
+    ConnectionFixInvocationHandler(Connection connection) {
         this.connection = connection;
     }
 

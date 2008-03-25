@@ -80,9 +80,9 @@ import org.nuxeo.runtime.api.Framework;
 public class PublishingActionsListenerBean extends InputController implements
         PublishingActionsListener {
 
-    private static final long serialVersionUID = 1L;
-
     private static final Log log = LogFactory.getLog(PublishingActionsListenerBean.class);
+
+    private static final long serialVersionUID = -8814124116585645286L;
 
     @In(create = true, required = false)
     private transient CoreSession documentManager;

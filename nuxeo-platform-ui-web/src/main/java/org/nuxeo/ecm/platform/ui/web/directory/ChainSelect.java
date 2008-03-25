@@ -145,7 +145,7 @@ public class ChainSelect extends UIInput {
         Object[] values = (Object[]) state;
         super.restoreState(context, values[0]);
         componentValue = (Selection[]) values[1];
-        optionList = (HashMap<String, DirectorySelectItem>[]) values[2];
+        optionList = (Map<String, DirectorySelectItem>[]) values[2];
         localize = (Boolean) values[3];
         size = (Integer) values[4];
         multiSelect = (Boolean) values[5];

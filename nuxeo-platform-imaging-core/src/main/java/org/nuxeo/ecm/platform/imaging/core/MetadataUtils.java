@@ -19,11 +19,6 @@
 
 package org.nuxeo.ecm.platform.imaging.core;
 
-import it.tidalwave.image.EditableImage;
-import it.tidalwave.image.Rational;
-import it.tidalwave.image.metadata.EXIFDirectory;
-import it.tidalwave.image.op.ReadOp;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +34,11 @@ import com.drew.imaging.jpeg.JpegProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.iptc.IptcDirectory;
+
+import it.tidalwave.image.EditableImage;
+import it.tidalwave.image.Rational;
+import it.tidalwave.image.metadata.EXIFDirectory;
+import it.tidalwave.image.op.ReadOp;
 
 /**
  * @author Max Stepanov

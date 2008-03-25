@@ -67,6 +67,7 @@ public class DigestComputer extends AbstractEventListener {
         return initDone;
     }
 
+    @Override
     public void notifyEvent(CoreEvent coreEvent) throws Exception {
         if (!initIfNeeded()) {
             return;

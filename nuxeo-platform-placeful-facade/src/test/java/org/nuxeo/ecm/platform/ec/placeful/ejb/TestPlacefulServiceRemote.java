@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.ec.placeful.ejb;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.rmi.RMISecurityManager;
@@ -37,7 +36,6 @@ import org.jboss.security.auth.callback.SecurityAssociationHandler;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -77,10 +75,9 @@ public class TestPlacefulServiceRemote extends TestCase {
         super.tearDown();
     }
 
-    protected void _loadTestingConfiguration() throws IOException {
+    protected void _loadTestingConfiguration() {
         //URL url = getClass().getResource("/org/nuxeo/ecm/core/api/nuxeo_jaas.config");
         URL url = getClass().getResource("/org/nuxeo/ecm/platform/ec/placeful/ejb/nuxeo_jaas.config");
-        System.out.println("XXXXXX: " + url);
         System.setProperty("java.security.auth.login.config", url.toString());
         //url = getClass().getResource("/org/nuxeo/ecm/core/api/nuxeo.policy");
         url = getClass().getResource("/org/nuxeo/ecm/platform/ec/placeful/ejb/nuxeo.policy");

@@ -62,9 +62,11 @@ import org.nuxeo.runtime.api.Framework;
 @Name("emailNotifSenderAction")
 @Scope(EVENT)
 public class EmailNotificationSenderActionsBean extends InputController implements
-        EmailNotificationSenderActions {
+        EmailNotificationSenderActions, Serializable {
 
     private static final Log log = LogFactory.getLog(EmailNotificationSenderActionsBean.class);
+
+    private static final long serialVersionUID = 2125646683248052737L;
 
     @In(create = true)
     UserManager userManager;
@@ -180,7 +182,8 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
         Map<String, Serializable> options = new HashMap<String, Serializable>();
 
         //options for confirmation email
-        options.put("recipients", (principalListManager.getPrincipalType(user) == PrincipalListManager.USER_TYPE ? "user:" : "group:")+user );
+        options.put("recipients",
+                (principalListManager.getPrincipalType(user) == PrincipalListManager.USER_TYPE ? "user:" : "group:") + user);
         options.put("subject", theMailSubject);
         options.put("content", theMailContent);
 

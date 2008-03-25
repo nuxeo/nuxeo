@@ -22,11 +22,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Calendar;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 
@@ -45,7 +44,6 @@ public class FeedItemAdapter {
      * @param doc DocumentModel to convert
      * @return a FeedItem, ready to be syndicate by ROME
      * @throws ParseException
-     * @throws ClientException
      */
     public FeedItem toFeedItem(DocumentModel doc) throws ParseException {
 
@@ -88,17 +86,13 @@ public class FeedItemAdapter {
      * @param docList
      * @return
      * @throws ParseException
-     * @throws ClientException
      */
     public List<FeedItem> toFeedItemList(List<DocumentModel> docList)
-            throws ParseException, ClientException {
-
+            throws ParseException {
         List<FeedItem> feedItems = new ArrayList<FeedItem>();
-
         for (DocumentModel doc : docList) {
             feedItems.add(toFeedItem(doc));
         }
-
         return feedItems;
     }
 

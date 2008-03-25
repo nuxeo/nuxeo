@@ -49,7 +49,6 @@ import org.nuxeo.ecm.platform.relations.search.resources.indexing.api.RelationIn
  * Relations indexable resource implementation.
  *
  * @author <a href="mailto:gr@nuxeo.com">Georges Racinet</a>
- *
  */
 public class RelationIndexableResourceImpl extends
         AbstractNXCoreIndexableResource implements RelationIndexableResource {
@@ -65,7 +64,6 @@ public class RelationIndexableResourceImpl extends
     private RelationManager relationManager;
 
     public RelationIndexableResourceImpl() {
-        super();
     }
 
     private void initGraph() {

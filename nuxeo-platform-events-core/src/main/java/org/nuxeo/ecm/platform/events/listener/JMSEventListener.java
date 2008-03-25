@@ -84,6 +84,7 @@ public class JMSEventListener extends AbstractEventListener implements
      *
      * @param coreEvent instance fired at core layer
      */
+    @Override
     public void notifyEvent(CoreEvent coreEvent) {
 
         // Is it a document saved session event ?

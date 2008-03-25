@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,24 +44,25 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 @Name("suggestBox")
 @Scope(ScopeType.EVENT)
 @Transactional
-public class SuggestBoxBean {
+public class SuggestBoxBean implements Serializable {
 
     private static final Log log = LogFactory.getLog(SuggestBoxBean.class);
 
     private static transient DirectoryService dirService;
 
-    private static List<Map<String, String>> tempLabel;
+    private static final List<Map<String, String>> tempLabel = new ArrayList<Map<String, String>>();
+
+    private static final long serialVersionUID = 9206507449990045737L;
 
     public static DirectoryService getService() {
         if (dirService == null) {
-            dirService= DirectoryHelper.getDirectoryService();
+            dirService = DirectoryHelper.getDirectoryService();
         }
         return dirService;
     }
 
     private static boolean queryVoc(String directoryName, String input)
             throws Exception {
-        tempLabel = new ArrayList<Map<String, String>>();
         Session directory = null;
         try {
             Map<String, Object> filter = new LinkedHashMap<String, Object>();

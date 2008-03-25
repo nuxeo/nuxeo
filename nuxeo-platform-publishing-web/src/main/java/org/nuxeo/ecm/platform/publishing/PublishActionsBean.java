@@ -626,8 +626,7 @@ public class PublishActionsBean extends InputController implements
                 // message
                 // driven bean in a async way. Not sure we can optimize right
                 // now.
-                Events.instance().raiseEvent(
-                        org.nuxeo.ecm.platform.workflow.api.client.events.EventNames.WORKFLOW_NEW_STARTED);
+                Events.instance().raiseEvent(EventNames.WORKFLOW_NEW_STARTED);
 
                 // Close the unrestricted session.
                 CoreInstance.getInstance().close(unrestrictedSession);

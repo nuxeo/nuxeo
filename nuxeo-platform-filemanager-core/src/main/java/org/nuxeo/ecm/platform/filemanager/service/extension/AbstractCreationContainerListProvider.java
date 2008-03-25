@@ -35,7 +35,7 @@ public abstract class AbstractCreationContainerListProvider implements
 
     private String[] docTypes;
 
-    public boolean accept(String docType) throws Exception {
+    public boolean accept(String docType) {
         if (docTypes == null || docTypes.length == 0) {
             return true;
         } else {

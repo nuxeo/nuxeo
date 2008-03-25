@@ -105,7 +105,7 @@ public class UserDataManager {
      * @return A {@link PathRef} to the user data folder.
      * @throws ClientException
      */
-    private PathRef getOrCreateUserDataFolder(String username,
+    private static PathRef getOrCreateUserDataFolder(String username,
             CoreSession session, PathRef domainRef)
             throws ClientException {
 
@@ -189,7 +189,7 @@ public class UserDataManager {
         return pathRef;
     }
 
-    private CoreSession getSystemSession(CoreSession userSession)
+    private static CoreSession getSystemSession(CoreSession userSession)
             throws ClientException {
         CoreSession systemSession;
         try {

@@ -183,7 +183,7 @@ public final class Functions {
     }
 
     // method to format date in the standard short format
-    public static String basicDateFormater() throws ClientException {
+    public static String basicDateFormater() {
         return dateFormater("short");
     }
 
@@ -208,7 +208,7 @@ public final class Functions {
     }
 
     // method to format date and time in the standard short format
-    public static String basicDateAndTimeFormater() throws ClientException {
+    public static String basicDateAndTimeFormater() {
         return dateAndTimeFormater("short");
     }
 

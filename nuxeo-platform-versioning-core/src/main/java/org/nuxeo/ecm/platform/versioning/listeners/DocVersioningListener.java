@@ -75,8 +75,8 @@ public class DocVersioningListener extends AbstractEventListener implements
      * Gets core events and updates versions if needed.
      *
      * @param coreEvent instance thrown at core layer
-     *
      */
+    @Override
     public void notifyEvent(CoreEvent coreEvent) {
 
         final String logPrefix = "<notifyEvent> ";

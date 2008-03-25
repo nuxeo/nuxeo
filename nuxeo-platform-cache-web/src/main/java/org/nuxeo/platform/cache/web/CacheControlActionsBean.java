@@ -18,6 +18,8 @@
  */
 package org.nuxeo.platform.cache.web;
 
+import java.io.Serializable;
+
 import static org.jboss.seam.ScopeType.SESSION;
 
 import org.apache.commons.logging.Log;
@@ -36,9 +38,10 @@ import org.nuxeo.ecm.platform.cache.client.ClientCacheServiceFactory;
  */
 @Name("cacheControlActions")
 @Scope(SESSION)
-public class CacheControlActionsBean implements CacheControlActions {
+public class CacheControlActionsBean implements CacheControlActions, Serializable {
 
     private static final Log log = LogFactory.getLog(CacheControlActionsBean.class);
+    private static final long serialVersionUID = -3603740980383168097L;
 
     @Destroy
     public void destroy() {

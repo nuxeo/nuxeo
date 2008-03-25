@@ -19,13 +19,13 @@
 
 package org.nuxeo.ecm.platform.mimetype;
 
-  import java.io.File;
-  import java.io.FileInputStream;
-  import java.io.InputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
-  import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
-  import org.nuxeo.runtime.test.NXRuntimeTestCase;
-  import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * Test binary files sniff.
@@ -46,8 +46,9 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
     }
 
     @Override
-    public void tearDown() {
+    public void tearDown() throws Exception {
         mimetypeRegistry = null;
+        super.tearDown();
     }
 
     private static File getFileFromResource(String path) {

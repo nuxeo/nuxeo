@@ -73,9 +73,9 @@ public class SystemPrincipal implements NuxeoPrincipal {
                 return false;
             }
             if (origUserName == null) {
-                return ((SystemPrincipal) other).getOriginatingUser() == null;
+                return ((SystemPrincipal) other).origUserName == null;
             } else {
-                return origUserName.equals(((SystemPrincipal) other).getOriginatingUser());
+                return origUserName.equals(((SystemPrincipal) other).origUserName);
             }
         } else {
             return false;

@@ -19,14 +19,14 @@
 
 package org.nuxeo.ecm.platform.imaging.core;
 
-import it.tidalwave.image.EditableImage;
-import it.tidalwave.image.metadata.EXIFDirectory;
-import it.tidalwave.image.op.ReadOp;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import it.tidalwave.image.EditableImage;
+import it.tidalwave.image.metadata.EXIFDirectory;
+import it.tidalwave.image.op.ReadOp;
 
 /**
  * @author Max Stepanov
@@ -39,7 +39,7 @@ public class MimeUtils {
     private static final String MIME_IMAGE_TIFF = "image/tiff";
     private static final String MIME_IMAGE_BMP = "image/x-ms-bmp";
 
-    private final static Map<String, String> mimeTypes = new HashMap<String, String>();
+    private static final Map<String, String> mimeTypes = new HashMap<String, String>();
 
     static {
         mimeTypes.put("jpg", MIME_IMAGE_JPEG);

@@ -21,8 +21,8 @@ package org.nuxeo.ecm.platform.mimetype.detectors;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -61,16 +61,8 @@ public class TestDetector extends TestCase {
 
         // by byte[]
         byte[] data = FileUtils.readBytes(xlsFile);
-        // FIXME: no need for these variables
-        int dummyInt = 0;
-        long dummyLong = 0;
-        Map dummyMap = new HashMap();
-        String dummyString = "dummy";
-        char dummyChar = dummyString.charAt(0);
-
-        String[] returnedByteMimetype = sniffer.process(data, dummyInt,
-                dummyInt,
-                dummyLong, dummyChar, dummyString, dummyMap);
+        String[] returnedByteMimetype = sniffer.process(data, 0, 0, 0L, 'd',
+                "dummy", new HashMap());
         assertTrue(returnedByteMimetype.length > 0);
     }
 
@@ -117,15 +109,8 @@ public class TestDetector extends TestCase {
         String [] returnedByteMimetype = {};
         File xmlFile = getFileFromTestResource("test-data/TestWord2003AsXML.xml.txt");
         byte[] data = FileUtils.readBytes(xmlFile);
-        // FIXME: no need for these variables
-        int dummyInt = 0;
-        long dummyLong = 0;
-        Map dummyMap = new HashMap();
-        String dummyString = "dummy";
-        char dummyChar = dummyString.charAt(0);
-
-        returnedByteMimetype = sniffer.process(data, dummyInt, dummyInt,
-                dummyLong, dummyChar, dummyString, dummyMap);
+        returnedByteMimetype = sniffer.process(data, 0, 0, 0L, 'd', "dummy",
+                new HashMap());
         assertEquals("application/msword", returnedByteMimetype[0]);
     }
 

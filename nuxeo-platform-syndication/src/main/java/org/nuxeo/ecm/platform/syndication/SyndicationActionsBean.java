@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.syndication;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -70,7 +71,7 @@ import com.sun.syndication.io.SyndFeedOutput;
 //@Stateless
 @Name("syndication")
 public class SyndicationActionsBean extends InputController implements
-        SyndicationActions {
+        SyndicationActions, Serializable {
 
     public static final String DOC_PARAM_NAME = "docRef";
 
@@ -93,6 +94,8 @@ public class SyndicationActionsBean extends InputController implements
     private static final String DEFAULT_SEARCH_TYPE = SearchType.KEYWORDS.name();
 
     private static final String DEFAULT_SYNDICATION_TYPE = RSS_TYPE;
+
+    private static final long serialVersionUID = -1632103314861118955L;
 
     @In(create = true, required = false)
     private CoreSession documentManager;
@@ -198,8 +201,6 @@ public class SyndicationActionsBean extends InputController implements
      * Writes the feed in Servlet Response.
      *
      * @param feed
-     * @throws IOException
-     * @throws FeedException
      */
     private void writeFeed(SyndFeed feed) {
 

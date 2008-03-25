@@ -142,7 +142,7 @@ public class TestModifierOnDocModel extends AbstractPluginTestCase {
         modifyContent(content);
     }
 
-    private void modifyContent(final ByteArrayBlob content) throws Exception {
+    private void modifyContent(final ByteArrayBlob content) {
         Map<String, Map<String, Serializable>> options = new HashMap<String, Map<String, Serializable>>();
         // options.put(pluginName, pluginOptions);
 

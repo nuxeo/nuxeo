@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.forum.web;
 
 import java.io.Serializable;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -87,9 +86,11 @@ import org.nuxeo.ecm.webapp.dashboard.DashboardActions;
 @Scope(ScopeType.CONVERSATION)
 public class PostActionBean extends InputController implements PostAction {
 
-    private static final long serialVersionUID = 1L;
+    static final String WRITE = "ReadWrite";
 
     private static final Log log = LogFactory.getLog(PostActionBean.class);
+
+    private static final long serialVersionUID = 2948023661103514559L;
 
     @In(required = false)
     protected RepositoryLocation currentServerLocation;
@@ -127,8 +128,6 @@ public class PostActionBean extends InputController implements PostAction {
     private String filename;
 
     private Blob fileContent;
-
-    static final String WRITE = "ReadWrite";
 
 
     @Destroy

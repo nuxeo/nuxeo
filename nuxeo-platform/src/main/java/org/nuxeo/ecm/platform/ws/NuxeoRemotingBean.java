@@ -158,7 +158,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
             throws ClientException {
         WSRemotingSession rs = initSession(sid);
 
-        java.util.List<NuxeoPrincipal> principals = rs.getUserManager().getAvailablePrincipals();
+        List<NuxeoPrincipal> principals = rs.getUserManager().getAvailablePrincipals();
         String[] users = new String[principals.size()];
         int i = 0;
         for (NuxeoPrincipal user : principals) {
@@ -172,7 +172,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
             throws ClientException {
         WSRemotingSession rs = initSession(sid);
 
-        java.util.List<NuxeoGroup> ngroups = rs.getUserManager().getAvailableGroups();
+        List<NuxeoGroup> ngroups = rs.getUserManager().getAvailableGroups();
         String[] groups = new String[ngroups.size()];
         int i = 0;
         for (NuxeoGroup group : ngroups) {
@@ -392,7 +392,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
             }
         } else if (value instanceof List) {
             prefix = prefix + name + '/';
-            java.util.List<Object> list = (java.util.List<Object>) value;
+            List<Object> list = (List<Object>) value;
             for (int i = 0, len = list.size(); i < len; i++) {
                 collectBlobs(rs, prefix, container, String.valueOf(i),
                         list.get(i), blobs);

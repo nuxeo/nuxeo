@@ -63,9 +63,9 @@ import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 @Scope(ScopeType.CONVERSATION)
 public class ThreadActionBean extends InputController implements ThreadAction {
 
-    private static final long serialVersionUID = 1L;
-
     private static final Log log = LogFactory.getLog(ThreadActionBean.class);
+
+    private static final long serialVersionUID = -2667460487440135732L;
 
     protected static final String schema = "thread";
 

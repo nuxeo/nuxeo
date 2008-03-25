@@ -44,7 +44,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
- * 
+ *
  */
 @Stateful
 @SerializedConcurrentAccess
