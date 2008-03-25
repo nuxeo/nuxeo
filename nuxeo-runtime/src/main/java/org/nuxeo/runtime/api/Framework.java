@@ -125,6 +125,15 @@ public final class Framework {
     }
 
     /**
+     * Lookup a registered object given its key
+     * @param key
+     * @return
+     */
+    public static Object lookup(String key) {
+        return null; //TODO
+    }
+
+    /**
      * Login in the system as the system user (a pseudo-user having all
      * privileges).
      *
