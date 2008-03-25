@@ -35,7 +35,7 @@ public class IsLocalInterceptor extends org.jboss.ejb3.remoting.IsLocalIntercept
 
     public static String getBindAddr() {
         if (bindAddr == null) {
-            bindAddr = System.getProperty("jboss.bind.address");
+            bindAddr = System.getProperty("jboss.bind.address", "");
             if (bindAddr.equals("0.0.0.0")) {
                 InvokerLocator localLocator = new InvokerLocator("socket", "0.0.0.0", 3873, "", null);
                 bindAddr = localLocator.getHost();
