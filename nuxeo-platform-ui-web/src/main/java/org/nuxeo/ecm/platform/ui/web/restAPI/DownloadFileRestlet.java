@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -72,7 +73,9 @@ import org.restlet.resource.OutputRepresentation;
 @Name("downloadFileRestlet")
 @Scope(EVENT)
 public class DownloadFileRestlet extends BaseNuxeoRestlet implements
-        LiveEditConstants {
+        LiveEditConstants, Serializable {
+
+    private static final long serialVersionUID = -2163290273836947871L;
 
     @In(create = true)
     protected NavigationContext navigationContext;
@@ -88,7 +91,7 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements
             return;
         }
 
-        DocumentModel dm = null;
+        DocumentModel dm;
         try {
             navigationContext.setCurrentServerLocation(new RepositoryLocation(
                     repo));

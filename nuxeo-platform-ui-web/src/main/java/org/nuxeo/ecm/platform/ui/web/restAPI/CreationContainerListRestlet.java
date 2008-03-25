@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 import static org.jboss.seam.ScopeType.EVENT;
 
 import java.security.Principal;
+import java.io.Serializable;
 
 import org.dom4j.Element;
 import org.dom4j.dom.DOMDocument;
@@ -47,7 +48,9 @@ import org.restlet.data.Response;
 @Name("creationContainerListRestlet")
 @Scope(EVENT)
 public class CreationContainerListRestlet extends BaseNuxeoRestlet implements
-        LiveEditConstants {
+        LiveEditConstants, Serializable {
+
+    private static final long serialVersionUID = 5403775170948512675L;
 
     protected FileManager fileManager;
 

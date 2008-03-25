@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import java.util.List;
+import java.io.Serializable;
 
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
@@ -42,7 +43,9 @@ import org.w3c.dom.Element;
 
 @Name("browseRestlet")
 @Scope(EVENT)
-public class BrowseRestlet extends BaseNuxeoRestlet {
+public class BrowseRestlet extends BaseNuxeoRestlet implements Serializable {
+
+    private static final long serialVersionUID = -4518256101431979971L;
 
     @In(create = true)
     protected NavigationContext navigationContext;
