@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
@@ -118,7 +119,7 @@ public class RelationsTestHelper {
 
     }
 
-    private static QNameResource getDocumentResource(DocumentModel document) {
+    private static QNameResource getDocumentResource(DocumentModel document) throws Exception {
         QNameResource documentResource = null;
         if (document != null) {
             documentResource = (QNameResource) relationManager.getResource(
