@@ -90,8 +90,6 @@ import org.nuxeo.ecm.platform.workflow.web.adapter.ProcessModel;
 import org.nuxeo.ecm.platform.workflow.web.api.DocumentTaskActions;
 import org.nuxeo.ecm.platform.workflow.web.api.DocumentWorkflowActions;
 import org.nuxeo.ecm.platform.workflow.web.api.WorkflowBeansDelegate;
-import org.nuxeo.ecm.platform.workflow.web.api.ejb.remote.DocumentWorkflowActionsRemote;
-import org.nuxeo.ecm.platform.workflow.web.listener.ejb.local.DocumentWorkflowActionsLocal;
 import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 
 /**

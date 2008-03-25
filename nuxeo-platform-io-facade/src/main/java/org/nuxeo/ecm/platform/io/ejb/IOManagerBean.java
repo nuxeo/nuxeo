@@ -63,7 +63,6 @@ public class IOManagerBean implements IOManager {
     private IOManager service;
 
     @PostConstruct
-    @PostActivate
     public void initialize() {
         try {
             // get Runtime service
@@ -73,10 +72,7 @@ public class IOManagerBean implements IOManager {
         }
     }
 
-    @Remove
-    public void remove() {
-        service = null;
-    }
+    public void remove() {}
 
     public void addAdapter(String name, IOResourceAdapter adapter)
             throws ClientException {

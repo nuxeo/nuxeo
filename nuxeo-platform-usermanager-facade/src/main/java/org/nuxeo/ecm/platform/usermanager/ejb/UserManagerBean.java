@@ -56,7 +56,6 @@ public class UserManagerBean implements UserManager {
 
     private transient UserManager userManager;
 
-    @PostActivate
     @PostConstruct
     public void initialize() {
         getUserManager();
@@ -69,10 +68,7 @@ public class UserManagerBean implements UserManager {
         return userManager;
     }
 
-    @PrePassivate
-    public void cleanup() {
-        userManager = null;
-    }
+    public void cleanup() {}
 
     public boolean checkUsernamePassword(String username, String password)
             throws ClientException {
@@ -109,9 +105,7 @@ public class UserManagerBean implements UserManager {
         }
     }
 
-    @Remove
-    public void remove() {
-    }
+    public void remove() {}
 
     public void createGroup(NuxeoGroup group) throws ClientException {
         try {

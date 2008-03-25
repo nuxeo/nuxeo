@@ -82,7 +82,6 @@ public class ArchiveManagerBean implements ArchiveManager, ArchiveManagerLocal {
     }
 
     public ArchiveRecord searchArchiveRecord() {
-        // TODO Auto-generated method stub
         return null;
     }
 

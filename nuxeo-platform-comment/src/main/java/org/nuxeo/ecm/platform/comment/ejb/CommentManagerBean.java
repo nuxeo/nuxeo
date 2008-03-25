@@ -25,8 +25,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJBContext;
 import javax.ejb.Local;
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 
@@ -58,14 +56,9 @@ public class CommentManagerBean implements CommentManager {
         commentManager = commentService.getCommentManager();
     }
 
-    @PrePassivate
-    public void cleanup() {
-        commentManager = null;
-    }
+    public void cleanup() {}
 
-    public void remove() {
-        // TODO Auto-generated method stub
-    }
+    public void remove() {}
 
     public DocumentModel createComment(DocumentModel docModel,
             String comment) throws ClientException {

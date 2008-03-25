@@ -22,8 +22,6 @@ package org.nuxeo.ecm.platform.interfaces.ejb;
 import java.security.Principal;
 import java.util.List;
 
-import javax.ejb.Remove;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 

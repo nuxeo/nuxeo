@@ -51,10 +51,7 @@ public class ECContentRootBean implements ECContentRoot, ECContentRootLocal {
 
     private static final Log log = LogFactory.getLog(ECContentRootBean.class);
 
-    @Remove
-    public void remove() {
-        log.debug("Instance removed.");
-    }
+    public void remove() {}
 
     public List<DocumentModel> getContentRootChildren(String documentType,
             DocumentRef docRef, CoreSession handle) throws ClientException {

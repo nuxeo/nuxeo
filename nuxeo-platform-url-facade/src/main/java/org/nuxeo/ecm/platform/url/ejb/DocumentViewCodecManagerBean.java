@@ -52,7 +52,6 @@ public class DocumentViewCodecManagerBean implements DocumentViewCodecManager {
     private DocumentViewCodecManager service;
 
     @PostConstruct
-    @PostActivate
     public void initialize() {
         try {
             // get Runtime service
@@ -62,10 +61,7 @@ public class DocumentViewCodecManagerBean implements DocumentViewCodecManager {
         }
     }
 
-    @Remove
-    public void remove() {
-        service = null;
-    }
+    public void remove() {}
 
     public String getDefaultCodecName() {
         return service.getDefaultCodecName();

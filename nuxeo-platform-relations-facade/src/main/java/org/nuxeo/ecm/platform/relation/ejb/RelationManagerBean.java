@@ -64,7 +64,6 @@ public class RelationManagerBean implements RelationManager {
 
     private transient RelationManager service;
 
-    @PostActivate
     @PostConstruct
     public void initialize() {
         try {
@@ -75,10 +74,7 @@ public class RelationManagerBean implements RelationManager {
         }
     }
 
-    @Remove
-    public void remove() {
-        service = null;
-    }
+    public void remove() {}
 
     // TODO: maybe hack here to get graph in a cleaner way
     public Graph getGraphByName(String name) throws ClientException {
