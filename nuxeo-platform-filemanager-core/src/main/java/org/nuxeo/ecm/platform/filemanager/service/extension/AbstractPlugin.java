@@ -46,6 +46,8 @@ public abstract class AbstractPlugin implements Plugin {
 
     protected List<Pattern> patterns;
 
+    protected boolean enabled = true;
+
     // to be used by plugin implementation to gain access to standard file
     // creation utility methods without having to lookup the service
     protected FileManagerService fileManagerService;
@@ -93,4 +95,14 @@ public abstract class AbstractPlugin implements Plugin {
         this.fileManagerService = fileManagerService;
     }
 
+
+    public void setEnabled(boolean enabled)
+    {
+       this.enabled=enabled;
+    }
+
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
 }
