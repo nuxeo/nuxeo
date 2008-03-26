@@ -87,7 +87,7 @@ public class NotificationServiceBusinessDelegate implements Serializable {
 
     @Destroy
     @PermitAll
-    public void destroy() throws ClientException {
+    public void destroy() {
         if (null != notificationManager) {
             notificationManager = null;
         }

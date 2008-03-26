@@ -21,12 +21,7 @@ package org.nuxeo.ecm.webapp.versioning;
 
 import java.util.List;
 
-import javax.annotation.security.PermitAll;
-import javax.ejb.Local;
-import javax.ejb.Remove;
-
 import org.jboss.seam.annotations.Create;
-import org.jboss.seam.annotations.Destroy;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
@@ -100,7 +95,6 @@ public interface VersionedActions extends StatefulBaseLifeCycle {
      * @return the next page
      * @throws ClientException
      */
-    @SuppressWarnings({"NonBooleanMethodNameMayNotStartWithQuestion"})
     String checkOut() throws ClientException;
 
     /**

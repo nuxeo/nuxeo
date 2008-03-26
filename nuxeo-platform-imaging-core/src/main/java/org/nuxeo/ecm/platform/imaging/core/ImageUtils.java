@@ -19,16 +19,6 @@
 
 package org.nuxeo.ecm.platform.imaging.core;
 
-import it.tidalwave.image.EditableImage;
-import it.tidalwave.image.Quality;
-import it.tidalwave.image.jai.CropJAIOp;
-import it.tidalwave.image.java2d.ImplementationFactoryJ2D;
-import it.tidalwave.image.op.ConvertToBufferedImageOp;
-import it.tidalwave.image.op.CropOp;
-import it.tidalwave.image.op.ReadOp;
-import it.tidalwave.image.op.RotateQuadrantOp;
-import it.tidalwave.image.op.ScaleOp;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,6 +30,16 @@ import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
+
+import it.tidalwave.image.EditableImage;
+import it.tidalwave.image.Quality;
+import it.tidalwave.image.jai.ImplementationFactoryJAI;
+import it.tidalwave.image.java2d.ImplementationFactoryJ2D;
+import it.tidalwave.image.op.ConvertToBufferedImageOp;
+import it.tidalwave.image.op.CropOp;
+import it.tidalwave.image.op.ReadOp;
+import it.tidalwave.image.op.RotateQuadrantOp;
+import it.tidalwave.image.op.ScaleOp;
 
 /**
  * @author Max Stepanov
@@ -56,7 +56,7 @@ public final class ImageUtils {
 
     public static InputStream crop(InputStream in, int x, int y, int width, int height) {
         try {
-            it.tidalwave.image.jai.ImplementationFactoryJAI.getInstance();
+            ImplementationFactoryJAI.getInstance();
             ImplementationFactoryJ2D.getInstance().unregisterImplementation(ScaleOp.class);
         } catch (Exception e) {
         }
@@ -76,7 +76,7 @@ public final class ImageUtils {
 
     public static InputStream resize(InputStream in, int width, int height) {
         try {
-            it.tidalwave.image.jai.ImplementationFactoryJAI.getInstance();
+            ImplementationFactoryJAI.getInstance();
             ImplementationFactoryJ2D.getInstance().unregisterImplementation(ScaleOp.class);
         } catch (Exception e) {
         }

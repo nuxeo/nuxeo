@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.io.Serializable;
 
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
@@ -109,7 +110,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 @Name("relationActions")
 @Scope(CONVERSATION)
 public class RelationActionsBean extends InputController implements
-        RelationActions {
+        RelationActions, Serializable {
 
     private static final Log log = LogFactory.getLog(RelationActionsBean.class);
 

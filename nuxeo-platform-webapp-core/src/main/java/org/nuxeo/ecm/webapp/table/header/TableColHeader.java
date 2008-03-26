@@ -52,7 +52,7 @@ public class TableColHeader implements Serializable {
 
     public TableColHeader(String label, String id, boolean sortAscending) {
         this(label, id);
-        setSortAscending(sortAscending);
+        this.sortAscending = sortAscending;
     }
 
     public String getId() {

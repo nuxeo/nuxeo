@@ -54,7 +54,7 @@ public class ArchiveManagerBean implements ArchiveManager, ArchiveManagerLocal {
     private static final Log log = LogFactory.getLog(ArchiveManager.class);
 
     @PersistenceContext(unitName = "nxarchive")
-    private EntityManager em;
+    private transient EntityManager em;
 
     @SuppressWarnings("unchecked")
     public List<ArchiveRecord> getArchiveRecordsByDocUID(String docUID) {
@@ -101,8 +101,7 @@ public class ArchiveManagerBean implements ArchiveManager, ArchiveManagerLocal {
                 query.setParameter(name, value);
             }
         }
-        List<ArchiveRecord> records = (List<ArchiveRecord>) query.getResultList();
-        return records;
+        return (List<ArchiveRecord>) query.getResultList();
     }
     @Deprecated
     public void remove() {}

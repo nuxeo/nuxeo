@@ -42,12 +42,10 @@ public class WMProcessInstanceIteratorImpl implements WMProcessInstanceIterator 
     private transient Iterator<WMProcessInstance> it;
 
     public WMProcessInstanceIteratorImpl() {
-        super();
         it = null;
     }
 
     public WMProcessInstanceIteratorImpl(List<WMProcessInstance> procs) {
-        super();
         if (procs != null) {
             l.addAll(procs);
         }

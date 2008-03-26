@@ -116,28 +116,25 @@ public class PublishActionsBean extends InputController implements
     protected static final String DOMAIN_SECTIONS = "DOMAIN_SECTIONS";
 
     @In(create = true)
-    protected WebActions webActions;
+    protected transient WebActions webActions;
 
     @In(create = true)
     protected transient VersioningManager versioningManager;
 
     @In(create = true)
-    transient CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true)
-    NuxeoPrincipal currentUser;
+    protected NuxeoPrincipal currentUser;
 
     @In(create = true)
-    protected DocumentsListsManager documentsListsManager;
+    protected transient DocumentsListsManager documentsListsManager;
 
     @In(create = true)
-    protected DeleteActions deleteActions;
+    protected transient DeleteActions deleteActions;
 
     @In(create = true)
     protected PrincipalListManager principalListManager;
-
-    @In
-    protected org.nuxeo.ecm.webapp.security.UserSession userSession;
 
     @In(create = true)
     protected transient QueryModelActions queryModelActions;
@@ -629,8 +626,7 @@ public class PublishActionsBean extends InputController implements
                 // message
                 // driven bean in a async way. Not sure we can optimize right
                 // now.
-                Events.instance().raiseEvent(
-                        org.nuxeo.ecm.platform.workflow.api.client.events.EventNames.WORKFLOW_NEW_STARTED);
+                Events.instance().raiseEvent(EventNames.WORKFLOW_NEW_STARTED);
 
                 // Close the unrestricted session.
                 CoreInstance.getInstance().close(unrestrictedSession);
