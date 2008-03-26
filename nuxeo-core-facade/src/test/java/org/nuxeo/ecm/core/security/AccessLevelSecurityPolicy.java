@@ -28,8 +28,8 @@ import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.model.Document;
 
 /**
- * Security policy used for tests that grants every permission to the author of
- * the document.
+ * Security policy used for tests that grants permissions depending on the user
+ * access level and confidentiality set on the document.
  *
  * @author Anahide Tchertchian
  *

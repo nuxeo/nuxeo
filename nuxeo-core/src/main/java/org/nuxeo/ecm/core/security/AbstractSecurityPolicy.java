@@ -26,22 +26,4 @@ package org.nuxeo.ecm.core.security;
  */
 public abstract class AbstractSecurityPolicy implements SecurityPolicy {
 
-    /**
-     * Returns true if permission to check is in the given list of all
-     * permissions or groups of permissions.
-     */
-    public boolean isPermissionImplied(String permissionToCheck,
-            String[] resolvedPermissions) {
-        boolean res = false;
-        if (resolvedPermissions != null) {
-            for (String perm : resolvedPermissions) {
-                if (permissionToCheck.equals(perm)) {
-                    res = true;
-                    break;
-                }
-            }
-        }
-        return res;
-    }
-
 }
