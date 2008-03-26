@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo ECM Search API
+Bundle-SymbolicName: org.nuxeo.ecm.platform.search.test.integration.tests;singleton:=true
+Bundle-Vendor: Nuxeo
+Require-Bundle: org.nuxeo.ecm.core.query,
+ org.nuxeo.ecm.core,
+ org.nuxeo.ecm.platform.transform,
+ org.nuxeo.ecm.platform.search
+Eclipse-LazyStart: false

@@ -182,7 +182,6 @@ public class TestListener extends RepositoryTestCase {
         prefetchInfo.put("dc.title", "title");
         prefetchInfo.put("dc.modified", new GregorianCalendar());
         prefetchInfo.put("dc.contributors", new String[0]);
-        prefetchInfo.put("sp.securityLevel", Long.valueOf(3));
         if (prefetchInfo != null) {
             for (String k : prefetchInfo.keySet()) {
                 dm.prefetchProperty(k, prefetchInfo.get(k));
@@ -246,17 +245,6 @@ public class TestListener extends RepositoryTestCase {
         assertTrue(item.get("dc:modified") instanceof GregorianCalendar);
         assertNotNull(item.get("dc:contributors"));
         assertEquals("project", item.get(BuiltinDocumentFields.FIELD_DOC_LIFE_CYCLE));
-
-
-        // Test Security Policy
-        assertEquals("3", item.get("sp:securityLevel"));
-
-        ((NuxeoPrincipal)remote.getPrincipal()).getModel().setProperty("user", "accessLevel", Long.valueOf(2));
-
-        query.setSearchPrincipal(service.getSearchPrincipal(remote.getPrincipal()));
-        res = service.searchQuery(query, 0, 10);
-        assertEquals(0, res.getTotalHits());
-        assertEquals(0, res.size());
     }
 
 }
