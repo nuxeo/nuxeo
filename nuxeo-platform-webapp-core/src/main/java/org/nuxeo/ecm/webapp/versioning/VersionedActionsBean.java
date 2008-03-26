@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Razvan Caraghin
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.webapp.versioning;
@@ -26,8 +25,6 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
@@ -44,26 +41,26 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
-import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
  * Deals with versioning actions.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
+ * @author Razvan Caraghin
+ * @author Florent Guillaume
  */
 @Name("versionedActions")
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
-public class VersionedActionsBean extends InputController implements
-        VersionedActions {
+public class VersionedActionsBean implements VersionedActions {
 
-    private static final Log log = LogFactory.getLog(VersionedActionsBean.class);
+    @In(create = true, required = true)
+    protected NavigationContext navigationContext;
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     @In
@@ -100,11 +97,6 @@ public class VersionedActionsBean extends InputController implements
         return versionModelList;
     }
 
-    /**
-     * Returns an empty list if a no versions are found.
-     *
-     * @return e5e7b4ba-0ffb-492d-8bf2-f2f2e6683ae2
-     */
     public void retrieveVersions() throws ClientException {
         /**
          * in case the document is a proxy,meaning is the result of a
@@ -124,8 +116,6 @@ public class VersionedActionsBean extends InputController implements
             versionModelList = new ArrayList<VersionModel>(
                     documentVersioning.getCurrentItemVersioningHistory());
         }
-        logDocumentWithTitle("Retrieved versions for: ",
-                navigationContext.getCurrentDocument());
     }
 
     /**
@@ -140,9 +130,6 @@ public class VersionedActionsBean extends InputController implements
                 navigationContext.getCurrentDocument().getRef(),
                 selectedVersion);
         // documentManager.checkOut(restoredDocument.getRef());
-
-        logDocumentWithTitle("Restored to version: " +
-                selectedVersion.getLabel() + " the doc ", restoredDocument);
 
         // same as edit basically
         // XXX AT: do edit events need to be sent?
@@ -163,27 +150,17 @@ public class VersionedActionsBean extends InputController implements
                 SecurityConstants.WRITE);
     }
 
-    public void destroy() {
-        log.debug("Removing SEAM action listener...");
-    }
-
     /**
      * Tells if the current selected document is checked out or not.
      *
      * @return
      */
     public String getCheckedOut() throws ClientException {
-        checkedOut = "Unknown";
-
         if (documentManager.isCheckedOut(navigationContext.getCurrentDocument().getRef())) {
             checkedOut = "Checked-out";
         } else {
             checkedOut = "Checked-in";
         }
-
-        logDocumentWithTitle("Retrieved status " + checkedOut + " for: ",
-                navigationContext.getCurrentDocument());
-
         return checkedOut;
     }
 
@@ -198,10 +175,6 @@ public class VersionedActionsBean extends InputController implements
      */
     public String checkOut() throws ClientException {
         documentManager.checkOut(navigationContext.getCurrentDocument().getRef());
-
-        logDocumentWithTitle("Checked out ",
-                navigationContext.getCurrentDocument());
-
         return null;
     }
 
@@ -213,20 +186,9 @@ public class VersionedActionsBean extends InputController implements
     public String checkIn() throws ClientException {
         documentManager.checkIn(
                 navigationContext.getCurrentDocument().getRef(), newVersion);
-
-        logDocumentWithTitle("Checked in ",
-                navigationContext.getCurrentDocument());
-
         retrieveVersions();
-
         return navigationContext.getActionResult(
                 navigationContext.getCurrentDocument(), UserAction.AFTER_EDIT);
-    }
-
-    public void saveState() {
-    }
-
-    public void readState() {
     }
 
     public DocumentModel getSourceDocument() throws ClientException {
