@@ -72,7 +72,6 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
 
-import com.sun.org.apache.bcel.internal.generic.CPInstruction;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -1463,6 +1462,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         getProperty(path).setValue(value);
     }
 
+    @Override
     public DocumentModel clone() throws CloneNotSupportedException {
         DocumentModelImpl dm = (DocumentModelImpl)super.clone();
 //        dm.id =id;
@@ -1497,12 +1497,63 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     public void reset() {
-        if (dataModels != null) dataModels.clear();
-        if (prefetch != null) prefetch.clear();
+        if (dataModels != null) {
+            dataModels.clear();
+        }
+        if (prefetch != null) {
+            prefetch.clear();
+        }
         isACPLoaded = false;
         acp = null;
         currentLifeCycleState = null;
         lifeCyclePolicy = null;
     }
+
+    public void refresh() throws ClientException {
+        refresh(REFRESH_DEFAULT, null);
+    }
+
+    public void refresh(int refreshFlags, String[] schemas) throws ClientException {
+        if ((refreshFlags & REFRESH_ACP_IF_LOADED) != 0 && isACPLoaded) {
+            refreshFlags |= REFRESH_ACP;
+            // we must not clean the REFRESH_ACP_IF_LOADED flag since it is used below on the client
+        }
+
+        if ((refreshFlags & REFRESH_CONTENT_IF_LOADED) != 0) {
+            refreshFlags |= REFRESH_CONTENT;
+            Collection<String> keys = dataModels.keySet();
+            schemas = keys.toArray(new String[keys.size()]);
+        }
+
+        Object[] result = getClient().refreshDocument(ref, refreshFlags, schemas);
+
+        if ((refreshFlags & REFRESH_PREFETCH) != 0) {
+            prefetch = (HashMap<String, Serializable>) result[0];
+        }
+        if ((refreshFlags & REFRESH_LOCK) != 0) {
+            lock = (String)result[1];
+        }
+        if ((refreshFlags & REFRESH_LIFE_CYCLE) != 0) {
+            currentLifeCycleState = (String)result[2];
+            lifeCyclePolicy = (String)result[3];
+        }
+        acp = null;
+        isACPLoaded = false;
+        if ((refreshFlags & REFRESH_ACP) != 0) {
+            acp = (ACP)result[4];
+            isACPLoaded = true;
+        }
+        dataModels.clear();
+        if ((refreshFlags & REFRESH_CONTENT) != 0) {
+            DocumentPart[] parts = (DocumentPart[]) result[5];
+            if (parts != null) {
+                for (DocumentPart part : parts) {
+                    DataModelImpl dm = new DataModelImpl(part);
+                    dataModels.put(dm.getSchema(), dm);
+                }
+            }
+        }
+    }
+
 
 }

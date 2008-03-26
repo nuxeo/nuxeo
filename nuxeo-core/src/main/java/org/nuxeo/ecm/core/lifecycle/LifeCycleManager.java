@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.model.Document;
  * <p>
  * Responsible of the life cycle properties storage abstraction.
  *
- * @see org.nuxeo.ecm.jcr.JCRLifeCycleManager
+ * @see org.nuxeo.ecm.core.repository.jcr.JCRLifeCycleManager
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
@@ -92,7 +92,6 @@ public interface LifeCycleManager {
      *            the life cycle policy
      * @throws LifeCycleException
      */
-    void setPolicy(Document doc, String policy)
-            throws LifeCycleException;
+    void setPolicy(Document doc, String policy) throws LifeCycleException;
 
 }

@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.api.event;
 
 import java.security.Principal;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 /**

@@ -193,10 +193,10 @@ public class JCRSession implements Session {
     public Query createQuery(String query, Query.Type qType, String... params)
             throws QueryException {
         if (Query.Type.NXQL == qType) {
-            return new org.nuxeo.ecm.core.repository.jcr.JCRQuery(this, query);
+            return new JCRQuery(this, query);
         }
         if (Query.Type.XPATH == qType) {
-            return new org.nuxeo.ecm.core.repository.jcr.JCRQueryXPath(this, query, params);
+            return new JCRQueryXPath(this, query, params);
         }
 
         throw new UnsupportedQueryTypeException(qType);

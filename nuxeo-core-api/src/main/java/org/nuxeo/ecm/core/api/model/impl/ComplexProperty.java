@@ -68,13 +68,11 @@ public abstract class ComplexProperty extends AbstractProperty {
      * <p>
      * If you want to change the way a property is fetched / stored you must overwride this method.
      *
-     * @param name the child to return
      * @return the child. Cannot return null
      * @throws UnsupportedOperationException
      *
      */
-    protected Property internalGetChild(Field field)
-            throws UnsupportedOperationException {
+    protected Property internalGetChild(Field field) {
         return null; // we don't store property that are not in the cache
     }
 
@@ -94,10 +92,9 @@ public abstract class ComplexProperty extends AbstractProperty {
         throw new PropertyConversionException(value.getClass(), Map.class, getPath());
     }
 
-    public Property get(int index) throws PropertyNotFoundException,
-        UnsupportedOperationException {
-            throw new UnsupportedOperationException(
-                    "accessing children by index is not allowed for complex properties");
+    public Property get(int index) {
+        throw new UnsupportedOperationException(
+                "accessing children by index is not allowed for complex properties");
     }
 
     public final Property getNonPhantomChild(Field field) {
@@ -143,8 +140,7 @@ public abstract class ComplexProperty extends AbstractProperty {
         return Collections.unmodifiableCollection(children.values());
     }
 
-    public Property get(String name) throws PropertyNotFoundException,
-            UnsupportedOperationException {
+    public Property get(String name) throws PropertyNotFoundException {
         Field field = getType().getField(name);
         if (field == null) {
             throw new PropertyNotFoundException(name, "");
@@ -211,20 +207,17 @@ public abstract class ComplexProperty extends AbstractProperty {
         }
     }
 
-    public Property add(Object value) throws InvalidPropertyValueException,
-            UnsupportedOperationException {
+    public Property add(Object value) {
         throw new UnsupportedOperationException(
                 "add(value) operation not supported on map properties");
     }
 
-    public Property add(int index, Object value) throws
-            InvalidPropertyValueException, UnsupportedOperationException {
+    public Property add(int index, Object value) {
         throw new UnsupportedOperationException(
                 "add(value, index) operation not supported on map properties");
     }
 
-    public Property add() throws InvalidPropertyValueException,
-            UnsupportedOperationException {
+    public Property add() {
         throw new UnsupportedOperationException(
                 "add() operation not supported on map properties");
     }
