@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
@@ -382,6 +383,23 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
         assertEquals("SELECT * FROM Document WHERE " + "intparameter = 1 AND "
                 + "(sp:specific LIKE 'foo' OR ecm:isProxy = 1)",
                 descriptor.getQuery(documentModelWithFixedPart));
+    }
+
+    public void testSaveQM() throws ClientException {
+        documentModel.setProperty("querymodel_test", "intfield", 4L);
+        // Attach and save
+        documentModel.setPathInfo("/", "model");
+        coreSession.createDocument(documentModel);
+        coreSession.save();
+
+        // Refetch
+        documentModel = coreSession.getDocument(new PathRef("/model"));
+        assertEquals(4L, documentModel.getProperty("querymodel_test",
+                "intfield"));
+        QueryModelDescriptor descriptor = statefulModel.getDescriptor();
+        statefulModel = new QueryModel(descriptor, documentModel, null);
+        assertEquals("SELECT * FROM Document WHERE intparameter < 4",
+                descriptor.getQuery(documentModel));
     }
 
 }

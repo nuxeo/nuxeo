@@ -18,6 +18,9 @@
     <doctype name="TestQuery" extends="Document">
       <schema name="querymodel_common" />
       <schema name="querymodel_test" />
+      <!-- override because the standard one references common and dublincore
+      which produce errors -->
+      <prefetch/>
     </doctype>
   </extension>
 
