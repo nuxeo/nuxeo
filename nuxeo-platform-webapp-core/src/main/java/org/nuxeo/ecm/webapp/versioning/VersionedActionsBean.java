@@ -26,17 +26,9 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.PermitAll;
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.Create;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -49,15 +41,13 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.webapp.base.InputController;
+import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
-import org.w3c.dom.ranges.DocumentRange;
 
 /**
  * Deals with versioning actions.
@@ -96,8 +86,8 @@ public class VersionedActionsBean extends InputController implements
         sessionContext.set("newVersion", newVersion);
     }
 
-    @Observer(value={ EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_CHANGED }, create=false, inject=false)
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
+            EventNames.DOCUMENT_CHANGED }, create = false, inject = false)
     public void resetVersions() {
         versionModelList = null;
     }
@@ -116,26 +106,26 @@ public class VersionedActionsBean extends InputController implements
      * @return e5e7b4ba-0ffb-492d-8bf2-f2f2e6683ae2
      */
     public void retrieveVersions() throws ClientException {
-        try {
-            /**
-             * in case the document is a proxy,meaning is the result of a publishing,to have the history of the document from which this proxy was
-             * created,first we have to get to the version that was created when the document was publish,and to which the proxy document indicates,and
-             * then from that version we have to get to the root document.
-             */
-            if (navigationContext.getCurrentDocument().isProxy()) {
-                DocumentRef ref = navigationContext.getCurrentDocument().getRef();
-                DocumentModel version = documentManager.getSourceDocument(ref);
-                DocumentModel doc = documentManager.getSourceDocument(version.getRef());
-                versionModelList = new ArrayList<VersionModel>(documentVersioning.getItemVersioningHistory(doc));
-            } else {
-                versionModelList = new ArrayList<VersionModel>(
-                        documentVersioning.getCurrentItemVersioningHistory());
-            }
-            logDocumentWithTitle("Retrieved versions for: ",
-                    navigationContext.getCurrentDocument());
-        } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+        /**
+         * in case the document is a proxy,meaning is the result of a
+         * publishing,to have the history of the document from which this proxy
+         * was created,first we have to get to the version that was created when
+         * the document was publish,and to which the proxy document
+         * indicates,and then from that version we have to get to the root
+         * document.
+         */
+        if (navigationContext.getCurrentDocument().isProxy()) {
+            DocumentRef ref = navigationContext.getCurrentDocument().getRef();
+            DocumentModel version = documentManager.getSourceDocument(ref);
+            DocumentModel doc = documentManager.getSourceDocument(version.getRef());
+            versionModelList = new ArrayList<VersionModel>(
+                    documentVersioning.getItemVersioningHistory(doc));
+        } else {
+            versionModelList = new ArrayList<VersionModel>(
+                    documentVersioning.getCurrentItemVersioningHistory());
         }
+        logDocumentWithTitle("Retrieved versions for: ",
+                navigationContext.getCurrentDocument());
     }
 
     /**
@@ -146,34 +136,25 @@ public class VersionedActionsBean extends InputController implements
      */
     public String restoreToVersion(VersionModel selectedVersion)
             throws ClientException {
-        try {
-            DocumentModel restoredDocument = documentManager.restoreToVersion(
-                    navigationContext.getCurrentDocument().getRef(),
-                    selectedVersion);
-            //documentManager.checkOut(restoredDocument.getRef());
+        DocumentModel restoredDocument = documentManager.restoreToVersion(
+                navigationContext.getCurrentDocument().getRef(),
+                selectedVersion);
+        // documentManager.checkOut(restoredDocument.getRef());
 
-            logDocumentWithTitle("Restored to version: "
-                    + selectedVersion.getLabel() + " the doc ",
-                    restoredDocument);
+        logDocumentWithTitle("Restored to version: " +
+                selectedVersion.getLabel() + " the doc ", restoredDocument);
 
-            // same as edit basically
-            // XXX AT: do edit events need to be sent?
-            eventManager.raiseEventsOnDocumentChange(restoredDocument);
-            return navigationContext.navigateToDocument(restoredDocument,
-                    "after-edit");
-        } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
-        }
+        // same as edit basically
+        // XXX AT: do edit events need to be sent?
+        EventManager.raiseEventsOnDocumentChange(restoredDocument);
+        return navigationContext.navigateToDocument(restoredDocument,
+                "after-edit");
     }
 
     public String viewArchivedVersion(VersionModel selectedVersion)
             throws ClientException {
-        try {
-            return navigationContext.navigateToDocument(
-                    navigationContext.getCurrentDocument(), selectedVersion);
-        } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
-        }
+        return navigationContext.navigateToDocument(
+                navigationContext.getCurrentDocument(), selectedVersion);
     }
 
     public boolean getCanRestore() throws ClientException {
@@ -192,22 +173,18 @@ public class VersionedActionsBean extends InputController implements
      * @return
      */
     public String getCheckedOut() throws ClientException {
-        try {
-            checkedOut = "Unknown";
+        checkedOut = "Unknown";
 
-            if (documentManager.isCheckedOut(navigationContext.getCurrentDocument().getRef())) {
-                checkedOut = "Checked-out";
-            } else {
-                checkedOut = "Checked-in";
-            }
-
-            logDocumentWithTitle("Retrieved status " + checkedOut + " for: ",
-                    navigationContext.getCurrentDocument());
-
-            return checkedOut;
-        } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+        if (documentManager.isCheckedOut(navigationContext.getCurrentDocument().getRef())) {
+            checkedOut = "Checked-out";
+        } else {
+            checkedOut = "Checked-in";
         }
+
+        logDocumentWithTitle("Retrieved status " + checkedOut + " for: ",
+                navigationContext.getCurrentDocument());
+
+        return checkedOut;
     }
 
     public void setCheckedOut(String checkedOut) {
@@ -220,16 +197,12 @@ public class VersionedActionsBean extends InputController implements
      * @return the next page
      */
     public String checkOut() throws ClientException {
-        try {
-            documentManager.checkOut(navigationContext.getCurrentDocument().getRef());
+        documentManager.checkOut(navigationContext.getCurrentDocument().getRef());
 
-            logDocumentWithTitle("Checked out ",
-                    navigationContext.getCurrentDocument());
+        logDocumentWithTitle("Checked out ",
+                navigationContext.getCurrentDocument());
 
-            return null;
-        } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
-        }
+        return null;
     }
 
     /**
@@ -238,36 +211,22 @@ public class VersionedActionsBean extends InputController implements
      * @return
      */
     public String checkIn() throws ClientException {
-        try {
-            documentManager.checkIn(
-                    navigationContext.getCurrentDocument().getRef(), newVersion);
+        documentManager.checkIn(
+                navigationContext.getCurrentDocument().getRef(), newVersion);
 
-            logDocumentWithTitle("Checked in ",
-                    navigationContext.getCurrentDocument());
+        logDocumentWithTitle("Checked in ",
+                navigationContext.getCurrentDocument());
 
-            retrieveVersions();
+        retrieveVersions();
 
-            // Type currentType =
-            // typeManager.getType(currentDocument.getType());
-            // return applicationController
-            // .getPageOnEditedDocumentType(currentType);
-            return navigationContext.getActionResult(
-                    navigationContext.getCurrentDocument(),
-                    UserAction.AFTER_EDIT);
-
-        } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
-        }
+        return navigationContext.getActionResult(
+                navigationContext.getCurrentDocument(), UserAction.AFTER_EDIT);
     }
 
-    @PrePassivate
     public void saveState() {
-        log.debug("PrePassivate");
     }
 
-    @PostActivate
     public void readState() {
-        log.debug("PostActivate");
     }
 
     public DocumentModel getSourceDocument() throws ClientException {
