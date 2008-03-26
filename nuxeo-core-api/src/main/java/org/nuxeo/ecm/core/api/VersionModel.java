@@ -22,12 +22,13 @@ package org.nuxeo.ecm.core.api;
 import java.io.Serializable;
 import java.util.Calendar;
 
-/**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @deprecated VersionModel should be replaced with a DocumentVersionModel
- *      that extends DocumentModel
+/*
+ * TODO VersionModel should be replaced with a DocumentVersionModel that extends
+ * DocumentModel
  */
-@Deprecated
+/**
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ */
 public interface VersionModel extends Serializable {
 
     Calendar getCreated();
