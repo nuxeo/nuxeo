@@ -71,18 +71,6 @@ public class TestLocalAPI extends TestAPI {
         openSession();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        //super.tearDown();
-        Framework.shutdown();
-    }
-
-    // Duplicated from NXRuntimeTestCase
-//    public URL getResource(String resource) {
-//        return Thread.currentThread().getContextClassLoader()
-//                .getResource(resource);
-//    }
-
     // Duplicated from NXRuntimeTestCase
     @Override
     public void deploy(String bundle) {
