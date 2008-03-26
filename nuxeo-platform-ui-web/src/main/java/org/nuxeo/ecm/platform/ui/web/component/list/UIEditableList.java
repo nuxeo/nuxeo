@@ -28,6 +28,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+
 import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
@@ -38,7 +39,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.FacesEvent;
 import javax.faces.event.PhaseId;
 
-import com.sun.facelets.tag.jsf.ComponentSupport;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,6 +47,8 @@ import org.nuxeo.ecm.platform.ui.web.model.EditableModel;
 import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelImpl;
 import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelRowEvent;
 import org.nuxeo.ecm.platform.ui.web.model.impl.ProtectedEditableModelImpl;
+
+import com.sun.facelets.tag.jsf.ComponentSupport;
 
 /**
  * Editable table component.
@@ -156,7 +158,7 @@ public class UIEditableList extends UIInput implements NamingContainer {
         }
 
         if (superState != null || stampState != null) {
-            return new Object[]{ superState, stampState, getSubmittedValue(),
+            return new Object[] { superState, stampState, getSubmittedValue(),
                     editableModel, model, template, diff, number, removeEmpty };
         }
         return null;
@@ -174,7 +176,7 @@ public class UIEditableList extends UIInput implements NamingContainer {
             superState = array[0];
             stampState = array[1];
             submittedValue = array[2];
-            editableModel = (EditableModel) array[3];
+            editableModel = array[3];
             model = (String) array[4];
             template = array[5];
             diff = (Boolean) array[6];
@@ -258,6 +260,9 @@ public class UIEditableList extends UIInput implements NamingContainer {
         Object currencyObj = getRowKey();
         int position = 0;
         for (UIComponent stamp : getChildren()) {
+            if (stamp.isTransient()) {
+                continue;
+            }
             Object state = StampState.saveStampState(context, stamp);
             // String stampId = stamp.getId();
             // TODO
@@ -296,6 +301,9 @@ public class UIEditableList extends UIInput implements NamingContainer {
 
         int position = 0;
         for (UIComponent stamp : getChildren()) {
+            if (stamp.isTransient()) {
+                continue;
+            }
             // String stampId = stamp.getId();
             // TODO
             // temporarily use position. later we need to use ID's to access
@@ -833,7 +841,7 @@ public class UIEditableList extends UIInput implements NamingContainer {
             Object template = getTemplate();
             if (removeEmpty && data instanceof List) {
                 List dataList = (List) data;
-                for (int i = dataList.size() -1; i > -1; i--) {
+                for (int i = dataList.size() - 1; i > -1; i--) {
                     Object item = dataList.get(i);
                     if (item == null || item.equals(template)) {
                         model.removeValue(i);
