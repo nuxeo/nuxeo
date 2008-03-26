@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.core.search.api.security;
+package org.nuxeo.ecm.core.search.security;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,15 +29,28 @@ import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.WhereClause;
 import org.nuxeo.ecm.core.search.api.client.query.ComposedNXQuery;
+import org.nuxeo.ecm.core.search.api.client.query.SearchPrincipal;
 import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
+import org.nuxeo.ecm.core.search.api.security.SearchPolicyService;
 
+/**
+ * deprecated: see {@link AccessLevelSearchPolicy}
+ */
+@Deprecated
 public class SearchPolicyServiceImpl implements SearchPolicyService {
 
     private static final Log log = LogFactory.getLog(SearchPolicyServiceImpl.class);
 
     public ComposedNXQuery applyPolicy(ComposedNXQuery nxqlQuery) {
         SQLQuery query = nxqlQuery.getQuery();
-        NuxeoPrincipal principal = (NuxeoPrincipal) nxqlQuery.getSearchPrincipal().getOriginalPrincipal();
+        NuxeoPrincipal principal = null;
+        SearchPrincipal sPrincipal = nxqlQuery.getSearchPrincipal();
+        if (sPrincipal != null) {
+            principal = (NuxeoPrincipal) sPrincipal.getOriginalPrincipal();
+        }
+        if (principal == null) {
+            return nxqlQuery;
+        }
         Predicate add = new Predicate(new Reference("sp:securityLevel"),
                 Operator.LTEQ, new IntegerLiteral((Long) principal.getModel()
                         .getProperty("user", "accessLevel")));

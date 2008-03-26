@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,21 +12,28 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
  * $Id$
  */
 
 package org.nuxeo.ecm.core.search.api.security;
 
+import org.nuxeo.ecm.core.search.api.client.SearchException;
 import org.nuxeo.ecm.core.search.api.client.query.ComposedNXQuery;
 
 /**
- * @deprecated use {@link SearchPolicy} instead
+ * Interface for pluggable search policy.
+ *
+ * @author Anahide Tchertchian
+ *
  */
-@Deprecated
-public interface SearchPolicyService {
+public interface SearchPolicy {
 
-    ComposedNXQuery applyPolicy(ComposedNXQuery nxqlQuery);
+    /**
+     * Returns new query with its policy applied
+     */
+    ComposedNXQuery applyPolicy(ComposedNXQuery nxqlQuery)
+            throws SearchException;
 
 }
