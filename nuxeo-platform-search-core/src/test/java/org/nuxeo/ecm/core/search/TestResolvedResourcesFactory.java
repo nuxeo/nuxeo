@@ -280,7 +280,7 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         dm.setProperty("dublincore", "title", "A document of my type");
 
         HashMap<String, Serializable> task;
-        ArrayList<HashMap<String, Serializable>> tasks = new ArrayList<HashMap<String, Serializable>>(2);
+        List<HashMap<String, Serializable>> tasks = new ArrayList<HashMap<String, Serializable>>(2);
         task = new HashMap<String, Serializable>();
         task.put("what", "eat");
         tasks.add(task);
@@ -476,7 +476,7 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
 
         // Test doc resources metadata
 
-        docRes = (DocumentIndexableResource) oneRes;
+        docRes = oneRes;
         assertEquals(dm.getRef(), docRes.getDocRef());
         assertEquals(dm.getParentRef(), docRes.getDocParentRef());
         assertEquals(dm.getType(), docRes.getDocType());

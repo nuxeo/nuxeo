@@ -58,11 +58,10 @@ public class UIDSequencerManagerBean implements UIDSequencerManager {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public int getNext(String key) {
         synchronized (SEMAPHORE) {
-            EntityManagerFactory emf;
-            EntityManager em;
 
-            emf = Persistence.createEntityManagerFactory("NXUIDSequencer");
-            em = emf.createEntityManager();
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory(
+                    "NXUIDSequencer");
+            EntityManager em = emf.createEntityManager();
             EntityTransaction et = em.getTransaction();
             if (!et.isActive()) {
                 em.getTransaction().begin();

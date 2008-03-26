@@ -19,14 +19,14 @@
 
 package org.nuxeo.ecm.platform.imaging;
 
-import java.io.InputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.imaging.api.ImagingService;
 import org.nuxeo.ecm.platform.imaging.core.ImageUtils;
-import org.nuxeo.ecm.platform.imaging.core.MimeUtils;
 import org.nuxeo.ecm.platform.imaging.core.MetadataUtils;
+import org.nuxeo.ecm.platform.imaging.core.MimeUtils;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**

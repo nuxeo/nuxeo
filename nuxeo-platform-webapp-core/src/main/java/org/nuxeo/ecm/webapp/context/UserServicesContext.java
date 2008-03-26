@@ -54,7 +54,7 @@ public class UserServicesContext implements Serializable {
     private transient NavigationContext navigationContext;
 
     @In(required = false, create = true)
-    private Principal currentUser;
+    private transient Principal currentUser;
 
     private transient RepositoryLocation repoLocation;
 
