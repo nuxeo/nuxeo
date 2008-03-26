@@ -108,4 +108,17 @@ public interface VersionedActions {
 
     DocumentModel getSourceDocument() throws ClientException;
 
+    /**
+     * Check if a version can be removed. It won't be possible if a proxy is
+     * pointing to it.
+     */
+    boolean canRemoveArchivedVersion(VersionModel selectedVersion);
+
+    /**
+     * Remove an archived version.
+     *
+     * @param selectedVersion the version model to remove
+     */
+    String removeArchivedVersion(VersionModel selectedVersion)
+            throws ClientException;
 }
