@@ -292,8 +292,7 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
         assertTrue(descriptor.isStateful());
         // adding a value to the fulltext field
 
-        documentModel.setProperty(QM_SCHEMA, "fulltext_all",
-                "some text");
+        documentModel.setProperty(QM_SCHEMA, "fulltext_all", "some text");
         assertEquals(
                 "SELECT * FROM Document WHERE ecm:fulltext LIKE '+some +text'",
                 descriptor.getQuery(documentModel));
@@ -319,14 +318,12 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
 
         documentModel.setProperty(QM_SCHEMA, "fulltext_all", null);
 
-        documentModel.setProperty(QM_SCHEMA, "fulltext_none",
-                "some text");
+        documentModel.setProperty(QM_SCHEMA, "fulltext_none", "some text");
         assertEquals("SELECT * FROM Document WHERE ecm:fulltext "
                 + "NOT LIKE 'some text'", descriptor.getQuery(documentModel));
         documentModel.setProperty(QM_SCHEMA, "fulltext_none", null);
 
-        documentModel.setProperty(QM_SCHEMA, "fulltext_one_of",
-                "some text");
+        documentModel.setProperty(QM_SCHEMA, "fulltext_one_of", "some text");
         assertEquals(
                 "SELECT * FROM Document WHERE ecm:fulltext LIKE 'some text'",
                 descriptor.getQuery(documentModel));
@@ -358,8 +355,8 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
                 descriptor.getQuery(documentModel2));
 
         // with several options the predicate is serialized as expected
-        documentModel2.setProperty(QM_SCHEMA, "listfield",
-                new String[] { "Pedro", "Piotr", "Pierre" });
+        documentModel2.setProperty(QM_SCHEMA, "listfield", new String[] {
+                "Pedro", "Piotr", "Pierre" });
 
         assertEquals(
                 "SELECT * FROM Document WHERE dc:creator = 'Pedro' OR dc:creator = 'Piotr' OR dc:creator = 'Pierre'",
@@ -373,8 +370,7 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
         documentModel2.setProperty(QM_SCHEMA, "intfield", null);
 
         // an empty array of options is ignored as if the field was left null
-        documentModel2.setProperty(QM_SCHEMA, "listfield",
-                new String[] {});
+        documentModel2.setProperty(QM_SCHEMA, "listfield", new String[] {});
 
         assertEquals("SELECT * FROM Document",
                 descriptor.getQuery(documentModel2));
@@ -406,8 +402,7 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
 
         // Refetch
         documentModel = coreSession.getDocument(new PathRef("/model"));
-        assertEquals(4L, documentModel.getProperty(QM_SCHEMA,
-                "intfield"));
+        assertEquals(4L, documentModel.getProperty(QM_SCHEMA, "intfield"));
         QueryModelDescriptor descriptor = statefulModel.getDescriptor();
         statefulModel = new QueryModel(descriptor, documentModel, null);
         assertEquals("SELECT * FROM Document WHERE intparameter < 4",
@@ -419,13 +414,18 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
         QueryModel qm = initializeStatefulQueryModel(descriptor);
         DocumentModel doc = qm.getDocumentModel();
         doc.setProperty(QM_SCHEMA, "subclause", "foo < 'bar' or NOT x = 1");
-        assertEquals("SELECT * FROM Document WHERE foo < 'bar' or NOT x = 1", descriptor.getQuery(doc));
+        assertEquals("SELECT * FROM Document WHERE foo < 'bar' or NOT x = 1",
+                descriptor.getQuery(doc));
         // this is valid NXQL
         SQLQueryParser.parse(descriptor.getQuery(doc));
         doc.setProperty(QM_SCHEMA, "intfield", 3L);
-        assertEquals("SELECT * FROM Document WHERE intparameter = 3 AND (foo < 'bar' or NOT x = 1)", descriptor.getQuery(doc));
+        assertEquals(
+                "SELECT * FROM Document WHERE intparameter = 3 AND (foo < 'bar' or NOT x = 1)",
+                descriptor.getQuery(doc));
         doc.setProperty(QM_SCHEMA, "textfield", "zork");
-        assertEquals("SELECT * FROM Document WHERE intparameter = 3 AND (foo < 'bar' or NOT x = 1) AND textparameter = 'zork'", descriptor.getQuery(doc));
+        assertEquals(
+                "SELECT * FROM Document WHERE intparameter = 3 AND (foo < 'bar' or NOT x = 1) AND textparameter = 'zork'",
+                descriptor.getQuery(doc));
     }
 
 }
