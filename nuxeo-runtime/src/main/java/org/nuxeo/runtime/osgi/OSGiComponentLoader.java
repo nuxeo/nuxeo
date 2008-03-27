@@ -19,6 +19,8 @@
 
 package org.nuxeo.runtime.osgi;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -32,7 +34,7 @@ import org.osgi.framework.SynchronousBundleListener;
 public class OSGiComponentLoader implements SynchronousBundleListener {
 
     private final OSGiRuntimeService runtime;
-
+    private static final Log log = LogFactory.getLog(OSGiComponentLoader.class);
 
     public OSGiComponentLoader(OSGiRuntimeService runtime) {
         this.runtime = runtime;
@@ -53,9 +55,8 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
                     try {
                         runtime.createContext(bundle);
                     } catch (Throwable e) {
-                        System.out.println("Failed to load components for bundle - "
-                                + bundle.getSymbolicName());
-                        e.printStackTrace(); // TODO
+                        log.warn("Failed to load components for bundle - "
+                                + bundle.getSymbolicName(),e);
                     }
                 }
             }
@@ -84,7 +85,7 @@ public class OSGiComponentLoader implements SynchronousBundleListener {
                 break;
             }
         } catch (Exception e) {
-            e.printStackTrace(); //TODO
+            log.error(e);
         }
     }
 
