@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/user"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="id" type="xs:integer" />
+  <xs:element name="user" type="xs:string" />
+  <xs:element name="password" type="xs:string" />
+  <xs:element name="firstName" type="xs:string" />
+  <xs:element name="lastName" type="xs:string" />
+  <xs:element name="company" type="xs:string" />
+  <xs:element name="accessLevel" type="xs:int" />
+
+</xs:schema>

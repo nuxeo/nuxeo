@@ -41,6 +41,7 @@ import org.nuxeo.ecm.webapp.table.sort.SortableTableModel;
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  *
  */
+@SuppressWarnings({"ALL"})
 @Deprecated
 public class GenericTableModel extends SortableTableModel {
     private static final long serialVersionUID = -2921106396128184530L;

@@ -449,6 +449,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             List<Resource> dateProperties = null;
             if (dateUris != null) {
                 for (String dateUri : dateUris) {
+                    // FIXME: this can't work, dateProperties is null!
                     dateProperties.add(new ResourceImpl(dateUri));
                 }
             }

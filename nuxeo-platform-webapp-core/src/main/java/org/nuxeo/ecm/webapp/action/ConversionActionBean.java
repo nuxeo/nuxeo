@@ -29,13 +29,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.WebRemote;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.transform.api.TransformServiceDelegate;
@@ -53,9 +51,6 @@ public class ConversionActionBean extends InputController implements
         ConversionAction {
 
     private static final Log log = LogFactory.getLog(ConversionActionBean.class);
-
-    @In(create = true)
-    private CoreSession documentManager;
 
     @RequestParameter
     private String fileFieldFullName;
@@ -125,7 +120,7 @@ public class ConversionActionBean extends InputController implements
                 name = name.replace(sub, "pdf");
             }
 
-            if (resultingDocs.size() == 0) {
+            if (resultingDocs.isEmpty()) {
                 log.error("Transform service didn't return any resulting documents which is not normal.");
                 return "pdf_generation_error";
             }

@@ -21,6 +21,10 @@ package org.nuxeo.ecm.core.search.api.security;
 
 import org.nuxeo.ecm.core.search.api.client.query.ComposedNXQuery;
 
+/**
+ * @deprecated use {@link SearchPolicy} instead
+ */
+@Deprecated
 public interface SearchPolicyService {
 
     ComposedNXQuery applyPolicy(ComposedNXQuery nxqlQuery);

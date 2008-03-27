@@ -18,6 +18,18 @@
  */
 package org.nuxeo.ecm.platform.imaging.transform;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.imaging.api.ImagingService;
@@ -29,22 +41,6 @@ import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
 import org.nuxeo.ecm.platform.transform.service.TransformService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-
-import java.awt.FlowLayout;
-import java.awt.LayoutManager;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Max Stepanov
@@ -180,8 +176,6 @@ public class TestImagingTransformPlugin extends NXRuntimeTestCase {
         assertTrue("Original image size != (0,0)", width > 0 && height > 0);
         ImageIcon im= new ImageIcon(image);
         image = ImageIO.read(result);
-
-
 
         ImageIcon im2= new ImageIcon(image);
         FileBlob blob2 = new FileBlob(getFileFromPath(path2));

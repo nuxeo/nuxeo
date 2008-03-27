@@ -98,7 +98,7 @@ public class PluginExtensionPointHandler extends
             log.warn("Plugin class not specified for plugin extension: " + pluginExtension);
             return;
         }
-        Class<Plugin> pluginClass = extension.getContext().loadClass(className);
+        Class<Plugin> pluginClass = (Class<Plugin>)extension.getContext().loadClass(className);
         if (null == pluginClass) {
             throw new TransformException("Unable to load plugin class: '" + className + "'");
         }
@@ -122,7 +122,7 @@ public class PluginExtensionPointHandler extends
     }
 
     private static void unregisterOne(PluginExtension pluginExtension,
-            Extension extension) throws Exception {
+            Extension extension) {
         String name = pluginExtension.getName();
         getNXTransform().unregisterPlugin(name);
     }

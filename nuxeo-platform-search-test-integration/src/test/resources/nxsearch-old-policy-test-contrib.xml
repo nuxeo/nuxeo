@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.security.PolicyService.searchTest.contrib"
+  version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.security.PolicyService"
+    point="policy">
+
+    <policy class="org.nuxeo.ecm.core.search.security.SearchPolicyServiceImpl"
+      type="search" />
+
+  </extension>
+
+</component>
