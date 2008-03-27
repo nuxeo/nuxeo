@@ -1240,6 +1240,45 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    public boolean canRemoveDocument(DocumentRef docRef) throws ClientException {
+        try {
+            Document doc = resolveReference(docRef);
+            return canRemoveDocument(doc);
+        } catch (DocumentException e) {
+            throw new ClientException(e);
+        }
+    }
+
+    protected boolean canRemoveDocument(Document doc) throws ClientException,
+            DocumentException {
+        if (doc.isVersion()) {
+            // TODO a hasProxies method would be more efficient
+            Collection<Document> proxies = getSession().getProxies(doc, null);
+            if (!proxies.isEmpty()) {
+                return false;
+            }
+            // find a working document to check security
+            Document working;
+            try {
+                working = doc.getSourceDocument();
+            } catch (DocumentException e) {
+                working = null;
+            }
+            if (working != null) {
+                return hasPermission(working, REMOVE);
+            } else {
+                // no working document, only admins can remove
+                return isAdministrator();
+            }
+        } else {
+            if (!hasPermission(doc, REMOVE)) {
+                return false;
+            }
+            Document parent = doc.getParent();
+            return parent == null || hasPermission(parent, REMOVE_CHILDREN);
+        }
+    }
+
     public void removeDocument(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
@@ -1252,13 +1291,8 @@ public abstract class AbstractSession implements CoreSession,
 
     protected void removeDocument(Document doc) throws ClientException {
         try {
-            // Check the local security
-            checkPermission(doc, REMOVE);
-
-            // Get the container to check the security on it as well
-            Document parent = doc.getParent();
-            if (null != parent) {
-                checkPermission(parent, REMOVE_CHILDREN);
+            if (!canRemoveDocument(doc)) {
+                throw new DocumentException("Permission denied");
             }
 
             removeNotifyOneDoc(doc);
@@ -1281,11 +1315,17 @@ public abstract class AbstractSession implements CoreSession,
         DocumentModel docModel = readModel(doc, null);
         Map<String, Object> options = new HashMap<String, Object>();
         options.put(CoreEventConstants.DOCUMENT, doc);
-        notifyEvent(DocumentEventTypes.ABOUT_TO_REMOVE, docModel, options,
-                null, null, true);
+        // for now we don't notify for versions themselves, as they have the
+        // same path as the working document
+        if (!doc.isVersion()) {
+            notifyEvent(DocumentEventTypes.ABOUT_TO_REMOVE, docModel, options,
+                    null, null, true);
+        }
         doc.remove();
-        notifyEvent(DocumentEventTypes.DOCUMENT_REMOVED, docModel, null, null,
-                null, false);
+        if (!doc.isVersion()) {
+            notifyEvent(DocumentEventTypes.DOCUMENT_REMOVED, docModel, null,
+                    null, null, false);
+        }
     }
 
     /**
