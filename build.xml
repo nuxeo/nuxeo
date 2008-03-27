@@ -27,6 +27,13 @@
     <property name="nuxeo.ear.build" value="${nuxeo.ear.root}/target/${assembly.ear}" />
   </target>
 
+  <property name="nuxeo.jboss.jmx.protocol" value="" />
+  <property name="nuxeo.jboss.jmx.http.hostname" value="" />
+  <property name="nuxeo.jboss.jmx.http.port" value="" />
+  <condition property="mvn.profile" value="-Phttp" else="">
+    <equals arg1="${nuxeo.jboss.jmx.protocol}" arg2="http" />
+  </condition>
+
   <condition property="osfamily-unix">
     <os family="unix" />
   </condition>
@@ -161,8 +168,12 @@
       <arg value="-f" />
       <arg value="${pom.file}" />
       <arg value="-Djboss.dir=${jboss.home}" />
+      <arg value="-Dnuxeo.jboss.jmx.protocol=${nuxeo.jboss.jmx.protocol}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.hostname=${nuxeo.jboss.jmx.http.hostname}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.port=${nuxeo.jboss.jmx.http.port}" />
       <arg value="clean" />
       <arg value="package" />
+      <arg value="${mvn.profile}" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
@@ -176,6 +187,7 @@
       <arg value="-Djboss.dir=${jboss.home}" />
       <arg value="clean" />
       <arg value="package" />
+      <arg value="${mvn.profile}" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
