@@ -73,6 +73,7 @@ form.nxthemesWebWidgetsEditForm {
   padding: 4px;
   margin: 1px;
   text-align: left;
+  background-color: #eee;
 }
 
 form.nxthemesWebWidgetsEditForm label {
@@ -81,6 +82,7 @@ form.nxthemesWebWidgetsEditForm label {
 }
 
 form.nxthemesWebWidgetsEditForm input,
+form.nxthemesWebWidgetsEditForm button,
 form.nxthemesWebWidgetsEditForm textarea,
 form.nxthemesWebWidgetsEditForm select {
   font: 12px Arial, sans-serif;

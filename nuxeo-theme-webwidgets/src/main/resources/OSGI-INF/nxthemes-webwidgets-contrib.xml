@@ -58,6 +58,10 @@
       <path>nxthemes/webwidgets/styles/default-decorations.css</path>
     </resource>
 
+    <resource name="nxthemes-webwidgets-frameless-decorations.css">
+      <path>nxthemes/webwidgets/styles/frameless-decorations.css</path>
+    </resource>
+    
     <resource name="web-widget-inserter.json">
       <path>
         nxthemes/webwidgets/controllers/web-widget-inserter.json
@@ -255,15 +259,12 @@
 
 
     <decoration name="frameless">
-      <resource>nxthemes-webwidgets-default-decorations.css</resource>
+      <resource>nxthemes-webwidgets-frameless-decorations.css</resource>
 
       <panel-decoration mode="*">%REGION_BODY%</panel-decoration>
 
       <panel-decoration mode="web-widgets">
-        <div class="nxthemesDefaultWebWidgetPanelTitle">
-          %REGION_NAME%
-        </div>
-        <div class="nxthemesDefaultWebWidgetPanelBody">
+        <div class="nxthemesFramelessWebWidgetPanelBody">
           %REGION_BODY%
         </div>
       </panel-decoration>
@@ -274,8 +275,8 @@
 
       <widget-decoration mode="web-widgets/*">
         <div
-          class="nxthemesDefaultWebWidgetTitle %DRAG_AREA%">
-          <div class="nxthemesDefaultWebWidgetActions">
+          class="nxthemesFramelessWebWidgetTitle %DRAG_AREA%">
+          <div class="nxthemesFramelessWebWidgetActions">
             <span onclick="%ACTION_EDIT_PREFERENCES%">
               Edit
             </span>
@@ -293,20 +294,15 @@
           <span id="%ICON_AREA%">[ ]</span>
           <span id="%TITLE_AREA%">%WIDGET_NAME%</span>
         </div>
-        <div class="nxthemesDefaultWebWidgetBody">
+        <div class="nxthemesFramelessWebWidgetBody">
           <div id="%BODY_AREA%">%WIDGET_BODY%</div>
-          <div class="nxthemesDefaultWebWidgetFooter">
-            Widget by
-            <strong>%WIDGET_AUTHOR%</strong>
-            : %WIDGET_DESCRIPTION%
-          </div>
         </div>
       </widget-decoration>
 
       <widget-decoration mode="web-widgets/shaded">
         <div
-          class="nxthemesDefaultWebWidgetTitle %DRAG_AREA%">
-          <div class="nxthemesDefaultWebWidgetActions">
+          class="nxthemesFramelessWebWidgetTitle %DRAG_AREA%">
+          <div class="nxthemesFramelessWebWidgetActions">
             <span onclick="%ACTION_UNSHADE_WINDOW%">
               <img
                 src="/nuxeo/nxthemes-web-widgets/images/window-unshade.png"
