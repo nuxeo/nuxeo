@@ -203,7 +203,8 @@ public class ServerImpl implements Server {
         return null;
     }
 
-    public ServerConfiguration getConfiguration(InvokerLocator locator, Version version) throws ConfigurationException, UnsupportedServerVersion {
+    public ServerConfiguration getConfiguration(InvokerLocator locator, Version version)
+            throws ConfigurationException {
         ConfigurationFactory factory = ConfigurationFactory.getFactory(version);
         return factory.createConfiguration(locator, version);
     }

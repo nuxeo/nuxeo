@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public final class ServiceManager {
 
@@ -38,11 +38,11 @@ public final class ServiceManager {
 
     private static final ServiceManager instance = new ServiceManager();
 
-    protected final Map<String, ServiceDescriptor> services = new HashMap<String, ServiceDescriptor>();
+    private final Map<String, ServiceDescriptor> services = new HashMap<String, ServiceDescriptor>();
 
-    protected final List<ServiceHost> servers = new Vector<ServiceHost>();
+    private final List<ServiceHost> servers = new Vector<ServiceHost>();
 
-    protected final Map<String, ServiceGroup> groups = new HashMap<String, ServiceGroup>();
+    private final Map<String, ServiceGroup> groups = new HashMap<String, ServiceGroup>();
 
     // Singleton.
     private ServiceManager() {
@@ -135,7 +135,7 @@ public final class ServiceManager {
      * <li><code>glassfish://localhost:1234/org.nuxeo.ecm.platform.types.TypeManager</code> -
      * locate a service on glassfish</li>
      * </ul>
-     * 
+     *
      * @param serviceUri the service uri
      * @return the service
      * @throws Exception

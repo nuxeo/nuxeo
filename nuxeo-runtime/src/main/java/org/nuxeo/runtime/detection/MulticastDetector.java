@@ -35,15 +35,15 @@ import java.util.TimerTask;
  */
 public class MulticastDetector<T> {
 
-    protected MulticastSocket socket;
-    protected long heartBeatTimeout = 5000; // 10 sec
-
     protected final InetAddress groupAddr;
     protected final int groupPort;
 
-    protected String identity;
+    protected final String identity;
 
     protected final Map<String, Peer<T>> peers;
+
+    protected MulticastSocket socket;
+    protected long heartBeatTimeout = 5000; // 10 sec
 
     private DetectionHandler handler;
 

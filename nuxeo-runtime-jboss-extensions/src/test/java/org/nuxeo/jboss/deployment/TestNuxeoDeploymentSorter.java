@@ -19,14 +19,15 @@
 
 package org.nuxeo.jboss.deployment;
 
-import junit.framework.TestCase;
-
 import java.net.URL;
 
+import junit.framework.TestCase;
+
+// TODO: NuxeoDeploymentSorter not used. Remove test ?
 public class TestNuxeoDeploymentSorter extends TestCase {
 
     public void test() throws Exception {
-        //NuxeoDeploymentSorter sorter = new NuxeoDeploymentSorter();
+        // NuxeoDeploymentSorter sorter = new NuxeoDeploymentSorter();
 
         URL url1 = new URL("http://www.nuxeo.com/");
         URL url2 = new URL("http://www.nuxeo.com/");

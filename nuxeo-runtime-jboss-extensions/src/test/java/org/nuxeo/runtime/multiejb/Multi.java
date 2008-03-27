@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -17,28 +17,14 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.remoting;
-
-import org.nuxeo.runtime.Version;
-import org.nuxeo.runtime.config.ConfigurationException;
+package org.nuxeo.runtime.multiejb;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class UnsupportedServerVersion extends ConfigurationException {
+public interface Multi {
 
-    private static final long serialVersionUID = 7632769314648547250L;
-
-    Version version;
-
-    public UnsupportedServerVersion(Version version) {
-        super ("Unsupported server configuration version: "+version);
-    }
-
-    public UnsupportedServerVersion(Version version, String message) {
-        super ("Unsupported server configuration version: "+version+". "+message);
-    }
-
+    String getMessage();
 
 }

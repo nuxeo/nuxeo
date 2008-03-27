@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,26 +12,30 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     bstefanescu
+ *
  * $Id$
  */
 
-package org.nuxeo.runtime.model;
+package org.nuxeo.runtime.multiejb;
 
-import java.io.Serializable;
+import javax.ejb.Local;
+import javax.ejb.Remote;
+import javax.ejb.Stateless;
 
-import org.w3c.dom.Element;
+import org.nuxeo.runtime.jboss.interceptors.IsLocalInterceptor;
 
 /**
- * This interface is experimental.
- *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ConfigurationDescriptor extends Serializable {
+@Stateless
+@Local(Multi.class)
+@Remote(Multi.class)
+public class MultiBean implements Multi{
 
-    Element getElement();
-
-    Object getConfiguration();
+    public String getMessage() {
+        return "I am MultiBean running on: "+IsLocalInterceptor.getBindAddr();
+    }
 
 }

@@ -25,10 +25,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -204,9 +202,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         try {
             loadProperties(in);
         } finally {
-            if (in != null) {
-                in.close();
-            }
+            in.close();
         }
     }
 

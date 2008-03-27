@@ -19,11 +19,11 @@
 
 package org.nuxeo.runtime.scripting;
 
-import junit.framework.TestCase;
-
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+
+import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -32,7 +32,7 @@ import javax.script.ScriptException;
 @SuppressWarnings({"UnnecessaryBoxing"})
 public class TestEngines extends TestCase {
 
-    private ScriptEngineManager factory = new ScriptEngineManager();
+    private final ScriptEngineManager factory = new ScriptEngineManager();
 
     public void testJRuby() throws ScriptException {
         // Create a JRuby engine.

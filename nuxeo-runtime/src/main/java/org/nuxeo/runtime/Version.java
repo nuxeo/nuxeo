@@ -191,7 +191,9 @@ public class Version implements Serializable, Comparable<Version> {
     }
 
     public int compareTo(Version v) {
-        if (v == null) return -1;
+        if (v == null) {
+            return -1;
+        }
         if (isEqualTo(v)) {
             return 0;
         } else {
