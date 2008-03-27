@@ -265,7 +265,7 @@
     </copy>
     <!-- XXX: find a way not to depend on the version number of nxsearch compass -->
     <copy
-      todir="${jboss.nuxeo.ear}/platform/nuxeo-platform-search-compass-plugin-5.1.4-SNAPSHOT.jar" failonerror="false" overwrite="true">
+      todir="${jboss.nuxeo.ear}/platform/nuxeo-platform-search-compass-plugin-5.2-SNAPSHOT.jar" failonerror="false" overwrite="true">
       <fileset
         file="${basedir}/${postgresql.config}/compass.cfg.xml" />
     </copy>
@@ -292,7 +292,7 @@
     </copy>
     <!-- XXX: find a way not to depend on the version number of nxsearch compass -->
     <copy
-      todir="${jboss.nuxeo.ear}/platform/nuxeo-platform-search-compass-plugin-5.1.4-SNAPSHOT.jar" failonerror="false" overwrite="true">
+      todir="${jboss.nuxeo.ear}/platform/nuxeo-platform-search-compass-plugin-5.2-SNAPSHOT.jar" failonerror="false" overwrite="true">
       <fileset
         file="${basedir}/${oracle.config}/compass.cfg.xml" />
     </copy>
