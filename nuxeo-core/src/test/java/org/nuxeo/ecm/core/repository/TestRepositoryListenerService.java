@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.CoreTestConstants;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.listener.CoreEventListenerService;
@@ -43,9 +44,12 @@ public class TestRepositoryListenerService extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib("RepositoryService.xml");
-        deployContrib("CoreEventListenerService.xml");
-        deployContrib("CoreEventListenerTestExtensions.xml");
+        deployContrib(CoreTestConstants.CORE_BUNDLE,
+                "OSGI-INF/RepositoryService.xml");
+        deployContrib(CoreTestConstants.CORE_BUNDLE,
+                "OSGI-INF/CoreEventListenerService.xml");
+        deployContrib(CoreTestConstants.CORE_TESTS_BUNDLE,
+                "CoreEventListenerTestExtensions.xml");
 
         repositoryListenerService = NXCore.getCoreEventListenerService();
     }
@@ -55,14 +59,12 @@ public class TestRepositoryListenerService extends NXRuntimeTestCase {
     }
 
     public void testListenerRegistration() {
-        Collection<EventListener> listeners = repositoryListenerService
-                .getEventListeners();
-        assertEquals(5, listeners.size());
+        Collection<EventListener> listeners = repositoryListenerService.getEventListeners();
+        assertEquals(4, listeners.size());
     }
 
     public void testGetListenerByName() {
-        EventListener fakeListener = repositoryListenerService
-                .getEventListenerByName("fakelistener");
+        EventListener fakeListener = repositoryListenerService.getEventListenerByName("fakelistener");
         assertNotNull(fakeListener);
         assertEquals("fakelistener", fakeListener.getName());
     }
@@ -73,14 +75,13 @@ public class TestRepositoryListenerService extends NXRuntimeTestCase {
 
         // Register a new one.
         repositoryListenerService.addEventListener(listener);
-        Collection<EventListener> listeners = repositoryListenerService
-                .getEventListeners();
-        assertEquals(6, listeners.size());
+        Collection<EventListener> listeners = repositoryListenerService.getEventListeners();
+        assertEquals(5, listeners.size());
 
         // Unregister
         repositoryListenerService.removeEventListener(listener);
         listeners = repositoryListenerService.getEventListeners();
-        assertEquals(5, listeners.size());
+        assertEquals(4, listeners.size());
     }
 
     public void testNotifyListeners() {
@@ -89,14 +90,15 @@ public class TestRepositoryListenerService extends NXRuntimeTestCase {
         Map<String, Object> info = new HashMap<String, Object>();
         info.put("hits", hits);
 
-        CoreEventImpl coreEvent = new CoreEventImpl(null, null, info, null, null, null);
+        CoreEventImpl coreEvent = new CoreEventImpl(null, null, info, null,
+                null, null);
 
         // fake listener is configured to add info in the event hits info when
         // processing it => this is a way to test what listeners have been
         // notified and in what order.
         repositoryListenerService.notifyEventListeners(coreEvent);
-        List<String> expectedHits = Arrays.asList(
-                "fakelistener", "first-listener", "second-listener");
+        List<String> expectedHits = Arrays.asList("fakelistener",
+                "first-listener", "second-listener");
         assertEquals(expectedHits, hits);
 
         // test that party listener is notified when good event id is set
@@ -104,8 +106,8 @@ public class TestRepositoryListenerService extends NXRuntimeTestCase {
 
         coreEvent = new CoreEventImpl("party", null, info, null, null, null);
         repositoryListenerService.notifyEventListeners(coreEvent);
-        expectedHits = Arrays.asList("fakelistener",
-                "party-listener", "first-listener", "second-listener");
+        expectedHits = Arrays.asList("fakelistener", "party-listener",
+                "first-listener", "second-listener");
         assertEquals(expectedHits, hits);
     }
 

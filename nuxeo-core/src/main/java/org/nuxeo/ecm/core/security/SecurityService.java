@@ -48,6 +48,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @author Bogdan Stefanescu
+ * @author Olivier Grisel
+ * @author Anahide Tchertchian
  *
  */
 // TODO: improve caching invalidation
@@ -62,9 +64,13 @@ public class SecurityService extends DefaultComponent {
 
     private static final String PERMISSIONS_VISIBILITY_EXTENSION_POINT = "permissionsVisibility";
 
+    private static final String POLICIES_EXTENSION_POINT = "policies";
+
     private static final Log log = LogFactory.getLog(SecurityService.class);
 
     private PermissionProviderLocal permissionProvider;
+
+    private SecurityPolicyService securityPolicyService;
 
     // private SecurityManager securityManager;
 
@@ -72,12 +78,14 @@ public class SecurityService extends DefaultComponent {
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
         permissionProvider = new DefaultPermissionProvider();
+        securityPolicyService = new SecurityPolicyServiceImpl();
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         super.deactivate(context);
         permissionProvider = null;
+        securityPolicyService = null;
     }
 
     @Override
@@ -90,6 +98,9 @@ public class SecurityService extends DefaultComponent {
         } else if (PERMISSIONS_VISIBILITY_EXTENSION_POINT.equals(extensionPoint)
                 && contribution instanceof PermissionVisibilityDescriptor) {
             permissionProvider.registerDescriptor((PermissionVisibilityDescriptor) contribution);
+        } else if (POLICIES_EXTENSION_POINT.equals(extensionPoint)
+                && contribution instanceof SecurityPolicyDescriptor) {
+            securityPolicyService.registerDescriptor((SecurityPolicyDescriptor) contribution);
         }
     }
 
@@ -103,6 +114,9 @@ public class SecurityService extends DefaultComponent {
         } else if (PERMISSIONS_VISIBILITY_EXTENSION_POINT.equals(extensionPoint)
                 && contribution instanceof PermissionVisibilityDescriptor) {
             permissionProvider.unregisterDescriptor((PermissionVisibilityDescriptor) contribution);
+        } else if (POLICIES_EXTENSION_POINT.equals(extensionPoint)
+                && contribution instanceof SecurityPolicyDescriptor) {
+            securityPolicyService.unregisterDescriptor((SecurityPolicyDescriptor) contribution);
         }
     }
 
@@ -110,7 +124,8 @@ public class SecurityService extends DefaultComponent {
         return permissionProvider;
     }
 
-    public void invalidateCache(Session session, String username) {
+    // Never used. Remove ?
+    public static void invalidateCache(Session session, String username) {
         session.getRepository().getSecurityManager().invalidateCache(session);
     }
 
@@ -125,11 +140,11 @@ public class SecurityService extends DefaultComponent {
         }
 
         // Security Policy
-        PolicyService policyService = Framework.getLocalService(
-                PolicyService.class);
+        PolicyService policyService = Framework.getLocalService(PolicyService.class);
         if (policyService != null) {
             CorePolicyService corePolicyService = (CorePolicyService) policyService.getCorePolicy();
-            if (corePolicyService != null) {
+            if (corePolicyService != null
+                    && principal instanceof NuxeoPrincipal) {
                 if (!corePolicyService.checkPolicy(doc,
                         (NuxeoPrincipal) principal, permission)) {
                     return false;
@@ -137,33 +152,28 @@ public class SecurityService extends DefaultComponent {
             }
         }
 
-        // if document is locked by someone else the WRITE permission should be
-        // disallowed
-        try {
-            String lock = doc.getLock();
-            if (lock != null && !lock.startsWith(username + ':')
-                    && permission.equals(SecurityConstants.WRITE)) {
-                // locked by another user
-                return false; // DENY WRITE
-            }
-        } catch (Exception e) {
-            log.debug("Failed to get lock status on document ", e);
-            // ignore
-        }
-
         // get the security store
         SecurityManager securityManager = doc.getSession().getRepository().getSecurityManager();
 
+        // fully check each ACE in turn
+        String[] resolvedPermissions = getPermissionsToCheck(permission);
+        String[] additionalPrincipals = getPrincipalsToCheck(principal);
+
         // get the ordered list of ACE
         ACP acp = securityManager.getMergedACP(doc);
+
+        // check pluggable policies
+        Access access = securityPolicyService.checkPermission(doc, acp,
+                principal, permission, resolvedPermissions,
+                additionalPrincipals);
+        if (access != null && !Access.UNKNOWN.equals(access)) {
+            return access.toBoolean();
+        }
+
         if (acp == null) {
             return false; // no ACP on that doc - by default deny
         }
-
-        // fully check each ACE in turn
-        String[] permissions = getPermissionsToCheck(permission);
-        String[] principals = getPrincipalsToCheck((NuxeoPrincipal) principal);
-        Access access = acp.getAccess(principals, permissions);
+        access = acp.getAccess(additionalPrincipals, resolvedPermissions);
 
         return access.toBoolean();
     }
@@ -188,8 +198,11 @@ public class SecurityService extends DefaultComponent {
         }
     }
 
-    protected String[] getPrincipalsToCheck(NuxeoPrincipal principal) {
-        List<String> userGroups = principal.getAllGroups();
+    protected static String[] getPrincipalsToCheck(Principal principal) {
+        List<String> userGroups = null;
+        if (principal instanceof NuxeoPrincipal) {
+            userGroups = ((NuxeoPrincipal) principal).getAllGroups();
+        }
         if (userGroups == null) {
             return new String[] { principal.getName() };
         } else {
@@ -201,6 +214,7 @@ public class SecurityService extends DefaultComponent {
         }
     }
 
+    @Deprecated
     public boolean checkPermissionOld(Document doc, Principal principal,
             String permission) throws SecurityException {
         String username = principal.getName();
@@ -250,6 +264,7 @@ public class SecurityService extends DefaultComponent {
         return access.toBoolean();
     }
 
+    @Deprecated
     private Access checkPermissionForUser(SecurityManager securityManager,
             Document doc, String username, String permission)
             throws SecurityException {
@@ -292,13 +307,13 @@ public class SecurityService extends DefaultComponent {
 
         addChildrenToSecuritySummary(doc, result);
         // TODO: change API to use boolean instead
-        if (includeParents.booleanValue()) {
+        if (includeParents) {
             addParentsToSecurirySummary(doc, result);
         }
         return result;
     }
 
-    private SecuritySummaryEntry createSecuritySummaryEntry(Document doc)
+    private static SecuritySummaryEntry createSecuritySummaryEntry(Document doc)
             throws DocumentException {
         return new SecuritySummaryEntryImpl(new IdRef(doc.getUUID()),
                 new PathRef(doc.getPath()),
@@ -364,6 +379,8 @@ public class SecurityService extends DefaultComponent {
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter.isAssignableFrom(PermissionProvider.class)) {
             return (T) permissionProvider;
+        } else if (adapter.isAssignableFrom(SecurityPolicyService.class)) {
+            return (T) securityPolicyService;
         } else {
             return adapter.cast(this);
         }

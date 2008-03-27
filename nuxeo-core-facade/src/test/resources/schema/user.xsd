@@ -9,5 +9,6 @@
   <xs:element name="firstName" type="xs:string" />
   <xs:element name="lastName" type="xs:string" />
   <xs:element name="company" type="xs:string" />
+  <xs:element name="accessLevel" type="xs:int" />
 
 </xs:schema>

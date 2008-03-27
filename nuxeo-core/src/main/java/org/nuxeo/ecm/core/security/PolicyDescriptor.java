@@ -22,11 +22,16 @@ package org.nuxeo.ecm.core.security;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
+/**
+ * @deprecated use {@link SecurityPolicyDescriptor} and
+ *             SearchSecurityPolicyDescriptor instead
+ */
+@Deprecated
 @XObject("policy")
 public class PolicyDescriptor {
 
     @XNode("@class")
-    private  Class<Object> policy;
+    private Class<Object> policy;
 
     @XNode("@type")
     private String type;

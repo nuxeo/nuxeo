@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.core.api;
 
-import java.io.File;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -30,7 +28,6 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.runtime.RuntimeService;
@@ -73,18 +70,6 @@ public class TestLocalAPI extends TestAPI {
 
         openSession();
     }
-
-    @Override
-    protected void tearDown() throws Exception {
-        //super.tearDown();
-        Framework.shutdown();
-    }
-
-    // Duplicated from NXRuntimeTestCase
-//    public URL getResource(String resource) {
-//        return Thread.currentThread().getContextClassLoader()
-//                .getResource(resource);
-//    }
 
     // Duplicated from NXRuntimeTestCase
     @Override
@@ -219,7 +204,8 @@ public class TestLocalAPI extends TestAPI {
         doc = remote.createDocument(doc);
 
         List list = (List) doc.getProperty("testList", "attachments");
-        assertNull(list);
+        assertNotNull(list);
+        assertTrue(list.isEmpty());
 
         ListDiff diff = new ListDiff();
         diff.add(new Attachment("at1", "value1").asMap());
@@ -229,6 +215,7 @@ public class TestLocalAPI extends TestAPI {
 
         list = (List) doc.getProperty("testList", "attachments");
         assertNotNull(list);
+        assertEquals(2, list.size());
 
         Blob blob;
         blob = (Blob) ((Map) list.get(0)).get("content");
@@ -270,9 +257,8 @@ public class TestLocalAPI extends TestAPI {
         doc = remote.saveDocument(doc);
 
         list = (List) doc.getProperty("testList", "attachments");
-        assertNull(list);
-//        assertNotNull(list);
-//        assertEquals(0, list.size());
+        assertNotNull(list);
+        assertEquals(0, list.size());
     }
 
     public void testDataModel() throws Exception {
@@ -311,7 +297,8 @@ public class TestLocalAPI extends TestAPI {
             doc = remote.createDocument(doc);
 
             List list = (List) doc.getProperty("testList", "attachments");
-            assertNull(list);
+            assertNotNull(list);
+            assertTrue(list.isEmpty());
 
             ListDiff diff = new ListDiff();
             diff.add(new Attachment("at1", "value1").asMap());

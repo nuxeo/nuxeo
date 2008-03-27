@@ -19,6 +19,11 @@
 
 package org.nuxeo.ecm.core.api.security;
 
+/**
+ * @deprecated use CoreSecurityPolicyService and SearchSecurityPolicyService
+ *             instead
+ */
+@Deprecated
 public interface PolicyService {
 
     Object getCorePolicy();
