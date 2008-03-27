@@ -111,18 +111,18 @@ public class RepositoryInstanceHandler implements InvocationHandler {
             throws Throwable {
         if (method.getDeclaringClass() == CoreSession.class) {
             try {
-                StackTraceElement[] st = new Exception().getStackTrace();
-                System.out.println("---------------------------------------------");
-                System.out.print("### "+Thread.currentThread()+": Invoking CoreSession."+method.getName());
-                double s = System.currentTimeMillis();
-                Object obj = method.invoke(getSession(), args);
-                System.out.println(" => Invocation took: "+((System.currentTimeMillis()-s)/1000));
-                System.out.println("---------------------------------------------");
-                for (int i=0; i<Math.min(st.length, 4); i++) {
-                    System.out.println(">> "+st[i]);
-                }
-                System.out.println("---------------------------------------------");
-                return obj;
+//                StackTraceElement[] st = new Exception().getStackTrace();
+//                System.out.println("---------------------------------------------");
+//                System.out.print("### "+Thread.currentThread()+": Invoking CoreSession."+method.getName());
+//                double s = System.currentTimeMillis();
+                return method.invoke(getSession(), args);
+//                System.out.println(" => Invocation took: "+((System.currentTimeMillis()-s)/1000));
+//                System.out.println("---------------------------------------------");
+//                for (int i=0; i<Math.min(st.length, 4); i++) {
+//                    System.out.println(">> "+st[i]);
+//                }
+//                System.out.println("---------------------------------------------");
+//                return obj;
             } catch (Throwable t) {
                 if (exceptionHandler != null) {
                     exceptionHandler.handleException(t);
