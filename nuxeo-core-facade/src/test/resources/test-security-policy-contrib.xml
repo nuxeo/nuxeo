@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.security.testPolicies">
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="policies">
+    <policy name="accessLevel"
+      class="org.nuxeo.ecm.core.security.AccessLevelSecurityPolicy" order="0" />
+  </extension>
+
+</component>

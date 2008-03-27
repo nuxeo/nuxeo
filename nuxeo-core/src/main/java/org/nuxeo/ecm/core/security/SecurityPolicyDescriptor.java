@@ -23,33 +23,44 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * @deprecated use {@link SecurityPolicyDescriptor} and
- *             SearchSecurityPolicyDescriptor instead
+ * Pluggable policy descriptor for core security
+ *
+ * @author Anahide Tchertchian
  */
-@Deprecated
 @XObject("policy")
-public class PolicyDescriptor {
+public class SecurityPolicyDescriptor implements
+        Comparable<SecurityPolicyDescriptor> {
+
+    @XNode("@name")
+    private String name;
 
     @XNode("@class")
     private Class<Object> policy;
 
-    @XNode("@type")
-    private String type;
+    @XNode("@enabled")
+    private boolean enabled = true;
+
+    @XNode("@order")
+    private int order = 0;
+
+    public String getName() {
+        return name;
+    }
 
     public Class<Object> getPolicy() {
         return policy;
     }
 
-    public void setPolicy(Class<Object> policy) {
-        this.policy = policy;
+    public boolean isEnabled() {
+        return enabled;
     }
 
-    public String getType() {
-        return type;
+    public int getOrder() {
+        return order;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public int compareTo(SecurityPolicyDescriptor anotherPolicy) {
+        return order - anotherPolicy.order;
     }
 
 }

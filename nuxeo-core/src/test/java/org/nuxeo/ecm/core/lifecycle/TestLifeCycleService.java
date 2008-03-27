@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.CoreTestConstants;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -41,8 +42,10 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("LifeCycleService.xml");
-        deployContrib("LifeCycleManagerTestExtensions.xml");
+        deployContrib(CoreTestConstants.CORE_BUNDLE,
+                "OSGI-INF/LifeCycleService.xml");
+        deployContrib(CoreTestConstants.CORE_TESTS_BUNDLE,
+                "LifeCycleManagerTestExtensions.xml");
 
         lifeCycleService = NXCore.getLifeCycleService();
         assertNotNull(lifeCycleService);
@@ -160,12 +163,11 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         transitions = workState.getAllowedStateTransitions();
         assertEquals(0, transitions.size());
 
-
         LifeCycleTransition transition = lifeCycle.getTransitionByName("approve");
         assertNotNull(transition);
 
         String destinationName = lifeCycle.getTransitionByName("approve").getDestinationStateName();
-        assertEquals("approved",destinationName);
+        assertEquals("approved", destinationName);
 
     }
 
@@ -226,11 +228,10 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         transitions = workState.getAllowedStateTransitions();
         assertEquals(0, transitions.size());
 
-
         LifeCycleTransition transition = lifeCycle.getTransitionByName("approve");
         assertNotNull(transition);
         String destinationName = transition.getDestinationStateName();
-        assertEquals("approved",destinationName);
+        assertEquals("approved", destinationName);
     }
 
 }

@@ -36,10 +36,13 @@ public class TestCore extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("CoreService.xml");
-        deployContrib("TypeService.xml");
-        deployContrib("RepositoryService.xml");
-        deployContrib("test-CoreExtensions.xml");
+        deployContrib(CoreTestConstants.CORE_BUNDLE, "OSGI-INF/CoreService.xml");
+        deployContrib(CoreTestConstants.SCHEMA_BUNDLE,
+                "OSGI-INF/SchemaService.xml");
+        deployContrib(CoreTestConstants.CORE_BUNDLE,
+                "OSGI-INF/RepositoryService.xml");
+        deployContrib(CoreTestConstants.CORE_BUNDLE,
+                "OSGI-INF/CoreExtensions.xml");
         typeManager = NXSchema.getSchemaManager();
     }
 
@@ -58,21 +61,20 @@ public class TestCore extends NXRuntimeTestCase {
         }
     }
 
-    //  :XXX: You can't test that since other tests are registering or deleting
+    // :XXX: You can't test that since other tests are registering or deleting
     // document types from here.
     public void xxxtestDocTypes() {
         assertEquals(3, typeManager.getDocumentTypesCount());
 
         // TODO: Iterate on docTypes and check things out
 
-        DocumentType docType = typeManager.getDocumentType(
-                TypeConstants.DOCUMENT);
+        DocumentType docType = typeManager.getDocumentType(TypeConstants.DOCUMENT);
         assertNotNull(docType);
         docType = typeManager.getDocumentType("other name");
         assertNull(docType);
     }
 
-    //  :XXX: You can't test that since other tests are registering or deleting
+    // :XXX: You can't test that since other tests are registering or deleting
     // document types from here.
     public void xxxtestSchemaRegistry() {
         Schema[] schemas = typeManager.getSchemas();
@@ -80,7 +82,7 @@ public class TestCore extends NXRuntimeTestCase {
         assertEquals(0, schemas.length);
     }
 
-    //:XXX: You can't test that since other tests are registering or deleting
+    // :XXX: You can't test that since other tests are registering or deleting
     // document types from here.
     public void xxxtestTypeRegistry() {
         Type[] types = typeManager.getTypes();

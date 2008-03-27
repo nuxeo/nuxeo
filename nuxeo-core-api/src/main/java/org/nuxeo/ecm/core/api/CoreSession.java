@@ -539,6 +539,20 @@ public interface CoreSession {
     void saveDocuments(DocumentModel[] docModels) throws ClientException;
 
     /**
+     * Check if a document can be removed. This needs the REMOVE permission on
+     * the document and the REMOVE_CHILDREN permission on the parent.
+     * <p>
+     * For an archived version to be removeable, it must not be referenced from
+     * any proxy or be the base of a working document, and the REMOVE permission
+     * must be available on the working document (or the user must be an
+     * administrator if no working document exists).
+     *
+     * @param docRef the document
+     * @return true if the document can be removed
+     */
+    boolean canRemoveDocument(DocumentRef docRef) throws ClientException;
+
+    /**
      * Removes this document and all its children, if any.
      *
      * @param docRef the reference to the document to remove

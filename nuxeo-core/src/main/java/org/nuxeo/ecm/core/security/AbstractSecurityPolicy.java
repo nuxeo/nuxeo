@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,22 +12,18 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
  * $Id$
  */
 
-package org.nuxeo.ecm.core.api.security;
+package org.nuxeo.ecm.core.security;
 
 /**
- * @deprecated use CoreSecurityPolicyService and SearchSecurityPolicyService
- *             instead
+ * Abstract security policy
+ *
+ * @author Anahide Tchertchian
  */
-@Deprecated
-public interface PolicyService {
-
-    Object getCorePolicy();
-
-    Object getSearchPolicy();
+public abstract class AbstractSecurityPolicy implements SecurityPolicy {
 
 }

@@ -28,7 +28,6 @@ import junit.framework.Assert;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -49,23 +48,25 @@ public class TestSecurity extends NXRuntimeTestCase {
 
     private static final Log log = LogFactory.getLog(TestSecurity.class);
 
-    private final static String REPO_NAME="default";
+    private final static String REPO_NAME = "default";
 
     CoreSession remote;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib("CoreService.xml");
-        deployContrib("TypeService.xml");
-        deployContrib("PolicyService.xml");
-        deployContrib("SecurityService.xml");
-        deployContrib("RepositoryService.xml");
-        deployContrib("test-CoreExtensions.xml");
-        deployContrib("CoreTestExtensions.xml");
-        deployContrib("DemoRepository.xml");
-        deployContrib("LifeCycleService.xml");
-        deployContrib("LifeCycleServiceExtensions.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+                "OSGI-INF/CoreService.xml");
+        deployContrib(CoreFacadeTestConstants.SCHEMA_BUNDLE,
+                "OSGI-INF/SchemaService.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+                "OSGI-INF/SecurityService.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+                "OSGI-INF/RepositoryService.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "test-CoreExtensions.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "DemoRepository.xml");
 
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("username", "anonymous");
@@ -235,7 +236,8 @@ public class TestSecurity extends NXRuntimeTestCase {
         removePermissionToAnonymous();
 
         setPermissionToEveryone(SecurityConstants.WRITE,
-                SecurityConstants.REMOVE);
+                SecurityConstants.REMOVE, SecurityConstants.ADD_CHILDREN,
+                SecurityConstants.REMOVE_CHILDREN, SecurityConstants.READ);
         root = remote.getRootDocument();
 
         DocumentModel folder3 = new DocumentModelImpl(folder.getPathAsString(),
@@ -287,38 +289,6 @@ public class TestSecurity extends NXRuntimeTestCase {
         assertEquals("caf\u00e9", acl.get(2).getUsername());
         assertEquals("o'hara", acl.get(3).getUsername());
         assertEquals("A_x1234_", acl.get(4).getUsername());
-    }
-
-    public void testPolicy() throws ClientException {
-        setPermissionToAnonymous(SecurityConstants.EVERYTHING);
-
-        DocumentModel root = remote.getRootDocument();
-
-        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
-                "folder#1", "Folder");
-        folder = remote.createDocument(folder);
-
-        DocumentModelImpl documentModelImpl = new DocumentModelImpl("User");
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("accessLevel", Long.valueOf(3));
-        documentModelImpl.addDataModel(new DataModelImpl("user", data));
-        ((NuxeoPrincipal) remote.getPrincipal()).setModel(documentModelImpl);
-
-        ACP acp = folder.getACP();
-        assertNotNull(acp); // the acp inherited from root is returned
-
-        folder.setProperty("secupolicy", "securityLevel", Long.valueOf(4));
-        folder = remote.saveDocument(folder);
-        remote.save();
-
-        acp = folder.getACP();
-        assertNull(acp); // the acp inherited from root is returned
-
-        ((NuxeoPrincipal) remote.getPrincipal()).getModel().setProperty("user",
-                "accessLevel", Long.valueOf(5));
-
-        acp = folder.getACP();
-        assertNotNull(acp); // the acp inherited from root is returned
     }
 
     /**

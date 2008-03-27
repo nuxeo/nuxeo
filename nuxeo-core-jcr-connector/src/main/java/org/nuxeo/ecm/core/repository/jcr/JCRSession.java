@@ -369,12 +369,7 @@ public class JCRSession implements Session {
 
     public Collection<Document> getProxies(Document doc, Document folder)
             throws DocumentException {
-        NodeIterator it;
-        if (folder != null) {
-            it = findProxyNodes(doc.getUUID(), ((JCRDocument) folder).getNode());
-        } else {
-            it = findProxyNodes(doc.getUUID());
-        }
+        NodeIterator it = findProxyNodes(doc, folder);
         List<Document> proxies = new ArrayList<Document>();
         while (it.hasNext()) {
             try {
@@ -387,68 +382,34 @@ public class JCRSession implements Session {
         return proxies;
     }
 
-    public NodeIterator findProxyNodes(String docUuid) throws DocumentException {
-        try {
-            /*
-             * String queryString = "SELECT * FROM " +
-             * NodeConstants.ECM_NT_DOCUMENT_PROXY.rawname + " WHERE " +
-             * NodeConstants.ECM_REF_UUID.rawname + "=\"" + docUuid + "\"";
-             */
-            String queryString = "//element(*, "
-                    + NodeConstants.ECM_NT_DOCUMENT_PROXY.rawname + ") " + "[@"
-                    + NodeConstants.ECM_REF_UUID.rawname + " = '" + docUuid
-                    + "']";
-            javax.jcr.query.Query query = session.getWorkspace().getQueryManager().createQuery(
-                    queryString, javax.jcr.query.Query.XPATH);
-            QueryResult result = query.execute();
-            return result.getNodes();
-        } catch (RepositoryException e) {
-            throw new DocumentException("Failed to find proxy nodes for "
-                    + docUuid, e);
-        }
-    }
-
-    public NodeIterator findProxyNodes(String docUuid, Node folder)
+    protected NodeIterator findProxyNodes(Document doc, Document folder)
             throws DocumentException {
+        JCRName attribute;
+        if (doc.isVersion()) {
+            attribute = NodeConstants.ECM_REF_FROZEN_NODE;
+        } else {
+            attribute = NodeConstants.ECM_REF_UUID;
+        }
+        String uuid = doc.getUUID();
         try {
-            String path = folder.getPath();
-            String queryString = "/jcr:root/" + path + '/'
-                    + NodeConstants.ECM_CHILDREN.rawname + "/element(*, "
-                    + NodeConstants.ECM_NT_DOCUMENT_PROXY.rawname + ") " + "[@"
-                    + NodeConstants.ECM_REF_UUID.rawname + " = '" + docUuid
-                    + "']";
+            String queryString;
+            if (folder == null) {
+                queryString = "/";
+            } else {
+                queryString = "/jcr:root/" +
+                        ((JCRDocument) folder).getNode().getPath() + '/' +
+                        NodeConstants.ECM_CHILDREN.rawname;
+            }
+            queryString += "/element(*, " +
+                    NodeConstants.ECM_NT_DOCUMENT_PROXY.rawname + ")[@" +
+                    attribute.rawname + " = '" + uuid + "']";
             javax.jcr.query.Query query = session.getWorkspace().getQueryManager().createQuery(
                     queryString, javax.jcr.query.Query.XPATH);
             QueryResult result = query.execute();
             return result.getNodes();
         } catch (RepositoryException e) {
-            throw new DocumentException("Failed to find proxy nodes for "
-                    + docUuid, e);
-        }
-    }
-
-    /**
-     * Removes obsolete proxies in the same folder as the given proxy and which
-     * are in the same state as the given proxy.
-     *
-     * @param proxy
-     */
-    public void removeDeprecatedProxies(JCRDocumentProxy proxy)
-            throws DocumentException, LifeCycleException {
-        String state = proxy.getCurrentLifeCycleState();
-        NodeIterator it = findProxyNodes(proxy.getTargetDocumentUUID());
-        try {
-            while (it.hasNext()) {
-                Node node = it.nextNode();
-                Document doc = newDocument(node);
-                if (state.equals(doc.getCurrentLifeCycleState())) {
-                    log.debug("Removing depecrted proxy");
-                    doc.remove();
-                }
-            }
-        } catch (RepositoryException e) {
-            throw new DocumentException(
-                    "Failed to construct document for proxy node", e);
+            throw new DocumentException("Failed to find proxy nodes for " +
+                    uuid, e);
         }
     }
 

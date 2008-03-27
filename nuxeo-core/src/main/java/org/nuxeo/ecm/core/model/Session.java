@@ -215,10 +215,14 @@ public interface Session {
             String versionLabel) throws DocumentException;
 
     /**
-     * Gets the proxies to the given doc inside the given folder.
+     * Finds the proxies for a document. If the folder is not null, the search
+     * will be limited to its children.
+     * <p>
+     * If the document is a version, then only proxies to that version will be
+     * looked up.
      *
-     * @param doc the document
-     * @param folder the folder
+     * @param doc the document or version
+     * @param folder the folder, or null
      * @return the list of proxies if any is found otherwise an empty list
      * @throws DocumentException if any error occurs
      */

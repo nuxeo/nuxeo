@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,35 +12,27 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
  * $Id$
  */
 
 package org.nuxeo.ecm.core.api;
 
-import java.io.Serializable;
-import java.util.Calendar;
-
-/*
- * TODO VersionModel should be replaced with a DocumentVersionModel that extends
- * DocumentModel
- */
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author Anahide Tchertchian
+ *
  */
-public interface VersionModel extends Serializable {
+public class CoreFacadeTestConstants {
 
-    Calendar getCreated();
+    public static final String CORE_BUNDLE = "org.nuxeo.ecm.core";
 
-    void setCreated(Calendar created);
+    public static final String CORE_TESTS_BUNDLE = "org.nuxeo.ecm.core.tests";
 
-    String getDescription();
+    public static final String SCHEMA_BUNDLE = "org.nuxeo.ecm.core.schema";
 
-    void setDescription(String description);
+    public static final String CORE_FACADE_BUNDLE = "org.nuxeo.ecm.core.facade";
 
-    String getLabel();
-
-    void setLabel(String label);
+    public static final String CORE_FACADE_TESTS_BUNDLE = "org.nuxeo.ecm.core.facade.tests";
 
 }

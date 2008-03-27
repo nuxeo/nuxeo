@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.security;
 import java.util.Arrays;
 import java.util.List;
 
+import org.nuxeo.ecm.core.CoreTestConstants;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -38,11 +39,10 @@ public class TestSecurityService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        // GR: This looks overkill to load the whole of core, but:
-        // in security service, activate() uses the bundle context to find
-        // the permissions.xml file. If we don't instantiate the service by
-        // deployBundle, it will look in nuxeo-runtime bundle...
-        deployBundle("nuxeo-core");
+        deployContrib(CoreTestConstants.CORE_BUNDLE,
+                "OSGI-INF/SecurityService.xml");
+        deployContrib(CoreTestConstants.CORE_BUNDLE,
+                "OSGI-INF/permissions-contrib.xml");
         service = NXCore.getSecurityService();
     }
 
@@ -197,7 +197,8 @@ public class TestSecurityService extends NXRuntimeTestCase {
         String[] orderedVisiblePermissions = pp.getUserVisiblePermissions();
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Everything"),
+        assertEquals(
+                Arrays.asList("Write", "Read", "ReadRemove", "Everything"),
                 Arrays.asList(orderedVisiblePermissions));
 
         // custom settings for the Section type
@@ -211,7 +212,8 @@ public class TestSecurityService extends NXRuntimeTestCase {
         orderedVisiblePermissions = pp.getUserVisiblePermissions("Workspace");
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Everything"),
+        assertEquals(
+                Arrays.asList("Write", "Read", "ReadRemove", "Everything"),
                 Arrays.asList(orderedVisiblePermissions));
     }
 
