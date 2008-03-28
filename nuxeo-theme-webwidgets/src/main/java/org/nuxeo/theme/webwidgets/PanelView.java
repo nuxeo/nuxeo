@@ -57,10 +57,15 @@ public final class PanelView extends AbstractView {
                     getViewType().getIcon(), providerName,
                     providerType.getDescription()));
             s.append("</div>");
-        } else
+        }
+
+        /* Style editor preview */
+        else if (engineName.equals("fragments-only")) {
+            s.append("<div><div class=\"nxthemesWebWidget\" style=\"border: 1px solid #999; background-color: #fff; padding: 10px\"></div></div>");
+        }
 
         /* Web widgets edit mode */
-        if (viewMode.equals("web-widgets")) {
+        else if (viewMode.equals("web-widgets")) {
             final StringBuilder sb = new StringBuilder();
             if (!regionName.equals("")) {
                 final String identifier = String.format("web widget panel %s",
@@ -77,22 +82,20 @@ public final class PanelView extends AbstractView {
             }
             s.append(Manager.addPanelDecoration(decorationName, viewMode,
                     displayedRegionName, sb.toString()));
+        }
 
-        } else {
-
-            /* Default rendering mode, etc. */
-            if (!regionName.equals("")) {
-                final Map<String, Object> data = new HashMap<String, Object>();
-                data.put("provider", providerName);
-                data.put("region", regionName);
-                data.put("decoration", decorationName);
-                data.put("mode", viewMode);
-                final String content = String.format(
-                        "<ins style=\"display: none\" class=\"nxthemesWebWidgetPanel\">%s</ins>",
-                        Utils.toJson(data));
-                s.append(Manager.addPanelDecoration(decorationName, viewMode,
-                        displayedRegionName, content));
-            }
+        /* Default rendering mode */
+        else if (!regionName.equals("")) {
+            final Map<String, Object> data = new HashMap<String, Object>();
+            data.put("provider", providerName);
+            data.put("region", regionName);
+            data.put("decoration", decorationName);
+            data.put("mode", viewMode);
+            final String content = String.format(
+                    "<ins style=\"display: none\" class=\"nxthemesWebWidgetPanel\">%s</ins>",
+                    Utils.toJson(data));
+            s.append(String.format("<div>%s</div>", Manager.addPanelDecoration(
+                    decorationName, viewMode, displayedRegionName, content)));
         }
 
         return s.toString();
