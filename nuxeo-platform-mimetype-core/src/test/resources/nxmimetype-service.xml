@@ -717,6 +717,17 @@
       </extensions>
     </mimetype>
 
+    <mimetype normalized="application/visio" binary="true"
+      iconPath="visio.gif">
+      <mimetypes>
+        <mimetype>application/visio</mimetype>
+      </mimetypes>
+      <extensions>
+        <extension>vsd</extension>
+        <extension>vst</extension>
+      </extensions>
+    </mimetype>
+
   </extension>
 
   <extension
@@ -730,6 +741,8 @@
     </documentation>
 
     <fileExtension name="xml" mimetype="text/xml" ambiguous="true" />
+    <fileExtension name="vsd" mimetype="application/visio" ambiguous="false" />
+    <fileExtension name="vst" mimetype="application/visio" ambiguous="false" />
 
   </extension>
 

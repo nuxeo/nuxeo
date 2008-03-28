@@ -19,14 +19,13 @@
 
 package org.nuxeo.ecm.platform.mimetype;
 
-  import java.io.File;
-  import java.io.FileInputStream;
-  import java.io.InputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
-  import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-  import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
-  import org.nuxeo.runtime.test.NXRuntimeTestCase;
-  import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * Test binary files sniff.
@@ -47,8 +46,9 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
     }
 
     @Override
-    public void tearDown() {
+    public void tearDown() throws Exception {
         mimetypeRegistry = null;
+        super.tearDown();
     }
 
     private static File getFileFromResource(String path) {
@@ -116,6 +116,22 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
         InputStream stream = new FileInputStream(getZipDocument());
         assertEquals("application/zip",
                 mimetypeRegistry.getMimetypeFromStream(stream));
+    }
+
+    // Ms Office Visio
+    public void xtestVisioDocument() throws Exception {
+        assertEquals("getMimetypeFromExtension vsd",
+        					"application/visio",
+        					mimetypeRegistry.getMimetypeFromExtension("vsd"));
+        assertEquals("getMimetypeFromExtension vst",
+        					"application/visio",
+        					mimetypeRegistry.getMimetypeFromExtension("vst"));
+        assertEquals("getMimetypeFromFilename",
+        					"application/visio",
+        					mimetypeRegistry.getMimetypeFromFilename("test-data/hello.vsd"));
+        assertEquals("getMimetypeFromFile",
+        					"application/visio",
+        					mimetypeRegistry.getMimetypeFromFile( getFileFromResource("test-data/hello.vsd")));
     }
 
     // CSV file
