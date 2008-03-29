@@ -1091,10 +1091,10 @@ img.nxthemesAlignSection:hover {
 
 
 .nxthemesPageArea {
-  border: 1px solid #000;
-  background-color: #ffc;
-  padding: 0;
-  font: 12px Arial, sans-serif;
+  border: 1px solid #000 !important;
+  background-color: #ffc !important;
+  padding: 0 !important;
+  font: 12px Arial, sans-serif !important;
 }
 
 .nxthemesPageArea .title {

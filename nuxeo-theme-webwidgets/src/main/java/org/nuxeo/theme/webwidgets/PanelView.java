@@ -61,7 +61,10 @@ public final class PanelView extends AbstractView {
 
         /* Style editor preview */
         else if (engineName.equals("fragments-only")) {
-            s.append("<div><div class=\"nxthemesWebWidget\" style=\"border: 1px solid #999; background-color: #fff; padding: 10px\"></div></div>");
+            final String content = "&lt;PANEL AREA&gt;<div class=\"nxthemesWebWidget\">&lt;WEB WIDGET&gt;</div>";
+            final String panelContent = Manager.addPanelDecoration(
+                    decorationName, "*", displayedRegionName, content);
+            s.append(String.format("<div>%s</div>", panelContent));
         }
 
         /* Web widgets edit mode */
