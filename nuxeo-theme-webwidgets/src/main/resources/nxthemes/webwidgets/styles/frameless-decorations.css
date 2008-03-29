@@ -8,8 +8,7 @@
 .nxthemesFramelessWebWidgetTitle {
   background-color: #fcfcfc;
   font: bold 11px Arial, sans-serif;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #999;
+  border: 1px solid #999;
   color: #555;
   margin: 0;
   padding: 0px 1px;
