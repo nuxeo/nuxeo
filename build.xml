@@ -77,7 +77,7 @@
 
   <target name="package-2parts" description="Package Nuxeo-EP in two parts">
     <antcall target="package">
-      <param name="jboss.home" value="${jboss.dir}" />
+      <param name="jboss.home" value="${jboss1.dir}" />
       <param name="assembly.name" value="nuxeo-platform-stateful" />
     </antcall>
     <antcall target="package">
@@ -87,7 +87,7 @@
   </target>
   <target name="package-3parts" description="Package Nuxeo-EP in three parts">
     <antcall target="package">
-      <param name="jboss.home" value="${jboss.dir}" />
+      <param name="jboss.home" value="${jboss1.dir}" />
       <param name="assembly.name" value="nuxeo-core" />
     </antcall>
     <antcall target="package">
@@ -182,7 +182,7 @@
 
   <target name="copy-2parts" description="Copy Nuxeo-EP in two parts">
     <antcall target="copy">
-      <param name="jboss.home" value="${jboss.dir}" />
+      <param name="jboss.home" value="${jboss1.dir}" />
       <param name="assembly.name" value="nuxeo-platform-stateful" />
     </antcall>
     <antcall target="copy">
@@ -192,7 +192,7 @@
   </target>
   <target name="copy-3parts" description="Copy Nuxeo-EP in three parts">
       <antcall target="copy">
-        <param name="jboss.home" value="${jboss.dir}" />
+        <param name="jboss.home" value="${jboss1.dir}" />
         <param name="assembly.name" value="nuxeo-core" />
       </antcall>
       <antcall target="copy">
