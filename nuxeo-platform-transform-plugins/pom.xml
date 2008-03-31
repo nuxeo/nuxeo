@@ -82,7 +82,7 @@
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-text-extractors</artifactId>
-      <version>1.3.3.lucene22</version>
+      <version>1.3.3</version>
       <exclusions>
         <exclusion>
           <groupId>poi</groupId>
