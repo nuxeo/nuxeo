@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.api.repository;
 
 import java.io.Serializable;
-import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -156,9 +155,7 @@ public class Repository implements Serializable {
         if (cl == null) {
             cl = Repository.class.getClassLoader();
         }
-        return (RepositoryInstance)Proxy.newProxyInstance(cl,
-                new Class[] { RepositoryInstance.class },
-                new RepositoryInstanceHandler(repository));
+        return new RepositoryInstanceHandler(repository).getProxy();
     }
 
     public RepositoryInstance newInstance() {

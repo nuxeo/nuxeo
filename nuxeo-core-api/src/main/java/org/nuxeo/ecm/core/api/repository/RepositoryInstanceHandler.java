@@ -19,12 +19,16 @@
 
 package org.nuxeo.ecm.core.api.repository;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.HashMap;
 
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.WrappedException;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -34,8 +38,8 @@ public class RepositoryInstanceHandler implements InvocationHandler {
 
     private final Repository repository;
     private final RepositoryExceptionHandler exceptionHandler;
-
     private CoreSession session;
+    private RepositoryInstance  proxy;
 
 
     public RepositoryInstanceHandler(Repository repository, RepositoryExceptionHandler exceptionHandler) {
@@ -54,6 +58,19 @@ public class RepositoryInstanceHandler implements InvocationHandler {
         return exceptionHandler;
     }
 
+    public RepositoryInstance  getProxy() {
+        if (proxy == null) {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            if (cl == null) {
+                cl = Repository.class.getClassLoader();
+            }
+            proxy = (RepositoryInstance)Proxy.newProxyInstance(cl,
+                    new Class[] { RepositoryInstance.class },
+                    this);
+        }
+        return proxy;
+    }
+
     private void rethrownException(Throwable t) throws Exception {
         if (t instanceof Exception) {
             throw (Exception)t;
@@ -67,12 +84,12 @@ public class RepositoryInstanceHandler implements InvocationHandler {
     /**
      * @return the session.
      */
-    public CoreSession getSession() throws Exception {
+    private CoreSession getSession() throws Exception {
         if (session == null) {
             synchronized (this) {
                 if (session == null) {
                     try {
-                        session = repository.open();
+                        open(repository);
                     } catch (Throwable t) {
                         if (exceptionHandler != null) {
                             session = exceptionHandler.handleAuthenticationFailure(repository, t);
@@ -84,6 +101,17 @@ public class RepositoryInstanceHandler implements InvocationHandler {
             }
         }
         return session;
+    }
+
+    private void open(Repository repository) throws Exception {
+        this.session = Framework.getService(CoreSession.class, repository.getName());
+        String repositoryUri = repository.getRepositoryUri();
+        if (repositoryUri == null) {
+            repositoryUri = repository.getName();
+        }
+        String sid = session.connect(repositoryUri, new HashMap<String, Serializable>());
+        // register session on local JVM so it can be used later by doc models
+        CoreInstance.getInstance().registerSession(sid, proxy);
     }
 
     public void closeSession() throws Exception {
@@ -110,25 +138,25 @@ public class RepositoryInstanceHandler implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args)
             throws Throwable {
         if (method.getDeclaringClass() == CoreSession.class) {
+            StackTraceElement[] st = new Exception().getStackTrace();
+            System.out.println("---------------------------------------------");
+            System.out.print("### "+Thread.currentThread()+": Invoking CoreSession."+method.getName());
+            double s = System.currentTimeMillis();
             try {
-//                StackTraceElement[] st = new Exception().getStackTrace();
-//                System.out.println("---------------------------------------------");
-//                System.out.print("### "+Thread.currentThread()+": Invoking CoreSession."+method.getName());
-//                double s = System.currentTimeMillis();
                 return method.invoke(getSession(), args);
-//                System.out.println(" => Invocation took: "+((System.currentTimeMillis()-s)/1000));
-//                System.out.println("---------------------------------------------");
-//                for (int i=0; i<Math.min(st.length, 4); i++) {
-//                    System.out.println(">> "+st[i]);
-//                }
-//                System.out.println("---------------------------------------------");
-//                return obj;
             } catch (Throwable t) {
                 if (exceptionHandler != null) {
                     exceptionHandler.handleException(t);
                 } else {
                     rethrownException(t);
                 }
+            } finally {
+                System.out.println(" => Invocation took: "+((System.currentTimeMillis()-s)/1000));
+                System.out.println("---------------------------------------------");
+                for (int i=0; i<Math.min(st.length, 4); i++) {
+                    System.out.println(">> "+st[i]);
+                }
+                System.out.println("---------------------------------------------");
             }
         } else {
             //optimize matching by testing only one character
