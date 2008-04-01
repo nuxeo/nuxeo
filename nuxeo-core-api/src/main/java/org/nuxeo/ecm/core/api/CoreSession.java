@@ -68,7 +68,7 @@ public interface CoreSession {
      *
      * @param repositoryUri the repository URI (unique in the platform)
      * @param context a map of properties used to initialize the session. Can be
-     *            null if no context properties are specified.
+     *                null if no context properties are specified.
      * @return the session ID if the connection succeed, null otherwise
      * @throws ClientException
      */
@@ -405,12 +405,13 @@ public interface CoreSession {
      * Tests if the document pointed by the given reference exists and is
      * accessible.
      * <p>
-     * This operation makes no difference between non-existence and
-     * permission problems.
+     * This operation makes no difference between non-existence and permission
+     * problems.
      * </p>
      * <p>
      * If the parent is null or its path is null, then root is considered.
      * </p>
+     *
      * @param docRef the reference to the document to test for existence
      * @return true if the referenced document exists, false otherwise
      * @throws ClientException
@@ -476,7 +477,7 @@ public interface CoreSession {
      *
      * @param typeName
      * @param options additional contextual data provided to core event
-     *            listeners
+     *                listeners
      * @return the initial document model
      * @throws ClientException
      */
@@ -562,8 +563,9 @@ public interface CoreSession {
 
     /**
      * Bulk method to remove documents.
-     * <p>This method is safe with respect to orderings:
-     * it doesn't fail if an ancestor of a document occurs before the document.
+     * <p>
+     * This method is safe with respect to orderings: it doesn't fail if an
+     * ancestor of a document occurs before the document.
      * </p>
      *
      * @param docRefs the refs to the document to remove
@@ -589,7 +591,7 @@ public interface CoreSession {
      * @param src the source document reference
      * @param dst the destination folder reference
      * @param name the new name of the file or null if the original name must be
-     *            preserved
+     *                preserved
      * @throws ClientException
      * @throws SecurityException
      */
@@ -617,7 +619,7 @@ public interface CoreSession {
      * @param src the source document reference
      * @param dst the destination folder reference
      * @param name the new name of the file or null if the original name must be
-     *            preserved
+     *                preserved
      * @throws ClientException
      * @throws SecurityException
      */
@@ -745,7 +747,7 @@ public interface CoreSession {
      *
      * @param docRef the document reference
      * @param path the path of the content field. Must be the raw path of the
-     *            property (i.e. in the prefixed form)
+     *                property (i.e. in the prefixed form)
      * @return the content data as a byte array content source
      */
     byte[] getContentData(DocumentRef docRef, String path)
@@ -850,7 +852,7 @@ public interface CoreSession {
      *
      * @param docRef the reference to the document
      * @param version the version to which the document should be restored to -
-     *            only the label is used for the moment
+     *                only the label is used for the moment
      */
     DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version)
             throws ClientException;
@@ -893,7 +895,8 @@ public interface CoreSession {
      * @throws ClientException if any error occurs
      */
     DocumentModel createProxy(DocumentRef parentRef, DocumentRef docRef,
-            VersionModel version, boolean overwriteExistingProxy) throws ClientException;
+            VersionModel version, boolean overwriteExistingProxy)
+            throws ClientException;
 
     /** -------------------------- Query API --------------------------- * */
 
@@ -1118,7 +1121,7 @@ public interface CoreSession {
      * @param doc the document reference
      * @param key the lock key
      * @throws ClientException if a lock is already set or other exception
-     *             occurred
+     *                 occurred
      */
     void setLock(DocumentRef doc, String key) throws ClientException;
 
@@ -1166,19 +1169,20 @@ public interface CoreSession {
     boolean isDirty(DocumentRef doc) throws ClientException;
 
     /**
-     * Publishes the document in a section overwriting any existing proxy to the same document.
-     * This is simmilar to publishDocument(docToPublish, section, true);
+     * Publishes the document in a section overwriting any existing proxy to the
+     * same document. This is simmilar to publishDocument(docToPublish, section,
+     * true);
      *
      * @param docToPublish
      * @param section
      *
      * @return The proxy document that was created
      *
-     * @throws InvalidProxyDocOperation if the document to be published is proxy.
-     *  (i.e. proxy documents cannot be published).
+     * @throws InvalidProxyDocOperation if the document to be published is
+     *                 proxy. (i.e. proxy documents cannot be published).
      */
-    DocumentModel publishDocument(DocumentModel docToPublish, DocumentModel section)
-            throws ClientException;
+    DocumentModel publishDocument(DocumentModel docToPublish,
+            DocumentModel section) throws ClientException;
 
     /**
      * Publishes the document in a section.
@@ -1189,8 +1193,9 @@ public interface CoreSession {
      * @return The proxy document that was created
      * @throws ClientException
      */
-    DocumentModel publishDocument(DocumentModel docToPublish, DocumentModel section,
-            boolean overwriteExistingProxy) throws ClientException;
+    DocumentModel publishDocument(DocumentModel docToPublish,
+            DocumentModel section, boolean overwriteExistingProxy)
+            throws ClientException;
 
     /**
      * Checks if the document is already published in the section and retrieves
@@ -1239,8 +1244,8 @@ public interface CoreSession {
     String getSuperParentType(DocumentModel doc) throws ClientException;
 
     /**
-     * Returns the parent SuperSpace (workspace, section, etc.).
-     * SuperSpace is qualified by the SuperSpace facet.
+     * Returns the parent SuperSpace (workspace, section, etc.). SuperSpace is
+     * qualified by the SuperSpace facet.
      *
      * @param doc
      * @return DocumentModel of SuperSpace
@@ -1254,7 +1259,8 @@ public interface CoreSession {
      *
      * @param docModel the document node from where the security export is done
      * @param includeParents flag is the parent nodes holding security
-     *            information should be added at the top of the returned list
+     *                information should be added at the top of the returned
+     *                list
      * @return a list of SecuritySummaryEntry
      * @throws ClientException
      */
@@ -1279,8 +1285,9 @@ public interface CoreSession {
      * @throws ClientException
      * @throws DocumentException
      */
-    <T extends Serializable> T getDocumentSystemProp(DocumentRef ref, String systemProperty,
-            Class<T> type) throws ClientException, DocumentException;
+    <T extends Serializable> T getDocumentSystemProp(DocumentRef ref,
+            String systemProperty, Class<T> type) throws ClientException,
+            DocumentException;
 
     /**
      * Sets given value as a system property.
@@ -1293,24 +1300,30 @@ public interface CoreSession {
      * @throws DocumentException
      */
     <T extends Serializable> void setDocumentSystemProp(DocumentRef ref,
-            String systemProperty, T value) throws ClientException, DocumentException;
+            String systemProperty, T value) throws ClientException,
+            DocumentException;
 
     /**
-     * Given a parent document, order the source child before the destination child.
-     * The source and destination must be name of child documents of the given parent document.
-     * (a document name can be retrieved using <code>docModel.getName()</code>)
-     * To place the source document at the end of the children list use a null destination node.
+     * Given a parent document, order the source child before the destination
+     * child. The source and destination must be name of child documents of the
+     * given parent document. (a document name can be retrieved using
+     * <code>docModel.getName()</code>) To place the source document at the
+     * end of the children list use a null destination node.
+     *
      * @param parent the parent document
      * @param src the document to be moved (ordered)
-     * @param dest the document before which the reordered document will be placed
-     * If null the source document will be placed at the end of the children list
-     * @throws ClientException if the parent document is not an orderable folder or other error occurs
+     * @param dest the document before which the reordered document will be
+     *                placed If null the source document will be placed at the
+     *                end of the children list
+     * @throws ClientException if the parent document is not an orderable folder
+     *                 or other error occurs
      */
-    void orderBefore(DocumentRef parent, String src, String dest) throws ClientException;
-
+    void orderBefore(DocumentRef parent, String src, String dest)
+            throws ClientException;
 
     /**
      * Run a command
+     *
      * @param <T> command result type
      * @param cmd the command to run
      * @return the command result
