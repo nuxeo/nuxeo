@@ -299,6 +299,10 @@ public class LockActionsBean implements LockActions {
         return result.toString();
     }
 
+    /**
+     * @deprecated use LiveEditBootstrapHelper.isCurrentDocumentLiveEditable() instead
+     */
+    @Deprecated
     public Boolean isCurrentDocumentLiveEditable() {
         if (isLiveEditable == null) {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();

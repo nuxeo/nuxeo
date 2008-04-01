@@ -461,6 +461,13 @@ public class FileManageWS extends InputController implements
     // XXX AT: i dont get why documentActions is not enough
     // DM: maybe because documentActions raises events through context
     // inexistent in case of ws call
+    /**
+     * @param docModel
+     * @return
+     * @throws ClientException
+     * @deprecated use UploadFileRestlet instead
+     */
+    @Deprecated
     public String updateDocument(DocumentModel docModel) throws ClientException {
         try {
             // DocumentModel changeableDocument = getChangeableDocument();
@@ -523,7 +530,9 @@ public class FileManageWS extends InputController implements
      * @param fieldName
      * @return
      * @throws ClientException
+     * @deprecated use LiveEditHelper + nxd:liveEditUrl() JSF function instead
      */
+    @Deprecated
     @WebMethod
     public String getDataForExternalEdit(@WebParam(name = "doc_url")
     String doc_url, @WebParam(name = "fieldName")
@@ -646,6 +655,10 @@ public class FileManageWS extends InputController implements
         }
     }
 
+    /**
+     * @deprecated use CreateDocumentRestlet / UploadFileRestlet instead
+     */
+    @Deprecated
     @WebMethod
     public String createDocument(String parentUUID, String type,
             String[] properties) throws ClientException {
