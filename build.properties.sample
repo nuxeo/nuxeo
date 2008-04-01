@@ -12,13 +12,13 @@ jboss.config=default
 
 ## Example for standard nuxeo-2parts
 ## nuxeo-platform-stateful to bind on : nxplatformserver nxjmsserver
-#jboss.dir=/opt/jboss
+#jboss1.dir=/opt/jboss1
 ## nuxeo-web-stateless to bind on : nxwebserver
 #jboss2.dir=/opt/jboss2
 
 ## Example for standard nuxeo-3parts
 ## nuxeo-core to bind on : nxcoreserver nxjmsserver
-#jboss.dir=/opt/jboss
+#jboss1.dir=/opt/jboss1
 ## nuxeo-indexing to bind on : nxsearchserver
 #jboss2.dir=/opt/jboss2
 ## nuxeo-webplatform to bind on : nxplatformserver
