@@ -96,7 +96,6 @@
 
       <artifact name="nuxeo-platform-archive-*" />
       <!--
-      <artifact name="nuxeo-platform-imaging-transform" />
       <artifact name="nuxeo-platform-mimetype-facade"/>
       <artifact name="nuxeo-platform-url-facade" />
        -->

@@ -48,24 +48,6 @@
     <resource-property name="ecm:flags" converter="long" store="yes"
       index="un_tokenized" />
 
-    <!-- INA -->
-    <resource-property name="ina:internal" converter="boolean"
-      store="yes" index="un_tokenized" />
-
-  </resource>
-
-  <!-- TODO move this to another file (and make possible to contribute
-  several of them -->
-  <!--  TODO fill in properties that need it -->
-  <resource alias="nxrel-default" sub-index="nxrels"
-    analyzer="default" all="false">
-    <resource-id name="nxdoc_id" />
-    <!-- TODO use a better global name for id props -->
-  </resource>
-
-  <resource alias="nxrel-documentComments" sub-index="nxrels"
-    analyzer="default" all="false">
-    <resource-id name="nxdoc_id" />
   </resource>
 
 

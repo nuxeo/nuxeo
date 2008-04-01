@@ -116,7 +116,7 @@
       <artifact group="jboss" name="jbpm" version="3.1.2" />
       <artifact group="jboss" name="jgroups" version="2.2.9" />
       <artifact group="net.sf.json-lib" name="json-lib" version="0.9" />
-      <artifact group="org.apache.lucene" name="lucene-core" version="2.2.0" />
+      <artifact group="org.apache.lucene" name="lucene-core" version="2.0.0" />
       <artifact group="net.sf.opencsv" name="opencsv" version="1.7" />
       <artifact group="org.slf4j" name="slf4j-api" version="1.3.0" />
       <artifact group="org.slf4j" name="slf4j-log4j12" version="1.3.0" />

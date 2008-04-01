@@ -126,10 +126,6 @@
     <module>nuxeo-platform-ws</module>
     <module>nuxeo-platform-forum</module>
     <module>nuxeo-platform-forum-core</module>
-    <module>nuxeo-platform-imaging-api</module>
-    <module>nuxeo-platform-imaging-core</module>
-    <module>nuxeo-platform-imaging-facade</module>
-    <module>nuxeo-platform-imaging-transform</module>
     <module>nuxeo-platform-publishing-api</module>
     <module>nuxeo-platform-publishing</module>
     <module>nuxeo-platform-publishing-facade</module>
