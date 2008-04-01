@@ -192,6 +192,10 @@ public class FakeDocument implements Document {
         return null;
     }
 
+    public List<String> getChildrenIds() throws DocumentException {
+        return null;
+    }
+
     public boolean hasChild(String name) throws DocumentException {
         return false;
     }
