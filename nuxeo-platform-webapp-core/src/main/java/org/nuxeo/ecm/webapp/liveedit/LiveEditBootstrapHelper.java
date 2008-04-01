@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -78,8 +79,8 @@ import org.nuxeo.runtime.api.Framework;
  * 
  * </ul>
  * 
- * Please refer to the nuxeo book chapter on desktop integration for
- * details on the format of the nxedit URLs and the XML bootstrap file.
+ * Please refer to the nuxeo book chapter on desktop integration for details on
+ * the format of the nxedit URLs and the XML bootstrap file.
  * 
  * @author Thierry Delprat NXP-1959 the bootstrap file is managing the 'create
  *         new document [from template]' case too. The URL is containing an
@@ -449,7 +450,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             throw new ClientException(
                     "cannot check live editable state of null DocumentModel");
         }
-        
+
         if (documentModel.hasFacet(IMMUTABLE_FACET)) {
             return false;
         }
@@ -460,8 +461,15 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             // SecurityPolicyManager
             return false;
         }
-        
-        Blob blob = documentModel.getProperty(propertyName).getValue(Blob.class);
+
+        Blob blob = null;
+        try {
+            blob = documentModel.getProperty(propertyName).getValue(Blob.class);
+        } catch (PropertyNotFoundException e) {
+            // this document cannot host a live editable blob is the requested
+            // property, ignore
+            return false;
+        }
         if (blob == null) {
             return false;
         }
