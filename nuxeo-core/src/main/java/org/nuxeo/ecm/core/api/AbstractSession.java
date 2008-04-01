@@ -116,14 +116,12 @@ public abstract class AbstractSession implements CoreSession,
 
     private static final long serialVersionUID = 6585443198474361876L;
 
-    private static final Comparator<? super Document> pathComparator
-        = new PathComparator();
+    private static final Comparator<? super Document> pathComparator = new PathComparator();
 
     // the repository name
     protected String repositoryName;
 
     protected Map<String, Serializable> sessionContext;
-
 
     /**
      * Used to check permissions.
@@ -172,11 +170,14 @@ public abstract class AbstractSession implements CoreSession,
         CoreInstance.getInstance().registerSession(sessionId, this);
 
         // <------------ begin repository initialization
-        // we need to intialize the repository if this is the first time it is accessed in this JVM session
-        // for this we get the session and test if the "REPOSITORY_FIRST_ACCESS" is set after the session is created
+        // we need to intialize the repository if this is the first time it is
+        // accessed in this JVM session
+        // for this we get the session and test if the "REPOSITORY_FIRST_ACCESS"
+        // is set after the session is created
         // we need to synchronize the call to be sure we initialize only once.
         synchronized (AbstractSession.class) {
-            Session session = getSession(); // force the creation of the underlying session
+            Session session = getSession(); // force the creation of the
+            // underlying session
             if (sessionContext.remove("REPOSITORY_FIRST_ACCESS") != null) {
                 // this is the first time we access the repository in this JVM
                 // notify the InitializationHandler if any.
@@ -185,21 +186,25 @@ public abstract class AbstractSession implements CoreSession,
                     // change principal to give all rights
                     Principal ctxPrincipal = (Principal) sessionContext.get("principal");
                     try {
-                        // change current principal to give all right to the handler
+                        // change current principal to give all right to the
+                        // handler
                         // FIXME : this should be fixed by using SystemPrincipal
                         // -> we must synchronize this with SecurityService
                         // check
-                        sessionContext.put("principal", new SimplePrincipal("system"));
+                        sessionContext.put("principal", new SimplePrincipal(
+                                "system"));
                         handler.initializeRepository(this);
                         try {
                             session.save();
                         } catch (DocumentException e) {
-                            log.error("Unable to save session after repository init : " + e.getMessage());
+                            log.error("Unable to save session after repository init : " +
+                                    e.getMessage());
                         }
                     } finally {
                         sessionContext.remove("principal");
                         if (ctxPrincipal != null) { // restore principal
-                            sessionContext.put("principal", (Serializable) ctxPrincipal);
+                            sessionContext.put("principal",
+                                    (Serializable) ctxPrincipal);
                         }
                     }
                 }
@@ -268,8 +273,8 @@ public abstract class AbstractSession implements CoreSession,
     protected final void checkPermission(Document doc, String permission)
             throws DocumentSecurityException, DocumentException {
         if (!hasPermission(doc, permission)) {
-            throw new DocumentSecurityException("Privilege '" + permission
-                    + "' is not granted to '" + getPrincipal().getName() + "'");
+            throw new DocumentSecurityException("Privilege '" + permission +
+                    "' is not granted to '" + getPrincipal().getName() + "'");
         }
     }
 
@@ -310,8 +315,8 @@ public abstract class AbstractSession implements CoreSession,
         CoreEventListenerService service = NXCore.getCoreEventListenerService();
 
         if (service != null) {
-            log.debug("Notify RepositoryEventListener listeners list for event="
-                    + eventId);
+            log.debug("Notify RepositoryEventListener listeners list for event=" +
+                    eventId);
             service.notifyEventListeners(coreEvent);
         } else {
             log.error("Impossible to notify core events ! "
@@ -326,8 +331,8 @@ public abstract class AbstractSession implements CoreSession,
             Document doc = DocumentResolver.resolveReference(session, docRef);
             return hasPermission(doc, permission);
         } catch (DocumentException e) {
-            throw new ClientException("Failed to resolve document ref: "
-                    + docRef.toString(), e);
+            throw new ClientException("Failed to resolve document ref: " +
+                    docRef.toString(), e);
         }
     }
 
@@ -414,7 +419,8 @@ public abstract class AbstractSession implements CoreSession,
                 } catch (DocumentException e) {
                     throw e;
                 } catch (Exception e) {
-                    throw new ClientException("failed to write document part", e);
+                    throw new ClientException("failed to write document part",
+                            e);
                 }
                 changed = true;
             }
@@ -445,7 +451,9 @@ public abstract class AbstractSession implements CoreSession,
                     null, null, true);
 
             Document doc = getSession().copy(srcDoc, dstDoc, name);
-            if (doc.isLocked()) { // if we copy a locked document - the new document will be locked too! - fixing this
+            if (doc.isLocked()) { // if we copy a locked document - the new
+                // document will be locked too! - fixing
+                // this
                 doc.unlock();
             }
 
@@ -454,23 +462,23 @@ public abstract class AbstractSession implements CoreSession,
             // notify document created by copy
             DocumentModel docModel = readModel(doc, null);
             options.put(CoreEventConstants.DOCUMENT, doc);
-            String comment = srcDoc.getRepository().getName() + ':'
-                    + src.toString();
+            String comment = srcDoc.getRepository().getName() + ':' +
+                    src.toString();
             notifyEvent(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY, docModel,
                     options, null, comment, true);
             docModel = writeModel(doc, docModel);
 
             // notify document copied
-            comment = doc.getRepository().getName() + ':'
-                    + docModel.getRef().toString();
+            comment = doc.getRepository().getName() + ':' +
+                    docModel.getRef().toString();
             options.put(CoreEventConstants.DOCUMENT, srcDoc);
             notifyEvent(DocumentEventTypes.DOCUMENT_DUPLICATED, srcDocModel,
                     options, null, comment, true);
 
             return docModel;
         } catch (DocumentException e) {
-            throw new ClientException("Failed to copy document: "
-                    + e.getMessage(), e);
+            throw new ClientException("Failed to copy document: " +
+                    e.getMessage(), e);
         }
     }
 
@@ -497,8 +505,8 @@ public abstract class AbstractSession implements CoreSession,
             notifyEvent(DocumentEventTypes.ABOUT_TO_MOVE, srcDocModel, null,
                     null, null, true);
 
-            String comment = srcDoc.getRepository().getName() + ':'
-                    + srcDoc.getParent().getUUID();
+            String comment = srcDoc.getRepository().getName() + ':' +
+                    srcDoc.getParent().getUUID();
 
             Document doc = getSession().move(srcDoc, dstDoc, name);
 
@@ -506,14 +514,15 @@ public abstract class AbstractSession implements CoreSession,
             DocumentModel docModel = readModel(doc, null);
             Map<String, Object> options = new HashMap<String, Object>();
             options.put(CoreEventConstants.DOCUMENT, doc);
-            options.put(CoreEventConstants.PARENT_PATH, srcDocModel.getParentRef());
+            options.put(CoreEventConstants.PARENT_PATH,
+                    srcDocModel.getParentRef());
             notifyEvent(DocumentEventTypes.DOCUMENT_MOVED, docModel, options,
                     null, comment, true);
 
             return docModel;
         } catch (DocumentException e) {
-            throw new ClientException("Failed to move document: "
-                    + e.getMessage(), e);
+            throw new ClientException("Failed to move document: " +
+                    e.getMessage(), e);
         }
     }
 
@@ -571,8 +580,8 @@ public abstract class AbstractSession implements CoreSession,
             DocumentType docType = getSession().getTypeManager().getDocumentType(
                     typeName);
             if (docType == null) {
-                throw new ClientException(typeName
-                        + " is not a registered core type");
+                throw new ClientException(typeName +
+                        " is not a registered core type");
             }
             DocumentModel docModel = DocumentModelFactory.createDocumentModel(
                     sessionId, docType);
@@ -616,10 +625,9 @@ public abstract class AbstractSession implements CoreSession,
         String typeName = docModel.getType();
         DocumentRef parentRef = docModel.getParentRef();
         if (typeName == null) {
-            throw new ClientException(
-                    String.format(
-                            "cannot create document '%s' with undefined type name",
-                            docModel.getTitle()));
+            throw new ClientException(String.format(
+                    "cannot create document '%s' with undefined type name",
+                    docModel.getTitle()));
         }
         if (parentRef == null) {
             throw new ClientException(
@@ -795,8 +803,8 @@ public abstract class AbstractSession implements CoreSession,
             while (children.hasNext()) {
                 Document child = children.next();
                 if (hasPermission(child, perm)) {
-                    if (child.getType() != null
-                            && (type == null || type.equals(child.getType().getName()))) {
+                    if (child.getType() != null &&
+                            (type == null || type.equals(child.getType().getName()))) {
                         DocumentModel childModel = readModel(child, null);
                         if (filter == null || filter.accept(childModel)) {
                             docs.add(childModel);
@@ -809,8 +817,8 @@ public abstract class AbstractSession implements CoreSession,
             }
             return docs;
         } catch (DocumentException e) {
-            throw new ClientException("Failed to get children for "
-                    + parent.toString(), e);
+            throw new ClientException("Failed to get children for " +
+                    parent.toString(), e);
         }
     }
 
@@ -850,8 +858,8 @@ public abstract class AbstractSession implements CoreSession,
                 }
 
                 if (hasPermission(child, perm)) {
-                    if (child.getType() != null
-                            && (type == null || type.equals(child.getType().getName()))) {
+                    if (child.getType() != null &&
+                            (type == null || type.equals(child.getType().getName()))) {
                         DocumentModel childModel = readModel(child, null);
                         if (filter == null || filter.accept(childModel)) {
                             if (count == 0) {
@@ -871,11 +879,12 @@ public abstract class AbstractSession implements CoreSession,
             return new DocumentModelsChunk(docs, lastIndex - 1, hasMore, total);
         } catch (DocumentException e) {
             if (def.getParent() != null) {
-                throw new ClientException("Failed to get children for "
-                        + def.getParent().toString(), e);
+                throw new ClientException("Failed to get children for " +
+                        def.getParent().toString(), e);
             } else {
-                throw new ClientException("Failed to get documents for query: "
-                        + def.getQuery(), e);
+                throw new ClientException(
+                        "Failed to get documents for query: " + def.getQuery(),
+                        e);
             }
         }
     }
@@ -894,8 +903,8 @@ public abstract class AbstractSession implements CoreSession,
             checkPermission(doc, READ);
             return readModel(doc, null);
         } catch (DocumentException e) {
-            throw new ClientException("Failed to get document "
-                    + docRef.toString(), e);
+            throw new ClientException("Failed to get document " +
+                    docRef.toString(), e);
         }
     }
 
@@ -910,7 +919,8 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
-    public DocumentModelList getDocuments(DocumentRef[] docRefs) throws ClientException {
+    public DocumentModelList getDocuments(DocumentRef[] docRefs)
+            throws ClientException {
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
         for (DocumentRef docRef : docRefs) {
             docs.add(getDocument(docRef));
@@ -934,8 +944,8 @@ public abstract class AbstractSession implements CoreSession,
             }
             return docs;
         } catch (DocumentException e) {
-            throw new ClientException("Failed to get leaf children for "
-                    + parent.toString(), e);
+            throw new ClientException("Failed to get leaf children for " +
+                    parent.toString(), e);
         }
     }
 
@@ -969,8 +979,8 @@ public abstract class AbstractSession implements CoreSession,
             }
             return docs;
         } catch (DocumentException e) {
-            throw new ClientException("Failed to get files for "
-                    + parent.toString(), e);
+            throw new ClientException("Failed to get files for " +
+                    parent.toString(), e);
         }
     }
 
@@ -1022,8 +1032,8 @@ public abstract class AbstractSession implements CoreSession,
             }
             return docs;
         } catch (DocumentException e) {
-            throw new ClientException("Failed to get folders "
-                    + parent.toString(), e);
+            throw new ClientException("Failed to get folders " +
+                    parent.toString(), e);
         }
     }
 
@@ -1037,12 +1047,13 @@ public abstract class AbstractSession implements CoreSession,
             }
             if (!hasPermission(parentDoc, READ)) {
                 throw new DocumentSecurityException(
-                        "Privilege READ is not granted to " + getPrincipal().getName());
+                        "Privilege READ is not granted to " +
+                                getPrincipal().getName());
             }
             return readModel(parentDoc, null);
         } catch (DocumentException e) {
-            throw new ClientException("Failed to get parent document of "
-                    + docRef, e);
+            throw new ClientException("Failed to get parent document of " +
+                    docRef, e);
         }
     }
 
@@ -1067,8 +1078,8 @@ public abstract class AbstractSession implements CoreSession,
                 doc = doc.getParent();
             }
         } catch (DocumentException e) {
-            throw new ClientException("Failed to get parent documents: "
-                    + docRef, e);
+            throw new ClientException("Failed to get parent documents: " +
+                    docRef, e);
         }
         Collections.reverse(docsList);
 
@@ -1090,8 +1101,8 @@ public abstract class AbstractSession implements CoreSession,
             checkPermission(doc, BROWSE);
             return doc.hasChildren();
         } catch (DocumentException e) {
-            throw new ClientException("Failed to check for children for "
-                    + docRef, e);
+            throw new ClientException("Failed to check for children for " +
+                    docRef, e);
         }
     }
 
@@ -1178,8 +1189,8 @@ public abstract class AbstractSession implements CoreSession,
             // TODO this is hardcoded query : need to add support for CONTAINS
             // in NXQL
             // TODO check (repair) for keywords sanity to avoid xpath injection
-            final String xpathQ = "//element(*, ecmnt:document)[jcr:contains(.,'*"
-                    + keywords + "*')]";
+            final String xpathQ = "//element(*, ecmnt:document)[jcr:contains(.,'*" +
+                    keywords + "*')]";
             final Query compiledQuery = getSession().createQuery(xpathQ,
                     Query.Type.XPATH);
             final QueryResult qr = compiledQuery.execute();
@@ -1284,8 +1295,8 @@ public abstract class AbstractSession implements CoreSession,
             Document doc = resolveReference(docRef);
             removeDocument(doc);
         } catch (DocumentException e) {
-            throw new ClientException("Failed to fetch document " + docRef
-                    + " before removal", e);
+            throw new ClientException("Failed to fetch document " + docRef +
+                    " before removal", e);
         }
     }
 
@@ -1299,12 +1310,12 @@ public abstract class AbstractSession implements CoreSession,
 
         } catch (DocumentException e) {
             try {
-                throw new ClientException("Failed to remove document "
-                        + doc.getUUID(), e);
+                throw new ClientException("Failed to remove document " +
+                        doc.getUUID(), e);
             } catch (DocumentException e2) {
                 log.error("Failed to remove doc", e);
-                throw new ClientException("Failed to remove and "
-                        + "even to get UUID " + doc.toString());
+                throw new ClientException("Failed to remove and " +
+                        "even to get UUID " + doc.toString());
             }
         }
     }
@@ -1329,8 +1340,8 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     /**
-     * Implementation uses the fact that the lexicographic ordering of paths
-     * is a refinement of the "contains" partial ordering.
+     * Implementation uses the fact that the lexicographic ordering of paths is
+     * a refinement of the "contains" partial ordering.
      */
     public void removeDocuments(DocumentRef[] docRefs) throws ClientException {
         Document[] docs = new Document[docRefs.length];
@@ -1339,8 +1350,8 @@ public abstract class AbstractSession implements CoreSession,
             try {
                 docs[i] = resolveReference(docRefs[i]);
             } catch (DocumentException e) {
-                throw new ClientException(
-                        "Failed to resolve reference " + docRefs[i], e);
+                throw new ClientException("Failed to resolve reference " +
+                        docRefs[i], e);
             }
         }
         // TODO OPTIM: it's not guaranteed that getPath is cheap and
@@ -1401,8 +1412,10 @@ public abstract class AbstractSession implements CoreSession,
                     VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY);
             DocumentModel oldDoc = null;
             if (createSnapshot != null && createSnapshot) {
-                //FIXME: remove this - pass the flag as an arg or create anotehr method!!!
-                save(); // creating versions failes if the documents involved are nmot saved
+                // FIXME: remove this - pass the flag as an arg or create
+                // anotehr method!!!
+                save(); // creating versions failes if the documents involved
+                // are nmot saved
                 oldDoc = createDocumentSnapshot(docModel);
                 // ok, now it is consumed
                 ctxData.putScopedValue(ScopeType.REQUEST,
@@ -1509,7 +1522,7 @@ public abstract class AbstractSession implements CoreSession,
         // if session is not saved (i.e. there are pending changes), checkin
         // might fail
         // moved the decision to save in JCRDocument.checkin()
-        //save();
+        // save();
 
         checkIn(docRef, newVersion);
         log.debug("doc checked in " + doc.getTitle());
@@ -1543,8 +1556,8 @@ public abstract class AbstractSession implements CoreSession,
             Document headDocument = doc.getSourceDocument();
             return readModel(headDocument, null);
         } catch (DocumentException e) {
-            throw new ClientException("Failed to get head document for "
-                    + docRef, e);
+            throw new ClientException("Failed to get head document for " +
+                    docRef, e);
         }
     }
 
@@ -1785,8 +1798,8 @@ public abstract class AbstractSession implements CoreSession,
             Document doc = resolveReference(docRef);
             checkPermission(doc, READ);
             doc = doc.getVersion(version.getLabel());
-            log.debug("Retrieved the version " + version.getLabel()
-                    + " of the document " + doc.getPath());
+            log.debug("Retrieved the version " + version.getLabel() +
+                    " of the document " + doc.getPath());
             return readModel(doc, null);
         } catch (DocumentException e) {
             throw new ClientException("Failed to get version for " + docRef, e);
@@ -1794,7 +1807,8 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     public DocumentModel createProxy(DocumentRef parentRef, DocumentRef docRef,
-            VersionModel version, boolean overwriteExistingProxy) throws ClientException {
+            VersionModel version, boolean overwriteExistingProxy)
+            throws ClientException {
         assert null != parentRef;
         assert null != docRef;
         assert null != version;
@@ -1807,9 +1821,10 @@ public abstract class AbstractSession implements CoreSession,
 
             if (overwriteExistingProxy) {
                 String parentPath = section.getPath();
-                // delete existing proxies of the same document if any exist in the target folder
-                Collection<Document> existingProxies = getSession().getProxies(doc,
-                        null);
+                // delete existing proxies of the same document if any exist in
+                // the target folder
+                Collection<Document> existingProxies = getSession().getProxies(
+                        doc, null);
                 for (Document oldProxy : existingProxies) {
                     if (oldProxy.getParent().getPath().equals(parentPath)) {
                         removeNotifyOneDoc(oldProxy);
@@ -1821,17 +1836,17 @@ public abstract class AbstractSession implements CoreSession,
             String vlabel = version.getLabel();
             Document proxy = getSession().createProxyForVersion(section, doc,
                     vlabel);
-            log.debug("Created proxy for version " + vlabel
-                    + " of the document " + doc.getPath());
+            log.debug("Created proxy for version " + vlabel +
+                    " of the document " + doc.getPath());
 
             Map<String, Object> options = new HashMap<String, Object>();
 
-            //No need - this notification is sent from the ActionBean
-//            // save in history
-//            DocumentModel docModel = readModel(doc, null);
-//            options.put(CoreEventConstants.DOCUMENT, doc);
-//            notifyEvent(DocumentEventTypes.DOCUMENT_PUBLISHED, docModel,
-//                    options, null, null, true);
+            // No need - this notification is sent from the ActionBean
+// // save in history
+// DocumentModel docModel = readModel(doc, null);
+// options.put(CoreEventConstants.DOCUMENT, doc);
+// notifyEvent(DocumentEventTypes.DOCUMENT_PUBLISHED, docModel,
+// options, null, null, true);
 
             // notify for reindexation
             DocumentModel proxyModel = readModel(proxy, null);
@@ -1851,8 +1866,8 @@ public abstract class AbstractSession implements CoreSession,
             return proxyModel;
 
         } catch (DocumentException e) {
-            throw new ClientException("Failed to create proxy for doc "
-                    + docRef + " , version: " + version.getLabel(), e);
+            throw new ClientException("Failed to create proxy for doc " +
+                    docRef + " , version: " + version.getLabel(), e);
         }
     }
 
@@ -1897,8 +1912,8 @@ public abstract class AbstractSession implements CoreSession,
             }
             return versions.toArray(new String[versions.size()]);
         } catch (DocumentException e) {
-            throw new ClientException("Failed to get children for "
-                    + folderRef.toString(), e);
+            throw new ClientException("Failed to get children for " +
+                    folderRef.toString(), e);
         }
     }
 
@@ -1918,8 +1933,8 @@ public abstract class AbstractSession implements CoreSession,
             return DocumentModelFactory.exportSchema(
                     doc.getSession().getUserSessionId(), docRef, doc, docSchema);
         } catch (DocumentException e) {
-            throw new ClientException("Failed to get data model for " + docRef
-                    + ':' + schema, e);
+            throw new ClientException("Failed to get data model for " + docRef +
+                    ':' + schema, e);
         }
     }
 
@@ -1944,8 +1959,8 @@ public abstract class AbstractSession implements CoreSession,
             }
             return null;
         } catch (DocumentException e) {
-            throw new ClientException("Failed to get data model field "
-                    + schema + ':' + field, e);
+            throw new ClientException("Failed to get data model field " +
+                    schema + ':' + field, e);
         }
     }
 
@@ -1986,20 +2001,20 @@ public abstract class AbstractSession implements CoreSession,
             Path pathObj = new Path(path);
             int len = pathObj.segmentCount();
             if (len == 0) {
-                throw new ClientException("Failed to get content for " + docRef
-                        + ". invalid path: " + path);
+                throw new ClientException("Failed to get content for " +
+                        docRef + ". invalid path: " + path);
             }
             Property prop = doc.getProperty(pathObj.segment(0));
             if (prop == null) {
-                throw new ClientException("Failed to get content for " + docRef
-                        + ". invalid path " + path);
+                throw new ClientException("Failed to get content for " +
+                        docRef + ". invalid path " + path);
             }
             for (int i = 1; i < len; i++) {
                 String seg = pathObj.segment(i);
                 prop = prop.getProperty(seg);
                 if (prop == null) {
-                    throw new ClientException("Failed to get content for "
-                            + docRef + ". no such property " + seg);
+                    throw new ClientException("Failed to get content for " +
+                            docRef + ". no such property " + seg);
                 }
             }
             if (!prop.getType().getName().equals("content")) {
@@ -2040,8 +2055,8 @@ public abstract class AbstractSession implements CoreSession,
         } catch (ClientException e) {
             throw e;
         } catch (Exception e) {
-            throw new ClientException("Failed to register blob stream: "
-                    + blobPropertyId, e);
+            throw new ClientException("Failed to register blob stream: " +
+                    blobPropertyId, e);
         }
         return uri;
     }
@@ -2110,8 +2125,8 @@ public abstract class AbstractSession implements CoreSession,
             }
         } catch (LifeCycleException e) {
             ClientException ce = new ClientException(
-                    "Unable to follow transition <" + transition
-                            + "> for document : " + docRef, e);
+                    "Unable to follow transition <" + transition +
+                            "> for document : " + docRef, e);
             ce.fillInStackTrace();
             throw ce;
         } catch (DocumentException e) {
@@ -2130,8 +2145,8 @@ public abstract class AbstractSession implements CoreSession,
             allowedStateTransitions = doc.getAllowedStateTransitions();
         } catch (LifeCycleException e) {
             ClientException ce = new ClientException(
-                    "Unable to get allowed state transitions for document : "
-                            + docRef, e);
+                    "Unable to get allowed state transitions for document : " +
+                            docRef, e);
             ce.fillInStackTrace();
             throw ce;
         } catch (DocumentException e) {
@@ -2176,8 +2191,8 @@ public abstract class AbstractSession implements CoreSession,
                 parentDoc = parentDoc.getParent();
             }
         } catch (DocumentException e) {
-            throw new ClientException("Failed to get all parent documents: "
-                    + docRef, e);
+            throw new ClientException("Failed to get all parent documents: " +
+                    docRef, e);
         }
 
         DocumentRef[] refs = new DocumentRef[docRefs.size()];
@@ -2295,14 +2310,16 @@ public abstract class AbstractSession implements CoreSession,
     }
 
     public DocumentModel publishDocument(DocumentModel docToPublish,
-            DocumentModel section, boolean overwriteExistingProxy) throws ClientException {
+            DocumentModel section, boolean overwriteExistingProxy)
+            throws ClientException {
 
         // we cannot publish a proxy doc
         DocumentRef docRef = docToPublish.getRef();
         try {
             Document doc = resolveReference(docRef);
             if (doc.isProxy()) {
-                throw new InvalidProxyDocOperation("proxy document cannot be published");
+                throw new InvalidProxyDocOperation(
+                        "proxy document cannot be published");
             }
         } catch (DocumentException e) {
             throw new ClientException(e);
@@ -2333,7 +2350,7 @@ public abstract class AbstractSession implements CoreSession,
          */
         // XXX OG: why this method does commit? The client should be able to
         // decide when she wants to do the commit
-        //save();
+        // save();
     }
 
     public VersionModel isPublished(DocumentModel document,
@@ -2361,7 +2378,7 @@ public abstract class AbstractSession implements CoreSession,
         } else {
 
             DocumentModel parent = getDirectAccessibleParent(doc.getRef());
-            if (parent == null ||"/".equals(parent.getPathAsString())) {
+            if (parent == null || "/".equals(parent.getPathAsString())) {
                 return getRootDocument(); // return Root instead of null
             } else {
                 return getSuperSpace(parent);
@@ -2384,8 +2401,8 @@ public abstract class AbstractSession implements CoreSession,
                     return getRootDocument();
                 } else {
                     // try on parent
-                    return getDirectAccessibleParent(
-                            new PathRef(parentDoc.getPath()));
+                    return getDirectAccessibleParent(new PathRef(
+                            parentDoc.getPath()));
                 }
             }
             return readModel(parentDoc, null);
@@ -2405,8 +2422,8 @@ public abstract class AbstractSession implements CoreSession,
             doc = resolveReference(docModel.getRef());
 
         } catch (DocumentException e) {
-            throw new ClientException("Failed to get document "
-                    + docModel.getRef().toString(), e);
+            throw new ClientException("Failed to get document " +
+                    docModel.getRef().toString(), e);
         }
 
         return getSecurityService().getSecuritySummary(doc, includeParents);
@@ -2465,19 +2482,22 @@ public abstract class AbstractSession implements CoreSession,
                     docModel, options, null, comment, true);
 
         } catch (DocumentException e) {
-            throw new ClientException("Failed to resolve documents: " + src+", "+dest, e);
+            throw new ClientException("Failed to resolve documents: " + src +
+                    ", " + dest, e);
         }
-        //save();
+        // save();
     }
 
     public <T> T run(Operation<T> op) throws ClientException {
         return run(op, null);
     }
 
-    public <T> T run(Operation<T> op, ProgressMonitor monitor) throws ClientException {
-        //double s = System.currentTimeMillis();
+    public <T> T run(Operation<T> op, ProgressMonitor monitor)
+            throws ClientException {
+        // double s = System.currentTimeMillis();
         T result = op.run(this, this, monitor);
-        //System.out.println(">>>>> OPERATION "+op.getName()+" took: "+ ((System.currentTimeMillis()-s)/1000));
+        // System.out.println(">>>>> OPERATION "+op.getName()+" took: "+
+        // ((System.currentTimeMillis()-s)/1000));
         Status status = op.getStatus();
         if (status.isOk()) {
             return result;
@@ -2485,7 +2505,7 @@ public abstract class AbstractSession implements CoreSession,
             Throwable t = status.getException();
             if (t != null) {
                 if (t instanceof ClientException) {
-                    throw (ClientException)t;
+                    throw (ClientException) t;
                 } else {
                     throw new ClientException(status.getMessage(), t);
                 }
@@ -2516,74 +2536,77 @@ public abstract class AbstractSession implements CoreSession,
 
         try {
 
-
-        Document doc = resolveReference(ref);
-        if (doc == null) {
-            throw new ClientException("No Such Document: "+ref);
-        }
-
-        boolean readPermChecked = false;
-        if ((refreshFlags & DocumentModel.REFRESH_PREFETCH) != 0) {
-            if (!readPermChecked) {
-                checkPermission(doc, READ);
-                readPermChecked = true;
+            Document doc = resolveReference(ref);
+            if (doc == null) {
+                throw new ClientException("No Such Document: " + ref);
             }
-            PrefetchInfo info = doc.getType().getPrefetchInfo();
-            if (info != null) {
-                Schema[] pschemas = info.getSchemas();
-                if (pschemas != null) {
-                    //TODO: this should be returned as document parts of the document
+
+            boolean readPermChecked = false;
+            if ((refreshFlags & DocumentModel.REFRESH_PREFETCH) != 0) {
+                if (!readPermChecked) {
+                    checkPermission(doc, READ);
+                    readPermChecked = true;
                 }
-                Field[] fields = info.getFields();
-                if (fields != null) {
-                    Map<String, Serializable> prefetch = new HashMap<String, Serializable>();
-                    //TODO : should use documentpartreader
-                    for (Field field : fields) {
-                        Object value = doc.getPropertyValue(field.getName().getPrefixedName());
-                        prefetch.put(field.getDeclaringType().getName()
-                                + '.' + field.getName().getLocalName(), value == null ? Null.VALUE : (Serializable)value);
+                PrefetchInfo info = doc.getType().getPrefetchInfo();
+                if (info != null) {
+                    Schema[] pschemas = info.getSchemas();
+                    if (pschemas != null) {
+                        // TODO: this should be returned as document parts of
+                        // the document
                     }
-                    result[0] = prefetch;
+                    Field[] fields = info.getFields();
+                    if (fields != null) {
+                        Map<String, Serializable> prefetch = new HashMap<String, Serializable>();
+                        // TODO : should use documentpartreader
+                        for (Field field : fields) {
+                            Object value = doc.getPropertyValue(field.getName().getPrefixedName());
+                            prefetch.put(field.getDeclaringType().getName() +
+                                    '.' + field.getName().getLocalName(),
+                                    value == null ? Null.VALUE
+                                            : (Serializable) value);
+                        }
+                        result[0] = prefetch;
+                    }
                 }
             }
-        }
 
-        if ((refreshFlags & DocumentModel.REFRESH_LOCK) != 0) {
-            if (!readPermChecked) {
-                checkPermission(doc, READ);
-                readPermChecked = true;
+            if ((refreshFlags & DocumentModel.REFRESH_LOCK) != 0) {
+                if (!readPermChecked) {
+                    checkPermission(doc, READ);
+                    readPermChecked = true;
+                }
+                result[1] = doc.getLock();
             }
-            result[1] = doc.getLock();
-        }
 
-        if ((refreshFlags & DocumentModel.REFRESH_LIFE_CYCLE) != 0) {
-            checkPermission(doc, READ_LIFE_CYCLE);
-            result[2] = doc.getCurrentLifeCycleState();
-            result[3] = doc.getLifeCyclePolicy();
-        }
+            if ((refreshFlags & DocumentModel.REFRESH_LIFE_CYCLE) != 0) {
+                checkPermission(doc, READ_LIFE_CYCLE);
+                result[2] = doc.getCurrentLifeCycleState();
+                result[3] = doc.getLifeCyclePolicy();
+            }
 
-        if ((refreshFlags & DocumentModel.REFRESH_ACP) != 0) {
-            checkPermission(doc, READ_SECURITY);
-            result[4] = getSession().getSecurityManager().getMergedACP(doc);
-        }
+            if ((refreshFlags & DocumentModel.REFRESH_ACP) != 0) {
+                checkPermission(doc, READ_SECURITY);
+                result[4] = getSession().getSecurityManager().getMergedACP(doc);
+            }
 
-        if ((refreshFlags & (DocumentModel.REFRESH_CONTENT)) != 0) {
-            if (!readPermChecked) {
-                checkPermission(doc, READ);
-                readPermChecked = true;
+            if ((refreshFlags & (DocumentModel.REFRESH_CONTENT)) != 0) {
+                if (!readPermChecked) {
+                    checkPermission(doc, READ);
+                    readPermChecked = true;
+                }
+                if (schemas == null) {
+                    schemas = doc.getType().getSchemaNames();
+                }
+                DocumentType type = doc.getType();
+                DocumentPart[] parts = new DocumentPart[schemas.length];
+                for (int i = 0; i < schemas.length; i++) {
+                    DocumentPart part = new DocumentPartImpl(
+                            type.getSchema(schemas[i]));
+                    doc.readDocumentPart(part);
+                    parts[i] = part;
+                }
+                result[5] = parts;
             }
-            if (schemas == null) {
-                schemas = doc.getType().getSchemaNames();
-            }
-            DocumentType type = doc.getType();
-            DocumentPart[] parts = new DocumentPart[schemas.length];
-            for (int i=0; i<schemas.length; i++) {
-                DocumentPart part = new DocumentPartImpl(type.getSchema(schemas[i]));
-                doc.readDocumentPart(part);
-                parts[i] = part;
-            }
-            result[5] = parts;
-        }
 
         } catch (ClientException e) {
             throw e;
