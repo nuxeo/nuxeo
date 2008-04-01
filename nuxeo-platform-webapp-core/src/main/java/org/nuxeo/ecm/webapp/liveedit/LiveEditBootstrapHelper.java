@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -459,7 +460,14 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             return false;
         }
         
-        Blob blob = documentModel.getProperty(propertyName).getValue(Blob.class);
+        Blob blob = null;
+        try {
+            blob = documentModel.getProperty(propertyName).getValue(Blob.class);
+        } catch (PropertyNotFoundException e) {
+            // this document cannot host a live editable blob is the requested
+            // property, ignore
+            return false;
+        }
         if (blob == null) {
             return false;
         }

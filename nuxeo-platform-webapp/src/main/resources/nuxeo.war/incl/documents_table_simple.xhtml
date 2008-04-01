@@ -100,6 +100,19 @@
         </f:facet>
         <h:outputText value="#{nxu:userFullName(doc.dublincore.creator)}" />
       </h:column>
+      
+      <!-- Live edit -->
+      <nxu:column styleClass="iconColumn">
+        <nxu:methodResult name="editable"
+          value="#{liveEditHelper.isDocumentLiveEditable(doc, 'file', 'content')}">
+          <h:outputLink value="#{nxd:liveEditUrl(doc, 'file', 'content', 'filename')}"
+            rendered="#{editable}">
+            <h:graphicImage value="/icons/application_form_edit.png"
+              alt="#{messages['label.document.directEdit']}"
+              title="#{messages['label.document.directEdit']}"/>
+          </h:outputLink>
+        </nxu:methodResult>
+      </nxu:column>      
     </nxu:dataTable>
 
     <a4j:commandButton value="#{messages['label.refresh']}" reRender="#{idParam}" styleClass="button" />
