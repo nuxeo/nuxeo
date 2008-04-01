@@ -21,11 +21,12 @@ package org.nuxeo.ecm.webapp.liveedit;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.Cookie;
@@ -49,6 +50,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
@@ -74,7 +78,7 @@ import org.nuxeo.runtime.api.Framework;
  * 
  * </ul>
  * 
- * Please refer to the specification files in nuxeo-platform-ws-jaxws/doc/ for
+ * Please refer to the nuxeo book chapter on desktop integration for
  * details on the format of the nxedit URLs and the XML bootstrap file.
  * 
  * @author Thierry Delprat NXP-1959 the bootstrap file is managing the 'create
@@ -88,6 +92,8 @@ import org.nuxeo.runtime.api.Framework;
 @Scope(EVENT)
 @Name("liveEditHelper")
 public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants {
+
+    public static final String IMMUTABLE_FACET = "Immutable";
 
     private static final long serialVersionUID = 876879071L;
 
@@ -140,6 +146,11 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
 
     @RequestParameter
     private String docType;
+
+    private MimetypeRegistry mimetypeRegistry;
+
+    // Event-long cache for mimetype lookups - no invalidation required
+    private final Map<String, Boolean> cachedEditableStates = new HashMap<String, Boolean>();
 
     private CoreSession getSession(String repositoryName)
             throws ClientException {
@@ -289,7 +300,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             addTextElement(templateDocInfo, docMimetypeTag, mimetype);
             addTextElement(templateDocInfo, docFileExtensionTag,
                     getFileExtension(mimetype));
-            
+
             // Browser request related informations
             Element requestInfo = root.addElement(requestInfoTag);
             Cookie[] cookies = request.getCookies();
@@ -403,6 +414,81 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         sb.append('-');
         sb.append(modified.getTimeInMillis());
         return sb.toString();
+    }
+
+    //
+    // Methods to check whether or not to display live edit links
+    //
+
+    public boolean isCurrentDocumentLiveEditable() throws ClientException {
+        return isDocumentLiveEditable(navigationContext.getCurrentDocument(),
+                DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD);
+    }
+
+    public boolean isCurrentDocumentLiveEditable(String schemaName,
+            String fieldName) throws ClientException {
+        return isDocumentLiveEditable(navigationContext.getCurrentDocument(),
+                schemaName, fieldName);
+    }
+
+    public boolean isCurrentDocumentLiveEditable(String propertyName)
+            throws ClientException {
+        return isDocumentLiveEditable(navigationContext.getCurrentDocument(),
+                propertyName);
+    }
+
+    public boolean isDocumentLiveEditable(DocumentModel documentModel,
+            String schemaName, String fieldName) throws ClientException {
+        return isDocumentLiveEditable(documentModel, schemaName + ":"
+                + fieldName);
+    }
+
+    public boolean isDocumentLiveEditable(DocumentModel documentModel,
+            String propertyName) throws ClientException {
+        if (documentModel == null) {
+            throw new ClientException(
+                    "cannot check live editable state of null DocumentModel");
+        }
+        
+        if (documentModel.hasFacet(IMMUTABLE_FACET)) {
+            return false;
+        }
+
+        if (!documentManager.hasPermission(documentModel.getRef(),
+                SecurityConstants.WRITE_PROPERTIES)) {
+            // the lock state is check as a extension to the
+            // SecurityPolicyManager
+            return false;
+        }
+        
+        Blob blob = documentModel.getProperty(propertyName).getValue(Blob.class);
+        if (blob == null) {
+            return false;
+        }
+        String mimetype = blob.getMimeType();
+        Boolean isEditable = cachedEditableStates.get(mimetype);
+        if (isEditable == null) {
+            try {
+                MimetypeEntry mimetypeEntry = getMimetypeRegistry().getMimetypeEntryByMimeType(
+                        mimetype);
+                if (mimetypeEntry == null) {
+                    isEditable = Boolean.FALSE;
+                } else {
+                    isEditable = Boolean.valueOf(mimetypeEntry.isOnlineEditable());
+                }
+            } catch (Throwable t) {
+                throw EJBExceptionHandler.wrapException(t);
+            }
+            cachedEditableStates.put(mimetype, isEditable);
+        }
+        return isEditable.booleanValue();
+    }
+
+    private MimetypeRegistry getMimetypeRegistry() throws Exception {
+        if (mimetypeRegistry == null) {
+            mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
+        }
+        return mimetypeRegistry;
     }
 
 }

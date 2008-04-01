@@ -25,18 +25,20 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import javax.el.ELContext;
+import javax.el.ELException;
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.StringUtils;
 
 /**
  * Method value expression encapsulates a method expression so that it invokes
  * it when evaluated as a standard value expression.
- *
+ * 
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
+ * 
  */
 public class MethodValueExpression extends ValueExpression implements
         Externalizable {
@@ -105,12 +107,9 @@ public class MethodValueExpression extends ValueExpression implements
         Object res;
         try {
             return methodExpression.invoke(arg0, paramTypesClasses);
-        }
-        catch (Throwable t) {
-            log.error(
-                    "Error while evaluation MethodValueExpression " + methodExpression.getExpressionString());
-            log.error("parameters are : " + paramTypesClasses.toString());
-            return null;
+        } catch (Throwable t) {
+            throw new ELException("Error while evaluation MethodValueExpression "
+                    + methodExpression.getExpressionString(), t);
         }
     }
 
