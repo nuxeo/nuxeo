@@ -23,12 +23,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
@@ -214,6 +216,22 @@ public class JCRDocument extends AbstractDocument implements JCRNodeProxy {
         try {
             assertIsFolder();
             return new JCRDocumentIterator(session, node, start);
+        } catch (Exception e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    public List<String> getChildrenIds() throws DocumentException {
+        if (!isFolder()) {
+            return Collections.emptyList();
+        }
+        try {
+            NodeIterator it = ModelAdapter.getContainerNode(node).getNodes();
+            List<String> ids = new ArrayList<String>((int) it.getSize());
+            while (it.hasNext()) {
+                ids.add(it.nextNode().getUUID());
+            }
+            return ids;
         } catch (Exception e) {
             throw new DocumentException(e);
         }

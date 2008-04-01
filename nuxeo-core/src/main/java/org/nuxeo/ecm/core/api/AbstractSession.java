@@ -813,6 +813,26 @@ public abstract class AbstractSession implements CoreSession,
         }
     }
 
+    public List<DocumentRef> getChildrenRefs(DocumentRef parentRef,
+            String perm) throws ClientException {
+        if (perm != null) {
+            // XXX TODO
+            throw new ClientException("perm != null not implemented");
+        }
+        try {
+            Document parent = resolveReference(parentRef);
+            checkPermission(parent, READ_CHILDREN);
+            List<String> ids = parent.getChildrenIds();
+            List<DocumentRef> refs = new ArrayList<DocumentRef>(ids.size());
+            for (String id : ids) {
+                refs.add(new IdRef(id));
+            }
+            return refs;
+        } catch (DocumentException e) {
+            throw new ClientException(e);
+        }
+    }
+
     /**
      * Method used internally to retrieve frames of a long result.
      */

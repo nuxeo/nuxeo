@@ -263,6 +263,19 @@ public interface CoreSession {
             Filter filter, Sorter sorter) throws ClientException;
 
     /**
+     * Gets the references of the children. No permission is checked if perm is
+     * null.
+     *
+     * @param parentRef the parent reference
+     * @param perm the permission to check on the children (usually READ); if
+     *                null, <b>no permission is checked</b>
+     * @return a list of children references
+     * @throws ClientException
+     */
+    List<DocumentRef> getChildrenRefs(DocumentRef parentRef, String perm)
+            throws ClientException;
+
+    /**
      * Method used internally to retrieve frames of a long result.
      *
      * @param def

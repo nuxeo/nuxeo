@@ -123,6 +123,8 @@ public class TestDocument extends RepositoryTestCase {
         assertFalse(doc.hasChildren());
         Iterator<Document> children = doc.getChildren();
         assertFalse(children.hasNext());
+        List<String> childIds = doc.getChildrenIds();
+        assertEquals(0, childIds.size());
     }
 
     public void testGetName() throws Exception {
@@ -243,15 +245,25 @@ public class TestDocument extends RepositoryTestCase {
         parent.addChild("child_01", TypeConstants.DOCUMENT);
         prepareReTest();
         // testing for a root folder
+        List<String> rootChildrenIds = root.getChildrenIds();
+        assertEquals(1, rootChildrenIds.size());
+        assertEquals(parent.getUUID(), rootChildrenIds.get(0));
         Iterator<Document> iterator = root.getChildren();
-        while (iterator.hasNext()) {
-            assertNotNull(iterator.next().getName());
-        }
+        assertTrue(iterator.hasNext());
+        assertEquals("parent", iterator.next().getName());
+        assertFalse(iterator.hasNext());
         // testing for a non root folder
+        List<String> childrenIds = parent.getChildrenIds();
+        assertEquals(2, childrenIds.size());
         iterator = parent.getChildren();
-        while (iterator.hasNext()) {
-            assertNotNull(iterator.next().getName());
+        for (int i = 0; i < 2; i++) {
+            assertTrue(iterator.hasNext());
+            String name = iterator.next().getName();
+            if (!"child".equals(name) && !"child_01".equals(name)) {
+                fail(name);
+            }
         }
+        assertFalse(iterator.hasNext());
     }
 
     public void testHasChild() throws Exception {

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.model;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 
@@ -69,6 +70,13 @@ public interface DocumentContainer {
     Iterator<Document> getChildren() throws DocumentException;
 
     DocumentIterator getChildren(int start) throws DocumentException;
+
+    /**
+     * Gets a list of the children ids.
+     *
+     * @return a list of children ids.
+     */
+    List<String> getChildrenIds() throws DocumentException;
 
     /**
      * Tests if the document has the named child.

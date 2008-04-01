@@ -22,8 +22,10 @@ package org.nuxeo.ecm.core.api;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
@@ -317,6 +319,25 @@ public class TestLocalAPI extends TestAPI {
             dm.setValue("attachments/item[1]/name", "at2-modif2");
             assertEquals("at2-modif2", dm.getValue("attachments/item[1]/name"));
 
+    }
+
+    public void testGetChildrenRefs() throws Exception {
+            DocumentModel root = getRootDocument();
+            DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
+                    "mydoc", "Book");
+            doc = remote.createDocument(doc);
+            DocumentModel doc2 = new DocumentModelImpl(root.getPathAsString(),
+                    "mydoc2", "MyDocType");
+            doc2 = remote.createDocument(doc2);
+            List<DocumentRef> childrenRefs = remote.getChildrenRefs(root.getRef(), null);
+            assertEquals(2, childrenRefs.size());
+            Set<String> expected = new HashSet<String>();
+            expected.add(doc.getId());
+            expected.add(doc2.getId());
+            Set<String> actual = new HashSet<String>();
+            actual.add(childrenRefs.get(0).toString());
+            actual.add(childrenRefs.get(1).toString());
+            assertEquals(expected, actual);
     }
 
     public static byte[] createBytes(int size, byte val) {
