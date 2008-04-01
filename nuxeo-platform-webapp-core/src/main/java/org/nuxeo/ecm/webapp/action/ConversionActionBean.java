@@ -35,13 +35,12 @@ import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.WebRemote;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.transform.api.TransformServiceDelegate;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformServiceCommon;
-import org.nuxeo.ecm.webapp.base.InputController;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -49,14 +48,13 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("conversionActions")
 @Transactional
-public class ConversionActionBean extends InputController implements
-        ConversionAction {
+public class ConversionActionBean implements ConversionAction {
 
     private static final Log log = LogFactory.getLog(ConversionActionBean.class);
 
     @In(create = true)
-    private CoreSession documentManager;
-
+    NavigationContext navigationContext;
+    
     @RequestParameter
     private String fileFieldFullName;
 
@@ -74,7 +72,7 @@ public class ConversionActionBean extends InputController implements
 
     private String getMimetypeFromDocument(String fieldName) {
         String[] s = fieldName.split(":");
-        Blob blob = (Blob) currentDocument.getProperty(s[0], s[1]);
+        Blob blob = (Blob) navigationContext.getCurrentDocument().getProperty(s[0], s[1]);
         return blob.getMimeType();
     }
 
@@ -103,7 +101,7 @@ public class ConversionActionBean extends InputController implements
             }
 
             String[] s = fileFieldFullName.split(":");
-            Blob blob = (Blob) currentDocument.getProperty(s[0], s[1]);
+            Blob blob = (Blob) navigationContext.getCurrentDocument().getProperty(s[0], s[1]);
 
             TransformServiceCommon nxt = Framework.getService(TransformServiceCommon.class);
             List<TransformDocument> resultingDocs = nxt.transform("any2pdf",
@@ -152,6 +150,11 @@ public class ConversionActionBean extends InputController implements
         return "pdf_generation_error";
     }
 
+    /**
+     * @deprecated use LiveEditBootstrapHelper.isCurrentDocumentLiveEditable()
+     *             instead
+     */
+    @Deprecated
     @WebRemote
     public boolean isFileOnlineEditable(String fieldName) {
         try {
@@ -175,7 +178,7 @@ public class ConversionActionBean extends InputController implements
     /**
      * Simply sends what to be downloaded or shown at screen via
      * HttpServletResponse.
-     *
+     * 
      * @param header
      * @param headerContent
      * @param contentType
