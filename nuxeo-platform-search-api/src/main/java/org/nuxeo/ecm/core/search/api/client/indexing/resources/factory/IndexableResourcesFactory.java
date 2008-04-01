@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.search.api.client.indexing.resources.document.impl.Doc
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.impl.IndexableResourcesImpl;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceConf;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.IndexableDocType;
+import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.IndexableDocTypeDescriptor;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.ResourceType;
 
 /**
@@ -67,6 +68,7 @@ public final class IndexableResourcesFactory implements Serializable {
     private static final Map<String, IndexableResourceConf> fullResourceConfCache = new ConcurrentHashMap<String, IndexableResourceConf>();
     private static final Map<String, IndexableDocType> indexableDocTypeCache = new ConcurrentHashMap<String, IndexableDocType>();
 
+    private static final IndexableDocType NULL = new IndexableDocTypeDescriptor();
 
     // Utility class.
     private IndexableResourcesFactory() {
@@ -225,12 +227,14 @@ public final class IndexableResourcesFactory implements Serializable {
         if (res == null) {
             SearchService service = SearchServiceDelegate.getRemoteSearchService();
             res = service.getIndexableDocTypeFor(type);
-
+            if (res == null) res = NULL;
             synchronized (indexableDocTypeCache) {
                 indexableDocTypeCache.put(type, res);
             }
         }
-
+        if (res == NULL) {
+            return null;
+        }
         return res;
     }
 
