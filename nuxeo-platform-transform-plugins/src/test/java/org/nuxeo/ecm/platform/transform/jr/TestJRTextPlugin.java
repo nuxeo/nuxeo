@@ -94,7 +94,7 @@ public class TestJRTextPlugin extends AbstractPluginTestCase {
 
         File textFile = getFileFromInputStream(
                 results.get(0).getBlob().getStream(), "txt");
-        assertEquals("text content", "Hello from a xml  document  !",
+        assertEquals("text content", "Hello from a xml  document !",
                 DocumentTestUtils.readContent(textFile));
     }
 
