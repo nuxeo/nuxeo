@@ -29,14 +29,11 @@ import org.nuxeo.ecm.core.utils.SIDGenerator;
 
 public class TestSidGenerator extends TestCase {
 
-    public void testGenerator() throws Exception {
-        System.out.println("This test will take several seconds ... ");
+    public void testGenerator() {
         // generate 1 000 000 (one million ids)
         Set<Long> ids = new HashSet<Long>();
         for (int i = 0; i < 1000000; i++) {
             long id = SIDGenerator.next();
-//            System.out.println("ID: " + id + " : "
-//                    + Long.toHexString(id).toUpperCase());
             if (!ids.add(id)) {
                 fail("ID already generated");
             }
@@ -48,8 +45,6 @@ public class TestSidGenerator extends TestCase {
         Set<Long> ids = new HashSet<Long>();
         for (int i = 0; i < 100000; i++) {
             long id = SIDGenerator.next();
-//            System.out.println("ID: " + id + " : "
-//                    + Long.toHexString(id).toUpperCase());
             if (!ids.add(id)) {
                 fail("ID already generated");
             }
