@@ -63,32 +63,32 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * The LiveEdit bootstrap procedure works as follows:
  * <ul>
- * 
+ *
  * <li>browsed page calls a JSF function from the DocumentModelFunctions class
  * (edit a document, create new document, etc.) to generate;</li>
- * 
+ *
  * <li>composing a specifc URL as result, triggering the bootstrap addon to
  * popup;</li>
- * 
+ *
  * <li>the addon come back with the URL composed allowing the present seam
  * component to create the bootstrap file. The file contains various data as
  * requested in the URL;</li>
- * 
+ *
  * <li>the XML file is now available to addon which presents it to the client
  * plugin.</li>
- * 
+ *
  * </ul>
- * 
- * Please refer to the nuxeo book chapter on desktop integration for details on
- * the format of the nxedit URLs and the XML bootstrap file.
- * 
+ *
+ * Please refer to the nuxeo book chapter on desktop integration for
+ * details on the format of the nxedit URLs and the XML bootstrap file.
+ *
  * @author Thierry Delprat NXP-1959 the bootstrap file is managing the 'create
  *         new document [from template]' case too. The URL is containing an
  *         action identifier.
  * @author Rux rdarlea@nuxeo.com
  * @author Olivier Grisel ogrisel@nuxeo.com (split url functions into JSF
  *         DocumentModelFunctions module)
- * 
+ *
  */
 @Scope(EVENT)
 @Name("liveEditHelper")
@@ -106,10 +106,10 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     private static final Log log = LogFactory.getLog(LiveEditBootstrapHelper.class);
 
     @In(required = true, create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @RequestParameter
     private String action;
@@ -147,7 +147,6 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
 
     @RequestParameter
     private String docType;
-
     private MimetypeRegistry mimetypeRegistry;
 
     // Event-long cache for mimetype lookups - no invalidation required
@@ -180,7 +179,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
      * URL composition tells the case and what to create. The strucuture is
      * depicted in the NXP-1881. Rux NXP-1959: add new tag on root level
      * describing the action: actionEdit, actionNew or actionFromTemplate.
-     * 
+     *
      * @return the bootstrap file content
      * @throws Exception
      */
@@ -392,7 +391,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
 
     // TODO: please explain what is the use of the "editId" tag here
     private static String getEditId(DocumentModel doc, CoreSession session,
-            String userName) throws ClientException {
+            String userName) {
         StringBuilder sb = new StringBuilder();
 
         if (doc != null) {
@@ -424,8 +423,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     public boolean isCurrentDocumentLiveEditable() throws ClientException {
         return isDocumentLiveEditable(navigationContext.getCurrentDocument(),
                 DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD);
-    }
-
+}
     public boolean isCurrentDocumentLiveEditable(String schemaName,
             String fieldName) throws ClientException {
         return isDocumentLiveEditable(navigationContext.getCurrentDocument(),
@@ -450,7 +448,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             throw new ClientException(
                     "cannot check live editable state of null DocumentModel");
         }
-
+        
         if (documentModel.hasFacet(IMMUTABLE_FACET)) {
             return false;
         }
@@ -461,7 +459,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             // SecurityPolicyManager
             return false;
         }
-
+        
         Blob blob = null;
         try {
             blob = documentModel.getProperty(propertyName).getValue(Blob.class);

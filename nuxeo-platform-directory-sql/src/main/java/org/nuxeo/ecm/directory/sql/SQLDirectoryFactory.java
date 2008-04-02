@@ -19,20 +19,24 @@
 
 package org.nuxeo.ecm.directory.sql;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.directory.*;
+import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.DirectoryFactory;
+import org.nuxeo.ecm.directory.DirectoryServiceImpl;
+import org.nuxeo.ecm.directory.InverseReference;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class SQLDirectoryFactory extends DefaultComponent implements
         DirectoryFactory {

@@ -278,7 +278,7 @@ public class NotificationMessageListener implements MessageListener {
     }
 
     private void sendNotificationSignalForUser(Notification notification,
-            String subscriptor, DocumentMessage message) throws ClientException {
+            String subscriptor, DocumentMessage message) {
 
         log.debug("Producing notification message...........");
 
@@ -376,7 +376,7 @@ public class NotificationMessageListener implements MessageListener {
             mail.put("principalAuthor", author);
         }
 
-        mail.put("document", (DocumentModel)docMessage);
+        mail.put("document", docMessage);
         String subject = notif.getSubject() == null ? "Notification"
                 : notif.getSubject();
         subject = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix()
