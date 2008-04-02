@@ -156,6 +156,10 @@ public class FakeDocument implements Document {
         return null;
     }
 
+    public List<String> getVersionsIds() throws DocumentException {
+        return null;
+    }
+
     public DocumentVersionIterator getVersions() throws DocumentException {
         return null;
     }
