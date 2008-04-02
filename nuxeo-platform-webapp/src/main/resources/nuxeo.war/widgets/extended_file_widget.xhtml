@@ -36,7 +36,7 @@
         rendered="#{isLiveEditable}">
         <h:outputText value=" | " />
         <h:outputLink
-          value="#{nxd:liveEditUrl(changeableDocument, widget.fieldDefinitions[0].schemaName, widget.fieldDefinitions[0].fieldName, widget.fieldDefinitions[1].fieldName)}"
+          value="#{nxd:liveEditUrl(changeableDocument, widget.fieldDefinitions[0].schemaName, widget.fieldDefinitions[0].fieldName, widget.fieldDefinitions[1].fieldName)}">
           <h:outputText value="#{messages['label.document.directEdit']}" />
         </h:outputLink> 
       </h:panelGroup>
