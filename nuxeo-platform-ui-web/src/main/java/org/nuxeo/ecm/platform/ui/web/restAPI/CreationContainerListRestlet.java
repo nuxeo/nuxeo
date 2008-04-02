@@ -52,11 +52,6 @@ public class CreationContainerListRestlet extends BaseNuxeoRestlet implements
 
     private static final long serialVersionUID = 5403775170948512675L;
 
-    protected FileManager fileManager;
-
-    @In(create = true)
-    private Principal currentUser;
-
     @Override
     public void handle(Request req, Response res) {
 
@@ -64,7 +59,7 @@ public class CreationContainerListRestlet extends BaseNuxeoRestlet implements
         String docType = getQueryParamValue(req, DOC_TYPE, DEFAULT_DOCTYPE);
         try {
             FileManager fileManager = Framework.getService(FileManager.class);
-            containers = fileManager.getCreationContainers(currentUser, docType);
+            containers = fileManager.getCreationContainers(getUserPrincipal(req), docType);
         } catch (Exception e) {
             handleError(res, e);
         }

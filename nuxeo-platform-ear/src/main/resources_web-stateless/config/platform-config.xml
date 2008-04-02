@@ -78,11 +78,6 @@
       <locator>%FileManagerBean</locator>
     </service>
 
-    <service class="org.nuxeo.ecm.platform.imaging.api.ImagingService"
-      group="platform/imaging">
-      <locator>%ImagingServiceBean</locator>
-    </service>
-
     <service class="org.nuxeo.ecm.platform.io.api.IOManager"
       group="platform/io">
       <locator>%IOManagerBean</locator>
