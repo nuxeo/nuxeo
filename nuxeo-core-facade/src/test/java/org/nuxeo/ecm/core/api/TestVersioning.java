@@ -128,6 +128,8 @@ public class TestVersioning extends NXRuntimeTestCase {
                 "file#1", "File");
         file = coreSession.createDocument(file);
 
+        checkVersions(file, new String[0]);
+
         file.putContextData(ScopeType.REQUEST,
                 VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
         file = coreSession.saveDocument(file);
@@ -269,9 +271,10 @@ public class TestVersioning extends NXRuntimeTestCase {
         int i = 0;
         for (DocumentModel ver : vers) {
             assertTrue(ver.isVersion());
-            log.info("version label: " + ver.getVersionLabel());
             assertEquals(labels[i], ver.getVersionLabel());
             i++;
         }
+        List<DocumentRef> versionsRefs = coreSession.getVersionsRefs(doc.getRef());
+        assertEquals(labels.length, versionsRefs.size());
     }
 }

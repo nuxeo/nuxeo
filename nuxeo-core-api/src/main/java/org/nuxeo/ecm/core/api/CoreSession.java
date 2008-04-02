@@ -830,6 +830,16 @@ public interface CoreSession {
     DocumentModel getSourceDocument(DocumentRef docRef) throws ClientException;
 
     /**
+     * Gets the references of the versions of the document.
+     *
+     * @param docRef the document reference
+     * @return a list of version references
+     * @throws ClientException
+     */
+    List<DocumentRef> getVersionsRefs(DocumentRef docRef)
+            throws ClientException;
+
+    /**
      * Retrieves all the versions for a specified document.
      *
      * @param docRef the ref to the document

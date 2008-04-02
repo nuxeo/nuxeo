@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,14 +12,16 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.repository.jcr.versioning;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -39,8 +41,8 @@ import org.nuxeo.ecm.core.versioning.DocumentVersion;
 import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author Bogdan Stefanescu
+ * @author Florent Guillaume
  */
 public class JCRVersioningService implements VersioningService {
 
@@ -105,6 +107,33 @@ public class JCRVersioningService implements VersioningService {
             throw new DocumentException(
                     "Failed to get last version for document " + doc.getName(),
                     e);
+        }
+    }
+
+    public List<String> getVersionsIds(Document doc) throws DocumentException {
+        final String QNAME_VERSION_HISTORY = "jcr:versionHistory";
+        JCRDocument jdoc = (JCRDocument) doc;
+        Node node = jdoc.getNode();
+        try {
+            if (!node.hasProperty(QNAME_VERSION_HISTORY)) {
+                return Collections.emptyList();
+            }
+            VersionHistory versionHistory = node.getVersionHistory();
+            VersionIterator it = versionHistory.getAllVersions();
+            List<String> ids = new ArrayList<String>((int) it.getSize() - 1);
+            // FIX ME versions are not guaranteed to be returned in order
+            it.nextVersion(); // skip placeholder root version
+            while (it.hasNext()) {
+                Version version = it.nextVersion();
+                if (versionHistory.getVersionLabels(version).length == 0) {
+                    continue;
+                }
+                Node frozenNode = version.getNodes().nextNode();
+                ids.add(frozenNode.getUUID());
+            }
+            return ids;
+        } catch (RepositoryException e) {
+            throw new DocumentException(e);
         }
     }
 

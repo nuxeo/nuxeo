@@ -370,9 +370,7 @@ public class TestLocalAPI extends TestAPI {
 
     }
 
-
-    // TODO: fix and reenable SF 2007/05/23
-    public void XXXtestProxy() throws Exception {
+    public void testProxy() throws Exception {
         DocumentModel root = getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
                 "proxy_test", "File");
@@ -380,40 +378,45 @@ public class TestLocalAPI extends TestAPI {
         doc = remote.createDocument(doc);
         doc.setProperty("common", "title", "the title");
         doc = remote.saveDocument(doc);
-
-        // TODO a checkin operation must auto save the session
-        remote.save();
+        // remote.save();
 
         VersionModel version = new VersionModelImpl();
         version.setCreated(Calendar.getInstance());
         version.setLabel("v1");
         remote.checkIn(doc.getRef(), version);
+        // remote.save();
 
         // checkout the doc to modify it
         remote.checkOut(doc.getRef());
         doc.setProperty("common", "title", "the title modified");
         doc = remote.saveDocument(doc);
-        remote.save();
+        // remote.save();
 
+        DocumentModel proxy = remote.createProxy(root.getRef(), doc.getRef(),
+                version, true);
+        // remote.save();
+        // assertEquals("the title", proxy.getProperty("common", "title"));
+        // assertEquals("the title modified", doc.getProperty("common", "title"));
+
+        // make another new version
         VersionModel version2 = new VersionModelImpl();
         version2.setCreated(Calendar.getInstance());
         version2.setLabel("v2");
         remote.checkIn(doc.getRef(), version2);
+        // remote.save();
 
+        DocumentModelList list = remote.getChildren(root.getRef());
+        assertEquals(2, list.size());
 
-        DocumentModel proxy = remote.createProxy(root.getRef(), doc.getRef(), version, true);
+        for (DocumentModel model : list) {
+            assertEquals("File", model.getType());
+        }
 
-        //XXX : It fails to remove the proxy
-        //remote.removeDocument(proxy.getRef());
+        remote.removeDocument(proxy.getRef());
+        // remote.save();
 
-//        DocumentModelList list = remote.getChildren(root.getRef(), "a_type");
+        list = remote.getChildren(root.getRef());
+        assertEquals(1, list.size());
 
-//        for (DocumentModel model : list) {
-//            assertNotNull(model.getType());
-//        }
-
-//        assertEquals("the title", proxy.getProperty("common", "title"));
-//        assertEquals("the title modified", doc.getProperty("common", "title"));
     }
-
 }

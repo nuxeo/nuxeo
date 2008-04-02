@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.api;
@@ -95,7 +94,8 @@ import org.nuxeo.runtime.services.streaming.StreamManager;
  * The only aspect not implemented is the session management that should be
  * handled by subclasses.
  *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author Bogdan Stefanescu
+ * @author Florent Guillaume
  */
 public abstract class AbstractSession implements CoreSession,
         SecurityConstants, Serializable {
@@ -1604,6 +1604,21 @@ public abstract class AbstractSession implements CoreSession,
             return null;
         } catch (DocumentException e) {
             throw new ClientException("Failed to get versions for " + docRef, e);
+        }
+    }
+
+    public List<DocumentRef> getVersionsRefs(DocumentRef docRef) throws ClientException {
+        try {
+            Document doc = resolveReference(docRef);
+            checkPermission(doc, VERSION);
+            List<String> ids = doc.getVersionsIds();
+            List<DocumentRef> refs = new ArrayList<DocumentRef>(ids.size());
+            for (String id : ids) {
+                refs.add(new IdRef(id));
+            }
+            return refs;
+        } catch (DocumentException e) {
+            throw new ClientException(e);
         }
     }
 

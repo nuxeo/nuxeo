@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.core.versioning;
 
+import java.util.List;
+
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 
@@ -50,6 +52,14 @@ public interface VersionableDocument {
     void checkOut() throws DocumentException;
 
     boolean isCheckedOut() throws DocumentException;
+
+    /**
+     * Gets the list of version ids for this document.
+     *
+     * @return the list of version ids
+     * @throws DocumentException
+     */
+    List<String> getVersionsIds() throws DocumentException;
 
     /**
      * @return all versions of the document, empty list if there's no version

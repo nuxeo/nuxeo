@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.repository.jcr.versioning;
 
 import java.util.Calendar;
+import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -46,6 +47,15 @@ public interface VersioningService {
     void restore(Document doc, String label) throws DocumentException;
 
     Document getVersion(Document doc, String label) throws DocumentException;
+
+    /**
+     * Gets the list of version ids for a document.
+     *
+     * @param doc the document
+     * @return the list of version ids
+     * @throws DocumentException
+     */
+    List<String> getVersionsIds(Document doc) throws DocumentException;
 
     /**
      * Returns an iterator over all the versions within doc version history

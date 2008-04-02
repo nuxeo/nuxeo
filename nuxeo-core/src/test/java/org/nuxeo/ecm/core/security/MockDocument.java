@@ -157,6 +157,10 @@ public class MockDocument implements Document {
         return null;
     }
 
+    public List<String>getVersionsIds() throws DocumentException {
+        return null;
+    }
+
     public Document getVersion(String label) throws DocumentException {
         return null;
     }

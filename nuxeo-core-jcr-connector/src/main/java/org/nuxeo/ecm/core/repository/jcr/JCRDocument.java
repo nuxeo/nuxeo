@@ -386,6 +386,10 @@ public class JCRDocument extends AbstractDocument implements JCRNodeProxy {
         Versioning.getService().restore(this, label);
     }
 
+    public List<String>getVersionsIds() throws DocumentException {
+        return Versioning.getService().getVersionsIds(this);
+    }
+
     public Document getVersion(String label) throws DocumentException {
         return Versioning.getService().getVersion(this, label);
     }
