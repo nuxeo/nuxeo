@@ -23,6 +23,8 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -82,8 +84,10 @@ public class SecurityActionsBean extends InputController implements
     // XXX temporary
     protected static final String ADMIN_GROUP = "administrators";
 
-    protected static final String[] PERMISSIONS_TO_CHECK = {SecurityConstants.WRITE_SECURITY, SecurityConstants.READ_SECURITY};
+    protected static final String[] SEED_PERMISSIONS_TO_CHECK = {SecurityConstants.WRITE_SECURITY, SecurityConstants.READ_SECURITY};
 
+    protected String[] CACHED_PERMISSION_TO_CHECK = null;
+    
     private static final Log log = LogFactory.getLog(SecurityActionsBean.class);
 
     private static final Labeler labeler = new Labeler(
@@ -172,7 +176,7 @@ public class SecurityActionsBean extends InputController implements
      * @throws ECInvalidParameterException
      */
     protected UserPermissionsTableModel reconstructTableModel()
-            throws ClientException, ECInvalidParameterException {
+            throws ClientException {
         List<TableColHeader> headers = new ArrayList<TableColHeader>();
 
         TableColHeader header = new CheckBoxColHeader(
@@ -617,11 +621,31 @@ public class SecurityActionsBean extends InputController implements
         }
         acp.setRules(modifiableEntries.toArray(new UserEntry[0]));
 
-        final boolean access = acp.getAccess(principals.toArray(new String[0]), PERMISSIONS_TO_CHECK).toBoolean();
+        final boolean access = acp.getAccess(principals.toArray(new String[0]), getPermissionsToCheck()).toBoolean();
         if (!access) {
             rebuildSecurityData();
         }
         return access;
     }
 
+    protected String[] getPermissionsToCheck() throws ClientException {
+        if (CACHED_PERMISSION_TO_CHECK == null) {
+            try {
+                PermissionProvider pprovider = Framework.getService(PermissionProvider.class);
+                List<String> aggregatedPerms = new LinkedList<String>();
+                for (String seedPerm : SEED_PERMISSIONS_TO_CHECK) {
+                    aggregatedPerms.add(seedPerm);
+                    String[] compoundPerms = pprovider.getPermissionGroups(seedPerm);
+                    if (compoundPerms != null) {
+                        aggregatedPerms.addAll(Arrays.asList(compoundPerms));
+                    }
+                }
+                CACHED_PERMISSION_TO_CHECK = aggregatedPerms.toArray(new String[aggregatedPerms.size()]);
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
+        }
+        return CACHED_PERMISSION_TO_CHECK;
+    }
+    
 }
