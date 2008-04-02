@@ -42,6 +42,7 @@ import org.apache.jackrabbit.core.nodetype.PropDefImpl;
 import org.apache.jackrabbit.name.QName;
 import org.nuxeo.ecm.core.repository.jcr.versioning.JCRVersioningService;
 import org.nuxeo.ecm.core.repository.jcr.versioning.VersioningService;
+import org.nuxeo.ecm.core.repository.jcr.versioning.Versioning;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.Namespace;
@@ -491,7 +492,7 @@ public class TypeImporter implements NodeConstants {
         }
         // check if this document is versionable
         if (docType.getFacets().contains(FacetNames.VERSIONABLE)) {
-            final VersioningService vs = org.nuxeo.ecm.core.repository.jcr.versioning.Versioning.getService();
+            final VersioningService vs = Versioning.getService();
 
             //
             // the versioning system to be used can be specified from
@@ -530,8 +531,6 @@ public class TypeImporter implements NodeConstants {
     public boolean isSchemaRegistered(Schema type) {
         return ntReg.isRegistered(TypeAdapter.getSchemaName(type));
     }
-
-
 
     public static NodeTypeDef createContentNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();

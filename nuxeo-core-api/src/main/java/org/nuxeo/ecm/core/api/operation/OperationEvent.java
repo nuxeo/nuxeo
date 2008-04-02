@@ -20,9 +20,6 @@
 package org.nuxeo.ecm.core.api.operation;
 
 import java.io.Serializable;
-import java.security.Principal;
-
-import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
  * This class is not thread safe
@@ -31,44 +28,18 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class OperationEvent implements Serializable {
+public interface OperationEvent extends Serializable {
 
-    private static final long serialVersionUID = 1L;
+    String getId();
 
-    public String id; // the command ID
-    public String sessionId; // the sessionId that performed the modifs
-    public String repository; // the repository name
-    // create an identity object? (principal, key)
-    public Principal principal;
-    public String key; // the caller key
+    ModificationSet getModifications();
 
-    public ModificationSet modifications;
+    String getRepositoryName();
 
-    public Serializable details;
+    String getSessionId();
 
-    /**
-     *
-     */
-    public OperationEvent() {
-        // TODO Auto-generated constructor stub
-    }
+    String getUserName();
 
-    public OperationEvent(CoreSession session, String id, ModificationSet modifs) {
-        this (session, id, modifs, null, null);
-    }
-
-    public OperationEvent(CoreSession session, String id, ModificationSet modifs, Serializable details) {
-        this (session, id, modifs, details, null);
-    }
-
-    public OperationEvent(CoreSession session, String id, ModificationSet modifs, Serializable details, String key) {
-        this.modifications = modifs;
-        this.id = id;
-        this.repository = session.getRepositoryName();
-        this.sessionId = session.getSessionId();
-        this.principal = session.getPrincipal();
-        this.details = details;
-        //this.key = cmd.getData();
-    }
+    Object getDetails();
 
 }

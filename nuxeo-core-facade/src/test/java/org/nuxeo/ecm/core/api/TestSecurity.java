@@ -26,8 +26,6 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -46,11 +44,9 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestSecurity extends NXRuntimeTestCase {
 
-    private static final Log log = LogFactory.getLog(TestSecurity.class);
-
     private final static String REPO_NAME = "default";
 
-    CoreSession remote;
+    private CoreSession remote;
 
     @Override
     protected void setUp() throws Exception {

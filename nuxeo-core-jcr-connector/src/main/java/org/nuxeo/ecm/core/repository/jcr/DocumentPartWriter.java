@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.repository.jcr;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -128,8 +127,9 @@ public class DocumentPartWriter {
      * @param prop
      * @throws Exception
      */
+    @SuppressWarnings({"ObjectEquality"})
     public static void writePrimitiveProperty(Node parent, Property prop) throws Exception {
-        SimpleType type = ((SimpleType)prop.getType()).getPrimitiveType();
+        SimpleType type = ((SimpleType) prop.getType()).getPrimitiveType();
         if (type == StringType.INSTANCE) {
             parent.setProperty(prop.getName(), (String)prop.getValue());
         } else if (type == LongType.INSTANCE || type == IntegerType.INSTANCE) {
@@ -183,7 +183,6 @@ public class DocumentPartWriter {
             writeComplexProperty(node, property);
         }
     }
-
 
     /**
      * Writes content of the complex property to the its corresponding node.
@@ -305,6 +304,7 @@ public class DocumentPartWriter {
         throw new IllegalArgumentException("Unsupported type for setting array values "+array);
     }
 
+    @SuppressWarnings({"ObjectEquality"})
     public static Value[] arrayToJCRValues(ListType type, Object array, ValueFactory vf) {
         Type itemType = type.getFieldType();
 
@@ -399,6 +399,7 @@ public class DocumentPartWriter {
         return null;
     }
 
+    @SuppressWarnings({"ObjectEquality"})
     public static Value[] listToJCRValues(ListType type, List<?> list,
             ValueFactory vf) {
         Type itemType = type.getFieldType();

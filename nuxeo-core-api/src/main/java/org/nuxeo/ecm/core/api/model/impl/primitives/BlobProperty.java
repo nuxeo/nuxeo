@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.api.model.impl.primitives;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 
+import org.jetbrains.annotations.NotNull;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
@@ -86,6 +87,7 @@ public class BlobProperty extends ObjectProperty {
 //        }
     }
 
+    @NotNull
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {
@@ -99,8 +101,7 @@ public class BlobProperty extends ObjectProperty {
     }
 
     @Override
-    public Object newInstance() throws InstantiationException,
-            IllegalAccessException {
+    public Object newInstance() {
         return new ByteArrayInputStream("".getBytes()); // TODO not serializable
     }
 

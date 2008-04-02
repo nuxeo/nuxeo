@@ -31,7 +31,7 @@ import javax.jms.Session;
  */
 public interface MessageFactory extends Serializable {
 
-    public static MessageFactory DEFAULT = new MessageFactory() {
+    MessageFactory DEFAULT = new MessageFactory() {
         private static final long serialVersionUID = -5609402306633995881L;
         public Message createMessage(Session session, Object object) throws JMSException {
             if (object instanceof Serializable) {
