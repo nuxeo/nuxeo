@@ -55,7 +55,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.VersionModel;
@@ -192,7 +191,7 @@ public class NavigationContextBean implements NavigationContextLocal {
 
             ComposedNXQueryImpl q = new ComposedNXQueryImpl(
                     SQLQueryParser.parse("SELECT * FROM Document"),
-                    ss.getSearchPrincipal((NuxeoPrincipal) documentManager.getPrincipal()));
+                    ss.getSearchPrincipal(documentManager.getPrincipal()));
             ResultSet results;
             try {
                 results = ss.searchQuery(q, 0, 1);
@@ -545,7 +544,7 @@ public class NavigationContextBean implements NavigationContextLocal {
 
     @Factory(value = "currentDocument", scope = EVENT)
     public DocumentModel factoryCurrentDocument() {
-        return getCurrentDocument();
+        return currentDocument;
     }
 
     @Factory(value = "changeableDocument", scope = EVENT)
@@ -787,7 +786,7 @@ public class NavigationContextBean implements NavigationContextLocal {
     }
 
     public String goHome() {
-	    resetCurrentContext();
+        resetCurrentContext();
         EventManager.raiseEventsOnGoingHome();
         return "home";
     }
@@ -913,12 +912,12 @@ public class NavigationContextBean implements NavigationContextLocal {
      * @see NavigationContext#getCurrentDocumentFullUrl()
      */
     public String getCurrentDocumentFullUrl() {
-        if (null == getCurrentDocument()) {
+        if (null == currentDocument) {
             log.error("current document is null");
             return null;
         }
         return DocumentLocator.getFullDocumentUrl(getCurrentServerLocation(),
-                getCurrentDocument().getRef());
+                currentDocument.getRef());
     }
 
     // start a new conversation if needed, join main if possible

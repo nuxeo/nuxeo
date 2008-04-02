@@ -70,7 +70,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Archive manager actions bean.
- * <p>
  *
  * @author <a href="mailto:bt@nuxeo.com">Bogdan Tatar</a>
  */
@@ -105,13 +104,13 @@ public class ArchiveManagerActionsBean implements ArchiveManagerActions {
     private ArchiveRecord selectedArchiveRecord;
 
     @In(required = true)
-    private NavigationContext navigationContext;
+    private transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
     private transient FacesMessages facesMessages;
 
     @In(create = true)
-    private ResourcesAccessor resourcesAccessor;
+    private transient ResourcesAccessor resourcesAccessor;
 
     private ArchiveManager archiveManager;
 
@@ -286,7 +285,7 @@ public class ArchiveManagerActionsBean implements ArchiveManagerActions {
         }
     }
 
-    public void initializeArchiveManager() throws Exception {
+    public void initializeArchiveManager() {
         log.debug("Initializing ...");
     }
 

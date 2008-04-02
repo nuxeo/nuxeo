@@ -22,12 +22,13 @@ package org.nuxeo.ecm.platform.api.ws;
 import java.io.IOException;
 import java.io.Serializable;
 
+import org.nuxeo.ecm.core.api.Blob;
+
 
 /**
  * Web service document blob.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class DocumentBlob implements Serializable {
 
@@ -43,16 +44,13 @@ public class DocumentBlob implements Serializable {
 
     private byte[] blob;
 
-
-
     /**
      * Emtpy ctor needed by tools like jaxb.
      */
     public DocumentBlob() {
-        // TODO Auto-generated constructor stub
     }
 
-    public DocumentBlob(String name, org.nuxeo.ecm.core.api.Blob blob) throws IOException {
+    public DocumentBlob(String name, Blob blob) throws IOException {
         this.blob = blob.getByteArray();
         encoding = blob.getEncoding();
         mimeType = blob.getMimeType();
@@ -137,6 +135,5 @@ public class DocumentBlob implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-
 
 }
