@@ -47,7 +47,6 @@ import org.jboss.seam.annotations.WebRemote;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.core.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -55,7 +54,6 @@ import org.nuxeo.ecm.core.api.DocumentModelTree;
 import org.nuxeo.ecm.core.api.DocumentModelTreeNode;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.InvalidProxyDocOperation;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
@@ -336,18 +334,25 @@ public class PublishActionsBean implements PublishActions, Serializable {
                 }
 
                 // check for already selected sections
+                DocumentModel currentDocument = navigationContext.getCurrentDocument();
+                DocumentRef currentDocRef = currentDocument.getRef();
+                DocumentRef currentParentRef = currentDocument.getParentRef();
                 existingPublishedProxy = new HashMap<String, DocumentModel>();
                 DocumentModelList publishedProxies = documentManager.getProxies(
-                        navigationContext.getCurrentDocument().getRef(), null);
+                        currentDocRef, null);
                 for (DocumentModel pProxy : publishedProxies) {
                     for (DocumentModelTreeNode node : sections) {
-                        DocumentRef parentRef = pProxy.getParentRef();
-                        if (node.getDocument().getRef().equals(parentRef)) {
+                        DocumentRef proxyParentRef = pProxy.getParentRef();
+                        DocumentRef sectionRef = node.getDocument().getRef();
+                        if (sectionRef.equals(proxyParentRef)) {
                             String versionLabel = versioningManager.getVersionLabel(pProxy);
                             node.setVersion(versionLabel);
-                            existingPublishedProxy.put(parentRef.toString(),
+                            existingPublishedProxy.put(proxyParentRef.toString(),
                                     pProxy);
-                            addSelectedSection(node);
+                            if (!sectionRef.equals(currentParentRef)) {
+                                // when looking at a proxy, don't check itself
+                                addSelectedSection(node);
+                            }
                             break;
                         }
                     }
@@ -563,27 +568,17 @@ public class PublishActionsBean implements PublishActions, Serializable {
             }
 
             if (doc.isProxy()) {
+                // TODO copy also copies security. just recreate a proxy.
                 documentManager.copy(doc.getRef(), target.getRef(),
                         doc.getName());
                 nbPublishedDocs++;
             } else {
                 if (doc.hasFacet(FacetNames.PUBLISHABLE)) {
-                    // FIXME JA : I don't know where this is used but it should
-                    // use the publishDocument() API of this bean.
-                    // fix for EURPCF-338: Publish a Publish document in another
-                    // referential generate an error
-                    try {
-                        documentManager.publishDocument(doc,
-                                navigationContext.getCurrentDocument());
-                        nbPublishedDocs++;
-                    } catch (InvalidProxyDocOperation e) {
-                        log.warn("proxy document in list not published: " +
-                                doc.getTitle());
-                    } catch (ClientException e) {
-                        // TODO maybe just inform user about the specific doc
-                        // that couldn't be published
-                        throw e;
-                    }
+                    documentManager.publishDocument(doc, target);
+                    nbPublishedDocs++;
+                } else {
+                    log.info("Attempted to publish non-publishable document " +
+                            doc.getTitle());
                 }
             }
         }
@@ -615,11 +610,13 @@ public class PublishActionsBean implements PublishActions, Serializable {
                     "Cannot publish because not enough rights");
         }
 
-        Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
-        DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.FULL,
-                locale);
-        docToPublish.setProperty("dublincore", "issued",
-                dateFormat.getCalendar());
+        if (!docToPublish.isProxy()) {
+            Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
+            DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.FULL,
+                    locale);
+            docToPublish.setProperty("dublincore", "issued",
+                    dateFormat.getCalendar());
+        }
 
         DocumentModel proxy;
 
@@ -635,7 +632,9 @@ public class PublishActionsBean implements PublishActions, Serializable {
                 @Override
                 public void run() throws ClientException {
 
-                    unrestrictedSession.saveDocument(docToPublish);
+                    if (!docToPublish.isProxy()) {
+                        unrestrictedSession.saveDocument(docToPublish);
+                    }
                     DocumentModel proxy = unrestrictedSession.publishDocument(
                             docToPublish, section);
                     unrestrictedSession.save();
@@ -678,7 +677,9 @@ public class PublishActionsBean implements PublishActions, Serializable {
             proxy = misc[0]; // get info from inner method
 
         } else {
-            documentManager.saveDocument(docToPublish);
+            if (!docToPublish.isProxy()) {
+                documentManager.saveDocument(docToPublish);
+            }
             proxy = documentManager.publishDocument(docToPublish, section);
             documentManager.save();
             // fire an event for the publication workflow
