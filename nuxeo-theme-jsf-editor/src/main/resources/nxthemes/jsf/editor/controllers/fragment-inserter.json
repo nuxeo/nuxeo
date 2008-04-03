@@ -1,7 +1,7 @@
   {"id": "fragment inserter",
    "type": "drag-and-drop",
    "dragging": {
-       "source": "nxthemesFragmentFactory",
+       "element": "nxthemesFragmentFactory",
        "offset_x": -5,
        "offset_y": -5,
        "feedback": {

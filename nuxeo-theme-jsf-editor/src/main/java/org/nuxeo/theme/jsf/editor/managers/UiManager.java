@@ -64,6 +64,7 @@ import org.nuxeo.theme.jsf.negotiation.CookieManager;
 import org.nuxeo.theme.jsf.negotiation.JSFNegotiator;
 import org.nuxeo.theme.models.ModelType;
 import org.nuxeo.theme.negotiation.NegotiationException;
+import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.FieldIO;
@@ -74,6 +75,7 @@ import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 import org.nuxeo.theme.views.ViewType;
+import org.nuxeo.theme.vocabularies.VocabularyItem;
 
 @Stateless
 @Name("nxthemesUiManager")
@@ -82,8 +84,6 @@ import org.nuxeo.theme.views.ViewType;
 public class UiManager implements UiManagerLocal {
 
     private static final Log log = LogFactory.getLog(UiManager.class);
-
-    private static final long serialVersionUID = 1L;
 
     private static final String PREVIEW_PROPERTIES_RESOURCE = "/nxthemes/jsf/editor/styles/previews.properties";
 
@@ -110,7 +110,7 @@ public class UiManager implements UiManagerLocal {
 
     public String startEditor() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        ExternalContext externalContext = (ExternalContext) facesContext.getExternalContext();
+        ExternalContext externalContext = facesContext.getExternalContext();
         final HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
         final String referrer = request.getHeader("referer");
         if (referrer == null) {
@@ -122,7 +122,8 @@ public class UiManager implements UiManagerLocal {
         final ApplicationType application = (ApplicationType) Manager.getTypeRegistry().lookup(
                 TypeFamily.APPLICATION, root);
         final String strategy = application.getNegotiation().getStrategy();
-        final JSFNegotiator negotiator = new JSFNegotiator(strategy, facesContext);
+        final JSFNegotiator negotiator = new JSFNegotiator(strategy,
+                facesContext);
 
         // Store the current theme in a cookie
         String currentTheme = null;
@@ -131,7 +132,8 @@ public class UiManager implements UiManagerLocal {
         } catch (NegotiationException e) {
         }
         if (currentTheme != null) {
-            CookieManager.setCookie("nxthemes.theme", currentTheme, externalContext);
+            CookieManager.setCookie("nxthemes.theme", currentTheme,
+                    externalContext);
         }
 
         // Switch to the editor
@@ -148,7 +150,7 @@ public class UiManager implements UiManagerLocal {
     /* Fragments and views */
     public static class FragmentInfo {
 
-        private FragmentType fragmentType = null;
+        private final FragmentType fragmentType;
 
         public FragmentInfo(FragmentType fragmentType) {
             this.fragmentType = fragmentType;
@@ -216,7 +218,7 @@ public class UiManager implements UiManagerLocal {
     /* Perspectives */
     public List<SelectItem> getAvailablePerspectives() {
         final List<SelectItem> selectItemList = new ArrayList<SelectItem>();
-        for (PerspectiveType perspectiveType : Manager.getPerspectiveManager().listPerspectives()) {
+        for (PerspectiveType perspectiveType : PerspectiveManager.listPerspectives()) {
             selectItemList.add(new SelectItem(perspectiveType.name,
                     perspectiveType.title));
         }
@@ -240,14 +242,24 @@ public class UiManager implements UiManagerLocal {
 
     /* Themes */
     public List<ThemeDescriptor> getThemesDescriptors() {
-        final List<ThemeDescriptor> themes = new ArrayList<ThemeDescriptor>();
+        final List<ThemeDescriptor> themeDescriptors = new ArrayList<ThemeDescriptor>();
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        final Set<String> themeNames = Manager.getThemeManager().getThemeNames();
         for (Type type : typeRegistry.getTypes(TypeFamily.THEME)) {
             if (type != null) {
-                themes.add((ThemeDescriptor) type);
+                ThemeDescriptor themeDescriptor = (ThemeDescriptor) type;
+                themeDescriptors.add(themeDescriptor);
+                themeNames.remove(themeDescriptor.getName());
             }
         }
-        return themes;
+
+        /* Create temporary theme descriptors for unregistered themes */
+        for (String themeName : themeNames) {
+            ThemeDescriptor themeDescriptor = new ThemeDescriptor();
+            themeDescriptor.setName(themeName);
+            themeDescriptors.add(themeDescriptor);
+        }
+        return themeDescriptors;
     }
 
     public static class ThemeInfo {
@@ -331,7 +343,6 @@ public class UiManager implements UiManagerLocal {
         final String defaultThemeName = getDefaultTheme();
         final String defaultPageName = defaultThemeName.split("/")[1];
 
-        final ThemeManager themeManager = Manager.getThemeManager();
         final List<PageInfo> availablePages = new ArrayList<PageInfo>();
         final ThemeElement currentTheme = uiStates.getCurrentTheme();
         final PageElement currentPage = uiStates.getCurrentPage();
@@ -339,7 +350,7 @@ public class UiManager implements UiManagerLocal {
                 : currentPage.getName();
         if (currentTheme != null) {
             final String currentThemeName = currentTheme.getName();
-            for (PageElement page : themeManager.getPagesOf(currentTheme)) {
+            for (PageElement page : ThemeManager.getPagesOf(currentTheme)) {
                 final String pageName = page.getName();
                 final String link = String.format("%s/%s", currentThemeName,
                         pageName);
@@ -402,6 +413,42 @@ public class UiManager implements UiManagerLocal {
                 rendered.append(String.format(
                         "<input type=\"text\" class=\"textInput fieldInput\" name=\"%s\" value=\"%s\" />",
                         name, value));
+
+            } else if ("selection".equals(type)) {
+                String source = info.source();
+                if (!source.equals("")) {
+                    List<VocabularyItem> items = Manager.getVocabularyManager().getItems(
+                            source);
+                    if (items != null) {
+                        rendered.append(String.format(
+                                "<select class=\"fieldInput\" name=\"%s\">",
+                                name));
+                        boolean found = false;
+                        for (VocabularyItem item : items) {
+                            final String itemValue = item.getValue();
+                            if (itemValue.equals(value)) {
+                                rendered.append(String.format(
+                                        "<option selected=\"selected\" value=\"%s\">%s</option>",
+                                        itemValue, item.getLabel()));
+                                found = true;
+                            } else {
+                                rendered.append(String.format(
+                                        "<option value=\"%s\">%s</option>",
+                                        itemValue, item.getLabel()));
+                            }
+                        }
+                        if (!found) {
+                            rendered.append(String.format(
+                                    "<option>Invalid option: %s</option>",
+                                    value));
+                        }
+                        rendered.append("</select>");
+                    }
+                }
+            }
+
+            if (info.required() && value.equals("")) {
+                rendered.append("<span style=\"color: red\"> * </span>");
             }
 
             return rendered.toString();
@@ -599,7 +646,7 @@ public class UiManager implements UiManagerLocal {
         final String selectedCategory = uiStates.getStylePropertyCategory();
 
         final Properties cssProperties = Utils.getCssProperties();
-        final Enumeration propertyNames = cssProperties.propertyNames();
+        final Enumeration<?> propertyNames = cssProperties.propertyNames();
         while (propertyNames.hasMoreElements()) {
             final String name = (String) propertyNames.nextElement();
             final String value = properties == null ? ""
@@ -640,7 +687,7 @@ public class UiManager implements UiManagerLocal {
                 IGNORE_VIEW_NAME, IGNORE_CLASSNAME, INDENT);
     }
 
-    private FieldInfo getFieldInfo(final Class<? extends Object> c,
+    private FieldInfo getFieldInfo(final Class<?> c,
             final String name) {
         try {
             return c.getField(name).getAnnotation(FieldInfo.class);
@@ -750,7 +797,7 @@ public class UiManager implements UiManagerLocal {
     public List<StyleCategory> getStyleCategories() {
         final Map<String, StyleCategory> categories = new LinkedHashMap<String, StyleCategory>();
         final Properties cssProperties = Utils.getCssProperties();
-        final Enumeration elements = cssProperties.elements();
+        final Enumeration<?> elements = cssProperties.elements();
         final String selectedStyleCategory = uiStates.getStylePropertyCategory();
         categories.put("", new StyleCategory("", "all",
                 selectedStyleCategory.equals("")));
@@ -801,10 +848,9 @@ public class UiManager implements UiManagerLocal {
         Style style = getStyleOfSelectedElement();
         final Style currentStyleLayer = uiStates.getCurrentStyleLayer();
         final List<StyleLayer> layers = new ArrayList<StyleLayer>();
-        final ThemeManager themeManager = Manager.getThemeManager();
         layers.add(new StyleLayer("This style", style.getUid(),
                 style == currentStyleLayer || currentStyleLayer == null));
-        for (Format ancestor : themeManager.listAncestorFormatsOf(style)) {
+        for (Format ancestor : ThemeManager.listAncestorFormatsOf(style)) {
             layers.add(1, new StyleLayer(ancestor.getName(), ancestor.getUid(),
                     ancestor == currentStyleLayer));
         }
@@ -868,7 +914,7 @@ public class UiManager implements UiManagerLocal {
     }
 
     /* Private API */
-    private static String getDefaultTheme() {
+    private String getDefaultTheme() {
         String defaultTheme = "";
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
         final String applicationPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();

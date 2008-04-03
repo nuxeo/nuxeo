@@ -37,9 +37,9 @@ public final class NegotiationType implements Type {
     public String strategy;
 
     @XNodeList(value = "scheme", type = ArrayList.class, componentType = String.class)
-    private List<String> schemeClassNames = null;
+    private List<String> schemeClassNames;
 
-    private List<Scheme> schemes = null;
+    private List<Scheme> schemes;
 
 
     public String getTypeName() {
@@ -50,7 +50,7 @@ public final class NegotiationType implements Type {
         return TypeFamily.NEGOTIATION;
     }
 
-    synchronized public List<Scheme> getSchemes() {
+    public synchronized List<Scheme> getSchemes() {
         if (schemes == null && schemeClassNames != null) {
             schemes = new ArrayList<Scheme>();
             for (String schemeClassName : schemeClassNames) {

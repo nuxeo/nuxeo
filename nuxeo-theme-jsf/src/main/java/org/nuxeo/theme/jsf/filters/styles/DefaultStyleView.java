@@ -16,7 +16,6 @@ package org.nuxeo.theme.jsf.filters.styles;
 
 import java.util.List;
 
-import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFormatter;
 import org.nuxeo.theme.formats.Format;
@@ -32,11 +31,10 @@ public class DefaultStyleView extends AbstractView {
     @Override
     public String render(final RenderingInfo info) {
         final Style style = (Style) info.getFormat();
-        final ThemeManager themeManager = Manager.getThemeManager();
         final StringBuilder sb = new StringBuilder();
 
         // add inherited styles first
-        final List<Format> ancestors = themeManager.listAncestorFormatsOf(style);
+        final List<Format> ancestors = ThemeManager.listAncestorFormatsOf(style);
         for (Format ancestor : ancestors) {
             sb.append(Utils.computeCssClassName(ancestor)).append(' ');
         }
@@ -47,9 +45,10 @@ public class DefaultStyleView extends AbstractView {
         final Widget widget = (Widget) ElementFormatter.getFormatFor(element,
                 "widget");
         if (widget != null) {
-            String className = Utils.toUpperCamelCase(widget.getName());
+            final String className = Utils.toUpperCamelCase(widget.getName());
             sb.append(className);
         }
+
         return Utils.insertCssClass(info.getMarkup(), sb.toString());
     }
 }

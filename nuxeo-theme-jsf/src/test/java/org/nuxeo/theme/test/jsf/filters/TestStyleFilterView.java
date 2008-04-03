@@ -34,23 +34,23 @@ public class TestStyleFilterView extends NXRuntimeTestCase {
 
     FormatType formatType;
 
-    TypeRegistry typeRegistry;
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("nxthemes-core-service.xml");
-        deploy("nxthemes-core-contrib.xml");
-        deploy("nxthemes-jsf-contrib.xml");
+        deployContrib("nuxeo-theme-core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("nuxeo-theme-core", "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("nuxeo-theme-jsf", "OSGI-INF/nxthemes-jsf-contrib.xml");
+
+        ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
+                ThemeService.ID);
+        themeService.getRegistry("uids").clear();
+        themeService.getRegistry("relations").clear();
 
         // create the elements to render
         PageElement page = new PageElement();
         page.setUid(1);
 
-        ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
-                ThemeService.ID);
-
-        typeRegistry = (TypeRegistry) themeService.getRegistry("types");
+        TypeRegistry typeRegistry = (TypeRegistry) themeService.getRegistry("types");
         formatType = (FormatType) typeRegistry.lookup(TypeFamily.FORMAT,
                 "style");
 

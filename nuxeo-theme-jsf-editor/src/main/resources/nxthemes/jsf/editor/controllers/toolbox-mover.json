@@ -1,7 +1,7 @@
   {"id": "toolbox mover",
    "type": "drag-and-drop",
    "dragging": {
-     "source": "nxthemesToolbox",
+     "element": "nxthemesToolbox",
      "handle": "title",
      "opacity": 1,
      "savePosition": true,

@@ -9,20 +9,20 @@
 var NXThemes = {
   Version: "0.9",
 
-  Controllers: $H({}),
-  Effects: $H({}),
-  Storages: $H({}),
-  Widgets: $H({}),
-  Filters: $H({}),
+  Controllers: new Hash(),
+  Effects: new Hash(),
+  Storages: new Hash(),
+  Widgets: new Hash(),
+  Filters: new Hash(),
 
-  _subscribers: $H({}),
-  _models: $H({}),
-  _views: $H({}),
-  _controllers: $H({}),
-  _action_handlers: $H({}),
+  _subscribers: new Hash(),
+  _models: new Hash(),
+  _views: new Hash(),
+  _controllers: new Hash(),
+  _action_handlers: new Hash(),
 
-  _initialized: $H({}),
-  _defs: $H({}),
+  _initialized: new Hash(),
+  _defs: new Hash(),
 
   init: function() {
     NXThemes.parse(document);
@@ -30,15 +30,15 @@ var NXThemes = {
   },
 
   getModelById: function(id) {
-    return this._models[id];
+    return this._models.get(id);
   },
 
   getControllerById: function(id) {
-    return this._controllers[id];
+    return this._controllers.get(id);
   },
 
   getViewById: function(id) {
-    return this._views[id];
+    return this._views.get(id);
   },
 
   getViews: function() {
@@ -46,27 +46,37 @@ var NXThemes = {
   },
 
   registerControllers: function(controllers) {
-    Object.extend(this.Controllers, controllers);
+    $H(controllers).each(function(c) {
+      NXThemes.Controllers.set(c.key, c.value);
+    });
   },
 
   registerEffects: function(effects) {
-    Object.extend(this.Effects, effects);
+    $H(effects).each(function(c) {
+      NXThemes.Effects.set(c.key, c.value);
+    });
   },
 
   registerStorages: function(storages) {
-    Object.extend(this.Storages, storages);
+    $H(storages).each(function(c) {
+      NXThemes.Storages.set(c.key, c.value);
+    });
   },
 
   registerWidgets: function(widgets) {
-    Object.extend(this.Widgets, widgets);
+    $H(widgets).each(function(c) {
+      NXThemes.Widgets.set(c.key, c.value);
+    });
   },
 
   registerFilters: function(filters) {
-    Object.extend(this.Filters, filters);
+    $H(filters).each(function(c) {
+      NXThemes.Filters.set(c.key, c.value);
+    });
   },
 
   getFilterById: function(id) {
-    return this.Filters[id];
+    return this.Filters.get(id);
   },
 
   /* Session management */
@@ -119,13 +129,10 @@ var NXThemes = {
   /* Error handling */
   warn: function(msg, context) {
     msg = "[NXThemes] " + msg;
-    if (context === null || context.parentNode === null) {
-      window.alert(msg);
+    if (typeof console.log !== undefined) {
+      console.log(msg);
     } else {
-      var div = NXThemes.Canvas.createNode({tag: 'div',
-        classes: ['nxthemesWarningMessage'],
-        text: msg});
-      context.parentNode.replaceChild(div, context);
+      window.alert(msg);
     }
   },
 
@@ -145,19 +152,21 @@ var NXThemes = {
 
   /* Action handlers */
   addActions: function(actions) {
-    Object.extend(this._action_handlers, actions);
+    $H(actions).each(function(c) {
+      NXThemes._action_handlers.set(c.key, c.value);
+    });
   },
 
   getAction: function(action_id) {
-    return this._action_handlers[action_id];
+    return this._action_handlers.get(action_id);
   },
 
   /* Event system */
   subscribe: function(eventid, event) {
-    if (!(eventid in this._subscribers)) {
-      this._subscribers[eventid] = [];
+    if (this._subscribers.get(eventid) === undefined) {
+      this._subscribers.set(eventid, []);
     }
-    if (this._subscribers[eventid].findAll(function(e) {
+    if (this._subscribers.get(eventid).findAll(function(e) {
       if (event === undefined) {
         return true;
       }
@@ -169,14 +178,14 @@ var NXThemes = {
       return (NXThemes.compare(event.subscriber, e.subscriber) &&
               NXThemes.compare(event.publisher, e.publisher));
     }).length === 0) {
-      this._subscribers[eventid].push(event);
+      this._subscribers.get(eventid).push(event);
     }
   },
 
   unsubscribe: function(eventid, event) {
     var subscribers = this._subscribers;
-    if (!(eventid in subscribers)) { return; }
-    subscribers[eventid] = subscribers[eventid].reject(function(e) {
+    if (subscribers.get(eventid) === undefined) { return; }
+    var new_subscribers = subscribers.get(eventid).reject(function(e) {
       if (event === undefined) {
         return true;
       }
@@ -187,16 +196,17 @@ var NXThemes = {
       }
       return (NXThemes.compare(event.subscriber, e.subscriber) &&
               NXThemes.compare(event.publisher, e.publisher));
-      });
-    if (subscribers[eventid].length === 0) {
-      delete subscribers[eventid];
+    });
+    subscribers.set(eventid, new_subscribers);
+    if (subscribers.get(eventid).size() === 0) {
+      subscribers.unset(eventid);
     }
   },
 
   notify: function(eventid, event) {
     var subscribers = this._subscribers;
     var publisher = event.publisher;
-    (subscribers[eventid] || []).findAll(function(e) {
+    (subscribers.get(eventid) || []).findAll(function(e) {
       if (event === undefined) {
         return true;
       }
@@ -219,25 +229,37 @@ var NXThemes = {
   registerEventHandler: function(eventid, subscriber, handler) {
     var handlers = subscriber._handlers;
     if (handlers === undefined) {
-      subscriber._handlers = new Object();
+      subscriber._handlers = new Hash();
     }
-    subscriber._handlers[eventid] = handler;
+    subscriber._handlers.set(eventid, handler);
   },
 
   getEventHandler: function(eventid, subscriber) {
-    return (subscriber._handlers || {})[eventid];
+    return (subscriber._handlers || new Hash()).get(eventid);
   },
 
   /* Document parsing */
 
   _hasClassName: function(element, className) {
     var elementClassName = element.className;
-    if (elementClassName.length === 0) {
+    if (!elementClassName || elementClassName.length === 0) {
       return false;
     }
     if (elementClassName == className ||
         elementClassName.match(new RegExp("(^|\\s)" + className + "(\\s|$)"))) {
       return true;
+    }
+    return false;
+  },
+
+  _thisOrParentHasClassName: function(element, className) {
+    var el = element;
+    var hasClassName = NXThemes._hasClassName;
+    while (el) {
+      if (hasClassName(el, className)) {
+        return true;
+      }
+      el = el.parentNode;
     }
     return false;
   },
@@ -273,6 +295,7 @@ var NXThemes = {
         NXThemes.notify("parsed", {publisher: node});
       }
     });
+
     NXThemes.subscribe("initialized",
       {subscriber: progress, scope: progress}
     );
@@ -308,7 +331,7 @@ var NXThemes = {
       NXThemes.warn("Component has no id: <pre>" + text + "</pre>", el);
     }
     el.componentid = id;
-    this._defs[[el.className, id]] = def;
+    this._defs.set([el.className, id], def);
   },
 
   // second stage
@@ -326,7 +349,7 @@ var NXThemes = {
   },
 
   _register: function(node, el, classid) {
-      var def = NXThemes._defs[[classid,el.componentid]];
+      var def = NXThemes._defs.get([classid, el.componentid]);
       var id = def.id;
       var factory;
 
@@ -334,13 +357,13 @@ var NXThemes = {
 
         case "controller":
           var controller_type = def.type;
-          factory = NXThemes.Controllers[controller_type];
+          factory = NXThemes.Controllers.get(controller_type);
           if (!factory) {
             NXThemes.warn("No such controller type: " + controller_type);
             break;
           } else {
-            controller = factory(node, def);
-            NXThemes._controllers[id] = controller;
+            var controller = factory(node, def);
+            NXThemes._controllers.set(id, controller);
           }
           NXThemes.notify("registered controller",
             {publisher: controller, scope: id}
@@ -348,8 +371,8 @@ var NXThemes = {
           break;
 
         case "model":
-          model = new NXThemes.Model(node, def);
-          NXThemes._models[id] = model;
+          var model = new NXThemes.Model(node, def);
+          NXThemes._models.set(id, model);
           NXThemes.notify("registered model",
             {publisher: model, scope: id}
           );
@@ -360,17 +383,17 @@ var NXThemes = {
           if (!widget_type) {
             NXThemes.warn("Must specify a widget type for " + classid + " id: " + id, el);
             break;
-          } else if (!(widget_type in NXThemes.Widgets)) {
+          } else if (NXThemes.Widgets.get(widget_type) === undefined) {
             NXThemes.warn("Unknown widget type '" + widget_type + "' for " + classid + " id: " + id, el);
             break;
           }
 
-          factory = NXThemes.Widgets[widget_type];
+          var factory = NXThemes.Widgets.get(widget_type);
           if (factory === null) {
             NXThemes.warn("No such widget type: " + widget_type, el);
           } else {
-            view = factory(def);
-            NXThemes._views[id] = view;
+            var view = factory(def);
+            NXThemes._views.set(id, view);
           }
 
           /* create the view */
@@ -421,7 +444,7 @@ NXThemes.Set = Class.create();
 NXThemes.Set.prototype = {
 
   initialize: function(x) {
-    this._elements = $H({});
+    this._elements = new Hash();
     if (typeof x == 'string') {
       x = [x];
     }
@@ -435,7 +458,7 @@ NXThemes.Set.prototype = {
       x = [x];
     }
     $A(x).each(function(e) {
-      this._elements[e] = true;
+      this._elements.set(e, true);
     }.bind(this));
   },
 
@@ -444,12 +467,12 @@ NXThemes.Set.prototype = {
       x = [x];
     }
     $A(x).each(function(e) {
-      delete this._elements[e];
+      this._elements.unset(e);
     }.bind(this));
   },
 
   contains: function(x) {
-    return x in this._elements;
+    return this.entries().indexOf(x) > -1;
   },
 
   entries: function() {
@@ -552,8 +575,8 @@ Object.extend(NXThemes.Identifiable, {
 
 if (!NXThemes.Canvas) {
   NXThemes.Canvas = {
-    _styles: {},
-    _scripts: {}
+    _styles: new Hash(),
+    _scripts: new Hash() 
   };
 }
 
@@ -582,7 +605,9 @@ Object.extend(NXThemes.Canvas, {
 
   createNode: function(options) {
     var node = $(document.createElement(options.tag));
-    node.addClassName(options.classes);
+    $A(options.classes).each(function(c) {
+      node.addClassName(c);
+    });
     node.setStyle(options.style);
     $H(options.attributes).each(function(attr) {
       node.setAttribute(attr.key, attr.value);
@@ -611,7 +636,7 @@ Object.extend(NXThemes.Canvas, {
   },
 
   addStyleSheet: function(id, src) {
-    if (id in this._styles) {
+    if (this._styles.get(id) !== undefined) {
       return;
     }
     var head = document.getElementsByTagName("head")[0];
@@ -621,19 +646,19 @@ Object.extend(NXThemes.Canvas, {
     link.href = src;
     link.type = "text/css";
     head.appendChild(link);
-    this._styles[id] = src;
+    this._styles.set(id, src);
   },
 
   updateStyleSheet: function(id, src) {
-    if (id in this._styles) {
+    if (this._styles.get(id) !== undefined) {
       var style = document.getElementById("nxthemes-style-" + id);
       style.href = src;
     }
   },
 
   removeStyleSheet: function(id) {
-    if (id in this._styles) {
-      delete this._styles[id];
+    if (this._styles.get(id) !== undefined) {
+      this._styles.unset(id);
     }
     var style = document.getElementById("nxthemes-style-" + id);
     if (style) {
@@ -642,7 +667,7 @@ Object.extend(NXThemes.Canvas, {
   },
 
   addScript: function(id, src) {
-    if (id in this._scripts) {
+    if (this._scripts.get(id) !== undefined) {
       return;
     }
     var head = document.getElementsByTagName("head")[0];
@@ -651,12 +676,12 @@ Object.extend(NXThemes.Canvas, {
     script.src = src;
     script.type = "text/javascript";
     head.appendChild(script);
-    this._scripts[id] = src;
+    this._scripts.set(id, src);
   },
 
   removeScript: function(id) {
-    if (id in this._scripts) {
-      delete this._scripts[id];
+    if (this._scripts.get(id) !== undefined) {
+      this._scripts.unset(id);
     }
     var script = document.getElementById("nxthemes-script-" + id);
     if (script) {
@@ -676,14 +701,16 @@ if (!Element.Methods) {
 
 Element.addMethods({
 
-  setOpacity: function(element, opacity) {
-    if (window.ActiveXObject) {
-      element.style.filter = "alpha(opacity=" + opacity*100 + ")";
-    } else {
-      element.style.opacity = opacity;
-    }
+  within: function(element, x, y) {
+    this.xcomp = x;
+    this.ycomp = y;
+    this.offset = Element.cumulativeOffset(element);
+    return (y >= this.offset[1] &&
+            y <  this.offset[1] + element.offsetHeight &&
+            x >= this.offset[0] &&
+            x <  this.offset[0] + element.offsetWidth);
   },
-
+  
   setBackgroundColor: function(element, options) {
     var r = parseInt(options.r * 255);
     var g = parseInt(options.g * 255);
@@ -693,7 +720,7 @@ Element.addMethods({
 
   getBackgroundColor: function(element) {
     var regExp = new RegExp("^rgb\\((\\d+),(\\d+),(\\d+)\\)$");
-    var bgColor = element.getStyle('background-color') || 'rgb(255,255,255)';
+    var bgColor = element.getStyle('backgroundColor') || 'rgb(255,255,255)';
     var match = regExp.exec(bgColor.replace(/\s+/g,''));
     if (!match) {
       return {r: 1, g: 1, b: 1};
@@ -705,7 +732,7 @@ Element.addMethods({
     var x = options.x;
     var y = options.y;
     if (options.duration) {
-      var pos = Position.cumulativeOffset(element);
+      var pos = Element.cumulativeOffset(element);
       var x0 = pos[0];
       var y0 = pos[1];
       new NXThemes.Scheduler(Object.extend(options, {
@@ -723,7 +750,7 @@ Element.addMethods({
       var page_w = window.innerWidth || document.body.clientWidth;
       var page_h = window.innerHeight || document.body.clientHeight;
 
-      var offset = Position.realOffset(element);
+      var offset = Element.cumulativeScrollOffset(element);
       var offsetX = offset[0];
       var offsetY = offset[1];
 
@@ -814,11 +841,11 @@ NXThemes.Model.prototype = {
 
   // low-level I/O
   readData: function() {
-    return this._data || this.def.data;
+    return this._data || new Hash(this.def.data);
   },
 
   writeData: function(data) {
-    this._data = data;
+    this._data = new Hash(data);
   },
 
   // high-level I/O
@@ -855,11 +882,11 @@ NXThemes.Model.prototype = {
   /* Private API */
   _setSchema: function() {
     var initial_data = this.def.data;
-    var schema = $H({});
+    var schema = new Hash();
     $H(initial_data).each(function(f) {
       var field = f.key;
       var value = f.value;
-      schema[field] = typeof value;
+      schema.set(field, typeof value);
     });
     return schema;
   },
@@ -871,7 +898,7 @@ NXThemes.Model.prototype = {
       this.def.storage = storage_def;
     }
     var model = this;
-    var storage = NXThemes.Storages[storage_def.type](this);
+    var storage = NXThemes.Storages.get(storage_def.type)(this);
 
     // the model reacts to events on the storage and notifies observers
     NXThemes.registerEventHandler('stored', model, function(event) {
@@ -898,7 +925,7 @@ NXThemes.StorageAdapter.prototype = {
   initialize: function(model) {
     this.model = model;
     this._queue = [];
-    this._queued_data = {};
+    this._queued_data = new Hash();
     this.setup();
   },
 
@@ -914,12 +941,12 @@ NXThemes.StorageAdapter.prototype = {
       switch (access.type) {
         case 'queue':
           if (this._queue.length < size || size === null) {
-            this._queue.push(data[access.signature]);
+            this._queue.push(data.get(access.signature));
           }
           break;
 
         case 'stack':
-          this._queue.unshift(data[access.signature]);
+          this._queue.unshift(data.get(access.signature));
           if (size && size > 0) {
             this._queue = this._queue.slice(0, size);
           }
@@ -954,12 +981,12 @@ NXThemes.StorageAdapter.prototype = {
     var stored;
 
     if (access && access.type) {
-      var signature = data[access.signature];
-      this._queued_data[signature] = data;
+      var signature = data.get(access.signature);
+      this._queued_data.set(signature, data);
       while (this._queue) {
         var next = this._queue[0];
-        if (next in this._queued_data) {
-          data = this._queued_data[next];
+        if (this._queued_data.get(next) !== undefined) {
+          data = this._queued_data.get(next);
           stored = this._storeFields(data);
           this._queue.shift();
         } else {
@@ -975,15 +1002,15 @@ NXThemes.StorageAdapter.prototype = {
   _storeFields: function(data) {
     // filter out fields with the wrong data type
     var schema = this.model.schema;
-    var new_data = new Object();
+    var new_data = new Hash();
     var current_data = this.read();
     schema.each(function(f) {
       var field = f.key;
-      var value = data[field];
+      var value = data.get(field);
       if (typeof value == f.value) {
-        new_data[field] = value;
+        new_data.set(field, value);
       } else {
-        new_data[field] = current_data[field];
+        new_data.set(field, current_data.get(field));
       }
     });
     if (this.model._data === undefined ||
@@ -1000,7 +1027,7 @@ NXThemes.StorageAdapter.prototype = {
 
   merge: function(data) {
     var current_data = this.read();
-    var new_data = $H(current_data).merge(data);
+    var new_data = current_data.update(data);
     this.write(new_data);
   }
 
@@ -1039,7 +1066,7 @@ NXThemes.View.prototype = {
     this.def = def;
     this.widget = widget;
     this.widget.view_id = this.hash();
-    this.subviews = def.subviews || $A([]);
+    this.subviews = def.subviews || new Array();
     this._visible = false;
     this._displayed = true;
 
@@ -1225,11 +1252,11 @@ NXThemes.View.prototype = {
       this.effect.stop();
     }
     var widget = this.widget;
-    if (options.transition in NXThemes.Effects) {
+    if (NXThemes.Effects.get(options.transition) !== undefined) {
       if (widget.style.display == "none") {
         widget.style.display = "";
       }
-      this.effect = NXThemes.Effects[options.transition](widget, options);
+      this.effect = NXThemes.Effects.get(options.transition)(widget, options);
     }
   }
 

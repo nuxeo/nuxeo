@@ -1,4 +1,4 @@
-// script.aculo.us sound.js v1.7.1_beta3, Fri May 25 17:19:41 +0200 2007
+// script.aculo.us sound.js v1.8.1, Thu Jan 03 22:07:12 -0500 2008
 
 // Copyright (c) 2005-2007 Thomas Fuchs (http://script.aculo.us, http://mir.aculo.us)
 //
@@ -39,16 +39,11 @@ Sound = {
       this.tracks[options.track].id++;
       
     options.id = this.tracks[options.track].id;
-    if (Prototype.Browser.IE) {
-      var sound = document.createElement('bgsound');
-      sound.setAttribute('id','sound_'+options.track+'_'+options.id);
-      sound.setAttribute('src',options.url);
-      sound.setAttribute('loop','1');
-      sound.setAttribute('autostart','true');
-      $$('body')[0].appendChild(sound);
-    }  
-    else
-      new Insertion.Bottom($$('body')[0], Sound.template.evaluate(options));
+    $$('body')[0].insert( 
+      Prototype.Browser.IE ? new Element('bgsound',{
+        id: 'sound_'+options.track+'_'+options.id,
+        src: options.url, loop: 1, autostart: true
+      }) : Sound.template.evaluate(options));
   }
 };
 

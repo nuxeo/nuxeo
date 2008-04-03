@@ -57,6 +57,15 @@ public final class ThemeRepairer {
     private static final String[] CELL_LAYOUT_PROPERTIES = { "width",
             "padding", "text-align" };
 
+    private static final String[] PAGE_STYLE_PROPERTIES = { "border-top",
+            "border-left", "border-bottom", "border-right", "background" };
+
+    private static final String[] SECTION_STYLE_PROPERTIES = { "border-top",
+            "border-left", "border-bottom", "border-right", "background" };
+
+    private static final String[] CELL_STYLE_PROPERTIES = { "border-top",
+            "border-left", "border-bottom", "border-right", "background" };
+
     public static void repair(ThemeElement theme) {
         // Make sure that all shared formats are assigned to elements of a same
         // type
@@ -181,7 +190,7 @@ public final class ThemeRepairer {
         Style style = (Style) ElementFormatter.getFormatFor(element, "style");
         String xpath = element.computeXPath();
 
-        // Simplify styles by removing diasallowed layout properties and by
+        // Simplify styles by removing disallowed layout properties and by
         // cleaning up paths without properties
         if (style != null && widget != null) {
             String viewName = widget.getName();
@@ -200,10 +209,32 @@ public final class ThemeRepairer {
                                 + "' from <style> for element " + xpath);
                     }
                 }
+
                 if (styleProperties.isEmpty()) {
                     pathsToClear.add(path);
+                    continue;
+                }
+
+                List<String> stylePropertiesToRemove = new ArrayList<String>();
+                for (Object key : styleProperties.keySet()) {
+                    String propertyName = (String) key;
+                    if ((widget instanceof PageElement && !Utils.contains(
+                            PAGE_STYLE_PROPERTIES, propertyName))
+                            || (widget instanceof SectionElement && !Utils.contains(
+                                    SECTION_STYLE_PROPERTIES, propertyName))
+                            || (widget instanceof CellElement && !Utils.contains(
+                                    CELL_STYLE_PROPERTIES, propertyName))) {
+                        stylePropertiesToRemove.add(propertyName);
+                    }
+                }
+
+                for (String propertyName : stylePropertiesToRemove) {
+                    styleProperties.remove(propertyName);
+                    log.info("Removed style property: '" + propertyName
+                            + " in path: " + path + "' for element " + xpath);
                 }
             }
+
             for (String path : pathsToClear) {
                 style.clearPropertiesFor(viewName, path);
                 log.info("Removed empty style path: '" + path

@@ -44,6 +44,9 @@ public interface EditorActionLocal {
     String deleteElement(String id);
 
     @WebRemote
+    void clearSelections();
+
+    @WebRemote
     String insertFragment(String typeName, String destId, Integer order);
 
     @WebRemote
@@ -64,18 +67,18 @@ public interface EditorActionLocal {
             boolean alwaysVisible);
 
     @WebRemote
-    void updateElementProperties(String id, Map propertyMap);
+    void updateElementProperties(String id, Map<Object, Object> propertyMap);
 
     @WebRemote
     void updateElementStyle(String id, String viewName, String path,
-            Map propertyMap);
+            Map<Object, Object> propertyMap);
 
     @WebRemote
     void updateElementStyleCss(String id, String viewName,
             String cssSource);
 
     @WebRemote
-    void updateElementLayout(final Map propertyMap);
+    void updateElementLayout(final Map<Object, Object> propertyMap);
 
     @WebRemote
     void setSize(String id, String width);
@@ -126,7 +129,7 @@ public interface EditorActionLocal {
     boolean loadTheme(String src);
 
     @WebRemote
-    boolean saveTheme(String src);
+    boolean saveTheme(String src, int indent);
 
     @WebRemote
     String renderCssPreview(String cssPreviewId);

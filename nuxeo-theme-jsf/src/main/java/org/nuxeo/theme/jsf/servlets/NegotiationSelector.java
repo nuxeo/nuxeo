@@ -16,7 +16,6 @@ package org.nuxeo.theme.jsf.servlets;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -33,8 +32,7 @@ public final class NegotiationSelector extends HttpServlet {
 
     @Override
     protected void doGet(final HttpServletRequest request,
-            final HttpServletResponse response) throws ServletException,
-            IOException {
+            final HttpServletResponse response) throws IOException {
         doPost(request, response);
     }
 
@@ -54,6 +52,11 @@ public final class NegotiationSelector extends HttpServlet {
         final String engine = request.getParameter("engine");
         if (engine != null) {
             response.addCookie(createCookie("nxthemes.engine", engine, root));
+        }
+
+        final String mode = request.getParameter("mode");
+        if (mode != null) {
+            response.addCookie(createCookie("nxthemes.mode", mode, root));
         }
 
         final String theme = request.getParameter("theme");

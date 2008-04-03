@@ -46,7 +46,7 @@ public abstract class UIBaseMVC extends UIOutput {
     public void encodeBegin(final FacesContext context) throws IOException {
         final ResponseWriter writer = context.getResponseWriter();
 
-        final Map attributes = getAttributes();
+        final Map<String, Object> attributes = getAttributes();
         resource = (String) attributes.get("resource");
         url = (String) attributes.get("url");
         binding = attributes.get("binding");

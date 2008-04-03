@@ -32,7 +32,6 @@ import net.sf.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.CachingDef;
-import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.presets.PresetType;
@@ -81,7 +80,7 @@ public final class Utils {
     }
 
     private Utils() {
-        // This class is not supposed to be instanciated.
+        // This class is not supposed to be instantiated.
     }
 
     public static Properties getCssProperties() {
@@ -227,7 +226,6 @@ public final class Utils {
             final Collection<String> viewNames, final boolean resolvePresets,
             final boolean ignoreViewName, final boolean ignoreClassName,
             final boolean indent) {
-        final ThemeManager themeManager = Manager.getThemeManager();
 
         final StringBuilder sb = new StringBuilder();
         final StringBuilder pSb = new StringBuilder();
@@ -265,7 +263,7 @@ public final class Utils {
 
                 final Properties styleProperties = style.getPropertiesFor(
                         viewName, path);
-                final Enumeration propertyNames = cssProperties.propertyNames();
+                final Enumeration<?> propertyNames = cssProperties.propertyNames();
                 while (propertyNames.hasMoreElements()) {
                     final String propertyName = (String) propertyNames.nextElement();
                     String value = styleProperties.getProperty(propertyName);
@@ -281,7 +279,7 @@ public final class Utils {
                         sb.append(' ');
                     }
                     if (resolvePresets) {
-                        final PresetType preset = themeManager.resolvePreset(value);
+                        final PresetType preset = ThemeManager.resolvePreset(value);
                         if (preset != null) {
                             value = preset.getValue();
                         }
@@ -393,7 +391,8 @@ public final class Utils {
                 response.addHeader("Cache-Control", "max-age=" + lifetime);
                 response.addHeader("Cache-Control", "must-revalidate");
                 response.setDateHeader("Last-Modified", now);
-                response.setDateHeader("Expires", now + new Long(lifetime) * 1000L);
+                response.setDateHeader("Expires", now + new Long(lifetime)
+                        * 1000L);
             }
         }
     }
