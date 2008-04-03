@@ -418,5 +418,16 @@ public class TestLocalAPI extends TestAPI {
         list = remote.getChildren(root.getRef());
         assertEquals(1, list.size());
 
+        // publishDocument API
+        proxy = remote.publishDocument(doc, root);
+        assertEquals(2, remote.getChildrenRefs(root.getRef(), null).size());
+        assertTrue(proxy.isProxy());
+
+        // republish a proxy
+        remote.save(); // needed for publish-by-copy to work
+        DocumentModel proxy2 = remote.publishDocument(proxy, root);
+        assertEquals(3, remote.getChildrenRefs(root.getRef(), null).size());
+        assertTrue(proxy2.isProxy());
+
     }
 }

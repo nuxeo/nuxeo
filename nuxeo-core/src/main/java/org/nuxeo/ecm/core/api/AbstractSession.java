@@ -2342,29 +2342,32 @@ public abstract class AbstractSession implements CoreSession,
             DocumentModel section, boolean overwriteExistingProxy)
             throws ClientException {
 
-        // we cannot publish a proxy doc
-        DocumentRef docRef = docToPublish.getRef();
-        try {
-            Document doc = resolveReference(docRef);
-            if (doc.isProxy()) {
-                throw new InvalidProxyDocOperation(
-                        "proxy document cannot be published");
-            }
-        } catch (DocumentException e) {
-            throw new ClientException(e);
+        if (docToPublish.isProxy()) {
+            // publishing a proxy is just a copy
+            // TODO copy also copies security. just recreate a proxy
+            DocumentModel newDocument = copy(docToPublish.getRef(), section.getRef(), docToPublish.getName());
+
+            Map<String, Object> options = new HashMap<String, Object>();
+            options.put(CoreEventConstants.DOCUMENT, newDocument);
+            notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
+                    newDocument, options, null, null, true);
+
+            options.put(CoreEventConstants.DOCUMENT, section);
+            notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
+                    section, options, null, null, true);
+
+            return newDocument;
+        } else {
+            // prepare document for creating snapshot
+            docToPublish.putContextData(
+                    VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
+            // snapshot the document
+            createDocumentSnapshot(docToPublish);
+            VersionModel version = getLastVersion(docToPublish.getRef());
+            DocumentModel newProxy = createProxy(section.getRef(),
+                    docToPublish.getRef(), version, overwriteExistingProxy);
+            return newProxy;
         }
-
-        // prepare document for creating snapshot
-        docToPublish.putContextData(
-                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
-        // snapshot the document
-        createDocumentSnapshot(docToPublish);
-
-        VersionModel version = getLastVersion(docToPublish.getRef());
-        DocumentModel newProxy = createProxy(section.getRef(),
-                docToPublish.getRef(), version, overwriteExistingProxy);
-
-        return newProxy;
 
         /*
          * -- this cannot resolve unwanted transition 'approved -> project'

@@ -1194,7 +1194,9 @@ public interface CoreSession {
     /**
      * Publishes the document in a section overwriting any existing proxy to the
      * same document. This is simmilar to publishDocument(docToPublish, section,
-     * true);
+     * true).
+     * <p>
+     * If the document is already a proxy, then it's simply copied.
      *
      * @param docToPublish
      * @param section
@@ -1231,7 +1233,14 @@ public interface CoreSession {
     VersionModel isPublished(DocumentModel document, DocumentModel section);
 
     /**
-     * Gets all proxies to document docRef inside folder folderRef.
+     * Gets all proxies to document docRef. If folderRef is not null, the search
+     * will be limited to its children.
+     * <p>
+     * If the document is a version, then only proxies to that version will be
+     * looked up.
+     * <p>
+     * If the document is a proxy, then all similar proxies (pointing to any
+     * version of the same base document) are retrieved.
      *
      * @param docRef the target document for the proxies
      * @param folderRef the folder where proxies are located

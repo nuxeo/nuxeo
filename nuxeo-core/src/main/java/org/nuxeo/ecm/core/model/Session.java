@@ -220,12 +220,16 @@ public interface Session {
      * <p>
      * If the document is a version, then only proxies to that version will be
      * looked up.
+     * <p>
+     * If the document is a proxy, then all similar proxies (pointing to any
+     * version of the same base document) are retrieved.
      *
      * @param doc the document or version
      * @param folder the folder, or null
      * @return the list of proxies if any is found otherwise an empty list
      * @throws DocumentException if any error occurs
      */
-    Collection<Document> getProxies(Document doc, Document folder) throws DocumentException;
+    Collection<Document> getProxies(Document doc, Document folder)
+            throws DocumentException;
 
 }
