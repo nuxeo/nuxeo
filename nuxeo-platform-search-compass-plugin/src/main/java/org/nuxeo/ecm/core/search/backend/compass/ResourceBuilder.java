@@ -29,6 +29,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Calendar;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,8 +56,8 @@ import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedData;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory.BuiltinDocumentFields;
 import org.nuxeo.ecm.core.search.api.backend.security.SecurityFiltering;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
-import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.FieldConstants;
+import sun.misc.BASE64Encoder;
 
 /**
  * Takes care of building one Compass Resource. DO NOT reuse in another session
@@ -217,8 +218,8 @@ public class ResourceBuilder {
         if (value instanceof String) {
             value = Util.escapeSpecialMarkers((String) value);
             sValue = (String) value;
-        } else if (value instanceof GregorianCalendar) {
-            sValue = String.valueOf(((GregorianCalendar) value).getTimeInMillis());
+        } else if (value instanceof Calendar) {
+            sValue = String.valueOf(((Calendar) value).getTimeInMillis());
         } else if (value instanceof Date) {
             sValue = String.valueOf(((Date)value).getTime());
         } else if (value instanceof Integer || value instanceof Long
@@ -297,7 +298,7 @@ public class ResourceBuilder {
                 } catch (IOException e) {
                     throw new IndexingException(e.getMessage(), e);
                 }
-                sValue = new sun.misc.BASE64Encoder().encode(b.toByteArray());
+                sValue = new BASE64Encoder().encode(b.toByteArray());
             }
 
             // Note the existence of other Property.Store.* Use Compress on

@@ -30,8 +30,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject(value = "directory")
 public class MultiDirectoryDescriptor implements Cloneable {
 
-    private static final long serialVersionUID = 1L;
-
     @XNode("@name")
     public String name;
 

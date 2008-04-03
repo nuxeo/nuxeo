@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.security;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -73,8 +74,9 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 @Name("userManagerActions")
 @Scope(CONVERSATION)
 public class UserManagerActionsBean extends InputController implements
-        UserManagerActions {
+        UserManagerActions, Serializable {
 
+    private static final long serialVersionUID = 2160735474991874750L;
     private static final Log log = LogFactory.getLog(UserManagerActionsBean.class);
 
     private static final String ALL = "all";
@@ -86,10 +88,10 @@ public class UserManagerActionsBean extends InputController implements
     public static final String VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-0123456789";
 
     @In(create = true)
-    protected UserManager userManager;
+    protected transient UserManager userManager;
 
     @In(create = true)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     protected String searchString = "";
     protected String searchUsername = "";
@@ -165,7 +167,7 @@ public class UserManagerActionsBean extends InputController implements
                 allUsers = Collections.emptyList();
                 users = Collections.emptyList();
                 searchOverflow = true;
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 throw EJBExceptionHandler.wrapException(t);
             }
         }
@@ -184,7 +186,7 @@ public class UserManagerActionsBean extends InputController implements
         try {
             sessionContext.set("selectedUser", selectedUser);
             return "view_user";
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw EJBExceptionHandler.wrapException(t);
         }
     }
@@ -197,7 +199,7 @@ public class UserManagerActionsBean extends InputController implements
             refreshPrincipal(selectedUser);
             sessionContext.set("selectedUser", selectedUser);
             return "view_user";
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw EJBExceptionHandler.wrapException(t);
         }
     }
@@ -229,7 +231,7 @@ public class UserManagerActionsBean extends InputController implements
             refreshPrincipal(selectedUser);
             sessionContext.set("selectedUser", selectedUser);
             return "edit_user";
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw EJBExceptionHandler.wrapException(t);
         }
     }
@@ -248,7 +250,7 @@ public class UserManagerActionsBean extends InputController implements
             Events.instance().raiseEvent(EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED);
 
             return viewUsers();
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw EJBExceptionHandler.wrapException(t);
         }
     }
@@ -341,7 +343,7 @@ public class UserManagerActionsBean extends InputController implements
             }
             userManager.updatePrincipal(selectedUser);
             return viewUser(selectedUser.getName());
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw EJBExceptionHandler.wrapException(t);
         }
     }
@@ -384,7 +386,7 @@ public class UserManagerActionsBean extends InputController implements
             facesMessages.add(FacesMessage.SEVERITY_WARN, message);
             return null;
 
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw EJBExceptionHandler.wrapException(t);
         }
     }
@@ -403,11 +405,11 @@ public class UserManagerActionsBean extends InputController implements
             DocumentModelImpl entry = new DocumentModelImpl(null, userType.getId(), "",
                     null, null, null, new String[] { schemaName }, null);
             entry.addDataModel(dm);
-            ((NuxeoPrincipalImpl) newUser).setModel(entry);
+            newUser.setModel(entry);
             newUser.getRoles().add("regular");
             sessionContext.set("newUser", newUser);
             return "create_user";
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw EJBExceptionHandler.wrapException(t);
         }
     }
@@ -448,7 +450,12 @@ public class UserManagerActionsBean extends InputController implements
         }
 
         if (SEARCH_ONLY.equals(userListingMode)) {
-            if (StringUtils.isEmpty(searchString) && StringUtils.isEmpty(searchUsername) && StringUtils.isEmpty(searchFirstname) && StringUtils.isEmpty(searchLastname) && StringUtils.isEmpty(searchEmail) && StringUtils.isEmpty(searchCompany)) {
+            if (StringUtils.isEmpty(searchString)
+                    && StringUtils.isEmpty(searchUsername)
+                    && StringUtils.isEmpty(searchFirstname)
+                    && StringUtils.isEmpty(searchLastname)
+                    && StringUtils.isEmpty(searchEmail)
+                    && StringUtils.isEmpty(searchCompany)) {
                 allUsers = Collections.emptyList();
                 users = Collections.emptyList();
                 return "view_users";

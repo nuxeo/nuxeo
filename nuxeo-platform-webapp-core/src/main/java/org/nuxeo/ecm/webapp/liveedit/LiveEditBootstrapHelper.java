@@ -106,10 +106,10 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     private static final Log log = LogFactory.getLog(LiveEditBootstrapHelper.class);
 
     @In(required = true, create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @RequestParameter
     private String action;
@@ -392,7 +392,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
 
     // TODO: please explain what is the use of the "editId" tag here
     private static String getEditId(DocumentModel doc, CoreSession session,
-            String userName) throws ClientException {
+            String userName) {
         StringBuilder sb = new StringBuilder();
 
         if (doc != null) {

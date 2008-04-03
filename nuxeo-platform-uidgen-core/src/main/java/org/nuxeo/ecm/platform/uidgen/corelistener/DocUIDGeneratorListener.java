@@ -45,6 +45,7 @@ public class DocUIDGeneratorListener extends AbstractEventListener implements
      *
      * @param coreEvent instance thrown at core layer
      */
+    @Override
     public void notifyEvent(CoreEvent coreEvent) {
         Object source = coreEvent.getSource();
         if (source instanceof DocumentModel) {
@@ -65,16 +66,11 @@ public class DocUIDGeneratorListener extends AbstractEventListener implements
                 log.error(
                         "Error occurred while generating UID for doc: " + doc,
                         e);
-            } catch (NamingException e) {
-                log.error(
-                        "Error occurred while generating UID for doc: " + doc,
-                        e);
             }
         }
     }
 
-    private void addUIDtoDoc(DocumentModel doc) throws DocumentException,
-            NamingException {
+    private void addUIDtoDoc(DocumentModel doc) throws DocumentException {
         UIDGeneratorService service = ServiceHelper.getUIDGeneratorService();
         if (service == null) {
             log.error("<addUIDtoDoc> UIDGeneratorService service not found ... !");
