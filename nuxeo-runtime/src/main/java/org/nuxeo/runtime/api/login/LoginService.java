@@ -49,7 +49,7 @@ public interface LoginService {
      * <p>
      * The method requires the caller to have the {@link SystemLoginPermission}
      * permission.
-     * @param the username that opriginated the system login
+     * @param username the username that originated the system login
      * @return the login context
      * @throws LoginException
      */

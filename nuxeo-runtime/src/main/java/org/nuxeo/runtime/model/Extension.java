@@ -19,9 +19,9 @@
 
 package org.nuxeo.runtime.model;
 
-import org.w3c.dom.Element;
-
 import java.io.Serializable;
+
+import org.w3c.dom.Element;
 
 /**
  * A component extension.

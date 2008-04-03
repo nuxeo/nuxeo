@@ -136,8 +136,11 @@ public class ComponentManagerImpl implements ComponentManager {
     public final void _register(RegistrationInfoImpl ri) {
         ComponentName name = ri.getName();
         if (isRegistered(name)) {
-            //log.warn("Component was already registered: " + name);
-            throw new IllegalStateException("Component was already registered: " + name);
+            log.warn("Component was already registered: " + name);
+            // TODO avoid throwing an exception here - for now runtime components are registered twice
+            // When this will be fixed we can thrown an error here
+            return;
+            //throw new IllegalStateException("Component was already registered: " + name);
         }
 
         ri.manager = this;
@@ -218,7 +221,8 @@ public class ComponentManagerImpl implements ComponentManager {
             for (RegistrationInfoImpl dep : deps) {
                 try {
                     dep.unresolve();
-                    // TODO ------------- keep waiting comp. in the registry - otherwise the unresolved comp will never be unregistered
+                    // TODO ------------- keep waiting comp. in the registry -
+                    // otherwise the unresolved comp will never be unregistered
                     // add a blocking dependence on me
                     if (dep.waitsFor == null) {
                         dep.waitsFor = new HashSet<ComponentName>();
@@ -239,7 +243,7 @@ public class ComponentManagerImpl implements ComponentManager {
         try {
             if (registry.remove(ri.name) == null) {
                 // may be a pending component
-                //TODO -> put pendings in the registry
+                //TODO -> put pending components in the registry
             }
             ri.unregister();
         } catch (Exception e) {

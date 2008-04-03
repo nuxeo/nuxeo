@@ -19,10 +19,10 @@
 
 package org.nuxeo.runtime.jboss.deployment.preprocessor.install.commands;
 
+import java.io.IOException;
+
 import org.nuxeo.runtime.jboss.deployment.preprocessor.install.Command;
 import org.nuxeo.runtime.jboss.deployment.preprocessor.install.CommandContext;
-
-import java.io.IOException;
 
 /**
  * Sets a property that is valid along the current preprocessing context.
