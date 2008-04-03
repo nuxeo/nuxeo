@@ -70,7 +70,8 @@ import org.nuxeo.ecm.webapp.dashboard.DashboardActions;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Publishing actions listener.
+ * Publishing actions listener. Listens to publish/reject
+ * document actions.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *

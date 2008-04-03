@@ -20,9 +20,11 @@
   <h:form >
     <h:outputText value="#{messages['label.sections.not.defined']}"
       rendered="#{documents.rowCount == 0}" />
+    <nxu:methodResult value="#{currentDocument.parentRef.toString()}" name="parentRef">
     <nxu:dataTable id="dataTable" value="#{documents.rows}" var="row"
       rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput"
       rendered="#{documents.rowCount > 0}">
+      <nxu:methodResult value="#{row.data.document.ref.toString()}" name="sectionRef">
       <!-- id and selection -->
       <nxu:column styleClass="iconColumn" rendered="true">
         <!-- XXX AT: select all buggy right now -->
@@ -32,7 +34,8 @@
           </h:selectBooleanCheckbox>
         </f:facet>
         <h:selectBooleanCheckbox value="#{row.selected}"
-            onclick="selectSectionForPublish('#{row.data.document.ref}', this.checked)">
+            onclick="selectSectionForPublish('#{row.data.document.ref}', this.checked)"
+            rendered="#{sectionRef!=parentRef}">
 <!-- oncomplete="enableCheckBoxesIn('#{documents.name}:dataTable')"> -->
         </h:selectBooleanCheckbox>
       </nxu:column>
@@ -57,19 +60,17 @@
         <f:facet name="header">
           <h:outputText value="Action" />
         </f:facet>
-
-      <nxu:methodResult value="#{row.data.document.ref.toString()}" name="sectionRef">
       <h:commandLink value="#{messages['command.document.unpublish']}"
         action="#{publishActions.unPublishDocument}"
-        rendered="#{nxd:hasPermission(row.data.document, 'Everything') and row.data.version!=null}"
+        rendered="#{nxd:hasPermission(row.data.document, 'Everything') and row.data.version!=null and sectionRef!=parentRef}"
         immediate="true">
         <f:param name="unPublishSectionRef" value="#{sectionRef}" />
      </h:commandLink>
-     </nxu:methodResult>
-
     </h:column>
 
+    </nxu:methodResult>
     </nxu:dataTable>
+    </nxu:methodResult>
     <f:subview rendered="#{documents.rowCount != 0}">
       <ui:include src="/incl/publish_buttons.xhtml" />
     </f:subview>

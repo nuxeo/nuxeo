@@ -79,8 +79,8 @@ import org.nuxeo.runtime.api.Framework;
  *
  * </ul>
  *
- * Please refer to the nuxeo book chapter on desktop integration for
- * details on the format of the nxedit URLs and the XML bootstrap file.
+ * Please refer to the nuxeo book chapter on desktop integration for details on
+ * the format of the nxedit URLs and the XML bootstrap file.
  *
  * @author Thierry Delprat NXP-1959 the bootstrap file is managing the 'create
  *         new document [from template]' case too. The URL is containing an
@@ -147,6 +147,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
 
     @RequestParameter
     private String docType;
+
     private MimetypeRegistry mimetypeRegistry;
 
     // Event-long cache for mimetype lookups - no invalidation required
@@ -423,7 +424,8 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     public boolean isCurrentDocumentLiveEditable() throws ClientException {
         return isDocumentLiveEditable(navigationContext.getCurrentDocument(),
                 DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD);
-}
+    }
+
     public boolean isCurrentDocumentLiveEditable(String schemaName,
             String fieldName) throws ClientException {
         return isDocumentLiveEditable(navigationContext.getCurrentDocument(),
@@ -445,10 +447,11 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     public boolean isDocumentLiveEditable(DocumentModel documentModel,
             String propertyName) throws ClientException {
         if (documentModel == null) {
-            throw new ClientException(
-                    "cannot check live editable state of null DocumentModel");
+            return false;
+            // throw new ClientException(
+            // "cannot check live editable state of null DocumentModel");
         }
-        
+
         if (documentModel.hasFacet(IMMUTABLE_FACET)) {
             return false;
         }
@@ -459,7 +462,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             // SecurityPolicyManager
             return false;
         }
-        
+
         Blob blob = null;
         try {
             blob = documentModel.getProperty(propertyName).getValue(Blob.class);
