@@ -67,22 +67,24 @@ public abstract class Operation<T> implements Serializable {
     public static final int BLOCK_JMS = 32;
     // Whether or not the data field contains keyed data.
     public static final int KEYED_DATA = 64;
+    // block children events
+    public static final int BLOCK_CHILD_NOTIFICATIONS = 128;
     // reserved by the core for future use
-    public static final int RESERVED = 128;
+    public static final int RESERVED = 256;
 
     /**
      * User flags may be used by clients to set custom flags on the operation.
      * These flags must use only the range of bits from 8 to 31 (the first byte is reserved for core use)
      */
     // mask for user flags
-    public static final int USER_FLAGS = 0XFFFF00;
+    public static final int USER_FLAGS = 0XFFFE00;
 
     /**
      * A convenience method to compute the correct user flag from the 0 based representation of that bit
      * @param n
      * @return
      */
-    public static int USER_FLAG(int n) { return n << 8; }
+    public static int USER_FLAG(int n) { return n << 16; }
 
     protected final String name;
     protected int flags;
@@ -216,7 +218,8 @@ public abstract class Operation<T> implements Serializable {
         this.session = session;
         result = null;
         start();
-        if (handler != null) {
+        boolean isNotificationEnabled = isNotificationEnabled();
+        if (handler != null && isNotificationEnabled) {
             handler.startOperation(this);
         }
         if (monitor != null) {
@@ -227,7 +230,7 @@ public abstract class Operation<T> implements Serializable {
         } catch (Throwable t) {
             status = new Status(Status.ERROR, t);
         } finally {
-            if (handler != null) {
+            if (handler != null && isNotificationEnabled) {
                 handler.endOperation(this);
             }
             end();
@@ -236,6 +239,16 @@ public abstract class Operation<T> implements Serializable {
             }
         }
         return result;
+    }
+
+    private boolean isNotificationEnabled() {
+        while (parent != null) {
+            if (parent.isFlagSet(BLOCK_CHILD_NOTIFICATIONS)) {
+                return false; // notifications were blocked by a parent
+            }
+        }
+        // notifications are enabled
+        return true;
     }
 
     private void start() {
