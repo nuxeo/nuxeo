@@ -29,6 +29,7 @@ import org.nuxeo.ecm.platform.notification.api.Notification;
 
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
+ * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
  *
  */
 @XObject("notification")
@@ -47,6 +48,9 @@ public class NotificationDescriptor implements Notification {
 
     @XNode("@subject")
     protected String subject;
+
+    @XNode("@subjectTemplate")
+    protected String subjectTemplate;
 
     @XNode("@template")
     protected String template;
@@ -133,6 +137,14 @@ public class NotificationDescriptor implements Notification {
 
     public void setTemplate(String template) {
         this.template = template;
+    }
+
+    public String getSubjectTemplate() {
+        return subjectTemplate;
+    }
+
+    public void setSubjectTemplate(String subjectTemplate) {
+        this.subjectTemplate = subjectTemplate;
     }
 
 }

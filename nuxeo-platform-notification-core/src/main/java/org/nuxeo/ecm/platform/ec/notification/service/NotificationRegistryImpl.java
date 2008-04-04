@@ -32,6 +32,7 @@ import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
 
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
+ * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
  *
  */
 public class NotificationRegistryImpl implements NotificationRegistry {
@@ -50,8 +51,8 @@ public class NotificationRegistryImpl implements NotificationRegistry {
 
     public void registerNotification(Notification notif, List<String> events) {
         Notification notification = new NotificationImpl(notif.getName(),
-                notif.getTemplate(), notif.getChannel(), notif.getAutoSubscribed(),
-                notif.getSubject(), notif.getAvailableIn(), notif.getLabel());
+                notif.getTemplate(), notif.getChannel(), notif.getSubjectTemplate(), notif.getAutoSubscribed(),
+                 notif.getSubject(), notif.getAvailableIn(), notif.getLabel());
         if (notif.getEnabled()) {
             notificationList.add(notification);
             if (events != null && !events.isEmpty()) {
@@ -66,8 +67,8 @@ public class NotificationRegistryImpl implements NotificationRegistry {
 
     public void unregisterNotification(Notification notif, List<String> events) {
         NotificationImpl notification = new NotificationImpl(notif.getName(),
-                notif.getChannel(), notif.getTemplate(), notif.getAutoSubscribed(),
-                notif.getSubject(), notif.getAvailableIn(), notif.getLabel());
+                notif.getTemplate(), notif.getChannel(), notif.getSubjectTemplate(),
+                notif.getAutoSubscribed(), notif.getSubject(), notif.getAvailableIn(), notif.getLabel());
         notificationList.remove(notification);
         if (events != null && !events.isEmpty()) {
             for (String event : events) {
