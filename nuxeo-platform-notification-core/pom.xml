@@ -52,6 +52,11 @@
       <artifactId>freemarker</artifactId>
       <version>2.3.8</version>
     </dependency>
+    
+    <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>javax.ejb</groupId>
