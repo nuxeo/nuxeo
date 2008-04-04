@@ -29,6 +29,7 @@ import org.nuxeo.ecm.platform.rendering.RenderingResult;
 import org.nuxeo.ecm.platform.rendering.impl.DefaultRenderingResult;
 import org.nuxeo.ecm.platform.rendering.template.DocumentRenderingEngine;
 import org.nuxeo.ecm.platform.rendering.template.FreemarkerRenderingJob;
+import freemarker.template.Configuration;
 
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
@@ -42,6 +43,14 @@ public class NotificationsRenderingEngine extends DocumentRenderingEngine {
         this.template = template;
     }
 
+    @Override
+    public Configuration createConfiguration() throws Exception {
+        Configuration cfg = super.createConfiguration();
+        cfg.setSharedVariable("htmlEscape", new HtmlEscapeMethod() );
+        return cfg;
+    }
+    
+    
     @Override
     protected FreemarkerRenderingJob createJob(RenderingContext ctx)
             throws RenderingException {

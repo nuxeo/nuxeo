@@ -51,6 +51,11 @@ public interface Notification extends Serializable {
     String getSubject();
 
     /**
+     * @return the subject template.
+     */
+    String getSubjectTemplate();
+
+    /**
      * @return the availableIn.
      */
     String getAvailableIn();

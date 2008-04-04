@@ -76,6 +76,7 @@ import org.nuxeo.runtime.api.Framework;
  * </ul>
  *
  * @author <a mailto="npaslaru@nuxeo.com">Narcis Paslaru</a>
+ * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
  */
 
 @MessageDriven(activationConfig = {
@@ -260,7 +261,7 @@ public class NotificationMessageListener implements MessageListener {
                 }
             } else {
                 // An automatic notification happens
-                // should be sent to intersted users
+                // should be sent to interested users
                 targetUsers.put(notification, new ArrayList<String>());
             }
         }
@@ -278,7 +279,7 @@ public class NotificationMessageListener implements MessageListener {
     }
 
     private void sendNotificationSignalForUser(Notification notification,
-            String subscriptor, DocumentMessage message) {
+            String subscriptor, DocumentMessage message) throws ClientException {
 
         log.debug("Producing notification message...........");
 
@@ -360,10 +361,12 @@ public class NotificationMessageListener implements MessageListener {
         // XXX hack, principals have only one model
         DataModel model = recepient.getModel().getDataModels().values().iterator().next();
         String email = (String) model.getData("email");
+        String subjectTemplate = notif.getSubjectTemplate();
         String mailTemplate = notif.getTemplate();
 
         log.debug("email: " + email);
         log.debug("mail template: " + mailTemplate);
+        log.debug("subject template: " + subjectTemplate);
 
         Map<String, Object> mail = new HashMap<String, Object>();
         mail.put("mail.to", email);
@@ -383,6 +386,7 @@ public class NotificationMessageListener implements MessageListener {
                 + subject;
         mail.put("subject", subject);
         mail.put("template", mailTemplate);
+        mail.put("subjectTemplate", subjectTemplate);
 
         // Transferring all data from event to email
         for (String key : eventInfo.keySet()) {

@@ -51,6 +51,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
+ * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
  *
  */
 @Stateless
@@ -127,8 +128,12 @@ public class NotificationServiceBean implements NotificationManager {
 
 //        mail.put("doc", docMessage); - should be already there
 
-        String subject = notif.getSubject() == null ? "Notification"
+    	String subject = notif.getSubject() == null ? "Notification"
                 : notif.getSubject();
+        if (notif.getSubjectTemplate() != null) {
+        	subject = notif.getSubjectTemplate();
+        }
+        	
         subject = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix()
                 + subject;
 
