@@ -16,7 +16,7 @@
       <shrinkable>false</shrinkable>
     </resource>
 
-    <!-- JQuery 1.2.1 -->
+    <!-- JQuery 1.2.3 -->
     <resource name="jquery.js">
       <path>nxthemes/jsf/scripts/jquery.js</path>
     </resource>
