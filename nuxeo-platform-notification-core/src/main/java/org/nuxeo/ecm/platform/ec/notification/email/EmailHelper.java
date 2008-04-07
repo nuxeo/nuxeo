@@ -35,7 +35,9 @@ import javax.naming.InitialContext;
 import javax.security.auth.login.LoginContext;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
+import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.rendering.RenderingResult;
 import org.nuxeo.ecm.platform.rendering.RenderingService;
 import org.nuxeo.ecm.platform.rendering.impl.DocumentRenderingContext;
@@ -63,6 +65,7 @@ import freemarker.template.Template;
  * Currently only supports one email in to address
  *
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
+ * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
  */
 public final class EmailHelper {
 
@@ -87,24 +90,44 @@ public final class EmailHelper {
         msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(
                 (String) mail.get("mail.to"), false));
 
-        String subjTemplate = (String) mail.get("subject");
-        Template templ = new Template("name", new StringReader(subjTemplate), stringCfg);
-
-        Writer out = new StringWriter();
-        templ.process(mail, out);
-        out.flush();
-
-        msg.setSubject(out.toString(), "UTF8");
-        msg.setSentDate(new Date());
-
-
         RenderingService rs = Framework.getService(RenderingService.class);
-        rs.registerEngine(new NotificationsRenderingEngine((String) mail.get("template")));
-
+        
         DocumentRenderingContext context = new DocumentRenderingContext();
         context.remove("doc");
         context.putAll(mail);
         context.setDocument((DocumentModel) mail.get("document"));
+        
+        String customSubjectTemplate = (String) mail.get(NotificationConstants.SUBJECT_TEMPLATE_KEY);
+        if (customSubjectTemplate == null) {
+            String subjTemplate = (String) mail.get(NotificationConstants.SUBJECT_KEY);
+            Template templ = new Template("name", new StringReader(subjTemplate), stringCfg);
+
+            Writer out = new StringWriter();
+            templ.process(mail, out);
+            out.flush();
+
+            msg.setSubject(out.toString(), "UTF8");        	
+        } else {
+        	rs.registerEngine(new NotificationsRenderingEngine((String) customSubjectTemplate));
+        	
+            LoginContext lc = Framework.login();
+            
+            Collection<RenderingResult> results = rs.process(context);
+            String subjectMail = "<HTML><P>No parsing Succeded !!!</P></HTML>";
+
+            for (RenderingResult result : results) {
+            	subjectMail = (String) result.getOutcome();
+            }
+            subjectMail = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix() 
+            			+ subjectMail;
+            msg.setSubject(subjectMail, "UTF8");
+
+            lc.logout();
+        }
+        
+        msg.setSentDate(new Date());
+
+        rs.registerEngine(new NotificationsRenderingEngine((String) mail.get(NotificationConstants.TEMPLATE_KEY)));
 
         LoginContext lc = Framework.login();
 

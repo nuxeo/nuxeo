@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -28,11 +28,13 @@ import org.nuxeo.ecm.platform.notification.api.Notification;
  * <ul>
  * <li>a name
  * <li>a channel - for now only email is supported
- * <li>a template - so the notifications that the user will recieve can be
+ * <li>a subject - as a fixed string or a template to customize subject notifications
+ * <li>a template - so the notifications that the user will receive can be
  * customized
  * </ul>
  *
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
+ * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
  *
  */
 public class NotificationImpl implements Notification {
@@ -42,6 +44,8 @@ public class NotificationImpl implements Notification {
     private final String name;
 
     private final String template;
+    
+    private final String subjectTemplate;
 
     private final String subject;
 
@@ -59,12 +63,14 @@ public class NotificationImpl implements Notification {
      * @param name
      * @param template
      * @param channel
+     * @param subjectTemplate
      */
-    public NotificationImpl(String name, String template, String channel,
+    public NotificationImpl(String name, String template, String channel, String subjectTemplate,
             Boolean autoSubscribed, String subject, String availableIn, String label) {
         this.name = name;
         this.template = template;
         this.channel = channel;
+        this.subjectTemplate = subjectTemplate;
         this.autoSubscribed = autoSubscribed;
         this.subject = subject;
         this.availableIn = availableIn;
@@ -104,6 +110,13 @@ public class NotificationImpl implements Notification {
      */
     public String getSubject() {
         return subject;
+    }
+
+    /**
+     * @return the subject template.
+     */
+    public String getSubjectTemplate() {
+        return subjectTemplate;
     }
 
     /**
