@@ -1440,11 +1440,19 @@
       </selector>
       <selector path=".printButton" view="nuxeo5 breadcrumbs">
         <float>right</float>
-        <padding>4px 5px 4px 300px</padding>
+        <padding>4px 5px 4px 0</padding>
+      </selector>
+      <selector path=".printButton div a img" view="nuxeo5 breadcrumbs">
+        <margin-left>5px</margin-left>
+      </selector>
+      <selector path=".printButton .liveEditCreateButtons" view="nuxeo5 breadcrumbs">
+        <margin-right>5px</margin-right>
+        <padding-right>8px</padding-right>
+        <border-right>1px solid #ccc</border-right>
       </selector>
       <selector path=".breadcrumbs" view="nuxeo5 breadcrumbs">
         <font-size>9px</font-size>
-        <padding>4px 200px 4px 4px</padding>
+        <padding>4px 20px 4px 4px</padding>
         <float>left</float>
         <background>
           transparent url(/nuxeo/img/courrier/breadcrumb_left.gif)
@@ -1495,8 +1503,16 @@
       </selector>
       <selector path=".printButton" view="nuxeo5 breadcrumbs">
         <margin-right>4px</margin-right>
-        <padding>4px 5px 4px 300px</padding>
+        <padding>4px 5px 4px 0</padding>
         <float>right</float>
+      </selector>
+      <selector path=".printButton div a img" view="nuxeo5 breadcrumbs">
+        <margin-left>5px</margin-left>
+      </selector>
+      <selector path=".printButton .liveEditCreateButtons" view="nuxeo5 breadcrumbs">
+        <margin-right>5px</margin-right>
+        <padding-right>8px</padding-right>
+        <border-right>1px solid #ccc</border-right>
       </selector>
       <selector path=".upFolder" view="nuxeo5 breadcrumbs">
         <margin-left>10px</margin-left>
@@ -1508,7 +1524,7 @@
           no-repeat scroll left top
         </background>
         <font-size>9px</font-size>
-        <padding>4px 200px 4px 4px</padding>
+        <padding>4px 20px 4px 4px</padding>
         <float>left</float>
       </selector>
     </style><!-- Footer -->
