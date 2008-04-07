@@ -70,6 +70,11 @@ public final class SecurityFiltering {
                 aggregatedPerms.addAll(Arrays.asList(compoundPerms));
             }
         }
+        // EVERYTHING is special and may not be explicitly registered as a
+        // compound
+        if (!aggregatedPerms.contains(SecurityConstants.EVERYTHING)) {
+            aggregatedPerms.add(SecurityConstants.EVERYTHING);
+        }
         return aggregatedPerms;
     }
 
