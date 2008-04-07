@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -17,14 +17,20 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.core.api.repository;
+package org.nuxeo.ecm.core.api.repository.cache;
 
-import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
+ * Not yet used
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface RepositoryInstance extends CoreSession, RepositoryConnection {
+public class CacheEntry {
+
+    public DocumentModel doc;
+    public DocumentModelList children;
+
 
 }

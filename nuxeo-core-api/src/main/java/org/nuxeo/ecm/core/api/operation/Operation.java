@@ -246,6 +246,7 @@ public abstract class Operation<T> implements Serializable {
             if (parent.isFlagSet(BLOCK_CHILD_NOTIFICATIONS)) {
                 return false; // notifications were blocked by a parent
             }
+            parent = parent.getParent();
         }
         // notifications are enabled
         return true;

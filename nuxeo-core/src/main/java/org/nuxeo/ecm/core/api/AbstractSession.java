@@ -1649,6 +1649,10 @@ public abstract class AbstractSession implements CoreSession,
                     // discard root default version
                     continue;
                 }
+                if (docVersion.getType() == null) { //BUG
+                    System.out.println("######### FAILED TO GET VERSIONS FOR" + docRef + " with path: "+ doc.getPath());
+                    throw new RuntimeException("######### FAILED TO GET VERSIONS FOR" + docRef + " with path: "+ doc.getPath());
+                }
                 DocumentModel versionModel = readModel(docVersion, null);
                 versions.add(versionModel);
             }

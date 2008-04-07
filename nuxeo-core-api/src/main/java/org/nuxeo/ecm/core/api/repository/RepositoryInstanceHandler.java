@@ -24,6 +24,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -34,13 +35,17 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class RepositoryInstanceHandler implements InvocationHandler {
+public class RepositoryInstanceHandler implements InvocationHandler, RepositoryConnection {
 
-    private final Repository repository;
-    private final RepositoryExceptionHandler exceptionHandler;
-    private CoreSession session;
-    private RepositoryInstance  proxy;
+    public final static Object NULL = new Object();
 
+    protected static ConcurrentHashMap<Method, Method> methods = new ConcurrentHashMap<Method, Method>();
+    protected static ConcurrentHashMap<Method, MethodInvoker> invokers = new ConcurrentHashMap<Method, MethodInvoker>();
+
+    protected final Repository repository;
+    protected final RepositoryExceptionHandler exceptionHandler;
+    protected CoreSession session;
+    protected RepositoryInstance  proxy;
 
     public RepositoryInstanceHandler(Repository repository, RepositoryExceptionHandler exceptionHandler) {
         this.repository = repository;
@@ -65,10 +70,14 @@ public class RepositoryInstanceHandler implements InvocationHandler {
                 cl = Repository.class.getClassLoader();
             }
             proxy = (RepositoryInstance)Proxy.newProxyInstance(cl,
-                    new Class[] { RepositoryInstance.class },
+                    getProxyInterfaces(),
                     this);
         }
         return proxy;
+    }
+
+    public Class<?>[] getProxyInterfaces() {
+        return new Class[] { RepositoryInstance.class };
     }
 
     private void rethrownException(Throwable t) throws Exception {
@@ -81,10 +90,14 @@ public class RepositoryInstanceHandler implements InvocationHandler {
         }
     }
 
+    public Repository getRepository() {
+        return repository;
+    }
+
     /**
      * @return the session.
      */
-    private CoreSession getSession() throws Exception {
+    public CoreSession getSession() throws Exception {
         if (session == null) {
             synchronized (this) {
                 if (session == null) {
@@ -114,7 +127,7 @@ public class RepositoryInstanceHandler implements InvocationHandler {
         CoreInstance.getInstance().registerSession(sid, proxy);
     }
 
-    public void closeSession() throws Exception {
+    public void close() throws Exception {
         if (session != null) {
             synchronized (this) {
                 if (session != null) {
@@ -132,47 +145,45 @@ public class RepositoryInstanceHandler implements InvocationHandler {
                 }
             }
         }
+
     }
 
     @SuppressWarnings({"ObjectEquality"})
     public Object invoke(Object proxy, Method method, Object[] args)
-            throws Throwable {
-        if (method.getDeclaringClass() == CoreSession.class) {
-            StackTraceElement[] st = new Exception().getStackTrace();
-            System.out.println("---------------------------------------------");
-            System.out.print("### "+Thread.currentThread()+": Invoking CoreSession."+method.getName());
-            double s = System.currentTimeMillis();
-            try {
-                return method.invoke(getSession(), args);
-            } catch (Throwable t) {
-                if (exceptionHandler != null) {
-                    exceptionHandler.handleException(t);
-                } else {
-                    rethrownException(t);
+    throws Throwable {
+        try {
+//            MethodInvoker invoker = invokers.get(method);
+//          if (invoker != null) {
+//          return invoker.invoke(this, method, args);
+//          } else if (method.getDeclaringClass() == CoreSession.class) {
+//          return method.invoke(getSession(), args);
+//          } else {
+//          return method.invoke(this, args);
+//          }
+            if (method.getDeclaringClass() == CoreSession.class) {
+                Method m = methods.get(method); // check if method was overwritten
+                if (m == null) {
+                    try {
+                        m = getClass().getMethod(method.getName(), method.getParameterTypes());
+                    } catch (NoSuchMethodException e) {
+                        m = method;
+                    }
+                    methods.put(method, m);
                 }
-            } finally {
-                System.out.println(" => Invocation took: "+((System.currentTimeMillis()-s)/1000));
-                System.out.println("---------------------------------------------");
-                for (int i=0; i<Math.min(st.length, 4); i++) {
-                    System.out.println(">> "+st[i]);
-                }
-                System.out.println("---------------------------------------------");
+                return m.invoke(m == method ? getSession() : this, args);
             }
-        } else {
-            //optimize matching by testing only one character
-            String name = method.getName();
-            char ch3 = name.charAt(3);
-            switch (ch3) {
-            case 'S': // getSession
-                return getSession();
-            case 'R': // getRepository
-                return repository;
-            case 's': // close
-                closeSession();
-                return null;
+            return method.invoke(this, args);
+        } catch (Throwable t) {
+            if (exceptionHandler != null) {
+                exceptionHandler.handleException(t);
             }
+             throw t;
         }
-        throw new NoSuchMethodException("Should be a bug");
+    }
+
+
+    protected Object getImpl() {
+        return this;
     }
 
 }

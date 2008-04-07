@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -20,11 +20,27 @@
 package org.nuxeo.ecm.core.api.repository;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface RepositoryInstance extends CoreSession, RepositoryConnection {
+public class DocumentIterator {
+
+    protected static final int DEFAULT_PAGE = 20;
+    protected CoreSession session;
+    protected DocumentModel[] chunk;
+
+    public DocumentIterator(CoreSession session) {
+        this (session, DEFAULT_PAGE);
+    }
+
+    public DocumentIterator(CoreSession session, int page) {
+        this.session = session;
+
+    }
+
+
 
 }

@@ -151,10 +151,6 @@ public class Repository implements Serializable {
     }
 
     public static RepositoryInstance newRepositoryInstance(Repository repository) {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        if (cl == null) {
-            cl = Repository.class.getClassLoader();
-        }
         return new RepositoryInstanceHandler(repository).getProxy();
     }
 
