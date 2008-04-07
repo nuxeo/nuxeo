@@ -228,6 +228,7 @@ public interface Session {
      * @param folder the folder, or null
      * @return the list of proxies if any is found otherwise an empty list
      * @throws DocumentException if any error occurs
+     * @since 1.4.1 for the case where doc is a proxy
      */
     Collection<Document> getProxies(Document doc, Document folder)
             throws DocumentException;

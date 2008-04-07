@@ -58,6 +58,7 @@ public interface VersionableDocument {
      *
      * @return the list of version ids
      * @throws DocumentException
+     * @since 1.4.1
      */
     List<String> getVersionsIds() throws DocumentException;
 

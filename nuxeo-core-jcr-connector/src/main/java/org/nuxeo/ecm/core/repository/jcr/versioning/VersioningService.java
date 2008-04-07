@@ -54,6 +54,7 @@ public interface VersioningService {
      * @param doc the document
      * @return the list of version ids
      * @throws DocumentException
+     * @since 1.4.1
      */
     List<String> getVersionsIds(Document doc) throws DocumentException;
 

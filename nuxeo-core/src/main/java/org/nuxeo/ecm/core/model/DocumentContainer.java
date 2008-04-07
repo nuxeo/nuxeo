@@ -75,6 +75,7 @@ public interface DocumentContainer {
      * Gets a list of the children ids.
      *
      * @return a list of children ids.
+     * @since 1.4.1
      */
     List<String> getChildrenIds() throws DocumentException;
 
