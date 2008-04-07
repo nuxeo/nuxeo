@@ -23,7 +23,7 @@
      <f:subview rendered="false">
        <!-- TODO: remove the following hardcoded links once nxh:outputLink is able to perform nested JSF EL evaluations -->
      </f:subview>
-     <span class="liveEditCreateButtons">
+     <div class="liveEditCreateButtons">
      <nxh:outputLink value="#{nxd:liveCreateUrl('application/msword', 'File', 'file', 'content', 'filename')}">
        <h:graphicImage value="/icons/doc.png" title="#{messages['action.liveedit.create.msword']}"
         alt="#{messages['action.liveedit.create.msword']}"/>
@@ -38,7 +38,7 @@
        <h:graphicImage value="/icons/ppt.png" title="#{messages['action.liveedit.create.mspowerpoint']}"
         alt="#{messages['action.liveedit.create.mspowerpoint']}"/>
      </nxh:outputLink>
-     </span>
+     </div>
     </div>
   </h:form>
 </div>

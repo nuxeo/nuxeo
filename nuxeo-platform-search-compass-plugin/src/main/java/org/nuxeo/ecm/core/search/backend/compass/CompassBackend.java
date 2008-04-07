@@ -86,9 +86,9 @@ import org.nuxeo.runtime.model.ComponentInstance;
 
 /**
  * Compass search engine backend implementation.
- * 
+ *
  * @author <a href="mailto:gr@nuxeo.com">Georges Racinet</a
- * 
+ *
  */
 public class CompassBackend extends AbstractSearchEngineBackend {
 
@@ -165,7 +165,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
     /**
      * Builds the shared thread-safe compass object using the standard
      * configuration file compass.cfg.xml.
-     * 
+     *
      * @return shared thread-safe compass object
      */
     protected Compass getCompass() {
@@ -180,7 +180,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
      * The main Resource builder, called by index(). Can use a given builder to
      * add properties or start with a fresh one which as the effect to make a
      * separate resource.
-     * 
+     *
      * @param session
      * @param builder
      * @param iResource
@@ -248,7 +248,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
      * TODO change this to an extension point. For example we can't even use
      * constants her since we don't want to introduce dependencies to, e.g,
      * nuxeo-platform-relations-search
-     * 
+     *
      * @param resource
      * @return
      */
@@ -600,7 +600,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
     /**
      * Converts a Resource, typically from the Compass Results to a
      * DocumentResultItem.
-     * 
+     *
      * @param r Input Resource
      * @return A DocumentResultItem
      * @throws SearchException
@@ -859,7 +859,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
 
     /**
      * Save one compass session.
-     * 
+     *
      * @param cs
      * @throws IndexingException
      */

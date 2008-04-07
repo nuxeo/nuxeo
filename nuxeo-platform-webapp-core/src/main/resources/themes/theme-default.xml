@@ -330,6 +330,59 @@
         <border-width>1px</border-width>
       </selector>
     </style>
+    
+    <style name="breadcrumbs style">
+    <selector path="" view="nuxeo5 breadcrumbs">
+        <padding>5px 0px</padding>
+      </selector>
+      <selector path="div" view="nuxeo5 breadcrumbs">
+        <font preset="small (Nuxeo default fonts)"/>
+        <margin>0</margin>
+        <line-height>1.25em</line-height>
+        <padding>0</padding>
+      </selector>
+      <selector path="a" view="nuxeo5 breadcrumbs">
+        <color preset="link (Nuxeo psd colors)"/>
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path="a:visited" view="nuxeo5 breadcrumbs">
+        <color preset="link.visited (Nuxeo psd colors)"/>
+      </selector>
+      <selector path="a:active" view="nuxeo5 breadcrumbs">
+        <color preset="link.active (Nuxeo psd colors)"/>
+      </selector>
+      <selector path="a:hover" view="nuxeo5 breadcrumbs">
+        <color preset="link (Nuxeo psd colors)"/>
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector
+        path=".breadcrumbs a, .breadcrumbs a:link, .breadcrumbs a:visited" view="nuxeo5 breadcrumbs">
+        <font-weight>normal</font-weight>
+        <text-decoration>none</text-decoration>
+      </selector>
+      <selector path=".breadcrumbs a:hover, .breadcrumbs a:active" view="nuxeo5 breadcrumbs">
+        <font-weight>normal</font-weight>
+        <text-decoration>underline</text-decoration>
+      </selector>
+      <selector path=".printButton" view="nuxeo5 breadcrumbs">
+        <float>right</float>
+        <padding-right>1px</padding-right>
+      </selector>
+      <selector path=".printButton div a img" view="nuxeo5 breadcrumbs">
+        <margin-left>5px</margin-left>
+      </selector>
+      <selector path=".printButton .liveEditCreateButtons" view="nuxeo5 breadcrumbs">
+        <margin-right>5px</margin-right>
+        <padding-right>8px</padding-right>
+        <border-right>1px solid #ccc</border-right>
+      </selector>
+      <selector path=".breadcrumbs" view="nuxeo5 breadcrumbs">
+        <float>left</float>
+        <font-size>9px</font-size>
+        <padding>5px 4px 0px 0px</padding>
+      </selector>
+    </style>
+    
     <style name="common style 1">
       <selector path="h1, h2, h3, h4, h5, h6, form, p">
         <margin>0</margin>
@@ -1501,94 +1554,12 @@
         <background preset="shade (Nuxeo default backgrounds)"/>
       </selector>
     </style>
-    <style element="page[3]/section[2]/cell[1]/fragment[1]">
-      <selector path="" view="nuxeo5 breadcrumbs">
+    <style element="page[3]/section[2]/cell[1]/fragment[1]" inherit="breadcrumbs style">
+      <selector path="">
         <padding>5px 22px</padding>
       </selector>
-      <selector path="div" view="nuxeo5 breadcrumbs">
-        <font preset="small (Nuxeo default fonts)"/>
-        <margin>0</margin>
-        <line-height>1.25em</line-height>
-        <padding>0</padding>
-      </selector>
-      <selector path="a" view="nuxeo5 breadcrumbs">
-        <color preset="link (Nuxeo psd colors)"/>
-        <text-decoration>none</text-decoration>
-      </selector>
-      <selector path="a:visited" view="nuxeo5 breadcrumbs">
-        <color preset="link.visited (Nuxeo psd colors)"/>
-      </selector>
-      <selector path="a:active" view="nuxeo5 breadcrumbs">
-        <color preset="link.active (Nuxeo psd colors)"/>
-      </selector>
-      <selector path="a:hover" view="nuxeo5 breadcrumbs">
-        <color preset="link (Nuxeo psd colors)"/>
-        <text-decoration>underline</text-decoration>
-      </selector>
-      <selector
-        path=".breadcrumbs a, .breadcrumbs a:link, .breadcrumbs a:visited" view="nuxeo5 breadcrumbs">
-        <font-weight>normal</font-weight>
-        <text-decoration>none</text-decoration>
-      </selector>
-      <selector path=".breadcrumbs a:hover, .breadcrumbs a:active" view="nuxeo5 breadcrumbs">
-        <font-weight>normal</font-weight>
-        <text-decoration>underline</text-decoration>
-      </selector>
-      <selector path=".printButton" view="nuxeo5 breadcrumbs">
-        <float>right</float>
-        <padding-right>1px</padding-right>
-      </selector>
-      <selector path=".breadcrumbs" view="nuxeo5 breadcrumbs">
-        <float>left</float>
-        <font-size>9px</font-size>
-        <padding>5px 4px 0px 0px</padding>
-      </selector>
     </style>
-    <style element="page[1]/section[2]/cell[2]/fragment[1]">
-      <selector path="" view="nuxeo5 breadcrumbs">
-        <border>none</border>
-        <background>none</background>
-        <padding>0</padding>
-      </selector>
-      <selector path="div" view="nuxeo5 breadcrumbs">
-        <font preset="small (Nuxeo default fonts)"/>
-        <margin>0</margin>
-        <line-height>1.25em</line-height>
-        <padding>0</padding>
-      </selector>
-      <selector path="a" view="nuxeo5 breadcrumbs">
-        <color preset="link (Nuxeo psd colors)"/>
-        <text-decoration>none</text-decoration>
-      </selector>
-      <selector path="a:visited" view="nuxeo5 breadcrumbs">
-        <color preset="link.visited (Nuxeo psd colors)"/>
-      </selector>
-      <selector path="a:active" view="nuxeo5 breadcrumbs">
-        <color preset="link.active (Nuxeo psd colors)"/>
-      </selector>
-      <selector path="a:hover" view="nuxeo5 breadcrumbs">
-        <color preset="link (Nuxeo psd colors)"/>
-        <text-decoration>underline</text-decoration>
-      </selector>
-      <selector
-        path=".breadcrumbs a, .breadcrumbs a:link, .breadcrumbs a:visited" view="nuxeo5 breadcrumbs">
-        <font-weight>normal</font-weight>
-        <text-decoration>none</text-decoration>
-      </selector>
-      <selector path=".breadcrumbs a:hover, .breadcrumbs a:active" view="nuxeo5 breadcrumbs">
-        <font-weight>normal</font-weight>
-        <text-decoration>underline</text-decoration>
-      </selector>
-      <selector path=".printButton" view="nuxeo5 breadcrumbs">
-        <float>right</float>
-        <padding-right>1px</padding-right>
-      </selector>
-      <selector path=".breadcrumbs" view="nuxeo5 breadcrumbs">
-        <float>left</float>
-        <margin-bottom>10px</margin-bottom>
-        <font-size>9px</font-size>
-        <padding>5px 4px 0px 0px</padding>
-      </selector>
+    <style element="page[1]/section[2]/cell[2]/fragment[1]" inherit="breadcrumbs style">
     </style>
     <!-- Footer -->
     <style element="page[1]/section[3]|page[3]/section[4]">

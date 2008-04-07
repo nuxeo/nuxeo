@@ -29,7 +29,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Shared info about security filtering.
- * 
+ *
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
  */
 public final class SecurityFiltering {
@@ -38,7 +38,7 @@ public final class SecurityFiltering {
      * This is the list of all permissions that grant access to some indexed
      * document. This is used in place of groups of permissions resolution that
      * aren't accessible in async mode for now.
-     * 
+     *
      * @deprecated use getBrowsePermissionList() instead
      */
     @Deprecated
@@ -51,10 +51,10 @@ public final class SecurityFiltering {
     /**
      * Return the recursive closure of all permissions that comprises the
      * requested seed permissions.
-     * 
+     *
      * TODO: this logics should be moved upward to the PermissionProvider
      * interface.
-     * 
+     *
      * @param seedPermissions
      * @return the list of permissions, seeds inclusive
      * @throws Exception
@@ -76,7 +76,7 @@ public final class SecurityFiltering {
     /**
      * This is the list of all permissions that grant access to some indexed
      * document.
-     * 
+     *
      * @return the list of all permissions that include Browse directly or
      *         un-directly
      * @throws Exception
