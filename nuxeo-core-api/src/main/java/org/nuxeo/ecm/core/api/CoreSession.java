@@ -272,6 +272,7 @@ public interface CoreSession {
      *                null, <b>no permission is checked</b>
      * @return a list of children references
      * @throws ClientException
+     * @since 1.4.1
      */
     List<DocumentRef> getChildrenRefs(DocumentRef parentRef, String perm)
             throws ClientException;
@@ -836,6 +837,7 @@ public interface CoreSession {
      * @param docRef the document reference
      * @return a list of version references
      * @throws ClientException
+     * @since 1.4.1
      */
     List<DocumentRef> getVersionsRefs(DocumentRef docRef)
             throws ClientException;
@@ -1199,11 +1201,9 @@ public interface CoreSession {
      *
      * @param docToPublish
      * @param section
-     *
      * @return The proxy document that was created
-     *
-     * @throws InvalidProxyDocOperation if the document to be published is
-     *                 proxy. (i.e. proxy documents cannot be published).
+     * @throws ClientException
+     * @since 1.4.1 for the case where docToPublish is a proxy
      */
     DocumentModel publishDocument(DocumentModel docToPublish,
             DocumentModel section) throws ClientException;
@@ -1239,6 +1239,7 @@ public interface CoreSession {
      * @return the list of the proxies. An empty list is returned if no proxy
      *         are found
      * @throws ClientException if any error occurs
+     * @since 1.4.1 for the case where docRef is a proxy
      */
     DocumentModelList getProxies(DocumentRef docRef, DocumentRef folderRef)
             throws ClientException;
