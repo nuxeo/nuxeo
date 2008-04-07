@@ -46,7 +46,6 @@ public abstract class AbstractPluginTestCase extends RepositoryTestCase {
         // needed to avoid npe when creating DocumentModel
         deploy("LifeCycleService.xml");
 
-        deploy("nxmimetype-bundle.xml");
         deploy("nxtransform-bundle-dmtest.xml");
         deploy("nxtransform-plugins-bundle-dmtest.xml");
 

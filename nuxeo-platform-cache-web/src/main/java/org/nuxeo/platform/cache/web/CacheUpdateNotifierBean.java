@@ -23,6 +23,7 @@ import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.io.Serializable;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.PostActivate;
@@ -60,7 +61,7 @@ import org.nuxeo.ecm.platform.cache.client.ClientCacheServiceFactory;
 @Name(CacheUpdateNotifier.SEAM_NAME_CACHE_NOTIFIER)
 @Scope(ScopeType.SESSION)
 @SerializedConcurrentAccess
-public class CacheUpdateNotifierBean implements CacheUpdateNotifier {
+public class CacheUpdateNotifierBean implements CacheUpdateNotifier, Serializable {
 
     private static final long serialVersionUID = -4658013073616597630L;
 
@@ -122,7 +123,7 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier {
      * a Seam context (the thread is started by an event = web request).
      */
     @In
-    public transient Context sessionContext;
+    private transient Context sessionContext;
 
     /**
      * List of listeners registered by other Seam components which are taken
@@ -200,11 +201,10 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier {
         }
     }
 
-    private static void removeDocumentFromContextStructures(Context ctx,
+    private void removeDocumentFromContextStructures(Context ctx,
             DocumentModel docModelOnNotification) {
         //final String contextVarName = "ListOfDocuments";
         for (String varName : ctx.getNames()) {
-
             removeDocumentFromContextStructure(ctx, varName, docModelOnNotification);
         }
     }
@@ -216,7 +216,7 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier {
      *
      * @param
      */
-    private static void removeDocumentFromContextStructure(Context ctx,
+    private void removeDocumentFromContextStructure(Context ctx,
             final String contextVarName, DocumentModel docModelOnNotification) {
         final String logPrefix = "<removeDocumentFromContextList> "
                 + "contextVarName=" + contextVarName;
@@ -245,10 +245,9 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier {
                 }
             }
         }
-
     }
 
-    private static void removeDocumnentFromList(final String contextVarName,
+    private void removeDocumnentFromList(final String contextVarName,
             DocumentModel docModelOnNotification, final List list) {
         final String logPrefix = "<removeDocumnentFromList> ";
 
@@ -309,7 +308,7 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier {
      *
      * @param ctx
      */
-    private static void printVarsOnContext(Context ctx) {
+    private void printVarsOnContext(Context ctx) {
         final String logPrefix = "VarOnCtx: ";
         log.info(logPrefix + ctx);
         for (String varName : ctx.getNames()) {
@@ -329,4 +328,5 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier {
     public void doNothing() {
         // log.info("<doNothing>" + sessionContext);
     }
+
 }
