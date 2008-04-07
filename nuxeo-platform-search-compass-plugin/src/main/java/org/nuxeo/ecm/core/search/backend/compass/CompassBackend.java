@@ -86,9 +86,9 @@ import org.nuxeo.runtime.model.ComponentInstance;
 
 /**
  * Compass search engine backend implementation.
- *
+ * 
  * @author <a href="mailto:gr@nuxeo.com">Georges Racinet</a
- *
+ * 
  */
 public class CompassBackend extends AbstractSearchEngineBackend {
 
@@ -97,6 +97,8 @@ public class CompassBackend extends AbstractSearchEngineBackend {
     private static final Log log = LogFactory.getLog(CompassBackend.class);
 
     private static final int BATCH_SIZE_MARGIN = 10;
+
+    private static List<String> CACHED_BROWSE_PERMISSIONS;
 
     /*
      * TODO Temporary harcoded stuff that has to become dynamic
@@ -163,7 +165,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
     /**
      * Builds the shared thread-safe compass object using the standard
      * configuration file compass.cfg.xml.
-     *
+     * 
      * @return shared thread-safe compass object
      */
     protected Compass getCompass() {
@@ -178,7 +180,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
      * The main Resource builder, called by index(). Can use a given builder to
      * add properties or start with a fresh one which as the effect to make a
      * separate resource.
-     *
+     * 
      * @param session
      * @param builder
      * @param iResource
@@ -225,9 +227,14 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         }
         if (acp != null) {
             // index
-            builder.addSecurityProperty(
-                    BuiltinDocumentFields.FIELD_ACP_INDEXED,
-                    SecurityFiltering.GRANT, acp);
+            try {
+                builder.addSecurityProperty(
+                        BuiltinDocumentFields.FIELD_ACP_INDEXED,
+                        getBrowsePermissions(), acp);
+            } catch (Exception e) {
+                throw new IndexingException("error building indexable ACP: "
+                        + e.getMessage(), e);
+            }
             // store
             builder.addProperty(BuiltinDocumentFields.FIELD_ACP_STORED, acp,
                     null, false, true, false, false,
@@ -241,7 +248,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
      * TODO change this to an extension point. For example we can't even use
      * constants her since we don't want to introduce dependencies to, e.g,
      * nuxeo-platform-relations-search
-     *
+     * 
      * @param resource
      * @return
      */
@@ -396,7 +403,8 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         if (optimizerLock.tryLock()) {
             try {
                 optimize_try += 1;
-                if ((optimize_try >= OPTIMIZER_SAVE_INTERVAL) && (getCompass().getSearchEngineOptimizer().needOptimization())) {
+                if ((optimize_try >= OPTIMIZER_SAVE_INTERVAL)
+                        && (getCompass().getSearchEngineOptimizer().needOptimization())) {
                     optimize_try = 0;
                     log.debug("Running optimizer");
                     getCompass().getSearchEngineOptimizer().optimize();
@@ -592,7 +600,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
     /**
      * Converts a Resource, typically from the Compass Results to a
      * DocumentResultItem.
-     *
+     * 
      * @param r Input Resource
      * @return A DocumentResultItem
      * @throws SearchException
@@ -851,7 +859,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
 
     /**
      * Save one compass session.
-     *
+     * 
      * @param cs
      * @throws IndexingException
      */
@@ -924,4 +932,12 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         }
     }
 
+    // TODO: this cached list should be invalidated upon runtime registration of
+    // new permissions
+    private static List<String> getBrowsePermissions() throws Exception {
+        if (CACHED_BROWSE_PERMISSIONS == null) {
+            CACHED_BROWSE_PERMISSIONS = SecurityFiltering.getBrowsePermissionList();
+        }
+        return CACHED_BROWSE_PERMISSIONS;
+    }
 }
