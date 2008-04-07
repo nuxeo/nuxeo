@@ -90,17 +90,6 @@ public final class EmailHelper {
         msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(
                 (String) mail.get("mail.to"), false));
 
-        String subjTemplate = (String) mail.get("subject");
-        Template templ = new Template("name", new StringReader(subjTemplate), stringCfg);
-
-        Writer out = new StringWriter();
-        templ.process(mail, out);
-        out.flush();
-
-        msg.setSubject(out.toString(), "UTF8");
-        msg.setSentDate(new Date());
-
-
         RenderingService rs = Framework.getService(RenderingService.class);
         
         DocumentRenderingContext context = new DocumentRenderingContext();
