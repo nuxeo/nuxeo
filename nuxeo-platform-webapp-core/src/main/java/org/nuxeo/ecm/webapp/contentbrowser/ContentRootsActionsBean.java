@@ -74,10 +74,10 @@ import org.nuxeo.ecm.webapp.table.row.TableRow;
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
  *
  */
-
 @Name("contentRootsActions")
 @Scope(SESSION)
 @Deprecated
+@SuppressWarnings({"ALL"})
 public class ContentRootsActionsBean extends InputController implements
         ContentRootsActions {
     private static final Log log = LogFactory.getLog(ContentRootsActionsBean.class);
@@ -251,7 +251,7 @@ public class ContentRootsActionsBean extends InputController implements
                     selectedTab, currentDomain.getRef(), documentManager);
 
             log.debug("Retrieved workspace type children for domain: "
-                    + currentDomain + " " + workspacesChildren);
+                    + currentDomain + ' ' + workspacesChildren);
         } catch (Throwable t) {
             throw EJBExceptionHandler.wrapException(t);
         }
@@ -277,7 +277,7 @@ public class ContentRootsActionsBean extends InputController implements
                     selectedTab, currentDomain.getRef(), documentManager);
 
             log.debug("Retrieved workspace type children for domain: "
-                    + currentDomain + " " + sectionsChildren);
+                    + currentDomain + ' ' + sectionsChildren);
         } catch (Throwable t) {
             throw EJBExceptionHandler.wrapException(t);
         }
@@ -291,19 +291,17 @@ public class ContentRootsActionsBean extends InputController implements
         contentRootDocuments = null;
     }
 
-    protected List<DocumentModel> getContentRoots()
-            throws AlreadyConnectedException, ClientException {
+    protected List<DocumentModel> getContentRoots() throws ClientException {
         if (null == contentRootDocuments) {
             getContentRootDocuments();
         }
-
         return contentRootDocuments;
     }
 
     // @Observer( { EventNames.DOMAIN_SELECTION_CHANGED })
     // @Factory("contentRootDocumentList")
     public List<DocumentModel> getContentRootDocuments()
-            throws ClientException, AlreadyConnectedException {
+            throws ClientException {
         try {
             contentRootDocuments = ecContentRoot.getContentRootDocuments(
                     currentDomain.getRef(), documentManager);
@@ -326,7 +324,7 @@ public class ContentRootsActionsBean extends InputController implements
      * @throws AlreadyConnectedException
      */
     protected DocumentModel getContentRootWithType(String type)
-            throws AlreadyConnectedException, ClientException {
+            throws ClientException {
         for (DocumentModel rightDocModel : getContentRoots()) {
             if (type.equalsIgnoreCase((String) rightDocModel.getProperty(
                     "dublincore", "description"))) {
@@ -464,8 +462,7 @@ public class ContentRootsActionsBean extends InputController implements
     }
 
     public DocModelTableModel getWorkspacesTableModel()
-            throws AlreadyConnectedException, ClientException,
-            ECInvalidParameterException {
+            throws ClientException, ECInvalidParameterException {
         if (null == workspacesTableModel) {
             workspacesTableModel = reconstructWorkspacesTableModel();
         }
@@ -474,8 +471,7 @@ public class ContentRootsActionsBean extends InputController implements
     }
 
     public DocModelTableModel getSectionsTableModel()
-            throws AlreadyConnectedException, ClientException,
-            ECInvalidParameterException {
+            throws ClientException, ECInvalidParameterException {
         if (null == sectionsTableModel) {
             sectionsTableModel = reconstructSectionsTableModel();
         }

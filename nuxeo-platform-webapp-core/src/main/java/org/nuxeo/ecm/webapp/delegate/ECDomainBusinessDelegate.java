@@ -32,10 +32,8 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.api.ECM;
 import org.nuxeo.ecm.platform.interfaces.ejb.ECDomain;
 import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
-import org.nuxeo.ecm.webapp.shield.ErrorHandlingInterceptor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -87,7 +85,7 @@ public class ECDomainBusinessDelegate implements Serializable {
 
     @Destroy
     @PermitAll
-    public void destroy() throws ClientException {
+    public void destroy() {
         if (null != ecDomain) {
             ecDomain.remove();
             ecDomain = null;
