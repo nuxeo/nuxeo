@@ -185,6 +185,9 @@
       <arg value="-f" />
       <arg value="${pom.file}" />
       <arg value="-Djboss.dir=${jboss.home}" />
+      <arg value="-Dnuxeo.jboss.jmx.protocol=${nuxeo.jboss.jmx.protocol}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.hostname=${nuxeo.jboss.jmx.http.hostname}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.port=${nuxeo.jboss.jmx.http.port}" />
       <arg value="clean" />
       <arg value="package" />
       <arg value="${mvn.profile}" />
