@@ -113,6 +113,7 @@
     <indexingEvent name="documentCreated" action="Index" />
     <indexingEvent name="documentModified" action="ReIndex" />
     <indexingEvent name="documentPublished" action="ReIndex" />
+    <indexingEvent name="documentRestored" action="ReIndex" />
     <indexingEvent name="documentProxyPublished" action="Index" />
     <indexingEvent name="documentCreatedByCopy" action="Index"
       recursive="true" />
