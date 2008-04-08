@@ -53,6 +53,8 @@ public class DocumentChildrenStdFarm extends InputController implements
     // Result providers
     public static final String CHILDREN_BY_COREAPI = "CURRENT_DOC_CHILDREN";
 
+    private static final long serialVersionUID = 8609573595065569339L;
+
     @In(create = true, required = false)
     private transient CoreSession documentManager;
 

@@ -38,6 +38,8 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 @Scope(CONVERSATION)
 public class MassSecurityModifierActions implements Serializable {
 
+    private static final long serialVersionUID = 4978984433628773791L;
+
     @In(required = true, create = true)
     protected transient NavigationContext navigationContext;
 

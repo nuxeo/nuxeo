@@ -55,6 +55,7 @@ import org.nuxeo.ecm.webapp.base.InputController;
 public class ChainSelectActionsBean extends InputController implements
         ChainSelectActions, Serializable {
 
+    private static final long serialVersionUID = 27502317512904295L;
     private static final Log log = LogFactory.getLog(ChainSelectActionsBean.class);
 
     @RequestParameter("selectionValue")

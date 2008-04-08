@@ -62,6 +62,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
     public static final String TemplateRoot = "TemplateRoot";
 
     private static final Log log = LogFactory.getLog(DocumentTemplatesActionsBean.class);
+    private static final long serialVersionUID = -4031259222075515590L;
 
     @In(required = false)
     private transient CoreSession documentManager;

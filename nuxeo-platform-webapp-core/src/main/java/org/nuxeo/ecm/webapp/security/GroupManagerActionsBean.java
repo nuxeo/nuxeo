@@ -63,6 +63,8 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 public class GroupManagerActionsBean extends InputController implements
         GroupManagerActions, Serializable {
 
+    private static final long serialVersionUID = 5592973087289772720L;
+
     private static final Log log = LogFactory.getLog(GroupManagerActionsBean.class);
 
     private static final String ALL = "all";

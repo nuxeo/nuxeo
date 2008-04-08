@@ -82,6 +82,8 @@ import org.nuxeo.runtime.api.Framework;
 public class SecurityActionsBean extends InputController implements
         SecurityActions, Serializable {
 
+    private static final long serialVersionUID = -7190826911734958662L;
+
     // XXX temporary
     protected static final String ADMIN_GROUP = "administrators";
 

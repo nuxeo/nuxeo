@@ -53,6 +53,8 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 @Scope(ScopeType.CONVERSATION)
 public class SortActionsBean extends InputController implements SortActions, Serializable {
 
+    private static final long serialVersionUID = 378361922122703841L;
+
     private static final Log log = LogFactory.getLog(SortActionsBean.class);
 
     @RequestParameter("sortColumn")

@@ -71,6 +71,8 @@ import org.nuxeo.runtime.api.Framework;
 @Scope(ScopeType.CONVERSATION)
 public class ResultsProvidersCacheBean implements ResultsProvidersCache, Serializable {
 
+    private static final long serialVersionUID = 8632024396770685542L;
+
     private static final Log log = LogFactory.getLog(ResultsProvidersCacheBean.class);
 
     @In(create = true, required = false)

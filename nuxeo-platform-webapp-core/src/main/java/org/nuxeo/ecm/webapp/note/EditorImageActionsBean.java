@@ -99,6 +99,8 @@ public class EditorImageActionsBean extends InputController implements
         SIZES.add(m);
     }
 
+    private static final long serialVersionUID = 8716548847393060676L;
+
     private static final Log log = LogFactory.getLog(EditorImageActionsBean.class);
 
     @In(create = true)

@@ -48,6 +48,8 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 public class DocumentChildrenSearchFarm extends InputController implements
         ResultsProviderFarm, Serializable {
 
+    private static final long serialVersionUID = 8331654530334881666L;
+
     // Result providers
     // public static final String CHILDREN_BY_SEARCH =
     // "CURRENT_DOC_CHILDREN_BY_SEARCH";

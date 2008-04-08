@@ -65,6 +65,8 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 @Install(precedence=FRAMEWORK)
 public class TreeManagerBean extends InputController implements TreeManager, Serializable {
 
+    private static final long serialVersionUID = 4773510417160248991L;
+
     private static final Log log = LogFactory.getLog(TreeManagerBean.class);
 
     protected boolean initialized;

@@ -60,6 +60,8 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 @Scope(CONVERSATION)
 public class DomainActionsBean extends InputController implements DomainActions, Serializable {
 
+    private static final long serialVersionUID = 4151925677321848635L;
+
     private static final Log log = LogFactory.getLog(DomainActionsBean.class);
 
     private static final String QM_USER_DOMAINS = "USER_DOMAINS";

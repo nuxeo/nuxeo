@@ -110,6 +110,8 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 public class RelationActionsBean extends InputController implements
         RelationActions, Serializable {
 
+    private static final long serialVersionUID = 2336539966097558178L;
+
     private static final Log log = LogFactory.getLog(RelationActionsBean.class);
 
     @In(create = true, required = false)

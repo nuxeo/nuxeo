@@ -80,6 +80,8 @@ import org.nuxeo.ecm.webapp.table.row.TableRow;
 @Deprecated
 public class ContentRootsActionsBean extends InputController implements
         ContentRootsActions, Serializable {
+
+    private static final long serialVersionUID = 2464516767262727931L;
     private static final Log log = LogFactory.getLog(ContentRootsActionsBean.class);
 
     @In(create = true)

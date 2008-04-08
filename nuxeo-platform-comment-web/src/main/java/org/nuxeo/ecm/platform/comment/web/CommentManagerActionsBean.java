@@ -65,6 +65,8 @@ public class CommentManagerActionsBean extends InputController implements
 
     public static final String COMMENTS_ACTIONS = "COMMENT_ACTIONS";
 
+    private static final long serialVersionUID = 6994714264125958209L;
+
     private static final Log log = LogFactory.getLog(CommentManagerActionsBean.class);
 
     NuxeoPrincipal principal;

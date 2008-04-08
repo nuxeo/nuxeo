@@ -44,6 +44,7 @@ import org.nuxeo.ecm.platform.cache.client.ClientCacheServiceFactory;
 public class CacheControlActionsBean implements CacheControlActions, Serializable {
 
     private static final Log log = LogFactory.getLog(CacheControlActionsBean.class);
+    private static final long serialVersionUID = -3603740980383168097L;
 
     @Destroy
     public void destroy() {

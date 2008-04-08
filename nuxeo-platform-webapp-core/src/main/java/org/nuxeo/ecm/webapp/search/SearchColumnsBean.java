@@ -65,6 +65,8 @@ import org.nuxeo.runtime.api.Framework;
 @Scope(ScopeType.CONVERSATION)
 public class SearchColumnsBean extends InputController implements SearchColumns, Serializable {
 
+    private static final long serialVersionUID = -2462881843957407025L;
+
     private static final Log log = LogFactory.getLog(SearchColumnsBean.class);
 
     private static final String RESULT_FIELD_GROUPS = "resultFieldGroups";

@@ -101,6 +101,8 @@ import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 @Install(precedence=FRAMEWORK)
 public class NavigationContextBean implements NavigationContextLocal, Serializable {
 
+    private static final long serialVersionUID = -3708768859028774906L;
+
     private static final Log log = LogFactory.getLog(NavigationContextBean.class);
 
     @In

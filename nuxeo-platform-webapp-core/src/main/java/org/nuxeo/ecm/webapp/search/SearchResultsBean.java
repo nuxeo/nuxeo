@@ -74,6 +74,8 @@ import au.com.bytecode.opencsv.CSVWriter;
 @Transactional
 public class SearchResultsBean extends InputController implements SearchResults, Serializable {
 
+    private static final long serialVersionUID = -8961300556253836623L;
+
     private static final Log log = LogFactory.getLog(SearchResultsBean.class);
 
     private static final String SEARCH_DOCUMENT_LIST = "SEARCH_DOCUMENT_LIST";

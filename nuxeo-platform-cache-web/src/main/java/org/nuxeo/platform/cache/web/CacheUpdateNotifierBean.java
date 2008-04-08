@@ -62,8 +62,6 @@ import org.nuxeo.ecm.platform.cache.client.ClientCacheServiceFactory;
 @SerializedConcurrentAccess
 public class CacheUpdateNotifierBean implements CacheUpdateNotifier {
 
-    private static final long serialVersionUID = -4658013073616597630L;
-
     private static final Log log = LogFactory.getLog(CacheUpdateNotifierBean.class);
 
     static int c = 0;

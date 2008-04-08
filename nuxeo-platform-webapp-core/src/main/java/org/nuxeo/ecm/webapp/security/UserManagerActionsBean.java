@@ -76,6 +76,8 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 public class UserManagerActionsBean extends InputController implements
         UserManagerActions, Serializable {
 
+    private static final long serialVersionUID = -3828954056351924772L;
+
     private static final Log log = LogFactory.getLog(UserManagerActionsBean.class);
 
     private static final String ALL = "all";
