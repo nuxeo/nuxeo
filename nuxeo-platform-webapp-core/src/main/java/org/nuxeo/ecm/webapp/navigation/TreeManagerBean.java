@@ -24,6 +24,7 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.io.Serializable;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.PostActivate;
@@ -62,7 +63,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 @Scope(CONVERSATION)
 @Name("treeManager")
 @Install(precedence=FRAMEWORK)
-public class TreeManagerBean extends InputController implements TreeManager {
+public class TreeManagerBean extends InputController implements TreeManager, Serializable {
 
     private static final Log log = LogFactory.getLog(TreeManagerBean.class);
 

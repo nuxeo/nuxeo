@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.io.Serializable;
 
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
@@ -74,16 +75,15 @@ import org.nuxeo.ecm.webapp.table.row.TableRow;
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
  *
  */
-
 @Name("contentRootsActions")
 @Scope(SESSION)
 @Deprecated
 public class ContentRootsActionsBean extends InputController implements
-        ContentRootsActions {
+        ContentRootsActions, Serializable {
     private static final Log log = LogFactory.getLog(ContentRootsActionsBean.class);
 
     @In(create = true)
-    CoreSession documentManager;
+    transient CoreSession documentManager;
 
     @RequestParameter("tabParam")
     String tabParam;
@@ -98,7 +98,7 @@ public class ContentRootsActionsBean extends InputController implements
     protected transient Context sessionContext;
 
     @In(required = true, create = true)
-    protected ECContentRoot ecContentRoot;
+    protected transient ECContentRoot ecContentRoot;
 
     DocumentModel currentItem;
 

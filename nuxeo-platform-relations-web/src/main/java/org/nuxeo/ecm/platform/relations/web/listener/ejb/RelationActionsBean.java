@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.io.Serializable;
 
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
@@ -93,9 +94,7 @@ import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
- * RelationActionsBean.
- * <p>
- * Offers management of statements involving current document as well as
+ * Seam component that manages statements involving current document as well as
  * creation, edition and deletion of statements involving current document.
  * <p>
  * Current document is the subject of the relation. The predicate is resolved
@@ -109,21 +108,21 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 @Name("relationActions")
 @Scope(CONVERSATION)
 public class RelationActionsBean extends InputController implements
-        RelationActions {
+        RelationActions, Serializable {
 
     private static final Log log = LogFactory.getLog(RelationActionsBean.class);
 
     @In(create = true, required = false)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true)
     protected RelationManager relationManager;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(required = false)
-    protected Principal currentUser;
+    protected transient Principal currentUser;
 
     // statements lists
 

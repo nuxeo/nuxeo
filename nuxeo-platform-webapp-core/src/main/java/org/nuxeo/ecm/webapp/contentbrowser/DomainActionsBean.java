@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webapp.contentbrowser;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.util.List;
+import java.io.Serializable;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.PostActivate;
@@ -54,11 +55,10 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
  * Action listener that deals with operations with the domains.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
 @Name("domainActions")
 @Scope(CONVERSATION)
-public class DomainActionsBean extends InputController implements DomainActions {
+public class DomainActionsBean extends InputController implements DomainActions, Serializable {
 
     private static final Log log = LogFactory.getLog(DomainActionsBean.class);
 

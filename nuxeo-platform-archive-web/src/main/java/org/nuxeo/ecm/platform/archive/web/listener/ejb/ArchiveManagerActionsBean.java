@@ -105,13 +105,13 @@ public class ArchiveManagerActionsBean implements ArchiveManagerActions {
     private ArchiveRecord selectedArchiveRecord;
 
     @In(required = true)
-    private NavigationContext navigationContext;
+    private transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
     private transient FacesMessages facesMessages;
 
     @In(create = true)
-    private ResourcesAccessor resourcesAccessor;
+    private transient ResourcesAccessor resourcesAccessor;
 
     private ArchiveManager archiveManager;
 

@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.io.Serializable;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.PostActivate;
@@ -79,7 +80,7 @@ import org.nuxeo.runtime.api.Framework;
 @Name("securityActions")
 @Scope(CONVERSATION)
 public class SecurityActionsBean extends InputController implements
-        SecurityActions {
+        SecurityActions, Serializable {
 
     // XXX temporary
     protected static final String ADMIN_GROUP = "administrators";
@@ -87,7 +88,7 @@ public class SecurityActionsBean extends InputController implements
     protected static final String[] SEED_PERMISSIONS_TO_CHECK = {SecurityConstants.WRITE_SECURITY, SecurityConstants.READ_SECURITY};
 
     protected String[] CACHED_PERMISSION_TO_CHECK = null;
-    
+
     private static final Log log = LogFactory.getLog(SecurityActionsBean.class);
 
     private static final Labeler labeler = new Labeler(
@@ -106,10 +107,10 @@ public class SecurityActionsBean extends InputController implements
     protected transient List<String> cachedDeletedUserAndGroups;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true)
     protected PermissionActionListManager permissionActionListManager;
@@ -121,7 +122,7 @@ public class SecurityActionsBean extends InputController implements
     protected PrincipalListManager principalListManager;
 
     @In(create = true)
-    protected UserManager userManager;
+    protected transient UserManager userManager;
 
     @In(create = true)
     protected NuxeoPrincipal currentUser;
@@ -647,5 +648,5 @@ public class SecurityActionsBean extends InputController implements
         }
         return CACHED_PERMISSION_TO_CHECK;
     }
-    
+
 }

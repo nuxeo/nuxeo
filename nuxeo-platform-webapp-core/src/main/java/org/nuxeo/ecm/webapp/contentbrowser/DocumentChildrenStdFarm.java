@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.webapp.contentbrowser;
 
+import java.io.Serializable;
+
 import static org.jboss.seam.ScopeType.SESSION;
 
 import org.jboss.seam.annotations.In;
@@ -46,13 +48,13 @@ import org.nuxeo.ecm.webapp.base.InputController;
 @Name("documentChildrenFarm")
 @Scope(SESSION)
 public class DocumentChildrenStdFarm extends InputController implements
-        ResultsProviderFarm {
+        ResultsProviderFarm, Serializable {
 
     // Result providers
     public static final String CHILDREN_BY_COREAPI = "CURRENT_DOC_CHILDREN";
 
     @In(create = true, required = false)
-    private CoreSession documentManager;
+    private transient CoreSession documentManager;
 
     @In(create = true)
     private DocumentChildrenSearchFarm documentChildrenSearchFarm;

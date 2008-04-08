@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webapp.search;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -71,7 +72,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 @Name("searchResults")
 @Scope(ScopeType.CONVERSATION)
 @Transactional
-public class SearchResultsBean extends InputController implements SearchResults {
+public class SearchResultsBean extends InputController implements SearchResults, Serializable {
 
     private static final Log log = LogFactory.getLog(SearchResultsBean.class);
 
@@ -92,7 +93,7 @@ public class SearchResultsBean extends InputController implements SearchResults 
     private String newSortColumn;
 
     @In(required = false, create = true)
-    private ResultsProvidersCache resultsProvidersCache;
+    private transient ResultsProvidersCache resultsProvidersCache;
 
     @In(create = true)
     private transient ClipboardActions clipboardActions;

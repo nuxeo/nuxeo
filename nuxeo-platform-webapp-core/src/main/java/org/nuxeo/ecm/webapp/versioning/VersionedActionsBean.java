@@ -24,6 +24,7 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
 import javax.faces.application.FacesMessage;
 
@@ -61,7 +62,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 @Name("versionedActions")
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
-public class VersionedActionsBean implements VersionedActions {
+public class VersionedActionsBean implements VersionedActions, Serializable {
 
     private static final Log log = LogFactory.getLog(VersionedActionsBean.class);
 
@@ -75,7 +76,7 @@ public class VersionedActionsBean implements VersionedActions {
     protected transient FacesMessages facesMessages;
 
     @In(create = true, required = false)
-    protected ResourcesAccessor resourcesAccessor;
+    protected transient ResourcesAccessor resourcesAccessor;
 
     @In
     protected transient Context sessionContext;

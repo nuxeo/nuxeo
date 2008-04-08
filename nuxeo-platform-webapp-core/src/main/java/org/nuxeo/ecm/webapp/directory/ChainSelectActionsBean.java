@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.io.Serializable;
 
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
@@ -52,7 +53,7 @@ import org.nuxeo.ecm.webapp.base.InputController;
 @Name("chainSelectActions")
 @Scope(SESSION)
 public class ChainSelectActionsBean extends InputController implements
-        ChainSelectActions {
+        ChainSelectActions, Serializable {
 
     private static final Log log = LogFactory.getLog(ChainSelectActionsBean.class);
 

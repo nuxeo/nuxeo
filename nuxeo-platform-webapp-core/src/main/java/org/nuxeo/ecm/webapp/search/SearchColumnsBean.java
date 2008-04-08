@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.io.Serializable;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.PostActivate;
@@ -62,7 +63,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("searchColumns")
 @Scope(ScopeType.CONVERSATION)
-public class SearchColumnsBean extends InputController implements SearchColumns {
+public class SearchColumnsBean extends InputController implements SearchColumns, Serializable {
 
     private static final Log log = LogFactory.getLog(SearchColumnsBean.class);
 

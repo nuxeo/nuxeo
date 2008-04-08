@@ -118,10 +118,10 @@ public class DocumentActionsBean extends InputController implements
     private transient CoreSession documentManager;
 
     @In(required = false, create = true)
-    private DocumentsListsManager documentsListsManager;
+    private transient DocumentsListsManager documentsListsManager;
 
     @In(create = true)
-    protected DeleteActions deleteActions;
+    protected transient DeleteActions deleteActions;
 
     @In(create = true)
     protected transient WebActions webActions;

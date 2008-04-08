@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webapp.pagination;
 
+import java.io.Serializable;
 import javax.annotation.security.PermitAll;
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
@@ -48,10 +49,9 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  *
  */
-
 @Name("sortActions")
 @Scope(ScopeType.CONVERSATION)
-public class SortActionsBean extends InputController implements SortActions {
+public class SortActionsBean extends InputController implements SortActions, Serializable {
 
     private static final Log log = LogFactory.getLog(SortActionsBean.class);
 
@@ -59,7 +59,7 @@ public class SortActionsBean extends InputController implements SortActions {
     private String newSortColumn;
 
     @In(required = false, create = true)
-    private ResultsProvidersCache resultsProvidersCache;
+    private transient ResultsProvidersCache resultsProvidersCache;
 
     @RequestParameter("providerName")
     private String providerName;
