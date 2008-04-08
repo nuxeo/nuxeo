@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.security.SecurityManager;
  */
 public class FakeSecurityManager implements SecurityManager {
 
-    private final class ACPGrant extends ACPImpl {
+    private static final class ACPGrant extends ACPImpl {
 
         private static final long serialVersionUID = -5167896851016076928L;
 

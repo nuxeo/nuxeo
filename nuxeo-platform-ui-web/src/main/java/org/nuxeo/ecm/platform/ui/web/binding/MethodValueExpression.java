@@ -31,14 +31,13 @@ import javax.el.ValueExpression;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
 
 /**
  * Method value expression encapsulates a method expression so that it invokes
  * it when evaluated as a standard value expression.
- * 
+ *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- * 
+ *
  */
 public class MethodValueExpression extends ValueExpression implements
         Externalizable {
@@ -104,7 +103,6 @@ public class MethodValueExpression extends ValueExpression implements
     @Override
     public Object getValue(ELContext arg0) {
         // invoke method instead of resolving value
-        Object res;
         try {
             return methodExpression.invoke(arg0, paramTypesClasses);
         } catch (Throwable t) {

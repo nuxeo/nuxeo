@@ -50,8 +50,9 @@ public class ACEDescriptor {
         return principal;
     }
 
-    @Deprecated // keep for BBB with old config files
     @XNode("@userName")
+    @Deprecated
+    // keep for BBB with old config files
     public void setUserName(String userName) {
         principal = userName;
     }
