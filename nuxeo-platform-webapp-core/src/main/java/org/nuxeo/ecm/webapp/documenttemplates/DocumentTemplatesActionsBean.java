@@ -137,7 +137,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
 
     public String createDocumentFromTemplate(DocumentModel doc,
             String templateId) throws ClientException {
-        setSelectedTemplateId(templateId);
+        selectedTemplateId = templateId;
         return createDocumentFromTemplate(doc);
     }
 

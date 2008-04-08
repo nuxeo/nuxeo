@@ -19,11 +19,12 @@
 
 package org.nuxeo.ecm.platform.mimetype.detectors;
 
-import net.sf.jmimemagic.MagicDetector;
-import java.util.Map;
-import java.util.zip.ZipFile;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
+import java.util.zip.ZipFile;
+
+import net.sf.jmimemagic.MagicDetector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

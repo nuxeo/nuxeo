@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
-import org.nuxeo.ecm.platform.ui.web.api.SortNotSupportedException;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
@@ -134,9 +133,7 @@ public class DocumentChildrenSearchFarm extends InputController implements
             resultsProvidersCache.invalidate(queryModelName);
         }
 
-        final PagedDocumentsProvider resultsProvider = resultsProvidersCache.get(queryModelName);
-
-        return resultsProvider;
+        return resultsProvidersCache.get(queryModelName);
     }
 
 }

@@ -28,13 +28,13 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 /**
  * A DocumentModel that caches info that DocumentModelImpl would fetch from the
  * core.
- * 
+ *
  * <p>
  * Typical use-case: search engine results can have said info that is needed to
  * build a viable DocumentModel for results display.
- * 
+ *
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
- * 
+ *
  */
 public class ResultDocumentModel extends DocumentModelImpl {
 

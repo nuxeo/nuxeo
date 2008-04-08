@@ -1418,7 +1418,7 @@ public class TestJbpmEngine extends AbstractJbmTestCase {
         WMProcessInstanceIterator it = engine.listProcessInstances(null);
         while (it.hasNext()) {
             WMProcessInstance proc = it.next();
-            assertTrue(proc instanceof WMProcessInstance);
+            // TODO: assert something?
         }
 
     }
