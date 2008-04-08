@@ -40,9 +40,7 @@ import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.core.security.SecurityManager;
 
-
 /**
- *
  * A security manager that works only on JCR repositories.
  * <p>
  * This manager is keeping the ACP corresponding to a document inside
@@ -61,12 +59,9 @@ import org.nuxeo.ecm.core.security.SecurityManager;
  *
  * </code>
  *
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class JCRSecurityManager implements SecurityManager {
-
 
     public void invalidateCache(Session session) {
         // TODO: no cache is used for now
@@ -80,7 +75,6 @@ public class JCRSecurityManager implements SecurityManager {
         //return true;
     }
 
-
     public Access getAccess(Document doc, String username,
             String permission) throws SecurityException {
         ACP acp = getMergedACP(doc);
@@ -89,7 +83,6 @@ public class JCRSecurityManager implements SecurityManager {
         }
         return Access.UNKNOWN;
     }
-
 
     public ACP getMergedACP(Document doc) throws SecurityException {
         // TODO cache ACPs
@@ -114,7 +107,6 @@ public class JCRSecurityManager implements SecurityManager {
             throw new SecurityException("Failed to get merged acp", e);
         }
     }
-
 
     public ACP getACP(Document doc) throws SecurityException {
         Node docNode = ((JCRDocument) doc).getNode();
@@ -208,7 +200,7 @@ public class JCRSecurityManager implements SecurityManager {
         }
     }
 
-    private void collectACLs(ACP acp, Node acpNode) throws SecurityException {
+    private static void collectACLs(ACP acp, Node acpNode) throws SecurityException {
         try {
             NodeIterator it = acpNode.getNodes();
             while (it.hasNext()) {
@@ -656,6 +648,5 @@ public class JCRSecurityManager implements SecurityManager {
 //
 //        return allowed;
 //    }
-
 
 }

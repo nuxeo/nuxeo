@@ -135,11 +135,11 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
         return factory.createProperty(parent, field, flags);
     }
 
-    public PropertyDiff exportDiff() throws PropertyException {
+    public PropertyDiff exportDiff() {
         return null;
     }
 
-    public void importDiff(PropertyDiff diff) throws PropertyException {
+    public void importDiff(PropertyDiff diff) {
     }
 
     private void readObject(ObjectInputStream in)

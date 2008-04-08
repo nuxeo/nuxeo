@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.api.adapter;
 
+import java.util.Hashtable;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -31,7 +32,7 @@ public abstract class SessionAdapterFactory<T> {
 
     public abstract T getAdapter(CoreSession session);
 
-    static Map<String, SessionAdapterFactory<?>> adapters = new java.util.Hashtable<String, SessionAdapterFactory<?>>();
+    static final Map<String, SessionAdapterFactory<?>> adapters = new Hashtable<String, SessionAdapterFactory<?>>();
 
     public static void registerAdapter(String itf, SessionAdapterFactory<?> adapter) {
         adapters.put(itf, adapter);

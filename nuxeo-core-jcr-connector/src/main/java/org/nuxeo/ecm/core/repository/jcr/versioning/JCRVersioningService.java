@@ -280,7 +280,7 @@ public class JCRVersioningService implements VersioningService {
      *
      * @throws RepositoryException
      */
-    private void _printVersions(VersionHistory vhist) throws RepositoryException {
+    private static void _printVersions(VersionHistory vhist) throws RepositoryException {
         VersionIterator it = vhist.getAllVersions();
 
         while (it.hasNext()) {
