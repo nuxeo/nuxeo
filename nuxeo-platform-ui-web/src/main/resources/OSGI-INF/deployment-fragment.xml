@@ -506,7 +506,7 @@
     -->
     <context-param>
       <param-name>facelets.REFRESH_PERIOD</param-name>
-      <param-value>-1</param-value>
+      <param-value>1</param-value>
     </context-param>
 
     <!--  Seam and Ajax4JSF  integration-->
