@@ -2416,4 +2416,29 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("File", docModel.getType());
     }
 
+    public void testCopyContent() throws ClientException {
+        DocumentModel root = remote.getRootDocument();
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
+                "original", "File");
+        doc.setProperty("dublincore", "title", "t");
+        doc.setProperty("dublincore", "description", "d");
+        doc.setProperty("dublincore", "subjects", new String[] { "a", "b" });
+        doc.setProperty("file", "filename", "f");
+        doc = remote.createDocument(doc);
+        remote.save();
+
+        DocumentModel copy = new DocumentModelImpl(root.getPathAsString(),
+                "copy", "File");
+        copy.copyContent(doc);
+        copy = remote.createDocument(copy);
+        remote.save();
+
+        assertEquals("t", copy.getProperty("dublincore", "title"));
+        assertEquals("d", copy.getProperty("dublincore", "description"));
+        assertEquals(Arrays.asList("a", "b"),
+                Arrays.asList((String[]) copy.getProperty("dublincore",
+                        "subjects")));
+        assertEquals("f", copy.getProperty("file", "filename"));
+    }
+
 }
