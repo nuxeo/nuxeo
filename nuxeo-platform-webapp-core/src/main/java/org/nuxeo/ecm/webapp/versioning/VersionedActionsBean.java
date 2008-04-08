@@ -58,12 +58,15 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  *
  * @author Razvan Caraghin
  * @author Florent Guillaume
+ * @author Thierry Martins
  */
 @Name("versionedActions")
 @Scope(CONVERSATION)
 @Install(precedence = FRAMEWORK)
 public class VersionedActionsBean implements VersionedActions, Serializable {
 
+    private static final long serialVersionUID = 4472648747609642493L;
+    
     private static final Log log = LogFactory.getLog(VersionedActionsBean.class);
 
     @In(create = true, required = true)
@@ -144,6 +147,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
         DocumentModel restoredDocument = documentManager.restoreToVersion(
                 navigationContext.getCurrentDocument().getRef(),
                 selectedVersion);
+        documentManager.save();
         // documentManager.checkOut(restoredDocument.getRef());
 
         // same as edit basically
