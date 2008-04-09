@@ -90,17 +90,17 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
         assertEquals(ENGINE_NAME, backend.getName());
     }
 
-    public SearchEngineBackend getBackend() throws Exception {
+    public SearchEngineBackend getBackend() {
         return getSearchServiceInternals().getSearchEngineBackendByName(
                 ENGINE_NAME);
     }
 
-    private ComposedNXQuery composeQuery(String query) {
+    private static ComposedNXQuery composeQuery(String query) {
         SQLQuery nxqlQuery = SQLQueryParser.parse(query);
         return new ComposedNXQueryImpl(nxqlQuery);
     }
 
-    private ComposedNXQuery composeQuery(String query, String name,
+    private static ComposedNXQuery composeQuery(String query, String name,
             String... groups) {
         SQLQuery nxqlQuery = SQLQueryParser.parse(query);
         return new ComposedNXQueryImpl(nxqlQuery, new SearchPrincipalImpl(name,

@@ -91,8 +91,8 @@ public class UIDGeneratorDescriptor {
      */
     public UIDGeneratorDescriptor(String generationExp, Set generationCrit,
             int counterStart) {
-        this.generationExpression = generationExp;
-        this.generationCriteria = generationCrit;
+        generationExpression = generationExp;
+        generationCriteria = generationCrit;
         this.counterStart = counterStart;
     }
 

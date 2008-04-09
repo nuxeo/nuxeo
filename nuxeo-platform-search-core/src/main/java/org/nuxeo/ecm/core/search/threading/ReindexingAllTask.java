@@ -16,7 +16,7 @@ public class ReindexingAllTask extends IndexingTask {
 
     private static final Log log = LogFactory.getLog(ReindexingAllTask.class);
 
-    private static int DEFAULT_DOC_BATCH_SIZE = 50;
+    private static final int DEFAULT_DOC_BATCH_SIZE = 50;
 
     public ReindexingAllTask(DocumentModel dm, Boolean recursive) {
         super(dm, recursive);
@@ -32,6 +32,7 @@ public class ReindexingAllTask extends IndexingTask {
         super(resources);
     }
 
+    @Override
     public void run() {
 
         final String errorMsg = "Reindexing all documents failed...";
@@ -39,7 +40,7 @@ public class ReindexingAllTask extends IndexingTask {
         // Init search service.
         getSearchService();
 
-        final int current_batch_size = searchService.getIndexingDocBatchSize();
+        final int currentBatchSize = searchService.getIndexingDocBatchSize();
 
         try {
 
@@ -73,7 +74,7 @@ public class ReindexingAllTask extends IndexingTask {
         //catch (IndexingException e) {
         //r    log.error(errorMsg, e);
         } finally {
-            searchService.setIndexingDocBatchSize(current_batch_size);
+            searchService.setIndexingDocBatchSize(currentBatchSize);
         }
 
     }

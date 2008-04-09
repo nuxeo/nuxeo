@@ -329,7 +329,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 String[] schemaNames = dm.getDeclaredSchemas();
                 assertEquals(1, schemaNames.length);
 
-                assertEquals(schemaNames[0], USER_SCHEMANAME);
+                assertEquals(USER_SCHEMANAME, schemaNames[0]);
 
                 assertEquals("user0", dm.getProperty(USER_SCHEMANAME,
                         "username"));
