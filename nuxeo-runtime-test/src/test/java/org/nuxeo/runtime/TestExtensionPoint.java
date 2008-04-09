@@ -31,8 +31,8 @@ public class TestExtensionPoint extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib(TestExtensionPoint.class.getResource("BaseXPoint.xml"));
-        deployContrib(TestExtensionPoint.class.getResource("OverridingXPoint.xml"));
+        deployContrib("BaseXPoint.xml");
+        deployContrib("OverridingXPoint.xml");
     }
 
 
