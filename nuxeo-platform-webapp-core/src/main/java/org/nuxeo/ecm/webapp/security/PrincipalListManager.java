@@ -19,23 +19,25 @@
 
 package org.nuxeo.ecm.webapp.security;
 
+import static org.jboss.seam.ScopeType.SESSION;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import static org.jboss.seam.ScopeType.PAGE;
-import static org.jboss.seam.ScopeType.SESSION;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.contexts.Context;
+import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -48,6 +50,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  * POJO class that extracts and holds the list of the users from backend.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
+ * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
  *
  */
 @Name("principalListManager")
@@ -98,8 +101,6 @@ public class PrincipalListManager implements Serializable {
     protected List<String> selectedUsers;
 
     @In(required = false)
-    @Out(required = false, scope = PAGE)
-    // to make it available to AjaxRequest
     String searchFilter;
 
     private boolean searchOverflow;
@@ -132,6 +133,11 @@ public class PrincipalListManager implements Serializable {
     }
 
     public void setSearchFilter(String searchFilter) {
+    	//Context seamContext = Contexts.getEventContext();
+        Context pageContext = Contexts.getPageContext();
+    	if (pageContext != null) {
+    	    pageContext.set("searchFilter", searchFilter);
+    	}
         this.searchFilter = searchFilter;
     }
 
