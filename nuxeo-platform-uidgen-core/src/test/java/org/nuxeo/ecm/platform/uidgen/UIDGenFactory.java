@@ -17,12 +17,9 @@
  * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
-package org.nuxeo.ecm.platform.uidgen.tests;
+package org.nuxeo.ecm.platform.uidgen;
 
-import org.nuxeo.ecm.platform.uidgen.AbstractUIDGenerator;
-import org.nuxeo.ecm.platform.uidgen.UIDGenerator;
-import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
-import org.nuxeo.ecm.platform.uidgen.tests.generators.UIDGenerator1;
+import org.nuxeo.ecm.platform.uidgen.generators.UIDGenerator1;
 
 /**
  * Provides different UID generators based on the given doc type.
@@ -39,17 +36,12 @@ public final class UIDGenFactory {
     /**
      * Mockup generator factory.
      * Will instantiate a Generator based on document type.
-     *
-     * @param doc
-     * @param sequencer
-     * @return
      */
     public static UIDGenerator createGeneratorForDocType(String docTypeName,
             UIDSequencer sequencer) {
-
         final AbstractUIDGenerator generator = new UIDGenerator1();
         generator.setSequencer(sequencer);
-
         return generator;
     }
+
 }

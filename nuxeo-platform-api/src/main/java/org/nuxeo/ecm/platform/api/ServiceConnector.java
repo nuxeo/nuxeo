@@ -19,12 +19,11 @@
 
 package org.nuxeo.ecm.platform.api;
 
+import java.io.Serializable;
+
 import javax.naming.NamingException;
 
 import org.nuxeo.runtime.api.ServiceManagement;
-
-import java.io.Serializable;
-
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
