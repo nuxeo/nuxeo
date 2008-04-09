@@ -141,11 +141,15 @@ public class ComponentInstanceImpl implements ComponentInstance {
         // if this the target extension point is extending another extension point from another component
         // then delegate the registration to the that component component
         ExtensionPoint xp = ri.getExtensionPoint(extension.getExtensionPoint());
-        String superCo = xp.getSuperComponent();
-        if (superCo != null) {
-            ((ExtensionImpl)extension).target = new ComponentName(superCo);
-            ri.manager.registerExtension(extension);
-            return;
+        if (xp != null) {
+            String superCo = xp.getSuperComponent();
+            if (superCo != null) {
+                ((ExtensionImpl)extension).target = new ComponentName(superCo);
+                ri.manager.registerExtension(extension);
+                return;
+            }
+        } else {
+            System.err.println("Warning: TARGET EXTENSION POINT IS UNKNOWN. Check your extension in "+extension.getComponent().getName());
         }
         // this extension is for us - register it
         // activate the implementation instance
