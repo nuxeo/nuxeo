@@ -251,11 +251,6 @@
         <version>1.1.5.NX3</version>
       </dependency>
       <dependency>
-        <groupId>org.jboss.seam</groupId>
-        <artifactId>jboss-seam</artifactId>
-        <version>1.1.5.NX3</version>
-      </dependency>
-      <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-serialization</artifactId>
         <version>1.0.0-RC1</version>
