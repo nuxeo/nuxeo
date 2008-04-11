@@ -23,7 +23,6 @@ import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -36,7 +35,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.restAPI.BaseNuxeoRestlet;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
@@ -45,7 +43,7 @@ import org.restlet.data.Response;
 
 /**
  * Restlet to help LiveEdit clients update the blob content of a document
- * 
+ *
  * @author Sun Tan <stan@nuxeo.com>
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
