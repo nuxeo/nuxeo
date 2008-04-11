@@ -21,13 +21,11 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
-import java.security.Principal;
 import java.io.Serializable;
 
 import org.dom4j.Element;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
-import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -59,7 +57,8 @@ public class CreationContainerListRestlet extends BaseNuxeoRestlet implements
         String docType = getQueryParamValue(req, DOC_TYPE, DEFAULT_DOCTYPE);
         try {
             FileManager fileManager = Framework.getService(FileManager.class);
-            containers = fileManager.getCreationContainers(getUserPrincipal(req), docType);
+            containers = fileManager.getCreationContainers(
+                    getUserPrincipal(req), docType);
         } catch (Exception e) {
             handleError(res, e);
         }
