@@ -147,8 +147,7 @@ public class StatementImpl implements Statement {
     }
 
     public Node[] getProperties(Resource property) {
-        Node[] values;
-        values = properties.get(property);
+        Node[] values = properties.get(property);
         return values;
     }
 
