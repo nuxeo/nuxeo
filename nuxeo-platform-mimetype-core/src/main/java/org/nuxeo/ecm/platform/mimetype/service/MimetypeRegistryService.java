@@ -212,10 +212,10 @@ public class MimetypeRegistryService extends DefaultComponent implements
                 return matchingMimetype;
             }
         } catch (MagicMatchNotFoundException e) {
-            if (file.getAbsolutePath() != null){
+            if (file.getAbsolutePath() != null) {
                 return getMimetypeFromFilename(file.getAbsolutePath());
             }
-           throw new MimetypeNotFoundException(e.getMessage(), e);
+            throw new MimetypeNotFoundException(e.getMessage(), e);
         } catch (Exception e) {
             throw new MimetypeDetectionException(e.getMessage(), e);
         }
@@ -231,7 +231,8 @@ public class MimetypeRegistryService extends DefaultComponent implements
             MimetypeEntry mimetype = mimetypeByExtensionRegistry.get(lowerCaseExtension);
             if (mimetype == null) {
                 throw new MimetypeNotFoundException(
-                        "no registered mimetype has extension: " + lowerCaseExtension);
+                        "no registered mimetype has extension: "
+                                + lowerCaseExtension);
             } else {
                 return mimetype.getNormalized();
             }
@@ -322,7 +323,7 @@ public class MimetypeRegistryService extends DefaultComponent implements
                     mtype = entry;
                     break;
                 }
-              }
+            }
         }
         return mtype;
     }
