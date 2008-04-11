@@ -1,5 +1,3 @@
-package org.nuxeo.ecm.platform.ui.web.restAPI;
-
 /*
  * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
@@ -18,6 +16,8 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
  *
  * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
+
+package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
