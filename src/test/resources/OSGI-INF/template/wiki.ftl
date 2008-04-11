@@ -1,0 +1,3 @@
+
+Wiki: ${title}
+<@render/>

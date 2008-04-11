@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.site.rendering.wiki">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Contribute the wiki transformer to main rendering engine
+    by overriding the transformer extension point to add custom
+    wiki transformer configuration
+  </documentation>
+
+  <extension-point name="transformer" target="org.nuxeo.ecm.platform.site.rendering.SiteTemplateManagerService">
+        <object
+      class="org.nuxeo.ecm.platform.site.rendering.WikiTransformerDescriptor" />
+  </extension-point>
+
+  <extension target="org.nuxeo.ecm.platform.site.rendering.wiki" point="transformer">
+    <transformer name="wiki" serializer="org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer">
+      <filter pattern="[A-Z]+[a-z]+[A-Z][A-Za-z]*" replacement="&lt;a href='http://www.nuxeo.org/wiki/$0'&gt;$0&lt;/a&gt;"/>
+      <filter pattern="NXP-[0-9]+" replacement="&lt;a href='http://jira.nuxeo.org/browse/$0'&gt;$0&lt;/a&gt;"/>
+    </transformer>
+  </extension>
+
+</component>

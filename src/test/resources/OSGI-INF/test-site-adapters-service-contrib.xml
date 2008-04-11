@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.site.adapters.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.site.adapters.SiteAdaptersManagerService"
+    point="siteAdapter">
+
+	<siteAdapter docType="Note" class="org.nuxeo.ecm.platform.site.adapters.NoteSiteObjectHandler"/>
+
+  </extension>
+
+</component>

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.site.adapters.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.site.adapters.SiteAdaptersManagerService"
+    point="siteAdapter">
+
+
+	<!--  for now use the Note as a WikiPage
+	<siteAdapter docType="Note" class="org.nuxeo.ecm.platform.site.adapters.NoteSiteObjectHandler"/>
+	 -->
+	<siteAdapter docType="Note" class="org.nuxeo.ecm.platform.site.adapters.WikiPageSiteObjectHandler"/>
+
+	<!--  for now use the Folder as a WikiSite -->
+	<siteAdapter docType="Folder" class="org.nuxeo.ecm.platform.site.adapters.WikiSiteObjectHandler"/>
+
+  </extension>
+
+</component>

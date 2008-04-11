@@ -1,0 +1,5 @@
+
+Wiki: ${title}
+
+CreatePage ?
+

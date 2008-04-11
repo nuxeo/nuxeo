@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<fragment>
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
+  <!-- Enable authentication for Site requests -->
+  <extension target="web#STD-AUTH-FILTER">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/site/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+  </extension>
+
+  <!-- Site Servlet mapping -->
+  <extension target="web#SERVLET">
+    <servlet>
+      <servlet-name>Nuxeo Site Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.platform.site.servlet.SiteServlet
+      </servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo Site Servlet</servlet-name>
+      <url-pattern>/site/*</url-pattern>
+    </servlet-mapping>
+  </extension>
+</fragment>
+

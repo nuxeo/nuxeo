@@ -1,0 +1,6 @@
+Here is some wiki in the *document* content.\
+See NXP-1256
+
+This is an inline macro {freemarker}doc title: ${dublincore.title}{/freemarker}
+
+This is a doc expression example $doc(dc:title) or $doc(key=dc:title)

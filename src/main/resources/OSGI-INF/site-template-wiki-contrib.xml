@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.site.templates.wiki">
+
+  <extension target="org.nuxeo.ecm.platform.site.rendering.SiteTemplateManagerService"
+    point="template">
+
+	<template name="wiki-site" src="OSGI-INF/templates/wiki-site.ftl"/>
+	<template name="wikiCreatePage" src="OSGI-INF/templates/wiki-site-createPage.ftl"/>
+	<template name="editWikiPage" src="OSGI-INF/templates/wiki-page-edit.ftl"/>
+	<template name="defaultWikiPage" src="OSGI-INF/templates/wiki-page-default.ftl"/>
+	<template name="wikiIndex" src="OSGI-INF/templates/wiki-site-index-page.ftl"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.site.rendering.SiteTemplateManagerService"
+    point="binding">
+
+	<templateBinding templateName="wiki-site" docType="Folder" path="*"/>
+
+  </extension>
+
+</component>
