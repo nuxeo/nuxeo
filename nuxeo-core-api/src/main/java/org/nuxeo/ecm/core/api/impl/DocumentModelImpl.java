@@ -1149,6 +1149,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     public Object cloneField(Field field, String key, Object value) {
+        // key is unused
         Object clone;
         Type type = field.getType();
         if (type.isSimpleType()) {
@@ -1163,22 +1164,26 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             ListType ltype = (ListType) type;
             Field lfield = ltype.getField();
             Type ftype = lfield.getType();
-            List<Object> list = null;
-            //if (ftype.isSimpleType()) { // these are stored as arrays
+            List<Object> list;
             if (value instanceof Object[]) { // these are stored as arrays
                 list = Arrays.asList((Object[]) value);
             } else {
                 list = (List<Object>) value;
             }
-            List<Object> clonedList = new ArrayList<Object>();
-            for (Object o : list) {
-                clonedList.add(cloneField(lfield, key, o));
-            }
-            Class klass = JavaTypes.getClass(ftype);
-            if (klass.isPrimitive()) {
-                return PrimitiveArrays.toPrimitiveArray(list, klass);
+            if (ftype.isComplexType()) {
+                List<Object> clonedList = new ArrayList<Object>(list.size());
+                for (Object o : list) {
+                    clonedList.add(cloneField(lfield, null, o));
+                }
+                clone = clonedList;
             } else {
-                return list.toArray((Object[])Array.newInstance(klass, list.size()));
+                Class<?> klass = JavaTypes.getClass(ftype);
+                if (klass.isPrimitive()) {
+                    clone = PrimitiveArrays.toPrimitiveArray(list, klass);
+                } else {
+                    clone = list.toArray((Object[]) Array.newInstance(klass,
+                            list.size()));
+                }
             }
         } else { // complex type
             ComplexType ctype = (ComplexType) type;

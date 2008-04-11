@@ -2424,6 +2424,15 @@ public abstract class TestAPI extends TestConnection {
         doc.setProperty("dublincore", "description", "d");
         doc.setProperty("dublincore", "subjects", new String[] { "a", "b" });
         doc.setProperty("file", "filename", "f");
+        List<Object> files = new ArrayList<Object>(2);
+        Map<String, Object> f = new HashMap<String, Object>();
+        f.put("filename", "f1");
+        files.add(f);
+        f = new HashMap<String, Object>();
+        f.put("filename", "f2");
+        f.put("file", new StringBlob("myfile", "text/test", "UTF-8"));
+        files.add(f);
+        doc.setProperty("files", "files", files);
         doc = remote.createDocument(doc);
         remote.save();
 
@@ -2439,6 +2448,23 @@ public abstract class TestAPI extends TestConnection {
                 Arrays.asList((String[]) copy.getProperty("dublincore",
                         "subjects")));
         assertEquals("f", copy.getProperty("file", "filename"));
+        Object fileso = copy.getProperty("files", "files");
+        assertNotNull(fileso);
+        List<Map<String, Object>> newfiles = (List<Map<String, Object>>) fileso;
+        assertEquals(2, newfiles.size());
+        assertEquals("f1", newfiles.get(0).get("filename"));
+        assertEquals("f2", newfiles.get(1).get("filename"));
+        Blob bb = (Blob) newfiles.get(1).get("file");
+        assertNotNull(bb);
+        assertEquals("text/test", bb.getMimeType());
+        assertEquals("UTF-8", bb.getEncoding());
+        String content;
+        try {
+            content = bb.getString();
+        } catch (IOException e) {
+            throw new ClientException(e);
+        }
+        assertEquals("myfile", content);
     }
 
 }
