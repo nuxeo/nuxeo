@@ -80,7 +80,7 @@ public class MethodResultTagHandler extends MetaTagHandler {
             ve = ctx.getExpressionFactory().createValueExpression(res,
                     Object.class);
         } else {
-            ve = new MethodValueExpression(meth, paramTypesClasses);
+            ve = new MethodValueExpression(ctx, meth, paramTypesClasses);
         }
         ctx.getVariableMapper().setVariable(nameStr, ve);
         this.nextHandler.apply(ctx, parent);
