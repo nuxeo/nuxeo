@@ -575,6 +575,9 @@ public class CompassBackend extends AbstractSearchEngineBackend {
             if (type.equals("text") || type.equals("path")) {
                 return sValue;
             }
+            if (type.equals("boolean")) {
+                return Boolean.valueOf(sValue);
+            }
         }
 
         // Fallback to generic serialization
@@ -586,8 +589,8 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         } catch (IOException e) {
             log.warn(String.format(
                     "While building ResultItem, could not handle contents of stored "
-                            + "field %s. \n"
-                            + "Check Search Service configuration and Compass mappings. ",
+                            + "field %s. "
+                            + "Check Search Service configuration and Compass mappings.",
                     prop.getName()));
         } catch (ClassNotFoundException e) {
             throw new SearchException(String.format(
