@@ -27,6 +27,13 @@
     <property name="nuxeo.ear.build" value="${nuxeo.ear.root}/target/${assembly.ear}" />
   </target>
 
+  <property name="nuxeo.jboss.jmx.protocol" value="" />
+  <property name="nuxeo.jboss.jmx.http.hostname" value="" />
+  <property name="nuxeo.jboss.jmx.http.port" value="" />
+  <condition property="mvn.profile" value="-Phttp" else="">
+    <equals arg1="${nuxeo.jboss.jmx.protocol}" arg2="http" />
+  </condition>
+
   <condition property="osfamily-unix">
     <os family="unix" />
   </condition>
@@ -161,8 +168,12 @@
       <arg value="-f" />
       <arg value="${pom.file}" />
       <arg value="-Djboss.dir=${jboss.home}" />
+      <arg value="-Dnuxeo.jboss.jmx.protocol=${nuxeo.jboss.jmx.protocol}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.hostname=${nuxeo.jboss.jmx.http.hostname}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.port=${nuxeo.jboss.jmx.http.port}" />
       <arg value="clean" />
       <arg value="package" />
+      <arg value="${mvn.profile}" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
@@ -174,8 +185,12 @@
       <arg value="-f" />
       <arg value="${pom.file}" />
       <arg value="-Djboss.dir=${jboss.home}" />
+      <arg value="-Dnuxeo.jboss.jmx.protocol=${nuxeo.jboss.jmx.protocol}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.hostname=${nuxeo.jboss.jmx.http.hostname}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.port=${nuxeo.jboss.jmx.http.port}" />
       <arg value="clean" />
       <arg value="package" />
+      <arg value="${mvn.profile}" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
@@ -265,7 +280,7 @@
     </copy>
     <!-- XXX: find a way not to depend on the version number of nxsearch compass -->
     <copy
-      todir="${jboss.nuxeo.ear}/platform/nuxeo-platform-search-compass-plugin-5.1.5-SNAPSHOT.jar" failonerror="false" overwrite="true">
+      todir="${jboss.nuxeo.ear}/platform/nuxeo-platform-search-compass-plugin-5.2-SNAPSHOT.jar" failonerror="false" overwrite="true">
       <fileset
         file="${basedir}/${postgresql.config}/compass.cfg.xml" />
     </copy>
@@ -292,7 +307,7 @@
     </copy>
     <!-- XXX: find a way not to depend on the version number of nxsearch compass -->
     <copy
-      todir="${jboss.nuxeo.ear}/platform/nuxeo-platform-search-compass-plugin-5.1.5-SNAPSHOT.jar" failonerror="false" overwrite="true">
+      todir="${jboss.nuxeo.ear}/platform/nuxeo-platform-search-compass-plugin-5.2-SNAPSHOT.jar" failonerror="false" overwrite="true">
       <fileset
         file="${basedir}/${oracle.config}/compass.cfg.xml" />
     </copy>
