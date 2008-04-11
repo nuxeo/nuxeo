@@ -24,8 +24,6 @@ import static org.jboss.seam.ScopeType.EVENT;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
-import org.apache.myfaces.custom.fileupload.UploadedFileConverter;
-import org.apache.myfaces.custom.fileupload.UploadedFileDefaultFileImpl;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
