@@ -5,6 +5,6 @@
 <hr/>
 
 <p>
-<@transformer type="wiki">${note.note}</@transformer>
+<@transform name="wiki">${note.note}</@transform>
 </p>
 
