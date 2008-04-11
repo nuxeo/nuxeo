@@ -326,8 +326,6 @@
       src="themes/palettes/nxbackgrounds.properties" category="background" />
     <palette name="Nuxeo default borders"
       src="themes/palettes/nxborders.properties" category="border" />
-    <palette name="Nuxeo psd colors" src="themes/palettes/nxcolors.aco"
-      category="color" />
     <palette name="Courrier default fonts" src="themes/palettes/courrier_fonts.properties"
       category="font" />
     <palette name="Courrier default backgrounds"
