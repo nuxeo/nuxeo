@@ -225,13 +225,13 @@ public class DefaultActionFilter implements ActionFilter {
             ActionContext context, String[] groups) {
         NuxeoPrincipal principal = context.getCurrentPrincipal();
         if (principal == null) {
-        	return false;
+            return false;
         }
         List<String> principaGroups = principal.getGroups();
         for (String group : groups) {
-        	if (principaGroups.contains(group)) {
-        		return true;
-        	}
+            if (principaGroups.contains(group)) {
+                return true;
+            }
         }
         return false;
     }
@@ -249,17 +249,15 @@ public class DefaultActionFilter implements ActionFilter {
         NuxeoPrincipal currentPrincipal = context.getCurrentPrincipal();
 
         for (String condition : conditions) {
-            boolean eval = false;
-            JexlExpression exp;
             try {
-                exp = new JexlExpression(condition);
+                JexlExpression exp = new JexlExpression(condition);
                 Context ctx = new Context();
                 ctx.put("document", doc);
                 ctx.put("principal", currentPrincipal);
 
                 ctx.put("SeamContext", context.get("SeamContext"));
 
-                eval = (Boolean) exp.eval(ctx);
+                boolean eval = (Boolean) exp.eval(ctx);
                 if (eval) {
                     return true;
                 }

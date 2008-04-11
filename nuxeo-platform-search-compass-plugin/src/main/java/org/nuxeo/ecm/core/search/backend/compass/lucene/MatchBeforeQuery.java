@@ -98,9 +98,8 @@ public class MatchBeforeQuery extends Query {
         }
 
         public Scorer scorer(IndexReader reader) throws IOException {
-            int i;
             TermPositions[] requiredTps = new TermPositions[required.size()];
-            i = 0;
+            int i = 0;
             for (String req : required) {
                 requiredTps[i++] = reader.termPositions(new Term(field, req));
             }

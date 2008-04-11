@@ -14,7 +14,7 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ * $Id$
  */
 
 package org.nuxeo.ecm.platform.ui.web.restAPI;
@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.UnsupportedEncodingException;
+import java.io.Serializable;
 import java.net.URLDecoder;
 
 import org.jboss.seam.annotations.In;
@@ -50,7 +51,9 @@ import org.restlet.data.Response;
 @Name("uploadFileRestlet")
 @Scope(EVENT)
 public class UploadFileRestlet extends BaseNuxeoRestlet implements
-        LiveEditConstants {
+        LiveEditConstants, Serializable {
+
+    private static final long serialVersionUID = -6167207806181917456L;
 
     @In(create = true)
     protected NavigationContext navigationContext;

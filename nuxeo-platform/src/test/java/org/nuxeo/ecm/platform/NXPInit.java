@@ -71,7 +71,7 @@ public abstract class NXPInit extends TestCase {
         super.tearDown();
     }
 
-    protected void _loadTestingConfiguration() throws IOException {
+    protected void _loadTestingConfiguration() {
         System.setProperty("java.security.auth.login.config",
                 Thread.currentThread().getContextClassLoader().getResource("nuxeo_jaas.config").getPath());
         System.setProperty("java.security.policy",
@@ -89,7 +89,7 @@ public abstract class NXPInit extends TestCase {
         SecurityAssociationHandler handler = new SecurityAssociationHandler();
         SimplePrincipal user = new SimplePrincipal("q");
         handler.setSecurityInfo(user, "q".toCharArray());
-        loginContext = new LoginContext("nuxeo.ecm", (CallbackHandler) handler);
+        loginContext = new LoginContext("nuxeo.ecm", handler);
 
         loginContext.login();
         authenticatedSubject = loginContext.getSubject();
