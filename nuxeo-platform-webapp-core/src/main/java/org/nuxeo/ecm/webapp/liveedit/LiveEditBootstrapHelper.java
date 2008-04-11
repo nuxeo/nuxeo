@@ -35,9 +35,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
 import org.dom4j.QName;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.RequestParameter;
@@ -184,7 +187,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
      * @return the bootstrap file content
      * @throws Exception
      */
-    public String getBootstrap() throws Exception {
+    public void getBootstrap() throws Exception {
 
         String currentRepoID = documentManager.getRepositoryName();
 
@@ -350,14 +353,19 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             Element editId = root.addElement(editIdTag);
             editId.setText(getEditId(doc, session, username));
 
-            // response.setHeader("Content-Disposition", "inline;
-            // filename=\"nx5_edit.nuxeo5\");
+            // serialize bootstrap XML document in the response
+            Document xmlDoc = DocumentFactory.getInstance().createDocument();
+            xmlDoc.setRootElement(root);
             response.setContentType("text/xml");
-            response.getWriter().write(root.asXML());
+
+            // use a formatter to make it easier to debug live edit client
+            // implementations
+            OutputFormat format = OutputFormat.createPrettyPrint();
+            XMLWriter writer = new XMLWriter(response.getOutputStream(), format);
+            writer.write(xmlDoc);
 
             response.flushBuffer();
             context.responseComplete();
-            return null;
         } finally {
             if (session != null && session != documentManager) {
                 CoreInstance.getInstance().close(session);
