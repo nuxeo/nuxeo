@@ -14,22 +14,21 @@
  * Contributors:
  *     Narcis Paslaru
  *     Florent Guillaume
+ *     Thierry Martins
  */
 
 package org.nuxeo.ecm.platform.publishing;
 
 import java.io.Serializable;
-import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
@@ -95,6 +94,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Narcis Paslaru
  * @author Florent Guillaume
+ * @author Thierry Martins
  */
 
 @Name("publishActions")
@@ -611,11 +611,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
         }
 
         if (!docToPublish.isProxy()) {
-            Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
-            DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.FULL,
-                    locale);
             docToPublish.setProperty("dublincore", "issued",
-                    dateFormat.getCalendar());
+                    Calendar.getInstance());
         }
 
         DocumentModel proxy;
