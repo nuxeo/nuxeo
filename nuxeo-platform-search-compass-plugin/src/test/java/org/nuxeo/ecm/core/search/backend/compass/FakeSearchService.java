@@ -303,24 +303,24 @@ public class FakeSearchService implements SearchServiceInternals {
     }
 
     public void setReindexingAll(boolean flag) {
-        // TODO Auto-generated method stub        
+        // TODO Auto-generated method stub
     }
 
     public void index(IndexableResources sources, boolean fulltext,
             boolean newTxn) throws IndexingException {
         // TODO Auto-generated method stub
-        
+
     }
 
     public void index(ResolvedResources sources, boolean newTxn)
             throws IndexingException {
         // TODO Auto-generated method stub
-        
+
     }
 
     public void clear(boolean newTxn) throws IndexingException {
         // TODO Auto-generated method stub
-        
+
     }
 
 }

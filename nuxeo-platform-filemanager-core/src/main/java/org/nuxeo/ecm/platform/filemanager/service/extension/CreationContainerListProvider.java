@@ -59,9 +59,8 @@ public interface CreationContainerListProvider {
      *
      * @param docType name of the document core type
      * @return true is the docType is accepted
-     * @throws Exception
      */
-    boolean accept(String docType) throws Exception;
+    boolean accept(String docType);
 
     /**
      * Build the list of candidate containers for the given document type and

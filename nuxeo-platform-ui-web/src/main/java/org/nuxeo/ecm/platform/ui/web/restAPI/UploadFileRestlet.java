@@ -1,5 +1,3 @@
-package org.nuxeo.ecm.platform.ui.web.restAPI;
-
 /*
  * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
@@ -16,16 +14,17 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ * $Id$
  */
+
+package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.UnsupportedEncodingException;
+import java.io.Serializable;
 import java.net.URLDecoder;
 
-import org.apache.myfaces.custom.fileupload.UploadedFileConverter;
-import org.apache.myfaces.custom.fileupload.UploadedFileDefaultFileImpl;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -52,7 +51,9 @@ import org.restlet.data.Response;
 @Name("uploadFileRestlet")
 @Scope(EVENT)
 public class UploadFileRestlet extends BaseNuxeoRestlet implements
-        LiveEditConstants {
+        LiveEditConstants, Serializable {
+
+    private static final long serialVersionUID = -6167207806181917456L;
 
     @In(create = true)
     protected NavigationContext navigationContext;
