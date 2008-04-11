@@ -133,7 +133,6 @@ public class PrincipalListManager implements Serializable {
     }
 
     public void setSearchFilter(String searchFilter) {
-    	//Context seamContext = Contexts.getEventContext();
         Context pageContext = Contexts.getPageContext();
     	if (pageContext != null) {
     	    pageContext.set("searchFilter", searchFilter);
