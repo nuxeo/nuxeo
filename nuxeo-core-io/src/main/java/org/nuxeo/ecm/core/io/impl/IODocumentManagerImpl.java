@@ -98,12 +98,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
             DocumentPipe pipe = new DocumentPipeImpl(10);
             pipe.setReader(reader);
             pipe.setWriter(writer);
-            DocumentTranslationMap map = pipe.run();
-
-            // will need to save session before notifying events, otherwise docs won't be found
-            writer.close();
-
-            return map;
+            return pipe.run();
         } catch (Exception e) {
             throw new ImportDocumentException(e);
         } finally {

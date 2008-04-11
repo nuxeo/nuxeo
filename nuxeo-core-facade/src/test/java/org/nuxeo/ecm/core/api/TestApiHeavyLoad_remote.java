@@ -46,6 +46,7 @@ public class TestApiHeavyLoad_remote extends TestApiHeavyLoad {
 
     @Override
     public void setUp() throws Exception {
+        super.setUp();
         _loadTestingConfiguration();
         _defaultSecurityManager();
         _authenticate();
@@ -62,6 +63,7 @@ public class TestApiHeavyLoad_remote extends TestApiHeavyLoad {
         properties = null;
         authenticatedSubject = null;
         loginContext = null;
+        super.tearDown();
     }
 
     @Override

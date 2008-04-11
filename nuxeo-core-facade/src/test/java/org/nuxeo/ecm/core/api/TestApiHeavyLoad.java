@@ -43,7 +43,7 @@ public abstract class TestApiHeavyLoad extends TestCase {
     protected CoreSession remote;
 
     /**
-     * Overwrite stupid base test case - this should be refactored
+     * Overwrite stupid base test case - TODO: this should be refactored.
      */
     public void openSession() throws ClientException {
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
@@ -52,7 +52,6 @@ public abstract class TestApiHeavyLoad extends TestCase {
 
         assertNotNull(remote);
     }
-
 
     protected void createChildDocuments(DocumentModel folder, int childrenCount)
             throws ClientException {

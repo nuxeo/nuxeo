@@ -19,10 +19,11 @@
 
 package org.nuxeo.ecm.core.api;
 
-import java.util.Set;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Arrays;
+import java.util.Set;
+
 import junit.framework.TestCase;
 
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;

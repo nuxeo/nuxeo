@@ -23,10 +23,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.PropertyVisitor;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -87,36 +85,29 @@ public class ScalarProperty extends AbstractProperty {
         throw new UnsupportedOperationException("Scalar properties don't have children");
     }
 
-    public Property get(int index)
-            throws UnsupportedOperationException {
+    public Property get(int index) {
         throw new UnsupportedOperationException("Scalar properties don't have children");
     }
 
-    public Property get(String name)
-            throws UnsupportedOperationException {
+    public Property get(String name) {
         throw new UnsupportedOperationException("Scalar properties don't have children");
     }
 
-    public Property set(String name, Object value)
-            throws PropertyNotFoundException, UnsupportedOperationException,
-            InvalidPropertyValueException {
+    public Property set(String name, Object value) {
         throw new UnsupportedOperationException("Scalar properties don't have children");
     }
 
-    public Property add(Object value) throws InvalidPropertyValueException,
-            UnsupportedOperationException {
+    public Property add(Object value) {
         throw new UnsupportedOperationException(
                 "Scalar properties don't have children");
     }
 
-    public Property add(int index, Object value) throws
-            InvalidPropertyValueException, UnsupportedOperationException {
+    public Property add(int index, Object value) {
         throw new UnsupportedOperationException(
                 "Scalar properties don't have children");
     }
 
-    public Property add() throws InvalidPropertyValueException,
-            UnsupportedOperationException {
+    public Property add() {
         throw new UnsupportedOperationException(
                 "add() operation not supported on map properties");
     }
@@ -127,7 +118,7 @@ public class ScalarProperty extends AbstractProperty {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        ScalarProperty clone = (ScalarProperty)super.clone();
+        ScalarProperty clone = (ScalarProperty) super.clone();
         return clone;
     }
 
