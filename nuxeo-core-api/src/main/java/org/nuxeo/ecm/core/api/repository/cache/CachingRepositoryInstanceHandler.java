@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryExceptionHandler;
 import org.nuxeo.ecm.core.api.repository.RepositoryInstance;
 import org.nuxeo.ecm.core.api.repository.RepositoryInstanceHandler;
 
@@ -56,6 +57,10 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler 
      */
     public CachingRepositoryInstanceHandler(Repository repository) {
         super (repository);
+    }
+
+    public CachingRepositoryInstanceHandler(Repository repository, RepositoryExceptionHandler exceptionHandler) {
+        super (repository, exceptionHandler);
     }
 
     public Class<?>[] getProxyInterfaces() {
