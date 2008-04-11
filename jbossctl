@@ -30,8 +30,8 @@ HERE=`dirname $0`
 JBOSS_HOME=`cd $HERE/..; pwd -P`
 
 # Read an optional running configuration file
-if [ -r "$JBOSS_HOME/jbossctl.conf" ]; then
-    . "$RUN_CONF"
+if [ -r "$JBOSS_HOME/bin/jbossctl.conf" ]; then
+    export RUN_CONF=$JBOSS_HOME/bin/jbossctl.conf
 fi
 if [ -z "$JAVA_HOME" ]; then
     echo 'Missing $JAVA_HOME' >&2; exit 2
@@ -111,7 +111,7 @@ status() {
             if [ $ps_alive = 0 ]; then
                 echo "No JBoss running."
             else
-                echo "JBoss running [$(cat $PID_FILE)]"
+                echo "JBoss running [$JBOSS_PID]"
             fi
         fi
         return 1 # failure
@@ -140,7 +140,7 @@ start() {
         tail -n1 $LOG |grep "Started in" >/dev/null
         if [ $? = 0 ]; then
             echo "Server started."
-            tail -n 9 $LOG
+            grep "Nuxeo ECM Started" -B1 -A5 $LOG|tail -n7
             return 0
         fi
         echo -n "."
@@ -164,8 +164,9 @@ stop() {
     if ! status check_alive warn; then
         return 0 # success
     fi
-    echo -n "Stopping JBoss [$JBOSS_PID]... "
-    echo "Using jnp://$JNPHOST:$JNPPORT"
+    echo -n "Stopping JBoss... "
+    echo "(using jnp://$JNPHOST:$JNPPORT)"
+    echo -n "[$JBOSS_PID]"
     if [ -z "$SU" ]; then
         $CMD_STOP > /dev/null 2>&1
     else
@@ -181,13 +182,13 @@ stop() {
     if status check_alive nowarn; then
         #kill it
         echo -n " SIGKILL"
-        cmd="kill -9 `cat $PID_FILE`"
+        cmd="kill -9 $JBOSS_PID"
         if [ -z "$SU" ]; then
             eval $cmd
         else
             $SU "$cmd"
         fi
-        wait `cat $PID_FILE` || waitstopped
+        wait $JBOSS_PID || waitstopped
     fi
     echo " done."
     return 0
