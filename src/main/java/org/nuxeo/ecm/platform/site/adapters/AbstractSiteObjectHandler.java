@@ -28,10 +28,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
 import org.nuxeo.ecm.platform.site.api.SiteException;
-import org.nuxeo.ecm.platform.site.api.SiteTemplateManager;
 import org.nuxeo.ecm.platform.site.servlet.NoBodyResponse;
 import org.nuxeo.ecm.platform.site.servlet.SiteConst;
 import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
+import org.nuxeo.ecm.platform.site.template.SiteManager;
+import org.nuxeo.ecm.platform.site.template.SiteObject;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -41,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractSiteObjectHandler implements SiteAwareObject {
 
-    private static SiteTemplateManager templateManager;
+    private SiteManager siteManager;
 
     protected DocumentModel sourceDocument;
 
@@ -123,15 +124,20 @@ public abstract class AbstractSiteObjectHandler implements SiteAwareObject {
         return true;
     }
 
-    protected SiteTemplateManager getTemplateManager() {
-        if (templateManager == null) {
-            templateManager = Framework.getLocalService(SiteTemplateManager.class);
+
+    protected SiteManager getSiteManager() {
+        if (siteManager == null) {
+            siteManager = Framework.getLocalService(SiteManager.class);
         }
-        return templateManager;
+        return siteManager;
     }
 
     public DocumentModel getSourceDocument() {
         return sourceDocument;
+    }
+
+    public SiteObject getSiteConfiguration(SiteRequest request) {
+        return getSiteManager().resolve(sourceDocument);
     }
 
 }

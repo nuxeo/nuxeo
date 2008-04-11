@@ -29,6 +29,7 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.RootContextModel;
+import org.nuxeo.ecm.platform.site.template.nxdoc.PropertyURL;
 
 import freemarker.core.Environment;
 import freemarker.template.SimpleScalar;
@@ -64,6 +65,12 @@ public class TransformDirective implements TemplateDirectiveModel {
 	        src = scalar.getAsString();
 	    }
 
+	    String property = null;
+	    scalar = (SimpleScalar)params.get("property");
+	    if (scalar != null) {
+	        property = scalar.getAsString();
+	    }
+
 	    RootContextModel ctx = (RootContextModel)env.getCustomAttribute(FreemarkerEngine.ROOT_CTX_KEY);
 	    if (ctx == null) {
 	        throw new TemplateModelException("Not in a nuxeo rendering context");
@@ -76,7 +83,10 @@ public class TransformDirective implements TemplateDirectiveModel {
 
 	    try {
 	        String content = null;
-	        if (src == null) {
+	        if (property != null) {
+                URL url = PropertyURL.getURL(ctx.getDocument(), property);
+                tr.transform(url, env.getOut(), ctx.getThisContext());
+	        } else if (src == null) {
 	            if (body == null) {
 	                throw new TemplateModelException("Transform directive must have either a content either a valid 'src' attribute");
 	            }

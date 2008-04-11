@@ -16,6 +16,8 @@
     point="binding">
 
 	<templateBinding templateName="wiki-site" docType="Folder" path="*"/>
+	<templateBinding templateName="defaultWikiPage" docType="Note" path="*"/>
+
 
   </extension>
 

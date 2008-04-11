@@ -21,6 +21,8 @@ import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
 import org.nuxeo.ecm.platform.site.api.SiteTemplateManager;
+import org.nuxeo.ecm.platform.site.template.URLFactory;
+import org.nuxeo.ecm.platform.site.template.nxdoc.PropertyURL;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -285,8 +287,11 @@ public class SiteTemplateManagerService extends DefaultComponent implements
 
 
     public URL getResource(String templateName) {
-        URL templateURL = getTemplateUrlFromName(templateName);
-        return templateURL;
+        try {
+            return URLFactory.getURL(templateName);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 }

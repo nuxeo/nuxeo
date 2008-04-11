@@ -19,14 +19,13 @@
 
 package org.nuxeo.ecm.platform.site.api;
 
-import java.io.InputStream;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
+import org.nuxeo.ecm.platform.site.template.SiteObject;
 
 /**
  * interface SiteObject DocumentModel adapters
@@ -59,7 +58,7 @@ public interface SiteAwareObject {
     boolean traverse(SiteRequest request, HttpServletResponse response) throws SiteException;
 
     // Rendering oriented methods
-    String getTemplateName(SiteRequest request);
+    public SiteObject getSiteConfiguration(SiteRequest request);
 
     String getURL(SiteRequest request);
 

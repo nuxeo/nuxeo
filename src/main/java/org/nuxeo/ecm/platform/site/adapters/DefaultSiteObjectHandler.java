@@ -46,8 +46,4 @@ public class DefaultSiteObjectHandler extends AbstractSiteObjectHandler {
         // TODO Auto-generated method stub
     }
 
-    public String getTemplateName(SiteRequest request) {
-        return getTemplateManager().getTemplateNameForDoc(sourceDocument);
-    }
-
 }

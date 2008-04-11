@@ -30,6 +30,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
 import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
+import org.nuxeo.ecm.platform.site.template.SiteObject;
+import org.nuxeo.ecm.platform.site.template.SiteObjectView;
 
 public class SiteRenderingContext implements RenderingContext {
 
@@ -70,7 +72,14 @@ public class SiteRenderingContext implements RenderingContext {
     }
 
     public String getTemplate() {
-        return currentSiteObject.getTemplateName(request);
+        SiteObject cfg = currentSiteObject.getSiteConfiguration(request);
+        Object[] ar = cfg.getViewMap().values().toArray();
+        SiteObjectView view = cfg.getView(request.getMode().toLowerCase());
+        if (view != null) {
+            return view.getTemplate().toExternalForm();
+        } else {
+            return "error";
+        }
     }
 
     public Writer getWriter() {

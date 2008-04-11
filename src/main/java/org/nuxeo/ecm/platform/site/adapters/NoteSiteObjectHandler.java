@@ -30,18 +30,13 @@ import org.nuxeo.ecm.platform.site.api.SiteException;
 import org.nuxeo.ecm.platform.site.servlet.SiteConst;
 import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
 
-public class NoteSiteObjectHandler extends DynamicTemplateSiteObjectHandler {
+public class NoteSiteObjectHandler extends DefaultSiteObjectHandler {
 
     public NoteSiteObjectHandler() {
     }
 
     public NoteSiteObjectHandler(DocumentModel doc) {
         super(doc);
-    }
-
-    @Override
-    public String getTemplateName(SiteRequest request) {
-        return getDynamicTemplateKey(request, "note", "note");
     }
 
     @Override

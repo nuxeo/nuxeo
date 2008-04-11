@@ -19,21 +19,14 @@
 
 package org.nuxeo.ecm.platform.site.adapters;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
 import org.nuxeo.ecm.platform.site.api.SiteException;
 import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
+import org.nuxeo.ecm.platform.site.template.SiteObject;
 
 public class WikiSiteObjectHandler extends FolderishSiteObjectHandler {
 
@@ -41,21 +34,14 @@ public class WikiSiteObjectHandler extends FolderishSiteObjectHandler {
     private static final String CREATE_KEY = "create";
     private static final String DEFAULT_PAGE_ID = "index";
 
-    private DocumentModel createSubPage(SiteRequest request, String pageId, String templateName)
+    private DocumentModel createSubPage(SiteRequest request, String pageId)
             throws Exception {
-        InputStream templateStream = getTemplateManager().getTemplateFromName(templateName);
-        BufferedReader in = new BufferedReader(new InputStreamReader(templateStream));
-        StringBuffer templateContent = new StringBuffer();
-        String line;
-        while ((line = in.readLine()) != null) {
-            templateContent.append(line);
-        }
         CoreSession dm = request.getDocumentManager();
         DocumentModel newPage = dm.createDocumentModel(sourceDocument.getPathAsString(), pageId,
                 "Note");
         newPage.setProperty("dublincore", "title", pageId);
         //newPage.setProperty("note", "note", "This is new page ${title}");
-        newPage.setProperty("note", "note", templateContent.toString());
+        newPage.setProperty("note", "note", "");
         newPage = dm.createDocument(newPage);
         dm.save();
         return newPage;
@@ -76,7 +62,7 @@ public class WikiSiteObjectHandler extends FolderishSiteObjectHandler {
             String pageId = request.getUnresolvedPath().get(0);
             if ("true".equalsIgnoreCase(createFlag)) {
                 try {
-                    DocumentModel newPage = createSubPage(request, pageId, "defaultWikiPage");
+                    DocumentModel newPage = createSubPage(request, pageId);
                     request.getDocsToTraverse().add(newPage);
                     request.getUnresolvedPath().remove(0);
                     request.setMode(SiteRequest.EDIT_MODE);
@@ -85,7 +71,7 @@ public class WikiSiteObjectHandler extends FolderishSiteObjectHandler {
                 }
             } else {
                 request.setAttribute("pageToCreate", pageId);
-                templateName = "wikiCreatePage";
+                request.setMode(SiteRequest.CREATE_MODE);
             }
         } else if (request.getDocsToTraverse() == null || request.getDocsToTraverse().isEmpty()) {
             DocumentModel indexPage = null;
@@ -95,7 +81,7 @@ public class WikiSiteObjectHandler extends FolderishSiteObjectHandler {
                 request.getDocsToTraverse().add(indexPage);
             } catch (ClientException ce) {
                 try {
-                    indexPage = createSubPage(request, DEFAULT_PAGE_ID, "wikiIndex");
+                    indexPage = createSubPage(request, DEFAULT_PAGE_ID);
                     request.getDocsToTraverse().add(indexPage);
                 } catch (Exception e) {
                     throw new SiteException("Error while creating wiki page", e);
@@ -105,15 +91,6 @@ public class WikiSiteObjectHandler extends FolderishSiteObjectHandler {
         }
 
         return true;
-    }
-
-    @Override
-    public String getTemplateName(SiteRequest request) {
-        if (templateName == null) {
-            return getTemplateManager().getTemplateNameForDoc(sourceDocument);
-        } else {
-            return templateName;
-        }
     }
 
     @Override

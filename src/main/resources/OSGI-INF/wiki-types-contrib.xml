@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<component name="net.press.pa.ecm.types">
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+    <type id="Wiki" coretype="Wiki">
+      <label>Wiki</label>
+      <icon>/icons/file.gif</icon>
+      <default-view>view_documents</default-view>
+    </type>
+  </extension>
+
+</component>

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.site.template.SiteManagerComponent">
+  <implementation
+          class="org.nuxeo.ecm.platform.site.template.SiteManagerComponent" />
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Manage templates
+  </documentation>
+
+  <!-- you can change the default rendering engine by setting this property to the engine class name
+  <property name="engine" value="org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine"/>
+  -->
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.site.template.SiteManager" />
+      <provide
+      interface="org.nuxeo.ecm.platform.site.template.FileChangeNotifier" />
+  </service>
+
+</component>

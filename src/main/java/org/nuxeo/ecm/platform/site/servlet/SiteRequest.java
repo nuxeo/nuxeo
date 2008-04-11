@@ -46,6 +46,8 @@ public class SiteRequest extends HttpServletRequestWrapper {
 
     public static final String EDIT_MODE = "EDIT";
 
+    public static final String CREATE_MODE = "CREATE";
+
     public static final String UNRESOLVED_SUBPATH = "unresolvedSubPath";
 
     protected String mode = VIEW_MODE;
@@ -188,11 +190,7 @@ public class SiteRequest extends HttpServletRequestWrapper {
     }
 
     public void setMode(String mode) {
-        if (EDIT_MODE.equalsIgnoreCase(mode)) {
-            this.mode = EDIT_MODE;
-        } else {
-            this.mode = VIEW_MODE;
-        }
+        this.mode = mode;
     }
 
     public SiteRequest(HttpServletRequest request) {

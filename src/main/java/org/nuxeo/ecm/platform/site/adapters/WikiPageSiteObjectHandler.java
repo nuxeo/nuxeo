@@ -43,19 +43,6 @@ public class WikiPageSiteObjectHandler extends NoteSiteObjectHandler {
     public WikiPageSiteObjectHandler() {
     }
 
-    @Override
-    public String getTemplateName(SiteRequest request) {
-        if (request.getMode().equals(SiteRequest.EDIT_MODE)) {
-            return "editWikiPage";
-        } else {
-            return getDynamicTemplateKey(request, wikiSchema, wikiContent, true);
-        }
-    }
-
-    @Override
-    protected String preprocessTemplateContent(SiteRequest request, String templateContent) {
-        return addEditLink(request, templateContent);
-    }
 
     @Override
     public void doPost(SiteRequest request, HttpServletResponse response) throws SiteException {
@@ -63,7 +50,7 @@ public class WikiPageSiteObjectHandler extends NoteSiteObjectHandler {
         if (newContent != null) {
             String oldContent = (String) sourceDocument.getProperty(wikiSchema, wikiContent);
             if (!newContent.equals(oldContent)) {
-                sourceDocument.setProperty(wikiSchema, wikiSchema, newContent);
+                sourceDocument.setProperty(wikiSchema, wikiContent, newContent);
                 try {
                     // flag doc for snapshoting
                     ScopedMap ctxData = sourceDocument.getContextData();

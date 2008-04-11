@@ -1,3 +1,10 @@
-<h2>${this.title}</h2>
+<h2>${title}</h2>
 
-Use the Edit link to edit this newly created page.
+<hr/>
+<A href="${docURL}?render_mode=EDIT">Edit</A><BR/>
+<hr/>
+
+<p>
+<@transformer type="wiki">${note.note}</@transformer>
+</p>
+
