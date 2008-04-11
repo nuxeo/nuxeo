@@ -118,8 +118,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return typeManagerService;
     }
 
-    private static String getDefaultView(DocumentModel doc)
-            throws ClientException {
+    private static String getDefaultView(DocumentModel doc) {
         String docType = doc.getType();
 
         if (defaultViewCache.containsKey(docType)) {
@@ -128,8 +127,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             org.nuxeo.ecm.platform.types.Type type = getTypeManager().getType(
                     docType);
             if (type == null) {
-                throw new ClientException("Cannot get default view. Type '"
-                        + docType + "' not registered");
+                return null;
             }
             String defaultView = type.getDefaultView();
             defaultViewCache.put(docType, defaultView);
