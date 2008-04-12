@@ -43,22 +43,22 @@ import org.nuxeo.runtime.services.streaming.StreamingService;
  */
 public class ConfigurationFactory1 extends ConfigurationFactory {
 
-    public final static Version VERSION = new Version(1, 0, 0);
+    public static final Version VERSION = new Version(1, 0, 0);
 
     @Override
     public Version getVersion() {
         return VERSION;
     }
 
-
     @Override
-    public ServerConfiguration createConfiguration(InvokerLocator locator, Version version) throws ConfigurationException {
+    public ServerConfiguration createConfiguration(InvokerLocator locator, Version version)
+            throws ConfigurationException {
         String name = Framework.getProperty("org.nuxeo.runtime.server.name");
         ServerConfiguration1 config = new ServerConfiguration1(locator, name, VERSION);
         config.setProperties(getProperties());
         config.setSecurityDomains(getSecurityDomains());
         // 1. collect streaming information
-        StreamingService streaming = (StreamingService)Framework.getRuntime().getComponent(StreamingService.NAME);
+        StreamingService streaming = (StreamingService) Framework.getRuntime().getComponent(StreamingService.NAME);
         if (streaming.isServer()) {
             // streaming locator is the same as the config locator
             config.setStreamingLocator(locator.getLocatorURI());
@@ -87,13 +87,12 @@ public class ConfigurationFactory1 extends ConfigurationFactory {
         return config;
     }
 
-
-    public ServiceDescriptor[] getServiceBindings() {
+    public static ServiceDescriptor[] getServiceBindings() {
         ServiceManager sm = Framework.getLocalService(ServiceManager.class);
         return sm.getServiceDescriptors();
     }
 
-    public ServiceHost[] getServiceHosts(String host) throws ConfigurationException {
+    public ServiceHost[] getServiceHosts(String host) {
         ServiceManager sm = Framework.getLocalService(ServiceManager.class);
         ServiceHost[] serviceHosts = sm.getServers();
         for (ServiceHost shost : serviceHosts) {
@@ -117,7 +116,7 @@ public class ConfigurationFactory1 extends ConfigurationFactory {
         return serviceHosts;
     }
 
-    private void updateLocalHostJndiProps(ServiceHost host) {
+    private static void updateLocalHostJndiProps(ServiceHost host) {
         Properties runtimeProps = Framework.getRuntime().getProperties();
         Properties props = AutoConfigurationService.readJndiProperties(runtimeProps);
         if (!props.isEmpty()) {
@@ -125,12 +124,10 @@ public class ConfigurationFactory1 extends ConfigurationFactory {
         }
     }
 
-
-    public SecurityDomain[]  getSecurityDomains() {
+    public SecurityDomain[] getSecurityDomains() {
         LoginService loginService = Framework.getLocalService(LoginService.class);
         return loginService.getSecurityDomains();
     }
-
 
     public Properties getProperties() {
          Properties props = new Properties();

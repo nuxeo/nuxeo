@@ -12,33 +12,29 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     Nuxeo - initial API and implementation
  *
  * $Id$
  */
 
-package org.nuxeo.runtime.remoting;
+package org.nuxeo.runtime;
 
-import org.nuxeo.runtime.Version;
-import org.nuxeo.runtime.config.ConfigurationException;
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class UnsupportedServerVersion extends ConfigurationException {
+@XObject("printer")
+public class ContributionTestOverrided extends ContributionTest {
 
-    private static final long serialVersionUID = 7632769314648547250L;
-
-    Version version;
-
-    public UnsupportedServerVersion(Version version) {
-        super ("Unsupported server configuration version: "+version);
+    @XNode("message")
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public UnsupportedServerVersion(Version version, String message) {
-        super ("Unsupported server configuration version: "+version+". "+message);
-    }
-
+    @XNode("name")
+    public String name;
 
 }

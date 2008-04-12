@@ -61,13 +61,12 @@ public class TestRuntime extends AbstractRuntimeService {
         return VERSION;
     }
 
-    private synchronized String generateId() {
+    private static synchronized String generateId() {
         long stamp = System.currentTimeMillis();
         counter++;
         return Long.toHexString(stamp) + '-'
                 + System.identityHashCode(System.class) + '.' + counter;
     }
-
 
     public void deploy(URL url) throws Exception {
         context.deploy(url);

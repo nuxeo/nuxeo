@@ -243,10 +243,7 @@ public class LoginComponent extends DefaultComponent implements LoginService {
 
         @Override
         public int hashCode() {
-            if (userName==null)
-                return 0;
-            else
-                return userName.hashCode();
+            return userName == null ? 0 : userName.hashCode();
         }
 
     }

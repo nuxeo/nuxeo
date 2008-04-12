@@ -60,6 +60,8 @@ public class BundleImpl implements Bundle {
 
     protected BundleActivator activator;
 
+    protected double startupTime;
+
     public BundleImpl(OSGiAdapter osgi, BundleFile file, ClassLoader loader) {
         this (osgi, file, loader, false);
     }
@@ -300,4 +302,20 @@ public class BundleImpl implements Bundle {
         osgi.fireBundleEvent(event);
     }
 
+    public double getStartupTime() {
+        return startupTime;
+    }
+
+    @Override
+    public int hashCode() {
+        return symbolicName.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Bundle) {
+            return symbolicName.equals(((Bundle)obj).getSymbolicName());
+        }
+        return false;
+    }
 }
