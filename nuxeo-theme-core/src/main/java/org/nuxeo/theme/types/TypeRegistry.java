@@ -44,7 +44,7 @@ public final class TypeRegistry implements Registrable {
             typeNames.put(typeFamily, new ArrayList<String>());
         }
         typeNames.get(typeFamily).add(typeName);
-        log.info("Registered " + typeFamily + ": " + typeName);
+        log.debug("Registered " + typeFamily + ": " + typeName);
     }
 
     public synchronized void unregister(final Type type) {
@@ -53,7 +53,7 @@ public final class TypeRegistry implements Registrable {
         String key = computeKey(typeFamily, typeName);
         registry.remove(key);
         typeNames.get(typeFamily).remove(typeName);
-        log.info("Unregistered " + typeFamily + ": " + typeName);
+        log.debug("Unregistered " + typeFamily + ": " + typeName);
     }
 
     public Type lookup(final TypeFamily typeFamily, final String name) {
