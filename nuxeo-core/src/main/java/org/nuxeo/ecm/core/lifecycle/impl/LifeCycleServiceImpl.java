@@ -91,8 +91,6 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
                     .getLifeCycleManagerName());
         } else {
             lifeCycleManager = null;
-            log.info("No life cycle associate to document type : "
-                    + doc.getType());
         }
 
         return lifeCycleManager;
@@ -120,8 +118,6 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
             currentLifeCycleState = lifeCycleManager.getState(doc);
         } else {
             currentLifeCycleState = null;
-            log.info("No life cycle manager found for document type = "
-                    + doc.getType() + " check out your configuration.");
         }
 
         return currentLifeCycleState;
@@ -156,7 +152,6 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
     public void initialize(Document doc) throws LifeCycleException {
         LifeCycle documentLifeCycle = getLifeCycleFor(doc);
         if (documentLifeCycle == null) {
-            log.info("Not life cycle policy for this document. Nothing to do !");
             return;
         }
 
@@ -173,7 +168,7 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
         try {
             getLifeCycleManagerFor(doc).setPolicy(doc, policy);
         } catch (Exception e) {
-            throw new LifeCycleException("Failed to set life cycle policy", e);
+            throw new LifeCycleException("Failed to set lifecycle policy", e);
         }
     }
 
@@ -195,7 +190,7 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
     public void reinitLifeCycle(Document doc) throws LifeCycleException {
         LifeCycle documentLifeCycle = getLifeCycleFor(doc);
         if (documentLifeCycle == null) {
-            log.debug("No life cycle policy for this document. Nothing to do !");
+            log.debug("No lifecycle policy for this document. Nothing to do !");
             return;
         }
 
@@ -219,8 +214,8 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
             if (extension.getExtensionPoint().equals("lifecycle")) {
                 for (Object lifeCycle : contributions) {
                     LifeCycleDescriptor lifeCycleDescriptor = (LifeCycleDescriptor) lifeCycle;
-                    log.info("Trying to register a life cycle with name="
-                            + lifeCycleDescriptor.getName());
+                    log.info("Registering lifecycle: " +
+                            lifeCycleDescriptor.getName());
                     lifeCycles.put(lifeCycleDescriptor.getName(),
                             lifeCycleDescriptor.getLifeCycle());
                 }
@@ -231,15 +226,16 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
                     LifeCycleManager manager = (LifeCycleManager) extension.getContext().loadClass(
                                     desc.getClassName()).newInstance();
                     manager.setName(desc.getName());
-                    log.info("Trying to register a lifecycle manager implementation with name="
-                            + manager.getName());
+                    log.info("Registering lifecycle manager: " +
+                            manager.getName());
                     lifeCycleManagers.put(manager.getName(), manager);
                 }
             }
             if (extension.getExtensionPoint().equals("types")) {
                 for (Object mapping : contributions) {
                     LifeCycleTypesDescriptor desc = (LifeCycleTypesDescriptor) mapping;
-                    log.info("Trying to register a life cycle types mapping for life cycle :");
+                    log.info("Registering lifecycle types mapping: " +
+                            desc.getTypesMapping());
                     typesMapping.putAll(desc.getTypesMapping());
                 }
             }
@@ -255,8 +251,8 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
             lifeCycleManager.setState(doc, stateName);
         } else {
             throw new LifeCycleException(
-                    "Not life cycle manager found for document type = "
-                    + doc.getType() + "Check out your configuration");
+                    "Not lifecycle manager found for document type: " +
+                            doc.getType());
         }
     }
 
@@ -268,8 +264,6 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
             lifeCyclePolicy = lifeCycleManager.getPolicy(doc);
         } else {
             lifeCyclePolicy = null;
-            log.info("No life cycle manager found for document type = "
-                    + doc.getType() + " check out your configuration.");
         }
         return lifeCyclePolicy;
     }
@@ -283,8 +277,8 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
             lifeCycleManager.setPolicy(doc, policy);
         } else {
             throw new LifeCycleException(
-                    "Not life cycle manager found for document type = "
-                    + doc.getType() + "Check out your configuration");
+                    "Not lifecycle manager found for document type: " +
+                            doc.getType());
         }
     }
 
@@ -300,16 +294,15 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
             if (extension.getExtensionPoint().equals("lifecycle")) {
                 for (Object lifeCycle : contributions) {
                     LifeCycleDescriptor lifeCycleDescriptor = (LifeCycleDescriptor) lifeCycle;
-                    log.info("Trying to unregister a life cycle with name="
-                            + lifeCycleDescriptor.getName());
+                    log.debug("Unregistering lifecycle: " +
+                            lifeCycleDescriptor.getName());
                     lifeCycles.remove(lifeCycleDescriptor.getName());
                 }
             }
             if (extension.getExtensionPoint().equals("lifecyclemanager")) {
                 for (Object lifeCycleManager : contributions) {
                     LifeCycleManagerDescriptor desc = (LifeCycleManagerDescriptor) lifeCycleManager;
-                    log.info("Trying to unregister a life cycle manager with name="
-                                    + desc.getName());
+                    log.debug("Unregister lifecycle manager: " + desc.getName());
                     lifeCycleManagers.remove(desc.getName());
                 }
 
