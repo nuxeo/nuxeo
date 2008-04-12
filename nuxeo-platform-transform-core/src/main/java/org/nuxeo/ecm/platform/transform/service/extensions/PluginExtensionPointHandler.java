@@ -48,8 +48,6 @@ public class PluginExtensionPointHandler extends
     public static void unregisterExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
 
-        log.info("unregisterExtension()....................................");
-
         for (Object contrib : contribs) {
             PluginExtension pluginExtension = (PluginExtension) contrib;
 
@@ -63,8 +61,6 @@ public class PluginExtensionPointHandler extends
     }
 
     public static void registerExtension(Extension extension) {
-        log.info("RegisterExtension.....................");
-
         Object[] contribs = extension.getContributions();
 
         for (Object contrib : contribs) {
