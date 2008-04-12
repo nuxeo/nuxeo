@@ -71,7 +71,7 @@
     <xsl:text>
    </xsl:text>
     <category name="org.hibernate">
-      <priority value="INFO"/>
+      <priority value="WARN"/>
     </category>
     <xsl:text>
    </xsl:text>
