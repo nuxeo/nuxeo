@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.runtime.osgi;
@@ -25,20 +24,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.model.ComponentName;
-import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -48,7 +45,8 @@ import org.osgi.framework.FrameworkListener;
 /**
  * The default implementation of NXRuntime over an OSGi compatible environment.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author Bogdan Stefanescu
+ * @author Florent Guillaume
  */
 public class OSGiRuntimeService extends AbstractRuntimeService implements FrameworkListener {
 
@@ -147,10 +145,10 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
                     throw e;
                 }
             } else {
-                String message = "Component descriptor '" + desc
-                        + "' was not found in bundle '"
-                        + bundle.getSymbolicName();
-                log.warn(message + "'. Check your MANIFEST.MF");
+                String message = "Unknown component '" + desc +
+                        "' referenced by bundle '" + bundle.getSymbolicName() +
+                        "'";
+                log.error(message + ". Check the MANIFEST.MF");
                 warnings.add(message);
             }
         }
@@ -239,41 +237,28 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
 
     private void printStatusMessage() {
         String hr = "===========================================================";
-        StringBuffer msg = new StringBuffer();
-        msg.append("\r\n").append(hr)
-                .append("\r\n").append("=  Nuxeo ECM Started ")
-                .append("\r\n").append(hr)
-                .append("\r\n").append("= Component Loading Warnings: ");
-        if (warnings.isEmpty()) {
-            msg.append("No Warnings");
-        } else {
+        StringBuilder msg = new StringBuilder("Nuxeo EP Started\n"); // greppable
+        msg.append(hr).append("\n= Nuxeo EP Started\n");
+        if (!warnings.isEmpty()) {
+            msg.append(hr).append("\n= Component Loading Errors:\n");
             for (String warning : warnings) {
-                msg.append("\r\n").append("  * ").append(warning);
+                msg.append("  * ").append(warning).append('\n');
             }
         }
 
-        Collection<ComponentName> pending = manager.getPendingRegistrations();
-        msg.append("\r\n").append(hr)
-                .append("\r\n").append("= Component Loading Status: Pending: ")
-                .append(pending.size()).append(" / Total: ")
-                .append(manager.getRegistrations().size());
-        if (!pending.isEmpty()) {
-            msg.append("\r\n").append(hr)
-                    .append("\r\n").append("= Pending Components:");
-            for (ComponentName name : pending) {
-                RegistrationInfo ri = manager.getRegistrationInfo(name);
-                if (ri == null) {
-                    continue;
-                }
-                msg.append("\r\n").append("  > ").append(name)
-                        .append(". Requires: ").append(ri.getRequiredComponents());
-            }
+        Map<ComponentName, Set<ComponentName>> pending = manager.getPendingRegistrations();
+        msg.append(hr).append("\n= Component Loading Status: Pending: ").append(
+                pending.size()).append(" / Total: ").append(
+                manager.getRegistrations().size()).append('\n');
+        for (Entry<ComponentName, Set<ComponentName>> e : pending.entrySet()) {
+            msg.append("  * ").append(e.getKey()).append(" requires ").append(
+                    e.getValue()).append('\n');
         }
-        msg.append("\r\n").append(hr).append("\r\n");
+        msg.append(hr);
         if (warnings.isEmpty() && pending.isEmpty()) {
             log.info(msg);
         } else {
-            log.warn(msg);
+            log.error(msg);
         }
     }
 

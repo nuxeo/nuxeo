@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,19 +12,21 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.runtime.model;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.runtime.ComponentListener;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author Bogdan Stefanescu
+ * @author Florent Guillaume
  */
 public interface ComponentManager {
 
@@ -116,11 +118,11 @@ public interface ComponentManager {
     Collection<RegistrationInfo> getRegistrations();
 
     /**
-     * Gets the list of pending registrations.
+     * Gets the pending registrations and their dependencies.
      *
-     * @return the pending registrations or an empty collection if none
+     * @return the pending registrations
      */
-    Collection<ComponentName> getPendingRegistrations();
+    Map<ComponentName, Set<ComponentName>> getPendingRegistrations();
 
     /**
      * Gets the number of registered objects in this registry.
