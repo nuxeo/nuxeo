@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.site.adapters;
 
-import java.io.InputStream;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.core.api.DocumentModel;

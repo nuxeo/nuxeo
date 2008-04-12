@@ -21,11 +21,17 @@ package org.nuxeo.ecm.platform.site.tests.templates;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.platform.site.api.SiteTemplateManager;
-import org.nuxeo.ecm.platform.site.rendering.SiteTemplateManagerService;
+import org.nuxeo.ecm.platform.site.template.SiteManager;
+import org.nuxeo.ecm.platform.site.template.SiteManagerComponent;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
+/**
+ *
+ * @deprecated this test is no more used
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
+ */
 public class TestTemplates extends NXRuntimeTestCase {
 
     @Override
@@ -37,40 +43,40 @@ public class TestTemplates extends NXRuntimeTestCase {
 
     public void testRunTimeComponentRegistration()
     {
-        SiteTemplateManagerService stm = (SiteTemplateManagerService) Framework.getRuntime().getComponent(SiteTemplateManagerService.NAME);
+        SiteManagerComponent stm = (SiteManagerComponent) Framework.getRuntime().getComponent(SiteManagerComponent.NAME);
         assertNotNull(stm);
     }
 
     public void testTemplateServiceRegistration()
     {
-        SiteTemplateManager stm = Framework.getLocalService(SiteTemplateManager.class);
+        SiteManager stm = Framework.getLocalService(SiteManager.class);
         assertNotNull(stm);
     }
 
     public void testTemplateRegistration()
     {
-        SiteTemplateManager stm = Framework.getLocalService(SiteTemplateManager.class);
-        assertTrue(stm.getTemplateNames().contains("test"));
+        SiteManager stm = Framework.getLocalService(SiteManager.class);
+//        assertTrue(stm.getTemplateNames().contains("test"));
     }
 
 
     public void testTemplateBindingRegistration()
     {
 
-        SiteTemplateManager stm = Framework.getLocalService(SiteTemplateManager.class);
+        SiteManager stm = Framework.getLocalService(SiteManager.class);
 
         DocumentModel testFolder = new DocumentModelImpl("/", "TestFolder", "Folder");
         DocumentModel testFile1 = new DocumentModelImpl("/default-domain/workspaces", "TestFile1", "File");
         DocumentModel testFile2 = new DocumentModelImpl("/", "TestFile2", "File");
 
-        String template = stm.getTemplateNameForDoc(testFolder);
-        assertEquals("test", template);
-
-        template = stm.getTemplateNameForDoc(testFile1);
-        assertEquals("test", template);
-
-        template = stm.getTemplateNameForDoc(testFile2);
-        assertNull(template);
+//        String template = stm.getTemplateNameForDoc(testFolder);
+//        assertEquals("test", template);
+//
+//        template = stm.getTemplateNameForDoc(testFile1);
+//        assertEquals("test", template);
+//
+//        template = stm.getTemplateNameForDoc(testFile2);
+//        assertNull(template);
     }
 
 }

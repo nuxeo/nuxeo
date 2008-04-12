@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.site.api.SiteException;
 import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
-import org.nuxeo.ecm.platform.site.template.SiteObject;
 
 public class WikiSiteObjectHandler extends FolderishSiteObjectHandler {
 

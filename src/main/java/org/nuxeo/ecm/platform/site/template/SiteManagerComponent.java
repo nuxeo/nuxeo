@@ -20,7 +20,16 @@
 package org.nuxeo.ecm.platform.site.template;
 
 import java.io.File;
+import java.net.URL;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.url.URLFactory;
+import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
+import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
+import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
+import org.nuxeo.ecm.platform.site.rendering.SiteDocumentView;
+import org.nuxeo.ecm.platform.site.rendering.TransformerDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -31,19 +40,44 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class SiteManagerComponent extends DefaultComponent {
+public class SiteManagerComponent extends DefaultComponent implements ResourceLocator, FileChangeListener  {
 
     public final static ComponentName NAME = new ComponentName("org.nuxeo.ecm.platform.site.template.SiteManagerComponent");
 
+    public final static String TRANSFORMER_XP = "transformer";
+
+    private final static Log log = LogFactory.getLog(SiteManagerComponent.class);
+
     private SiteManager mgr;
     private FileChangeNotifier notifier;
+    private RenderingEngine engine;
+
 
     @Override
     public void activate(ComponentContext context) throws Exception {
+        String val = (String)context.getPropertyValue("engine", null);
+        if (val != null) {
+            try {
+            engine = (RenderingEngine)context.getRuntimeContext().loadClass(val).newInstance();
+            } catch (Exception e) {
+                log.error("Failed to load rendering engine from component configuration -> using the default freemarker engine", e);
+            }
+        }
+        if (engine == null) {
+            engine = new FreemarkerEngine(); // the default engine
+        }
+        engine.setResourceLocator(this);
+        //engine.setEnvironmentProvider(env) TODO
+        if (engine instanceof FreemarkerEngine) {
+            FreemarkerEngine fmEngine = (FreemarkerEngine) engine;
+            fmEngine.setDocumentView(new SiteDocumentView());
+        }
+
+        File root = new File(Framework.getRuntime().getHome(), "web");
+        mgr = new SiteManagerImpl(root, engine);
+
         notifier = new FileChangeNotifier();
         notifier.start();
-        File root = new File(Framework.getRuntime().getHome(), "web");
-        mgr = new SiteManagerImpl(root);
     }
 
     @Override
@@ -58,6 +92,11 @@ public class SiteManagerComponent extends DefaultComponent {
             throws Exception {
         // TODO Auto-generated method stub
         super.registerContribution(contribution, extensionPoint, contributor);
+
+        if (TRANSFORMER_XP.equals(extensionPoint)) {
+            TransformerDescriptor td = (TransformerDescriptor)contribution;
+            engine.setTransformer(td.getName(), td.newInstance());
+        }
     }
 
     @Override
@@ -76,6 +115,22 @@ public class SiteManagerComponent extends DefaultComponent {
             return adapter.cast(notifier);
         }
         return null;
+    }
+
+    public URL getResource(String templateName) {
+        try {
+            return URLFactory.getURL(templateName);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public void fileChanged(File file, long since) {
+        if (file.getAbsolutePath().startsWith(mgr.getRootDirectory().getAbsolutePath())) {
+            if (file.isDirectory()) {
+               mgr.reset();
+            }
+        }
     }
 
 }

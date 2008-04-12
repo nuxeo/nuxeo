@@ -39,9 +39,9 @@ import org.nuxeo.ecm.platform.site.template.SiteManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Servlet for publishing SiteObjects
+ * Servlet for accessing common file resources
  *
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
+ * @author <a href="mailto:bs@nuxeo.com">Stefanescu Bogdan</a>
  *
  */
 public class ResourceServlet extends HttpServlet {

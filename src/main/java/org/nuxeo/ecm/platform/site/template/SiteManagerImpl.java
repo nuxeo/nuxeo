@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -45,13 +46,19 @@ public class SiteManagerImpl implements SiteManager {
     protected SiteObjectResolver resolver;
 
     protected File root;
+    protected RenderingEngine engine;
 
-    public SiteManagerImpl(File root) {
+    public SiteManagerImpl(File root, RenderingEngine engine) {
         this.bindings = new ArrayList<SiteObjectBinding>();
         this.objects = new HashMap<String, SiteObject>();
         this.root = root;
         this.cache = new LinkedHashMap<String, SiteObject>();
         this.resolver = new FileBasedResolver(this);
+        this.engine = engine;
+    }
+
+    public RenderingEngine getRenderingEngine() {
+        return engine;
     }
 
     public File getRootDirectory() {
@@ -88,7 +95,6 @@ public class SiteManagerImpl implements SiteManager {
 
     public void reset() {
         objects.clear();
-        defaultObject = null;
         bindings.clear();
     }
 

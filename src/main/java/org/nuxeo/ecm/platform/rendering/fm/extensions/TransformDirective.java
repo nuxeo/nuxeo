@@ -25,11 +25,11 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.url.nxdoc.PropertyURL;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.RootContextModel;
-import org.nuxeo.ecm.platform.site.template.nxdoc.PropertyURL;
 
 import freemarker.core.Environment;
 import freemarker.template.SimpleScalar;

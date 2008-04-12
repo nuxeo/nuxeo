@@ -43,10 +43,10 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
 import org.nuxeo.ecm.platform.site.api.SiteException;
-import org.nuxeo.ecm.platform.site.api.SiteTemplateManager;
 import org.nuxeo.ecm.platform.site.rendering.SiteRenderingContext;
 import org.nuxeo.ecm.platform.site.resolver.DefaultSiteResolver;
 import org.nuxeo.ecm.platform.site.resolver.SiteResourceResolver;
+import org.nuxeo.ecm.platform.site.template.SiteManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -73,7 +73,7 @@ public class SiteServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        SiteTemplateManager mgr = Framework.getLocalService(SiteTemplateManager.class);
+        SiteManager mgr = Framework.getLocalService(SiteManager.class);
         engine = mgr.getRenderingEngine();
     }
 

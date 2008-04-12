@@ -3,15 +3,18 @@
 <component name="net.press.pa.coreTypes">
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
-    <schema name="wiki" src="OSGI-INF/schemas/wiki.xsd" prefix="wiki"/>
+    <schema name="site" src="OSGI-INF/schemas/site.xsd" prefix="site"/>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
-    <doctype name="Wiki" extends="Document">
+    <doctype name="SitePage" extends="Document">
       <schema name="common"/>
       <schema name="dublincore"/>
-      <schema name="wiki"/>
+      <schema name="site"/>
     </doctype>
+    <facet name="Folderish" />
+    <facet name="Versionable" />
+    <facet name="Publishable" />
   </extension>
 
 </component>

@@ -18,4 +18,19 @@
       interface="org.nuxeo.ecm.platform.site.template.FileChangeNotifier" />
   </service>
 
+  <extension-point name="transformer">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Expose the registration of rendering transformers contributions.
+    This extension point will generally be extended by other components
+    with specific transformer configuration
+    <code>
+      <transformer name="wiki" class="org.nuxeo.ecm.platform.wiki.WikiTransformer"/>
+   </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.site.rendering.TransformerDescriptor" />
+  </extension-point>
+
 </component>

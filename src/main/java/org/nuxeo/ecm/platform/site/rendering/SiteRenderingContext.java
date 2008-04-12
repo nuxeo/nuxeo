@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.site.rendering;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
