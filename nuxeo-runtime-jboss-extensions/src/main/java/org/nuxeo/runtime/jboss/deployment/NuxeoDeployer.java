@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -210,11 +211,17 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
                 if (pendingEntries.size() == 0) {
                     log.info("No unresolved Sub Deployments");
                 } else {
-                    String prefix = "Unresolved Sub Deployment: ";
+                    StringBuilder msgs = new StringBuilder();
                     for (DependencyTree.Entry<String, FragmentDescriptor> entry : pendingEntries) {
-                        log.error(prefix + entry.getKey() + ": " +
-                                entry.getWaitsFor());
+                        String msg = "Unresolved Sub Deployment: " +
+                                entry.getKey() + ": " + entry.getWaitsFor();
+                        log.error(msg);
+                        msgs.append(msg).append('\n');
                     }
+                    // store errors in a system property for OSGiRuntimeService
+                    // to retrieve
+                    System.setProperty("org.nuxeo.runtime.deployment.errors",
+                            msgs.toString());
                 }
             }
 

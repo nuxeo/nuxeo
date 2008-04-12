@@ -75,6 +75,14 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         if (properties != null) {
             this.properties.putAll(properties);
         }
+        // get errors set by NuxeoDeployer
+        String errs = System.getProperty("org.nuxeo.runtime.deployment.errors");
+        if (errs != null) {
+            for (String err : errs.split("\n")) {
+                warnings.add(err);
+            }
+            System.clearProperty("org.nuxeo.runtime.deployment.errors");
+        }
     }
 
     /**
