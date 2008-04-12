@@ -101,4 +101,9 @@ public class CopyCommand implements Command {
         return "copy " + src.toString() + " > " + dst.toString();
     }
 
+    public String toString(CommandContext ctx) {
+        return "copy " + ctx.expandVars(src.toString()) + " > " +
+                ctx.expandVars(dst.toString());
+    }
+
 }

@@ -69,4 +69,8 @@ public class MkfileCommand implements Command {
         return "mkfile " + path.toString();
     }
 
+    public String toString(CommandContext ctx) {
+        return "mkfile " + ctx.expandVars(path.toString());
+    }
+
 }

@@ -43,7 +43,7 @@ public class CommandProcessorImpl implements CommandProcessor {
         try {
             for (Command cmd : commands) {
                 if (log != null && log.isInfoEnabled()) {
-                    log.info("Executing: " + cmd);
+                    log.debug("Executing: " + cmd.toString(ctx));
                 }
                 cmd.exec(ctx);
             }

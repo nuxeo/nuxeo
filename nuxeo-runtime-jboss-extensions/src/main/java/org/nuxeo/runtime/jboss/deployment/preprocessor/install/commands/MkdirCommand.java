@@ -54,4 +54,9 @@ public class MkdirCommand implements Command {
     public String toString() {
         return "mkdir " + path.toString();
     }
+
+    public String toString(CommandContext ctx) {
+        return "mkdir " + ctx.expandVars(path.toString());
+    }
+
 }

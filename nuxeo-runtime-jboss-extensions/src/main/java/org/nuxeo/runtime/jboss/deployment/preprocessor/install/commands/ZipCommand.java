@@ -106,4 +106,9 @@ public class ZipCommand implements Command {
         return "zip " + src.toString() + " > " + dst.toString();
     }
 
+    public String toString(CommandContext ctx) {
+        return "zip " + ctx.expandVars(src.toString()) + " > " +
+                ctx.expandVars(dst.toString());
+    }
+
 }

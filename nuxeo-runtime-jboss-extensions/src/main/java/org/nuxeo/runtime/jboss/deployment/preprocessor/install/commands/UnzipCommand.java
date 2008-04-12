@@ -80,4 +80,9 @@ public class UnzipCommand implements Command {
         return "unzip " + src.toString() + " > " + dst.toString();
     }
 
+    public String toString(CommandContext ctx) {
+        return "unzip " + ctx.expandVars(src.toString()) + " > " +
+                ctx.expandVars(dst.toString());
+    }
+
 }
