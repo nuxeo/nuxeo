@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -74,11 +75,11 @@ public final class ThemeManager implements Registrable {
 
     private final Map<String, PageElement> pages = new HashMap<String, PageElement>();
 
-    private final Map<String, List<Integer>> formatsByTypeName = new HashMap<String, List<Integer>>();
+    private final Map<String, List<Integer>> formatsByTypeName = new LinkedHashMap<String, List<Integer>>();
 
     private final Map<String, Map<String, Integer>> namedObjects = new HashMap<String, Map<String, Integer>>();
 
-    private final Predicate PREDICATE_FORMAT_INHERIT = new DefaultPredicate(
+    private static final Predicate PREDICATE_FORMAT_INHERIT = new DefaultPredicate(
             "_ inherits from _");
 
     private String cachedStyles;
@@ -93,7 +94,7 @@ public final class ThemeManager implements Registrable {
     }
 
     public Set<String> getThemeNames() {
-        return themes.keySet();
+        return new HashSet<String>(themes.keySet());
     }
 
     public Set<String> getPageNames(final String themeName) {
@@ -238,7 +239,7 @@ public final class ThemeManager implements Registrable {
     public void setNamedObject(final String themeName, final String realm,
             final Identifiable object) {
         if (!namedObjects.containsKey(themeName)) {
-            namedObjects.put(themeName, new HashMap<String, Integer>());
+            namedObjects.put(themeName, new LinkedHashMap<String, Integer>());
         }
         final String name = object.getName();
         if (name == null) {
@@ -383,7 +384,7 @@ public final class ThemeManager implements Registrable {
     }
 
     public Set<String> getFormatTypeNames() {
-        return formatsByTypeName.keySet();
+        return new LinkedHashSet<String>(formatsByTypeName.keySet());
     }
 
     public List<Format> getFormatsByTypeName(final String formatTypeName) {
@@ -521,7 +522,7 @@ public final class ThemeManager implements Registrable {
         }
     }
 
-    public static void saveTheme(final String src) throws ThemeIOException {
+    public static void saveTheme(final String src, final int indent) throws ThemeIOException {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         ThemeDescriptor themeDescriptor = (ThemeDescriptor) typeRegistry.lookup(
                 TypeFamily.THEME, src);
@@ -546,7 +547,7 @@ public final class ThemeManager implements Registrable {
         ThemeSerializer serializer = new ThemeSerializer();
         String themeName = themeDescriptor.getName();
         ThemeElement theme = Manager.getThemeManager().getThemeByName(themeName);
-        final String xml = serializer.serializeToXml(theme);
+        final String xml = serializer.serializeToXml(theme, indent);
 
         if (os != null) {
             try {
@@ -626,7 +627,8 @@ public final class ThemeManager implements Registrable {
     public void makeFormatInherit(Format format, Format ancestor) {
         if (format.equals(ancestor)) {
             FormatType formatType = format.getFormatType();
-            String formatName = formatType != null ? formatType.getTypeName() : "unknown";
+            String formatName = formatType != null ? formatType.getTypeName()
+                    : "unknown";
             log.error(String.format(
                     "A format ('%s' with type '%s') cannot inherit from itself, aborting",
                     format.getName(), formatName));
@@ -641,7 +643,7 @@ public final class ThemeManager implements Registrable {
         Manager.getRelationStorage().add(relation);
     }
 
-    public Format getAncestorFormatOf(Format format) {
+    public static Format getAncestorFormatOf(Format format) {
         Collection<Relation> relations = Manager.getRelationStorage().search(
                 PREDICATE_FORMAT_INHERIT, format, null);
         Iterator<Relation> it = relations.iterator();
@@ -651,7 +653,7 @@ public final class ThemeManager implements Registrable {
         return null;
     }
 
-    public List<Format> listAncestorFormatsOf(Format format) {
+    public static List<Format> listAncestorFormatsOf(Format format) {
         List<Format> ancestors = new ArrayList<Format>();
         Format current = format;
         while (current != null) {

@@ -14,11 +14,6 @@
 
 package org.nuxeo.theme.test.jsf;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Properties;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -34,8 +29,8 @@ public class TestUtils extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("nxthemes-core-service.xml");
-        deploy("nxthemes-core-contrib.xml");
+        deployContrib("nuxeo-theme-core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("nuxeo-theme-core", "OSGI-INF/nxthemes-core-contrib.xml");
     }
 
     @Override
@@ -215,7 +210,7 @@ public class TestUtils extends NXRuntimeTestCase {
     }
 
     public void testJSCompress1() {
-        assertEquals("var global_variable=10;\nfunction test(){\nvar _1=0;\n}\n",
+        assertEquals("var global_variable=10;\nfunction test(){\nvar _1=0;\n};\n",
                 JSUtils.compressSource("var global_variable = 10;  \n  function test() { var local_variable = 0 }"));
     }
 

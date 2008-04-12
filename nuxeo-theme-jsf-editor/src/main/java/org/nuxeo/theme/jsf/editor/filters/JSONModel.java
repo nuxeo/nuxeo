@@ -95,7 +95,7 @@ public class JSONModel extends StandaloneFilter {
         }
 
         else if (element instanceof CellElement) {
-            if (viewMode.equals("layout")) {
+            if ("layout".equals(viewMode)) {
                 model_data.put("splittable", true);
                 model_data.put("deletable", true);
             }
@@ -109,9 +109,9 @@ public class JSONModel extends StandaloneFilter {
         model.put("data", model_data);
 
         StringBuilder s = new StringBuilder();
-        s.append("<");
+        s.append('<');
         s.append(firstMatcher.group(1));
-        s.append(">");
+        s.append('>');
         s.append("<ins class=\"model\">");
         s.append("<f:verbatim xmlns:f=\"http://java.sun.com/jsf/core\">");
         s.append(Utils.toJson(model));
@@ -122,7 +122,7 @@ public class JSONModel extends StandaloneFilter {
         return info;
     }
 
-    private List<Map<String, Object>> getWidgetsFor(final Element element) {
+    private static List<Map<String, Object>> getWidgetsFor(final Element element) {
         final List<Map<String, Object>> widgets = new ArrayList<Map<String, Object>>();
         final FragmentType fragmentType = ((Fragment) element).getFragmentType();
         final ModelType modelType = fragmentType.getModelType();
@@ -166,7 +166,7 @@ public class JSONModel extends StandaloneFilter {
         return widgets;
     }
 
-    private List<Map<String, Object>> getAlignments() {
+    private static List<Map<String, Object>> getAlignments() {
         final List<Map<String, Object>> alignments = new ArrayList<Map<String, Object>>();
         for (String position : ALIGNMENTS) {
             Map<String, Object> alignmentInfo = new HashMap<String, Object>();

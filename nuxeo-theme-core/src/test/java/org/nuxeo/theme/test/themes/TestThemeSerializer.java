@@ -14,15 +14,11 @@
 
 package org.nuxeo.theme.test.themes;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Properties;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.Utils;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFactory;
 import org.nuxeo.theme.elements.ElementFormatter;
@@ -41,10 +37,19 @@ public class TestThemeSerializer extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("nxthemes-core-service.xml");
-        deploy("nxthemes-core-contrib.xml");
-        deploy("fragment-config.xml");
-        deploy("view-config.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("fragment-config.xml");
+        deployContrib("view-config.xml");
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        Manager.getRelationStorage().clear();
+        Manager.getPerspectiveManager().clear();
+        Manager.getTypeRegistry().clear();
+        Manager.getUidManager().clear();
+        super.tearDown();
     }
 
     public void testSerializeTheme() throws Exception {
@@ -137,43 +142,8 @@ public class TestThemeSerializer extends NXRuntimeTestCase {
         cell.addChild(fragment1);
         cell.addChild(fragment2);
 
-        assertEquals(getFileContent("themeSerializerOutput.xml"),
+        assertEquals(Utils.getFileContent("themeSerializerOutput.xml"),
                 new ThemeSerializer().serializeToXml(theme, 4));
-    }
-
-    private String getFileContent(String name) {
-        InputStream is = null;
-        StringBuffer content = new StringBuffer();
-        try {
-            is = getClass().getClassLoader().getResourceAsStream(name);
-            Reader in = null;
-            try {
-                in = new BufferedReader(new InputStreamReader(is));
-                int ch;
-                while ((ch = in.read()) > -1) {
-                    content.append((char) ch);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (in != null) {
-                    in.close();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    is = null;
-                }
-            }
-        }
-        return content.toString();
     }
 
 }

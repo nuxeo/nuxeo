@@ -27,7 +27,7 @@ public final class JSUtils {
 
     private static final Log log = LogFactory.getLog(JSUtils.class);
 
-    final private static Global global = Main.getGlobal();
+    private static final Global global = Main.getGlobal();
 
     static {
         ToolErrorReporter errorReporter = new ToolErrorReporter(false,
@@ -42,7 +42,7 @@ public final class JSUtils {
     }
 
     private static class IProxy implements ContextAction {
-        final private String source;
+        private final String source;
 
         IProxy(String source) {
             this.source = source;

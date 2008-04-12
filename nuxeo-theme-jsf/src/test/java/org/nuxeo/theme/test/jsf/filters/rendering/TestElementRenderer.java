@@ -42,10 +42,10 @@ public class TestElementRenderer extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         Manager.initializeProtocols();
-        deploy("nxthemes-core-service.xml");
-        deploy("nxthemes-core-contrib.xml");
-        deploy("nxthemes-jsf-contrib.xml");
-        deploy("fragment-config.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.jsf", "OSGI-INF/nxthemes-jsf-contrib.xml");
+        deployContrib("fragment-config.xml");
     }
 
     public void testElement() throws MalformedURLException {
@@ -104,7 +104,7 @@ public class TestElementRenderer extends NXRuntimeTestCase {
 
     private String getFileContent(String name) {
         InputStream is = null;
-        StringBuffer content = new StringBuffer();
+        StringBuilder content = new StringBuilder();
         try {
             is = getClass().getClassLoader().getResourceAsStream(name);
             if (is != null) {
@@ -136,6 +136,6 @@ public class TestElementRenderer extends NXRuntimeTestCase {
                 }
             }
         }
-        return content.toString().replaceAll(">(.*?)<", "><");
+        return content.toString().trim();
     }
 }

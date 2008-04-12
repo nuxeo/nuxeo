@@ -5,7 +5,7 @@ if (typeof NXThemesEditor == "undefined") {
           var box = $("nxthemesStatusMessage");
           box.innerHTML = msg;
           box.show();
-          NXThemes.Effects.fadeout(box, {delay: 1700});
+          NXThemes.Effects.get('fadeout')(box, {delay: 1700});
         },
         isAlpha: function(s) {
           for (var i = 0; i < s.length; i= i+1) {
@@ -60,7 +60,11 @@ NXThemesEditor.insertFragment = function(info) {
     var order = info.order;
     var type_name = info.source.getAttribute('typename');
     Seam.Component.getInstance("nxthemesEditorAction").insertFragment(
-        type_name, dest_id, order, NXThemesEditor.refreshCanvas);
+        type_name, dest_id, order,
+        function(r) {
+          NXThemesEditor.refreshCanvas();
+          NXThemesEditor.switchToEditCanvas()
+        });
 };
 
 NXThemesEditor.editElement = function(info) {
@@ -122,6 +126,7 @@ NXThemesEditor.updateElementProperties = function(info) {
     Seam.Component.getInstance("nxthemesEditorAction").updateElementProperties(
        id, propertyMap,
        function(r) {
+         NXThemes.getViewById("element properties").refresh();
          NXThemesEditor.writeMessage("Properties updated.");
        });
 };
@@ -351,10 +356,14 @@ NXThemesEditor.addPage = function(themeName) {
       });
 };
 
-NXThemesEditor.backToCanvas = function() {
+NXThemesEditor.switchToEditCanvas = function() {
     NXThemes.getControllerById('editor buttons').select('edit canvas');
     NXThemes.getControllerById('editor perspectives').switchTo('edit canvas');
 };
+
+NXThemesEditor.backToCanvas = function() {
+    NXThemesEditor.switchToEditCanvas();
+}
 
 NXThemesEditor.addSection = function(info) {
     var target = Event.element(info);
@@ -439,7 +448,9 @@ NXThemesEditor.exit = function() {
   NXThemes.expireCookie("nxthemes.theme");
   NXThemes.expireCookie("nxthemes.engine");
   NXThemes.expireCookie("nxthemes.perspective");
-  window.location.reload();
+  Seam.Component.getInstance("nxthemesEditorAction").clearSelections(function() {
+    window.location.reload();
+  });
 };
 
 NXThemesEditor.repairTheme = function(themeName) {
@@ -461,9 +472,9 @@ NXThemesEditor.loadTheme = function(src) {
       });
 };
 
-NXThemesEditor.saveTheme = function(src) {
+NXThemesEditor.saveTheme = function(src, indent) {
     Seam.Component.getInstance("nxthemesEditorAction").saveTheme(
-       src,
+       src, indent,
       function(r) {
         var msg = r ? "Theme saved." : "The theme could not be saved.";
         NXThemes.getViewById("theme manager").refresh();

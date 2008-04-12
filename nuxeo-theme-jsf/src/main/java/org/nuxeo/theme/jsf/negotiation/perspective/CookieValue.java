@@ -16,7 +16,6 @@ package org.nuxeo.theme.jsf.negotiation.perspective;
 
 import javax.faces.context.FacesContext;
 
-import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.jsf.negotiation.CookieManager;
 import org.nuxeo.theme.negotiation.Scheme;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
@@ -30,8 +29,7 @@ public class CookieValue implements Scheme {
         if (perspectiveName == null) {
             return null;
         }
-        final PerspectiveManager perspectiveManager = Manager.getPerspectiveManager();
-        if (perspectiveManager.hasPerspective(perspectiveName)) {
+        if (PerspectiveManager.hasPerspective(perspectiveName)) {
             return perspectiveName;
         }
         return null;

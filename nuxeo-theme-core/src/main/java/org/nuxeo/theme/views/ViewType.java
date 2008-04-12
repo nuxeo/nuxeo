@@ -40,6 +40,9 @@ public final class ViewType implements Type {
     @XNode("mode")
     public String mode = "*";
 
+    @XNode("icon")
+    public String icon = "/nuxeo/nxthemes/icons/no-icon.png";
+
     @XNode("element-type")
     public String elementTypeName = "*";
 
@@ -58,7 +61,7 @@ public final class ViewType implements Type {
     @XNodeList(value = "resource", type = String[].class, componentType = String.class)
     public String[] resources;
 
-    private View view = null;
+    private View view;
 
     public ViewType() {
     }
@@ -149,6 +152,14 @@ public final class ViewType implements Type {
 
     public void setMode(String mode) {
         this.mode = mode;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
 }

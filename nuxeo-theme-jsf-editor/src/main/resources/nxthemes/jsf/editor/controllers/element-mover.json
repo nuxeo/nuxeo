@@ -1,7 +1,7 @@
   {"id": "element mover",
    "type": "drag-and-drop",
    "dragging": {
-     "source": "nxthemesDraggable",
+     "element": "nxthemesDraggable",
      "highlight": {
        "color": "#fce94f"
      },

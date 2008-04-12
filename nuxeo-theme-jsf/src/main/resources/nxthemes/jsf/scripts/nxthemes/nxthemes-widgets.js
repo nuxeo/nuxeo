@@ -11,7 +11,7 @@ NXThemes.registerWidgets({
   contextmenu: function(def) {
     var widget = NXThemes.Canvas.createNode({
       tag: 'div',
-      classes: 'nxthemesContextMenu',
+      classes: ['nxthemesContextMenu'],
       style: {position: 'absolute', display: 'none'}
     });
     return new NXThemes.ContextualMenu(widget, def);
@@ -20,7 +20,7 @@ NXThemes.registerWidgets({
   contextactions: function(def) {
     var widget = NXThemes.Canvas.createNode({
       tag: 'div',
-      classes: 'nxthemesContextActions',
+      classes: ['nxthemesContextActions'],
       style: {position: 'absolute', display: 'none'}
     });
     return new NXThemes.ContextualActions(widget, def);
@@ -29,7 +29,7 @@ NXThemes.registerWidgets({
   tooltip: function(def) {
     var widget = NXThemes.Canvas.createNode({
       tag: 'div',
-      classes: 'nxthemesTooltip',
+      classes: ['nxthemesTooltip'],
       style: {position: 'absolute', display: 'none'}
     });
     return new NXThemes.Tooltip(widget, def);
@@ -51,7 +51,7 @@ NXThemes.registerWidgets({
   button: function(def) {
     var widget = NXThemes.Canvas.createNode({
       tag: 'span',
-      classes: 'nxthemesButton'
+      classes: ['nxthemesButton']
     });
     return new NXThemes.Button(widget, def);
   },
@@ -59,7 +59,7 @@ NXThemes.registerWidgets({
   tabs: function(def) {
     var widget = NXThemes.Canvas.createNode({
       tag: 'div',
-      classes: 'nxthemesTabs'
+      classes: ['nxthemesTabs']
     });
     return new NXThemes.Tabs(widget, def);
   }
@@ -89,14 +89,14 @@ NXThemes.Panel.prototype = Object.extend(new NXThemes.View(), {
     }
     view._rendering = true;
 
-    var url = data[this.url_field];
+    var url = data.get(this.url_field);
     if (!url) {
       NXThemes.warn("Panel '" + view.def.id + "' found no url in model: " + this.model.def.id);
       return;
     }
     url = url.replace('%{here}', window.location.href);
 
-    var loading = data.loading;
+    var loading = data.get('loading');
     if (loading) {
       var loadingElement = $(loading);
       if (loadingElement) {
@@ -104,13 +104,13 @@ NXThemes.Panel.prototype = Object.extend(new NXThemes.View(), {
       }
     }
 
-    var script = data.script;
+    var script = data.get('script');
     if (script) {
       this.script_id = this.def.model;
       NXThemes.Canvas.addScript(this.script_id, script);
     }
 
-    var css = data.css;
+    var css = data.get('css');
     if (css) {
       this.css_id = this.def.model;
       NXThemes.Canvas.addStyleSheet(this.css_id, css);
@@ -148,13 +148,15 @@ NXThemes.Panel.prototype = Object.extend(new NXThemes.View(), {
       }
     };
 
-    var form_data = $H(data.form) || {};
+    var form_data = $H(data.get('form')) || new Hash();
     if (form_data.keys().length > 0) {
       var i = url.indexOf('?');
       if (i > 0) {
         var query_string = url.substr(i+1);
-        var query_params = $H(query_string.toQueryParams()).merge(form_data);
+        var query_params = $H(query_string.toQueryParams()).update(form_data);
         url = url.substr(0, i) + '?' + query_params.toQueryString();
+      } else {
+        url += '?' + form_data.toQueryString();
       }
     }
     new Ajax.Request(url, options);
@@ -232,7 +234,7 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
       var visible = item.visible;
       var disabled = false;
       if (data && visible) {
-        if (!data[visible]) {
+        if (!data.get(visible)) {
           if (this.def.widget.showDisabled) {
             disabled = true;
           } else {
@@ -242,11 +244,11 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
       }
       switch (type) {
         case "title":
-          var title = data.title;
+          var title = data.get('title');
           if (title) {
             var div = createNode({
               tag: 'div',
-              classes: 'title',
+              classes: ['title'],
               parent: container,
               text: title
             });
@@ -257,7 +259,7 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
           var options = {
             tag: 'a',
             style: {display: 'block'},
-            classes: 'menuitem',
+            classes: ['menuitem'],
             attributes: {
               action: item.action,
               href: 'javascript:void(0)'
@@ -284,10 +286,10 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
 
         case "selection":
           var choices = item.choices;
-          (data[choices] || []).each(function(s) {
+          (data.get(choices) || []).each(function(s) {
             var options = {
               tag: 'a',
-              style: {display: 'block', 'padding-right': '10px'},
+              style: {display: 'block', paddingRight: '10px'},
               classes: s.selected ? ['selected'] : [],
               attributes: {
                 action: item.action,
@@ -314,7 +316,7 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
         case "separator":
           var node = createNode({
             tag: 'div',
-            classes: 'separator',
+            classes: ['separator'],
             parent: container
           });
           break;
@@ -323,18 +325,18 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
           var arrow = this.def.widget.arrow;
           var options = {
             tag: 'a',
-            classes: 'submenuitem',
+            classes: ['submenuitem'],
             style: {display: 'block'},
             attributes: {href: 'javascript:void(0)'}
           };
-          if (disabled) { options.classes = "disabled"; }
+          if (disabled) { options.classes = ['disabled']; }
           var submenuitem = container.appendChild(createNode(options));
           var icon = item.icon || noicon;
           if (arrow) {
             createNode({
               tag: 'img',
               attributes: {src: arrow, alt: '>'},
-              classes: 'arrow',
+              classes: ['arrow'],
               parent: submenuitem
             });
           }
@@ -344,11 +346,11 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
             parent: submenuitem
           });
           if (!this.submenuLeft) {
-            this.submenuLeft = $(this.widget).getDimensions().width -2;
+            this.submenuLeft = $(this.widget).getWidth() -2;
           }
           var submenu = createNode({
             tag: 'div',
-            classes: 'submenu',
+            classes: ['submenu'],
             style: {
               position: 'absolute',
               left: this.submenuLeft + 'px',
@@ -424,7 +426,7 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
       for (var i=0; i< items.length; i=i+1) {
         var visible = items[i].visible;
         if (typeof visible != "undefined") {
-          if (data[visible]) {
+          if (data.get(visible)) {
             return true;
           }
         }
@@ -468,7 +470,7 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
     if ($(here).hasClassName("submenuitem")) {
       var menu = this._getSubmenu(here);
       if (!menu) return;
-      document.getElementsByClassName("submenu", here.parentNode).each(
+      $(here.parentNode).select(".submenu").each(
         function(v) {
           $(v).hide();
         }
@@ -476,7 +478,7 @@ NXThemes.ContextualMenu.prototype = Object.extend(new NXThemes.View(), {
       $(menu).show();
     }
     if ($(here).hasClassName("menuitem")) {
-      document.getElementsByClassName("submenu", here.parentNode).each(
+      $(here.parentNode).select(".submenu").each(
         function(v) {
           $(v).hide();
         }
@@ -500,7 +502,7 @@ Object.extend(NXThemes.ContextualActions.prototype, {
       var visible = item.visible;
       var disabled = false;
       if (data && visible) {
-        if (!data[visible]) return;
+        if (!data.get(visible)) return;
      }
       var options = {
         tag: 'a',
@@ -550,7 +552,7 @@ NXThemes.Tooltip.prototype = Object.extend(new NXThemes.View(), {
   },
 
   render: function(data) {
-    this.widget.innerHTML = data.hint;
+    this.widget.innerHTML = data.get('hint');
   },
 
   prepare: function() {
@@ -566,7 +568,7 @@ NXThemes.Tooltip.prototype = Object.extend(new NXThemes.View(), {
 
     var data = model.readData();
     if (!data) return;
-    if (data.hint == null) return;
+    if (data.get('hint') === null) return;
 
     this.mouseX = Event.pointerX(e);
     this.mouseY = Event.pointerY(e);
@@ -687,12 +689,12 @@ NXThemes.Tabs.prototype = Object.extend(new NXThemes.View(), {
     var ul = createNode({tag: 'ul', parent: this.widget});
 
     var view_id = this.hash();
-    var tabs = this.tabs = $H({});
+    var tabs = this.tabs = new Hash();
     $A(items).each(function(item) {
        var li = createNode({tag: 'li', parent: ul});
        var link = item.link;
        var switchTo = item.switchTo;
-       tabs[switchTo] = li;
+       tabs.set(switchTo, li);
        var href = 'javascript:void(0)';
        if (link != null) {
            href = link
@@ -711,7 +713,7 @@ NXThemes.Tabs.prototype = Object.extend(new NXThemes.View(), {
          }
        }
     });
-    this.widget.appendChild(createNode({tag: 'div', style: {'clear': 'both'} }));
+    this.widget.appendChild(createNode({tag: 'div', style: {clear: 'both'} }));
   },
 
   switchTo: function(p) {

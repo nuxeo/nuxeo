@@ -19,6 +19,7 @@ import java.util.List;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.AbstractElement;
 import org.nuxeo.theme.models.Model;
+import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 
 public abstract class AbstractFragment extends AbstractElement implements
@@ -42,7 +43,7 @@ public abstract class AbstractFragment extends AbstractElement implements
     }
 
     public void setVisibleInPerspective(PerspectiveType perspective) {
-        Manager.getPerspectiveManager().setVisibleInPerspective(this,
+        PerspectiveManager.setVisibleInPerspective(this,
                 perspective);
     }
 

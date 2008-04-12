@@ -23,8 +23,8 @@ public class TestThemeConfiguration extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("nxthemes-core-contrib.xml");
-        deploy("theme-config.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("theme-config.xml");
     }
 
     public void testRegisterTheme() throws IOException {

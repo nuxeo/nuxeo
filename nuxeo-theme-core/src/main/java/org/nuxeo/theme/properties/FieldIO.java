@@ -17,7 +17,12 @@ package org.nuxeo.theme.properties;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,7 +41,7 @@ public class FieldIO {
 
             Class<?> c = object.getClass();
             Field field = c.getField(name);
-            Class fieldType = field.getType();
+            Class<?> fieldType = field.getType();
             Type fieldGenericType = field.getGenericType();
 
             // boolean fields
@@ -87,7 +92,7 @@ public class FieldIO {
 
         Class<?> c = object.getClass();
         for (Field field : c.getDeclaredFields()) {
-            Class fieldType = field.getType();
+            Class<?> fieldType = field.getType();
             String fieldName = field.getName();
 
             // boolean fields
