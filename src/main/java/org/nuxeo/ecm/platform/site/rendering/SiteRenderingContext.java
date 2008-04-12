@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.site.rendering;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -73,8 +74,12 @@ public class SiteRenderingContext implements RenderingContext {
 
     public String getTemplate() {
         SiteObject cfg = currentSiteObject.getSiteConfiguration(request);
-        Object[] ar = cfg.getViewMap().values().toArray();
-        SiteObjectView view = cfg.getView(request.getMode().toLowerCase());
+        SiteObjectView view = null;
+        if (request.getTraversalChild(currentSiteObject) == null) {
+            view = cfg.getView(request.getMode().toLowerCase());
+        } else {
+            view = cfg.getView("view");
+        }
         if (view != null) {
             return view.getTemplate().toExternalForm();
         } else {

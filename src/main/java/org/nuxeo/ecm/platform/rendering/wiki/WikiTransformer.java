@@ -29,6 +29,9 @@ import java.net.URL;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
+import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
+import org.nuxeo.ecm.platform.rendering.wiki.filters.DocumentExpression;
+import org.nuxeo.ecm.platform.rendering.wiki.filters.FreemarkerMacro;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -45,6 +48,8 @@ public class WikiTransformer implements RenderingTransformer {
 
     public WikiTransformer(WikiSerializer serializer) {
         this.serializer = serializer;
+        this.serializer.registerMacro(new FreemarkerMacro());
+        this.serializer.registerExpression(new DocumentExpression());
     }
 
     public WikiSerializer getSerializer() {
