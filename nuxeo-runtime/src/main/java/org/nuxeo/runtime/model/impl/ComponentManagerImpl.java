@@ -143,6 +143,12 @@ public class ComponentManagerImpl implements ComponentManager {
     public final void _register(RegistrationInfoImpl ri) {
         ComponentName name = ri.getName();
         if (isRegistered(name)) {
+            if (name.getName().startsWith("org.nuxeo.runtime.")) {
+                // XXX we hide the fact that nuxeo-runtime bundles are
+                // registered twice
+                // TODO fix the root cause and remove this
+                return;
+            }
             String msg = "Duplicate component name: '" + name + "'";
             log.error(msg);
             Framework.getRuntime().getWarnings().add(msg);
