@@ -50,7 +50,6 @@ public class FreemarkerMacro implements WikiMacro {
             try {
             env.setOut(neww);
             env.include(tpl);
-            env.setOut(oldw);
             } finally {
                 env.setOut(oldw);
             }

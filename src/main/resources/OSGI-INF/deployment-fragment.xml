@@ -28,6 +28,17 @@
       <servlet-name>Nuxeo Site Servlet</servlet-name>
       <url-pattern>/site/*</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+      <servlet-name>Nuxeo Resource Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.platform.site.servlet.ResourceServlet
+      </servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo Resource Servlet</servlet-name>
+      <url-pattern>/site/files/*</url-pattern>
+    </servlet-mapping>
   </extension>
 </fragment>
 

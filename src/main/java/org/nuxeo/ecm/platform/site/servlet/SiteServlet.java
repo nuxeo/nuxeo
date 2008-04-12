@@ -80,7 +80,6 @@ public class SiteServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         double start = System.currentTimeMillis();
 
         String method = req.getMethod();
