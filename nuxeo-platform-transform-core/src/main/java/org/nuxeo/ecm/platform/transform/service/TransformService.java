@@ -171,14 +171,14 @@ public class TransformService extends DefaultComponent implements
         // party
         // code.
         pluginsRegistry.register(name, plugin);
-        log.info("Plugin: " + name + " has been registered!");
+        log.debug("Registering plugin: " + name);
     }
 
     public void registerTransformer(String name, Transformer transformer) {
         // : XXX : merge transformers options so that we can override from third
         // party code.
         transformersRegistry.register(name, transformer);
-        log.info("Transformer: " + name + " has been registered!");
+        log.debug("Registering transformer: " + name);
     }
 
     public List<TransformDocument> transform(String transformerName,
@@ -213,12 +213,12 @@ public class TransformService extends DefaultComponent implements
 
     public void unregisterPlugin(String name) {
         pluginsRegistry.unregister(name);
-        log.info("Plugin: " + name + " has been unregistered!");
+        log.debug("Unregistering plugin: " + name);
     }
 
     public void unregisterTransformer(String name) {
         transformersRegistry.unregister(name);
-        log.info("Transformer: " + name + " has been unregistered!");
+        log.debug("Unregistering transformer: " + name);
     }
 
     public boolean isMimetypeSupportedByPlugin(String pluginName,

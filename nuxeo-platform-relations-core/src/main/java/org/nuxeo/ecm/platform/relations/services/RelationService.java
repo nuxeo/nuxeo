@@ -128,8 +128,6 @@ public class RelationService extends DefaultComponent implements
      * The name will be used when registering graphs.
      */
     private void registerGraphType(Object contribution) {
-        log.info("registerGraphType....................................");
-
         GraphTypeDescriptor graphTypeExtension = (GraphTypeDescriptor) contribution;
 
         String name = graphTypeExtension.getName();
@@ -140,7 +138,8 @@ public class RelationService extends DefaultComponent implements
                     className));
         } else {
             graphTypeRegistry.put(name, className);
-            log.info(String.format("%s registered using %s", name, className));
+            log.info(String.format("Registered graph type: %s (%s)", name,
+                    className));
         }
     }
 
@@ -148,8 +147,6 @@ public class RelationService extends DefaultComponent implements
      * Unregisters a graph type.
      */
     private void unregisterGraphType(Object contrib) {
-        log.info("unregisterGraphType....................................");
-
         GraphTypeDescriptor graphTypeExtension = (GraphTypeDescriptor) contrib;
 
         String name = graphTypeExtension.getName();
@@ -163,8 +160,7 @@ public class RelationService extends DefaultComponent implements
                     registeredClassName));
         } else {
             graphTypeRegistry.remove(name);
-            log.info(String.format("%s unregistered, was using %s", name,
-                    className));
+            log.debug("Unregistered graph type: " + name);
         }
     }
 
