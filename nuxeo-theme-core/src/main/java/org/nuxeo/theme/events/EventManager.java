@@ -34,7 +34,7 @@ public class EventManager implements Registrable {
     public synchronized void addListener(final EventListener listener) {
         EventType eventType = listener.getEventType();
         getListenersFor(eventType).add(listener);
-        log.info("Registered EVENT LISTENER: "
+        log.debug("Registered EVENT LISTENER: "
                 + listener.getClass().getCanonicalName() + " for EVENT: "
                 + eventType.getTypeName());
     }
