@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.core.api.operation.DefaultOperationEvent;
 import org.nuxeo.ecm.core.api.operation.Modification;
 import org.nuxeo.ecm.core.api.operation.ModificationSet;
 import org.nuxeo.ecm.core.api.operation.Operation;
@@ -43,7 +44,7 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleEventTypes;
  */
 public class OperationEventFactory {
 
-    private static Set<String> acceptedEvents = new HashSet<String>();
+    private static final Set<String> acceptedEvents = new HashSet<String>();
 
     static {
         acceptedEvents.add(DocumentEventTypes.DOCUMENT_UPDATED);
@@ -61,22 +62,44 @@ public class OperationEventFactory {
     }
 
     public static OperationEvent createEvent(Operation<?> cmd) {
-        return new OperationEvent(cmd.getSession(), cmd.getName(), cmd.getModifications(), null, null);
+        return new DefaultOperationEvent(cmd.getSession(), cmd.getName(), cmd.getModifications(), null);
     }
 
     public static OperationEvent createEvent(CoreEvent coreEvent) {
-        CoreSession session = null;
-        Map<?,?> info = coreEvent.getInfo();
-        if (info != null) {
-            String sessionId = (String) info.get(CoreEventConstants.SESSION_ID);
-            if (sessionId == null) {
-                session = CoreInstance.getInstance().getSession(sessionId);
-            }
+        Map<String, ?> info = coreEvent.getInfo();
+        String sessionId = null;
+        DocumentModel doc = (DocumentModel)coreEvent.getSource();
+        if (doc != null) {
+            sessionId = doc.getSessionId();
         }
-        return createEvent(session, coreEvent);
+        if (info != null) {
+            sessionId = (String) info.get(CoreEventConstants.SESSION_ID);
+        }
+        CoreSession session = null;
+        if (sessionId != null) {
+            session = CoreInstance.getInstance().getSession(sessionId);
+        }
+        if (session != null) {
+            return createEvent(session, coreEvent);
+        } else {
+            System.out.println(
+                    "WARNING: may be a compatibility bug: session id could not be found. Ignoring ...");
+            String repositoryName = null;
+            if (doc != null) {
+                repositoryName = doc.getRepositoryName();
+            }
+            String principal = "system";
+            return createEvent(sessionId, repositoryName, principal, coreEvent);
+        }
     }
 
     public static OperationEvent createEvent(CoreSession session, CoreEvent coreEvent) {
+        return createEvent(session.getSessionId(), session.getRepositoryName(),
+                session.getPrincipal().getName(), coreEvent);
+    }
+
+    public static OperationEvent createEvent(String sessionId, String repository, String principal,
+            CoreEvent coreEvent) {
         String id = coreEvent.getEventId();
         if (!acceptedEvents.contains(id)) {
             return null;
@@ -90,7 +113,8 @@ public class OperationEventFactory {
         DocumentRef docRef = docModel.getRef();
         Serializable details = null;
 
-        if (DocumentEventTypes.DOCUMENT_CREATED.equals(id) || DocumentEventTypes.DOCUMENT_REMOVED.equals(id)) {
+        if (DocumentEventTypes.DOCUMENT_CREATED.equals(id)
+                || DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(id)) {
             modifs.add(docRef, Modification.CREATE);
             //TODO getParentRef() is a PATH reference -> should put a ID ref!
             modifs.add(docModel.getParentRef(), Modification.ADD_CHILD);
@@ -113,9 +137,11 @@ public class OperationEventFactory {
             modifs.add(srcParent, Modification.REMOVE_CHILD);
             modifs.add(docModel.getParentRef(), Modification.ADD_CHILD);
             modifs.add(docRef, Modification.MOVE);
+        } else if (DocumentEventTypes.DOCUMENT_UPDATED.equals(id)) {
+            modifs.add(docRef, Modification.CONTENT);
         }
 
-        return new OperationEvent(session, id, modifs, details);
+        return new DefaultOperationEvent(sessionId, repository, principal, id, modifs, details);
     }
 
 }

@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.api.model.impl;
 import java.io.Serializable;
 import java.util.Iterator;
 
+import org.jetbrains.annotations.NotNull;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
@@ -99,8 +100,7 @@ public abstract class AbstractProperty implements Property {
         }
     }
 
-    public Property set(int index, Object value)
-            throws PropertyException, UnsupportedOperationException{
+    public Property set(int index, Object value) throws PropertyException{
         Property property = get(index);
         property.setValue(value);
         return property;
@@ -296,6 +296,7 @@ public abstract class AbstractProperty implements Property {
         }
     }
 
+    @NotNull
     public <T> T getValue(Class<T> type) throws PropertyException {
         return convertTo(getValue(), type);
     }
@@ -334,6 +335,7 @@ public abstract class AbstractProperty implements Property {
         return resolvePath(path).getValue();
     }
 
+    @NotNull
     public Serializable getValue() throws PropertyException {
         if (isPhantom() || isRemoved()) {
             return getDefaultValue();
@@ -345,8 +347,7 @@ public abstract class AbstractProperty implements Property {
         return (Serializable)getField().getDefaultValue();
     }
 
-    public void moveTo(int index)
-            throws UnsupportedOperationException {
+    public void moveTo(int index) {
         if (parent == null || !parent.isList()) {
             throw new UnsupportedOperationException("Not a list item property");
         }
@@ -424,6 +425,7 @@ public abstract class AbstractProperty implements Property {
         return value == null || value instanceof Serializable;
     }
 
+    @NotNull
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {
         // TODO FIXME XXX make it abstract at this level
@@ -438,8 +440,7 @@ public abstract class AbstractProperty implements Property {
         return true; // TODO XXX FIXME
     }
 
-    public Object newInstance() throws InstantiationException,
-            IllegalAccessException {
+    public Object newInstance() {
         return null; // TODO XXX FIXME
     }
 

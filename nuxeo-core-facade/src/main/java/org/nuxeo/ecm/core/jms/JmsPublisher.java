@@ -30,10 +30,10 @@ import javax.jms.Topic;
  */
 public interface JmsPublisher {
 
-    public final static String CORE_EVENTS_TOPIC = "topic/NXCoreEvents";
+    String CORE_EVENTS_TOPIC = "topic/NXCoreEvents";
 
-    public void publish(Serializable content) throws JMSException;
+    void publish(Serializable content) throws JMSException;
 
-    public void publish(Topic topic, Object content, MessageFactory factory) throws JMSException;
+    void publish(Topic topic, Object content, MessageFactory factory) throws JMSException;
 
 }
