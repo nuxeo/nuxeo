@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.runtime.jboss.deployment.preprocessor.install;
@@ -22,11 +21,13 @@ package org.nuxeo.runtime.jboss.deployment.preprocessor.install;
 import java.io.IOException;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author Bogdan Stefanescu
+ * @author Florent Guillaume
  */
 public interface Command {
 
     void exec(CommandContext ctx) throws IOException;
+
+    String toString(CommandContext ctx);
 
 }

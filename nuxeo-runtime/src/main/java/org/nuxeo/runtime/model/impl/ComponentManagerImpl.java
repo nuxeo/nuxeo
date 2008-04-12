@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.runtime.model.impl;
@@ -34,6 +33,7 @@ import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.ComponentListener;
 import org.nuxeo.runtime.RuntimeService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
@@ -42,8 +42,8 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.remoting.RemoteContext;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author Bogdan Stefanescu
+ * @author Florent Guillaume
  */
 public class ComponentManagerImpl implements ComponentManager {
 
@@ -72,14 +72,21 @@ public class ComponentManagerImpl implements ComponentManager {
         return new ArrayList<RegistrationInfo>(registry.values());
     }
 
-    public Collection<ComponentName> getPendingRegistrations() {
-        List<ComponentName> names = new ArrayList<ComponentName>();
+    public Map<ComponentName, Set<ComponentName>> getPendingRegistrations() {
+        Map<ComponentName, Set<ComponentName>> pending = new HashMap<ComponentName, Set<ComponentName>>();
         for (RegistrationInfo ri : registry.values()) {
             if (ri.getState() == RegistrationInfo.REGISTERED) {
-                names.add(ri.getName());
+                pending.put(ri.getName(), ri.getRequiredComponents());
             }
         }
-        return names;
+        for (Map.Entry<ComponentName, Set<RegistrationInfoImpl>> e : dependsOnMe.entrySet()) {
+            for (RegistrationInfo ri : e.getValue()) {
+                Set<ComponentName> deps = new HashSet<ComponentName>(1);
+                deps.add(e.getKey());
+                pending.put(ri.getName(), deps);
+            }
+        }
+        return pending;
     }
 
     public Collection<ComponentName> getNeededRegistrations() {
@@ -136,9 +143,9 @@ public class ComponentManagerImpl implements ComponentManager {
     public final void _register(RegistrationInfoImpl ri) {
         ComponentName name = ri.getName();
         if (isRegistered(name)) {
-            log.warn("Component was already registered: " + name);
-            // TODO avoid throwing an exception here - for now runtime components are registered twice
-            // When this will be fixed we can thrown an error here
+            String msg = "Duplicate component name: '" + name + "'";
+            log.error(msg);
+            Framework.getRuntime().getWarnings().add(msg);
             return;
             //throw new IllegalStateException("Component was already registered: " + name);
         }
@@ -188,7 +195,7 @@ public class ComponentManagerImpl implements ComponentManager {
                 }
 
             } catch (Exception e) {
-                log.error("Failed to create the component " + ri.name, e);
+                log.error("Failed to create component: " + ri.name, e);
             }
 
         } else {
@@ -394,7 +401,7 @@ public class ComponentManagerImpl implements ComponentManager {
             return;
         }
         for (String service : ri.serviceDescriptor.services) {
-            log.info("Registering service" + service);
+            log.info("Registering service: " + service);
             services.put(service, ri);
             // TODO: send notifications
         }
@@ -417,9 +424,7 @@ public class ComponentManagerImpl implements ComponentManager {
     public <T> T getService(Class<T> serviceClass) {
         try {
             RegistrationInfoImpl ri = services.get(serviceClass.getName());
-            if (ri == null) {
-                log.error("Service unknown: " + serviceClass.getName());
-            } else {
+            if (ri != null) {
                 if (!ri.isActivated()) {
                     if (ri.isResolved()) {
                         ri.activate(); // activate the component if not yet activated

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.runtime.jboss.deployment;
@@ -49,8 +48,8 @@ import org.nuxeo.runtime.jboss.deployment.preprocessor.FragmentRegistry;
 
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author Bogdan Stefanescu
+ * @author Florent Guillaume
  */
 @SuppressWarnings({"ResultOfObjectAllocationIgnored"})
 public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
@@ -201,20 +200,25 @@ public class NuxeoDeployer extends EARDeployer implements NuxeoDeployerMBean {
                 sorter.addFirst(firstDeployments);
                 sorter.addLast(lastDeployments);
                 Collections.sort(subDeployments, sorter);
+
                 if (log.isInfoEnabled()) {
-                    StringBuilder logBuf = new StringBuilder("Sub Deployment order is: \n");
+                    StringBuilder logBuf = new StringBuilder("Sub Deployment order is:\n");
                     for (DeploymentInfo sub : subDeployments) {
-                        logBuf.append(sub.shortName).append('\n');
+                        logBuf.append("     ").append(sub.shortName).append(
+                                '\n');
                     }
+                    logBuf.setLength(logBuf.length() - 1); // strip trailing LF
                     log.info(logBuf.toString());
-                    logBuf.setLength(0);
-                    logBuf.append("Unresolved Sub Deployments: \n");
-                    for (DependencyTree.Entry<String, FragmentDescriptor> entry
-                            : root.fragments.getPendingEntries()) {
-                        logBuf.append(entry.getKey()).append(" : ")
-                                .append(entry.getWaitsFor()).append('\n');
+                }
+                List<DependencyTree.Entry<String, FragmentDescriptor>> pendingEntries = root.fragments.getPendingEntries();
+                if (pendingEntries.size() == 0) {
+                    log.info("No unresolved Sub Deployments");
+                } else {
+                    String prefix = "Unresolved Sub Deployment: ";
+                    for (DependencyTree.Entry<String, FragmentDescriptor> entry : pendingEntries) {
+                        log.error(prefix + entry.getKey() + ": " +
+                                entry.getWaitsFor());
                     }
-                    log.info(logBuf.toString());
                 }
             }
 

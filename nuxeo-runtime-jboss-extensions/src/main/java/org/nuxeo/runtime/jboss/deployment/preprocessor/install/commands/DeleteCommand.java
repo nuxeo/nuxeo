@@ -60,4 +60,8 @@ public class DeleteCommand implements Command {
         return "delete " + path.toString();
     }
 
+    public String toString(CommandContext ctx) {
+        return "delete " + ctx.expandVars(path.toString());
+    }
+
 }

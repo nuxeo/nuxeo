@@ -66,7 +66,12 @@ public class AppendCommand implements Command {
 
     @Override
     public String toString() {
-        return "cat " + src.toString() + " > " + dst.toString();
+        return "append " + src.toString() + " > " + dst.toString();
+    }
+
+    public String toString(CommandContext ctx) {
+        return "append " + ctx.expandVars(src.toString()) + " > " +
+                ctx.expandVars(dst.toString());
     }
 
 }

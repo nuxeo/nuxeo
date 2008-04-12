@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 
 package org.nuxeo.runtime.jboss.adapter;
@@ -22,6 +21,9 @@ package org.nuxeo.runtime.jboss.adapter;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import org.jboss.system.ListenerServiceMBeanSupport;
 import org.nuxeo.runtime.NXRuntime;
@@ -35,8 +37,8 @@ import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
 /**
  * Adapts the runtime service to a MBean.
  *
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @author Bogdan Stefanescu
+ * @author Florent Guillaume
  */
 public class RuntimeAdapter extends ListenerServiceMBeanSupport implements RuntimeAdapterMBean {
 
@@ -76,16 +78,14 @@ public class RuntimeAdapter extends ListenerServiceMBeanSupport implements Runti
     }
 
     public String listPendingComponents() {
-        Collection<ComponentName> regs =  Framework.getRuntime()
-            .getComponentManager().getPendingRegistrations();
+        Map<ComponentName, Set<ComponentName>> pending = Framework.getRuntime().getComponentManager().getPendingRegistrations();
         StringBuilder buf = new StringBuilder();
-        for (ComponentName reg : regs) {
-            buf.append(reg).append('\n');
-            // TODO: get pending cause details
+        for (Entry<ComponentName, Set<ComponentName>> e : pending.entrySet()) {
+            buf.append(e.getKey()).append(": ").append(e.getValue()).append(
+                    '\n');
         }
         return buf.toString();
     }
-
 
     public String getDescription() {
         if (!NXRuntime.isInitialized()) {

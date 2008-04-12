@@ -53,4 +53,8 @@ public class PropertyCommand implements Command {
         return "set " + name + " = \"" + value + '"';
     }
 
+    public String toString(CommandContext ctx) {
+        return toString();
+    }
+
 }
