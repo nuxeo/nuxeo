@@ -89,13 +89,9 @@ public class WorkflowServiceImpl extends DefaultComponent implements
                         if (desc.isDefaultEngine()) {
                             defaultEngine = engine.getName();
                         }
-                        log.info("Trying to register workflow engine with name="
-                                + engine.getName());
                         registerWorkflowEngine(engine);
                     } else {
-                        log.error("###################################");
-                        log.error("Cannot load klass=" + desc.getName());
-                        log.error("###################################");
+                        log.error("Cannot load class " + desc.getName());
                     }
                 }
             }
@@ -106,21 +102,22 @@ public class WorkflowServiceImpl extends DefaultComponent implements
                     WorkflowDefinitionDeploymentDescriptor desc = (WorkflowDefinitionDeploymentDescriptor) contribution;
                     desc.context = extension.getComponent().getContext();
 
-                    log.info("Definition path = " + desc.getDefinitionPath());
+                    String definitionPath = desc.getDefinitionPath();
+                    log.debug("Definition path: " + definitionPath);
 
                     RuntimeContext definitionContext = desc.context == null ? context
                             : desc.context;
-                    URL definitionUrl = definitionContext.getResource(desc.getDefinitionPath());
+                    URL definitionUrl = definitionContext.getResource(definitionPath);
 
-                    log.info("Request definition deployment in engine="
-                            + desc.getEngineName());
+                    log.debug("Request definition deployment in engine: " +
+                            desc.getEngineName());
                     if (definitionUrl != null) {
 
-                        log.info("Definition URL @ " + definitionUrl.getPath());
+                        log.debug("Definition URL @ " + definitionUrl.getPath());
                         deployDefinition(desc.getEngineName(),
                                 definitionUrl.openStream(), desc.getMimetype());
                     } else {
-                        log.error("Definition not found : cancel registration....");
+                        log.error("Definition not found: " + definitionPath);
                     }
                 }
             }
@@ -129,8 +126,7 @@ public class WorkflowServiceImpl extends DefaultComponent implements
 
     public void registerWorkflowEngine(WorkflowEngine engine) {
         if (engine.getName() != null) {
-            log.info("Register a new workflow engine with name="
-                    + engine.getName());
+            log.debug("Registering workflow engine: " + engine.getName());
             engines.register(engine);
         } else {
             log.error("Impossible to register an engine with no name...");
@@ -148,12 +144,10 @@ public class WorkflowServiceImpl extends DefaultComponent implements
             if (extension.getExtensionPoint().equals("engine")) {
                 for (Object contribution : contributions) {
                     WorkflowEngineDescriptor desc = (WorkflowEngineDescriptor) contribution;
-                    log.info("Trying to unregister workflow engine with name="
-                            + desc.getName());
                     unregisterWorkflowEngine(desc.getName());
                 }
             } else if (extension.getExtensionPoint().equals("definition")) {
-                log.info("Trying to unregister workflow definition");
+                //log.debug("Unregistering workflow definition");
                 /*
                  * for (Object contribution : contributions) {
                  * WorkflowDefinitionDeploymentDescriptor desc =
@@ -167,7 +161,7 @@ public class WorkflowServiceImpl extends DefaultComponent implements
     }
 
     public void unregisterWorkflowEngine(String name) {
-        log.info("Unregister a workflow engine with name=" + name);
+        log.debug("Unregistering workflow engine: " + name);
         engines.unregister(name);
     }
 

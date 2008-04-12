@@ -68,15 +68,15 @@ public class NXAuditEventsService extends DefaultComponent implements
             if (extension.getExtensionPoint().equals(EVENT_EXT_POINT)) {
                 for (Object contribution : contributions) {
                     EventDescriptor desc = (EventDescriptor) contribution;
-                    log.info("Trying to register an event with name="
-                            + desc.getName());
+                    log.debug("Registered event: " + desc.getName());
                     eventNames.add(desc.getName());
                 }
             }
             if (extension.getExtensionPoint().equals(FACTORY_EXT_POINT)) {
                 for (Object contribution : contributions) {
                     LogEntryFactoryDescriptor desc = (LogEntryFactoryDescriptor) contribution;
-                    log.info("Register a new log entry factory");
+                    log.debug("Registered factory: " +
+                            desc.getKlass().getName());
                     logEntryFactoryKlass = desc.getKlass();
                 }
             }
@@ -90,8 +90,7 @@ public class NXAuditEventsService extends DefaultComponent implements
             if (extension.getExtensionPoint().equals(EVENT_EXT_POINT)) {
                 for (Object contribution : contributions) {
                     EventDescriptor desc = (EventDescriptor) contribution;
-                    log.info("Trying to unregister an event with name="
-                            + desc.getName());
+                    log.debug("Unregistered event: " + desc.getName());
                     eventNames.remove(desc.getName());
                 }
             }
@@ -99,7 +98,8 @@ public class NXAuditEventsService extends DefaultComponent implements
                 for (Object contribution : contributions) {
                     LogEntryFactoryDescriptor desc = (LogEntryFactoryDescriptor) contribution;
                     if (logEntryFactoryKlass == desc.getKlass()) {
-                        log.info("UnRegister log entry factory");
+                        log.debug("Unregistered factory: " +
+                                desc.getKlass().getName());
                         logEntryFactoryKlass = null;
                     }
                 }

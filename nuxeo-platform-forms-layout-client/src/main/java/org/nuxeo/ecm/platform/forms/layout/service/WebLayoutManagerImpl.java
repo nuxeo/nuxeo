@@ -149,7 +149,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         WidgetType widgetType = new WidgetTypeImpl(name, widgetTypeClass,
                 desc.getProperties());
         widgetTypeRegistry.put(name, widgetType);
-        log.info(String.format("Widget type %s registered", name));
+        log.info("Registered widget type: " + name);
     }
 
     private void unregisterWidgetType(Object contribution) {
@@ -157,7 +157,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         String name = desc.getName();
         if (widgetTypeRegistry.containsKey(name)) {
             widgetTypeRegistry.remove(name);
-            log.info(String.format("Widget type %s unregistered", name));
+            log.debug("Unregistered widget type: " + name);
         }
     }
 
@@ -171,7 +171,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
             layoutRegistry.remove(name);
         }
         layoutRegistry.put(name, layoutDef);
-        log.info(String.format("Layout %s registered", name));
+        log.info("Registered layout: " + name);
     }
 
     private void unregisterLayout(Object contribution) {
@@ -179,7 +179,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         String name = layoutDef.getName();
         if (layoutRegistry.containsKey(name)) {
             layoutRegistry.remove(name);
-            log.info(String.format("Layout %s unregistered", name));
+            log.debug("Unregistered layout: " + name);
         }
     }
 
