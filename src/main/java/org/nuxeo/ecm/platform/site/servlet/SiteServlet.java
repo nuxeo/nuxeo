@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.site.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -33,17 +31,15 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
-import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
 import org.nuxeo.ecm.platform.site.api.SiteException;
-import org.nuxeo.ecm.platform.site.rendering.SiteRenderingContext;
 import org.nuxeo.ecm.platform.site.resolver.DefaultSiteResolver;
 import org.nuxeo.ecm.platform.site.resolver.SiteResourceResolver;
 import org.nuxeo.ecm.platform.site.template.SiteManager;
@@ -82,76 +78,51 @@ public class SiteServlet extends HttpServlet {
             throws ServletException, IOException {
         double start = System.currentTimeMillis();
 
-        String method = req.getMethod();
-
-        CoreSession coreSession = null;
-
-
-        List<DocumentModel> doc2traverse = null;
-        try {
-            coreSession = getCoreSession(req);
-            doc2traverse = resolver.resolvePath(req, coreSession);
-        } catch (Exception e) {
-            displayError(resp, e, "Unable to resolve traversal path",
-                    SiteConst.SC_NOT_FOUND);
+        String path = req.getPathInfo();
+        if (path == null || path.length() <= 1) {
+            displayError(resp, null, "Cannot access the root",
+                    SiteConst.SC_FORBIDDEN);
+            // TODO: show an index page?
             return;
         }
 
-        List<DocumentModel> nonTraversedDocs = new ArrayList<DocumentModel>();
-
-        SiteRequest siteRequest = new SiteRequest(req, coreSession, doc2traverse);
-
-        // traverse all objects that are traversable
-        while (!doc2traverse.isEmpty() && nonTraversedDocs.isEmpty()) {
-            DocumentModel doc = doc2traverse.remove(0);
-
-            SiteAwareObject siteOb = doc.getAdapter(SiteAwareObject.class);
-            if (siteOb == null) {
-                nonTraversedDocs.add(doc);
-            } else {
-                boolean canTraverse = false;
-                try {
-                    canTraverse = siteOb.traverse(siteRequest, resp);
-                } catch (SiteException e) {
-                    displayError(resp, e,
-                            "Error during traversal of SiteObject "
-                                    + siteOb.getTitle());
-                    return;
-                }
-                if (canTraverse) {
-                    siteRequest.addToTraversalPath(siteOb);
-                } else {
-                    nonTraversedDocs.add(doc);
-                }
-            }
-        }
-
-        // get non traversed object to attach them to the request
-        if (0 < doc2traverse.size()) {
-            nonTraversedDocs.addAll(doc2traverse);
-        }
-
-        siteRequest.setNonTraversedDocs(nonTraversedDocs);
-
-        // call the handling methods on last traversed object
-        List<SiteAwareObject> traversedObjects = siteRequest.getTraversalPath();
-        SiteAwareObject lastTraversedObject = traversedObjects.get(traversedObjects.size() - 1);
-
+        CoreSession coreSession = null;
+        SiteRequest siteRequest = null;
         try {
+            coreSession = getCoreSession(req);
+            siteRequest = createRequest(req, resp, coreSession);
+        } catch (Exception e) {
+            displayError(resp, e, "Failed to get a core session",
+                    SiteConst.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
+
+        String method = req.getMethod();
+        SiteObject lastTraversedObject = null;
+        try {
+            lastTraversedObject = siteRequest.traverse();
+            if (lastTraversedObject == null) {
+                displayError(resp, null, "Site Root is not a supported object ");
+                return;
+            }
             if (method.equals(SiteConst.METHOD_POST)) {
-                lastTraversedObject.doPost(siteRequest, resp);
+                lastTraversedObject.getAdapter().doPost(siteRequest, resp);
             } else if (method.equals(SiteConst.METHOD_PUT)) {
-                lastTraversedObject.doPut(siteRequest, resp);
+                lastTraversedObject.getAdapter().doPut(siteRequest, resp);
             } else if (method.equals(SiteConst.METHOD_GET)) {
-                lastTraversedObject.doGet(siteRequest, resp);
+                lastTraversedObject.getAdapter().doGet(siteRequest, resp);
             } else if (method.equals(SiteConst.METHOD_DELETE)) {
-                lastTraversedObject.doDelete(siteRequest, resp);
+                lastTraversedObject.getAdapter().doDelete(siteRequest, resp);
             } else if (method.equals(SiteConst.METHOD_HEAD)) {
-                lastTraversedObject.doHead(siteRequest, resp);
+                lastTraversedObject.getAdapter().doHead(siteRequest, resp);
             }
         } catch (SiteException e) {
+            if (lastTraversedObject != null) {
             displayError(resp, e, "Error during calling method " + method
-                    + " on " + lastTraversedObject.getTitle());
+                    + " on " + lastTraversedObject.getAdapter().getName());
+            } else {
+                displayError(resp, e, "Error during traversal");
+            }
             return;
         }
 
@@ -160,55 +131,16 @@ public class SiteServlet extends HttpServlet {
             return;
         }
 
-        RenderingContext rc = new SiteRenderingContext(siteRequest, resp,
-                traversedObjects.get(0));
-
         double s = System.currentTimeMillis();
         try {
-            engine.render(rc);
+            engine.render(siteRequest.getSiteRoot());
         } catch (RenderingException e) {
             displayError(resp, e, "Error during the rendering process");
         }
         System.out.println(">>>>>>>>>> RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
-
-        // rendering loop in reverse order
-        /*
-         * List<SiteAwareObject> siteObjects2Render = new ArrayList<SiteAwareObject>();
-         * siteObjects2Render.addAll(siteRequest.getTraversalPath());
-         * Collections.reverse(siteObjects2Render);
-         *
-         * OldRenderingContext renderContext = new
-         * OldRenderingContext(siteRequest); String renderingEngineName =
-         * siteRequest.getEngineName();
-         *
-         * InputStream out=null; for (SiteAwareObject siteOb :
-         * siteObjects2Render) { siteRequest.setCurrentSiteObject(siteOb);
-         * InputStream template = siteOb.getTemplate(siteRequest); if
-         * (template!=null) { InputStream result=null; if
-         * (siteOb.needsRendering(siteRequest)) { result =
-         * render(renderingEngineName, template, renderContext); } else {
-         * result=template; } renderContext.put(siteOb.getSlotId(), result);
-         * out=result; } } if (out!=null) { int read=0; byte[] buffer = new
-         * byte[BUFFER_SIZE]; ServletOutputStream respStream =
-         * resp.getOutputStream(); while ((read = out.read(buffer)) != -1) {
-         * respStream.write(buffer,0, read); } }
-         */
         resp.setStatus(SiteConst.SC_OK);
-
         System.out.println(">>> SITE REQUEST TOOK:  "+((System.currentTimeMillis()-start)/1000));
     }
-
-    /*
-    protected InputStream render(String renderingEngineName,
-            InputStream template, OldRenderingContext renderContext) {
-        SiteRenderingEngine engine = RenderingEngineFactory.getEngine(renderingEngineName);
-
-        if (engine == null)
-            return new StringBufferInputStream("");
-
-        return engine.render(template, renderContext);
-
-    }*/
 
     protected void displayError(HttpServletResponse resp, Throwable t,
             String message, int code) {
@@ -223,9 +155,11 @@ public class SiteServlet extends HttpServlet {
 
         writer.write("\nError occured during Site rendering");
         writer.write("\nSite Error message : " + message);
-        writer.write("\nException message : " + t.getMessage());
-        for (StackTraceElement element : t.getStackTrace()) {
-            writer.write("\n" + element.toString() );
+        if (t != null) {
+            writer.write("\nException message : " + t.getMessage());
+            for (StackTraceElement element : t.getStackTrace()) {
+                writer.write("\n" + element.toString() );
+            }
         }
 
         resp.setStatus(code);
@@ -252,7 +186,7 @@ public class SiteServlet extends HttpServlet {
             session = (CoreSession) httpSession.getAttribute(CORESESSION_KEY);
         }
         if (session == null) {
-            String repoName = resolver.getTargetRepositoryName(request);
+            String repoName = getTargetRepositoryName(request);
             RepositoryManager rm = Framework.getService(RepositoryManager.class);
             Repository repo = rm.getRepository(repoName);
             if (repo == null) {
@@ -265,6 +199,43 @@ public class SiteServlet extends HttpServlet {
             httpSession.setAttribute(CORESESSION_KEY, session);
         }
         return session;
+    }
+
+    public String getTargetRepositoryName(HttpServletRequest req) {
+        return "default";
+    }
+
+    /**
+     * Build a circular list to describe traversal path
+     * @param pathInfo
+     * @param session
+     * @return
+     * @throws Exception
+     */
+    public SiteRequest createRequest(HttpServletRequest req, HttpServletResponse resp, CoreSession session) throws Exception {
+        SiteRequest siteReq = new SiteRequest(req, resp, session);
+        Path path = new Path(req.getPathInfo());
+        if (path.segmentCount() == 0) {
+            return siteReq;
+        }
+        String[] segments = path.segments();
+        String name = segments[0];
+        DocumentModel doc = resolver.getSiteRoot(name, session);
+        siteReq.addSiteObject(name, doc);
+        if (segments.length > 1) {
+            for (int i=1; i<segments.length; i++) {
+                name = segments[i];
+                doc = resolver.getSiteSegment(doc, name, session);
+                siteReq.addSiteObject(segments[i], doc);
+                if (doc == null) {
+                    for (; i<segments.length; i++) {
+                        siteReq.addSiteObject(segments[i], null);
+                    }
+                    break;
+                }
+            }
+        }
+        return siteReq;
     }
 
 }

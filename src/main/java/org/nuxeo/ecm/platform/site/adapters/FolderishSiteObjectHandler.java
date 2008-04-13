@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.site.adapters;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 
-public class FolderishSiteObjectHandler extends DefaultSiteObjectHandler {
+public class FolderishSiteObjectHandler extends AbstractSiteObjectHandler {
 
     public FolderishSiteObjectHandler() {
     }

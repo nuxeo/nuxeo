@@ -44,6 +44,6 @@ public class SiteObjectBinding {
     /**
      * used to store resolved site object
      */
-    public SiteObject object;
+    public SitePageTemplate object;
 
 }

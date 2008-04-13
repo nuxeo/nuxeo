@@ -32,8 +32,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@XObject("SiteObject")
-public class SiteObject {
+@XObject("template")
+public class SitePageTemplate {
 
     @XNode("@name")
     protected String name;
@@ -41,20 +41,17 @@ public class SiteObject {
     @XNode("@extends")
     protected String zuper = "default";
 
-    @XNode("content")
-    protected String contentPath;
-
-    @XNodeMap(value="action", key="name", componentType=SiteObjectView.class, type=ConcurrentHashMap.class)
+    @XNodeMap(value="view", key="name", componentType=SiteObjectView.class, type=ConcurrentHashMap.class)
     protected ConcurrentMap<String, SiteObjectView> views;
 
 
-    SiteObject() {}
+    SitePageTemplate() {}
 
-    public SiteObject(String name) {
+    public SitePageTemplate(String name) {
         this (name, null);
     }
 
-    public SiteObject(String name, String zuper) {
+    public SitePageTemplate(String name, String zuper) {
         this.name = name;
         this.zuper = zuper;
         views = new ConcurrentHashMap<String, SiteObjectView>();
@@ -64,29 +61,17 @@ public class SiteObject {
         return name;
     }
 
-    public SiteObject getSuper() {
+    public SitePageTemplate getSuper() {
         if (zuper == null) {
             return null;
         }
-        SiteObject obj = getSiteManager().getSiteObject(zuper);
+        SitePageTemplate obj = getSiteManager().getTemplate(zuper);
         if (obj == null) {
             return getSiteManager().getDefaultSiteObject();
         }
         return obj;
     }
 
-    /**
-     * @return the contentPath.
-     */
-    public String getContentPath() {
-        if (contentPath == null) {
-            SiteObject base = getSuper();
-            if (base != null) {
-                contentPath = getSuper().getContentPath();
-            }
-        }
-        return contentPath;
-    }
 
     public SiteObjectView[] getActions() {
         return views.values().toArray(new SiteObjectView[views.size()]);
@@ -95,7 +80,7 @@ public class SiteObject {
     public SiteObjectView getView(String name) {
         SiteObjectView view = views.get(name);
         if (view == null) {
-            SiteObject base = getSuper();
+            SitePageTemplate base = getSuper();
             if (base != null) {
                 view = base.getView(name);
                 if (view != null) {

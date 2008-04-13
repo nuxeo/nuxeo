@@ -20,13 +20,17 @@
 package org.nuxeo.ecm.platform.site.rendering;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.rendering.api.DefaultDocumentView;
+import org.nuxeo.ecm.platform.rendering.api.DocumentViewField;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
-import org.nuxeo.ecm.platform.rendering.fm.DefaultDocumentView;
-import org.nuxeo.ecm.platform.rendering.fm.DocumentField;
 import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
+import org.nuxeo.ecm.platform.site.servlet.SiteObject;
 import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
 
 public class SiteDocumentView extends DefaultDocumentView {
+
+    public SiteDocumentView() {
+    }
 
     @Override
     protected void initialize() {
@@ -37,18 +41,15 @@ public class SiteDocumentView extends DefaultDocumentView {
     }
 
     protected static SiteRequest getRequest(RenderingContext ctx, DocumentModel doc) {
-        if (ctx instanceof SiteRenderingContext) {
-            SiteRenderingContext sCtx = (SiteRenderingContext) ctx;
+        if (ctx instanceof SiteObject) {
+            SiteObject sCtx = (SiteObject) ctx;
             SiteRequest request = sCtx.getRequest();
-            if (request != null && request.getCurrentSiteObject() == null) {
-                request.setCurrentSiteObject(doc.getAdapter(SiteAwareObject.class));
-            }
             return request;
         }
         return null;
     }
 
-    protected static final DocumentField SITEADAPTER = new DocumentField() {
+    protected static final DocumentViewField SITEADAPTER = new DocumentViewField() {
         public String getName() {
             return "siteAdapter";
         }
@@ -58,17 +59,18 @@ public class SiteDocumentView extends DefaultDocumentView {
         }
     };
 
-    protected static final DocumentField DOCURL = new DocumentField() {
+    protected static final DocumentViewField DOCURL = new DocumentViewField() {
         public String getName() {
             return "docURL";
         }
 
         public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
-            return doc.getAdapter(SiteAwareObject.class).getURL(getRequest(ctx, doc));
+            return ((SiteObject)ctx).getUrlPath();
+            //return doc.getAdapter(SiteAwareObject.class).getURL(getRequest(ctx, doc));
         }
     };
 
-    protected static final DocumentField REQUEST = new DocumentField() {
+    protected static final DocumentViewField REQUEST = new DocumentViewField() {
         public String getName() {
             return "request";
         }

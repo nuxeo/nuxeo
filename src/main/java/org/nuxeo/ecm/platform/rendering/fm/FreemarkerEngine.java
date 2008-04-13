@@ -76,9 +76,6 @@ public class FreemarkerEngine implements RenderingEngine {
        }
     };
 
-    //TODO add possibility to register new views by doc types through extension points
-    protected DocumentView view = DocumentView.DEFAULT;
-
     protected Map<String, RenderingTransformer> transformers = new HashMap<String, RenderingTransformer>();
 
 
@@ -138,15 +135,6 @@ public class FreemarkerEngine implements RenderingEngine {
 
     public Configuration getConfiguration() {
         return cfg;
-    }
-
-    public DocumentView getDocumentView() {
-        return view;
-    }
-
-    public void setDocumentView(DocumentView view) {
-        if (view == null) view = DocumentView.DEFAULT;
-        this.view = view;
     }
 
     public void setTransformer(String name, RenderingTransformer transformer) {

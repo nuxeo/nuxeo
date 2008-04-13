@@ -3,7 +3,6 @@
   targetNamespace="http://pa.org/schemas/link/"
   xmlns:smp="http://pa.org/schemas/link/">
 
-  <xs:element name="name" type="xs:string"/>
   <xs:element name="content" type="xs:string"/>
 
 </xs:schema>

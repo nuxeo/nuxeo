@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.site.servlet;
 
+import java.awt.geom.PathIterator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -68,6 +69,7 @@ public class ResourceServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String path = req.getPathInfo();
+        if (path == null) path= "";
         File file = new File(root, path);
         if (file.isFile()) {
             String mimeType = getServletConfig().getServletContext().getMimeType(file.getName());

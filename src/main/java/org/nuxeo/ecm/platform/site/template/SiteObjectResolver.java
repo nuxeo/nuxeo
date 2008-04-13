@@ -29,6 +29,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface SiteObjectResolver {
 
-    public SiteObject resolve(DocumentModel doc, Map<String, SiteObject> objects);
+    public SitePageTemplate resolve(DocumentModel doc, Map<String, SitePageTemplate> objects);
 
 }

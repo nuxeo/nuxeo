@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     bstefanescu
  *
  * $Id$
  */
@@ -24,165 +24,64 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
+import org.nuxeo.ecm.platform.site.api.SiteException;
+import org.nuxeo.ecm.platform.site.template.SiteManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
- * Request wrapper for SiteObjects publishing
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
+public class SiteRequest extends HttpServletRequestWrapper implements SiteConst {
 
-public class SiteRequest extends HttpServletRequestWrapper {
+    private static final Log log = LogFactory.getLog(SiteRequest.class);
 
-    public static final String MODE_KEY = "render_mode";
-
-    public static final String ENGINE_KEY = "render_engine";
-
-    public static final String VIEW_MODE = "VIEW";
-
-    public static final String EDIT_MODE = "EDIT";
-
-    public static final String CREATE_MODE = "CREATE";
-
-    public static final String UNRESOLVED_SUBPATH = "unresolvedSubPath";
-
+    protected SiteManager siteManager;
+    protected CoreSession session;
+    protected boolean isRenderingCanceled = false;
     protected String mode = VIEW_MODE;
 
-    protected String engineName = "default";
+    protected SiteObject head; // the site root
+    protected SiteObject tail;
+    protected SiteObject lastResolved;
 
-    protected boolean cancelRenderingFlag = false;
+    protected HttpServletResponse resp;
 
-    private SiteAwareObject currentSiteObject;
-
-    protected List<SiteAwareObject> traversedObjects = new ArrayList<SiteAwareObject>();
-
-    protected List<DocumentModel> nonTraversedDocs = new ArrayList<DocumentModel>();
-
-    protected List<DocumentModel> docsToTraverse;
-
-    protected CoreSession documentManager;
-
-
-    public boolean hasUnresolvedSubPath() {
-        List<String> unresolved = getUnresolvedPath();
-        if (unresolved == null || unresolved.isEmpty()) {
-            return false;
+    public SiteRequest(HttpServletRequest req, HttpServletResponse resp, CoreSession session) {
+        super (req);
+        this.session = session;
+        String requestedMode = getParameter(MODE_KEY);
+        if (requestedMode != null) {
+            this.mode = requestedMode;
         }
-        return true;
+        this.resp = resp;
     }
 
-    public List<String> getUnresolvedPath() {
-        Object unresolvedPath = getAttribute(UNRESOLVED_SUBPATH);
-        if (unresolvedPath == null) {
-            return null;
-        }
-        return (List<String>) unresolvedPath;
+    public SiteObject getSiteRoot() {
+        return head;
     }
 
-    public void setCurrentSiteObject(SiteAwareObject siteObject) {
-        currentSiteObject = siteObject;
+    public HttpServletResponse getResponse() {
+        return resp;
     }
 
-    public SiteAwareObject getCurrentSiteObject() {
-        return currentSiteObject;
-    }
-
-    public void cancelRendering() {
-        cancelRenderingFlag = true;
+    public CoreSession getCoreSession() {
+        return session;
     }
 
     public boolean isRenderingCanceled() {
-        return cancelRenderingFlag;
+        return isRenderingCanceled;
     }
 
-    public void addToTraversalPath(SiteAwareObject siteOb) {
-        traversedObjects.add(siteOb);
-    }
-
-    public List<SiteAwareObject> getTraversalPath() {
-        return traversedObjects;
-    }
-
-    public String getSiteBaseUrl() {
-        String servletBase = getContextPath();
-        if (servletBase == null) {
-            servletBase = "/nuxeo/site"; // for testing
-        } else {
-            servletBase += getServletPath();
-        }
-
-        return servletBase + '/';
-    }
-
-    public String getTraveredURL(SiteAwareObject siteObject) {
-        SiteAwareObject parent = getTraversalParent(siteObject);
-        if (parent == null) {
-            return getSiteBaseUrl() + siteObject.getName();
-        } else {
-            return getTraveredURL(parent) + '/' + siteObject.getName();
-        }
-    }
-
-    private Integer getSiteObjectIndexInTraversalPath(SiteAwareObject siteObject) {
-        for (int i = traversedObjects.size() - 1; i >= 0; i--) {
-            if (traversedObjects.get(i).getId().equals(siteObject.getId())) {
-                return i;
-            }
-        }
-        return null;
-    }
-
-    public SiteAwareObject getTraversalParent() {
-        return getTraversalParent(currentSiteObject);
-    }
-
-    public SiteAwareObject getTraversalParent(SiteAwareObject siteObject) {
-        if (traversedObjects == null || traversedObjects.isEmpty()) {
-            return null;
-        }
-
-        Integer idx = getSiteObjectIndexInTraversalPath(siteObject);
-        if (idx == null || idx == 0) {
-            return null;
-        } else {
-            return traversedObjects.get(idx - 1);
-        }
-    }
-
-    public SiteAwareObject getTraversalChild() {
-        return getTraversalChild(currentSiteObject);
-    }
-
-    public SiteAwareObject getTraversalChild(SiteAwareObject siteObject) {
-        if (traversedObjects == null || traversedObjects.isEmpty()) {
-            return null;
-        }
-
-        Integer idx = getSiteObjectIndexInTraversalPath(siteObject);
-        if (idx == null || idx == (traversedObjects.size() - 1)) {
-            return null;
-        } else {
-            return traversedObjects.get(idx + 1);
-        }
-    }
-
-    public String getLiefSiteObjectId() {
-        if (traversedObjects == null || traversedObjects.isEmpty()) {
-            return null;
-        }
-        return traversedObjects.get(traversedObjects.size() - 1).getId();
-    }
-
-    public String getEngineName() {
-        return engineName;
-    }
-
-    public void setEngineName(String engineName) {
-        this.engineName = engineName;
+    public void cancelRendering() {
+        isRenderingCanceled = true;
     }
 
     public String getMode() {
@@ -193,56 +92,144 @@ public class SiteRequest extends HttpServletRequestWrapper {
         this.mode = mode;
     }
 
-    public SiteRequest(HttpServletRequest request) {
-        super(request);
-
-        String requestedMode = getParameter(MODE_KEY);
-        if (requestedMode != null) {
-            setMode(requestedMode);
+    public String getSiteBaseUrl() {
+        String servletBase = getContextPath();
+        if (servletBase == null) {
+            servletBase = "/nuxeo/site"; // for testing
+        } else {
+            servletBase += getServletPath();
         }
+        return servletBase;
     }
 
-    public SiteRequest(HttpServletRequest request, CoreSession session) {
-        super(request);
 
-        String requestedMode = getParameter(MODE_KEY);
-        if (requestedMode != null) {
-            setMode(requestedMode);
+    public SiteManager getSiteManager() {
+        if (siteManager == null) {
+            siteManager = Framework.getLocalService(SiteManager.class);
         }
-        documentManager = session;
+        return siteManager;
     }
 
-    public SiteRequest(HttpServletRequest request, CoreSession session,
-            List<DocumentModel> docsToTraverse) {
-        this(request, session);
-        this.docsToTraverse = docsToTraverse;
+
+    public SiteObject getLastResolvedObject() {
+        return lastResolved;
     }
 
-    public List<DocumentModel> getNonTraversedDocs() {
-        return nonTraversedDocs;
+    public SiteObject getFirstUnresolvedObject() {
+        return lastResolved == null ? head : lastResolved.next;
     }
 
-    public void setNonTraversedDocs(List<DocumentModel> nonTraversedDocs) {
-        this.nonTraversedDocs = nonTraversedDocs;
+    public boolean hasUnresolvedObjects() {
+        return lastResolved != tail;
     }
 
-    public CoreSession getDocumentManager() {
-        if (documentManager == null) {
-            HttpSession httpSession = getSession(true);
-            if (httpSession != null) {
-                documentManager = (CoreSession) httpSession.getAttribute(
-                        SiteServlet.CORESESSION_KEY);
-            }
+    public SiteObject addSiteObject(String name, DocumentModel doc) {
+        SiteObject object = new SiteObject(this, name, doc);
+        if (head == null) {
+            this.head = this.tail = object;
+            object.prev = null;
+        } else {
+            tail.next = object;
+            object.prev = tail;
         }
-        return documentManager;
+        object.next = null;
+        tail = object;
+        if (doc != null) {
+            lastResolved = object;
+        }
+        return object;
     }
 
-    public List<DocumentModel> getDocsToTraverse() {
-        return docsToTraverse;
+    public List<SiteObject> getSiteObjects() {
+        ArrayList<SiteObject> objects = new ArrayList<SiteObject>();
+        SiteObject p = head;
+        while (p != null) {
+            objects.add(p);
+            p = p.next;
+        }
+        return objects;
     }
 
-    public void setDocsToTraverse(List<DocumentModel> docsToTraverse) {
-        this.docsToTraverse = docsToTraverse;
+    public List<SiteObject> getUnresolvedSiteObjects() {
+        ArrayList<SiteObject> objects = new ArrayList<SiteObject>();
+        SiteObject p = head;
+        while (p != null) {
+            objects.add(p);
+            p = p.next;
+        }
+        return objects;
     }
+
+    public List<SiteObject> getResolvedSiteObjects() {
+        ArrayList<SiteObject> objects = new ArrayList<SiteObject>();
+        SiteObject p = head;
+        while (p != null) {
+            objects.add(p);
+            p = p.next;
+        }
+        return objects;
+    }
+
+    public SiteObject getLastObject() {
+        return tail;
+    }
+
+    public boolean isRootRequest() {
+        return head != null && head.next == null;
+    }
+
+    /**
+    *
+    * @return the last traversed object
+    */
+   public SiteObject traverse() throws SiteException {
+       if (head == null || lastResolved == null) {
+           return null;
+       }
+       SiteAwareObject adapter = head.getAdapter();
+       if (adapter == null || !adapter.traverse(this, resp)) {
+           return null;
+       }
+       SiteObject lastTraversed = head;
+       SiteObject p = head.next;
+       while (p != lastResolved.next) {
+           adapter = p.getAdapter();
+           if (adapter == null || !adapter.traverse(this, resp)) {
+               return lastTraversed;
+           }
+           lastTraversed = p;
+           p = p.next;
+       }
+       return lastTraversed;
+   }
+
+   /**
+    *
+    * @param start inclusive
+    * @param end exclusive
+    * @return
+    */
+   public String getPath(SiteObject start, SiteObject end) {
+       if (start == null || start == end) return "";
+       StringBuilder buf = new StringBuilder(256);
+       SiteObject p = start;
+       while (p != end) {
+           buf.append("/").append(p.name);
+           p = p.next;
+       }
+       return buf.toString();
+   }
+
+   public String getUnresolvedPath() {
+       if (lastResolved == null) {
+           return getPath(head, null);
+       }
+       return getPath(lastResolved.next, null);
+   }
+
+   public String getResolvedPath() {
+       if (lastResolved == null) return "";
+       return getPath(head, lastResolved.next);
+   }
 
 }

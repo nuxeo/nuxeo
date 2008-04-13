@@ -21,12 +21,14 @@ package org.nuxeo.ecm.platform.site.tests.rendering;
 
 import java.io.OutputStream;
 import java.io.Writer;
+import java.net.URL;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.rendering.api.DocumentView;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 
 /**
@@ -67,4 +69,11 @@ public class HttpSimpleContext implements RenderingContext {
         return null;
     }
 
+    public URL getResource(String key) {
+        return SimpleContext.class.getClassLoader().getResource(key);
+    }
+
+    public DocumentView getDocumentView() {
+        return DocumentView.DEFAULT;
+    }
 }

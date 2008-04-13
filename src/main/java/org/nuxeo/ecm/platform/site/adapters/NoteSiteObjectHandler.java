@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.site.api.SiteException;
 import org.nuxeo.ecm.platform.site.servlet.SiteConst;
 import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
 
-public class NoteSiteObjectHandler extends DefaultSiteObjectHandler {
+public class NoteSiteObjectHandler extends AbstractSiteObjectHandler {
 
     public NoteSiteObjectHandler() {
     }
@@ -45,8 +45,8 @@ public class NoteSiteObjectHandler extends DefaultSiteObjectHandler {
         if (newContent != null) {
             sourceDocument.setProperty("note", "note", newContent);
             try {
-                sourceDocument = request.getDocumentManager().saveDocument(sourceDocument);
-                request.getDocumentManager().save();
+                sourceDocument = request.getCoreSession().saveDocument(sourceDocument);
+                request.getCoreSession().save();
             } catch (ClientException e) {
                 throw new SiteException("Error during update process", e);
             }

@@ -28,7 +28,19 @@ import javax.servlet.http.HttpServletResponse;
  *
  */
 
-public class SiteConst {
+public interface SiteConst {
+
+    public static final String MODE_KEY = "render_mode";
+
+    public static final String ENGINE_KEY = "render_engine";
+
+    public static final String VIEW_MODE = "VIEW";
+
+    public static final String EDIT_MODE = "EDIT";
+
+    public static final String CREATE_MODE = "CREATE";
+
+
 
     public static final String METHOD_HEAD = "HEAD";
 

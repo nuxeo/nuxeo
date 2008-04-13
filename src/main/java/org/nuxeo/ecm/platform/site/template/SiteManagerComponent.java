@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
-import org.nuxeo.ecm.platform.site.rendering.SiteDocumentView;
 import org.nuxeo.ecm.platform.site.rendering.TransformerDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -68,10 +67,6 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
         }
         engine.setResourceLocator(this);
         //engine.setEnvironmentProvider(env) TODO
-        if (engine instanceof FreemarkerEngine) {
-            FreemarkerEngine fmEngine = (FreemarkerEngine) engine;
-            fmEngine.setDocumentView(new SiteDocumentView());
-        }
 
         File root = new File(Framework.getRuntime().getHome(), "web");
         mgr = new SiteManagerImpl(root, engine);

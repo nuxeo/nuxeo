@@ -17,16 +17,15 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.rendering.fm;
+package org.nuxeo.ecm.platform.rendering.api;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface DocumentField {
+public interface DocumentViewField {
 
     String getName();
 

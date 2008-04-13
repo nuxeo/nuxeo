@@ -35,13 +35,13 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
  */
 public class SiteManagerImpl implements SiteManager {
 
-    protected SiteObject defaultObject;
+    protected SitePageTemplate defaultObject;
 
     protected List<SiteObjectBinding> bindings;
 
-    protected Map<String, SiteObject> objects;
+    protected Map<String, SitePageTemplate> objects;
 
-    protected LinkedHashMap<String, SiteObject> cache;
+    protected LinkedHashMap<String, SitePageTemplate> cache;
 
     protected SiteObjectResolver resolver;
 
@@ -50,9 +50,9 @@ public class SiteManagerImpl implements SiteManager {
 
     public SiteManagerImpl(File root, RenderingEngine engine) {
         this.bindings = new ArrayList<SiteObjectBinding>();
-        this.objects = new HashMap<String, SiteObject>();
+        this.objects = new HashMap<String, SitePageTemplate>();
         this.root = root;
-        this.cache = new LinkedHashMap<String, SiteObject>();
+        this.cache = new LinkedHashMap<String, SitePageTemplate>();
         this.resolver = new FileBasedResolver(this);
         this.engine = engine;
     }
@@ -69,27 +69,36 @@ public class SiteManagerImpl implements SiteManager {
         return bindings.toArray(new SiteObjectBinding[bindings.size()]);
     }
 
-    public SiteObject getSiteObject(String name) {
+    public SitePageTemplate getTemplate(String name) {
         return objects.get(name);
     }
 
-    public SiteObject resolve(DocumentModel doc) {
-        SiteObject obj =  resolver.resolve(doc, objects);
+    public SitePageTemplate getOrCreateTemplate(String name) {
+        SitePageTemplate template = objects.get(name);
+        if (template == null) {
+            template = new SitePageTemplate(name);
+            objects.put(name, template);
+        }
+        return template;
+    }
+
+    public SitePageTemplate resolve(DocumentModel doc) {
+        SitePageTemplate obj = resolver.resolve(doc, objects);
         if (obj == null) {
             return defaultObject;
         }
         return obj;
     }
 
-    public SiteObject[] getSiteObjects() {
-        return objects.values().toArray(new SiteObject[objects.size()]);
+    public SitePageTemplate[] getSiteObjects() {
+        return objects.values().toArray(new SitePageTemplate[objects.size()]);
     }
 
     public void registerBinding(SiteObjectBinding binding) {
         bindings.add(binding);
     }
 
-    public void registerSiteObject(SiteObject object) {
+    public void registerSiteObject(SitePageTemplate object) {
         objects.put(object.getName(), object);
     }
 
@@ -106,11 +115,11 @@ public class SiteManagerImpl implements SiteManager {
         objects.remove(name);
     }
 
-    public SiteObject getDefaultSiteObject() {
+    public SitePageTemplate getDefaultSiteObject() {
         return defaultObject;
     }
 
-    public void setDefaultSiteObject(SiteObject object) {
+    public void setDefaultSiteObject(SitePageTemplate object) {
         this.defaultObject = object;
     }
 

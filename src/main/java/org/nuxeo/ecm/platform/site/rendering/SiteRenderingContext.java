@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     bstefanescu
  *
  * $Id$
  */
@@ -27,28 +27,35 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.rendering.api.DocumentView;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
-import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
+import org.nuxeo.ecm.platform.site.servlet.SiteObject;
 import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
-import org.nuxeo.ecm.platform.site.template.SiteObject;
 import org.nuxeo.ecm.platform.site.template.SiteObjectView;
+import org.nuxeo.ecm.platform.site.template.SitePageTemplate;
 
+/**
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
+ */
 public class SiteRenderingContext implements RenderingContext {
+
+    private final static SiteDocumentView DOCUMENT_VIEW = new SiteDocumentView();
 
     private SiteRequest request;
     private HttpServletResponse response;
-    private SiteAwareObject currentSiteObject;
+    private SiteObject currentSiteObject;
 
     public SiteRenderingContext(SiteRequest request, HttpServletResponse response,
-            SiteAwareObject currentObject) {
+            SiteObject currentObject) {
         this.request = request;
         this.response = response;
         this.currentSiteObject = currentObject;
     }
 
     public RenderingContext createChildContext() {
-        SiteAwareObject child = request.getTraversalChild(currentSiteObject);
-        if (child != null) {
+        SiteObject child = currentSiteObject.next();
+        if (child.isResolved() && !child.isRoot()) {
             return new SiteRenderingContext(request, response, child);
         } else {
             return null;
@@ -56,7 +63,7 @@ public class SiteRenderingContext implements RenderingContext {
     }
 
     public DocumentModel getDocument() {
-        return currentSiteObject.getSourceDocument();
+        return currentSiteObject.getDocument();
     }
 
     public OutputStream getOut() {
@@ -68,16 +75,16 @@ public class SiteRenderingContext implements RenderingContext {
     }
 
     public CoreSession getSession() {
-        return request.getDocumentManager();
+        return request.getCoreSession();
     }
 
     public String getTemplate() {
-        SiteObject cfg = currentSiteObject.getSiteConfiguration(request);
+        SitePageTemplate template = currentSiteObject.getSiteTemplate();
         SiteObjectView view = null;
-        if (request.getTraversalChild(currentSiteObject) == null) {
-            view = cfg.getView(request.getMode().toLowerCase());
+        if (currentSiteObject.isLastResolved()) {
+            view = template.getView(request.getMode().toLowerCase());
         } else {
-            view = cfg.getView("view");
+            view = template.getView("view");
         }
         if (view != null) {
             return view.getTemplate().toExternalForm();
@@ -97,4 +104,9 @@ public class SiteRenderingContext implements RenderingContext {
     public SiteRequest getRequest() {
         return request;
     }
+
+    public DocumentView getDocumentView() {
+        return DOCUMENT_VIEW;
+    }
+
 }

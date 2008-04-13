@@ -20,16 +20,16 @@
 package org.nuxeo.ecm.platform.rendering.fm.adapters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Arrays;
 
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
-import org.nuxeo.ecm.platform.rendering.fm.DocumentField;
-import org.nuxeo.ecm.platform.rendering.fm.DocumentView;
+import org.nuxeo.ecm.platform.rendering.api.DocumentView;
+import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 
 import freemarker.template.AdapterTemplateModel;
@@ -73,8 +73,8 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
         return doc;
     }
 
-    public DocumentView getDocumentView() {
-        return root.getDocumentView();
+    public final DocumentView getDocumentView() {
+        return root.getThisContext().getDocumentView();
     }
 
     public final TemplateModel wrap(Object obj) throws TemplateModelException {
@@ -83,14 +83,16 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
     }
 
     public TemplateModel get(String key) throws TemplateModelException {
-        DocumentField field =  root.getDocumentView().getField(key);
-        if (field != null) {
-            try {
-                return wrap(field.getValue(doc, root.getThisContext()));
-            } catch(Exception e) {
-                throw new TemplateModelException("Failed to get document field: "+key, e);
+        RenderingContext ctx = root.getThisContext();
+        try {
+            Object value =  ctx.getDocumentView().get(doc, key, ctx);
+            if (value != DocumentView.NULL) {
+                return wrap(value);
             }
+        } catch(Exception e) {
+            throw new TemplateModelException("Failed to get document field: "+key, e);
         }
+
         // may be a schema name
         DocumentPart part = doc.getPart(key);
         if (part != null) {
@@ -118,7 +120,7 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
 
     public Collection<String> getRawKeys() {
         List<String> keysCol = new ArrayList<String>();
-        keysCol.addAll(root.getDocumentView().getFields().keySet());
+        keysCol.addAll(root.getThisContext().getDocumentView().keys());
         String[] schemas = doc.getDeclaredSchemas();
         keysCol.addAll(Arrays.asList(schemas));
         keysCol.add("document");
@@ -134,8 +136,9 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
     public Collection<Object> getRawValues() throws TemplateModelException {
         List<Object> values = new ArrayList<Object>();
         try {
-            for (DocumentField field : root.getDocumentView().getFields().values()) {
-                values.add(field.getValue(doc,root.getThisContext()));
+            DocumentView view = root.getThisContext().getDocumentView();
+            for (String key : view.keys()) {
+                values.add(view.get(doc, key, root.getThisContext()));
             }
             for (DocumentPart part : doc.getParts()) {
                 values.add(part.getValue());
@@ -155,7 +158,7 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
     }
 
     public int size() throws TemplateModelException {
-        return root.getDocumentView().size() + doc.getDeclaredSchemas().length + 2;
+        return root.getThisContext().getDocumentView().size() + doc.getDeclaredSchemas().length + 2;
     }
 
 }

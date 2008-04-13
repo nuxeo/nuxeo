@@ -35,10 +35,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 public interface SiteResourceResolver {
 
-    String getTargetRepositoryName(HttpServletRequest request);
-
-    List<DocumentModel> resolvePath(HttpServletRequest request, CoreSession session) throws Exception;
-
     DocumentModel getSiteRoot(String rootName, CoreSession session) throws Exception;
+
+    DocumentModel getSiteSegment(DocumentModel parent, String segment, CoreSession session) throws Exception;
 
 }

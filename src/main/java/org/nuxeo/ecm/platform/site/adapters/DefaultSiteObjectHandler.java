@@ -19,10 +19,7 @@
 
 package org.nuxeo.ecm.platform.site.adapters;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
 
 /**
  * Default impl SiteObject DocumentModel adapter
@@ -33,15 +30,10 @@ import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
 public class DefaultSiteObjectHandler extends AbstractSiteObjectHandler {
 
     public DefaultSiteObjectHandler() {
-
     }
 
     public DefaultSiteObjectHandler(DocumentModel doc) {
-        sourceDocument = doc;
-    }
-
-    public void doGet(SiteRequest request, HttpServletResponse response) {
-        // TODO Auto-generated method stub
+        super (doc);
     }
 
 }

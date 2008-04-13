@@ -35,7 +35,6 @@ import org.nuxeo.ecm.platform.rendering.wiki.filters.DocumentExpression;
 import org.nuxeo.ecm.platform.rendering.wiki.filters.FreemarkerMacro;
 import org.nuxeo.ecm.platform.rendering.wiki.filters.PatternFilter;
 import org.nuxeo.runtime.api.DefaultServiceProvider;
-import org.nuxeo.runtime.services.streaming.StringSource;
 import org.nuxeo.runtime.services.streaming.URLSource;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 

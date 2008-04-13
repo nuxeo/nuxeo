@@ -22,21 +22,10 @@ package org.nuxeo.ecm.platform.site.tests.rendering;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.io.Reader;
 
 import org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer;
 import org.nuxeo.ecm.platform.rendering.wiki.filters.PatternFilter;
-import org.wikimodel.wem.CompositeListener;
-import org.wikimodel.wem.EventDumpListener;
-import org.wikimodel.wem.IWemListener;
-import org.wikimodel.wem.IWikiParser;
-import org.wikimodel.wem.IWikiPrinter;
-import org.wikimodel.wem.PrintListener;
-import org.wikimodel.wem.xwiki.XWikiParser;
-
-import com.sun.org.apache.xalan.internal.xsltc.trax.OutputSettings;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

@@ -17,9 +17,9 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.rendering.fm;
+package org.nuxeo.ecm.platform.rendering.api;
 
-import java.util.Map;
+import java.util.Collection;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -29,16 +29,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface DocumentView {
 
-    DocumentView DEFAULT = new DefaultDocumentView();
+    public final static DocumentView DEFAULT = new DefaultDocumentView();
+    // represent a null value this should be used returned by get() method for unknown fields
+    public final static Object NULL = new Object();
 
-    DocumentField getField(String name);
+    Object get(DocumentModel doc, String key, RenderingContext ctx) throws Exception;
 
-    Object getFieldValue(DocumentModel doc, String name) throws Exception;
-
-    Map<String, DocumentField> getFields();
+    Collection<String>  keys();
 
     int size();
-
-    boolean isEmpty();
 
 }

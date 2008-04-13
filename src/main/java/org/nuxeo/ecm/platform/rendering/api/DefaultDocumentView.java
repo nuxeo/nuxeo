@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.rendering.fm;
+package org.nuxeo.ecm.platform.rendering.api;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
-import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -38,21 +37,16 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
  */
 public class DefaultDocumentView implements DocumentView {
 
-    protected Map<String, DocumentField> fields;
 
-    protected RenderingContext ctx;
+    protected Map<String, DocumentViewField> fields;
 
     protected DefaultDocumentView() {
-        fields = new HashMap<String, DocumentField>();
+        fields = new HashMap<String, DocumentViewField>();
         initialize();
     }
 
-    protected DefaultDocumentView(Map<String, DocumentField> fields) {
-        this.fields = fields == null ? new HashMap<String, DocumentField>() : fields;
-    }
-
-    public void setRendeingContext(RenderingContext ctx) {
-        this.ctx = ctx;
+    protected DefaultDocumentView(Map<String, DocumentViewField> fields) {
+        this.fields = fields == null ? new HashMap<String, DocumentViewField>() : fields;
     }
 
     protected void initialize() {
@@ -80,12 +74,12 @@ public class DefaultDocumentView implements DocumentView {
 
     }
 
-    public final void addField(DocumentField field) {
+    public final void addField(DocumentViewField field) {
         this.fields.put(field.getName(), field);
     }
 
-    public final void addFields(Collection<DocumentField> fields) {
-        for (DocumentField field : fields) {
+    public final void addFields(Collection<DocumentViewField> fields) {
+        for (DocumentViewField field : fields) {
             this.fields.put(field.getName(), field);
         }
     }
@@ -94,20 +88,23 @@ public class DefaultDocumentView implements DocumentView {
         this.fields.remove(name);
     }
 
-    public DocumentField getField(String name) {
+    public DocumentViewField getField(String name) {
         return fields.get(name);
     }
 
-
-    public Object getFieldValue(DocumentModel doc, String name) throws Exception {
-        DocumentField field = fields.get(name);
+    public Object get(DocumentModel doc, String name, RenderingContext ctx) throws Exception {
+        DocumentViewField field = fields.get(name);
         if (field != null) {
             return field.getValue(doc, ctx);
         }
-        return null;
+        return NULL;
     }
 
-    public Map<String, DocumentField> getFields() {
+    public Collection<String> keys() {
+        return fields.keySet();
+    }
+
+    public Map<String, DocumentViewField> getFields() {
         return fields;
     }
 
@@ -120,7 +117,7 @@ public class DefaultDocumentView implements DocumentView {
     }
 
 
-    protected static final DocumentField ID = new DocumentField() {
+    protected static final DocumentViewField ID = new DocumentViewField() {
         public final String getName() {
             return "id";
         }
@@ -130,7 +127,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentField NAME = new DocumentField() {
+    protected static final DocumentViewField NAME = new DocumentViewField() {
         public final String getName() {
             return "name";
         }
@@ -140,7 +137,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentField PATH = new DocumentField() {
+    protected static final DocumentViewField PATH = new DocumentViewField() {
         public final String getName() {
             return "path";
         }
@@ -150,7 +147,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static DocumentField TYPE = new DocumentField() {
+    protected static DocumentViewField TYPE = new DocumentViewField() {
         public final String getName() {
             return "type";
         }
@@ -160,7 +157,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static DocumentField SCHEMAS = new DocumentField() {
+    protected static DocumentViewField SCHEMAS = new DocumentViewField() {
         public final String getName() {
             return "schemas";
         }
@@ -170,7 +167,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static DocumentField FACETS = new DocumentField() {
+    protected static final DocumentViewField FACETS = new DocumentViewField() {
         public final String getName() {
             return "facets";
         }
@@ -180,7 +177,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static DocumentField STATE = new DocumentField() {
+    protected static final DocumentViewField STATE = new DocumentViewField() {
         public final String getName() {
             return "state";
         }
@@ -190,7 +187,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static DocumentField LOCKED = new DocumentField() {
+    protected static final DocumentViewField LOCKED = new DocumentViewField() {
         public final String getName() {
             return "isLocked";
         }
@@ -200,7 +197,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static DocumentField IS_FOLDER = new DocumentField() {
+    protected static final DocumentViewField IS_FOLDER = new DocumentViewField() {
         public final String getName() {
             return "isFolder";
         }
@@ -210,7 +207,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentField TITLE = new DocumentField() {
+    protected static final DocumentViewField TITLE = new DocumentViewField() {
         public String getName() {
             return "title";
         }
@@ -220,7 +217,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentField AUTHOR = new DocumentField() {
+    protected static final DocumentViewField AUTHOR = new DocumentViewField() {
         public String getName() {
             return "author";
         }
@@ -230,7 +227,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentField CREATED = new DocumentField() {
+    protected static final DocumentViewField CREATED = new DocumentViewField() {
         public String getName() {
             return "created";
         }
@@ -241,7 +238,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentField MODIFIED = new DocumentField() {
+    protected static final DocumentViewField MODIFIED = new DocumentViewField() {
         public String getName() {
             return "modified";
         }
@@ -252,7 +249,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentField CONTENT = new DocumentField() {
+    protected static final DocumentViewField CONTENT = new DocumentViewField() {
         public String getName() {
             return "content";
         }
@@ -267,7 +264,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentField PARTS = new DocumentField() {
+    protected static final DocumentViewField PARTS = new DocumentViewField() {
         public String getName() {
             return "parts";
         }
@@ -277,7 +274,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentField SID = new DocumentField() {
+    protected static final DocumentViewField SID = new DocumentViewField() {
         public String getName() {
             return "sessionId";
         }
@@ -287,7 +284,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentField REPOSITORY = new DocumentField() {
+    protected static final DocumentViewField REPOSITORY = new DocumentViewField() {
         public String getName() {
             return "repository";
         }
@@ -297,7 +294,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentField PARENT = new DocumentField() {
+    protected static final DocumentViewField PARENT = new DocumentViewField() {
         public String getName() {
             return "parent";
         }
@@ -309,7 +306,7 @@ public class DefaultDocumentView implements DocumentView {
     };
 
 
-    protected static final DocumentField CHILDREN = new DocumentField() {
+    protected static final DocumentViewField CHILDREN = new DocumentViewField() {
         public String getName() {
             return "children";
         }
@@ -319,5 +316,6 @@ public class DefaultDocumentView implements DocumentView {
             return session.getChildren(doc.getRef());
         }
     };
+
 
 }

@@ -40,9 +40,9 @@ public class FileBasedResolver implements SiteObjectResolver {
         }
     }
 
-    public SiteObject resolve(DocumentModel doc, Map<String, SiteObject> objects) {
+    public SitePageTemplate resolve(DocumentModel doc, Map<String, SitePageTemplate> objects) {
         String type = doc.getType();
-        SiteObject obj = objects.get(type);
+        SitePageTemplate obj = objects.get(type);
         if (obj == null) {
             obj = createSiteObject(type, "default");
             if (obj != null) {
@@ -53,11 +53,11 @@ public class FileBasedResolver implements SiteObjectResolver {
     }
 
 
-    protected SiteObject createSiteObject(String type, String zuper) {
-        SiteObject obj = null;
+    protected SitePageTemplate createSiteObject(String type, String zuper) {
+        SitePageTemplate obj = null;
         File typeFolder = new File(root, type);
         if (typeFolder.isDirectory()) {
-            obj = new SiteObject(type, zuper);
+            obj = new SitePageTemplate(type, zuper);
             for (String name : typeFolder.list()) {
                 if (name.endsWith(".ftl")) {
                     try {

@@ -21,18 +21,15 @@ package org.nuxeo.ecm.platform.site.adapters;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
 import org.nuxeo.ecm.platform.site.api.SiteException;
 import org.nuxeo.ecm.platform.site.servlet.NoBodyResponse;
-import org.nuxeo.ecm.platform.site.servlet.SiteConst;
 import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
 import org.nuxeo.ecm.platform.site.template.SiteManager;
-import org.nuxeo.ecm.platform.site.template.SiteObject;
+import org.nuxeo.ecm.platform.site.template.SitePageTemplate;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -46,15 +43,18 @@ public abstract class AbstractSiteObjectHandler implements SiteAwareObject {
 
     protected DocumentModel sourceDocument;
 
-    protected String autoSlotId;
 
+    public AbstractSiteObjectHandler() {
+    }
+
+    public AbstractSiteObjectHandler(DocumentModel doc) {
+        sourceDocument = doc;
+    }
 
     public void setSourceDocument(DocumentModel doc) {
         sourceDocument = doc;
 
     }
-
-    public abstract void doGet(SiteRequest request, HttpServletResponse response);
 
     public String getId() {
         return sourceDocument.getId();
@@ -62,6 +62,10 @@ public abstract class AbstractSiteObjectHandler implements SiteAwareObject {
 
     public String getName() {
         return sourceDocument.getName();
+    }
+
+    public void doGet(SiteRequest request, HttpServletResponse response) {
+        // do nothing
     }
 
     public void doHead(SiteRequest request, HttpServletResponse response) throws SiteException {
@@ -80,29 +84,9 @@ public abstract class AbstractSiteObjectHandler implements SiteAwareObject {
         response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
     }
 
-    public DocumentModelList getChildren() throws ClientException {
-        return getCoreSession().getChildren(sourceDocument.getRef());
-    }
-
-    public String getSlotId() {
-        return autoSlotId;
-    }
-
-    public boolean needsRendering(SiteRequest request) {
-        if (request.EDIT_MODE.equals(request.getMode()) && getId().equals(
-                request.getLiefSiteObjectId())) {
-            // skip rendering if edit mode and last in traversal path
-            return false;
-        }
-        return true;
-    }
-
-    public String getTitle() {
-        return sourceDocument.getTitle();
-    }
-
     public String getURL(SiteRequest request) {
-        return request.getTraveredURL(this);
+        return "TODO"; //TODO
+        //return request.getURL(this);
     }
 
     protected CoreSession getCoreSession() {
@@ -111,16 +95,6 @@ public abstract class AbstractSiteObjectHandler implements SiteAwareObject {
 
     public boolean traverse(SiteRequest request, HttpServletResponse response)
             throws SiteException {
-        if (request.getTraversalPath() == null) {
-            autoSlotId = "main";
-        } else {
-            autoSlotId = "child" + request.getTraversalPath().size();
-        }
-        if (request.hasUnresolvedSubPath()) {
-            throw new SiteException(
-                    "Request contains unresolvedPath " + request.getUnresolvedPath(),
-                    SiteConst.SC_NOT_FOUND);
-        }
         return true;
     }
 
@@ -136,7 +110,7 @@ public abstract class AbstractSiteObjectHandler implements SiteAwareObject {
         return sourceDocument;
     }
 
-    public SiteObject getSiteConfiguration(SiteRequest request) {
+    public SitePageTemplate getTemplate(SiteRequest request) {
         return getSiteManager().resolve(sourceDocument);
     }
 

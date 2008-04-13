@@ -22,8 +22,8 @@ package org.nuxeo.ecm.platform.rendering.fm.adapters;
 import java.util.Collection;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.rendering.api.DocumentView;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
-import org.nuxeo.ecm.platform.rendering.fm.DocumentView;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 
 import freemarker.template.AdapterTemplateModel;
@@ -80,7 +80,7 @@ public class RootContextModel implements TemplateHashModelEx, AdapterTemplateMod
     }
 
     public final DocumentView getDocumentView() {
-        return engine.getDocumentView();
+        return doc.getContext().getDocumentView();
     }
 
     public final DocumentModel getDocument() {

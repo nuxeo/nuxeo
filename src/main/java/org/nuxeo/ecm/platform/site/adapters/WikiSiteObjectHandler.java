@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.site.api.SiteException;
+import org.nuxeo.ecm.platform.site.servlet.SiteObject;
 import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
 
 public class WikiSiteObjectHandler extends FolderishSiteObjectHandler {
@@ -35,35 +36,28 @@ public class WikiSiteObjectHandler extends FolderishSiteObjectHandler {
 
     private DocumentModel createSubPage(SiteRequest request, String pageId)
             throws Exception {
-        CoreSession dm = request.getDocumentManager();
-        DocumentModel newPage = dm.createDocumentModel(sourceDocument.getPathAsString(), pageId,
+        CoreSession session = request.getCoreSession();
+        DocumentModel newPage = session.createDocumentModel(sourceDocument.getPathAsString(), pageId,
                 "Note");
         newPage.setProperty("dublincore", "title", pageId);
         //newPage.setProperty("note", "note", "This is new page ${title}");
         newPage.setProperty("note", "note", "");
-        newPage = dm.createDocument(newPage);
-        dm.save();
+        newPage = session.createDocument(newPage);
+        session.save();
         return newPage;
     }
 
     @Override
     public boolean traverse(SiteRequest request, HttpServletResponse response)
             throws SiteException {
-
-        if (request.getTraversalPath() == null || request.getTraversalPath().isEmpty()) {
-            autoSlotId = "main";
-        } else {
-            autoSlotId = "child" + request.getTraversalPath().size();
-        }
-
-        if (request.hasUnresolvedSubPath()) {
+        SiteObject unresolved = request.getFirstUnresolvedObject();
+        if (unresolved != null) {
             String createFlag = request.getParameter(CREATE_KEY);
-            String pageId = request.getUnresolvedPath().get(0);
+            String pageId = unresolved.getName();
             if ("true".equalsIgnoreCase(createFlag)) {
                 try {
                     DocumentModel newPage = createSubPage(request, pageId);
-                    request.getDocsToTraverse().add(newPage);
-                    request.getUnresolvedPath().remove(0);
+                    unresolved.resolve(newPage);
                     request.setMode(SiteRequest.EDIT_MODE);
                 } catch (Exception e) {
                     throw new SiteException("Error while creating wiki page", e);
@@ -72,29 +66,25 @@ public class WikiSiteObjectHandler extends FolderishSiteObjectHandler {
                 request.setAttribute("pageToCreate", pageId);
                 request.setMode(SiteRequest.CREATE_MODE);
             }
-        } else if (request.getDocsToTraverse() == null || request.getDocsToTraverse().isEmpty()) {
+        } else if (request.isRootRequest()) {
             DocumentModel indexPage = null;
             try {
                 indexPage = getCoreSession().getChild(sourceDocument.getRef(), DEFAULT_PAGE_ID);
-                //request.getTraversalPath().add(indexPage.getAdapter(SiteAwareObject.class));
-                request.getDocsToTraverse().add(indexPage);
+                request.addSiteObject(DEFAULT_PAGE_ID, indexPage);
             } catch (ClientException ce) {
                 try {
                     indexPage = createSubPage(request, DEFAULT_PAGE_ID);
-                    request.getDocsToTraverse().add(indexPage);
+                    request.addSiteObject(DEFAULT_PAGE_ID, indexPage);
                 } catch (Exception e) {
                     throw new SiteException("Error while creating wiki page", e);
                 }
             }
-            return true;
         }
-
         return true;
     }
 
     @Override
     public void doGet(SiteRequest request, HttpServletResponse response) {
-//        if request.getT
 
     }
 

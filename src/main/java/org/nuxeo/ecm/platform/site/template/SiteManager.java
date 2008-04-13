@@ -30,15 +30,15 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
  */
 public interface SiteManager {
 
-    SiteObject[] getSiteObjects();
+    SitePageTemplate[] getSiteObjects();
 
-    SiteObject getSiteObject(String name);
+    SitePageTemplate getTemplate(String name);
 
-    void registerSiteObject(SiteObject object);
+    void registerSiteObject(SitePageTemplate object);
 
     void unregisterSiteObject(String name);
 
-    SiteObject resolve(DocumentModel doc);
+    SitePageTemplate resolve(DocumentModel doc);
 
     void registerBinding(SiteObjectBinding binding);
 
@@ -46,9 +46,9 @@ public interface SiteManager {
 
     SiteObjectBinding[] getBindings();
 
-    SiteObject getDefaultSiteObject();
+    SitePageTemplate getDefaultSiteObject();
 
-    void setDefaultSiteObject(SiteObject object);
+    void setDefaultSiteObject(SitePageTemplate object);
 
     File getRootDirectory();
 

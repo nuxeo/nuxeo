@@ -58,8 +58,8 @@ public class WikiPageSiteObjectHandler extends NoteSiteObjectHandler {
                             VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
                     ctxData.putScopedValue(ScopeType.REQUEST, VersioningActions.KEY_FOR_INC_OPTION,
                             VersioningActions.ACTION_INCREMENT_MINOR);
-                    sourceDocument = request.getDocumentManager().saveDocument(sourceDocument);
-                    request.getDocumentManager().save();
+                    sourceDocument = request.getCoreSession().saveDocument(sourceDocument);
+                    request.getCoreSession().save();
                 } catch (ClientException e) {
                     throw new SiteException("Error during update process", e);
                 }
