@@ -23,10 +23,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.rendering.api.DocumentView;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
+import org.nuxeo.ecm.platform.rendering.api.RenderingContextView;
 import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
 import org.nuxeo.ecm.platform.site.rendering.SiteDocumentView;
 import org.nuxeo.ecm.platform.site.template.SiteManager;
@@ -37,7 +40,7 @@ import org.nuxeo.ecm.platform.site.template.SitePageTemplate;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class SiteObject implements RenderingContext {
+public class SiteObject implements ServletRenderingContext {
 
     protected SiteObject next;
     protected SiteObject prev;
@@ -59,7 +62,7 @@ public class SiteObject implements RenderingContext {
     /**
      * @return the request.
      */
-    public SiteRequest getRequest() {
+    public SiteRequest getSiteRequest() {
         return request;
     }
 
@@ -143,9 +146,19 @@ public class SiteObject implements RenderingContext {
 
     /**  --------------- RenderingContext API ----------------  */
 
-    private final static SiteDocumentView DOCUMENT_VIEW = new SiteDocumentView();
+    public HttpServletRequest getRequest() {
+        return request.getRequest();
+    }
 
-    public RenderingContext createChildContext() {
+    public HttpServletResponse getResponse() {
+        return request.getResponse();
+    }
+
+    public RenderingContext getParentContext() {
+        return prev;
+    }
+
+    public RenderingContext getChildContext() {
         return next;
     }
 
@@ -164,8 +177,8 @@ public class SiteObject implements RenderingContext {
         }
     }
 
-    public DocumentView getDocumentView() {
-        return DOCUMENT_VIEW;
+    public RenderingContextView getDocumentView() {
+        return SiteDocumentView.INSTANCE;
     }
 
     public OutputStream getOut() {

@@ -25,12 +25,19 @@ import java.util.Collection;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface EnvironmentProvider {
+public interface RenderingContextView {
 
-    Object getEnv(String key, RenderingContext ctx);
+//    public final static ContextView EMPTY = new EmptyContextView();
+//    public final static ContextView DEFAULT = new EmptyContextView();
 
-    Collection<String> getKeys();
+    // Must be returned by get() method when the key is unknown since the caller should be able to
+    // treat differently a key hit that returned null from a key that is not known by this view
+    public final static Object UNKNOWN = new Object();
 
-    int size();
+    Object get(String key, RenderingContext ctx) throws Exception;
+
+    Collection<String>  keys(RenderingContext ctx);
+
+    int size(RenderingContext ctx);
 
 }

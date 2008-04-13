@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.rendering.fm.adapters;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
+import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 
 import freemarker.template.DefaultObjectWrapper;
@@ -49,8 +50,16 @@ public class DocumentObjectWrapper extends DefaultObjectWrapper {
             return new ListPropertyTemplate(this, (ListProperty)obj);
         } else if (obj instanceof Property) {
             return new ComplexPropertyTemplate(this, (Property)obj);
+        } else if (obj instanceof RenderingContext) {
+            return new RenderingContextTemplate(engine, (RenderingContext)obj);
         }
         return super.handleUnknownType(obj);
     }
+
+    public final TemplateModel wrap(Object obj) throws TemplateModelException {
+        if (obj == null) return TemplateModel.NOTHING;
+        return super.wrap(obj);
+    }
+
 
 }

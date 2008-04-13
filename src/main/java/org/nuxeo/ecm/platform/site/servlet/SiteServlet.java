@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.site.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -40,6 +41,7 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.site.api.SiteException;
+import org.nuxeo.ecm.platform.site.rendering.ServletRequestView;
 import org.nuxeo.ecm.platform.site.resolver.DefaultSiteResolver;
 import org.nuxeo.ecm.platform.site.resolver.SiteResourceResolver;
 import org.nuxeo.ecm.platform.site.template.SiteManager;
@@ -64,13 +66,20 @@ public class SiteServlet extends HttpServlet {
     protected static SiteResourceResolver resolver = new DefaultSiteResolver();
 
     private RenderingEngine engine;
-
+    private SiteManager manager;
+    //private SiteRenderingContext siteRenderingContext = new SiteRenderingContext();
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        SiteManager mgr = Framework.getLocalService(SiteManager.class);
-        engine = mgr.getRenderingEngine();
+        manager = Framework.getLocalService(SiteManager.class);
+        engine = manager.getRenderingEngine();
+        HashMap<String, Object> env = new HashMap<String, Object>();
+        env.put("installDir", manager.getRootDirectory());
+        env.put("engine", "Nuxeo Site Engine");
+        env.put("version", "1.0.0");
+        engine.setSharedVariable("env", env);
+        engine.setSharedDocumentView(new ServletRequestView());
     }
 
     @Override
@@ -78,15 +87,19 @@ public class SiteServlet extends HttpServlet {
             throws ServletException, IOException {
         double start = System.currentTimeMillis();
 
+        CoreSession coreSession = null;
+
         String path = req.getPathInfo();
         if (path == null || path.length() <= 1) {
-            displayError(resp, null, "Cannot access the root",
-                    SiteConst.SC_FORBIDDEN);
-            // TODO: show an index page?
+            try {
+                showIndex(req, resp);
+            } catch (Exception e) {
+                displayError(resp, null, "Failed to show server main index",
+                        SiteConst.SC_INTERNAL_SERVER_ERROR);
+            }
             return;
         }
 
-        CoreSession coreSession = null;
         SiteRequest siteRequest = null;
         try {
             coreSession = getCoreSession(req);
@@ -236,6 +249,15 @@ public class SiteServlet extends HttpServlet {
             }
         }
         return siteReq;
+    }
+
+
+    public void showIndex(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        try {
+            engine.render(new SiteRenderingContext(request, response, manager));
+        } catch (RenderingException e) {
+            displayError(response, e, "Error during the rendering process");
+        }
     }
 
 }

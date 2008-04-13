@@ -20,23 +20,27 @@
 package org.nuxeo.ecm.platform.rendering.api;
 
 import java.util.Collection;
-
-import org.nuxeo.ecm.core.api.DocumentModel;
+import java.util.HashMap;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface DocumentView {
+public class SimpleContextView extends HashMap<String,Object> implements RenderingContextView {
 
-    public final static DocumentView DEFAULT = new DefaultDocumentView();
-    // represent a null value this should be used returned by get() method for unknown fields
-    public final static Object NULL = new Object();
+    private static final long serialVersionUID = -7297461509416300673L;
 
-    Object get(DocumentModel doc, String key, RenderingContext ctx) throws Exception;
+    public Object get(String key, RenderingContext ctx) {
+        Object value = get(key);
+        return value == null ? UNKNOWN : value;
+    }
 
-    Collection<String>  keys();
+    public Collection<String> keys(RenderingContext ctx) {
+        return keySet();
+    }
 
-    int size();
+    public int size(RenderingContext ctx) {
+        return 0;
+    }
 
 }

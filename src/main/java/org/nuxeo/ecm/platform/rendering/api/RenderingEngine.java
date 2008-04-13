@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.rendering.api;
 
 
 
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -31,12 +32,18 @@ public interface RenderingEngine {
 
     ResourceLocator getResourceLocator();
 
-    void setEnvironmentProvider(EnvironmentProvider env);
+    void setSharedDocumentView(RenderingContextView env);
 
-    EnvironmentProvider getEnvironmentProvider();
+    RenderingContextView getSharedDocumentView();
 
     void setSharedVariable(String key, Object value);
 
+    /**
+     * Start the rendering for the given document context.
+     *
+     * @param ctx
+     * @throws RenderingException
+     */
     void render(RenderingContext ctx) throws RenderingException;
 
     void setTransformer(String name, RenderingTransformer transformer);

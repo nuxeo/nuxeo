@@ -19,16 +19,28 @@
 
 package org.nuxeo.ecm.platform.rendering.api;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface DocumentViewField {
+public class EmptyContextView implements RenderingContextView {
 
-    String getName();
+    public static final EmptyContextView INSTANCE = new EmptyContextView();
 
-    Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception;
+    public Object get(String key, RenderingContext ctx) throws Exception {
+        return UNKNOWN;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Collection<String> keys(RenderingContext ctx) {
+        return Collections.EMPTY_LIST;
+    }
+
+    public int size(RenderingContext ctx) {
+        return 0;
+    }
 
 }

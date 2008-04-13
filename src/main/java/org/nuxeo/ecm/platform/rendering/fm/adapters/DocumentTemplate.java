@@ -20,16 +20,14 @@
 package org.nuxeo.ecm.platform.rendering.fm.adapters;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.model.DocumentPart;
-import org.nuxeo.ecm.platform.rendering.api.DocumentView;
-import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
+import org.nuxeo.ecm.platform.rendering.api.DocumentField;
+import org.nuxeo.ecm.platform.rendering.api.DocumentContextView;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 
 import freemarker.template.AdapterTemplateModel;
@@ -39,29 +37,29 @@ import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 
 /**
+ * TODO document template should not be aware of rendering context ?
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateModel {
 
-    protected RootContextModel root; // the root context
+    protected DocumentObjectWrapper wrapper;
     protected final DocumentModel doc;
-    //TODO implement a cache
 
 
-    public DocumentTemplate(RootContextModel ctx, DocumentModel doc) {
+    public DocumentTemplate(DocumentObjectWrapper wrapper, DocumentModel doc) {
         this.doc = doc;
-        this.root = ctx;
-
+        this.wrapper = wrapper;
     }
 
     //TODO lazy initialization of the context
     public DocumentTemplate(DocumentModel doc) {
-        this (FreemarkerEngine.getRootContext(), doc);
+        this (FreemarkerEngine.getContextModel().getObjectWrapper(), doc);
     }
 
-    public RootContextModel getRoot() {
-        return root;
+    public DocumentObjectWrapper getWrapper() {
+        return wrapper;
     }
 
     @SuppressWarnings("unchecked")
@@ -73,36 +71,14 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
         return doc;
     }
 
-    public final DocumentView getDocumentView() {
-        return root.getThisContext().getDocumentView();
-    }
-
-    public final TemplateModel wrap(Object obj) throws TemplateModelException {
-        if (obj == null) return TemplateModel.NOTHING;
-        return root.getObjectWrapper().wrap(obj);
-    }
-
     public TemplateModel get(String key) throws TemplateModelException {
-        RenderingContext ctx = root.getThisContext();
         try {
-            Object value =  ctx.getDocumentView().get(doc, key, ctx);
-            if (value != DocumentView.NULL) {
-                return wrap(value);
+            DocumentField field = DocumentContextView.DEFAULT.getField(key);
+            if (field != null) {
+                return wrapper.wrap(field.getValue(doc, null));
             }
         } catch(Exception e) {
             throw new TemplateModelException("Failed to get document field: "+key, e);
-        }
-
-        // may be a schema name
-        DocumentPart part = doc.getPart(key);
-        if (part != null) {
-            return new ComplexPropertyTemplate(root.getObjectWrapper(), part);
-        }
-        // ... and 2 special keys
-        if ("session".equals(key)) {
-            return wrap(getSession());
-        } else if ("document".equals(key)) {
-            return wrap(doc);
         }
         return null;
     }
@@ -119,33 +95,20 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
     }
 
     public Collection<String> getRawKeys() {
-        List<String> keysCol = new ArrayList<String>();
-        keysCol.addAll(root.getThisContext().getDocumentView().keys());
-        String[] schemas = doc.getDeclaredSchemas();
-        keysCol.addAll(Arrays.asList(schemas));
-        keysCol.add("document");
-        keysCol.add("session");
-        return keysCol;
+        return DocumentContextView.DEFAULT.getFields().keySet();
     }
 
     public TemplateCollectionModel keys() throws TemplateModelException {
-        return (TemplateCollectionModel)root.getObjectWrapper().wrap(getRawKeys());
+        return (TemplateCollectionModel)wrapper.wrap(getRawKeys());
     }
-
 
     public Collection<Object> getRawValues() throws TemplateModelException {
         List<Object> values = new ArrayList<Object>();
         try {
-            DocumentView view = root.getThisContext().getDocumentView();
-            for (String key : view.keys()) {
-                values.add(view.get(doc, key, root.getThisContext()));
+            Collection<DocumentField> fields = DocumentContextView.DEFAULT.getFields().values();
+            for (DocumentField field : fields) {
+                values.add(field.getValue(doc, null));
             }
-            for (DocumentPart part : doc.getParts()) {
-                values.add(part.getValue());
-            }
-            values.add(doc);
-            values.add(getSession());
-
         } catch (Exception e) {
             throw new TemplateModelException("failed to fetch field values", e);
         }
@@ -154,11 +117,12 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
 
 
     public TemplateCollectionModel values() throws TemplateModelException {
-        return (TemplateCollectionModel)root.getObjectWrapper().wrap(getRawValues());
+        return (TemplateCollectionModel)wrapper.wrap(getRawValues());
     }
 
     public int size() throws TemplateModelException {
-        return root.getThisContext().getDocumentView().size() + doc.getDeclaredSchemas().length + 2;
+        return DocumentContextView.DEFAULT.size(null);
     }
+
 
 }

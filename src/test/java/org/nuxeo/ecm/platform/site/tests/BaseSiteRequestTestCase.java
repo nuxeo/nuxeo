@@ -33,7 +33,7 @@ public abstract class  BaseSiteRequestTestCase extends RepositoryOSGITestCase {
         deployBundle("nuxeo-platform-content-template-manager");
         deployContrib("OSGI-INF/site-adapters-service-framework.xml");
         deployContrib("OSGI-INF/site-adapters-contrib.xml");
-        deployContrib("OSGI-INF/site-template-framework.xml");
+        deployContrib("OSGI-INF/site-manager-framework.xml");
 
         openRepository();
     }

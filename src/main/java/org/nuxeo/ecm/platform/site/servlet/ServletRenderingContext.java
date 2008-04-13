@@ -17,25 +17,21 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.rendering.api;
+package org.nuxeo.ecm.platform.site.servlet;
 
-import java.util.Collection;
-import java.util.HashMap;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class SimpleEnvironmentProvider extends HashMap<String,Object> implements EnvironmentProvider {
+public interface ServletRenderingContext extends RenderingContext {
 
-    private static final long serialVersionUID = -7297461509416300673L;
+    HttpServletRequest getRequest();
 
-    public Object getEnv(String key, RenderingContext ctx) {
-        return get(key);
-    }
-
-    public Collection<String> getKeys() {
-        return keySet();
-    }
+    HttpServletResponse getResponse();
 
 }

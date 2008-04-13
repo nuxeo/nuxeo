@@ -29,7 +29,6 @@ import java.net.URL;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
-import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.platform.rendering.wiki.filters.DocumentExpression;
 import org.nuxeo.ecm.platform.rendering.wiki.filters.FreemarkerMacro;
 

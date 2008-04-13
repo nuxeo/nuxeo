@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.site.servlet;
 
-import java.awt.geom.PathIterator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -33,8 +32,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.site.template.SiteManager;
 import org.nuxeo.runtime.api.Framework;
@@ -48,8 +45,6 @@ import org.nuxeo.runtime.api.Framework;
 public class ResourceServlet extends HttpServlet {
 
     private static final long serialVersionUID = 6548084847887645044L;
-
-    private static final Log log = LogFactory.getLog(ResourceServlet.class);
 
     private File root;
 

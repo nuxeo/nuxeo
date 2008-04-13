@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,27 +12,22 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     bstefanescu
  *
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.site.resolver;
+package org.nuxeo.ecm.platform.rendering.api;
 
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Interface for resolving SiteObjects resources from a URL Path
- *
- * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+public interface DocumentField {
 
-public interface SiteResourceResolver {
-
-    DocumentModel getSiteRoot(String rootName, CoreSession session) throws Exception;
-
-    DocumentModel getSiteSegment(DocumentModel parent, String segment, CoreSession session) throws Exception;
+    String getName();
+    Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception;
 
 }

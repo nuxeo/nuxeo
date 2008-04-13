@@ -32,7 +32,7 @@ public class TestSimpleRender extends BaseSiteRequestTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("OSGI-INF/site-template-framework.xml");
+        deployContrib("OSGI-INF/site-manager-framework.xml");
         deployContrib("OSGI-INF/test-ftl-templates-contrib.xml");
         deployContrib("OSGI-INF/test-site-adapters-service-contrib.xml");
 

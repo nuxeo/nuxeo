@@ -88,7 +88,7 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         StringWriter writer = new StringWriter();
         SimpleContext ctx = new SimpleContext(doc1, "doc.ftl", writer) {
             @Override
-            public RenderingContext createChildContext() {
+            public RenderingContext getChildContext() {
                 return new SimpleContext(doc2, "subdoc.ftl", writer);
             }
         };

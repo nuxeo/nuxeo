@@ -25,11 +25,11 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
 
+import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
-import org.nuxeo.ecm.platform.rendering.fm.adapters.ContextDocumentTemplate;
-import org.nuxeo.ecm.platform.rendering.fm.adapters.RootContextModel;
+import org.nuxeo.ecm.platform.rendering.fm.adapters.RenderingContextModel;
 
 import freemarker.core.Environment;
 import freemarker.template.SimpleScalar;
@@ -53,8 +53,8 @@ public class RenderDirective implements TemplateDirectiveModel {
 	        throw new TemplateModelException("Didn't expect a body");
 	    }
 
-	    RootContextModel ctx = FreemarkerEngine.getRootContext(env);
-	    if (ctx == null) {
+	    RenderingContextModel ctxModel = FreemarkerEngine.getContextModel(env);
+	    if (ctxModel == null) {
 	        throw new TemplateModelException("Not in a nuxeo rendering context");
 	    }
 
@@ -64,21 +64,21 @@ public class RenderDirective implements TemplateDirectiveModel {
             type = scalar.getAsString();
         }
 
-	    ContextDocumentTemplate doc = ctx.pushContext();
-	    if (doc != null) {
-	        String uri = doc.getContext().getTemplate();
+	    RenderingContext ctx = ctxModel.pushContext();
+	    if (ctx != null) {
+	        String uri = ctx.getTemplate();
 	        Template temp = env.getConfiguration().getTemplate(uri);
 	        try {
-	            render(type, ctx, env, temp);
+	            render(type, ctxModel, env, temp);
 	        } finally {
-	            ctx.popContext();
+	            ctxModel.popContext();
 	        }
 	    }
 	}
 
-	protected void render(String type, RootContextModel ctx, Environment env, Template temp) throws TemplateException, IOException {
+	protected void render(String type, RenderingContextModel ctxModel, Environment env, Template temp) throws TemplateException, IOException {
 	    if (type != null) {
-	        RenderingTransformer tr = ctx.getEngine().getTransformer(type);
+	        RenderingTransformer tr = ctxModel.getEngine().getTransformer(type);
 	        if (tr != null) {
 	            StringWriter writer = new StringWriter();
 	            Writer out = env.getOut();
@@ -86,7 +86,7 @@ public class RenderDirective implements TemplateDirectiveModel {
 	            env.setOut(writer);
 	            try {
 	                env.include(temp);
-	                tr.transform(new StringReader(writer.toString()), out, ctx.getThisContext());
+	                tr.transform(new StringReader(writer.toString()), out, ctxModel.getContext());
 	            } catch (RenderingException e) {
 	                throw new TemplateException("Failed to transform rendering result using transformer: "+type, e, env);
 	            } finally {

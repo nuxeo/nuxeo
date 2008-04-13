@@ -56,13 +56,15 @@ public interface RenderingContext {
 
     Writer getWriter();
 
-    RenderingContext  createChildContext();
+    RenderingContext getParentContext();
+
+    RenderingContext  getChildContext();
 
     /**
      * Must never return null. If no special document view is used
-     * you may return the defualt one {@link DocumentView#DEFAULT}
+     * you may return the defualt one {@link RenderingContextView#DEFAULT}
      * @return
      */
-    DocumentView getDocumentView();
+    RenderingContextView getDocumentView();
 
 }

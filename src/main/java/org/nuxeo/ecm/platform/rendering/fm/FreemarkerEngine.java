@@ -20,19 +20,18 @@
 package org.nuxeo.ecm.platform.rendering.fm;
 
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.platform.rendering.api.EnvironmentProvider;
+import org.nuxeo.ecm.platform.rendering.api.RenderingContextView;
+import org.nuxeo.ecm.platform.rendering.api.EmptyContextView;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.DocumentObjectWrapper;
-import org.nuxeo.ecm.platform.rendering.fm.adapters.RootContextModel;
+import org.nuxeo.ecm.platform.rendering.fm.adapters.RenderingContextModel;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.RenderDirective;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.TransformDirective;
 
@@ -43,7 +42,6 @@ import freemarker.cache.URLTemplateLoader;
 import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -59,23 +57,7 @@ public class FreemarkerEngine implements RenderingEngine {
     // so we will have one wrapper per engine instance
     protected DocumentObjectWrapper wrapper;
     // an empty env provider by default
-    protected EnvironmentProvider envProvider = new EnvironmentProvider() {
-       public Object getEnv(String key, RenderingContext ctx) {
-            if ("engine".equals(key)) {
-                return "Nuxeo Freemarker Engine";
-            } else if ("version".equals(key)) {
-                return "1.0.0";
-            }
-            return null;
-        }
-       public Collection<String> getKeys() {
-           return Arrays.asList("engine", "version");
-       }
-       public int size() {
-        return 2;
-       }
-    };
-
+    protected RenderingContextView sharedView = EmptyContextView.INSTANCE;
     protected Map<String, RenderingTransformer> transformers = new HashMap<String, RenderingTransformer>();
 
 
@@ -113,12 +95,12 @@ public class FreemarkerEngine implements RenderingEngine {
         return locator;
     }
 
-    public void setEnvironmentProvider(EnvironmentProvider env) {
-        envProvider = env;
+    public void setSharedDocumentView(RenderingContextView sharedView) {
+        this.sharedView = sharedView;
     }
 
-    public EnvironmentProvider getEnvironmentProvider() {
-        return envProvider;
+    public RenderingContextView getSharedDocumentView() {
+        return this.sharedView;
     }
 
     public void setSharedVariable(String key, Object value) {
@@ -149,7 +131,7 @@ public class FreemarkerEngine implements RenderingEngine {
     throws RenderingException {
         try {
             Template temp = cfg.getTemplate(ctx.getTemplate());
-            RootContextModel root = new RootContextModel(this, ctx);
+            RenderingContextModel root = new RenderingContextModel(this, ctx);
             Environment env = temp.createProcessingEnvironment(root,
                     ctx.getWriter(), getObjectWrapper());
             env.setCustomAttribute(ROOT_CTX_KEY, root);
@@ -159,12 +141,12 @@ public class FreemarkerEngine implements RenderingEngine {
         }
     }
 
-    public final static RootContextModel getRootContext() {
-        return getRootContext(Environment.getCurrentEnvironment());
+    public final static RenderingContextModel getContextModel() {
+        return getContextModel(Environment.getCurrentEnvironment());
     }
 
-    public final static RootContextModel getRootContext(Environment env) {
-        return (RootContextModel)env.getCustomAttribute(ROOT_CTX_KEY);
+    public final static RenderingContextModel getContextModel(Environment env) {
+        return (RenderingContextModel)env.getCustomAttribute(ROOT_CTX_KEY);
     }
 
     class ResourceTemplateLoader extends URLTemplateLoader {

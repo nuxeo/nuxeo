@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.rendering.api;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,24 +33,34 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 
 /**
+ * Base class to build views for Document oriented contexts (contexts that are bound to a document)
+ * <p>
+ * Note that this class cannot be used with contexts for which the {@link RenderingContext#getDocument()}
+ * method is returning null.
+ * <p>
+ * This implementation ensure that the context argument is never used so it can be used outside
+ * the scope of a rendering context to get a view over the document.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DefaultDocumentView implements DocumentView {
+public class DocumentContextView implements RenderingContextView {
 
+    protected Map<String, DocumentField> fields;
 
-    protected Map<String, DocumentViewField> fields;
-
-    protected DefaultDocumentView() {
-        fields = new HashMap<String, DocumentViewField>();
+    public DocumentContextView() {
+        fields = new HashMap<String, DocumentField>();
         initialize();
     }
 
-    protected DefaultDocumentView(Map<String, DocumentViewField> fields) {
-        this.fields = fields == null ? new HashMap<String, DocumentViewField>() : fields;
+    public DocumentContextView(Map<String, DocumentField> fields) {
+        this.fields = fields == null ? new HashMap<String, DocumentField>() : fields;
     }
 
     protected void initialize() {
+        addField(SESSION);
+        addField(DOCUMENT);
+
         addField(ID);
         addField(NAME);
         addField(PATH);
@@ -74,12 +85,12 @@ public class DefaultDocumentView implements DocumentView {
 
     }
 
-    public final void addField(DocumentViewField field) {
+    public final void addField(DocumentField field) {
         this.fields.put(field.getName(), field);
     }
 
-    public final void addFields(Collection<DocumentViewField> fields) {
-        for (DocumentViewField field : fields) {
+    public final void addFields(Collection<DocumentField> fields) {
+        for (DocumentField field : fields) {
             this.fields.put(field.getName(), field);
         }
     }
@@ -88,23 +99,33 @@ public class DefaultDocumentView implements DocumentView {
         this.fields.remove(name);
     }
 
-    public DocumentViewField getField(String name) {
+    public DocumentField getField(String name) {
         return fields.get(name);
     }
 
-    public Object get(DocumentModel doc, String name, RenderingContext ctx) throws Exception {
-        DocumentViewField field = fields.get(name);
+    public Object get(String name, RenderingContext ctx) throws Exception {
+        DocumentField field = fields.get(name);
         if (field != null) {
-            return field.getValue(doc, ctx);
+            return field.getValue(ctx.getDocument(), ctx);
         }
-        return NULL;
+        // not custom field binding found -> look into document properties
+        DocumentPart part = ctx.getDocument().getPart(name);
+        if (part != null) {
+            return part;
+        }
+        return UNKNOWN;
     }
 
-    public Collection<String> keys() {
-        return fields.keySet();
+    public Collection<String> keys(RenderingContext ctx) {
+        DocumentModel doc = ctx.getDocument();
+        Collection<String> keys = new ArrayList<String>(fields.keySet());
+        for (String schema : doc.getDeclaredSchemas()) {
+            keys.add(schema);
+        }
+        return keys;
     }
 
-    public Map<String, DocumentViewField> getFields() {
+    public Map<String, DocumentField> getFields() {
         return fields;
     }
 
@@ -112,12 +133,31 @@ public class DefaultDocumentView implements DocumentView {
         return fields.isEmpty();
     }
 
-    public int size() {
-        return fields.size();
+    public int size(RenderingContext context) {
+        return fields.size() + context.getDocument().getDeclaredSchemas().length;
     }
 
+    protected static final DocumentField SESSION = new DocumentField() {
+        public final String getName() {
+            return "session";
+        }
 
-    protected static final DocumentViewField ID = new DocumentViewField() {
+        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+            return CoreInstance.getInstance().getSession(doc.getSessionId());
+        }
+    };
+
+    protected static final DocumentField DOCUMENT = new DocumentField() {
+        public final String getName() {
+            return "document";
+        }
+
+        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+            return doc;
+        }
+    };
+
+    protected static final DocumentField ID = new DocumentField() {
         public final String getName() {
             return "id";
         }
@@ -127,7 +167,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentViewField NAME = new DocumentViewField() {
+    protected static final DocumentField NAME = new DocumentField() {
         public final String getName() {
             return "name";
         }
@@ -137,7 +177,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentViewField PATH = new DocumentViewField() {
+    protected static final DocumentField PATH = new DocumentField() {
         public final String getName() {
             return "path";
         }
@@ -147,7 +187,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static DocumentViewField TYPE = new DocumentViewField() {
+    protected static DocumentField TYPE = new DocumentField() {
         public final String getName() {
             return "type";
         }
@@ -157,7 +197,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static DocumentViewField SCHEMAS = new DocumentViewField() {
+    protected static DocumentField SCHEMAS = new DocumentField() {
         public final String getName() {
             return "schemas";
         }
@@ -167,7 +207,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentViewField FACETS = new DocumentViewField() {
+    protected static final DocumentField FACETS = new DocumentField() {
         public final String getName() {
             return "facets";
         }
@@ -177,7 +217,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentViewField STATE = new DocumentViewField() {
+    protected static final DocumentField STATE = new DocumentField() {
         public final String getName() {
             return "state";
         }
@@ -187,7 +227,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentViewField LOCKED = new DocumentViewField() {
+    protected static final DocumentField LOCKED = new DocumentField() {
         public final String getName() {
             return "isLocked";
         }
@@ -197,7 +237,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentViewField IS_FOLDER = new DocumentViewField() {
+    protected static final DocumentField IS_FOLDER = new DocumentField() {
         public final String getName() {
             return "isFolder";
         }
@@ -207,7 +247,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentViewField TITLE = new DocumentViewField() {
+    protected static final DocumentField TITLE = new DocumentField() {
         public String getName() {
             return "title";
         }
@@ -217,7 +257,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentViewField AUTHOR = new DocumentViewField() {
+    protected static final DocumentField AUTHOR = new DocumentField() {
         public String getName() {
             return "author";
         }
@@ -227,7 +267,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentViewField CREATED = new DocumentViewField() {
+    protected static final DocumentField CREATED = new DocumentField() {
         public String getName() {
             return "created";
         }
@@ -238,7 +278,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentViewField MODIFIED = new DocumentViewField() {
+    protected static final DocumentField MODIFIED = new DocumentField() {
         public String getName() {
             return "modified";
         }
@@ -249,7 +289,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentViewField CONTENT = new DocumentViewField() {
+    protected static final DocumentField CONTENT = new DocumentField() {
         public String getName() {
             return "content";
         }
@@ -264,7 +304,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentViewField PARTS = new DocumentViewField() {
+    protected static final DocumentField PARTS = new DocumentField() {
         public String getName() {
             return "parts";
         }
@@ -274,7 +314,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentViewField SID = new DocumentViewField() {
+    protected static final DocumentField SID = new DocumentField() {
         public String getName() {
             return "sessionId";
         }
@@ -284,7 +324,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentViewField REPOSITORY = new DocumentViewField() {
+    protected static final DocumentField REPOSITORY = new DocumentField() {
         public String getName() {
             return "repository";
         }
@@ -294,7 +334,7 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
-    protected static final DocumentViewField PARENT = new DocumentViewField() {
+    protected static final DocumentField PARENT = new DocumentField() {
         public String getName() {
             return "parent";
         }
@@ -306,7 +346,7 @@ public class DefaultDocumentView implements DocumentView {
     };
 
 
-    protected static final DocumentViewField CHILDREN = new DocumentViewField() {
+    protected static final DocumentField CHILDREN = new DocumentField() {
         public String getName() {
             return "children";
         }
@@ -317,5 +357,13 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
+
+    /**
+     * The singleton instance that should be used by clients.
+     * Warn that this static field must be defined at the end of the class after any other field class
+     * since it will try to register these fields (otherwise fields will not be defined yet at the time of
+     * the initialization of that static member
+     */
+    public final static DocumentContextView DEFAULT = new DocumentContextView();
 
 }

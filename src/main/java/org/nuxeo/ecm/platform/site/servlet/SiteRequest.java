@@ -26,8 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
@@ -40,8 +38,6 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class SiteRequest extends HttpServletRequestWrapper implements SiteConst {
-
-    private static final Log log = LogFactory.getLog(SiteRequest.class);
 
     protected SiteManager siteManager;
     protected CoreSession session;
@@ -70,6 +66,10 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
 
     public HttpServletResponse getResponse() {
         return resp;
+    }
+
+    public HttpServletRequest getRequest() {
+        return (HttpServletRequest) super.getRequest();
     }
 
     public CoreSession getCoreSession() {

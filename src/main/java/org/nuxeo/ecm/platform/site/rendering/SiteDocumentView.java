@@ -20,14 +20,15 @@
 package org.nuxeo.ecm.platform.site.rendering;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.rendering.api.DefaultDocumentView;
-import org.nuxeo.ecm.platform.rendering.api.DocumentViewField;
+import org.nuxeo.ecm.platform.rendering.api.DocumentContextView;
+import org.nuxeo.ecm.platform.rendering.api.DocumentField;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
 import org.nuxeo.ecm.platform.site.servlet.SiteObject;
 import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
 
-public class SiteDocumentView extends DefaultDocumentView {
+public class SiteDocumentView extends DocumentContextView {
+
 
     public SiteDocumentView() {
     }
@@ -43,13 +44,13 @@ public class SiteDocumentView extends DefaultDocumentView {
     protected static SiteRequest getRequest(RenderingContext ctx, DocumentModel doc) {
         if (ctx instanceof SiteObject) {
             SiteObject sCtx = (SiteObject) ctx;
-            SiteRequest request = sCtx.getRequest();
+            SiteRequest request = sCtx.getSiteRequest();
             return request;
         }
         return null;
     }
 
-    protected static final DocumentViewField SITEADAPTER = new DocumentViewField() {
+    protected static final DocumentField SITEADAPTER = new DocumentField() {
         public String getName() {
             return "siteAdapter";
         }
@@ -59,18 +60,17 @@ public class SiteDocumentView extends DefaultDocumentView {
         }
     };
 
-    protected static final DocumentViewField DOCURL = new DocumentViewField() {
+    protected static final DocumentField DOCURL = new DocumentField() {
         public String getName() {
             return "docURL";
         }
 
         public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
             return ((SiteObject)ctx).getUrlPath();
-            //return doc.getAdapter(SiteAwareObject.class).getURL(getRequest(ctx, doc));
         }
     };
 
-    protected static final DocumentViewField REQUEST = new DocumentViewField() {
+    protected static final DocumentField REQUEST = new DocumentField() {
         public String getName() {
             return "request";
         }
@@ -79,5 +79,13 @@ public class SiteDocumentView extends DefaultDocumentView {
             return getRequest(ctx, doc);
         }
     };
+
+    /**
+     * The singleton instance that should be used by clients.
+     * Warn that this static field must be defined at the end of the class after any other field class
+     * since it will try to register these fields (otherwise fields will not be defined yet at the time of
+     * the initialization of that static member
+     */
+    public final static SiteDocumentView INSTANCE = new SiteDocumentView();
 
 }
