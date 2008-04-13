@@ -48,6 +48,13 @@ public class TestElementRenderer extends NXRuntimeTestCase {
         deploy("fragment-config.xml");
     }
 
+    @Override
+    public void tearDown() throws Exception {
+        // clear relations that have been set through ElementFormatter
+        Manager.getRelationStorage().clear();
+        super.tearDown();
+    }
+
     public void testElement() throws MalformedURLException {
 
         URL themeUrl = new URL(
