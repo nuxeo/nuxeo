@@ -19,7 +19,14 @@
 
 package org.nuxeo.ecm.core.api.impl.blob;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.util.Arrays;
 
 import junit.framework.TestCase;

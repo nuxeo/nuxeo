@@ -19,9 +19,9 @@
 
 package org.nuxeo.ecm.core.repository.jcr;
 
-import org.nuxeo.common.utils.Path;
-
 import junit.framework.TestCase;
+
+import org.nuxeo.common.utils.Path;
 
 /**
  * @author Florent Guillaume

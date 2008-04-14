@@ -97,12 +97,11 @@ public class JCRQueryXPathResult implements QueryResult {
             }
             return new DocumentModelListImpl(list);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new QueryException("getDocumentModels failed", e);
         }
     }
 
-    private String[] getSchemasInSelectClause(Document doc) {
+    private static String[] getSchemasInSelectClause(Document doc) {
         /*
          SelectList selectElements = query.sqlQuery.select.elements;
          // if it is an 'select * from', we return all document schemas
