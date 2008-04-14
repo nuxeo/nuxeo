@@ -70,7 +70,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Archive manager actions bean.
- * <p>
  *
  * @author <a href="mailto:bt@nuxeo.com">Bogdan Tatar</a>
  */
@@ -286,7 +285,7 @@ public class ArchiveManagerActionsBean implements ArchiveManagerActions {
         }
     }
 
-    public void initializeArchiveManager() throws Exception {
+    public void initializeArchiveManager() {
         log.debug("Initializing ...");
     }
 

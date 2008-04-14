@@ -19,25 +19,17 @@
 
 package org.nuxeo.ecm.webapp.search;
 
-import javax.annotation.security.PermitAll;
-import javax.ejb.Local;
-import javax.ejb.Remove;
-
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModel;
 import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
-import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 
 /**
  *
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  *
  */
-
 public interface SearchResults extends SelectDataModelListener {
 
     /**
@@ -61,7 +53,9 @@ public interface SearchResults extends SelectDataModelListener {
     SelectDataModel getResultsSelectModel(String providerName) throws ClientException;
 
     SelectDataModel getResultsSelectModelAdvanced() throws ClientException;
+
     SelectDataModel getResultsSelectModelNxql() throws ClientException;
+
     SelectDataModel getResultsSelectModelSimple() throws ClientException;
 
     /**
