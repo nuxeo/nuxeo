@@ -305,7 +305,9 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @param schemaName the schema name
      * @param fieldName the field name
      * @return the default value.
+     * @deprecated use defaultValue(propertyName) instead
      */
+    @Deprecated
     public static Object defaultValue(String schemaName, String fieldName)
             throws Exception {
         Object value = null;
@@ -316,6 +318,27 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (type.isListType()) {
             Type itemType = ((ListType) type).getFieldType();
             value = itemType.newInstance();
+        }
+        return value;
+    }
+
+    /**
+     * Returns the default value for given property name.
+     *
+     * @param propertyName as xpath
+     * @return the default value.
+     * @throws Exception
+     */
+    public static Object defaultValue(String propertyName) throws Exception {
+        Object value = null;
+        SchemaManager tm = Framework.getService(SchemaManager.class);
+        Field field = tm.getField(propertyName);
+        if (field != null) {
+            Type type = field.getType();
+            if (type.isListType()) {
+                Type itemType = ((ListType) type).getFieldType();
+                value = itemType.newInstance();
+            }
         }
         return value;
     }
@@ -361,7 +384,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String complexFileUrl(String patternName, DocumentModel doc,
             int index, String filename) {
         return complexFileUrl(patternName, doc, "files:files", index,
-                DEFAULT_FILENAME_FIELD, filename);
+                DEFAULT_BLOB_FIELD, filename);
     }
 
     /**
@@ -388,9 +411,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
                     doc.getRepositoryName(), doc.getRef());
             Map<String, String> params = new HashMap<String, String>();
 
-            String fileProperty = listElement + '/'
-                    + URLEncoder.encode("[" + index + ']', URL_ENCODE_CHARSET)
-                    + '/' + blobPropertyName;
+            String fileProperty = getPropertyPath(listElement, index, blobPropertyName);
 
             params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, fileProperty);
             params.put(DocumentFileCodec.FILENAME_KEY, filename);
@@ -497,6 +518,31 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         addQueryParameter(queryParamBuilder, SCHEMA, schemaName, false);
         addQueryParameter(queryParamBuilder, BLOB_FIELD, blobFieldName, false);
         addQueryParameter(queryParamBuilder, FILENAME_FIELD, filenameFieldName,
+                false);
+        return buildNxEditUrl(queryParamBuilder.toString());
+    }
+
+    /**
+     * Build the nxedit URL for the "edit existing document" use case
+     *
+     * @return the encoded URL string
+     * @throws ClientException if the URL encoding fails
+     */
+    public static String complexLiveEditUrl(DocumentModel doc,
+            String listPropertyName, int index, String blobPropertyName,
+            String filenamePropertyName) throws ClientException {
+
+        StringBuilder queryParamBuilder = new StringBuilder();
+        addQueryParameter(queryParamBuilder, ACTION, ACTION_EDIT_DOCUMENT, true);
+        addQueryParameter(queryParamBuilder, REPO_ID, doc.getRepositoryName(),
+                false);
+        addQueryParameter(queryParamBuilder, DOC_REF, doc.getRef().toString(),
+                false);
+        addQueryParameter(queryParamBuilder, BLOB_PROPERTY_NAME,
+                getPropertyPath(listPropertyName, index, blobPropertyName),
+                false);
+        addQueryParameter(queryParamBuilder, FILENAME_PROPERTY_NAME,
+                getPropertyPath(listPropertyName, index, filenamePropertyName),
                 false);
         return buildNxEditUrl(queryParamBuilder.toString());
     }
@@ -667,4 +713,9 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         }
     }
 
+    public static String getPropertyPath(String listPropertyName, int index,
+            String subPropertyName) {
+        return String.format("%s/%s/%s", listPropertyName, index,
+                subPropertyName);
+    }
 }

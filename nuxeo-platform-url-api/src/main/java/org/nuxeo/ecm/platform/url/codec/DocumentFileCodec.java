@@ -174,13 +174,7 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec implements
         Blob blob = null;
         String propertyName = getBlobPropertyName(docView);
         if (propertyName != null) {
-            blob = (Blob) DocumentModelUtils.getPropertyValue(doc,
-                    DocumentModelUtils.decodePropertyName(propertyName));
-            if (blob == null) {
-                // maybe it's a complex property
-                blob = (Blob) DocumentModelUtils.getComplexPropertyValue(doc,
-                        propertyName);
-            }
+            blob = (Blob) DocumentModelUtils.getPropertyValue(doc, propertyName);
         }
         return blob;
     }

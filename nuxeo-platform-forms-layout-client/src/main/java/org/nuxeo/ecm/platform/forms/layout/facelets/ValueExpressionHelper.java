@@ -35,8 +35,12 @@ public class ValueExpressionHelper {
     private ValueExpressionHelper() {
     }
 
+    // FIXME follow xpath syntax
     public static String createExpressionString(String valueName,
             FieldDefinition field) {
+        if (field == null || "".equals(field.getPropertyName())) {
+            return String.format("#{%s}", valueName);
+        }
         String schemaName = field.getSchemaName();
         String fieldName = field.getFieldName();
         if (schemaName == null) {

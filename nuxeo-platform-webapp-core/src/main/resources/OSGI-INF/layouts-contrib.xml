@@ -302,11 +302,19 @@
           <property name="diff">true</property>
         </properties>
         <subWidgets>
-          <widget name="file" type="file">
+          <widget name="file" type="template">
+            <labels>
+              <label mode="any"></label>
+            </labels>
             <fields>
               <field>file</field>
               <field>filename</field>
             </fields>
+            <properties mode="any">
+              <property name="template">
+                /widgets/extended_subfile_widget.xhtml
+              </property>
+            </properties>
           </widget>
         </subWidgets>
       </widget>

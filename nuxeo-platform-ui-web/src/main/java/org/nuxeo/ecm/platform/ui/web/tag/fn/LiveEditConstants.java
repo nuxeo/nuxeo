@@ -30,11 +30,28 @@ public interface LiveEditConstants {
 
     static final String DOC_TYPE = "docType";
 
+    /**
+     * @deprecated use {@link #FILENAME_PROPERTY_NAME}
+     */
+    @Deprecated
     static final String FILENAME_FIELD = "filenameField";
 
+    /**
+     * @deprecated use {@link #BLOB_PROPERTY_NAME}
+     */
+    @Deprecated
     static final String BLOB_FIELD = "blobField";
 
+    /**
+     * @deprecated use {@link #FILENAME_PROPERTY_NAME} and
+     *             {@link #BLOB_PROPERTY_NAME}
+     */
+    @Deprecated
     static final String SCHEMA = "schema";
+
+    static final String FILENAME_PROPERTY_NAME = "filenamePropertyName";
+
+    static final String BLOB_PROPERTY_NAME = "blobPropertyName";
 
     static final String MIMETYPE = "mimetype";
 
