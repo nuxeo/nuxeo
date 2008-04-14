@@ -193,7 +193,12 @@
         <fields>
           <field>dc:expired</field>
         </fields>
-
+        <properties widgetMode="view">
+          <property name="pattern">#{nxu:basicDateFormater()}</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="format">#{nxu:basicDateFormater()}</property>
+        </properties>
       </widget>
       <widget name="author" type="text">
         <labels>
