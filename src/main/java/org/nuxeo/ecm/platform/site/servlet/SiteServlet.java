@@ -97,6 +97,7 @@ public class SiteServlet extends HttpServlet {
                 displayError(resp, null, "Failed to show server main index",
                         SiteConst.SC_INTERNAL_SERVER_ERROR);
             }
+            System.out.println(">>> SITE REQUEST TOOK:  "+((System.currentTimeMillis()-start)/1000));
             return;
         }
 
@@ -254,7 +255,9 @@ public class SiteServlet extends HttpServlet {
 
     public void showIndex(HttpServletRequest request, HttpServletResponse response) throws Exception {
         try {
+            double s = System.currentTimeMillis();
             engine.render(new SiteRenderingContext(request, response, manager));
+            System.out.println(">>>>>>>>>> STATIC RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
         } catch (RenderingException e) {
             displayError(response, e, "Error during the rendering process");
         }

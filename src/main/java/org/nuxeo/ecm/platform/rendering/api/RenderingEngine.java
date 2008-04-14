@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.rendering.api;
 
+import java.io.File;
+
 
 
 
@@ -31,6 +33,8 @@ public interface RenderingEngine {
     void setResourceLocator(ResourceLocator locator);
 
     ResourceLocator getResourceLocator();
+
+    void addResourceDirectories(File ... dir);
 
     void setSharedDocumentView(RenderingContextView env);
 

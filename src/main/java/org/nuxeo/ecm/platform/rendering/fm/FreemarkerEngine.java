@@ -19,13 +19,16 @@
 
 package org.nuxeo.ecm.platform.rendering.fm;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.platform.rendering.api.RenderingContextView;
 import org.nuxeo.ecm.platform.rendering.api.EmptyContextView;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
+import org.nuxeo.ecm.platform.rendering.api.RenderingContextView;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
@@ -36,6 +39,7 @@ import org.nuxeo.ecm.platform.rendering.fm.extensions.RenderDirective;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.TransformDirective;
 
 import freemarker.cache.ClassTemplateLoader;
+import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.cache.URLTemplateLoader;
@@ -62,21 +66,16 @@ public class FreemarkerEngine implements RenderingEngine {
 
 
     public FreemarkerEngine() {
-        this (null, new Configuration());
+        this (null, null, (File[])null);
     }
 
     /**
      *
      */
-    public FreemarkerEngine(ResourceLocator locator, Configuration cfg) {
+    public FreemarkerEngine(Configuration cfg, ResourceLocator locator, File ... resourceDirs) {
         this.wrapper = new DocumentObjectWrapper(this);
         this.locator = locator;
-        this.cfg = cfg;
-        this.cfg.setTemplateLoader(new MultiTemplateLoader(
-                new TemplateLoader[] {
-                        new ResourceTemplateLoader(),
-                        new ClassTemplateLoader(FreemarkerEngine.class, "")
-                         }));
+        this.cfg = cfg == null ? new Configuration() : cfg;
         this.cfg.setWhitespaceStripping(true);
         this.cfg.setLocalizedLookup(false);
         this.cfg.setClassicCompatible(true);
@@ -85,6 +84,8 @@ public class FreemarkerEngine implements RenderingEngine {
         // custom directives goes here
         this.cfg.setSharedVariable("render", new RenderDirective());
         this.cfg.setSharedVariable("transform", new TransformDirective());
+
+        addResourceDirectories(resourceDirs);
     }
 
     public void setResourceLocator(ResourceLocator locator) {
@@ -93,6 +94,28 @@ public class FreemarkerEngine implements RenderingEngine {
 
     public ResourceLocator getResourceLocator() {
         return locator;
+    }
+
+    public void addResourceDirectories(File ... dirs) {
+        TemplateLoader[] loaders = null;
+        if (dirs != null) {
+            int size = dirs.length + 2;
+            loaders = new TemplateLoader[size];
+            for (int i=0; i<dirs.length; i++) {
+                try {
+                    loaders[i] = new FileTemplateLoader(dirs[i], true);
+                } catch (IOException e) {
+                    e.printStackTrace(); //TODO continue?
+                }
+            }
+            loaders[size-2] = new ResourceTemplateLoader();
+            loaders[size-1] = new ClassTemplateLoader(FreemarkerEngine.class, "");
+        } else {
+            loaders = new TemplateLoader[2];
+            loaders[0] = new ResourceTemplateLoader();
+            loaders[1] = new ClassTemplateLoader(FreemarkerEngine.class, "");
+        }
+        this.cfg.setTemplateLoader(new MultiTemplateLoader(loaders));
     }
 
     public void setSharedDocumentView(RenderingContextView sharedView) {
@@ -156,7 +179,11 @@ public class FreemarkerEngine implements RenderingEngine {
             if (locator != null) {
                 return locator.getResource(arg0);
             }
-            return null;
+            try {
+                return new URL(arg0);
+            } catch (MalformedURLException e) {
+                return null;
+            }
         }
 
     }

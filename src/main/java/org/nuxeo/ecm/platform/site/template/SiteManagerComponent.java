@@ -54,6 +54,7 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
 
     @Override
     public void activate(ComponentContext context) throws Exception {
+        File root = new File(Framework.getRuntime().getHome(), "web");
         String val = (String)context.getPropertyValue("engine", null);
         if (val != null) {
             try {
@@ -66,11 +67,9 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
             engine = new FreemarkerEngine(); // the default engine
         }
         engine.setResourceLocator(this);
-        //engine.setEnvironmentProvider(env) TODO
+        engine.addResourceDirectories(root);
 
-        File root = new File(Framework.getRuntime().getHome(), "web");
         mgr = new SiteManagerImpl(root, engine);
-
         notifier = new FileChangeNotifier();
         notifier.start();
     }

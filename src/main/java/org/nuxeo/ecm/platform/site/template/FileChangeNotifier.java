@@ -34,7 +34,7 @@ public class FileChangeNotifier {
 
     private ListenerList listeners = new ListenerList();
     private Timer timer = new Timer("FileChangeNotifier");
-    private Vector<FileEntry> files;
+    private Vector<FileEntry> files = new Vector<FileEntry>();
 
     public void start() {
         start(10000, 10000);
