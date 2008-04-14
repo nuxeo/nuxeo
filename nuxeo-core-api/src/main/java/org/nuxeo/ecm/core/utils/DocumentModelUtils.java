@@ -84,9 +84,7 @@ public final class DocumentModelUtils {
     public static Object getComplexPropertyValue(DocumentModel doc,
             String propertyPath) {
         try {
-            String schemaName = getSchemaName(propertyPath);
-            String fieldName = getFieldName(propertyPath);
-            return doc.getPart(schemaName).getValue(fieldName);
+            return doc.getPropertyValue(propertyPath);
         } catch (Exception e) {
             return null;
         }
@@ -97,12 +95,14 @@ public final class DocumentModelUtils {
      *
      * @param propertyName
      * @return
-     * @throws IllegalArgumentException if the propertyName does not have a schema:field pattern
+     * @throws IllegalArgumentException if the propertyName does not have a
+     *             schema:field pattern
      */
     public static String getSchemaName(String propertyName) {
         String[] s = propertyName.split(":");
         if (s.length != 2) {
-            throw new IllegalArgumentException("offending value: " + propertyName);
+            throw new IllegalArgumentException("offending value: "
+                    + propertyName);
         }
         String prefix = s[0];
         Schema schema = null;
@@ -124,15 +124,16 @@ public final class DocumentModelUtils {
      *
      * @param propertyName
      * @return
-     * @throws IllegalArgumentException if the propertyName does not have a schema:field pattern
+     * @throws IllegalArgumentException if the propertyName does not have a
+     *             schema:field pattern
      */
     public static String getFieldName(String propertyName) {
-        // XXX AT: should deal with sub fields
-        String[] s = propertyName.split(":");
-        if (s.length != 2) {
-            throw new IllegalArgumentException("offending value: " + propertyName);
+        int index = propertyName.indexOf(":");
+        if (index == -1) {
+            throw new IllegalArgumentException("offending value: "
+                    + propertyName);
         }
-        return s[1];
+        return propertyName.substring(index + 1);
     }
 
     private static String join(String[] items, String sep) {
@@ -156,7 +157,8 @@ public final class DocumentModelUtils {
     public static Map<String, Object> getProperties(DocumentModel docModel) {
         final String[] schemas = docModel.getDeclaredSchemas();
         if (schemas == null) {
-            throw new IllegalStateException("schemas are not declared for docModel " + docModel);
+            throw new IllegalStateException(
+                    "schemas are not declared for docModel " + docModel);
         }
         final Map<String, Object> allProps = new HashMap<String, Object>();
         for (String schemaName : schemas) {

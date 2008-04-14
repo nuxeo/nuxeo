@@ -248,7 +248,12 @@ public class SchemaManagerImpl implements SchemaManager {
         Field field = fields.get(prefixedName);
         if (field == null) {
             QName qname = QName.valueOf(prefixedName);
-            Schema schema = getSchemaFromPrefix(qname.getPrefix());
+            String prefix = qname.getPrefix();
+            Schema schema = getSchemaFromPrefix(prefix);
+            if (schema == null) {
+                // try using the name
+                schema = getSchema(prefix);
+            }
             if (schema != null) {
                 field = schema.getField(qname);
                 if (field != null) {
