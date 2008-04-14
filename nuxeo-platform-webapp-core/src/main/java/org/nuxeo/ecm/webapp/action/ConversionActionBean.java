@@ -35,6 +35,7 @@ import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.WebRemote;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.utils.DocumentModelUtils;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.transform.api.TransformServiceDelegate;
@@ -70,10 +71,10 @@ public class ConversionActionBean implements ConversionAction {
         return "view_file";
     }
 
-    private String getMimetypeFromDocument(String fieldName) {
-        String[] s = fieldName.split(":");
+    private String getMimetypeFromDocument(String propertyName) {
         Blob blob = (Blob) navigationContext.getCurrentDocument().getProperty(
-                s[0], s[1]);
+                DocumentModelUtils.getSchemaName(propertyName),
+                DocumentModelUtils.getFieldName(propertyName));
         return blob.getMimeType();
     }
 

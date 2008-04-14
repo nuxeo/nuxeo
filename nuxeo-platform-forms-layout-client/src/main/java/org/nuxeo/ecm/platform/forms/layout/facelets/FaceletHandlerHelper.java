@@ -95,17 +95,48 @@ public final class FaceletHandlerHelper {
         return id;
     }
 
+    public String generateValidIdString(String base) {
+        if (base == null) {
+            throw new IllegalArgumentException(base);
+        }
+        int n = base.length();
+        if (n < 1) {
+            throw new IllegalArgumentException(base);
+        }
+        StringBuffer newId = new StringBuffer();
+        for (int i = 0; i < n; i++) {
+            char c = base.charAt(i);
+            if (i == 0) {
+                if (!Character.isLetter(c) && (c != '_')) {
+                    newId.append("_");
+                } else {
+                    newId.append(c);
+                }
+            } else {
+                if (!Character.isLetter(c) && !Character.isDigit(c)
+                        && (c != '-') && (c != '_')) {
+                    newId.append("_");
+                } else {
+                    newId.append(c);
+                }
+            }
+        }
+        return newId.toString();
+    }
+
     public String generateWidgetId(String widgetName) {
-        return generateUniqueId(WIDGET_ID_PREFIX + widgetName);
+        return generateUniqueId(generateValidIdString(WIDGET_ID_PREFIX
+                + widgetName));
     }
 
     public String generateLayoutId(String layoutName) {
-        return generateUniqueId(LAYOUT_ID_PREFIX + layoutName);
+        return generateUniqueId(generateValidIdString(LAYOUT_ID_PREFIX
+                + layoutName));
     }
 
     public String generateMessageId(String widgetName) {
-        return generateUniqueId(WIDGET_ID_PREFIX + widgetName
-                + MESSAGE_ID_SUFFIX);
+        return generateUniqueId(generateValidIdString(WIDGET_ID_PREFIX
+                + widgetName + MESSAGE_ID_SUFFIX));
     }
 
     /**
