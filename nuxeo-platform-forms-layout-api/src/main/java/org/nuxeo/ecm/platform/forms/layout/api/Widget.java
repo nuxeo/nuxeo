@@ -123,4 +123,13 @@ public interface Widget extends Serializable {
      */
     Widget[] getSubWidgets();
 
+    /**
+     * Returns the widget level in the widget hierarchy.
+     * <p>
+     * For instance a standard widget will have a level of 0, and its potential
+     * subwidgets will have a level of 1.
+     * </p>
+     */
+    int getLevel();
+
 }

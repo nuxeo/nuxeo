@@ -54,7 +54,7 @@ public class ConversionActionBean implements ConversionAction {
 
     @In(create = true)
     NavigationContext navigationContext;
-    
+
     @RequestParameter
     private String fileFieldFullName;
 
@@ -72,8 +72,27 @@ public class ConversionActionBean implements ConversionAction {
 
     private String getMimetypeFromDocument(String fieldName) {
         String[] s = fieldName.split(":");
-        Blob blob = (Blob) navigationContext.getCurrentDocument().getProperty(s[0], s[1]);
+        Blob blob = (Blob) navigationContext.getCurrentDocument().getProperty(
+                s[0], s[1]);
         return blob.getMimeType();
+    }
+
+    public boolean isExportableToPDF(Blob blob) {
+        boolean isSupported = false;
+
+        try {
+            if (blob != null) {
+                String mimetype = blob.getMimeType();
+                TransformServiceCommon nxt = TransformServiceDelegate.getRemoteTransformService();
+                isSupported = nxt.isMimetypeSupportedByPlugin("any2pdf",
+                        mimetype);
+            }
+        } catch (Exception e) {
+            log.error("error asking the any2pdf plugin whether pdf conversion "
+                    + " is supported: " + e.getMessage());
+        }
+
+        return isSupported;
     }
 
     @WebRemote
@@ -101,7 +120,8 @@ public class ConversionActionBean implements ConversionAction {
             }
 
             String[] s = fileFieldFullName.split(":");
-            Blob blob = (Blob) navigationContext.getCurrentDocument().getProperty(s[0], s[1]);
+            Blob blob = (Blob) navigationContext.getCurrentDocument().getProperty(
+                    s[0], s[1]);
 
             TransformServiceCommon nxt = Framework.getService(TransformServiceCommon.class);
             List<TransformDocument> resultingDocs = nxt.transform("any2pdf",
@@ -178,7 +198,7 @@ public class ConversionActionBean implements ConversionAction {
     /**
      * Simply sends what to be downloaded or shown at screen via
      * HttpServletResponse.
-     * 
+     *
      * @param header
      * @param headerContent
      * @param contentType

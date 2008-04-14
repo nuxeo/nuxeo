@@ -51,7 +51,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -129,21 +128,40 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     @RequestParameter
     private String templateDocRef;
 
+    /**
+     * @deprecated use blobPropertyField and filenamePropertyField instead
+     */
+    @Deprecated
     @RequestParameter
     private String schema;
 
     @RequestParameter
     private String templateSchema;
 
+    /**
+     * @deprecated use blobPropertyField instead
+     */
+    @Deprecated
     @RequestParameter
     private String blobField;
 
     @RequestParameter
+    private String blobPropertyName;
+
+    @RequestParameter
     private String templateBlobField;
 
-    // to be deprecated once all filenames are stored in the blob itself
+    // TODO: to be deprecated once all filenames are stored in the blob itself
+    /**
+     * @deprecated use filenamePropertyField instead
+     */
+    @Deprecated
     @RequestParameter
     private String filenameField;
+
+    // TODO: to be deprecated once all filenames are stored in the blob itself
+    @RequestParameter
+    private String filenamePropertyName;
 
     @RequestParameter
     private String mimetype;
@@ -210,15 +228,30 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 // type
                 doc = session.getDocument(new IdRef(docRef));
                 docType = doc.getType();
-                Blob blob = (Blob) doc.getProperty(schema, blobField);
-                if (blob == null) {
-                    throw new ClientException(
-                            String.format(
-                                    "could not find blob to edit with schema '%s' and field '%s'",
-                                    schema, blobField));
+                Blob blob = null;
+                if (blobPropertyName != null) {
+                    blob = (Blob) doc.getPropertyValue(blobPropertyName);
+                    if (blob == null) {
+                        throw new ClientException(
+                                String.format(
+                                        "could not find blob to edit with property '%s'",
+                                        blobPropertyName));
+                    }
+                } else {
+                    blob = (Blob) doc.getProperty(schema, blobField);
+                    if (blob == null) {
+                        throw new ClientException(
+                                String.format(
+                                        "could not find blob to edit with schema '%s' and field '%s'",
+                                        schema, blobField));
+                    }
                 }
                 mimetype = blob.getMimeType();
-                filename = (String) doc.getProperty(schema, filenameField);
+                if (filenamePropertyName != null) {
+                    filename = (String) doc.getPropertyValue(filenamePropertyName);
+                } else {
+                    filename = (String) doc.getProperty(schema, filenameField);
+                }
             } else if (ACTION_CREATE_DOCUMENT.equals(action)) {
                 // creating a new document all parameters are read from the
                 // request parameters
@@ -266,11 +299,16 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 docTitleT.setText(doc.getTitle());
             }
             addTextElement(docInfo, docRepositoryTag, repoID);
-            addTextElement(docInfo, docSchemaNameTag, schema);
-            addTextElement(docInfo, docFieldNameTag, blobField);
             Element docFieldPathT = docInfo.addElement(docfieldPathTag);
-            if (schema != null && blobField != null) {
-                docFieldPathT.setText(schema + '/' + blobField);
+            if (blobPropertyName != null) {
+                // FIXME AT: NXP-2306: send blobPropertyName correctly (?)
+                docFieldPathT.setText(blobPropertyName);
+            } else {
+                addTextElement(docInfo, docSchemaNameTag, schema);
+                addTextElement(docInfo, docFieldNameTag, blobField);
+                if (schema != null && blobField != null) {
+                    docFieldPathT.setText(schema + '/' + blobField);
+                }
             }
             addTextElement(docInfo, docfileNameTag, filename);
             addTextElement(docInfo, docTypeTag, docType);
@@ -429,6 +467,29 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     // Methods to check whether or not to display live edit links
     //
 
+    public boolean isLiveEditable(Blob blob) throws ClientException {
+        if (blob == null) {
+            return false;
+        }
+        String mimetype = blob.getMimeType();
+        Boolean isEditable = cachedEditableStates.get(mimetype);
+        if (isEditable == null) {
+            try {
+                MimetypeEntry mimetypeEntry = getMimetypeRegistry().getMimetypeEntryByMimeType(
+                        mimetype);
+                if (mimetypeEntry == null) {
+                    isEditable = Boolean.FALSE;
+                } else {
+                    isEditable = Boolean.valueOf(mimetypeEntry.isOnlineEditable());
+                }
+            } catch (Throwable t) {
+                throw EJBExceptionHandler.wrapException(t);
+            }
+            cachedEditableStates.put(mimetype, isEditable);
+        }
+        return isEditable.booleanValue();
+    }
+
     public boolean isCurrentDocumentLiveEditable() throws ClientException {
         return isDocumentLiveEditable(navigationContext.getCurrentDocument(),
                 DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD);
@@ -474,31 +535,12 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         Blob blob = null;
         try {
             blob = documentModel.getProperty(propertyName).getValue(Blob.class);
-        } catch (PropertyNotFoundException e) {
+        } catch (Exception e) {
             // this document cannot host a live editable blob is the requested
             // property, ignore
             return false;
         }
-        if (blob == null) {
-            return false;
-        }
-        String mimetype = blob.getMimeType();
-        Boolean isEditable = cachedEditableStates.get(mimetype);
-        if (isEditable == null) {
-            try {
-                MimetypeEntry mimetypeEntry = getMimetypeRegistry().getMimetypeEntryByMimeType(
-                        mimetype);
-                if (mimetypeEntry == null) {
-                    isEditable = Boolean.FALSE;
-                } else {
-                    isEditable = Boolean.valueOf(mimetypeEntry.isOnlineEditable());
-                }
-            } catch (Throwable t) {
-                throw EJBExceptionHandler.wrapException(t);
-            }
-            cachedEditableStates.put(mimetype, isEditable);
-        }
-        return isEditable.booleanValue();
+        return isLiveEditable(blob);
     }
 
     private MimetypeRegistry getMimetypeRegistry() throws Exception {

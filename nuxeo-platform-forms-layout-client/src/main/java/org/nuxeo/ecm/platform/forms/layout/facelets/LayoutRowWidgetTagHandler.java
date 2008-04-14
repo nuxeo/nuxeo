@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 import java.io.IOException;
 
 import javax.el.ELException;
+import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
@@ -30,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
+import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
 
@@ -62,11 +64,18 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
             throws IOException, FacesException, FaceletException, ELException {
         // XXX same handler is used in different threads => reset counter
         // before use
-        widgetCounter = 0;
-        while (ctx.includeDefinition(parent,
-                TemplateClientHelper.generateWidgetNumber(widgetCounter))) {
-            nextHandler.apply(ctx, parent);
-            widgetCounter++;
+
+        VariableMapper orig = ctx.getVariableMapper();
+        ctx.setVariableMapper(new VariableMapperWrapper(orig));
+        try {
+            widgetCounter = 0;
+            while (ctx.includeDefinition(parent,
+                    TemplateClientHelper.generateWidgetNumber(widgetCounter))) {
+                nextHandler.apply(ctx, parent);
+                widgetCounter++;
+            }
+        } finally {
+            ctx.setVariableMapper(orig);
         }
     }
 }

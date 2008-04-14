@@ -31,14 +31,13 @@ import javax.el.ValueExpression;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
 
 /**
  * Method value expression encapsulates a method expression so that it invokes
  * it when evaluated as a standard value expression.
- * 
+ *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- * 
+ *
  */
 public class MethodValueExpression extends ValueExpression implements
         Externalizable {
@@ -47,6 +46,8 @@ public class MethodValueExpression extends ValueExpression implements
 
     private static final long serialVersionUID = 1228707110702282837L;
 
+    private ELContext context;
+
     private MethodExpression methodExpression;
 
     private Class[] paramTypesClasses;
@@ -54,8 +55,9 @@ public class MethodValueExpression extends ValueExpression implements
     public MethodValueExpression() {
     }
 
-    public MethodValueExpression(MethodExpression methodExpression,
-            Class[] paramTypesClasses) {
+    public MethodValueExpression(ELContext context,
+            MethodExpression methodExpression, Class[] paramTypesClasses) {
+        this.context = context;
         this.methodExpression = methodExpression;
         this.paramTypesClasses = paramTypesClasses;
     }
@@ -104,12 +106,14 @@ public class MethodValueExpression extends ValueExpression implements
     @Override
     public Object getValue(ELContext arg0) {
         // invoke method instead of resolving value
-        Object res;
         try {
-            return methodExpression.invoke(arg0, paramTypesClasses);
+            EvaluationContext evalCtx = new EvaluationContext(arg0,
+                    context.getFunctionMapper(), context.getVariableMapper());
+            return methodExpression.invoke(evalCtx, paramTypesClasses);
         } catch (Throwable t) {
-            throw new ELException("Error while evaluation MethodValueExpression "
-                    + methodExpression.getExpressionString(), t);
+            throw new ELException(
+                    "Error while evaluation MethodValueExpression "
+                            + methodExpression.getExpressionString(), t);
         }
     }
 

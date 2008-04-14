@@ -130,6 +130,8 @@ public class LayoutTagHandler extends TagHandler implements TemplateClient {
         vm.setVariable(RenderVariables.globalVariables.value.name(), valueExpr);
         vm.setVariable(RenderVariables.globalVariables.document.name(),
                 valueExpr);
+        vm.setVariable(RenderVariables.globalVariables.layoutValue.name(),
+                valueExpr);
         if (template != null) {
             // XXX same handler is used in different threads => reset counters
             // before use
@@ -205,10 +207,16 @@ public class LayoutTagHandler extends TagHandler implements TemplateClient {
                     widget, Widget.class);
             vm.setVariable(RenderVariables.widgetVariables.widget.name(),
                     widgetVe);
+            vm.setVariable(String.format("%s_%s",
+                    RenderVariables.widgetVariables.widget.name(),
+                    widget.getLevel()), widgetVe);
             ValueExpression widgetIndexVe = ctx.getExpressionFactory().createValueExpression(
                     widgetNumber, Integer.class);
             vm.setVariable(RenderVariables.widgetVariables.widgetIndex.name(),
                     widgetIndexVe);
+            vm.setVariable(String.format("%s_%s",
+                    RenderVariables.widgetVariables.widgetIndex.name(),
+                    widget.getLevel()), widgetIndexVe);
             widgetCounter = widgetNumber;
             return true;
         }

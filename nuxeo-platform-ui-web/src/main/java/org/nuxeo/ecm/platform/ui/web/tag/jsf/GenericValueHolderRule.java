@@ -158,7 +158,7 @@ public class GenericValueHolderRule extends MetaRule {
             Class returnType = Object.class;
             MethodExpression meth = attr.getMethodExpression(ctx, returnType,
                     paramTypesClasses);
-            ValueExpression ve = new MethodValueExpression(meth,
+            ValueExpression ve = new MethodValueExpression(ctx, meth,
                     paramTypesClasses);
             ((UIComponent) instance).setValueBinding("value",
                     new LegacyValueBinding(ve));

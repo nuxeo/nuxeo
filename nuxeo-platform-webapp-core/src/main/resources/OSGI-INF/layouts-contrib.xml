@@ -193,7 +193,12 @@
         <fields>
           <field>dc:expired</field>
         </fields>
-
+        <properties widgetMode="view">
+          <property name="pattern">#{nxu:basicDateFormater()}</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="format">#{nxu:basicDateFormater()}</property>
+        </properties>
       </widget>
       <widget name="author" type="text">
         <labels>
@@ -297,11 +302,19 @@
           <property name="diff">true</property>
         </properties>
         <subWidgets>
-          <widget name="file" type="file">
+          <widget name="file" type="template">
+            <labels>
+              <label mode="any"></label>
+            </labels>
             <fields>
               <field>file</field>
               <field>filename</field>
             </fields>
+            <properties mode="any">
+              <property name="template">
+                /widgets/extended_subfile_widget.xhtml
+              </property>
+            </properties>
           </widget>
         </subWidgets>
       </widget>

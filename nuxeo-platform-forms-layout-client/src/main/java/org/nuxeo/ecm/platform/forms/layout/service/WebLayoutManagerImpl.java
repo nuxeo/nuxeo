@@ -225,7 +225,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
      * @param expression the string expression.
      * @return
      */
-    private static Object evaluateExpression(FaceletContext context, String expression) {
+    private static Object evaluateExpression(FaceletContext context,
+            String expression) {
         if (expression == null) {
             return null;
         }
@@ -253,7 +254,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
     /**
      * Evaluates an expression to a boolean value.
      */
-    private static Boolean getBooleanValue(FaceletContext context, String expression) {
+    private static Boolean getBooleanValue(FaceletContext context,
+            String expression) {
         Object value = evaluateExpression(context, expression);
         if (value instanceof Boolean) {
             return (Boolean) value;
@@ -268,7 +270,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
     /**
      * Evaluates an expression to a string value.
      */
-    private static String getStringValue(FaceletContext context, String expression) {
+    private static String getStringValue(FaceletContext context,
+            String expression) {
         Object value = evaluateExpression(context, expression);
         if (value == null || value instanceof String) {
             return (String) value;
@@ -302,14 +305,16 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
      * Sub widgets are also computed recursively.
      */
     private Widget getWidget(FaceletContext context, LayoutDefinition lDef,
-            WidgetDefinition wDef, String layoutMode, String valueName) {
+            WidgetDefinition wDef, String layoutMode, String valueName,
+            int level) {
         String wMode = getModeFromLayoutMode(context, wDef, layoutMode);
         if (BuiltinWidgetModes.HIDDEN.equals(wMode)) {
             return null;
         }
         List<Widget> subWidgets = new ArrayList<Widget>();
         for (WidgetDefinition swDef : wDef.getSubWidgetDefinitions()) {
-            Widget subWidget = getWidget(context, lDef, swDef, wMode, valueName);
+            Widget subWidget = getWidget(context, lDef, swDef, wMode,
+                    valueName, level + 1);
             if (subWidget != null) {
                 subWidgets.add(subWidget);
             }
@@ -321,7 +326,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
                 wDef.getType(), valueName, wDef.getFieldDefinitions(),
                 wDef.getLabel(layoutMode), wDef.getHelpLabel(layoutMode),
                 wDef.isTranslated(), wDef.getProperties(layoutMode, wMode),
-                required, subWidgets.toArray(new Widget[]{}));
+                required, subWidgets.toArray(new Widget[] {}), level);
         return widget;
     }
 
@@ -354,7 +359,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
                     widgets.add(null);
                     continue;
                 }
-                Widget widget = getWidget(ctx, lDef, wDef, mode, valueName);
+                Widget widget = getWidget(ctx, lDef, wDef, mode, valueName, 0);
                 if (widget != null) {
                     emptyRow = false;
                 }
@@ -383,7 +388,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
                     subHandlersList.add(getFaceletHandler(ctx, config,
                             subWidget));
                 }
-                subHandlers = subHandlersList.toArray(new FaceletHandler[]{});
+                subHandlers = subHandlersList.toArray(new FaceletHandler[] {});
             }
             FaceletHandler fHandler = handler.getFaceletHandler(ctx, config,
                     widget, subHandlers);
@@ -408,7 +413,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         }
         Widget widget = new WidgetImpl("layout", "widget", mode, type,
                 valueName, null, null, null, required, properties, required,
-                subWidgets);
+                subWidgets, 0);
         return widget;
     }
 }

@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 import java.io.IOException;
 
 import javax.el.ELException;
+import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
@@ -30,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
+import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
 
@@ -64,13 +66,20 @@ public class LayoutRowTagHandler extends TagHandler {
         // XXX same handler is used in different threads => reset counter
         // before use
         rowCounter = 0;
-        while (ctx.includeDefinition(parent,
-                TemplateClientHelper.generateRowNumber(rowCounter))) {
-            nextHandler.apply(ctx, parent);
-            rowCounter++;
-            // log.debug("row thread="
-            // + String.valueOf(Thread.currentThread().getId())
-            // + ", handler=" + this.hashCode() + ", row=" + rowCounter);
+
+        VariableMapper orig = ctx.getVariableMapper();
+        ctx.setVariableMapper(new VariableMapperWrapper(orig));
+        try {
+            while (ctx.includeDefinition(parent,
+                    TemplateClientHelper.generateRowNumber(rowCounter))) {
+                nextHandler.apply(ctx, parent);
+                rowCounter++;
+                // log.debug("row thread="
+                // + String.valueOf(Thread.currentThread().getId())
+                // + ", handler=" + this.hashCode() + ", row=" + rowCounter);
+            }
+        } finally {
+            ctx.setVariableMapper(orig);
         }
         // log.debug("row thread="
         // + String.valueOf(Thread.currentThread().getId()) + ", handler="
