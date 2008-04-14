@@ -1,13 +1,17 @@
 #!/bin/sh
 # JBoss Bootstrap Script Configuration setting JAVA_HOME and JAVA_OPTS
 
-HEAP_SIZE=768m
+#HEAP_SIZE=768m
+#JAVA_OPTS="-server -Xms$HEAP_SIZE -Xmx$HEAP_SIZE -XX:MaxPermSize=128m -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000"
 
+if [ "x$JAVA_OPTS" = "x" ]; then
+  JAVA_OPTS="-Xms128m -Xmx512m -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000"
+fi
+
+JAVA_OPTS="$JAVA_OPTS -XX:MaxPermSize=128m"
 
 # Sun JVM OPTION -----------------------------------------
-JAVA_HOME=/usr/lib/jvm/java-1.5.0-sun
-
-JAVA_OPTS="-server -Xms$HEAP_SIZE -Xmx$HEAP_SIZE -XX:MaxPermSize=128m -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000"
+#JAVA_HOME=/usr/lib/jvm/java-1.5.0-sun
 
 # Enable jconsole
 #JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote=true"
@@ -21,15 +25,17 @@ JAVA_OPTS="-server -Xms$HEAP_SIZE -Xmx$HEAP_SIZE -XX:MaxPermSize=128m -Dsun.rmi.
 
 # DEBUGGING ----------------------------------------------
 
-# Sample JPDA settings for remote socket debuging
-#JAVA_OPTS="$JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n"
+if [ "$JBOSS_DEBUG_MODE" ]; then
+  # Sample JPDA settings for remote socket debuging
+  JAVA_OPTS="$JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n"
 
-# Sample JPDA settings for shared memory debugging
-#JAVA_OPTS="$JAVA_OPTS -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_shmem,server=y,suspend=n,address=jboss"
+  # Sample JPDA settings for shared memory debugging
+  #JAVA_OPTS="$JAVA_OPTS -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_shmem,server=y,suspend=n,address=jboss"
 
-# Sample JPDA settings for remote socket debuging
-# #JAVA_OPTS="$JAVA_OPTS -Xdebug
-# -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n"
+  # Sample JPDA settings for remote socket debuging
+  # #JAVA_OPTS="$JAVA_OPTS -Xdebug
+  # -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n"
+fi
 
 export JAVA_HOME
 export JAVA_OPTS

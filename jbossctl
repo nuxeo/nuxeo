@@ -140,7 +140,7 @@ start() {
         tail -n1 $LOG |grep "Started in" >/dev/null
         if [ $? = 0 ]; then
             echo "Server started."
-            grep "Nuxeo ECM Started" -B1 -A5 $LOG|tail -n7
+            egrep 'Nuxeo ECM Started|Nuxeo EP Started' -B1 -A5 $LOG|tail -n7
             return 0
         fi
         echo -n "."
@@ -157,7 +157,8 @@ startd() {
     fi
     echo "Setup debug configuration"
     export JBOSS_DEBUG_MODE=1
-    return start
+    start
+    return $?
 }
 
 stop() {
@@ -211,6 +212,9 @@ case "$1" in
     start)
         start
         ;;
+    startd)
+        startd
+        ;;
     status)
         if status check_alive nowarn; then
             echo "JBoss running [$JBOSS_PID]."
@@ -249,6 +253,6 @@ case "$1" in
         tail -f $LOG
         ;;
     *)
-        echo "usage: `basename $0` (start|stop|restart|status|tail|tailf|info|help)"
+        echo "usage: `basename $0` (start|stop|startd|restart|status|tail|tailf|info|help)"
         ;;
 esac
