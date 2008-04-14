@@ -32,7 +32,7 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 public class RenderVariables {
 
     public static enum globalVariables {
-        value, document
+        value, document, layoutValue,
     }
 
     public static enum layoutVariables {
@@ -47,6 +47,11 @@ public class RenderVariables {
         widget, widgetIndex, field,
     }
 
+    /**
+     * @deprecated use widget_0, widget_1, number being the widget level in
+     *             hierarchy.
+     */
+    @Deprecated
     public static enum subWidgetVariables {
         subWidget, subWidgetIndex,
     }

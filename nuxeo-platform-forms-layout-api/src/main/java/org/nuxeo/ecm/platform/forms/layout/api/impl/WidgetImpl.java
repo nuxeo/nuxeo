@@ -61,11 +61,13 @@ public class WidgetImpl implements Widget {
 
     boolean translated = false;
 
+    int level;
+
     public WidgetImpl(String layoutName, String name, String mode, String type,
             String valueName, FieldDefinition[] fields, String label,
             String helpLabel, boolean translated,
             Map<String, Serializable> properties, boolean required,
-            Widget[] subWidgets) {
+            Widget[] subWidgets, int level) {
         this.layoutName = layoutName;
         this.name = name;
         this.mode = mode;
@@ -78,6 +80,7 @@ public class WidgetImpl implements Widget {
         this.properties = properties;
         this.required = required;
         this.subWidgets = subWidgets;
+        this.level = level;
     }
 
     public String getId() {
@@ -152,6 +155,10 @@ public class WidgetImpl implements Widget {
 
     public void setValueName(String valueName) {
         this.valueName = valueName;
+    }
+
+    public int getLevel() {
+        return level;
     }
 
 }
