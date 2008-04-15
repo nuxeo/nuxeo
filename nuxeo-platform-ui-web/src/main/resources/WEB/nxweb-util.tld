@@ -59,9 +59,6 @@
       </p>
       <b>WARNING</b>: the method result should be Serializable.
       </p>
-      <p>
-      Currently unstable: sometimes method invocation fails.
-      </p>
       ]]>
     </description>
     <attribute>
