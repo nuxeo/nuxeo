@@ -21,8 +21,8 @@ package org.nuxeo.ecm.core.jcr.search;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.net.URL;
+import java.util.Arrays;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -34,17 +34,17 @@ import javax.jcr.ValueFormatException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.core.repository.jcr.properties.BlobProperty;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryResult;
 import org.nuxeo.ecm.core.repository.jcr.JCRDocument;
+import org.nuxeo.ecm.core.repository.jcr.properties.BlobProperty;
+import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 
 /**
  * Test Queries.

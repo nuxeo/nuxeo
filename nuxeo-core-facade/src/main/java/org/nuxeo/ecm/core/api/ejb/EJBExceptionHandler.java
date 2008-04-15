@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.core.api.ejb;
 
-import java.io.Serializable;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -32,9 +30,7 @@ import org.nuxeo.ecm.core.api.ClientException;
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
-final class EJBExceptionHandler implements Serializable {
-
-    private static final long serialVersionUID = 3571163516248088734L;
+final class EJBExceptionHandler {
 
     private static final Log log = LogFactory.getLog(EJBExceptionHandler.class);
 

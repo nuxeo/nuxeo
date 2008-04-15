@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.api.repository;
 
 import java.io.Serializable;
-import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -126,7 +125,7 @@ public class Repository implements Serializable {
     }
 
     public CoreSession open(Map<String, Serializable> context) throws Exception {
-        CoreSession session = null;
+        CoreSession session;
         if (group != null) {
             ServiceManager mgr = Framework.getLocalService(ServiceManager.class);
             ServiceGroup sg = mgr.getGroup(group);
@@ -152,13 +151,7 @@ public class Repository implements Serializable {
     }
 
     public static RepositoryInstance newRepositoryInstance(Repository repository) {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        if (cl == null) {
-            cl = Repository.class.getClassLoader();
-        }
-        return (RepositoryInstance)Proxy.newProxyInstance(cl,
-                new Class[] { RepositoryInstance.class },
-                new RepositoryInstanceHandler(repository));
+        return new RepositoryInstanceHandler(repository).getProxy();
     }
 
     public RepositoryInstance newInstance() {

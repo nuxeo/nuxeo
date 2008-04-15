@@ -32,9 +32,9 @@ import javax.jcr.RepositoryException;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.repository.jcr.properties.PropertyFactory;
 import org.nuxeo.ecm.core.model.NoSuchPropertyException;
 import org.nuxeo.ecm.core.model.Property;
+import org.nuxeo.ecm.core.repository.jcr.properties.PropertyFactory;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.Field;
 
@@ -221,7 +221,7 @@ public final class PropertyContainerAdapter {
         JCRBlob.setContent(node, name, value);
     }
 
-    public static Collection<org.nuxeo.ecm.core.model.Property> getProperties(JCRNodeProxy node)
+    public static Collection<Property> getProperties(JCRNodeProxy node)
             throws DocumentException {
         Node jcrNode  = node.getNode();
         if (jcrNode == null) {
@@ -235,7 +235,7 @@ public final class PropertyContainerAdapter {
         return props;
     }
 
-    public static Iterator<org.nuxeo.ecm.core.model.Property> getPropertyIterator(JCRNodeProxy node)
+    public static Iterator<Property> getPropertyIterator(JCRNodeProxy node)
             throws DocumentException {
         Node jcrNode  = node.getNode();
         if (jcrNode == null) {
