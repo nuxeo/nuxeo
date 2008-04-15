@@ -46,7 +46,7 @@ public class MassSecurityModifierActions implements Serializable {
     @In(create = true)
     protected transient DocumentsListsManager documentsListsManager;
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     private Boolean blockRightInheritance;

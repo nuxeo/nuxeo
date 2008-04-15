@@ -81,7 +81,7 @@ public class PrincipalListManager implements Serializable {
 
     public final Map<String, String> iconAlt;
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     @In(required = true, create = true)

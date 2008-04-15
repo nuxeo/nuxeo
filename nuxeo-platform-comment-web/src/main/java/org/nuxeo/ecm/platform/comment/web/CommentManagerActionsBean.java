@@ -75,7 +75,7 @@ public class CommentManagerActionsBean extends InputController implements
 
     boolean showCreateForm;
 
-    @In(create = true)
+    @In(create = true, required = false)
     transient CoreSession documentManager;
 
     @In(create = true)
@@ -211,7 +211,6 @@ public class CommentManagerActionsBean extends InputController implements
     /**
      * Initializes uiComments with Comments of current document.
      */
-    @Factory("documentComments")
     public void getComments() throws ClientException {
 
         commentableDoc = getCommentableDoc();

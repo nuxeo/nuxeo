@@ -90,7 +90,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     // @DataModel("availableVersioningOptionsMap")

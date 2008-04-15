@@ -73,7 +73,7 @@ public class DomainActionsBean extends InputController implements DomainActions,
     @In(create = true)
     private transient QueryModelActions queryModelActions;
 
-    @In(create = true)
+    @In(create = true, required = false)
     private transient CoreSession documentManager;
 
     @In(create = true)

@@ -50,7 +50,7 @@ public class PermissionListManager implements Serializable {
 
     private static final Log log = LogFactory.getLog(PermissionListManager.class);
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     protected SelectItem[] availablePermissions;

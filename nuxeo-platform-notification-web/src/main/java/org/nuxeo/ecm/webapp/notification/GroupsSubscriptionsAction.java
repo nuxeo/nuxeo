@@ -65,7 +65,7 @@ public class GroupsSubscriptionsAction extends InputController implements
 
     private static final Labeler labeler = new Labeler("label.subscriptions");
 
-    @In(create = true)
+    @In(create = true, required = false)
     private transient CoreSession documentManager;
 
     @In(required = false)

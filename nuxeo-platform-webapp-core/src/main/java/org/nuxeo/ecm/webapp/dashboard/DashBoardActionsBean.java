@@ -114,7 +114,7 @@ public class DashBoardActionsBean extends InputController implements
     @In
     protected transient Context eventContext;
 
-    @In(required = true)
+    @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     @In(create = true)

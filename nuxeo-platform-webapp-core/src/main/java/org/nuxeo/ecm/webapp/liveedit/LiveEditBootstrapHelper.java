@@ -110,7 +110,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     @In(required = true, create = true)
     protected transient NavigationContext navigationContext;
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     @RequestParameter

@@ -63,7 +63,7 @@ public class SubscriptionsAction extends InputController implements
     @In(required = true)
     private transient NavigationContext navigationContext;
 
-    @In(create = true)
+    @In(create = true, required = false)
     private transient CoreSession documentManager;
 
     @DataModel("notificationList")

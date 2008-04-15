@@ -73,7 +73,7 @@ public class WorkspaceActionsBean extends InputController implements
 
     protected static final String ADMIN_GROUP = "administrators";
 
-    @In(create = true)
+    @In(create = true, required = false)
     private CoreSession documentManager;
 
     @In(create = true)
