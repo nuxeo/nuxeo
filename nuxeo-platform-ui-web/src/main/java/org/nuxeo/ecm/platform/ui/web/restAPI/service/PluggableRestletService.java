@@ -64,7 +64,7 @@ public class PluggableRestletService extends DefaultComponent {
 
         // override URL
         if (newContrib.getUrlPatterns() != null
-                && newContrib.getUrlPatterns().size() > 0) {
+                && !newContrib.getUrlPatterns().isEmpty()) {
             oldDescriptor.getUrlPatterns().addAll(newContrib.getUrlPatterns());
 
         }
