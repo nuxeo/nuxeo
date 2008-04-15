@@ -53,7 +53,7 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
     @In(create = true)
     private ConversationDocumentsListsManager conversationDocumentsListsManager;
 
-    @In(create = true)
+    @In(create = true, required = false)
     transient CoreSession documentManager;
 
     @In(create=true)

@@ -148,7 +148,7 @@ public class FileManageWS extends InputController implements
     // @Out(required = false)
     // protected DocumentModel changeableDocument;
 
-    @In(create = true, required=false)
+    @In(create = true, required = false)
     protected CoreSession documentManager;
 
     @In(required = false, create = true)

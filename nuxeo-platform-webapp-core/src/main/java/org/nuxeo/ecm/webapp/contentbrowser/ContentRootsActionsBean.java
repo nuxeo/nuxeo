@@ -84,7 +84,7 @@ public class ContentRootsActionsBean extends InputController implements
     private static final long serialVersionUID = 2464516767262727931L;
     private static final Log log = LogFactory.getLog(ContentRootsActionsBean.class);
 
-    @In(create = true)
+    @In(create = true, required = false)
     transient CoreSession documentManager;
 
     @RequestParameter("tabParam")

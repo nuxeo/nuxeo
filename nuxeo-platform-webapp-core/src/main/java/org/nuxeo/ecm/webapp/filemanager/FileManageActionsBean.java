@@ -92,7 +92,7 @@ public class FileManageActionsBean extends InputController implements
 
     protected UploadedFile fileUpload;
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected CoreSession documentManager;
 
     @In(required = true)

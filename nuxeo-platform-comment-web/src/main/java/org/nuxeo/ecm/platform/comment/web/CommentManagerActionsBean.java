@@ -75,7 +75,7 @@ public class CommentManagerActionsBean extends InputController implements
 
     boolean showCreateForm;
 
-    @In(create = true)
+    @In(create = true, required = false)
     transient CoreSession documentManager;
 
     @In(create = true)

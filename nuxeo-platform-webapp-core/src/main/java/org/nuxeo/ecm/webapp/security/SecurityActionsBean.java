@@ -111,7 +111,7 @@ public class SecurityActionsBean extends InputController implements
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     @In(create = true)

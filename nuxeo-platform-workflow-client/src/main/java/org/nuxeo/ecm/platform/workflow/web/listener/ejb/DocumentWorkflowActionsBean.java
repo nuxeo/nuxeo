@@ -127,7 +127,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
     @In(required = true)
     protected RepositoryLocation currentServerLocation;
 
-    @In(required = true)
+    @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     @In(create = true)

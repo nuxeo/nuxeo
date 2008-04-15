@@ -84,7 +84,7 @@ public class GroupManagerActionsBean extends InputController implements
     @In(create = true)
     transient UserManager userManager;
 
-    @In(create = true)
+    @In(create = true, required = false)
     transient CoreSession documentManager;
 
     @DataModel("groupList")

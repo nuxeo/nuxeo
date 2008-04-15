@@ -91,7 +91,7 @@ public class UserManagerActionsBean extends InputController implements
     @In(create = true)
     protected transient UserManager userManager;
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     protected String searchString = "";

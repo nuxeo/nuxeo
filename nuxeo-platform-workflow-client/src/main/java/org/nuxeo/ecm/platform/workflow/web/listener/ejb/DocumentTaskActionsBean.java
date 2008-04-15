@@ -136,7 +136,7 @@ public class DocumentTaskActionsBean extends InputController implements
     @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     protected List<WMWorkItemInstance> documentTasks;

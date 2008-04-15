@@ -69,7 +69,7 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
     @In(create = true)
     UserManager userManager;
 
-    @In(create = true)
+    @In(create = true, required = false)
     CoreSession documentManager;
 
     @In(required = false)

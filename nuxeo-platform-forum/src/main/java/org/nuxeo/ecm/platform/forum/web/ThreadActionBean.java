@@ -76,7 +76,7 @@ public class ThreadActionBean extends InputController implements ThreadAction {
     @In(create = true)
     protected Principal currentUser;
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected CoreSession documentManager;
 
     @In(create = true)
