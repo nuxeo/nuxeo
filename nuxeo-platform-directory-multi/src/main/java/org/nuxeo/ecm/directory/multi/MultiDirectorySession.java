@@ -496,13 +496,10 @@ public class MultiDirectorySession implements Session {
         log.warn("Calling deleteEntry extended on multi directory");
         try {
             deleteEntry(id);
+        } catch (DirectoryException e) {
+            throw e;
         } catch (ClientException e) {
-            // XXX doh
-            if (e instanceof DirectoryException) {
-                throw (DirectoryException) e;
-            } else {
-                throw new DirectoryException(e);
-            }
+            throw new DirectoryException(e);
         }
     }
 

@@ -40,11 +40,9 @@ import org.nuxeo.ecm.platform.url.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentLocation;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
-import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
 import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
 
-public class DocumentFileCodec extends AbstractDocumentViewCodec implements
-        DocumentViewCodec {
+public class DocumentFileCodec extends AbstractDocumentViewCodec {
 
     public static final String PREFIX = "nxfile";
 
@@ -155,10 +153,8 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec implements
 
                 final DocumentLocation docLoc = new DocumentLocationImpl(
                         server, docRef);
-                final DocumentView docView = new DocumentViewImpl(docLoc, null,
-                        params);
 
-                return docView;
+                return new DocumentViewImpl(docLoc, null, params);
             }
         }
 
@@ -166,8 +162,7 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec implements
     }
 
     public static String getBlobPropertyName(DocumentView docView) {
-        String propertyPath = docView.getParameter(FILE_PROPERTY_PATH_KEY);
-        return propertyPath;
+        return docView.getParameter(FILE_PROPERTY_PATH_KEY);
     }
 
     public static Blob getBlob(DocumentModel doc, DocumentView docView) {

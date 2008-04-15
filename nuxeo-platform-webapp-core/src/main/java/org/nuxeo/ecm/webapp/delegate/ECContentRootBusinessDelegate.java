@@ -32,7 +32,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.api.ECM;
 import org.nuxeo.ecm.platform.interfaces.ejb.ECContentRoot;
 import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.runtime.api.Framework;
@@ -88,7 +87,7 @@ public class ECContentRootBusinessDelegate implements Serializable {
 
     @Destroy
     @PermitAll
-    public void destroy() throws ClientException {
+    public void destroy() {
         if (null != ecContentRoot) {
             ecContentRoot.remove();
             ecContentRoot = null;

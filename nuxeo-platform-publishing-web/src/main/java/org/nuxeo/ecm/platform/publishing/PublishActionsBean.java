@@ -14,6 +14,7 @@
  * Contributors:
  *     Narcis Paslaru
  *     Florent Guillaume
+ *     Thierry Martins
  */
 
 package org.nuxeo.ecm.platform.publishing;
