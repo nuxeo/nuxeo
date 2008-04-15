@@ -1844,16 +1844,7 @@ public abstract class AbstractSession implements CoreSession,
             checkPermission(section, ADD_CHILDREN);
 
             if (overwriteExistingProxy) {
-                String parentPath = section.getPath();
-                // delete existing proxies of the same document if any exist in
-                // the target folder
-                Collection<Document> existingProxies = getSession().getProxies(
-                        doc, null);
-                for (Document oldProxy : existingProxies) {
-                    if (oldProxy.getParent().getPath().equals(parentPath)) {
-                        removeNotifyOneDoc(oldProxy);
-                    }
-                }
+                removeExistingProxies(doc, section);
             }
 
             // create the new proxy
@@ -1892,6 +1883,18 @@ public abstract class AbstractSession implements CoreSession,
         } catch (DocumentException e) {
             throw new ClientException("Failed to create proxy for doc " +
                     docRef + " , version: " + version.getLabel(), e);
+        }
+    }
+
+    /**
+     * Remove proxies for the same base document in the folder. doc may be a
+     * normal document or a proxy.
+     */
+    protected void removeExistingProxies(Document doc, Document folder)
+            throws DocumentException, ClientException {
+        Collection<Document> otherProxies = getSession().getProxies(doc, folder);
+        for (Document otherProxy : otherProxies) {
+            removeNotifyOneDoc(otherProxy);
         }
     }
 
@@ -2342,30 +2345,46 @@ public abstract class AbstractSession implements CoreSession,
             DocumentModel section, boolean overwriteExistingProxy)
             throws ClientException {
 
+        DocumentRef docRef = docToPublish.getRef();
+        DocumentRef sectionRef = section.getRef();
         if (docToPublish.isProxy()) {
-            // publishing a proxy is just a copy
-            // TODO copy also copies security. just recreate a proxy
-            DocumentModel newDocument = copy(docToPublish.getRef(), section.getRef(), docToPublish.getName());
+            try {
+                Document doc = resolveReference(docRef);
+                Document sec = resolveReference(sectionRef);
+                checkPermission(doc, READ);
+                checkPermission(sec, ADD_CHILDREN);
 
-            Map<String, Object> options = new HashMap<String, Object>();
-            options.put(CoreEventConstants.DOCUMENT, newDocument);
-            notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
-                    newDocument, options, null, null, true);
+                if (overwriteExistingProxy) {
+                    removeExistingProxies(doc, sec);
+                }
 
-            options.put(CoreEventConstants.DOCUMENT, section);
-            notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
-                    section, options, null, null, true);
+                // publishing a proxy is just a copy
+                // TODO copy also copies security. just recreate a proxy
+                DocumentModel newDocument = copy(docRef, sectionRef,
+                        docToPublish.getName());
 
-            return newDocument;
+                Map<String, Object> options = new HashMap<String, Object>();
+                options.put(CoreEventConstants.DOCUMENT, newDocument);
+                notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED,
+                        newDocument, options, null, null, true);
+
+                options.put(CoreEventConstants.DOCUMENT, section);
+                notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED,
+                        section, options, null, null, true);
+
+                return newDocument;
+            } catch (DocumentException e) {
+                throw new ClientException(e);
+            }
         } else {
             // prepare document for creating snapshot
             docToPublish.putContextData(
                     VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
             // snapshot the document
             createDocumentSnapshot(docToPublish);
-            VersionModel version = getLastVersion(docToPublish.getRef());
-            DocumentModel newProxy = createProxy(section.getRef(),
-                    docToPublish.getRef(), version, overwriteExistingProxy);
+            VersionModel version = getLastVersion(docRef);
+            DocumentModel newProxy = createProxy(sectionRef, docRef, version,
+                    overwriteExistingProxy);
             return newProxy;
         }
 
