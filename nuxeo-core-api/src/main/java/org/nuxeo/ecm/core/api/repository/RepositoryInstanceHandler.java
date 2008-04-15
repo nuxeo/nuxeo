@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.api.repository;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
@@ -173,6 +174,13 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
                 return m.invoke(m == method ? getSession() : this, args);
             }
             return method.invoke(this, args);
+        } catch (InvocationTargetException e) {
+            // throw a ClientException
+            Throwable cause = e.getCause();
+            if (exceptionHandler != null) {
+                exceptionHandler.handleException(cause);
+            }
+            throw cause;
         } catch (Throwable t) {
             if (exceptionHandler != null) {
                 exceptionHandler.handleException(t);
