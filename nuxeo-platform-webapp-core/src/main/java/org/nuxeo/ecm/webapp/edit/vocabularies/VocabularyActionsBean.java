@@ -122,7 +122,6 @@ public class VocabularyActionsBean implements VocabularyActions {
     @Begin(join = true)
     @Create
     public void initialize() {
-        log.info("Initializing vocabulary actions bean...");
         initDirService();
         // searchCriteria = getEmptyVocabularyEntry();
     }
