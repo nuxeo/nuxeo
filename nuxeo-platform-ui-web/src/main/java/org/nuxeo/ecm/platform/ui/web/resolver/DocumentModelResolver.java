@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.resolver;
 
+import java.io.Serializable;
+
 import javax.el.BeanELResolver;
 import javax.el.ELContext;
 import javax.el.PropertyNotFoundException;
@@ -26,10 +28,11 @@ import javax.el.PropertyNotFoundException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
- * Resolves our custom expressions based on our custom {@link DocumentModel} and
- * {@link DataModel}s.
+ * Resolves our custom expressions based on our custom {@link DocumentModel}.
  * <p>
  * In order to specify a given property of the {@link DocumentModel} the
  * following syntax is available: <code>myDocumentModel.dublincore.title</code>
@@ -56,7 +59,8 @@ public class DocumentModelResolver extends BeanELResolver {
             if (base instanceof DocumentModel) {
                 type = DocumentPropertyContext.class;
                 context.setPropertyResolved(true);
-            } else if (base instanceof DocumentPropertyContext) {
+            } else if (base instanceof DocumentPropertyContext
+                    || base instanceof Property) {
                 type = Object.class;
                 context.setPropertyResolved(true);
             }
@@ -77,14 +81,57 @@ public class DocumentModelResolver extends BeanELResolver {
                 context.setPropertyResolved(true);
             } else if (base instanceof DocumentPropertyContext) {
                 DocumentPropertyContext ctx = (DocumentPropertyContext) base;
-                value = ctx.doc.getProperty(ctx.schema, (String) property);
-                value = FieldAdapterManager.getValueForDisplay(value);
-                context.setPropertyResolved(true);
-
-//                if (log.isDebugEnabled()) {
-//                    log.debug("Evaluated property " + property + " from base: "
-//                            + base + ". Value is: " + value);
-//                }
+                Property docProperty = null;
+                try {
+                    docProperty = ctx.doc.getProperty(ctx.schema + ":"
+                            + (String) property);
+                    if (docProperty != null && !docProperty.isContainer()) {
+                        // return the value
+                        value = ctx.doc.getProperty(ctx.schema,
+                                (String) property);
+                        value = FieldAdapterManager.getValueForDisplay(value);
+                    } else {
+                        value = docProperty;
+                    }
+                    context.setPropertyResolved(true);
+                } catch (PropertyException pe) {
+                    context.setPropertyResolved(false);
+                }
+            } else if (base instanceof Property) {
+                try {
+                    Property docProperty = (Property) base;
+                    if (!docProperty.isContainer()) {
+                        // return the value
+                        Serializable propValue = docProperty.getValue();
+                        if (property instanceof Long
+                                && propValue instanceof Object[]) {
+                            value = ((Object[]) propValue)[Integer.valueOf(((Long) property).toString())];
+                        }
+                        value = FieldAdapterManager.getValueForDisplay(value);
+                        context.setPropertyResolved(true);
+                    } else {
+                        Property subProperty = null;
+                        if (property instanceof Long && docProperty.isList()) {
+                            subProperty = docProperty.get(Integer.valueOf(((Long) property).toString()));
+                        } else if (property instanceof String) {
+                            subProperty = docProperty.get((String) property);
+                        }
+                        if (subProperty == null) {
+                            context.setPropertyResolved(false);
+                        } else {
+                            if (!subProperty.isContainer()) {
+                                // return the value
+                                value = subProperty.getValue();
+                                value = FieldAdapterManager.getValueForDisplay(value);
+                            } else {
+                                value = subProperty;
+                            }
+                            context.setPropertyResolved(true);
+                        }
+                    }
+                } catch (PropertyException pe) {
+                    context.setPropertyResolved(false);
+                }
             } else {
                 context.setPropertyResolved(false);
             }
@@ -122,11 +169,26 @@ public class DocumentModelResolver extends BeanELResolver {
                 value = FieldAdapterManager.getValueForStorage(value);
                 ctx.doc.setProperty(ctx.schema, (String) property, value);
                 context.setPropertyResolved(true);
-
-//                if (log.isDebugEnabled()) {
-//                    log.debug("Setting property: " + property + " with value: "
-//                            + value + " for dataModel: " + ctx.schema);
-//                }
+            } else if (base instanceof Property) {
+                Property docProperty = (Property) base;
+                try {
+                    if (docProperty.isContainer()) {
+                        Property subProperty = null;
+                        if (property instanceof Long && docProperty.isList()) {
+                            subProperty = docProperty.get(Integer.valueOf(((Long) property).toString()));
+                        } else if (property instanceof String) {
+                            subProperty = docProperty.get((String) property);
+                        }
+                        if (subProperty == null) {
+                            context.setPropertyResolved(false);
+                        } else {
+                            value = FieldAdapterManager.getValueForStorage(value);
+                            subProperty.setValue(value);
+                            context.setPropertyResolved(true);
+                        }
+                    }
+                } catch (PropertyException pe) {
+                }
             }
         }
     }
