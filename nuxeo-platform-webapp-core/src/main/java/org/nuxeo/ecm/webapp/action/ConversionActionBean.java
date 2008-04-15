@@ -35,7 +35,7 @@ import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.WebRemote;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.utils.DocumentModelUtils;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.transform.api.TransformServiceDelegate;
@@ -71,10 +71,10 @@ public class ConversionActionBean implements ConversionAction {
         return "view_file";
     }
 
-    private String getMimetypeFromDocument(String propertyName) {
-        Blob blob = (Blob) navigationContext.getCurrentDocument().getProperty(
-                DocumentModelUtils.getSchemaName(propertyName),
-                DocumentModelUtils.getFieldName(propertyName));
+    private String getMimetypeFromDocument(String propertyName)
+            throws PropertyException {
+        Blob blob = (Blob) navigationContext.getCurrentDocument().getPropertyValue(
+                propertyName);
         return blob.getMimeType();
     }
 
@@ -120,9 +120,8 @@ public class ConversionActionBean implements ConversionAction {
                 return null;
             }
 
-            String[] s = fileFieldFullName.split(":");
-            Blob blob = (Blob) navigationContext.getCurrentDocument().getProperty(
-                    s[0], s[1]);
+            Blob blob = (Blob) navigationContext.getCurrentDocument().getPropertyValue(
+                    fileFieldFullName);
 
             TransformServiceCommon nxt = Framework.getService(TransformServiceCommon.class);
             List<TransformDocument> resultingDocs = nxt.transform("any2pdf",
