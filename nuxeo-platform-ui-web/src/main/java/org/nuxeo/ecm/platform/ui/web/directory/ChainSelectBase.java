@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
@@ -63,7 +62,7 @@ public abstract class ChainSelectBase extends UIInput implements
 
     protected static final String DISPLAY_ID = "id";
 
-    protected static final String DISPLaY_IDLABEL = "idAndLabel";
+    protected static final String DISPLAY_IDLABEL = "idAndLabel";
 
     protected static final String DEFAULT_KEYSEPARATOR = "/";
 
@@ -574,7 +573,7 @@ public abstract class ChainSelectBase extends UIInput implements
             return id;
         } else if (DISPLAY_LABEL.equals(display)) {
             return translatedLabel;
-        } else if (DISPLaY_IDLABEL.equals(display)) {
+        } else if (DISPLAY_IDLABEL.equals(display)) {
             return id + ' ' + translatedLabel;
         } else {
             throw new RuntimeException(

@@ -41,7 +41,7 @@ public class TestQuerySplitter extends NXRuntimeTestCase {
 
     protected String ENGINE_NAME;
 
-    class IntrospectableSplitter extends QuerySplitter {
+    private static class IntrospectableSplitter extends QuerySplitter {
 
         IntrospectableSplitter(SQLQuery query) {
             super(query);
@@ -106,7 +106,7 @@ public class TestQuerySplitter extends NXRuntimeTestCase {
         return SQLQueryParser.parse(query);
     }
 
-    private IntrospectableSplitter makeSplitter(String query) {
+    private static IntrospectableSplitter makeSplitter(String query) {
         return new IntrospectableSplitter(SQLQueryParser.parse(query));
     }
 
@@ -128,7 +128,6 @@ public class TestQuerySplitter extends NXRuntimeTestCase {
         assertNotNull(rConf);
         rConf = service.getIndexableResourceConfByPrefix("ecm", false);
         assertNotNull(rConf);
-
     }
 
     //

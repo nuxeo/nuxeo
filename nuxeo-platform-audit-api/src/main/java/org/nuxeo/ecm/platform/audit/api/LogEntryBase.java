@@ -56,15 +56,15 @@ public class LogEntryBase implements LogEntry {
     }
 
     public LogEntryBase(DocumentMessage doc) {
-        setEventId(doc.getEventId());
-        setDocUUID(doc.getId());
-        setDocPath(doc.getPathAsString());
-        setDocType(doc.getType());
-        setEventDate(doc.getEventDate());
-        setPrincipalName(doc.getPrincipalName());
-        setCategory(doc.getCategory());
-        setComment(doc.getComment());
-        setDocLifeCycle(doc.getDocCurrentLifeCycle());
+        eventId = doc.getEventId();
+        docUUID = doc.getId();
+        docPath = doc.getPathAsString();
+        docType = doc.getType();
+        eventDate = doc.getEventDate();
+        principalName = doc.getPrincipalName();
+        category = doc.getCategory();
+        comment = doc.getComment();
+        docLifeCycle = doc.getDocCurrentLifeCycle();
     }
 
     public long getId() {
@@ -97,7 +97,7 @@ public class LogEntryBase implements LogEntry {
     }
 
     public void setEventDate(Date creationDate) {
-        this.eventDate = creationDate;
+        eventDate = creationDate;
     }
 
     public String getDocUUID() {
