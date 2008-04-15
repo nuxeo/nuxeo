@@ -382,7 +382,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String complexFileUrl(String patternName, DocumentModel doc,
             int index, String filename) {
         return complexFileUrl(patternName, doc, "files:files", index,
-                DEFAULT_BLOB_FIELD, filename);
+                DEFAULT_SUB_BLOB_FIELD, filename);
     }
 
     /**

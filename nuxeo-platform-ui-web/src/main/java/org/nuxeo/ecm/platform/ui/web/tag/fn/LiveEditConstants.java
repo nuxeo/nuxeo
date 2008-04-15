@@ -84,6 +84,8 @@ public interface LiveEditConstants {
 
     static final String DEFAULT_BLOB_FIELD = "content";
 
+    static final String DEFAULT_SUB_BLOB_FIELD = "file";
+
     static final String DEFAULT_SCHEMA = "file";
 
     // XML QNames for the Bootstrap XML and RESTful web service responses
