@@ -137,6 +137,10 @@ public class VocabularyActionsBean implements VocabularyActions {
     }
 
     @Factory("selectedVocabularyEntries")
+    protected void selectedVocabularyEntriesFactory() throws ClientException {
+        editVocabulary();
+    }
+
     public String editVocabulary() throws ClientException {
         showAddEntryForm = false;
         searchCriteria = getEmptyVocabularyEntry();
@@ -296,6 +300,10 @@ public class VocabularyActionsBean implements VocabularyActions {
     }
 
     @Factory("vocabularyNames")
+    protected void vocabularyNamesFactory() throws ClientException {
+        viewAllVocabularies();
+    }
+
     public String viewAllVocabularies() throws ClientException {
 
         vocabularyNames = new ArrayList<String>();

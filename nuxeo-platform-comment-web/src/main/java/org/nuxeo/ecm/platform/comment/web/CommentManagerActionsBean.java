@@ -217,7 +217,6 @@ public class CommentManagerActionsBean extends InputController implements
     /**
      * Initializes uiComments with Comments of current document.
      */
-    @Factory("documentComments")
     public void getComments() throws ClientException {
 
         commentableDoc = getCommentableDoc();
