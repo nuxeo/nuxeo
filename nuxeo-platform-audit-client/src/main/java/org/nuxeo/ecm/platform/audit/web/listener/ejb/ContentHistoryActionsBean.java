@@ -28,11 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,8 +51,6 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
 import org.nuxeo.ecm.platform.audit.api.delegate.AuditLogsServiceDelegate;
 import org.nuxeo.ecm.platform.audit.web.listener.ContentHistoryActions;
-import org.nuxeo.ecm.platform.audit.web.listener.ejb.local.ContentHistoryActionsLocal;
-import org.nuxeo.ecm.platform.audit.web.listener.ejb.remote.ContentHistoryActionsRemote;
 import org.nuxeo.ecm.platform.audit.web.listener.events.EventNames;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
@@ -173,7 +166,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
                  * the proxy document indicates,and then from that version we
                  * have to get to the root document.
                  */
-                boolean doDefaultSort = comparator == null ? true : false;
+                boolean doDefaultSort = comparator == null;
                 if (currentDocument.isProxy()) {
                     DocumentModel version = documentManager.getSourceDocument(currentDocument.getRef());
                     // logEntries =
@@ -245,14 +238,13 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         }
 
         for (LogEntry entry : logEntries) {
-            String newComment = null;
             String oldComment = entry.getComment();
             if (oldComment == null) {
                 continue;
             }
 
-            DocumentRef docRef = null;
-            RepositoryLocation repoLoc = null;
+            DocumentRef docRef;
+            RepositoryLocation repoLoc;
 
             try {
                 String repoName = oldComment.split(":")[0];
@@ -283,6 +275,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
             }
 
             // update comment
+            String newComment = null;
             if (entry.getEventId().equals("documentDuplicated")) {
                 newComment = "audit.duplicated_to";
             } else if (entry.getEventId().equals("documentCreatedByCopy")) {
@@ -297,7 +290,6 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
             } else {
                 logEntriesComments.put(entry.getId(), oldComment);
             }
-
         }
     }
 
