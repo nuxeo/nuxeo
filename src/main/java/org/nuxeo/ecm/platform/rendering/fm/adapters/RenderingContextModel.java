@@ -50,6 +50,16 @@ public class RenderingContextModel extends RenderingContextTemplate {
                 } else {
                     return null;
                 }
+            } else if ("root".equals(key)) {
+                RenderingContext root = this.ctx;
+                while (true) {
+                    if (root.getParentContext() != null) {
+                        root = root.getParentContext();
+                    } else {
+                        break;
+                    }
+                }
+                return new RenderingContextTemplate(engine, root);
             } else {
                 // try second the shared document view
                 Object value = engine.getSharedDocumentView().get(key, ctx);
