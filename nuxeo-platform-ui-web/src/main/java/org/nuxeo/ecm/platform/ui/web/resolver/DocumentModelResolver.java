@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.resolver;
 
-import java.io.Serializable;
-
 import javax.el.BeanELResolver;
 import javax.el.ELContext;
 import javax.el.PropertyNotFoundException;
@@ -30,6 +28,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
+import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
+import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 
 /**
  * Resolves our custom expressions based on our custom {@link DocumentModel}.
@@ -53,17 +54,17 @@ public class DocumentModelResolver extends BeanELResolver {
     @Override
     public Class<?> getType(ELContext context, Object base, Object property) {
         Class<?> type = null;
-        try {
-            type = super.getType(context, base, property);
-        } catch (PropertyNotFoundException e) {
-            if (base instanceof DocumentModel) {
+        if (base instanceof DocumentModel) {
+            try {
+                type = super.getType(context, base, property);
+            } catch (PropertyNotFoundException e) {
                 type = DocumentPropertyContext.class;
                 context.setPropertyResolved(true);
-            } else if (base instanceof DocumentPropertyContext
-                    || base instanceof Property) {
-                type = Object.class;
-                context.setPropertyResolved(true);
             }
+        } else if (base instanceof DocumentPropertyContext
+                || base instanceof Property) {
+            type = Object.class;
+            context.setPropertyResolved(true);
         }
         return type;
     }
@@ -71,72 +72,75 @@ public class DocumentModelResolver extends BeanELResolver {
     @Override
     public Object getValue(ELContext context, Object base, Object property) {
         Object value = null;
-
-        try {
-            value = super.getValue(context, base, property);
-        } catch (PropertyNotFoundException e) {
-            if (base instanceof DocumentModel) {
+        if (base instanceof DocumentModel) {
+            try {
+                // try document getters first to resolve doc.id for instance
+                value = super.getValue(context, base, property);
+            } catch (PropertyNotFoundException e) {
                 value = new DocumentPropertyContext((DocumentModel) base,
                         (String) property);
                 context.setPropertyResolved(true);
-            } else if (base instanceof DocumentPropertyContext) {
+            }
+        } else if (base instanceof DocumentPropertyContext) {
+            try {
                 DocumentPropertyContext ctx = (DocumentPropertyContext) base;
-                Property docProperty = null;
-                try {
-                    docProperty = ctx.doc.getProperty(ctx.schema + ":"
-                            + (String) property);
-                    if (docProperty != null && !docProperty.isContainer()) {
-                        // return the value
-                        value = ctx.doc.getProperty(ctx.schema,
-                                (String) property);
-                        value = FieldAdapterManager.getValueForDisplay(value);
-                    } else {
-                        value = docProperty;
-                    }
-                    context.setPropertyResolved(true);
-                } catch (PropertyException pe) {
-                    context.setPropertyResolved(false);
-                }
-            } else if (base instanceof Property) {
-                try {
-                    Property docProperty = (Property) base;
-                    if (!docProperty.isContainer()) {
-                        // return the value
-                        Serializable propValue = docProperty.getValue();
-                        if (property instanceof Long
-                                && propValue instanceof Object[]) {
-                            value = ((Object[]) propValue)[Integer.valueOf(((Long) property).toString())];
-                        }
-                        value = FieldAdapterManager.getValueForDisplay(value);
-                        context.setPropertyResolved(true);
-                    } else {
-                        Property subProperty = null;
-                        if (property instanceof Long && docProperty.isList()) {
-                            subProperty = docProperty.get(Integer.valueOf(((Long) property).toString()));
-                        } else if (property instanceof String) {
-                            subProperty = docProperty.get((String) property);
-                        }
-                        if (subProperty == null) {
-                            context.setPropertyResolved(false);
-                        } else {
-                            if (!subProperty.isContainer()) {
-                                // return the value
-                                value = subProperty.getValue();
-                                value = FieldAdapterManager.getValueForDisplay(value);
-                            } else {
-                                value = subProperty;
-                            }
-                            context.setPropertyResolved(true);
-                        }
-                    }
-                } catch (PropertyException pe) {
-                    context.setPropertyResolved(false);
-                }
-            } else {
+                Property docProperty = ctx.doc.getProperty(ctx.schema + ":"
+                        + (String) property);
+                value = getDocumentPropertyValue(docProperty);
+                context.setPropertyResolved(true);
+            } catch (PropertyException pe) {
+            }
+        } else if (base instanceof Property) {
+            try {
+                Property docProperty = (Property) base;
+                Property subProperty = getDocumentProperty(docProperty,
+                        property);
+                value = getDocumentPropertyValue(subProperty);
+                context.setPropertyResolved(true);
+            } catch (PropertyException pe) {
+            }
+        }
+
+        // XXX end by bean resolver to overcome a mysterious StackOverflow error
+        // at first login, and maybe resolve Property getters.
+        if (!context.isPropertyResolved()) {
+            try {
+                value = super.getValue(context, base, property);
+            } catch (Exception e) {
                 context.setPropertyResolved(false);
             }
         }
 
+        return value;
+    }
+
+    private Property getDocumentProperty(Property docProperty,
+            Object propertyValue) throws PropertyException {
+        Property subProperty = null;
+        if ((docProperty instanceof ArrayProperty || docProperty instanceof ListProperty)
+                && propertyValue instanceof Long) {
+            subProperty = docProperty.get(((Long) propertyValue).intValue());
+        } else if (docProperty instanceof ComplexProperty
+                && propertyValue instanceof String) {
+            subProperty = docProperty.get((String) propertyValue);
+        }
+        if (subProperty == null) {
+            throw new PropertyException("Property not found");
+        }
+        return subProperty;
+    }
+
+    private Object getDocumentPropertyValue(Property docProperty)
+            throws PropertyException {
+        if (docProperty == null) {
+            throw new PropertyException("Null property");
+        }
+        Object value = docProperty;
+        if (!docProperty.isContainer()) {
+            // return the value
+            value = docProperty.getValue();
+            value = FieldAdapterManager.getValueForDisplay(value);
+        }
         return value;
     }
 
@@ -150,6 +154,9 @@ public class DocumentModelResolver extends BeanELResolver {
                     || base instanceof DocumentPropertyContext) {
                 readOnly = false;
                 context.setPropertyResolved(true);
+            } else if (base instanceof Property) {
+                readOnly = ((Property) base).isReadOnly();
+                context.setPropertyResolved(true);
             }
         }
         return readOnly;
@@ -158,37 +165,26 @@ public class DocumentModelResolver extends BeanELResolver {
     @Override
     public void setValue(ELContext context, Object base, Object property,
             Object value) {
-        try {
-            super.setValue(context, base, property, value);
-        } catch (PropertyNotFoundException e) {
-            if (base instanceof DocumentModel) {
-                // do nothing
-                context.setPropertyResolved(true);
-            } else if (base instanceof DocumentPropertyContext) {
-                DocumentPropertyContext ctx = (DocumentPropertyContext) base;
-                value = FieldAdapterManager.getValueForStorage(value);
-                ctx.doc.setProperty(ctx.schema, (String) property, value);
-                context.setPropertyResolved(true);
-            } else if (base instanceof Property) {
+        if (base instanceof DocumentModel) {
+            try {
+                super.setValue(context, base, property, value);
+            } catch (PropertyNotFoundException e) {
+                // nothing else to set on doc model
+            }
+        } else if (base instanceof DocumentPropertyContext) {
+            DocumentPropertyContext ctx = (DocumentPropertyContext) base;
+            value = FieldAdapterManager.getValueForStorage(value);
+            ctx.doc.setProperty(ctx.schema, (String) property, value);
+            context.setPropertyResolved(true);
+        } else if (base instanceof Property) {
+            try {
                 Property docProperty = (Property) base;
-                try {
-                    if (docProperty.isContainer()) {
-                        Property subProperty = null;
-                        if (property instanceof Long && docProperty.isList()) {
-                            subProperty = docProperty.get(Integer.valueOf(((Long) property).toString()));
-                        } else if (property instanceof String) {
-                            subProperty = docProperty.get((String) property);
-                        }
-                        if (subProperty == null) {
-                            context.setPropertyResolved(false);
-                        } else {
-                            value = FieldAdapterManager.getValueForStorage(value);
-                            subProperty.setValue(value);
-                            context.setPropertyResolved(true);
-                        }
-                    }
-                } catch (PropertyException pe) {
-                }
+                Property subProperty = getDocumentProperty(docProperty,
+                        property);
+                value = FieldAdapterManager.getValueForStorage(value);
+                subProperty.setValue(value);
+                context.setPropertyResolved(true);
+            } catch (PropertyException pe) {
             }
         }
     }
