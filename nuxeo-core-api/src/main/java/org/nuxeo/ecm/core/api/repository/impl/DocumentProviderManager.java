@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.DocumentProvider;
+import org.nuxeo.ecm.core.api.repository.cache.DocumentModelCache;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -51,39 +52,29 @@ public class DocumentProviderManager extends DefaultComponent implements Documen
         return session;
     }
 
+    public void removeDocumentFromCache(String id) {
+        cache.remove(id);
+    }
+
+    public void removeDocumentFromCache(DocumentRef ref) {
+        ((DocumentModelCache)session).uncacheDocument(ref);
+    }
+
     public DocumentModel getCachedDocument(String id) {
-        return cache.get(id);
+        return ((DocumentModelCache)session).getCachedDocument(new IdRef(id));
     }
 
     public DocumentModel getCachedDocument(DocumentRef ref) {
-        String docId;
-        if (ref instanceof IdRef) {
-            docId = ((IdRef)ref).value;
-        } else {
-            docId = refs.get(ref);
-        }
-        if (docId != null) {
-            return cache.get(docId);
-        }
-        return null;
+        return ((DocumentModelCache)session).getCachedDocument(ref);
     }
 
     private DocumentModel cacheDocument(DocumentModel docModel) {
-        String docId = docModel.getId();
-        DocumentModel cached = cache.get(docId);
-        if (cached != null) {
-            return cached;
-        }
-        cache.put(docId, docModel);
-        return docModel;
+        return ((DocumentModelCache)session).cacheDocument(docModel);
     }
 
     private DocumentModel cacheDocument(DocumentRef docRef, DocumentModel docModel) {
-        docModel = cacheDocument(docModel);
-        if (!(docRef instanceof IdRef)) {
-            refs.put(docRef, docModel.getId());
-        }
-        return docModel;
+        System.err.println("#################### SHOULD NOT PASS HERE #################");
+        return ((DocumentModelCache)session).cacheDocument(docModel);
     }
 
     private DocumentModelList cacheDocumentList(DocumentModelList docList) {
@@ -99,35 +90,31 @@ public class DocumentProviderManager extends DefaultComponent implements Documen
     }
 
     public DocumentModel getDocument(String id) throws ClientException {
-        return getDocument(id, false);
+        return getDocument(id);
     }
 
     public DocumentModel getDocument(DocumentRef docRef) throws ClientException {
-        return getDocument(docRef, false);
+        return session.getDocument(docRef);
     }
 
     public DocumentModel getDocument(String id, boolean force) throws ClientException {
-        DocumentModel docModel = !force ? getCachedDocument(id) : null;
-        if (docModel == null) {
-            docModel = cacheDocument(session.getDocument(new IdRef(id)));
-        }
-        return docModel;
+        return getDocument(new IdRef(id), force);
     }
 
     public DocumentModel getDocument(DocumentRef docRef, boolean force) throws ClientException {
-        DocumentModel docModel = !force ? getCachedDocument(docRef) : null;
-        if (docModel == null) {
-            docModel = cacheDocument(docRef, session.getDocument(docRef));
+        if (force) {
+            return ((DocumentModelCache)session).fetchDocument(docRef);
+        } else {
+            return session.getDocument(docRef);
         }
-        return docModel;
     }
 
     public DocumentModel getDocument(DocumentRef docRef, String[] schemas) throws ClientException {
-        return cacheDocument(docRef, session.getDocument(docRef, schemas));
+        return session.getDocument(docRef);
     }
 
     public DocumentModel getRootDocument() throws ClientException {
-        return cacheDocument(session.getRootDocument());
+        return session.getRootDocument();
     }
 
     public boolean exists(DocumentRef docRef) throws ClientException {
@@ -135,15 +122,15 @@ public class DocumentProviderManager extends DefaultComponent implements Documen
     }
 
     public DocumentModelList getChildren(DocumentRef parent, String type) throws ClientException {
-        return cacheDocumentList(session.getChildren(parent, type));
+        return session.getChildren(parent, type);
     }
 
     public DocumentModelList getChildren(DocumentRef parent) throws ClientException {
-        return cacheDocumentList(session.getChildren(parent));
+        return session.getChildren(parent);
     }
 
     public DocumentModel getChild(DocumentRef parent, String name) throws ClientException {
-        return cacheDocument(session.getChild(parent, name));
+        return session.getChild(parent, name);
     }
 
     /**
@@ -151,13 +138,7 @@ public class DocumentProviderManager extends DefaultComponent implements Documen
      * @see CoreSession#getParentDocument(DocumentRef docRef)
      */
     public DocumentModel getParentDocument(DocumentRef docRef) throws ClientException {
-        DocumentModel parent = session.getParentDocument(docRef);
-        if (parent == null) {
-            // given doc is root
-            return null;
-        }
-
-        return cacheDocument(parent);
+        return session.getParentDocument(docRef);
     }
 
     public DocumentModelIterator getChildrenIterator(DocumentRef parent) throws ClientException {

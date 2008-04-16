@@ -26,8 +26,8 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.repository.jcr.properties.PropertyFactory;
 import org.nuxeo.ecm.core.model.Property;
+import org.nuxeo.ecm.core.repository.jcr.properties.PropertyFactory;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 
 /**

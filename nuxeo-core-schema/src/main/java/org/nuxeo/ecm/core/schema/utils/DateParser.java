@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * A helper class that parses Dates out of Strings with date time in RFC822 and W3CDateTime
  * formats plus the variants Atom (0.3) and RSS (0.9, 0.91, 0.92, 0.93, 0.94, 1.0 and 2.0)
@@ -121,14 +123,13 @@ public class DateParser {
      */
     private static Date parseUsingMask(String[] masks, String sDate) {
         sDate = (sDate != null) ? sDate.trim() : null;
-        ParsePosition pp;
         Date d = null;
         for (int i = 0; d == null && i < masks.length; i++) {
             DateFormat df = new SimpleDateFormat(masks[i], Locale.US);
             //df.setLenient(false);
             df.setLenient(true);
             try {
-                pp = new ParsePosition(0);
+                ParsePosition pp = new ParsePosition(0);
                 d = df.parse(sDate, pp);
                 if (pp.getIndex() != sDate.length()) {
                     d = null;
@@ -191,9 +192,10 @@ public class DateParser {
      * <p/>
      * @param sDate string to parse for a date.
      * @return the Date represented by the given W3C date-time string.
-     *         It returns <b>null</b> if it was not possible to parse the given string into a Date.
+     *         It returns null if it was not possible to parse the given string into a Date.
      *
      */
+    @Nullable
     public static Date parseW3CDateTime(String sDate) {
         if (sDate == null) {
             return null;
@@ -225,36 +227,34 @@ public class DateParser {
         return parseUsingMask(W3CDATETIME_MASKS,sDate);
     }
 
-
     /**
      * Parses a Date out of a String with a date in W3C date-time format or
      * in a RFC822 format.
-     * <p>
-     * @param sDate string to parse for a date.
-     * @return the Date represented by the given W3C date-time string.
-     *         It returns <b>null</b> if it was not possible to parse the given string into a Date.
      *
-     * */
+     * @param sDate string to parse for a date.
+     * @return the Date represented by the given W3C date-time string,
+     *         or null if it was not possible to parse the given string into a Date.
+     *
+     */
+    @Nullable
     public static Date parseDate(String sDate) {
         if (sDate == null) {
             return null;
         }
         Date d = parseW3CDateTime(sDate);
-        if (d==null) {
+        if (d == null) {
             d = parseRFC822(sDate);
         }
         return d;
     }
 
     /**
-     * create a RFC822 representation of a date.
-     * <p/>
+     * Creates a RFC822 representation of a date.
+     * <p>
      * Refer to the java.text.SimpleDateFormat javadocs for details on the format of each element.
-     * <p/>
-     * @param date Date to parse
-     * @return the RFC822 represented by the given Date
-     *         It returns <b>null</b> if it was not possible to parse the date.
      *
+     * @param date Date to format
+     * @return the RFC822 representation of the given Date,
      */
     public static String formatRFC822(Date date) {
         SimpleDateFormat dateFormater = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'",Locale.US);
@@ -263,14 +263,12 @@ public class DateParser {
     }
 
     /**
-     * create a W3C Date Time representation of a date.
-     * <p/>
+     * Creates a W3C Date Time representation of a date.
+     * <p>
      * Refer to the java.text.SimpleDateFormat javadocs for details on the format of each element.
-     * <p/>
-     * @param date Date to parse
-     * @return the W3C Date Time represented by the given Date
-     *         It returns <b>null</b> if it was not possible to parse the date.
      *
+     * @param date Date to format
+     * @return the W3C Date Time representation of the given Date
      */
     public static String formatW3CDateTime(Date date) {
         SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'",Locale.US);

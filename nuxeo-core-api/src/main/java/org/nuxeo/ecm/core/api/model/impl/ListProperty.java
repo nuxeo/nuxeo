@@ -27,13 +27,13 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.ecm.core.api.ListDiff;
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.PropertyVisitor;
 import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -75,8 +75,8 @@ public class ListProperty extends AbstractProperty {
      * TODO FIXME XXX uncommented <code>return true;</code>
      * see NXP-1653.
      * @see DefaultPropertyFactory line 216
-     * @see {@link ListProperty#getValue()}
-     * @see {@link ListProperty#accept()}
+     * @see {@link ListProperty#getValue}
+     * @see {@link ListProperty#accept}
      */
     public boolean isContainer() {
         //return true; // - this can be uncommented when scalar list will be fixed
@@ -99,7 +99,7 @@ public class ListProperty extends AbstractProperty {
         return property;
     }
 
-    public Property add() throws PropertyException {
+    public Property add() {
         Field lfield = getType().getField();
         Property property = getRoot().createProperty(this, lfield, 0);
         children.add(property);
@@ -119,13 +119,11 @@ public class ListProperty extends AbstractProperty {
         return (ListType)field.getType();
     }
 
-    public Property get(String name) throws PropertyNotFoundException,
-            UnsupportedOperationException {
+    public Property get(String name) {
         return children.get(Integer.parseInt(name));
     }
 
-    public Property get(int index)
-            throws UnsupportedOperationException {
+    public Property get(int index) {
         return children.get(index);
     }
 
@@ -182,7 +180,7 @@ public class ListProperty extends AbstractProperty {
         if (value == null) { // IGNORE null values - properties will be considered PHANTOMS
             return;
         }
-        List<Serializable> list = null;
+        List<Serializable> list;
         if (value.getClass().isArray()) { // accept also arrays
             list = (List<Serializable>)PrimitiveArrays.toList(value);
         } else {
@@ -309,6 +307,7 @@ public class ListProperty extends AbstractProperty {
         throw new PropertyConversionException(value.getClass(), List.class);
     }
 
+    @NotNull
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {

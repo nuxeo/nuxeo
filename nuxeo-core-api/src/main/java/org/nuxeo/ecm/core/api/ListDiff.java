@@ -21,8 +21,8 @@ package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * A list that is detached from its data source so all modifications on the list

@@ -308,6 +308,12 @@ public class SchemaManagerImpl implements SchemaManager {
                     return;
                 }
             }
+            registerDocumentType(superType, dtd);
+        }
+    }
+
+    private DocumentType registerDocumentType(DocumentType superType, DocumentTypeDescriptor dtd) {
+        synchronized (docTypeReg) {
             try {
                 String[] schemaNames = getSchemaNames(dtd.schemas);
                 DocumentType docType = new DocumentTypeImpl(superType,
@@ -315,17 +321,30 @@ public class SchemaManagerImpl implements SchemaManager {
                 docType.setChildrenTypes(dtd.childrenTypes);
                 // use global prefetch info if not a local one was defined
                 docType.setPrefetchInfo(dtd.prefetch != null ? new PrefetchInfo(dtd.prefetch)
-                        : prefetchInfo);
+                : prefetchInfo);
                 docTypeReg.put(dtd.name, docType);
                 facetsCache = null;
                 log.info("Registered document type: " + dtd.name);
                 registerPendingDocTypes(docType);
+                return docType;
             } catch (Exception e) {
                 log.error("Error registering document type: " + dtd.name, e);
                 // TODO: use component dependencies instead?
             }
+            return null;
         }
     }
+
+    private void registerPendingDocTypes(DocumentType superType) {
+        List<DocumentTypeDescriptor> list = pendingDocTypes.remove(superType.getName());
+        if (list == null) {
+            return;
+        }
+        for (DocumentTypeDescriptor dtd : list) {
+            registerDocumentType(superType, dtd);
+        }
+    }
+
 
     private void removeFromFacetsCache(DocumentType docType) {
         if (facetsCache == null) {
@@ -362,21 +381,6 @@ public class SchemaManagerImpl implements SchemaManager {
                 removeFromInheritanceCache(docType);
             }
             return docType;
-        }
-    }
-
-    private void registerPendingDocTypes(DocumentType superType) {
-        List<DocumentTypeDescriptor> list = pendingDocTypes.remove(superType.getName());
-        if (list == null) {
-            return;
-        }
-        for (DocumentTypeDescriptor dtd : list) {
-            String[] schemaNames = getSchemaNames(dtd.schemas);
-            DocumentType docType = new DocumentTypeImpl(superType, dtd.name,
-                    schemaNames, dtd.facets);
-            docTypeReg.put(dtd.name, docType);
-            log.info("Registered document type: " + dtd.name);
-            registerPendingDocTypes(docType);
         }
     }
 

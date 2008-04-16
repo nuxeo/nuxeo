@@ -259,8 +259,7 @@ public class LazyBlob extends DefaultStreamBlob implements Serializable {
         if (!dataKeyEquals) {
             return false;
         }
-        boolean repoEquals = equalValues(repositoryName, other.repositoryName);
-        return repoEquals;
+        return equalValues(repositoryName, other.repositoryName);
     }
 
     @Override
