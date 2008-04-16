@@ -35,7 +35,11 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.DocumentObjectWrapper;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.RenderingContextModel;
-import org.nuxeo.ecm.platform.rendering.fm.extensions.RenderDirective;
+import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockDirective;
+import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriter;
+import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriterRegistry;
+import org.nuxeo.ecm.platform.rendering.fm.extensions.ExtendsDirective;
+import org.nuxeo.ecm.platform.rendering.fm.extensions.SuperBlockDirective;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.TransformDirective;
 
 import freemarker.cache.ClassTemplateLoader;
@@ -82,7 +86,9 @@ public class FreemarkerEngine implements RenderingEngine {
         this.cfg.setObjectWrapper(wrapper);
 
         // custom directives goes here
-        this.cfg.setSharedVariable("render", new RenderDirective());
+        this.cfg.setSharedVariable("block", new BlockDirective());
+        this.cfg.setSharedVariable("superBlock", new SuperBlockDirective());
+        this.cfg.setSharedVariable("extends", new ExtendsDirective());
         this.cfg.setSharedVariable("transform", new TransformDirective());
 
         addResourceDirectories(resourceDirs);
@@ -155,10 +161,12 @@ public class FreemarkerEngine implements RenderingEngine {
         try {
             Template temp = cfg.getTemplate(ctx.getTemplate());
             RenderingContextModel root = new RenderingContextModel(this, ctx);
+            BlockWriter bw = new BlockWriter("", new BlockWriterRegistry());
             Environment env = temp.createProcessingEnvironment(root,
-                    ctx.getWriter(), getObjectWrapper());
+                    bw, getObjectWrapper());
             env.setCustomAttribute(ROOT_CTX_KEY, root);
             env.process();
+            bw.copyTo(ctx.getWriter());
         } catch (Exception e) {
             throw new RenderingException(e);
         }

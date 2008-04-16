@@ -25,6 +25,7 @@ import java.io.Writer;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.rendering.api.DocumentContextView;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContextView;
 import org.nuxeo.ecm.platform.rendering.api.EmptyContextView;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
@@ -74,12 +75,9 @@ public class SimpleContext implements RenderingContext {
     public RenderingContext getParentContext() {
         return null;
     }
-    public RenderingContext getChildContext() {
-        return null;
-    }
 
-    public RenderingContextView getDocumentView() {
-        return EmptyContextView.INSTANCE;
+    public RenderingContextView getView() {
+        return DocumentContextView.DEFAULT;
     }
 
 }

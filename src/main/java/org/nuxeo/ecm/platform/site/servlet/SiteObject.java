@@ -158,10 +158,6 @@ public class SiteObject implements ServletRenderingContext {
         return prev;
     }
 
-    public RenderingContext getChildContext() {
-        return next;
-    }
-
     public String getTemplate() {
         SitePageTemplate template = getSiteTemplate();
         SiteObjectView view = null;
@@ -177,7 +173,7 @@ public class SiteObject implements ServletRenderingContext {
         }
     }
 
-    public RenderingContextView getDocumentView() {
+    public RenderingContextView getView() {
         return SiteDocumentView.INSTANCE;
     }
 
@@ -190,7 +186,11 @@ public class SiteObject implements ServletRenderingContext {
     }
 
     public CoreSession getSession() {
+        try {
         return request.getCoreSession();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to open a session", e);
+        }
     }
 
     public Writer getWriter() {

@@ -21,8 +21,8 @@ package org.nuxeo.ecm.platform.rendering.fm.adapters;
 
 import java.util.Collection;
 
-import org.nuxeo.ecm.platform.rendering.api.RenderingContextView;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
+import org.nuxeo.ecm.platform.rendering.api.RenderingContextView;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 
 import freemarker.template.TemplateModel;
@@ -38,25 +38,6 @@ public class RenderingContextModel extends RenderingContextTemplate {
     public RenderingContextModel(FreemarkerEngine engine, RenderingContext ctx) {
         super (engine, ctx);
     }
-
-    public final RenderingContext pushContext() {
-        RenderingContext subCtx = ctx.getChildContext();
-        if (subCtx != null) {
-            ctx = subCtx;
-            return ctx;
-        }
-        return null;
-    }
-
-    public final RenderingContext popContext() {
-        RenderingContext superCtx = ctx.getParentContext();
-        if (superCtx != null) {
-            ctx = superCtx;
-            return ctx;
-        }
-        return null;
-    }
-
 
     public TemplateModel get(String key) throws TemplateModelException {
         try {
@@ -87,11 +68,13 @@ public class RenderingContextModel extends RenderingContextTemplate {
     public Collection<String> getRawKeys() {
         Collection<String> keys = super.getRawKeys();
         keys.addAll(engine.getSharedDocumentView().keys(ctx));
+        keys.add("this");
+        keys.add("super");
         return keys;
     }
 
     public int size() throws TemplateModelException {
-        return ctx.getDocumentView().size(ctx) + engine.getSharedDocumentView().size(ctx);
+        return ctx.getView().size(ctx) + engine.getSharedDocumentView().size(ctx) + 2;
     }
 
 }

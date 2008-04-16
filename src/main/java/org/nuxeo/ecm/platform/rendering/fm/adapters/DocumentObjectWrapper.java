@@ -45,7 +45,7 @@ public class DocumentObjectWrapper extends DefaultObjectWrapper {
     protected TemplateModel handleUnknownType(Object obj)
             throws TemplateModelException {
         if (obj instanceof DocumentModel) {
-            return new DocumentTemplate((DocumentModel)obj);
+            return new DocumentTemplate(this, (DocumentModel)obj);
         } else if (obj instanceof ListProperty) {
             return new ListPropertyTemplate(this, (ListProperty)obj);
         } else if (obj instanceof Property) {

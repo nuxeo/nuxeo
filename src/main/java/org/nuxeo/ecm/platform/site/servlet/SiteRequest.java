@@ -25,9 +25,13 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
 import org.nuxeo.ecm.platform.site.api.SiteException;
 import org.nuxeo.ecm.platform.site.template.SiteManager;
@@ -38,6 +42,9 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class SiteRequest extends HttpServletRequestWrapper implements SiteConst {
+
+
+    public static final String CORESESSION_KEY = "SiteCoreSession";
 
     protected SiteManager siteManager;
     protected CoreSession session;
@@ -50,14 +57,18 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
 
     protected HttpServletResponse resp;
 
-    public SiteRequest(HttpServletRequest req, HttpServletResponse resp, CoreSession session) {
+    public SiteRequest(HttpServletRequest req, HttpServletResponse resp, SiteManager mgr) {
         super (req);
-        this.session = session;
+        this.siteManager = mgr;
         String requestedMode = getParameter(MODE_KEY);
         if (requestedMode != null) {
             this.mode = requestedMode;
         }
         this.resp = resp;
+    }
+
+    public SiteManager getSiteManager() {
+        return siteManager;
     }
 
     public SiteObject getSiteRoot() {
@@ -72,7 +83,10 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
         return (HttpServletRequest) super.getRequest();
     }
 
-    public CoreSession getCoreSession() {
+    public CoreSession getCoreSession() throws Exception {
+        if (session == null) {
+            session = getCoreSession(this);
+        }
         return session;
     }
 
@@ -101,15 +115,6 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
         }
         return servletBase;
     }
-
-
-    public SiteManager getSiteManager() {
-        if (siteManager == null) {
-            siteManager = Framework.getLocalService(SiteManager.class);
-        }
-        return siteManager;
-    }
-
 
     public SiteObject getLastResolvedObject() {
         return lastResolved;
@@ -230,6 +235,37 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
    public String getResolvedPath() {
        if (lastResolved == null) return "";
        return getPath(head, lastResolved.next);
+   }
+
+
+   public static CoreSession getCoreSession(HttpServletRequest request)
+   throws Exception {
+
+//     for testing
+       CoreSession session = (CoreSession) request.getAttribute("TestCoreSession");
+
+       HttpSession httpSession = request.getSession(true);
+       if (session == null) {
+           session = (CoreSession) httpSession.getAttribute(CORESESSION_KEY);
+       }
+       if (session == null) {
+           String repoName = getTargetRepositoryName(request);
+           RepositoryManager rm = Framework.getService(RepositoryManager.class);
+           Repository repo = rm.getRepository(repoName);
+           if (repo == null) {
+               throw new ClientException("Unable to get " + repoName
+                       + " repository");
+           }
+           session = repo.open();
+       }
+       if (httpSession != null) {
+           httpSession.setAttribute(CORESESSION_KEY, session);
+       }
+       return session;
+   }
+
+   public static String getTargetRepositoryName(HttpServletRequest req) {
+       return "default";
    }
 
 }

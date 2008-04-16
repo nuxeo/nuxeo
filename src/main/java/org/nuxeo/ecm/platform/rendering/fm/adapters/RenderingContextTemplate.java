@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.rendering.api.RenderingContextView;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
+import org.nuxeo.ecm.platform.rendering.api.RenderingContextView;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 
 import freemarker.template.AdapterTemplateModel;
@@ -74,7 +74,7 @@ public class RenderingContextTemplate implements TemplateHashModelEx, AdapterTem
     }
 
     public final RenderingContextView getDocumentView() {
-        return ctx.getDocumentView();
+        return ctx.getView();
     }
 
     public final DocumentModel getDocument() {
@@ -84,7 +84,7 @@ public class RenderingContextTemplate implements TemplateHashModelEx, AdapterTem
     public TemplateModel get(String key) throws TemplateModelException {
         try {
             // try first the contextual document view
-            Object value = ctx.getDocumentView().get(key, ctx);
+            Object value = ctx.getView().get(key, ctx);
             if (value != RenderingContextView.UNKNOWN) {
                 return wrap(value);
             }
@@ -108,7 +108,7 @@ public class RenderingContextTemplate implements TemplateHashModelEx, AdapterTem
     }
 
     public Collection<String> getRawKeys() {
-        return ctx.getDocumentView().keys(ctx);
+        return ctx.getView().keys(ctx);
     }
 
     public TemplateCollectionModel values() throws TemplateModelException {
@@ -121,7 +121,7 @@ public class RenderingContextTemplate implements TemplateHashModelEx, AdapterTem
     }
 
     public int size() throws TemplateModelException {
-        return ctx.getDocumentView().size(ctx);
+        return ctx.getView().size(ctx);
     }
 
     public final TemplateModel wrap(Object obj) throws TemplateModelException {

@@ -58,13 +58,11 @@ public interface RenderingContext {
 
     RenderingContext getParentContext();
 
-    RenderingContext  getChildContext();
-
     /**
      * Must never return null. If no special document view is used
      * you may return the defualt one {@link RenderingContextView#DEFAULT}
      * @return
      */
-    RenderingContextView getDocumentView();
+    RenderingContextView getView();
 
 }

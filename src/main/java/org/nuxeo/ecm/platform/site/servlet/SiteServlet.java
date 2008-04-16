@@ -28,16 +28,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.site.api.SiteException;
@@ -58,8 +54,6 @@ public class SiteServlet extends HttpServlet {
     private static final long serialVersionUID = 965764764858L;
 
     private static final Log log = LogFactory.getLog(SiteServlet.class);
-
-    public static final String CORESESSION_KEY = "SiteCoreSession";
 
     protected static final int BUFFER_SIZE = 4096 * 16;
 
@@ -87,27 +81,23 @@ public class SiteServlet extends HttpServlet {
             throws ServletException, IOException {
         double start = System.currentTimeMillis();
 
-        CoreSession coreSession = null;
+        SiteRequest siteRequest = null;
+        try {
+            siteRequest = createRequest(req, resp);
+        } catch (Exception e) {
+            displayError(resp, e, "Failed to get a core session",
+                    SiteConst.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
 
-        String path = req.getPathInfo();
-        if (path == null || path.length() <= 1) {
+        if (siteRequest.getSiteRoot() == null) { // a request outside the root
             try {
-                showIndex(req, resp);
+                showIndex(siteRequest);
             } catch (Exception e) {
                 displayError(resp, null, "Failed to show server main index",
                         SiteConst.SC_INTERNAL_SERVER_ERROR);
             }
             System.out.println(">>> SITE REQUEST TOOK:  "+((System.currentTimeMillis()-start)/1000));
-            return;
-        }
-
-        SiteRequest siteRequest = null;
-        try {
-            coreSession = getCoreSession(req);
-            siteRequest = createRequest(req, resp, coreSession);
-        } catch (Exception e) {
-            displayError(resp, e, "Failed to get a core session",
-                    SiteConst.SC_INTERNAL_SERVER_ERROR);
             return;
         }
 
@@ -147,7 +137,7 @@ public class SiteServlet extends HttpServlet {
 
         double s = System.currentTimeMillis();
         try {
-            engine.render(siteRequest.getSiteRoot());
+            engine.render(siteRequest.getLastResolvedObject());
         } catch (RenderingException e) {
             displayError(resp, e, "Error during the rendering process");
         }
@@ -189,36 +179,6 @@ public class SiteServlet extends HttpServlet {
         }
     }
 
-    protected CoreSession getCoreSession(HttpServletRequest request)
-            throws Exception {
-
-        // for testing
-        CoreSession session = (CoreSession) request.getAttribute("TestCoreSession");
-
-        HttpSession httpSession = request.getSession(true);
-        if (session == null) {
-            session = (CoreSession) httpSession.getAttribute(CORESESSION_KEY);
-        }
-        if (session == null) {
-            String repoName = getTargetRepositoryName(request);
-            RepositoryManager rm = Framework.getService(RepositoryManager.class);
-            Repository repo = rm.getRepository(repoName);
-            if (repo == null) {
-                throw new ClientException("Unable to get " + repoName
-                        + " repository");
-            }
-            session = repo.open();
-        }
-        if (httpSession != null) {
-            httpSession.setAttribute(CORESESSION_KEY, session);
-        }
-        return session;
-    }
-
-    public String getTargetRepositoryName(HttpServletRequest req) {
-        return "default";
-    }
-
     /**
      * Build a circular list to describe traversal path
      * @param pathInfo
@@ -226,12 +186,13 @@ public class SiteServlet extends HttpServlet {
      * @return
      * @throws Exception
      */
-    public SiteRequest createRequest(HttpServletRequest req, HttpServletResponse resp, CoreSession session) throws Exception {
-        SiteRequest siteReq = new SiteRequest(req, resp, session);
+    public SiteRequest createRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        SiteRequest siteReq = new SiteRequest(req, resp, manager);
         Path path = new Path(req.getPathInfo());
         if (path.segmentCount() == 0) {
             return siteReq;
         }
+        CoreSession session = siteReq.getCoreSession();
         String[] segments = path.segments();
         String name = segments[0];
         DocumentModel doc = resolver.getSiteRoot(name, session);
@@ -253,13 +214,13 @@ public class SiteServlet extends HttpServlet {
     }
 
 
-    public void showIndex(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void showIndex(SiteRequest request) throws Exception {
         try {
             double s = System.currentTimeMillis();
-            engine.render(new SiteRenderingContext(request, response, manager));
+            engine.render(new SiteRenderingContext(request));
             System.out.println(">>>>>>>>>> STATIC RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
         } catch (RenderingException e) {
-            displayError(response, e, "Error during the rendering process");
+            displayError(request.getResponse(), e, "Error during the rendering process");
         }
     }
 

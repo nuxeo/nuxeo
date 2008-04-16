@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.XSDLoader;
-import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiTransformer;
 import org.nuxeo.ecm.platform.rendering.wiki.filters.DocumentExpression;
@@ -83,15 +82,13 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         Blob blob = new StreamingBlob(new URLSource(SimpleContext.class.getClassLoader().getResource("blob.wiki")));
         doc1.getPart("dublincore").get("content").setValue(blob);
 
-        final DocumentModelImpl doc2 = new DocumentModelImpl("/root/folder/wiki2", "Test Doc 2", "File");
+        DocumentModelImpl doc2 = new DocumentModelImpl("/root/folder/wiki2", "Test Doc 2", "File");
+        doc2.addDataModel(new DataModelImpl("dublincore"));
+        doc2.getPart("dublincore").get("title").setValue("The dublincore title for doc1");
+        engine.setSharedVariable("doc", doc2);
 
         StringWriter writer = new StringWriter();
-        SimpleContext ctx = new SimpleContext(doc1, "doc.ftl", writer) {
-            @Override
-            public RenderingContext getChildContext() {
-                return new SimpleContext(doc2, "subdoc.ftl", writer);
-            }
-        };
+        SimpleContext ctx = new SimpleContext(doc1, "c.ftl", writer);
 
         System.err.flush();
         double s = System.currentTimeMillis();
@@ -103,17 +100,17 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         System.out.println(">>>>>>>>>> RENDERING TOOK: "+((e-s)/1000));
         System.out.println("###############################");
         System.out.flush();
-        for (int i=0; i<1; i++) {
-            ctx.writer = new StringWriter();
-            s = System.currentTimeMillis();
-            engine.render(ctx);
-            e = System.currentTimeMillis();
-            System.out.println("###############################");
-            System.out.println(writer.getBuffer());
-            System.out.println("###############################");
-            System.out.println(">>>>>>>>>> "+(i+2)+" RENDERING TOOK: "+((e-s)/1000));
-            System.out.println("###############################");
-        }
+//        for (int i=0; i<1; i++) {
+//            ctx.writer = new StringWriter();
+//            s = System.currentTimeMillis();
+//            engine.render(ctx);
+//            e = System.currentTimeMillis();
+//            System.out.println("###############################");
+//            System.out.println(writer.getBuffer());
+//            System.out.println("###############################");
+//            System.out.println(">>>>>>>>>> "+(i+2)+" RENDERING TOOK: "+((e-s)/1000));
+//            System.out.println("###############################");
+//        }
 
     }
 

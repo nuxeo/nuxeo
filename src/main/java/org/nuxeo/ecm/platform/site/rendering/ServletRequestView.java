@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.site.rendering;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,8 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.api.SimpleContextView;
 import org.nuxeo.ecm.platform.site.servlet.ServletRenderingContext;
-
-import com.sun.net.ssl.HttpsURLConnection;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -69,6 +66,9 @@ public class ServletRequestView extends SimpleContextView {
                 return getResponse(ctx);
             } else if ("requestUri".equals(key)) {
                 return getRequest(ctx).getRequestURI();
+            } else if ("basePath".equals(key)) {
+                HttpServletRequest req = getRequest(ctx);
+                return req.getContextPath() + req.getServletPath();
 //            } else if ("http".equals(key)) {
 //                return getHttpInfo(key);
             }

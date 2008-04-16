@@ -29,10 +29,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.rendering.api.RenderingContextView;
 import org.nuxeo.ecm.platform.rendering.api.EmptyContextView;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
-import org.nuxeo.ecm.platform.site.template.SiteManager;
+import org.nuxeo.ecm.platform.rendering.api.RenderingContextView;
 
 /**
  * A simple context to be able to render templates not linked to document instances
@@ -44,21 +43,13 @@ import org.nuxeo.ecm.platform.site.template.SiteManager;
  */
 public class SiteRenderingContext implements ServletRenderingContext {
 
-    private SiteManager manager;
-    private HttpServletRequest request;
-    private HttpServletResponse response;
+    private SiteRequest request;
 
-    public SiteRenderingContext(HttpServletRequest request, HttpServletResponse response, SiteManager manager) {
+    public SiteRenderingContext(SiteRequest request) {
         this.request = request;
-        this.response = response;
-        this.manager = manager;
     }
 
     public RenderingContext getParentContext() {
-        return null;
-    }
-
-    public RenderingContext getChildContext() {
         return null;
     }
 
@@ -68,19 +59,23 @@ public class SiteRenderingContext implements ServletRenderingContext {
 
     public OutputStream getOut() {
         try {
-            return response.getOutputStream();
+            return request.getResponse().getOutputStream();
         } catch (IOException e) {
             return null;
         }
     }
 
     public CoreSession getSession() {
-        return null;
+        try {
+            return request.getCoreSession();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to open a session", e);
+        }
     }
 
     public String getTemplate() {
         String path = request.getPathInfo();
-        File file = manager.getRootDirectory(); // make a method getResourceFile();
+        File file = request.getSiteManager().getRootDirectory(); // make a method getResourceFile();
         if (path != null) {
             file = new File(file, path);
         }
@@ -98,7 +93,7 @@ public class SiteRenderingContext implements ServletRenderingContext {
 
     public Writer getWriter() {
         try {
-            return response.getWriter();
+            return request.getResponse().getWriter();
         } catch (IOException e) {
             return null;
         }
@@ -112,10 +107,10 @@ public class SiteRenderingContext implements ServletRenderingContext {
      * @return the response.
      */
     public HttpServletResponse getResponse() {
-        return response;
+        return request.getResponse();
     }
 
-    public RenderingContextView getDocumentView() {
+    public RenderingContextView getView() {
         return EmptyContextView.INSTANCE;
     }
 

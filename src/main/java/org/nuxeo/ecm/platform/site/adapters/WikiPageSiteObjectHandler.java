@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.platform.site.api.SiteException;
 import org.nuxeo.ecm.platform.site.servlet.SiteConst;
@@ -60,7 +59,9 @@ public class WikiPageSiteObjectHandler extends NoteSiteObjectHandler {
                             VersioningActions.ACTION_INCREMENT_MINOR);
                     sourceDocument = request.getCoreSession().saveDocument(sourceDocument);
                     request.getCoreSession().save();
-                } catch (ClientException e) {
+                } catch (SiteException e) {
+                    throw e;
+                } catch (Exception e) {
                     throw new SiteException("Error during update process", e);
                 }
             }

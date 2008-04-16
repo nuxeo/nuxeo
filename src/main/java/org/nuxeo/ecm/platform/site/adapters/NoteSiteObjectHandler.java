@@ -24,7 +24,6 @@ import java.io.Writer;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.site.api.SiteException;
 import org.nuxeo.ecm.platform.site.servlet.SiteConst;
@@ -47,7 +46,9 @@ public class NoteSiteObjectHandler extends AbstractSiteObjectHandler {
             try {
                 sourceDocument = request.getCoreSession().saveDocument(sourceDocument);
                 request.getCoreSession().save();
-            } catch (ClientException e) {
+            } catch (SiteException e) {
+                throw e;
+            } catch (Exception e) {
                 throw new SiteException("Error during update process", e);
             }
             doGet(request, response);

@@ -26,11 +26,11 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.rendering.api.DocumentField;
 import org.nuxeo.ecm.platform.rendering.api.DocumentContextView;
-import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
+import org.nuxeo.ecm.platform.rendering.api.DocumentField;
 
 import freemarker.template.AdapterTemplateModel;
+import freemarker.template.ObjectWrapper;
 import freemarker.template.TemplateCollectionModel;
 import freemarker.template.TemplateHashModelEx;
 import freemarker.template.TemplateModel;
@@ -44,22 +44,13 @@ import freemarker.template.TemplateModelException;
  */
 public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateModel {
 
-    protected DocumentObjectWrapper wrapper;
+    protected ObjectWrapper wrapper;
     protected final DocumentModel doc;
 
 
-    public DocumentTemplate(DocumentObjectWrapper wrapper, DocumentModel doc) {
+    public DocumentTemplate(ObjectWrapper wrapper, DocumentModel doc) {
         this.doc = doc;
         this.wrapper = wrapper;
-    }
-
-    //TODO lazy initialization of the context
-    public DocumentTemplate(DocumentModel doc) {
-        this (FreemarkerEngine.getContextModel().getObjectWrapper(), doc);
-    }
-
-    public DocumentObjectWrapper getWrapper() {
-        return wrapper;
     }
 
     @SuppressWarnings("unchecked")
@@ -73,9 +64,9 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
 
     public TemplateModel get(String key) throws TemplateModelException {
         try {
-            DocumentField field = DocumentContextView.DEFAULT.getField(key);
-            if (field != null) {
-                return wrapper.wrap(field.getValue(doc, null));
+            Object value = DocumentContextView.DEFAULT.get(doc, key);
+            if (value != DocumentContextView.UNKNOWN) {
+                return wrapper.wrap(value);
             }
         } catch(Exception e) {
             throw new TemplateModelException("Failed to get document field: "+key, e);

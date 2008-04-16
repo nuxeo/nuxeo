@@ -116,6 +116,26 @@ public class DocumentContextView implements RenderingContextView {
         return UNKNOWN;
     }
 
+    /**
+     * Should be used when not inside a document rendering context
+     * @param doc
+     * @param name
+     * @return
+     * @throws Exception
+     */
+    public Object get(DocumentModel doc, String name) throws Exception {
+        DocumentField field = fields.get(name);
+        if (field != null) {
+            return field.getValue(doc, null);
+        }
+        // not custom field binding found -> look into document properties
+        DocumentPart part = doc.getPart(name);
+        if (part != null) {
+            return part;
+        }
+        return UNKNOWN;
+    }
+
     public Collection<String> keys(RenderingContext ctx) {
         DocumentModel doc = ctx.getDocument();
         Collection<String> keys = new ArrayList<String>(fields.keySet());
