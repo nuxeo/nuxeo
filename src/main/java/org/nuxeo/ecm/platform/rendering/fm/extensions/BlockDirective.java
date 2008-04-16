@@ -28,7 +28,6 @@ import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateDirectiveModel;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateModel;
-import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -39,10 +38,6 @@ public class BlockDirective implements TemplateDirectiveModel {
 	@SuppressWarnings("unchecked")
 	public void execute(Environment env, Map params, TemplateModel[] loopVars,
 			TemplateDirectiveBody body) throws TemplateException, IOException {
-
-	    if (body == null) {
-	        throw new TemplateModelException("Did expect a body");
-	    }
 
         String name = null;
         SimpleScalar scalar = (SimpleScalar)params.get("name");
@@ -55,7 +50,9 @@ public class BlockDirective implements TemplateDirectiveModel {
         BlockWriter bw = new BlockWriter(name, reg);
         writer.writeBlock(bw);
         // render this block
-        body.render(bw);
+        if (body != null) {
+            body.render(bw);
+        }
 	}
 
 }

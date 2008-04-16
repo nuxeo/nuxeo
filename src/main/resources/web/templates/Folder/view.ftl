@@ -1,10 +1,17 @@
 <html>
 <body>
-<h1>Wiki: ${title}</h1>
+<h1>Wiki: ${this.title}</h1>
 
-<@render/>
+<@block name="content"/>
 
 <hr>
-engine : ${env[engine]} ${env[version]}
+engine : ${env.engine} ${env.version}
+
+<hr>
+<#--
+<#list this.session.query('SELECT * FROM Folder ORDER BY dc:modfied') as doc>
+  ${doc.title}<br/>
+</#list>
+-->
 </body>
 </html>

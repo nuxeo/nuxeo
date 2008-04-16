@@ -1,10 +1,10 @@
 <html>
 <body>
-<h1>Wiki: ${title}</h1>
+<h1>Wiki: ${this.title}</h1>
 
 The page you requested does not exist.<br/>
-Click <A href="${docURL}/${request.getAttribute("pageToCreate")}?create=true"> here </A> to create the page ${request.getAttribute("pageToCreate")}<br/>
+Click <A href="${this.docURL}/${this.request.getAttribute("pageToCreate")}?create=true"> here </A> to create the page ${this.request.getAttribute("pageToCreate")}<br/>
 <hr>
-engine : ${env[engine]} ${env[version]}
+engine : ${env.engine} ${env.version}
 </body>
 </html>

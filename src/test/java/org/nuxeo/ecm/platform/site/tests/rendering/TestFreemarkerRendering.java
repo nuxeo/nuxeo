@@ -100,17 +100,17 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         System.out.println(">>>>>>>>>> RENDERING TOOK: "+((e-s)/1000));
         System.out.println("###############################");
         System.out.flush();
-//        for (int i=0; i<1; i++) {
-//            ctx.writer = new StringWriter();
-//            s = System.currentTimeMillis();
-//            engine.render(ctx);
-//            e = System.currentTimeMillis();
-//            System.out.println("###############################");
-//            System.out.println(writer.getBuffer());
-//            System.out.println("###############################");
-//            System.out.println(">>>>>>>>>> "+(i+2)+" RENDERING TOOK: "+((e-s)/1000));
-//            System.out.println("###############################");
-//        }
+        for (int i=0; i<1; i++) {
+            ctx.writer = new StringWriter();
+            s = System.currentTimeMillis();
+            engine.render(ctx);
+            e = System.currentTimeMillis();
+            System.out.println("###############################");
+            System.out.println(writer.getBuffer());
+            System.out.println("###############################");
+            System.out.println(">>>>>>>>>> "+(i+2)+" RENDERING TOOK: "+((e-s)/1000));
+            System.out.println("###############################");
+        }
 
     }
 
