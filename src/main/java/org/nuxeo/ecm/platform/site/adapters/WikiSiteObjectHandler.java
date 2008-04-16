@@ -66,19 +66,19 @@ public class WikiSiteObjectHandler extends FolderishSiteObjectHandler {
                 request.setAttribute("pageToCreate", pageId);
                 request.setMode(SiteRequest.CREATE_MODE);
             }
-        } else if (request.isRootRequest()) {
-            DocumentModel indexPage = null;
-            try {
-                indexPage = getCoreSession().getChild(sourceDocument.getRef(), DEFAULT_PAGE_ID);
-                request.addSiteObject(DEFAULT_PAGE_ID, indexPage);
-            } catch (ClientException ce) {
-                try {
-                    indexPage = createSubPage(request, DEFAULT_PAGE_ID);
-                    request.addSiteObject(DEFAULT_PAGE_ID, indexPage);
-                } catch (Exception e) {
-                    throw new SiteException("Error while creating wiki page", e);
-                }
-            }
+//        } else if (request.isRootRequest()) {
+//            DocumentModel indexPage = null;
+//            try {
+//                indexPage = getCoreSession().getChild(sourceDocument.getRef(), DEFAULT_PAGE_ID);
+//                request.addSiteObject(DEFAULT_PAGE_ID, indexPage);
+//            } catch (ClientException ce) {
+//                try {
+//                    indexPage = createSubPage(request, DEFAULT_PAGE_ID);
+//                    request.addSiteObject(DEFAULT_PAGE_ID, indexPage);
+//                } catch (Exception e) {
+//                    throw new SiteException("Error while creating wiki page", e);
+//                }
+//            }
         }
         return true;
     }
