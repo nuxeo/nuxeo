@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.api.model.impl.primitives;
 import java.io.Serializable;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
@@ -60,7 +61,6 @@ public class DoubleProperty extends ScalarProperty {
         throw new PropertyConversionException(value.getClass(), Double.class);
     }
 
-    @NotNull
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {

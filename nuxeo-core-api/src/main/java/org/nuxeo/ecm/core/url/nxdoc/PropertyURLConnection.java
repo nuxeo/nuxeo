@@ -86,8 +86,8 @@ public class PropertyURLConnection extends URLConnection {
         }
 
         try {
-        doConnect(url);
-        getDocument();
+            doConnect(url);
+            getDocument();
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
@@ -117,19 +117,19 @@ public class PropertyURLConnection extends URLConnection {
         connect();
         getDocument();
         try {
-        Object value = property.getValue();
-        if (value == null) {
-            return new ByteArrayInputStream(new byte[0]);
-        }
-        if (value instanceof Blob) {
-            return ((Blob)value).getStream();
-        } else if (value instanceof InputStream) {
-            return (InputStream)value;
-        } else {
-            return new ByteArrayInputStream(value.toString().getBytes());
-        }
+            Object value = property.getValue();
+            if (value == null) {
+                return new ByteArrayInputStream(new byte[0]);
+            }
+            if (value instanceof Blob) {
+                return ((Blob) value).getStream();
+            } else if (value instanceof InputStream) {
+                return (InputStream) value;
+            } else {
+                return new ByteArrayInputStream(value.toString().getBytes());
+            }
         } catch (PropertyException e) {
-            IOException ee = new IOException("Failed to open get property value: "+url);
+            IOException ee = new IOException("Failed to open get property value: " + url);
             ee.initCause(e);
             throw ee;
         }
@@ -139,16 +139,16 @@ public class PropertyURLConnection extends URLConnection {
     public InputStream getInputStream() throws IOException {
         if (!shared) {
             return new FilterInputStream(getStream()) {
-               @Override
-            public void close() throws IOException {
-                super.close();
-                try {
-                    CoreInstance.getInstance().close(session);
-                } catch (Exception e) {
+                @Override
+                public void close() throws IOException {
+                    super.close();
+                    try {
+                        CoreInstance.getInstance().close(session);
+                    } catch (Exception e) {
+                    }
+                    session = null;
+                    connected = false;
                 }
-                session = null;
-                connected = false;
-            }
             };
         } else {
             return getStream();

@@ -125,7 +125,7 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
         if (property == null) {
             return false;
         }
-        ScalarProperty sp = (ScalarProperty)property;
+        ScalarProperty sp = (ScalarProperty) property;
         Object v1 = getValue();
         Object v2 = sp.getValue();
         if (v1 == null) {

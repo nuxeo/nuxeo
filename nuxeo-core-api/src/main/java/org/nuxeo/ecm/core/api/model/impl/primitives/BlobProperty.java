@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
@@ -87,7 +88,6 @@ public class BlobProperty extends ObjectProperty {
 //        }
     }
 
-    @NotNull
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {

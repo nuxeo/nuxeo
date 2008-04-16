@@ -26,6 +26,7 @@ import java.io.Serializable;
 
 import org.jboss.util.property.PropertyError;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
@@ -67,7 +68,6 @@ public class BinaryProperty extends ScalarProperty {
 //        }
     }
 
-    @NotNull
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {

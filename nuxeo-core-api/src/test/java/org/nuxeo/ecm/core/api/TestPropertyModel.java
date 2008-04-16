@@ -72,7 +72,7 @@ public class TestPropertyModel extends TestCase {
         return list;
     }
 
-    class Name {
+    private class Name {
         String firstName;
         String lastName;
         HashMap<String,Serializable> getMap() {
@@ -83,7 +83,7 @@ public class TestPropertyModel extends TestCase {
         }
     }
 
-    class Author {
+    private class Author {
         Name name = new Name();
         Long age;
 
@@ -100,7 +100,7 @@ public class TestPropertyModel extends TestCase {
         }
     }
 
-    class FileName implements Serializable {
+    private class FileName implements Serializable {
         private static final long serialVersionUID = -3238719896844696496L;
         String name;
         String extension;
@@ -113,7 +113,7 @@ public class TestPropertyModel extends TestCase {
         }
     }
 
-    class BlobFile implements Serializable {
+    private class BlobFile implements Serializable {
         private static final long serialVersionUID = 4486693420148155780L;
         final FileName fileName = new FileName();
         StringBlob blob;
@@ -126,7 +126,7 @@ public class TestPropertyModel extends TestCase {
         }
     }
 
-    class Book {
+    private class Book {
         String title;
         Calendar creationDate;
         Long price;
@@ -160,69 +160,6 @@ public class TestPropertyModel extends TestCase {
         }
     }
 
-    protected void clearMap(Map<String, Serializable> map) {
-        Iterator<Map.Entry<String, Serializable>> it = map.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, Serializable> entry = it.next();
-            Serializable v = entry.getValue();
-            if (v == null) {
-                it.remove();
-            } else if (v instanceof Map) {
-                clearMap((Map<String, Serializable>)v);
-            } else if (v instanceof List) {
-                for (Serializable el : (List<Serializable>)v) {
-                    if (el instanceof Map) {
-                        clearMap((Map<String, Serializable>)el);
-                    }
-                }
-            }
-        }
-    }
-
-    protected boolean valueEquals(Object o1, Object o2) {
-        if (o1 == null && o2 == null) {
-            return true;
-        }
-        if (o1 == null) {
-            return o2 == null;
-        }
-        if (o2 == null) {
-            return o1 == null;
-        }
-        if (o1 instanceof Map) {
-            if (!(o2 instanceof Map)) {
-                return false;
-            }
-            Map<String,Serializable> map1 = (Map<String,Serializable>)o1;
-            Map<String,Serializable> map2 = (Map<String,Serializable>)o2;
-            if (map1.size() != map2.size()) {
-                return false;
-            }
-            for (String key : map1.keySet()) {
-                if (!valueEquals(map1.get(key), map2.get(key))) {
-                    return false;
-                }
-            }
-        } else if (o1 instanceof List) {
-            if (!(o2 instanceof List)) {
-                return false;
-            }
-            List<Serializable> list1 = (List<Serializable>)o1;
-            List<Serializable> list2 = (List<Serializable>)o2;
-            if (list1.size() != list2.size()) {
-                return false;
-            }
-            for (int i=0; i<list1.size(); i++) {
-                if (!valueEquals(list1.get(i), list2.get(i))) {
-                    return false;
-                }
-            }
-        } else if (!o1.equals(o2)) {
-            return false;
-        }
-        return true;
-    }
-
     @Override
     protected void setUp() throws Exception {
         // Duplicated from NXRuntimeTestCase
@@ -247,6 +184,66 @@ public class TestPropertyModel extends TestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
         Framework.shutdown();
+    }
+
+    protected void clearMap(Map<String, Serializable> map) {
+        Iterator<Map.Entry<String, Serializable>> it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, Serializable> entry = it.next();
+            Serializable v = entry.getValue();
+            if (v == null) {
+                it.remove();
+            } else if (v instanceof Map) {
+                clearMap((Map<String, Serializable>) v);
+            } else if (v instanceof List) {
+                for (Serializable el : (List<Serializable>) v) {
+                    if (el instanceof Map) {
+                        clearMap((Map<String, Serializable>) el);
+                    }
+                }
+            }
+        }
+    }
+
+    protected static boolean valueEquals(Object o1, Object o2) {
+        if (o1 == null && o2 == null) {
+            return true;
+        }
+        if (o1 == null || o2 == null) {
+            return false;
+        }
+        if (o1 instanceof Map) {
+            if (!(o2 instanceof Map)) {
+                return false;
+            }
+            Map<String, Serializable> map1 = (Map<String, Serializable>) o1;
+            Map<String, Serializable> map2 = (Map<String, Serializable>) o2;
+            if (map1.size() != map2.size()) {
+                return false;
+            }
+            for (String key : map1.keySet()) {
+                if (!valueEquals(map1.get(key), map2.get(key))) {
+                    return false;
+                }
+            }
+        } else if (o1 instanceof List) {
+            if (!(o2 instanceof List)) {
+                return false;
+            }
+            List<Serializable> list1 = (List<Serializable>) o1;
+            List<Serializable> list2 = (List<Serializable>) o2;
+            if (list1.size() != list2.size()) {
+                return false;
+            }
+            for (int i=0; i<list1.size(); i++) {
+                if (!valueEquals(list1.get(i), list2.get(i))) {
+                    return false;
+                }
+            }
+        } else if (!o1.equals(o2)) {
+            return false;
+        }
+        return true;
     }
 
     // Duplicated from NXRuntimeTestCase
@@ -596,14 +593,15 @@ public class TestPropertyModel extends TestCase {
                 new ByteArrayInputStream(baos.toByteArray()));
         DocumentPartImpl dp2 = (DocumentPartImpl)in.readObject();
 
-        // blobs are equals only if they are the same object so we need to remove them before doing the assertion
-        Blob blob1 = (Blob)dp.get("file").get("blob").remove();
-        Blob blob2 = (Blob)dp2.get("file").get("blob").remove();
+        // blobs are equals only if they are the same object so we need
+        // to remove them before doing the assertion
+        Blob blob1 = (Blob) dp.get("file").get("blob").remove();
+        Blob blob2 = (Blob) dp2.get("file").get("blob").remove();
         // remove array also for the same reason as the blob
-        Object[] keywords1 = (Object[])dp.get("keywords").remove();
-        Object[] keywords2 = (Object[])dp2.get("keywords").remove();
-        ArrayList<?> references1 = (ArrayList<?>)dp.get("references").remove();
-        ArrayList<?> references2 = (ArrayList<?>)dp2.get("references").remove();
+        Object[] keywords1 = (Object[]) dp.get("keywords").remove();
+        Object[] keywords2 = (Object[]) dp2.get("keywords").remove();
+        ArrayList<?> references1 = (ArrayList<?>) dp.get("references").remove();
+        ArrayList<?> references2 = (ArrayList<?>) dp2.get("references").remove();
 
         assertEquals(dp2.getValue(), dp.getValue());
 

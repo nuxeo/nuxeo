@@ -74,7 +74,6 @@ public class ArrayProperty extends ScalarProperty {
         throw new PropertyConversionException(value.getClass(), Object[].class, getPath());
     }
 
-    @NotNull
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {

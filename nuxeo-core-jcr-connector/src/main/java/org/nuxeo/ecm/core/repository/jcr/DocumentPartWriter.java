@@ -133,21 +133,21 @@ public class DocumentPartWriter {
         if (type == StringType.INSTANCE) {
             parent.setProperty(prop.getName(), (String)prop.getValue());
         } else if (type == LongType.INSTANCE || type == IntegerType.INSTANCE) {
-            Number value = (Number)prop.getValue();
+            Number value = (Number) prop.getValue();
             long v = value == null ? 0 : value.longValue();
             parent.setProperty(prop.getName(), v);
         } else if (type == DoubleType.INSTANCE) {
-            Number value = (Number)prop.getValue();
+            Number value = (Number) prop.getValue();
             double v = value == null ? 0 : value.doubleValue();
             parent.setProperty(prop.getName(), v);
         } else if (type == DateType.INSTANCE) {
             parent.setProperty(prop.getName(), (Calendar) prop.getValue());
         } else if (type == BooleanType.INSTANCE) {
-            Boolean value = (Boolean)prop.getValue();
+            Boolean value = (Boolean) prop.getValue();
             boolean v = value == null ? false : value.booleanValue();
             parent.setProperty(prop.getName(), v);
         } else if (type == BinaryType.INSTANCE) {
-            InputStream in = (InputStream)prop.getValue();
+            InputStream in = (InputStream) prop.getValue();
             try {
                 parent.setProperty(prop.getName(), in);
             } finally {
