@@ -22,9 +22,6 @@ package org.nuxeo.ecm.platform.rendering.fm.extensions;
 import java.io.IOException;
 import java.util.Map;
 
-import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
-import org.nuxeo.ecm.platform.rendering.fm.adapters.RenderingContextModel;
-
 import freemarker.core.Environment;
 import freemarker.template.SimpleScalar;
 import freemarker.template.Template;
@@ -55,11 +52,6 @@ public class ExtendsDirective implements TemplateDirectiveModel {
             src = scalar.getAsString();
         } else {
             throw new TemplateModelException("src attribute is not defined");
-        }
-
-        RenderingContextModel ctxModel = FreemarkerEngine.getContextModel(env);
-        if (ctxModel == null) {
-            throw new TemplateModelException("Not in a nuxeo rendering context");
         }
 
         BlockWriter writer = (BlockWriter)env.getOut();

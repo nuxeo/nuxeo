@@ -60,6 +60,8 @@ public class RenderingContextModel extends RenderingContextTemplate {
                     }
                 }
                 return new RenderingContextTemplate(engine, root);
+            } else if ("session".equals(key)) {
+                return wrap(ctx.getSession());
             } else {
                 // try second the shared document view
                 Object value = engine.getSharedDocumentView().get(key, ctx);
@@ -80,11 +82,13 @@ public class RenderingContextModel extends RenderingContextTemplate {
         keys.addAll(engine.getSharedDocumentView().keys(ctx));
         keys.add("this");
         keys.add("super");
+        keys.add("root");
+        keys.add("session");
         return keys;
     }
 
     public int size() throws TemplateModelException {
-        return ctx.getView().size(ctx) + engine.getSharedDocumentView().size(ctx) + 2;
+        return ctx.getView().size(ctx) + engine.getSharedDocumentView().size(ctx) + 4;
     }
 
 }

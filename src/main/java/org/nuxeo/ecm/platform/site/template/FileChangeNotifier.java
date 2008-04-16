@@ -57,6 +57,10 @@ public class FileChangeNotifier {
         listeners.add(listener);
     }
 
+    public void removeListener(FileChangeListener listener) {
+        listeners.remove(listener);
+    }
+
     protected void fireNotification(FileEntry entry) {
         for (Object listener : listeners.getListeners()) {
             ((FileChangeListener)listener).fileChanged(entry.file, entry.lastModified);
