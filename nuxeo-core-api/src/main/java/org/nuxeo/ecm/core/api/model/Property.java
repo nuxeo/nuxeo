@@ -420,11 +420,11 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     /**
      * Gets the property normalized value.
      * <p>
-     * Normalized values are of the java type that correspond to the field type
+     * Normalized values are of the java type that correspond to the field type.
      *
-     * @return the property value
+     * @return the property value, which may be null
      */
-    @NotNull
+    @Nullable
     Serializable getValue() throws PropertyException;
 
     /**
@@ -434,15 +434,15 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * <p>
      * If conversion is not supported a runtime exception will be triggered.
      *
-     * @return the property value
-     * @throws TODO
+     * @return the property value, which may be null
      */
-    @NotNull
+    @Nullable
     <T> T getValue(Class<T> type) throws PropertyException;
 
     /**
-     * Remove this property from the tree.
-     * This method is marking the property as dirty and setting it's value to null
+     * Removes this property from the tree.
+     * <p>
+     * This method marks the property as dirty and sets its value to null.
      *
      * @return the old property value
      */
@@ -687,12 +687,12 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      *
      * @param value the normalized value to convert
      * @param toType the conversion type
-     * @return the converted value
+     * @return the converted value, which may be null
      *
      * @throws PropertyConversionException If the conversion cannot be made
      * because of type incompatibilities
      */
-    @NotNull
+    @Nullable
     <T> T convertTo(Serializable value, Class<T> toType) throws PropertyConversionException;
 
     /**

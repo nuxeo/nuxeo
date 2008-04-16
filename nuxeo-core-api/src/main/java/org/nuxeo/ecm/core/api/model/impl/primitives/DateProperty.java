@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
@@ -62,7 +63,6 @@ public class DateProperty extends ScalarProperty {
         throw new PropertyConversionException(value.getClass(), Calendar.class);
     }
 
-    @NotNull
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {

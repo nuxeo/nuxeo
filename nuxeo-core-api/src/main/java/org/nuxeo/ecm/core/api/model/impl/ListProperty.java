@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.ecm.core.api.ListDiff;
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
@@ -307,13 +308,12 @@ public class ListProperty extends AbstractProperty {
         throw new PropertyConversionException(value.getClass(), List.class);
     }
 
-    @NotNull
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {
         if (value == null) {
             return null;
-        } else if ( toType.isAssignableFrom(value.getClass())) {
+        } else if (toType.isAssignableFrom(value.getClass())) {
             return toType.cast(value);
         }
         if (toType.isArray()) {

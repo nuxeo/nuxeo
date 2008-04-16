@@ -30,7 +30,7 @@
     </dependency>
 
     <dependency>
-      <groupId>jsr170</groupId>
+      <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>
       <version>1.0</version>
     </dependency>
@@ -114,7 +114,7 @@
                   <artifactId>jackrabbit-jcr-commons</artifactId>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>jsr170</groupId>
+                  <groupId>javax.jcr</groupId>
                   <artifactId>jcr</artifactId>
                 </artifactItem>
               </artifactItems>

@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.api.model.impl.primitives;
 import java.io.Serializable;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
@@ -33,11 +34,10 @@ import org.nuxeo.ecm.core.schema.types.Field;
  */
 public class BooleanProperty extends ScalarProperty {
 
-
     private static final long serialVersionUID = -6408890276716577303L;
 
     public BooleanProperty(Property parent, Field field, int flags) {
-        super (parent, field, flags);
+        super(parent, field, flags);
     }
 
 
@@ -61,35 +61,34 @@ public class BooleanProperty extends ScalarProperty {
         throw new PropertyConversionException(value.getClass(), Boolean.class);
     }
 
-    @NotNull
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {
         if (value == null || Boolean.class == toType) {
-            return (T)value;
+            return (T) value;
         }
-        Boolean v = (Boolean)value;
+        Boolean v = (Boolean) value;
         if (toType == String.class) {
-            return (T)v.toString();
+            return (T) v.toString();
         }
-        byte n = (byte)(v ? 1 : 0);
+        byte n = (byte) (v ? 1 : 0);
         if (toType == Integer.class) {
-            return (T)new Integer(n);
+            return (T) new Integer(n);
         }
         if (toType == Long.class) {
-            return (T)new Long(n);
+            return (T) new Long(n);
         }
         if (toType == Double.class) {
-            return (T)new Double(n);
+            return (T) new Double(n);
         }
         if (toType == Float.class) {
-            return (T)new Float(n);
+            return (T) new Float(n);
         }
         if (toType == Short.class) {
-            return (T)new Short(n);
+            return (T) new Short(n);
         }
         if (toType == Byte.class) {
-            return (T)new Byte(n);
+            return (T) new Byte(n);
         }
         throw new PropertyConversionException(value.getClass(), toType);
     }

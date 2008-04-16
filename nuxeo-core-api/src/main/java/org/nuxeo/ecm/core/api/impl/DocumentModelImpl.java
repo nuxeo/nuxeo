@@ -1393,22 +1393,22 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     public DocumentPart getPart(String schema) {
         DataModel dm = getDataModel(schema);
         if (dm != null) {
-            return ((DataModelImpl)dm).getDocumentPart();
+            return ((DataModelImpl) dm).getDocumentPart();
         }
         return null; // TODO thrown an exception?
     }
 
     public DocumentPart[] getParts() {
-        DocumentType type = null;
+        DocumentType type;
         try {
             type = Framework.getService(SchemaManager.class).getDocumentType(getType());
         } catch (Exception e) {
-            log.error(e);
+            throw new IllegalStateException(e);
         }
         Collection<Schema> schemas = type.getSchemas();
         int size = schemas.size();
         DocumentPart[] parts = new DocumentPart[size];
-        int i=0;
+        int i = 0;
         for (Schema schema : schemas) {
             DataModel dm = getDataModel(schema.getName());
             parts[i++] = ((DataModelImpl) dm).getDocumentPart();
@@ -1421,7 +1421,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (path.segmentCount() == 0) {
             throw new PropertyNotFoundException(xpath, "Schema not specified");
         }
-        String segment =path.segment(0);
+        String segment = path.segment(0);
         int p = segment.indexOf(':');
         if (p == -1) { // support also other schema paths? like schema.property
             // allow also unprefixed schemas -> make a search for the first matching schema having a property with same name as path segment 0

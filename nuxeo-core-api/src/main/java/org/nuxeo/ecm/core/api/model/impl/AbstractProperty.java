@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
@@ -118,7 +119,7 @@ public abstract class AbstractProperty implements Property {
     public Serializable remove() throws PropertyException {
         Serializable value = getValue();
         if (parent != null && parent.isList()) { // remove from list is handled separatelly
-            ListProperty list = (ListProperty)parent;
+            ListProperty list = (ListProperty) parent;
             list.remove(this);
         } else if (!isPhantom()) { // remove from map is easier -> mark the field as removed and remove the value
             init(null);
@@ -296,7 +297,7 @@ public abstract class AbstractProperty implements Property {
         }
     }
 
-    @NotNull
+    @Nullable
     public <T> T getValue(Class<T> type) throws PropertyException {
         return convertTo(getValue(), type);
     }
@@ -335,7 +336,6 @@ public abstract class AbstractProperty implements Property {
         return resolvePath(path).getValue();
     }
 
-    @NotNull
     public Serializable getValue() throws PropertyException {
         if (isPhantom() || isRemoved()) {
             return getDefaultValue();
@@ -425,7 +425,6 @@ public abstract class AbstractProperty implements Property {
         return value == null || value instanceof Serializable;
     }
 
-    @NotNull
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {
         // TODO FIXME XXX make it abstract at this level
