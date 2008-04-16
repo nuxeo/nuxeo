@@ -82,6 +82,7 @@ public class DocumentContextView implements RenderingContextView {
 
         addField(PARENT);
         addField(CHILDREN);
+        addField(REF);
 
     }
 
@@ -374,6 +375,16 @@ public class DocumentContextView implements RenderingContextView {
         public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
             CoreSession session = CoreInstance.getInstance().getSession(doc.getSessionId());
             return session.getChildren(doc.getRef());
+        }
+    };
+
+    protected static final DocumentField REF = new DocumentField() {
+        public String getName() {
+            return "ref";
+        }
+
+        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+            return doc.getRef();
         }
     };
 
