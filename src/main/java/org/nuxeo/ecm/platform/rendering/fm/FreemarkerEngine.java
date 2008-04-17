@@ -38,7 +38,9 @@ import org.nuxeo.ecm.platform.rendering.fm.adapters.RenderingContextModel;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockDirective;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriter;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriterRegistry;
+import org.nuxeo.ecm.platform.rendering.fm.extensions.DocRefMethod;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.ExtendsDirective;
+import org.nuxeo.ecm.platform.rendering.fm.extensions.NewMethod;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.QueryMethod;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.SuperBlockDirective;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.TransformDirective;
@@ -92,6 +94,8 @@ public class FreemarkerEngine implements RenderingEngine {
         this.cfg.setSharedVariable("extends", new ExtendsDirective());
         this.cfg.setSharedVariable("transform", new TransformDirective());
         this.cfg.setSharedVariable("query", new QueryMethod());
+        this.cfg.setSharedVariable("docRef", new DocRefMethod());
+        this.cfg.setSharedVariable("new", new NewMethod());
 
         addResourceDirectories(resourceDirs);
     }
