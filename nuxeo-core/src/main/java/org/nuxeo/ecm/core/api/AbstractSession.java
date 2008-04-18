@@ -1314,7 +1314,7 @@ public abstract class AbstractSession implements CoreSession,
     protected void removeDocument(Document doc) throws ClientException {
         try {
             if (!canRemoveDocument(doc)) {
-                throw new DocumentException("Permission denied");
+                throw new DocumentSecurityException("Permission denied: cannot remove document " + doc.getUUID());
             }
             removeNotifyOneDoc(doc);
         } catch (DocumentException e) {
@@ -1407,7 +1407,7 @@ public abstract class AbstractSession implements CoreSession,
                         docModel.getTitle()));
             }
             Document doc = resolveReference(docModel.getRef());
-            checkPermission(doc, WRITE);
+            checkPermission(doc, WRITE_PROPERTIES);
 
             // add Document context data to core event
             final ScopedMap ctxData = docModel.getContextData();
