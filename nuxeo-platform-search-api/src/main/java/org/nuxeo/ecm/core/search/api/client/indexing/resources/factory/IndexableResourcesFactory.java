@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory.BuiltinDocumentFields;
@@ -101,13 +102,20 @@ public final class IndexableResourcesFactory implements Serializable {
 
             if (Thread.currentThread() instanceof IndexingThread) {
                 IndexingThread idxThread = (IndexingThread) Thread.currentThread();
-                String repositoryName=dm.getRepositoryName();
+                String repositoryName = dm.getRepositoryName();
                 try {
                     CoreSession session = idxThread.getCoreSession(repositoryName);
-                    sid=session.getSessionId();
-                    dm=session.getDocument(dm.getRef());
-                } catch (Exception e) {
-                    log.error("Unable to fetch CoreSession or DocumentModel from thread context", e);
+                    sid = session.getSessionId();
+                    dm = session.getDocument(dm.getRef());
+                } catch (ClientException e) {
+                    log.warn(String.format(
+                            "Unable to fetch DocumentModel with ref '%s' and title '%s' from indexing thread context",
+                            dm.getRef(), dm.getTitle()));
+                    return null;
+                } catch (Throwable t) {
+                    log.error(
+                            "Unable to fetch CoreSession from thread context",
+                            t);
                     return null;
                 }
             }
