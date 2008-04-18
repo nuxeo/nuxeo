@@ -8,7 +8,7 @@
       class="org.nuxeo.ecm.platform.filemanager.core.listener.DigestComputer"
       order="140" />
     <documentation>
-      Listen for Core event DOCUMENT_UPDATED and DOCUMENT_CREATED and generate disgests for blobs according to filemanager configuration.
+      Listen for Core event DOCUMENT_UPDATED and DOCUMENT_CREATED and generate digests for blobs according to filemanager configuration.
       @author Thierry Delprat (td@nuxeo.com)
     </documentation>
 
