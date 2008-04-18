@@ -51,7 +51,8 @@ public class TestLocalAPI extends TestAPI {
         runtime = Framework.getRuntime();
         if (runtime != null) {
             Framework.shutdown();
-            runtime = null; // be sure no runtime is intialized (this may happen when some test crashes)
+            runtime = null; // be sure no runtime is intialized (this may happen
+                            // when some test crashes)
         }
         runtime = new TestRuntime();
         Framework.initialize(runtime);
@@ -126,7 +127,7 @@ public class TestLocalAPI extends TestAPI {
 
         dp = doc.getPart("MySchema");
         p = dp.get("long");
-//        assertTrue(p.isPhantom());
+        // assertTrue(p.isPhantom());
         assertNull(p.getValue());
         p.setValue(new Long(13));
         p.remove();
@@ -264,80 +265,81 @@ public class TestLocalAPI extends TestAPI {
     }
 
     public void testDataModel() throws Exception {
-            DocumentModel root = getRootDocument();
-            DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
-                    "mydoc", "Book");
+        DocumentModel root = getRootDocument();
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
+                "mydoc", "Book");
 
-            doc = remote.createDocument(doc);
+        doc = remote.createDocument(doc);
 
-            DataModel dm = doc.getDataModel("book");
-            dm.setValue("title", "my title");
-            assertEquals("my title", dm.getValue("title"));
-            dm.setValue("title", "my title2");
-            assertEquals("my title2", dm.getValue("title"));
+        DataModel dm = doc.getDataModel("book");
+        dm.setValue("title", "my title");
+        assertEquals("my title", dm.getValue("title"));
+        dm.setValue("title", "my title2");
+        assertEquals("my title2", dm.getValue("title"));
 
-            dm.setValue("price", 123);
-            assertEquals(123L, dm.getValue("price"));
-            dm.setValue("price", 124);
-            assertEquals(124L, dm.getValue("price"));
+        dm.setValue("price", 123);
+        assertEquals(123L, dm.getValue("price"));
+        dm.setValue("price", 124);
+        assertEquals(124L, dm.getValue("price"));
 
-            dm.setValue("author/pJob", "Programmer");
-            assertEquals("Programmer", dm.getValue("author/pJob"));
-            dm.setValue("author/pJob", "Programmer2");
-            assertEquals("Programmer2", dm.getValue("author/pJob"));
+        dm.setValue("author/pJob", "Programmer");
+        assertEquals("Programmer", dm.getValue("author/pJob"));
+        dm.setValue("author/pJob", "Programmer2");
+        assertEquals("Programmer2", dm.getValue("author/pJob"));
 
-            dm.setValue("author/pName/FirstName", "fname");
-            assertEquals("fname", dm.getValue("author/pName/FirstName"));
-            dm.setValue("author/pName/FirstName", "fname2");
-            assertEquals("fname2", dm.getValue("author/pName/FirstName"));
+        dm.setValue("author/pName/FirstName", "fname");
+        assertEquals("fname", dm.getValue("author/pName/FirstName"));
+        dm.setValue("author/pName/FirstName", "fname2");
+        assertEquals("fname2", dm.getValue("author/pName/FirstName"));
 
-            // list test
+        // list test
 
-            doc = new DocumentModelImpl(root.getPathAsString(),
-                    "mydoc2", "MyDocType");
+        doc = new DocumentModelImpl(root.getPathAsString(), "mydoc2",
+                "MyDocType");
 
-            doc = remote.createDocument(doc);
+        doc = remote.createDocument(doc);
 
-            List list = (List) doc.getProperty("testList", "attachments");
-            assertNotNull(list);
-            assertTrue(list.isEmpty());
+        List list = (List) doc.getProperty("testList", "attachments");
+        assertNotNull(list);
+        assertTrue(list.isEmpty());
 
-            ListDiff diff = new ListDiff();
-            diff.add(new Attachment("at1", "value1").asMap());
-            diff.add(new Attachment("at2", "value2").asMap());
-            doc.setProperty("testList", "attachments", diff);
-            doc = remote.saveDocument(doc);
+        ListDiff diff = new ListDiff();
+        diff.add(new Attachment("at1", "value1").asMap());
+        diff.add(new Attachment("at2", "value2").asMap());
+        doc.setProperty("testList", "attachments", diff);
+        doc = remote.saveDocument(doc);
 
-            dm = doc.getDataModel("testList");
+        dm = doc.getDataModel("testList");
 
-            dm.setValue("attachments/item[0]/name", "at1-modif");
-            assertEquals("at1-modif", dm.getValue("attachments/item[0]/name"));
-            dm.setValue("attachments/item[0]/name", "at1-modif2");
-            assertEquals("at1-modif2", dm.getValue("attachments/item[0]/name"));
-            dm.setValue("attachments/item[1]/name", "at2-modif");
-            assertEquals("at2-modif", dm.getValue("attachments/item[1]/name"));
-            dm.setValue("attachments/item[1]/name", "at2-modif2");
-            assertEquals("at2-modif2", dm.getValue("attachments/item[1]/name"));
+        dm.setValue("attachments/item[0]/name", "at1-modif");
+        assertEquals("at1-modif", dm.getValue("attachments/item[0]/name"));
+        dm.setValue("attachments/item[0]/name", "at1-modif2");
+        assertEquals("at1-modif2", dm.getValue("attachments/item[0]/name"));
+        dm.setValue("attachments/item[1]/name", "at2-modif");
+        assertEquals("at2-modif", dm.getValue("attachments/item[1]/name"));
+        dm.setValue("attachments/item[1]/name", "at2-modif2");
+        assertEquals("at2-modif2", dm.getValue("attachments/item[1]/name"));
 
     }
 
     public void testGetChildrenRefs() throws Exception {
-            DocumentModel root = getRootDocument();
-            DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
-                    "mydoc", "Book");
-            doc = remote.createDocument(doc);
-            DocumentModel doc2 = new DocumentModelImpl(root.getPathAsString(),
-                    "mydoc2", "MyDocType");
-            doc2 = remote.createDocument(doc2);
-            List<DocumentRef> childrenRefs = remote.getChildrenRefs(root.getRef(), null);
-            assertEquals(2, childrenRefs.size());
-            Set<String> expected = new HashSet<String>();
-            expected.add(doc.getId());
-            expected.add(doc2.getId());
-            Set<String> actual = new HashSet<String>();
-            actual.add(childrenRefs.get(0).toString());
-            actual.add(childrenRefs.get(1).toString());
-            assertEquals(expected, actual);
+        DocumentModel root = getRootDocument();
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
+                "mydoc", "Book");
+        doc = remote.createDocument(doc);
+        DocumentModel doc2 = new DocumentModelImpl(root.getPathAsString(),
+                "mydoc2", "MyDocType");
+        doc2 = remote.createDocument(doc2);
+        List<DocumentRef> childrenRefs = remote.getChildrenRefs(root.getRef(),
+                null);
+        assertEquals(2, childrenRefs.size());
+        Set<String> expected = new HashSet<String>();
+        expected.add(doc.getId());
+        expected.add(doc2.getId());
+        Set<String> actual = new HashSet<String>();
+        actual.add(childrenRefs.get(0).toString());
+        actual.add(childrenRefs.get(1).toString());
+        assertEquals(expected, actual);
     }
 
     public static byte[] createBytes(int size, byte val) {
@@ -353,19 +355,19 @@ public class TestLocalAPI extends TestAPI {
                 "mydoc", "File");
 
         doc = remote.createDocument(doc);
-        byte[] bytes = createBytes(1024*1024, (byte)24);
+        byte[] bytes = createBytes(1024 * 1024, (byte) 24);
 
         Blob blob = new ByteArrayBlob(bytes);
         doc.getPart("file").get("content").setValue(blob);
         doc = remote.saveDocument(doc);
 
-        blob = (Blob)doc.getPart("file").get("content").getValue();
+        blob = (Blob) doc.getPart("file").get("content").getValue();
         assertTrue(Arrays.equals(bytes, blob.getByteArray()));
 
         // test that reset works
         blob.getStream().reset();
 
-        blob = (Blob)doc.getPart("file").get("content").getValue();
+        blob = (Blob) doc.getPart("file").get("content").getValue();
         assertTrue(Arrays.equals(bytes, blob.getByteArray()));
 
     }
@@ -396,7 +398,8 @@ public class TestLocalAPI extends TestAPI {
                 version, true);
         // remote.save();
         // assertEquals("the title", proxy.getProperty("common", "title"));
-        // assertEquals("the title modified", doc.getProperty("common", "title"));
+        // assertEquals("the title modified", doc.getProperty("common",
+        // "title"));
 
         // make another new version
         VersionModel version2 = new VersionModelImpl();
