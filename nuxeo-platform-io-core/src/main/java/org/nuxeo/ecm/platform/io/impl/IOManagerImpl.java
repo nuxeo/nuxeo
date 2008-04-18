@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.io.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -72,7 +71,7 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * IOManager implementation
- * 
+ *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class IOManagerImpl implements IOManager {
@@ -479,11 +478,11 @@ public class IOManagerImpl implements IOManager {
             }
         }
     }
-    
+
     public String externalizeExport(String repo,
             Collection<DocumentRef> sources,
             Collection<String> ioAdapters) throws ClientException {
-    
+
         return externalizeExport(repo, sources, null, null, ioAdapters);
     }
 
@@ -491,7 +490,7 @@ public class IOManagerImpl implements IOManager {
             String docReaderFactoryName,
             Map<String, Object> readerFactoryParams,
             Collection<String> ioAdapters) throws ClientException {
-    
+
         return externalizeExport(repo, null, docReaderFactoryName, readerFactoryParams, ioAdapters);
     }
 
@@ -623,12 +622,12 @@ public class IOManagerImpl implements IOManager {
             // TODO throw another error maybe
             throw new ClientException("bad class type: " + factoryObj);
         }
-        
+
         if (customDocWriter == null) {
             throw new ClientException("null DocumentWriter created by "
                     + docWriterFactoryName);
         }
-        
+
         return customDocWriter;
     }
 
@@ -653,13 +652,13 @@ public class IOManagerImpl implements IOManager {
             // TODO throw another error maybe
             throw new ClientException("bad class type: " + factoryObj);
         }
-        
+
         // guard against NPE
         if (customDocReader == null) {
             throw new ClientException("null DocumentReader created by "
                     + docReaderFactoryName);
         }
-        
+
         return customDocReader;
     }
 
@@ -683,10 +682,10 @@ public class IOManagerImpl implements IOManager {
                 rFactoryParams = new HashMap<String, Object>();
             }
             rFactoryParams.put("source_stream", in);
-            
+
             DocumentReader customDocReader = createDocReader(
                     docReaderFactoryClassName, rFactoryParams);
-            
+
             IODocumentManager docManager = new IODocumentManagerImpl();
             DocumentTranslationMap map =  docManager.importDocuments(customDocReader, customDocWriter);
 

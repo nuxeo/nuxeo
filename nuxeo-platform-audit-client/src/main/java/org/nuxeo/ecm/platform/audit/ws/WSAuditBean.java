@@ -84,17 +84,13 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
 
         BatchInfo batchInfo = BatchHelper.getBatchInfo(sessionId, dateRangeQuery);
 
-
         List<LogEntry> logEntries = getLogsBean().queryLogsByPage(eventIds,
                 batchInfo.getPageDateRange(), batchInfo.getNextPage(), batchInfo.getPageSize());
-        if (logEntries.size()< batchInfo.getPageSize())
-        {
+        if (logEntries.size() < batchInfo.getPageSize()) {
             // we are at the end of the batch
             // ==> reset the batch
             BatchHelper.resetBatchInfo(sessionId);
-        }
-        else
-        {
+        } else {
             // set the batchInfo ready for next call
             batchInfo.prepareNextCall();
         }
@@ -115,4 +111,5 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
 
         return docs;
     }
+
 }

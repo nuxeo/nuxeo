@@ -85,13 +85,13 @@ public interface IOManager extends Serializable {
     /**
      * Export documents and resources.
      *
+     * @param out stream that can be turned into a zip holding a group of file for
+     *            each additional resources types.
      * @param repo TODO
      * @param sources locations of documents to export.
      * @param recurse recurse into sources children
      * @param format export format. XXX see what format is actually accepted.
      * @param ioAdapters list of adapters to use for additional resources.
-     * @param stream that can be turned into a zip holding a group of file for
-     *            each additional resources types.
      *
      * @throws IOException
      * @throws ClientException
@@ -120,9 +120,6 @@ public interface IOManager extends Serializable {
     /**
      * Remote copy. Copy documents and resources to another location.
      *
-     * @param sourceLocation
-     * @param uri
-     * @param targetLocation
      * @throws ClientException
      */
     void copyDocumentsAndResources(String repo,
@@ -133,9 +130,6 @@ public interface IOManager extends Serializable {
     /**
      * Remote copy. Copy documents and resources to another location.
      *
-     * @param sourceLocation
-     * @param uri
-     * @param targetLocation
      * @throws ClientException
      */
     void copyDocumentsAndResources(String repo,
@@ -236,10 +230,11 @@ public interface IOManager extends Serializable {
     void importExportedFile(String uri, DocumentLocation targetLocation,
             String docWriterFactoryClassName, Map<String, Object> wFactoryParams)
             throws ClientException;
-    
+
     void importFromStreamSource(String uri, DocumentLocation targetLocation,
             String docReaderFactoryClassName,
             Map<String, Object> rFactoryParams,
             String docWriterFactoryClassName, Map<String, Object> wFactoryParams)
             throws ClientException;
+
 }

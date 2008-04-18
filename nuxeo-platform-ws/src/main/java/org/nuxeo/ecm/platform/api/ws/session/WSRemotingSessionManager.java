@@ -34,11 +34,12 @@ public interface WSRemotingSessionManager {
     /**
      * Creates a new remoting session.
      *
-     * @param username : the user name.
-     * @param password : the user password
-     * @param repository : the repository name
-     * @param um : the user manager
-     * @param sid : the Nuxeo Core session id
+     * @param username the user name.
+     * @param password the user password
+     * @param repository the repository name
+     * @param um the user manager
+     * @param session the Nuxeo Core session
+     *
      * @return an intialized <code>WSRemotingSession</code> instance.
      */
     WSRemotingSession createSession(String username, String password,
@@ -47,22 +48,22 @@ public interface WSRemotingSessionManager {
     /**
      * Adds a new session.
      *
-     * @param sid : the nuxeo core session id.
-     * @param session : the web service remoting session.
+     * @param sid the nuxeo core session id.
+     * @param session the web service remoting session.
      */
     void addSession(String sid, WSRemotingSession session);
 
     /**
-     * Deletes a session if exists.
+     * Deletes a session if it exists.
      *
-     * @param sid : the Nuxeo Core session id.
+     * @param sid the Nuxeo Core session id.
      */
     void delSession(String sid) throws ClientException;
 
     /**
      * Return a session given its Nuxeo Core session id if exists.
      *
-     * @param sid : the Nuxeo Core session id.
+     * @param sid the Nuxeo Core session id.
      * @return a <code>WSRemotingSession</code> instance.
      * @throws ClientException if the session does not exist anymore.
      */

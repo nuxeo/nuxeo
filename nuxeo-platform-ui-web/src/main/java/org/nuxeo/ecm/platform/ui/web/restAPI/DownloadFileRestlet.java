@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 /*
@@ -25,6 +44,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -53,7 +73,9 @@ import org.restlet.resource.OutputRepresentation;
 @Name("downloadFileRestlet")
 @Scope(EVENT)
 public class DownloadFileRestlet extends BaseNuxeoRestlet implements
-        LiveEditConstants {
+        LiveEditConstants, Serializable {
+
+    private static final long serialVersionUID = -2163290273836947871L;
 
     @In(create = true)
     protected NavigationContext navigationContext;
@@ -69,7 +91,7 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements
             return;
         }
 
-        DocumentModel dm = null;
+        DocumentModel dm;
         try {
             navigationContext.setCurrentServerLocation(new RepositoryLocation(
                     repo));
