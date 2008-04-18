@@ -78,18 +78,19 @@ public class WikiSerializerHandler extends PrintListener {
         flushWord();
     }
 
+    //TODO
     protected void flushWord() {
-        if (word.length() == 0) return;
-        String text = word.toString();
-        word.setLength(0);
-        for (int i=0, len=engine.filters.size(); i<len; i++) {
-            String result = engine.filters.get(i).apply(text);
-            if (result != null) {
-                print(result);
-                return;
-            }
-        }
-        print(text);
+//        if (word.length() == 0) return;
+//        String text = word.toString();
+//        word.setLength(0);
+//        for (int i=0, len=engine.filters.size(); i<len; i++) {
+//            String result = engine.filters.get(i).apply(text);
+//            if (result != null) {
+//                print(result);
+//                return;
+//            }
+//        }
+//        print(text);
     }
 
     @Override
@@ -379,14 +380,15 @@ public class WikiSerializerHandler extends PrintListener {
 
     @Override
     public void onSpecialSymbol(String str) {
-        if (str.length() != 1) {
-            super.onSpecialSymbol(str);
-        }
-        if ("-$#@~^_=+:*".indexOf(str.charAt(0)) > -1) {
-            word.append(str);
-        } else {
-            super.onSpecialSymbol(str);
-        }
+        super.onSpecialSymbol(str);
+//        if (str.length() != 1) {
+//            super.onSpecialSymbol(str);
+//        }
+//        if ("-$#@~^_=+:*".indexOf(str.charAt(0)) > -1) {
+//            word.append(str);
+//        } else {
+//            super.onSpecialSymbol(str);
+//        }
     }
 
     @Override
@@ -411,8 +413,20 @@ public class WikiSerializerHandler extends PrintListener {
 
 
     public void onWord(String word) {
-        this.word.append(word);
+        //this.word.append(word);
+        writeWord(word);
     }
 
+
+    protected void writeWord(String word) {
+        for (int i=0, len=engine.filters.size(); i<len; i++) {
+            String result = engine.filters.get(i).apply(word);
+            if (result != null) {
+                print(result);
+                return;
+            }
+        }
+        print(word);
+    }
 
 }
