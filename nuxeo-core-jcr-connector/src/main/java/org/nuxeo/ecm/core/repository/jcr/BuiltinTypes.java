@@ -85,9 +85,9 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
  * <li><i>ecm-mix:orderedfolder</i>  - marker type that denotes an ordered folder
  *
  * </ul>
- * The <code>ecm-mix</code> nodes cannot represent themself a node type,
+ * The <code>ecm-mix</code> nodes cannot represent themselves a node type,
  * instead they are used as additional
- * types given a primary type and they are not dervied from ecm-nt:base
+ * types given a primary type and they are not derived from ecm-nt:base
  * <p>
  * Reserved names are prefixed with <code>ecm</code> and are. This is the list
  * of the defined names:
