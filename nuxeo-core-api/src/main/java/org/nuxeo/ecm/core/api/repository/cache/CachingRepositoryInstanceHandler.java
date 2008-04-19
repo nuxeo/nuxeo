@@ -63,6 +63,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler 
         super (repository, exceptionHandler);
     }
 
+    @Override
     public Class<?>[] getProxyInterfaces() {
         return new Class[] { RepositoryInstance.class, DocumentModelCache.class };
     }

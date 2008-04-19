@@ -78,6 +78,7 @@ public class LocalPropertyURLConnection extends ObjectURLConnection {
         return getProperty().isDirty() ? -1L : 0L;
     }
 
+    @Override
     protected InputStream openStream() throws IOException {
         Property p = getProperty();
         try {

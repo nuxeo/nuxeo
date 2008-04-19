@@ -39,8 +39,11 @@ public class ObjectURLConnection extends URLConnection {
         super (url);
     }
 
+    @Override
     public void connect() throws IOException {
-        if (connected) return;
+        if (connected) {
+            return;
+        }
         obj = ObjectURL.getObject(url);
         if (obj == null) {
             throw new FileNotFoundException("Object was not found: "+obj.toString());

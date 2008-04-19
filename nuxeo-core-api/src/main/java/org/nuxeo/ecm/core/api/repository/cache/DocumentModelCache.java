@@ -29,15 +29,14 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  */
 public interface DocumentModelCache {
 
-    public DocumentModel cacheDocument(DocumentModel doc);
+    DocumentModel cacheDocument(DocumentModel doc);
 
-    public DocumentModel uncacheDocument(DocumentRef ref);
+    DocumentModel uncacheDocument(DocumentRef ref);
 
-    public DocumentModel getCachedDocument(DocumentRef ref);
+    DocumentModel getCachedDocument(DocumentRef ref);
 
-    public void flushDocumentCache();
+    void flushDocumentCache();
 
-    public DocumentModel fetchDocument(DocumentRef ref) throws ClientException;
+    DocumentModel fetchDocument(DocumentRef ref) throws ClientException;
 
 }
-

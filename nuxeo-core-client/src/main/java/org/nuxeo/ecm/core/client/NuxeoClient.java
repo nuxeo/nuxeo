@@ -81,7 +81,7 @@ public final class NuxeoClient {
      * @param multiThreadedLogin the multiThreadedLogin to set.
      */
     public void setMultiThreadedLogin(boolean useMultiThreadedLogin) {
-        this.multiThreadedLogin = useMultiThreadedLogin;
+        multiThreadedLogin = useMultiThreadedLogin;
     }
 
     /**
@@ -259,12 +259,12 @@ public final class NuxeoClient {
         }
         // logout
         logout();
-        this.repositoryMgr = null;
+        repositoryMgr = null;
         fireDisconnected(this);
     }
 
     public synchronized  void reconnect() throws Exception {
-        if (this.locator == null) {
+        if (locator == null) {
             throw new IllegalStateException("Client is not connected");
         }
         InvokerLocator locator = this.locator;
@@ -311,7 +311,7 @@ public final class NuxeoClient {
      * @return the port.
      */
     public int getServerPort() {
-        if (this.locator == null) {
+        if (locator == null) {
             throw new IllegalStateException("Client is not connected");
         }
         return locator.getPort();

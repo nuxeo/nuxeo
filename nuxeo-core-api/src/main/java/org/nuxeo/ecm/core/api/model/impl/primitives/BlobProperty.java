@@ -22,8 +22,6 @@ package org.nuxeo.ecm.core.api.model.impl.primitives;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;

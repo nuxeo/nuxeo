@@ -23,8 +23,6 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;

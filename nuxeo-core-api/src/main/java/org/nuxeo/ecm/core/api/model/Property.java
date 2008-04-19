@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;

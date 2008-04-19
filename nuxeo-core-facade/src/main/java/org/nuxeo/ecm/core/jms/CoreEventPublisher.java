@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.Session;
 import javax.jms.Topic;
 import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
@@ -126,7 +127,7 @@ public class CoreEventPublisher {
             // get a connection from topic connection pool
             connection = getTopicConnection();
             // create a not transacted session
-            session = connection.createTopicSession(false, TopicSession.AUTO_ACKNOWLEDGE);
+            session = connection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
             // create the publisher
             publisher = session.createPublisher(topic);
             // create the message using the given factory

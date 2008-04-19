@@ -278,11 +278,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         this.type = new TypeRef<DocumentType>(SchemaNames.DOCTYPES, type);
         this.id = id;
         this.path = path;
-        this.ref = docRef;
+        ref = docRef;
         this.parentRef = parentRef;
-        this.declaredSchemas = schemas;
-        this.declaredFacets = facets;
-        this.dataModels = new DataModelMapImpl();
+        declaredSchemas = schemas;
+        declaredFacets = facets;
+        dataModels = new DataModelMapImpl();
         this.lock = lock;
         contextData = new ScopedMap();
     }
@@ -310,11 +310,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         this.type = new TypeRef<DocumentType>(SchemaNames.DOCTYPES, type);
         this.id = id;
         this.path = path;
-        this.ref = docRef;
+        ref = docRef;
         this.parentRef = parentRef;
-        this.declaredSchemas = schemas;
-        this.declaredFacets = facets;
-        this.dataModels = new DataModelMapImpl();
+        declaredSchemas = schemas;
+        declaredFacets = facets;
+        dataModels = new DataModelMapImpl();
         this.lock = lock;
         contextData = new ScopedMap();
         this.repositoryName = repositoryName;

@@ -118,7 +118,7 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
     }
 
     private void open(Repository repository) throws Exception {
-        this.session = Framework.getService(CoreSession.class, repository.getName());
+        session = Framework.getService(CoreSession.class, repository.getName());
         String repositoryUri = repository.getRepositoryUri();
         if (repositoryUri == null) {
             repositoryUri = repository.getName();

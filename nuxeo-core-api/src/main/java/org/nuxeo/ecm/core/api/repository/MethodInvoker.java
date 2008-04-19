@@ -27,6 +27,6 @@ import java.lang.reflect.Method;
  */
 public interface MethodInvoker {
 
-    public Object invoke(RepositoryInstanceHandler handler, Method method, Object[] args) throws Throwable;
+    Object invoke(RepositoryInstanceHandler handler, Method method, Object[] args) throws Throwable;
 
 }

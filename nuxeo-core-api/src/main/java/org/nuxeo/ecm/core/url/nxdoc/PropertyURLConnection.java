@@ -76,7 +76,9 @@ public class PropertyURLConnection extends URLConnection {
 
     @Override
     public void connect() throws IOException {
-        if (connected) return;
+        if (connected) {
+            return;
+        }
 
         if (useCaches == false) {
             // connect to remote manager

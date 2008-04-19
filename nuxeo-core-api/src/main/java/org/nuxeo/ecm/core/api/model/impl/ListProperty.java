@@ -27,8 +27,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.ecm.core.api.ListDiff;
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;

@@ -64,10 +64,10 @@ public class DefaultOperationEvent implements OperationEvent {
     public DefaultOperationEvent(String sessionId, String repositoryName, String principal,
             String id, ModificationSet modifs, Object details) {
         this.sessionId = sessionId;
-        this.repository = repositoryName;
-        this.userName = principal;
+        repository = repositoryName;
+        userName = principal;
         this.id = id;
-        this.modifications = modifs;
+        modifications = modifs;
         this.details = details;
     }
 

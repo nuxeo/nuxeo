@@ -24,7 +24,6 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.jetbrains.annotations.NotNull;
 import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;

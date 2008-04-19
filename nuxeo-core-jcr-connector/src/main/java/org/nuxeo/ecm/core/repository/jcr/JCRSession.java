@@ -44,7 +44,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.core.XASessionImpl;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.Repository;

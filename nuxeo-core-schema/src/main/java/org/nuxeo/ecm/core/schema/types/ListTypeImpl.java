@@ -198,7 +198,7 @@ public class ListTypeImpl extends AbstractType implements ListType {
             return object;
         }
         throw new TypeException("Incompatible object: " + object.getClass()
-                + " for type " + this.getName());
+                + " for type " + getName());
     }
 
     @Override
