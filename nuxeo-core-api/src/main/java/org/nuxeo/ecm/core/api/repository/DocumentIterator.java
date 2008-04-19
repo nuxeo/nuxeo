@@ -26,21 +26,19 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+// TODO: not used. Remove ?
 public class DocumentIterator {
 
     protected static final int DEFAULT_PAGE = 20;
-    protected CoreSession session;
+    protected final CoreSession session;
     protected DocumentModel[] chunk;
 
     public DocumentIterator(CoreSession session) {
-        this (session, DEFAULT_PAGE);
+        this(session, DEFAULT_PAGE);
     }
 
     public DocumentIterator(CoreSession session, int page) {
         this.session = session;
-
     }
-
-
 
 }

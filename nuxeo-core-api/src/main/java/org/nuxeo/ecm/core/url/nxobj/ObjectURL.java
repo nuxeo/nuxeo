@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.url.nxdoc.Handler;
  */
 public class ObjectURL  implements java.net.URLStreamHandlerFactory {
 
-    static ConcurrentMap<String, Object> objects = new ConcurrentHashMap<String, Object>();
+    static final ConcurrentMap<String, Object> objects = new ConcurrentHashMap<String, Object>();
 
     public static URL getURL(Object object) {
         return getURL(object, "", Handler.getInstance());

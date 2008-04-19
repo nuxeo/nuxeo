@@ -38,13 +38,13 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
     private Document doc;
 
-    String creator = "Bodie";
+    final String creator = "Bodie";
 
-    String user = "Bubbles";
+    final String user = "Bubbles";
 
-    Principal creatorPrincipal = new UserPrincipal("Bodie");
+    final Principal creatorPrincipal = new UserPrincipal("Bodie");
 
-    Principal userPrincipal = new UserPrincipal("Bubbles");
+    final Principal userPrincipal = new UserPrincipal("Bubbles");
 
     @Override
     public void setUp() throws Exception {
@@ -79,7 +79,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
                 userPrincipal, permission, permissions, null));
 
         // with lock
-        doc.setLock(user + ":");
+        doc.setLock(user + ':');
         assertEquals(Access.DENY, service.checkPermission(doc, null,
                 creatorPrincipal, permission, permissions, null));
         assertEquals(Access.UNKNOWN, service.checkPermission(doc, null,

@@ -23,6 +23,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.jms.JMSException;
+import javax.naming.NamingException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -47,19 +48,19 @@ public class EventPublisherExecutor {
         return INSTANCE;
     }
 
-    public void start() throws Exception {
+    public void start() throws NamingException {
         publisher = CoreEventPublisher.getInstance().createPublisher();
         executor = Executors.newSingleThreadExecutor();
     }
 
-    public void stop() throws Exception {
+    public void stop() throws JMSException {
         executor.shutdown();
         publisher.close();
         executor = null;
         publisher = null;
     }
 
-    public void publish(final Object content) throws JMSException {
+    public void publish(final Object content) {
         executor.execute(new Runnable() {
             public void run() {
                 try {

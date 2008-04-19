@@ -945,8 +945,7 @@ public abstract class AbstractSession implements CoreSession,
         for (DocumentRef docRef : docRefs) {
             docs.add(getDocument(docRef));
         }
-        DocumentModelList list = new DocumentModelListImpl(docs);
-        return list;
+        return new DocumentModelListImpl(docs);
     }
 
     public DocumentModelList getFiles(DocumentRef parent)

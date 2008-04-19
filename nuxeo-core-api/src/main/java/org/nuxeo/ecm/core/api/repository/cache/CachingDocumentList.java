@@ -34,8 +34,9 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 public class CachingDocumentList implements DocumentModelList {
 
     private static final long serialVersionUID = 6370206124496509919L;
-    private List<DocumentModel> list;
-    private DocumentModelCache cache;
+
+    private final List<DocumentModel> list;
+    private final DocumentModelCache cache;
 
     public CachingDocumentList(DocumentModelCache cache, List<DocumentModel> list) {
         this.list = list;
@@ -54,6 +55,7 @@ public class CachingDocumentList implements DocumentModelList {
         return list.addAll(c);
     }
 
+    // FIXME: this recurses infinitely.
     public boolean addAll(int index, Collection<? extends DocumentModel> c) {
         return addAll(index, c);
     }
@@ -144,10 +146,9 @@ public class CachingDocumentList implements DocumentModelList {
 
     class CachingIterator implements ListIterator<DocumentModel> {
 
-        ListIterator<DocumentModel> it;
+        final ListIterator<DocumentModel> it;
 
-
-        public CachingIterator(ListIterator<DocumentModel> it) {
+        CachingIterator(ListIterator<DocumentModel> it) {
             this.it = it;
         }
 
@@ -187,4 +188,5 @@ public class CachingDocumentList implements DocumentModelList {
             it.set(o);
         }
     }
+
 }

@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+// TODO: never used. Remove?
 public class DocumentQuery {
 
     public DocumentModelList query(String query) {
@@ -36,7 +37,6 @@ public class DocumentQuery {
     public DocumentModelList getChildren(DocumentRef parent) {
         return null;
     }
-
 
     public DocumentModelList getFiles(DocumentRef parent) throws ClientException {
         return null;

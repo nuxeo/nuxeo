@@ -51,9 +51,6 @@ public class PropertyURLConnection extends URLConnection {
     protected DocumentModel doc;
     protected Property property;
 
-    /**
-     *
-     */
     public PropertyURLConnection(URL url) {
         super (url);
     }
@@ -80,7 +77,7 @@ public class PropertyURLConnection extends URLConnection {
             return;
         }
 
-        if (useCaches == false) {
+        if (!useCaches) {
             // connect to remote manager
         }
         if (ifModifiedSince != 0) {

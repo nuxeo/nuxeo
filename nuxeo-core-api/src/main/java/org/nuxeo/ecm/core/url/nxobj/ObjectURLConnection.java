@@ -27,16 +27,13 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
- */
+/** @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> */
 public class ObjectURLConnection extends URLConnection {
 
     protected Object obj;
 
     public ObjectURLConnection(URL url) {
-        super (url);
+        super(url);
     }
 
     @Override
@@ -46,7 +43,7 @@ public class ObjectURLConnection extends URLConnection {
         }
         obj = ObjectURL.getObject(url);
         if (obj == null) {
-            throw new FileNotFoundException("Object was not found: "+obj.toString());
+            throw new FileNotFoundException("Object was not found for url: " + url.toString());
         }
         connected = true;
     }
@@ -66,14 +63,14 @@ public class ObjectURLConnection extends URLConnection {
         connect();
         return new FilterInputStream(openStream()) {
             @Override
-         public void close() throws IOException {
-             super.close();
-             try {
-                 close();
-             } catch (Exception e) {
-             }
-         }
-         };
+            public void close() throws IOException {
+                super.close();
+                try {
+                    close();
+                } catch (Exception e) {
+                }
+            }
+        };
     }
 
     protected long lastModified() throws IOException {
@@ -82,12 +79,12 @@ public class ObjectURLConnection extends URLConnection {
 
     protected InputStream openStream() throws IOException {
         if (obj instanceof InputStream) {
-            return (InputStream)obj;
+            return (InputStream) obj;
         }
         return new ByteArrayInputStream(obj.toString().getBytes());
     }
 
-    protected void close() throws Exception {
+    protected void close() {
         ObjectURL.removeURL(url);
         obj = null;
     }

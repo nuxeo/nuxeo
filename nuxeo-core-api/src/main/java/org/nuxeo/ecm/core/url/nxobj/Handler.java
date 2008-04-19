@@ -24,7 +24,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -38,12 +37,6 @@ public class Handler extends URLStreamHandler {
             instance = new Handler();
         }
         return instance;
-    }
-
-    /**
-     *
-     */
-    public Handler() {
     }
 
     @Override

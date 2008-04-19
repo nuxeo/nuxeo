@@ -147,7 +147,7 @@ public class CoreEventPublisher {
         }
     }
 
-    public MessagePublisher createPublisher() throws NamingException, JMSException {
+    public MessagePublisher createPublisher() throws NamingException {
         return new MessagePublisher(getDefaultTopic(), getTopicConnectionFactory());
     }
 

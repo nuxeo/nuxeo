@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.jms.JMSException;
 
@@ -184,13 +185,14 @@ public class JMSEventListener extends AbstractEventListener implements
 
 
     protected void sendEventToJMS(List<CoreEvent> coreEvents) throws JMSException {
+        // Must be declared as Serializable
         ArrayList<OperationEvent> cmdEvents = new ArrayList<OperationEvent>();
-        HashSet<DocumentRef> checkedDocs = new HashSet<DocumentRef>();
+        Set<DocumentRef> checkedDocs = new HashSet<DocumentRef>();
 
         for (CoreEvent coreEvent : coreEvents) {
             // remove duplicates TODO improve this
             String id = coreEvent.getEventId();
-            if ((DocumentEventTypes.DOCUMENT_CREATED.equals(id))
+            if (DocumentEventTypes.DOCUMENT_CREATED.equals(id)
                     || DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(id)
                     || DocumentEventTypes.DOCUMENT_UPDATED.equals(id)) {
                 // stacked events are doc centric events
@@ -221,12 +223,7 @@ public class JMSEventListener extends AbstractEventListener implements
     }
 
     private void publish(Serializable content) throws JMSException {
-        //System.out.println("========================================");
-        //System.out.println(">>>>>> BEFORE CALLING PUBLISH: "+System.currentTimeMillis());
         CoreEventPublisher.getInstance().publish(content);
-        //EventPublisherExecutor.getInstance().publish(content);
-        //System.out.println(">>>>>> AFTER CALLING PUBLISH: "+System.currentTimeMillis());
-        //System.out.println("========================================");
     }
 
 }

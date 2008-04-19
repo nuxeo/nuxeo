@@ -157,7 +157,7 @@ public class CoreInstance implements Serializable {
         return sessions.remove(sid);
     }
 
-    public void close(CoreSession client) throws ClientException {
+    public void close(CoreSession client) {
         client = sessions.remove(client.getSessionId());
         if (client != null) {
             client.destroy();

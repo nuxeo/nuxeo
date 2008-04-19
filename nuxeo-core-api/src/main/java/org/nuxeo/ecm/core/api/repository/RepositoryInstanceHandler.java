@@ -38,9 +38,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class RepositoryInstanceHandler implements InvocationHandler, RepositoryConnection {
 
-    public final static Object NULL = new Object();
+    public static final Object NULL = new Object();
 
-    protected static ConcurrentHashMap<Method, Method> methods = new ConcurrentHashMap<Method, Method>();
+    protected static final ConcurrentHashMap<Method, Method> methods = new ConcurrentHashMap<Method, Method>();
     protected static ConcurrentHashMap<Method, MethodInvoker> invokers = new ConcurrentHashMap<Method, MethodInvoker>();
 
     protected final Repository repository;
@@ -57,9 +57,6 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
         this(repository, null);
     }
 
-    /**
-     * @return the exceptionHandler.
-     */
     public RepositoryExceptionHandler getExceptionHandler() {
         return exceptionHandler;
     }
@@ -83,9 +80,9 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
 
     private void rethrownException(Throwable t) throws Exception {
         if (t instanceof Exception) {
-            throw (Exception)t;
+            throw (Exception) t;
         } else if (t instanceof Error) {
-            throw (Error)t;
+            throw (Error) t;
         } else {
             throw WrappedException.wrap(t);
         }
@@ -95,9 +92,6 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
         return repository;
     }
 
-    /**
-     * @return the session.
-     */
     public CoreSession getSession() throws Exception {
         if (session == null) {
             synchronized (this) {
@@ -146,7 +140,6 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
                 }
             }
         }
-
     }
 
     @SuppressWarnings({"ObjectEquality"})
@@ -185,10 +178,9 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
             if (exceptionHandler != null) {
                 exceptionHandler.handleException(t);
             }
-             throw t;
+            throw t;
         }
     }
-
 
     protected Object getImpl() {
         return this;

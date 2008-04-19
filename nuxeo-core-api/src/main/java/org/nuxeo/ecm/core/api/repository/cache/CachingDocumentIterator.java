@@ -32,12 +32,9 @@ public class CachingDocumentIterator implements DocumentModelIterator {
 
     private static final long serialVersionUID = -2658570878403151252L;
 
-    private DocumentModelCache cache;
-    private DocumentModelIterator it;
+    private final DocumentModelCache cache;
+    private final DocumentModelIterator it;
 
-    /**
-     *
-     */
     public CachingDocumentIterator(DocumentModelCache cache, DocumentModelIterator it) {
         this.it = it;
         this.cache = cache;

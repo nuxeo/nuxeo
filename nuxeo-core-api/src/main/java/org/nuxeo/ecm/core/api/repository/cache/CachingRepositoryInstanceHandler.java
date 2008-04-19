@@ -39,33 +39,31 @@ import org.nuxeo.ecm.core.api.repository.RepositoryInstanceHandler;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
-public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler implements DocumentModelCache {
+public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
+        implements DocumentModelCache {
 
     protected Principal principal;
     protected String sessionId;
-
 
     protected final ConcurrentMap<String, DocumentModel> cache = new ConcurrentHashMap<String, DocumentModel>();
     protected final ConcurrentMap<String, String> path2Ids = new ConcurrentHashMap<String, String>();
     // TODO cache children?
     // TODO fix sync pb
 
-    /**
-     *
-     */
+
     public CachingRepositoryInstanceHandler(Repository repository) {
-        super (repository);
+        super(repository);
     }
 
-    public CachingRepositoryInstanceHandler(Repository repository, RepositoryExceptionHandler exceptionHandler) {
-        super (repository, exceptionHandler);
+    public CachingRepositoryInstanceHandler(Repository repository,
+            RepositoryExceptionHandler exceptionHandler) {
+        super(repository, exceptionHandler);
     }
 
     @Override
     public Class<?>[] getProxyInterfaces() {
-        return new Class[] { RepositoryInstance.class, DocumentModelCache.class };
+        return new Class[]{RepositoryInstance.class, DocumentModelCache.class};
     }
 
     public Principal getPrincipal() throws Exception {
@@ -88,10 +86,10 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler 
 
 
     /**
-     * --------------------------- Document Provider API --------------------------------
-     * The doc cache should be allways updated first (before paths cache).
-     * It is not a blocking issue if we end up with garbage in the path cache
-     * (path mappings to IDs that doesn't exists anymore in the doc cache)
+     * --------------------------- Document Provider API -------------------------------- The doc
+     * cache should be allways updated first (before paths cache). It is not a blocking issue if we
+     * end up with garbage in the path cache (path mappings to IDs that doesn't exists anymore in
+     * the doc cache)
      */
 
     public DocumentModel cacheDocument(DocumentModel doc) {
@@ -100,7 +98,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler 
             DocumentModel cachedDoc = cache.putIfAbsent(id, doc);
             if (cachedDoc == null) { // here we may end up with id and paths being unsync - but it is not a pb.
                 path2Ids.put(doc.getPathAsString(), id);
-               return doc;
+                return doc;
             }
             return cachedDoc;
         } // else doc is not yet stored in repository - avoid caching it
@@ -109,7 +107,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler 
 
     public DocumentModel uncacheDocument(DocumentRef ref) {
         if (ref.type() == DocumentRef.ID) {
-            String id = ((IdRef)ref).value;
+            String id = ((IdRef) ref).value;
             DocumentModel doc = cache.remove(id);
             if (doc != null) {
                 path2Ids.remove(doc.getPathAsString());
@@ -117,7 +115,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler 
             return doc;
         }
         // else assume a path
-        String path = ((PathRef)ref).value;
+        String path = ((PathRef) ref).value;
         String id = path2Ids.remove(path);
         if (id != null) {
             return cache.remove(id);
@@ -127,9 +125,9 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler 
 
     public DocumentModel getCachedDocument(DocumentRef ref) {
         if (ref.type() == DocumentRef.ID) {
-            return cache.get(((IdRef)ref).value);
+            return cache.get(((IdRef) ref).value);
         } // else assume a path
-        String id = path2Ids.get(((PathRef)ref).value);
+        String id = path2Ids.get(((PathRef) ref).value);
         if (id != null) {
             return cache.get(id);
         }
@@ -137,7 +135,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler 
     }
 
     public void flushDocumentCache() {
-        // Race condition: try to clean until we succed - this may not work from first time
+        // Race condition: try to clean until we succeed - this may not work from first time
         // because we are not in a synchronized block
         while (path2Ids.isEmpty() && cache.isEmpty()) {
             path2Ids.clear();
@@ -158,7 +156,8 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler 
         DocumentModel doc = getCachedDocument(parent);
         if (doc != null) {
             String path = doc.getPathAsString();
-            path = new StringBuffer(path.length()+256).append(path).append("/").append(name).toString();
+            path = new StringBuffer(path.length() + 256).append(path).append("/").append(
+                    name).toString();
             String id = path2Ids.get(path);
             if (id != null) {
                 doc = cache.get(id);
@@ -228,7 +227,7 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler 
 
     public DocumentModel[] createDocument(DocumentModel[] docs) throws ClientException {
         docs = session.createDocument(docs);
-        for (int i=docs.length-1; i>=0; i--) {
+        for (int i = docs.length - 1; i >= 0; i--) {
             docs[i] = cacheDocument(docs[i]);
         }
         return docs;
@@ -238,17 +237,20 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler 
         return cacheDocument(session.createDocumentModel(type));
     }
 
-    public DocumentModel createDocumentModel(String type, Map<String,Object> options) throws ClientException {
+    public DocumentModel createDocumentModel(String type, Map<String, Object> options)
+            throws ClientException {
         return cacheDocument(session.createDocumentModel(type, options));
     }
 
-    public DocumentModel createDocumentModel(String parentPath, String id, String type) throws ClientException {
+    public DocumentModel createDocumentModel(String parentPath, String id, String type)
+            throws ClientException {
         return cacheDocument(session.createDocumentModel(parentPath, id, type));
     }
 
     public DocumentModel createProxy(DocumentRef parentRef, DocumentRef docRef,
             VersionModel version, boolean overwriteExistingProxy) throws ClientException {
-        return cacheDocument(session.createProxy(parentRef, docRef, version, overwriteExistingProxy));
+        return cacheDocument(
+                session.createProxy(parentRef, docRef, version, overwriteExistingProxy));
     }
 
 }
