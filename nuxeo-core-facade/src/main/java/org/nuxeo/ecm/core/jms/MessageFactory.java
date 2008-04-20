@@ -35,7 +35,7 @@ public interface MessageFactory extends Serializable {
         private static final long serialVersionUID = -5609402306633995881L;
         public Message createMessage(Session session, Object object) throws JMSException {
             if (object instanceof Serializable) {
-                return session.createObjectMessage((Serializable)object);
+                return session.createObjectMessage((Serializable) object);
             } else {
                 throw new JMSException("Cannot create an object message: the input object is not serializable");
             }

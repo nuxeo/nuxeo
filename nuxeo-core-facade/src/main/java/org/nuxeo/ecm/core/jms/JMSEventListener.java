@@ -196,7 +196,7 @@ public class JMSEventListener extends AbstractEventListener implements
                     || DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(id)
                     || DocumentEventTypes.DOCUMENT_UPDATED.equals(id)) {
                 // stacked events are doc centric events
-                DocumentModel doc = (DocumentModel)coreEvent.getSource();
+                DocumentModel doc = (DocumentModel) coreEvent.getSource();
                 if (checkedDocs.contains(doc.getRef())) {
                     continue;
                 }
