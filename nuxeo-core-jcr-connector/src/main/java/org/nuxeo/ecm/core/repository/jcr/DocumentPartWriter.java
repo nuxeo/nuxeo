@@ -131,7 +131,7 @@ public class DocumentPartWriter {
     public static void writePrimitiveProperty(Node parent, Property prop) throws Exception {
         SimpleType type = ((SimpleType) prop.getType()).getPrimitiveType();
         if (type == StringType.INSTANCE) {
-            parent.setProperty(prop.getName(), (String)prop.getValue());
+            parent.setProperty(prop.getName(), (String) prop.getValue());
         } else if (type == LongType.INSTANCE || type == IntegerType.INSTANCE) {
             Number value = (Number) prop.getValue();
             long v = value == null ? 0 : value.longValue();

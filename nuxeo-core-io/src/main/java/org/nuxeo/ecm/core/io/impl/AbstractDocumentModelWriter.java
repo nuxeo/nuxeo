@@ -280,7 +280,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
                 if (klass.isPrimitive()) {
                     return PrimitiveArrays.toPrimitiveArray(list, klass);
                 } else {
-                    return list.toArray((Object[])Array.newInstance(klass, list.size()));
+                    return list.toArray((Object[]) Array.newInstance(klass, list.size()));
                 }
             }
             return list;

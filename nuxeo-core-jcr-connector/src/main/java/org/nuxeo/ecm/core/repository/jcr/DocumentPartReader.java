@@ -52,7 +52,7 @@ public class DocumentPartReader {
                 doc.getRepository().getName() + ':' + doc.getSession().getUserSessionId());
 
         // proxy document is forwarding props to referred doc
-        Node parent = doc.isProxy() ? ((JCRDocumentProxy)doc).getTargetNode()
+        Node parent = doc.isProxy() ? ((JCRDocumentProxy) doc).getTargetNode()
                 : doc.getNode();
         for (Property prop : dp) {
             readProperty(parent, prop);
@@ -128,7 +128,7 @@ public class DocumentPartReader {
             property.init(p.getBoolean());
             break;
         case PropertyType.BINARY:
-            property.init((Serializable)p.getStream());
+            property.init((Serializable) p.getStream());
             //TODO XXX FIXME: how to handle streams?
             break;
         default:
