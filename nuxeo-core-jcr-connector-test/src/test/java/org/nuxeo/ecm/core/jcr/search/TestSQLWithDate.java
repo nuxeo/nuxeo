@@ -60,7 +60,7 @@ public class TestSQLWithDate extends RepositoryTestCase {
         super.tearDown();
     }
 
-    private Calendar getCalendar(int year, int month, int day,
+    private static Calendar getCalendar(int year, int month, int day,
             int hours, int minutes, int seconds) {
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
         cal.set(Calendar.YEAR, year);

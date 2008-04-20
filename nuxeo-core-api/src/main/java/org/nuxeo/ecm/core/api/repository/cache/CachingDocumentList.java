@@ -144,7 +144,7 @@ public class CachingDocumentList implements DocumentModelList {
         return ar;
     }
 
-    class CachingIterator implements ListIterator<DocumentModel> {
+    static class CachingIterator implements ListIterator<DocumentModel> {
 
         final ListIterator<DocumentModel> it;
 

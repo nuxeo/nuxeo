@@ -77,16 +77,10 @@ public final class NuxeoClient {
         return instance;
     }
 
-    /**
-     * @param multiThreadedLogin the multiThreadedLogin to set.
-     */
     public void setMultiThreadedLogin(boolean useMultiThreadedLogin) {
         multiThreadedLogin = useMultiThreadedLogin;
     }
 
-    /**
-     * @return the multiThreadedLogin.
-     */
     public boolean getMultiThreadedLogin() {
         return multiThreadedLogin;
     }
@@ -155,7 +149,6 @@ public final class NuxeoClient {
         doConnect(locator);
     }
 
-
     private void doConnect(InvokerLocator locator) throws Exception {
         this.locator = locator;
         try {
@@ -198,7 +191,7 @@ public final class NuxeoClient {
         fireConnected(this);
     }
 
-    public void adaptClientSecurityDomain(SecurityDomain sd) {
+    public static void adaptClientSecurityDomain(SecurityDomain sd) {
         AppConfigurationEntry[] entries = sd.getAppConfigurationEntries();
         if (entries != null) {
             for (int i=0; i<entries.length; i++) {
@@ -219,7 +212,7 @@ public final class NuxeoClient {
      * TODO integrate this in core
      * FIXME integrate this in core
      */
-    private void schemaRemotingWorkaround(String host) throws Exception {
+    private static void schemaRemotingWorkaround(String host) throws Exception {
         ServiceManager serviceManager = Framework.getLocalService(ServiceManager.class);
         ServiceDescriptor sd = new ServiceDescriptor(TypeProvider.class, "core");
         sd.setLocator("%TypeProviderBean");
@@ -290,16 +283,10 @@ public final class NuxeoClient {
         return serverName;
     }
 
-    /**
-     * @return the isStarted.
-     */
     public synchronized boolean isConnected() {
         return locator != null;
     }
 
-    /**
-     * @return the host.
-     */
     public String getServerHost() {
         if (locator == null) {
             throw new IllegalStateException("Client is not connected");
@@ -307,9 +294,6 @@ public final class NuxeoClient {
         return locator.getHost();
     }
 
-    /**
-     * @return the port.
-     */
     public int getServerPort() {
         if (locator == null) {
             throw new IllegalStateException("Client is not connected");
@@ -317,23 +301,14 @@ public final class NuxeoClient {
         return locator.getPort();
     }
 
-    /**
-     * @return the locator.
-     */
     public InvokerLocator getLocator() {
         return locator;
     }
 
-    /**
-     * @return the loginHandler.
-     */
     public synchronized LoginHandler getLoginHandler() {
         return loginHandler;
     }
 
-    /**
-     * @param loginHandler the loginHandler to set.
-     */
     public synchronized void setLoginHandler(LoginHandler loginHandler) {
         this.loginHandler = loginHandler;
     }
@@ -359,7 +334,8 @@ public final class NuxeoClient {
     }
 
     /**
-     * Get the repositories available on the connected server
+     * Gets the repositories available on the connected server.
+     *
      * @return the repositories
      */
     public Repository[] getRepositories() throws Exception {

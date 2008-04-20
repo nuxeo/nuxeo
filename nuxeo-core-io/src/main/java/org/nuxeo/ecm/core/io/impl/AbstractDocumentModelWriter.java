@@ -262,7 +262,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
     }
 
     @SuppressWarnings("unchecked")
-    private Object getElementData(ExportedDocument xdoc, Element element,
+    private static Object getElementData(ExportedDocument xdoc, Element element,
             Type type) {
         if (type.isSimpleType()) {
             return type.decode(element.getText());

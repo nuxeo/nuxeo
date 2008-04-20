@@ -464,7 +464,7 @@ public class TestFtsQuery extends RepositoryTestCase {
      * @throws RepositoryException
      * @throws QueryException
      */
-    private void printResults(final QueryResult qr, final String logPrefix)
+    private static void printResults(final QueryResult qr, final String logPrefix)
             throws RepositoryException, QueryException {
         while (qr.next()) {
 

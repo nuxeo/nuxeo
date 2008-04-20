@@ -78,7 +78,7 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
         return new Class[] { RepositoryInstance.class };
     }
 
-    private void rethrownException(Throwable t) throws Exception {
+    private static void rethrowException(Throwable t) throws Exception {
         if (t instanceof Exception) {
             throw (Exception) t;
         } else if (t instanceof Error) {
@@ -102,7 +102,7 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
                         if (exceptionHandler != null) {
                             session = exceptionHandler.handleAuthenticationFailure(repository, t);
                         } else {
-                            rethrownException(t);
+                            rethrowException(t);
                         }
                     }
                 }
@@ -132,7 +132,7 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
                         if (exceptionHandler != null) {
                             exceptionHandler.handleException(t);
                         } else {
-                            rethrownException(t);
+                            rethrowException(t);
                         }
                     } finally {
                         session = null;

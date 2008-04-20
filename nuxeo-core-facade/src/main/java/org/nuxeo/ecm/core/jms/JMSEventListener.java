@@ -169,7 +169,7 @@ public class JMSEventListener extends AbstractEventListener implements
     }
 
     //TODO this code should be refactored and synchronized -> Stack is not a copy and need to be synchronized...
-    private void stackEvent(CoreEvent coreEvent) {
+    private static void stackEvent(CoreEvent coreEvent) {
         String sid = (String) coreEvent.getInfo().get(
                 CoreEventConstants.SESSION_ID);
 
@@ -183,8 +183,7 @@ public class JMSEventListener extends AbstractEventListener implements
         }
     }
 
-
-    protected void sendEventToJMS(List<CoreEvent> coreEvents) throws JMSException {
+    protected static void sendEventToJMS(List<CoreEvent> coreEvents) throws JMSException {
         // Must be declared as Serializable
         ArrayList<OperationEvent> cmdEvents = new ArrayList<OperationEvent>();
         Set<DocumentRef> checkedDocs = new HashSet<DocumentRef>();
@@ -211,7 +210,7 @@ public class JMSEventListener extends AbstractEventListener implements
         publish(cmdEvents);
     }
 
-    private void sendEventToJMS(CoreEvent coreEvent) {
+    private static void sendEventToJMS(CoreEvent coreEvent) {
         OperationEvent event = OperationEventFactory.createEvent(coreEvent);
         if (event != null) {
             try {
@@ -222,7 +221,7 @@ public class JMSEventListener extends AbstractEventListener implements
         }
     }
 
-    private void publish(Serializable content) throws JMSException {
+    private static void publish(Serializable content) throws JMSException {
         CoreEventPublisher.getInstance().publish(content);
     }
 

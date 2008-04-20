@@ -241,12 +241,12 @@ public class JCRVersioningService implements VersioningService {
         return "nt:frozenNode".equals(node.getPrimaryNodeType().getName());
     }
 
-    protected Version getBaseVersionNode(JCRDocument doc)
+    protected static Version getBaseVersionNode(JCRDocument doc)
             throws RepositoryException {
         return doc.getNode().getBaseVersion();
     }
 
-    protected Version getVersionNode(JCRDocument doc, String label)
+    protected static Version getVersionNode(JCRDocument doc, String label)
             throws RepositoryException {
         return doc.getNode().getVersionHistory().getVersionByLabel(label);
     }

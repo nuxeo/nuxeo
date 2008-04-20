@@ -72,7 +72,7 @@ public class TestPropertyModel extends TestCase {
         return list;
     }
 
-    private class Name {
+    private static class Name {
         String firstName;
         String lastName;
         HashMap<String,Serializable> getMap() {
@@ -83,7 +83,7 @@ public class TestPropertyModel extends TestCase {
         }
     }
 
-    private class Author {
+    private static class Author {
         Name name = new Name();
         Long age;
 
@@ -186,7 +186,7 @@ public class TestPropertyModel extends TestCase {
         Framework.shutdown();
     }
 
-    protected void clearMap(Map<String, Serializable> map) {
+    protected static void clearMap(Map<String, Serializable> map) {
         Iterator<Map.Entry<String, Serializable>> it = map.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, Serializable> entry = it.next();

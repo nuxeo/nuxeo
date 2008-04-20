@@ -130,7 +130,7 @@ public class JCRSecurityManager implements SecurityManager {
         }
     }
 
-    public void replaceACP(Document doc, ACP acp) throws SecurityException {
+    public static void replaceACP(Document doc, ACP acp) throws SecurityException {
         if (acp == null) {
             removeACP(doc);
         } else {
@@ -152,7 +152,7 @@ public class JCRSecurityManager implements SecurityManager {
         }
     }
 
-    public void updateACP(Document doc, ACP acp) throws SecurityException {
+    public static void updateACP(Document doc, ACP acp) throws SecurityException {
         if (acp == null) {
             return;
         }

@@ -73,19 +73,16 @@ public class RepositoryInstanceHandler implements InvocationHandler {
         return proxy;
     }
 
-    private void rethrownException(Throwable t) throws Exception {
+    private void rethrowException(Throwable t) throws Exception {
         if (t instanceof Exception) {
-            throw (Exception)t;
+            throw (Exception) t;
         } else if (t instanceof Error) {
-            throw (Error)t;
+            throw (Error) t;
         } else {
             throw WrappedException.wrap(t);
         }
     }
 
-    /**
-     * @return the session.
-     */
     public CoreSession getSession() throws Exception {
         if (session == null) {
             synchronized (this) {
@@ -96,7 +93,7 @@ public class RepositoryInstanceHandler implements InvocationHandler {
                         if (exceptionHandler != null) {
                             session = exceptionHandler.handleAuthenticationFailure(repository, t);
                         } else {
-                            rethrownException(t);
+                            rethrowException(t);
                         }
                     }
                 }
@@ -126,7 +123,7 @@ public class RepositoryInstanceHandler implements InvocationHandler {
                         if (exceptionHandler != null) {
                             exceptionHandler.handleException(t);
                         } else {
-                            rethrownException(t);
+                            rethrowException(t);
                         }
                     } finally {
                         session = null;
@@ -146,7 +143,7 @@ public class RepositoryInstanceHandler implements InvocationHandler {
                 if (exceptionHandler != null) {
                     exceptionHandler.handleException(t);
                 } else {
-                    rethrownException(t);
+                    rethrowException(t);
                 }
             }
         } else {

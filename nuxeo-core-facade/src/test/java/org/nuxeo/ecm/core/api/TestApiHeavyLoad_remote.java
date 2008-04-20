@@ -78,7 +78,7 @@ public class TestApiHeavyLoad_remote extends TestApiHeavyLoad {
         System.setProperty("java.security.policy", url.toString());
     }
 
-    protected void _defaultSecurityManager() {
+    protected static void _defaultSecurityManager() {
         if (null == System.getSecurityManager()) {
             System.setSecurityManager(new RMISecurityManager());
         }
@@ -99,7 +99,7 @@ public class TestApiHeavyLoad_remote extends TestApiHeavyLoad {
         loginContext.logout();
     }
 
-    protected void _initializeServerInstance() throws ClientException {
+    protected static void _initializeServerInstance() throws ClientException {
         CoreInstance.getInstance().initialize(
                 new CoreFacadeBusinessDelegate(""));
     }

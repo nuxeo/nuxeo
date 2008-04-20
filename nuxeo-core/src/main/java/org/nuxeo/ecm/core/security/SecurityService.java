@@ -320,7 +320,7 @@ public class SecurityService extends DefaultComponent {
                 doc.getSession().getSecurityManager().getACP(doc));
     }
 
-    private void addParentsToSecurirySummary(Document doc,
+    private static void addParentsToSecurirySummary(Document doc,
             List<SecuritySummaryEntry> summary) {
 
         Document parent;
@@ -350,7 +350,7 @@ public class SecurityService extends DefaultComponent {
         addParentsToSecurirySummary(parent, summary);
     }
 
-    private void addChildrenToSecuritySummary(Document doc,
+    private static void addChildrenToSecuritySummary(Document doc,
             List<SecuritySummaryEntry> summary) {
         try {
             SecuritySummaryEntry entry = createSecuritySummaryEntry(doc);
