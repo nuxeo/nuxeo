@@ -1147,7 +1147,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         dataModels = newDataModels;
     }
 
-    public Object cloneField(Field field, String key, Object value) {
+    public static Object cloneField(Field field, String key, Object value) {
         // key is unused
         Object clone;
         Type type = field.getType();

@@ -135,16 +135,10 @@ public abstract class Operation<T> implements Serializable {
         }
     }
 
-    /**
-     * @return the status.
-     */
     public final Status getStatus() {
         return status;
     }
 
-    /**
-     * @return the flags.
-     */
     public final int getFlags() {
         return flags;
     }
@@ -169,16 +163,10 @@ public abstract class Operation<T> implements Serializable {
         return (flags & flag) == flag;
     }
 
-    /**
-     * @return the result.
-     */
     public final T getResult() {
         return result;
     }
 
-    /**
-     * @return the name.
-     */
     public final String getName() {
         return name;
     }

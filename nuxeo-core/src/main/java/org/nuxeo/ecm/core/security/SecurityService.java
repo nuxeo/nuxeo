@@ -297,7 +297,7 @@ public class SecurityService extends DefaultComponent {
         return Access.UNKNOWN;
     }
 
-    public List<SecuritySummaryEntry> getSecuritySummary(Document doc,
+    public static List<SecuritySummaryEntry> getSecuritySummary(Document doc,
             Boolean includeParents) {
         List<SecuritySummaryEntry> result = new ArrayList<SecuritySummaryEntry>();
 

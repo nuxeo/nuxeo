@@ -53,9 +53,6 @@ public class RepositoryInstanceHandler implements InvocationHandler {
         this.exceptionHandler = exceptionHandler;
     }
 
-    /**
-     * @return the exceptionHandler.
-     */
     public RepositoryExceptionHandler getExceptionHandler() {
         return exceptionHandler;
     }
@@ -73,7 +70,7 @@ public class RepositoryInstanceHandler implements InvocationHandler {
         return proxy;
     }
 
-    private void rethrowException(Throwable t) throws Exception {
+    private static void rethrowException(Throwable t) throws Exception {
         if (t instanceof Exception) {
             throw (Exception) t;
         } else if (t instanceof Error) {

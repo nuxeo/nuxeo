@@ -290,7 +290,7 @@ public class TypeImporter implements NodeConstants {
         return ntd;
     }
 
-    protected NodeTypeDef createFieldDefinition(ListType fieldType, QName qname) {
+    protected static NodeTypeDef createFieldDefinition(ListType fieldType, QName qname) {
         // create the mixin node type
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(qname);
@@ -312,7 +312,7 @@ public class TypeImporter implements NodeConstants {
      * @param ctype the complex type
      * @param ntd the JCR node type def for the complex type
      */
-    protected void createChildrenDefs(ComplexType ctype, NodeTypeDef ntd) {
+    protected static void createChildrenDefs(ComplexType ctype, NodeTypeDef ntd) {
         List<PropDef> propDefs = new ArrayList<PropDef>();
         List<NodeDef> nodeDefs = new ArrayList<NodeDef>();
         Namespace ns = ctype.getNamespace();
@@ -386,7 +386,7 @@ public class TypeImporter implements NodeConstants {
         }
     }
 
-    protected void createUnstructuredChildren(NodeTypeDef ntd) {
+    protected static void createUnstructuredChildren(NodeTypeDef ntd) {
         PropDefImpl pd = new PropDefImpl();
         pd.setDeclaringNodeType(ntd.getName());
         NodeDefImpl nd = new NodeDefImpl();
@@ -453,7 +453,7 @@ public class TypeImporter implements NodeConstants {
      * @param qname the qname of the node  type to create
      * @return the node type definition
      */
-    protected NodeTypeDef createDocTypeDefinition(DocumentType docType,
+    protected static NodeTypeDef createDocTypeDefinition(DocumentType docType,
             QName qname) {
 
         // create the mixin node type

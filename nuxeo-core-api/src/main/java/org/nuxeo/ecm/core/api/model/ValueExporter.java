@@ -39,9 +39,6 @@ public class ValueExporter implements PropertyVisitor {
     private final Map<String, Serializable> result = new HashMap<String, Serializable>();
 
 
-    /**
-     * @return the result.
-     */
     public Map<String, Serializable> getResult() {
         return result;
     }

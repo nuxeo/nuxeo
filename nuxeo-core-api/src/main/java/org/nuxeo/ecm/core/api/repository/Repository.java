@@ -71,30 +71,18 @@ public class Repository implements Serializable {
         this(name, name);
     }
 
-    /**
-     * @return the name.
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * @return the label.
-     */
     public String getLabel() {
         return label;
     }
 
-    /**
-     * @param label the label to set.
-     */
     public void setLabel(String label) {
         this.label = label;
     }
 
-    /**
-     * @return the properties.
-     */
     public Map<String, String> getProperties() {
         return properties;
     }
@@ -174,4 +162,5 @@ public class Repository implements Serializable {
     public String getRepositoryUri() {
         return repositoryUri;
     }
+
 }

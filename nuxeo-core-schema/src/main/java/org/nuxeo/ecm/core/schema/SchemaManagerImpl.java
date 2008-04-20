@@ -276,16 +276,10 @@ public class SchemaManagerImpl implements SchemaManager {
         }
     }
 
-    /**
-     * @param prefetchInfo the prefetchInfo to set.
-     */
     public void setPrefetchInfo(PrefetchInfo prefetchInfo) {
         this.prefetchInfo = prefetchInfo;
     }
 
-    /**
-     * @return the prefetchInfo.
-     */
     public PrefetchInfo getPrefetchInfo() {
         return prefetchInfo;
     }

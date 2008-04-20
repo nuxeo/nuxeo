@@ -241,7 +241,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
     }
 
     @SuppressWarnings("unchecked")
-    protected void loadSchema(ExportedDocument xdoc, Schema schema,
+    protected static void loadSchema(ExportedDocument xdoc, Schema schema,
             DocumentModel doc, Element schemaElement) throws ClientException {
         String schemaName = schemaElement.attributeValue(ExportConstants.NAME_ATTR);
         Map<String, Object> data = new HashMap<String, Object>();

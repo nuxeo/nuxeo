@@ -89,6 +89,7 @@ public class DocumentProviderManager extends DefaultComponent implements Documen
         return docList;
     }
 
+    // FIXME: this method recurses infinitely.
     public DocumentModel getDocument(String id) throws ClientException {
         return getDocument(id);
     }

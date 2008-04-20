@@ -102,6 +102,7 @@ public class DefaultPropertyFactory extends CompositePropertyFactory {
             return new BinaryProperty(parent, field, flags);
         }
     };
+
     public static final PropertyFactory BLOB = new PropertyFactory() {
         public Property createProperty(Property parent, Field field, int flags) {
             return new BlobProperty(parent, field, flags);
@@ -109,9 +110,6 @@ public class DefaultPropertyFactory extends CompositePropertyFactory {
     };
 
 
-    /**
-     * @return the instance.
-     */
     public static DefaultPropertyFactory getInstance() {
         if (instance == null) {
             instance = new DefaultPropertyFactory();

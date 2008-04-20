@@ -59,16 +59,10 @@ public class MessagePublisher {
         this.messageFactory = messageFactory;
     }
 
-    /**
-     * @return the topic.
-     */
     public Topic getTopic() {
         return topic;
     }
 
-    /**
-     * @param topic the topic to set.
-     */
     public void setTopic(Topic topic) {
         this.topic = topic;
     }
@@ -81,16 +75,10 @@ public class MessagePublisher {
         }
     }
 
-    /**
-     * @return the factory.
-     */
     public MessageFactory getMessageFactory() {
         return messageFactory;
     }
 
-    /**
-     * @return the connection.
-     */
     public TopicConnection getConnection() throws JMSException {
         if (connection == null) {
             connection = factory.createTopicConnection();
@@ -98,9 +86,6 @@ public class MessagePublisher {
         return connection;
     }
 
-    /**
-     * @return the session.
-     */
     public TopicSession getSession() throws JMSException {
         if (session == null) {
             session = getConnection().createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -108,16 +93,12 @@ public class MessagePublisher {
         return session;
     }
 
-    /**
-     * @return the publisher.
-     */
     public TopicPublisher getPublisher() throws JMSException {
         if (publisher == null) {
             publisher = getSession().createPublisher(topic);
         }
         return publisher;
     }
-
 
     public void publish(Object content) throws JMSException {
         Message msg = messageFactory.createMessage(getSession(), content);
@@ -139,7 +120,6 @@ public class MessagePublisher {
             connection.close();
         }
     }
-
 
     public static MessagePublisher createPublisher(String connectionFactory, String topic)
             throws NamingException {
