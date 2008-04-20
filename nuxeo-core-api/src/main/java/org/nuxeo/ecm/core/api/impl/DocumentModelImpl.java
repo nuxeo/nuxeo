@@ -1469,7 +1469,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public DocumentModel clone() throws CloneNotSupportedException {
-        DocumentModelImpl dm = (DocumentModelImpl)super.clone();
+        DocumentModelImpl dm = (DocumentModelImpl) super.clone();
 //        dm.id =id;
 //        dm.acp = acp;
 //        dm.currentLifeCycleState = currentLifeCycleState;
@@ -1539,13 +1539,13 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             lock = (String)result[1];
         }
         if ((refreshFlags & REFRESH_LIFE_CYCLE) != 0) {
-            currentLifeCycleState = (String)result[2];
-            lifeCyclePolicy = (String)result[3];
+            currentLifeCycleState = (String) result[2];
+            lifeCyclePolicy = (String) result[3];
         }
         acp = null;
         isACPLoaded = false;
         if ((refreshFlags & REFRESH_ACP) != 0) {
-            acp = (ACP)result[4];
+            acp = (ACP) result[4];
             isACPLoaded = true;
         }
         dataModels.clear();
@@ -1559,6 +1559,5 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             }
         }
     }
-
 
 }

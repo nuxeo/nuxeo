@@ -40,13 +40,13 @@ public class ArrayProperty extends ScalarProperty {
     private static final long serialVersionUID = 0L;
 
     public ArrayProperty(Property parent, Field field, int flags) {
-        super (parent, field, flags);
+        super(parent, field, flags);
     }
 
 
     @Override
     public ListType getType() {
-        return (ListType)super.getType();
+        return (ListType) super.getType();
     }
 
     @Override
@@ -63,7 +63,7 @@ public class ArrayProperty extends ScalarProperty {
     public Serializable normalize(Object value)
             throws PropertyConversionException {
         if (isNormalized(value)) {
-            return (Serializable)value;
+            return (Serializable) value;
         }
         if (value instanceof Collection) {
             Collection<?> col = (Collection<?>) value;

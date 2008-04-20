@@ -87,7 +87,7 @@ public abstract class ComplexProperty extends AbstractProperty {
     public Serializable normalize(Object value)
             throws PropertyConversionException {
         if (isNormalized(value)) {
-            return (Serializable)value;
+            return (Serializable) value;
         }
         throw new PropertyConversionException(value.getClass(), Map.class, getPath());
     }
@@ -170,7 +170,7 @@ public abstract class ComplexProperty extends AbstractProperty {
         if (value == null) { // IGNORE null values - properties will be considered PHANTOMS
             return;
         }
-        Map<String, Serializable> map = (Map<String, Serializable>)value;
+        Map<String, Serializable> map = (Map<String, Serializable>) value;
         for (Map.Entry<String, Serializable> entry : map.entrySet()) {
             Property property = get(entry.getKey());
             property.init(entry.getValue());
@@ -200,7 +200,7 @@ public abstract class ComplexProperty extends AbstractProperty {
         if (!(value instanceof Map)) {
             throw new InvalidPropertyValueException(getPath());
         }
-        Map<String, Object> map = (Map<String, Object>)value;
+        Map<String, Object> map = (Map<String, Object>) value;
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             Property property = get(entry.getKey());
             property.setValue(entry.getValue());
@@ -251,7 +251,7 @@ public abstract class ComplexProperty extends AbstractProperty {
         if (!(property instanceof ComplexProperty)) {
             return false;
         }
-        ComplexProperty cp = (ComplexProperty)property;
+        ComplexProperty cp = (ComplexProperty) property;
         if (isContainer()) {
             if (!cp.isContainer()) {
                 return false;

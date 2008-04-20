@@ -104,7 +104,7 @@ public class TestApiHeavyLoad_remote extends TestApiHeavyLoad {
                 new CoreFacadeBusinessDelegate(""));
     }
 
-    protected void _uninitializeServerInstance() throws ClientException {
+    protected void _uninitializeServerInstance() {
         CoreInstance.getInstance().close(remote);
     }
 

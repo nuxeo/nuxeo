@@ -68,7 +68,7 @@ public class OperationEventFactory {
     public static OperationEvent createEvent(CoreEvent coreEvent) {
         Map<String, ?> info = coreEvent.getInfo();
         String sessionId = null;
-        DocumentModel doc = (DocumentModel)coreEvent.getSource();
+        DocumentModel doc = (DocumentModel) coreEvent.getSource();
         if (doc != null) {
             sessionId = doc.getSessionId();
         }
@@ -123,7 +123,8 @@ public class OperationEventFactory {
           //TODO getParentRef() is a PATH reference -> should put a ID ref!
             modifs.add(docModel.getParentRef(), Modification.REMOVE_CHILD);
         } else if (LifeCycleEventTypes.LIFECYCLE_TRANSITION_EVENT.equals(id)) {
-            details = (Serializable)coreEvent.getInfo().get(LifeCycleEventTypes.OPTION_NAME_TRANSITION);
+            details = (Serializable) coreEvent.getInfo().get(
+                    LifeCycleEventTypes.OPTION_NAME_TRANSITION);
             modifs.add(docRef, Modification.STATE);
         } else if (DocumentEventTypes.DOCUMENT_LOCKED.equals(id)) {
             modifs.add(docRef, Modification.STATE);
@@ -133,7 +134,8 @@ public class OperationEventFactory {
             details = Boolean.FALSE;
         } else if (DocumentEventTypes.DOCUMENT_MOVED.equals(id)) {
             //TODO srcParent is a PATH reference -> should put a ID ref!
-            DocumentRef srcParent = (DocumentRef) coreEvent.getInfo().get(CoreEventConstants.PARENT_PATH);
+            DocumentRef srcParent = (DocumentRef) coreEvent.getInfo().get(
+                    CoreEventConstants.PARENT_PATH);
             modifs.add(srcParent, Modification.REMOVE_CHILD);
             modifs.add(docModel.getParentRef(), Modification.ADD_CHILD);
             modifs.add(docRef, Modification.MOVE);
@@ -141,7 +143,8 @@ public class OperationEventFactory {
             modifs.add(docRef, Modification.CONTENT);
         }
 
-        return new DefaultOperationEvent(sessionId, repository, principal, id, modifs, details);
+        return new DefaultOperationEvent(
+                sessionId, repository, principal, id, modifs, details);
     }
 
 }

@@ -181,9 +181,9 @@ public class ListProperty extends AbstractProperty {
         }
         List<Serializable> list;
         if (value.getClass().isArray()) { // accept also arrays
-            list = (List<Serializable>)PrimitiveArrays.toList(value);
+            list = (List<Serializable>) PrimitiveArrays.toList(value);
         } else {
-            list = (List<Serializable>)value;
+            list = (List<Serializable>) value;
         }
         children.clear(); // do not use clear() method since it is marking the list as dirty
         Field lfield = getType().getField();
@@ -212,12 +212,12 @@ public class ListProperty extends AbstractProperty {
         Collection<?> col;
         Class<?> klass = value.getClass();
         if (klass == ListDiff.class) { // listdiff support for compatibility
-            applyListDiff((ListDiff)value);
+            applyListDiff((ListDiff) value);
             return;
         } else if (klass.isArray()) { // array support
             col = arrayToList(value);
         } else if (value instanceof Collection) { // collection support
-            col = (Collection<?>)value;
+            col = (Collection<?>) value;
         } else {
             throw new InvalidPropertyValueException(getPath());
         }
@@ -268,7 +268,7 @@ public class ListProperty extends AbstractProperty {
         }
         // use the key as the property data (this is the internal name of
         // the list item property)
-        removed.add((String)property.getData());
+        removed.add((String) property.getData());
     }
 
     @Override
@@ -298,7 +298,7 @@ public class ListProperty extends AbstractProperty {
     public Serializable normalize(Object value)
             throws PropertyConversionException {
         if (isNormalized(value)) {
-            return (Serializable)value;
+            return (Serializable) value;
         }
         if (value.getClass().isArray()) {
             return arrayToList(value);
@@ -329,7 +329,7 @@ public class ListProperty extends AbstractProperty {
         return super.convertTo(value, toType);
     }
 
-    // Returns ArrayList
+    // Must return ArrayList
     public static ArrayList<?> arrayToList(Object obj) {
         Object[] ar = PrimitiveArrays.toObjectArray(obj);
         ArrayList<Object> list = new ArrayList<Object>(ar.length);
@@ -361,7 +361,7 @@ public class ListProperty extends AbstractProperty {
                 get(entry.index).setValue(entry.value);
                 break;
             case ListDiff.MOVE:
-                int toIndex = (Integer)entry.value;
+                int toIndex = (Integer) entry.value;
                 int fromIndex = entry.index;
                 Property src = children.get(fromIndex);
                 src.moveTo(toIndex);
@@ -374,7 +374,7 @@ public class ListProperty extends AbstractProperty {
         if (!(property instanceof ListProperty)) {
             return false;
         }
-        ListProperty lp = (ListProperty)property;
+        ListProperty lp = (ListProperty) property;
         List<Property> c1 = children;
         List<Property> c2 = lp.children;
         if (c1.size() != c2.size()) {

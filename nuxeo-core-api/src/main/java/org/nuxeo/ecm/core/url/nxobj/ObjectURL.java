@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.url.nxobj;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLStreamHandler;
+import java.net.URLStreamHandlerFactory;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -32,7 +33,7 @@ import org.nuxeo.ecm.core.url.nxdoc.Handler;
  *
  *TODO use Weak references
  */
-public class ObjectURL  implements java.net.URLStreamHandlerFactory {
+public class ObjectURL  implements URLStreamHandlerFactory {
 
     static final ConcurrentMap<String, Object> objects = new ConcurrentHashMap<String, Object>();
 

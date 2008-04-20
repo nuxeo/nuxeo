@@ -201,7 +201,7 @@ public class CoreInstance implements Serializable {
             if (session != null) {
                 documentProvider = Framework.getLocalService(DocumentProvider.class);
                 if (documentProvider instanceof DocumentProviderManager) {
-                    ((DocumentProviderManager)documentProvider).setSession(session);
+                    ((DocumentProviderManager) documentProvider).setSession(session);
                 }
                 documentProviders.put(sid, documentProvider);
             }

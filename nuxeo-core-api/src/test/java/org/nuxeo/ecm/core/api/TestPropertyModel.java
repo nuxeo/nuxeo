@@ -509,7 +509,7 @@ public class TestPropertyModel extends TestCase {
 
         prop.setValue(ld);
 
-        List<?> list = (List<?>)prop.getValue(List.class);
+        List<?> list = (List<?>) prop.getValue(List.class);
 
         assertEquals(arrayList("b", "a", "d", "g", "e", "f"), list);
     }
@@ -591,7 +591,7 @@ public class TestPropertyModel extends TestCase {
 
         ObjectInputStream in = new ObjectInputStream(
                 new ByteArrayInputStream(baos.toByteArray()));
-        DocumentPartImpl dp2 = (DocumentPartImpl)in.readObject();
+        DocumentPartImpl dp2 = (DocumentPartImpl) in.readObject();
 
         // blobs are equals only if they are the same object so we need
         // to remove them before doing the assertion
@@ -687,7 +687,8 @@ public class TestPropertyModel extends TestCase {
         book.references = arrayList("a", "b");
 
         HashMap<String, Serializable> map = book.getMap();
-        ((Map)((Map)map.get("book:file")).get("fileName")).remove("name"); // remove name so that it will be a phantom
+        // remove name so that it will be a phantom
+        ((Map) ((Map) map.get("book:file")).get("fileName")).remove("name");
 
         dp.init(map);
 
@@ -706,7 +707,7 @@ public class TestPropertyModel extends TestCase {
         assertEquals("xml", dp.getValue("file/fileName/extension"));
         assertEquals("My Title", dp.getValue("title"));
         assertEquals("John", dp.getValue("authors/author[0]/name/firstName"));
-        Object[] ar = (Object[])dp.getValue("keywords");
+        Object[] ar = (Object[]) dp.getValue("keywords");
         assertEquals("a", ar[0]);
         assertEquals("b", ar[1]);
         assertEquals("a", dp.getValue("references/reference[0]"));
@@ -737,7 +738,8 @@ public class TestPropertyModel extends TestCase {
         book.keywords = new String[] {"a", "b"};
 
         HashMap<String, Serializable> map = book.getMap();
-        ((Map)((Map)map.get("book:file")).get("fileName")).remove("name"); // remove name so that it will be a phantom
+        // remove name so that it will be a phantom
+        ((Map) ((Map) map.get("book:file")).get("fileName")).remove("name");
 
         // remove null values - since they are related to phantom props
         clearMap(map);

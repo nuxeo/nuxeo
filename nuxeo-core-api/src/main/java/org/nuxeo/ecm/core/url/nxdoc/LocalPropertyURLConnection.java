@@ -41,18 +41,18 @@ public class LocalPropertyURLConnection extends ObjectURLConnection {
     protected Property property;
 
     LocalPropertyURLConnection(URL url) {
-        super (url);
+        super(url);
     }
 
     public Property getProperty() throws IOException {
         try {
             if (property == null) {
                 String xpath = url.getPath();
-                property = ((DocumentModel)obj).getProperty(xpath);
+                property = ((DocumentModel) obj).getProperty(xpath);
             }
             return property;
         } catch (PropertyException e) {
-            IOException ee = new IOException("Failed to get property: "+url.getPath());
+            IOException ee = new IOException("Failed to get property: " + url.getPath());
             ee.initCause(e);
             throw ee;
         }
@@ -94,9 +94,8 @@ public class LocalPropertyURLConnection extends ObjectURLConnection {
             }
             return new ByteArrayInputStream(value.toString().getBytes());
         } catch (PropertyException e) {
-            throw new IOException("Failed to get property value: "+p.getName());
+            throw new IOException("Failed to get property value: " + p.getName());
         }
     }
-
 
 }

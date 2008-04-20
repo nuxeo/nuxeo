@@ -199,7 +199,7 @@ public class DefaultPropertyFactory extends CompositePropertyFactory {
         } else if (type.isComplexType()) {
             property = newMapProperty(parent, field, flags);
         } else if (type.isListType()) {
-            ListType ltype = (ListType)type;
+            ListType ltype = (ListType) type;
             if (ltype.isArray()) {
                 property = newArrayProperty(parent, field, flags);
             } else {

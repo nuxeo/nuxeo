@@ -67,7 +67,7 @@ public class MapProperty extends ComplexProperty {
     @Override
     @SuppressWarnings("unchecked")
     public ComplexType getType() {
-        return (ComplexType)field.getType();
+        return (ComplexType) field.getType();
     }
 
     public Field getField() {

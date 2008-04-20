@@ -48,7 +48,7 @@ public abstract class SessionAdapterFactory<T> {
 
     @SuppressWarnings("unchecked")
     public static <T> T getAdapter(CoreSession session, Class<T> itf) {
-        SessionAdapterFactory<T> factory = (SessionAdapterFactory<T>)getAdapter(itf.getName());
+        SessionAdapterFactory<T> factory = (SessionAdapterFactory<T>) getAdapter(itf.getName());
         if (factory != null) {
             return factory.getAdapter(session);
         }

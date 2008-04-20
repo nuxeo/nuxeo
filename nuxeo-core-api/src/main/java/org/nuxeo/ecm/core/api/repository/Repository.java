@@ -146,7 +146,7 @@ public class Repository implements Serializable {
         return session;
     }
 
-    public void close(CoreSession session) throws Exception {
+    public static void close(CoreSession session) {
         CoreInstance.getInstance().close(session);
     }
 

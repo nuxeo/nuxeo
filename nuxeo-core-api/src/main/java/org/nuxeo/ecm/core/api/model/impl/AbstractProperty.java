@@ -96,7 +96,7 @@ public abstract class AbstractProperty implements Property {
     public  void removePhantomFlag() {
         flags &= ~IS_PHANTOM;
         if (parent != null) {
-            ((AbstractProperty)parent).removePhantomFlag();
+            ((AbstractProperty) parent).removePhantomFlag();
         }
     }
 
@@ -144,7 +144,7 @@ public abstract class AbstractProperty implements Property {
                 int i = ((ListProperty) parent).children.indexOf(this);
                 name = name + '[' + i + ']';
             }
-          path = ((AbstractProperty)parent).collectPath(path);
+            path = ((AbstractProperty) parent).collectPath(path);
         }
         return path.append(name);
     }
@@ -257,7 +257,7 @@ public abstract class AbstractProperty implements Property {
             flags |= IS_MODIFIED; // set the modified flag
             flags &= ~IS_PHANTOM; // remove phantom flag if any
             if (parent != null) {
-                ((AbstractProperty)parent).setIsModified();
+                ((AbstractProperty) parent).setIsModified();
             }
         }
     }
@@ -269,7 +269,7 @@ public abstract class AbstractProperty implements Property {
         // clear dirty + phatom flag if any
         setDirtyFlags(IS_NEW); // this clear any dirty flag and set the new flag
         if (parent != null) {
-            ((AbstractProperty)parent).setIsModified();
+            ((AbstractProperty) parent).setIsModified();
         }
     }
 
@@ -343,7 +343,7 @@ public abstract class AbstractProperty implements Property {
     }
 
     protected Serializable getDefaultValue() {
-        return (Serializable)getField().getDefaultValue();
+        return (Serializable) getField().getDefaultValue();
     }
 
     public void moveTo(int index) {
@@ -357,7 +357,7 @@ public abstract class AbstractProperty implements Property {
     }
 
     public DocumentPart getRoot() {
-        return parent == null ? (DocumentPart)this : parent.getRoot();
+        return parent == null ? (DocumentPart) this : parent.getRoot();
     }
 
     public Property resolvePath(String path) throws PropertyNotFoundException {
@@ -412,12 +412,12 @@ public abstract class AbstractProperty implements Property {
         return property;
     }
 
-    public Serializable normalize(Object value)
-            throws PropertyConversionException {
+    public Serializable normalize(Object value) throws PropertyConversionException {
         if (isNormalized(value)) {
-            return (Serializable)value;
+            return (Serializable) value;
         }
-        throw new PropertyConversionException(value.getClass(), Serializable.class, getPath());
+        throw new PropertyConversionException(
+                value.getClass(), Serializable.class, getPath());
     }
 
     public boolean isNormalized(Object value) {
