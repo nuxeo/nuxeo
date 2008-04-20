@@ -142,11 +142,7 @@ public class DownloadServlet extends HttpServlet {
             throw new ServletException(e);
         } finally {
             if (session != null) {
-                try {
-                    CoreInstance.getInstance().close(session);
-                } catch (ClientException e) {
-                    // nothing to do
-                }
+                CoreInstance.getInstance().close(session);
             }
             if (in != null) {
                 in.close();
