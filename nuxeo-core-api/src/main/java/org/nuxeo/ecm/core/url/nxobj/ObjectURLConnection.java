@@ -63,6 +63,7 @@ public class ObjectURLConnection extends URLConnection {
         connect();
         return new FilterInputStream(openStream()) {
             @Override
+            // FIXME: this method recurses infinitely
             public void close() throws IOException {
                 super.close();
                 try {
@@ -93,7 +94,8 @@ public class ObjectURLConnection extends URLConnection {
     protected void finalize() throws Throwable {
         try {
             close();
-        } catch (Throwable t) {
+        } finally {
+            super.finalize();
         }
     }
 

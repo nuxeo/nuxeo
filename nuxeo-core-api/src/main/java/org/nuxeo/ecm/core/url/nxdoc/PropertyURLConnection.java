@@ -52,7 +52,7 @@ public class PropertyURLConnection extends URLConnection {
     protected Property property;
 
     public PropertyURLConnection(URL url) {
-        super (url);
+        super(url);
     }
 
     protected void doConnect(URL u) throws Exception {
@@ -141,10 +141,7 @@ public class PropertyURLConnection extends URLConnection {
                 @Override
                 public void close() throws IOException {
                     super.close();
-                    try {
-                        CoreInstance.getInstance().close(session);
-                    } catch (Exception e) {
-                    }
+                    CoreInstance.getInstance().close(session);
                     session = null;
                     connected = false;
                 }
@@ -179,12 +176,15 @@ public class PropertyURLConnection extends URLConnection {
         return doc;
     }
 
-
     @Override
     protected void finalize() throws Throwable {
-        if (shared && session != null) {
-            CoreInstance.getInstance().close(session);
-            session = null;
+        try {
+            if (shared && session != null) {
+                CoreInstance.getInstance().close(session);
+                session = null;
+            }
+        } finally {
+            super.finalize();
         }
     }
 
