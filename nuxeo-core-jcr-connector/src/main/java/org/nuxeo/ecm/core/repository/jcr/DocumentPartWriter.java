@@ -165,7 +165,7 @@ public class DocumentPartWriter {
      */
     public static void writeArrayProperty(Node parent, Property prop) throws Exception {
         ValueFactory vf = parent.getSession().getValueFactory();
-        Value[] values = toValueArray((ListType)prop.getType(), prop.getValue(), vf);
+        Value[] values = toValueArray((ListType) prop.getType(), prop.getValue(), vf);
         parent.setProperty(prop.getName(), values);
     }
 
@@ -268,7 +268,7 @@ public class DocumentPartWriter {
         } catch (PathNotFoundException e) {
             node = ModelAdapter.addPropertyNode(parent,
                     name, type.getName());
-            if (type.isComplexType() && ((ComplexType)type).isUnstructured()) {
+            if (type.isComplexType() && ((ComplexType) type).isUnstructured()) {
                 ModelAdapter.setUnstructured(node);
             }
         }
