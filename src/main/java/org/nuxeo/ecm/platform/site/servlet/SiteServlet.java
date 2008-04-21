@@ -226,6 +226,7 @@ public class SiteServlet extends HttpServlet {
                 mapping.addVar("type", obj.getDocument().getType());
             }
             siteReq.setScript(mapping.getScript());
+            siteReq.setMapping(mapping); //TODO how to propagate vars without storing them in req?
         }
         return siteReq;
     }

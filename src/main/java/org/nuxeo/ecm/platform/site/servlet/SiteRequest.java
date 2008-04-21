@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
 import org.nuxeo.ecm.platform.site.api.SiteException;
+import org.nuxeo.ecm.platform.site.mapping.Mapping;
 import org.nuxeo.ecm.platform.site.template.ScriptFile;
 import org.nuxeo.ecm.platform.site.template.SiteManager;
 import org.nuxeo.ecm.platform.site.template.SiteRoot;
@@ -62,6 +63,7 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
 
     protected SiteRoot siteRoot;
     protected ScriptFile script;
+    protected Mapping mapping;
 
     public SiteRequest(SiteRoot root, HttpServletRequest req, HttpServletResponse resp) {
         super (req);
@@ -72,6 +74,26 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
             this.mode = requestedMode;
         }
         this.resp = resp;
+    }
+
+    public void setMapping(Mapping mapping) {
+        this.mapping = mapping;
+    }
+
+    public Mapping getMapping() {
+        return mapping;
+    }
+
+    public String getMappingVar(String name) {
+        return mapping != null ? mapping.getValue(name) : null;
+    }
+
+    public String getMappingVar(int index) {
+        return mapping != null ? mapping.getValue(index) : null;
+    }
+
+    public int getMappingVarCount() {
+        return mapping != null ? mapping.size() : 0;
     }
 
     public ScriptFile getScript() {
