@@ -87,12 +87,7 @@ public class MappingDescriptor {
         } while (m.find());
         if (s < replacement.length()) {
             // add segment
-            String var = m.group(1);
-            if (Character.isDigit(var.charAt(0))) {
-                ar.add(new IndexedSegment(Integer.parseInt(var)));
-            } else {
-                ar.add(new NamedSegment(var));
-            }
+            ar.add(new StringSegment(replacement.substring(s)));
         }
         return ar.toArray(new ReplacementSegment[ar.size()]);
     }

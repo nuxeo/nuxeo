@@ -44,7 +44,7 @@ public class MainSection implements Configurator {
         }
         val = properties.get("debug");
         if (val != null) {
-            root.setDebugEnabled(Boolean.getBoolean(val));
+            root.setDebugEnabled(Boolean.parseBoolean(val));
         }
         val = properties.get("resolver");
         if (val != null) {

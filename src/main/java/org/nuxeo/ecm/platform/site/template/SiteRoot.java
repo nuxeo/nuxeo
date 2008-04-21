@@ -75,6 +75,26 @@ public class SiteRoot implements FileChangeListener {
         this.config = new Configuration("main");
         config.putConfigurator("main", MainSection.INSTANCE);
         config.putConfigurator("mapping", MappingSection.INSTANCE);
+        try {
+            loadConfiguration();
+        } catch (IOException e) {
+            log.error("Failed to load site configuration", e);
+        }
+        if (debug) { // register file reloader
+            FileChangeNotifier notifier = Framework.getLocalService(FileChangeNotifier.class);
+            if (notifier != null) {
+                notifier.addListener(this);
+                notifier.watch(new File(root, ".metadata"));
+            }
+        }
+    }
+
+    public void dispose() {
+        FileChangeNotifier fcn = Framework.getLocalService(FileChangeNotifier.class);
+        if (fcn != null) {
+            fcn.unwatch(new File(root, ".metadata"));
+            fcn.removeListener(this);
+        }
     }
 
     public SiteManager getSiteManager() {
@@ -138,23 +158,11 @@ public class SiteRoot implements FileChangeListener {
 
     public void loadConfiguration() throws IOException {
         config.loadConfiguration(this, new File(root, ".metadata"));
-        if (debug) { // register file reloader
-            FileChangeNotifier notifier = Framework.getLocalService(FileChangeNotifier.class);
-            if (notifier != null) {
-                notifier.addListener(this);
-            }
-        }
     }
 
     public void reload() throws IOException {
         mapper.clearMappings();
         cache.clear();
-        if (debug) {
-            FileChangeNotifier notifier = Framework.getLocalService(FileChangeNotifier.class);
-            if (notifier != null) {
-                notifier.removeListener(this);
-            }
-        }
         loadConfiguration();
     }
 
@@ -166,7 +174,7 @@ public class SiteRoot implements FileChangeListener {
                 try {
                     reload();
                     log.info("Reloaded site configuration for: "+root.getName());
-                } catch (IOException e) {
+                } catch (Throwable e) {
                     log.error("Failed to reload site configuration for: "+root.getName());
                 }
             }

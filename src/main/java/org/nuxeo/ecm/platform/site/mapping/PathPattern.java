@@ -55,7 +55,7 @@ public class PathPattern  {
 
     public String tr(String pattern) {
         if (pattern.startsWith("**/")) {
-            pattern = "(?:(.*)/)?"+pattern.substring(2);
+            pattern = "(.*)"+pattern.substring(2);
         }
         if (pattern.endsWith("/**")) {
             pattern = pattern.substring(0, pattern.length()-2)+"(.*)";

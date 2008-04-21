@@ -69,11 +69,14 @@ public class PathMapper {
     public static void main(String[] args) {
         PathMapper mapper = new PathMapper();
         MappingDescriptor mdef = new MappingDescriptor();
-        mdef.setPattern("/wiki/**/d/*/*");
-        mdef.setScript("$1 $2 $3: $0");
+        mdef.setPattern("**/demo/*");
+        mdef.setScript("$1 $2");
+        //mdef.setPattern("/wiki/**/d/*/*");
+        //mdef.setScript("$1 $2 $3: $0");
         mapper.addMapping(mdef);
 
-        Mapping mapping = mapper.getMapping("/wiki/a/b/c/d/e/index.view");
+        //Mapping mapping = mapper.getMapping("/wiki/a/b/c/d/e/index.view");
+        Mapping mapping = mapper.getMapping("/wiki/a/b/c/demo/index.view");
         mapping.mdef = mdef;
         System.out.println(mapping.getScript());
         //System.out.println(mapper.getMapping(new SitePath("wiki/a/b/d/e/index.view", "Note")).script);

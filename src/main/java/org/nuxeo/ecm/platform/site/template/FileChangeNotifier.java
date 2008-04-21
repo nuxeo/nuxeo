@@ -24,6 +24,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ListenerList;
 
 /**
@@ -31,6 +33,8 @@ import org.nuxeo.common.collections.ListenerList;
  *
  */
 public class FileChangeNotifier {
+
+    private static Log log = LogFactory.getLog(FileChangeNotifier.class);
 
     private ListenerList listeners = new ListenerList();
     private Timer timer = new Timer("FileChangeNotifier");
@@ -53,6 +57,10 @@ public class FileChangeNotifier {
         files.add(new FileEntry(file));
     }
 
+    public void unwatch(File file) {
+        files.remove(new FileEntry(file));
+    }
+
     public void addListener(FileChangeListener listener) {
         listeners.add(listener);
     }
@@ -73,7 +81,11 @@ public class FileChangeNotifier {
             for (FileEntry entry : files) {
                 long lastModified = entry.file.lastModified();
                 if ( entry.lastModified < lastModified) {
-                    fireNotification(entry);
+                    try {
+                        fireNotification(entry);
+                    } catch (Throwable t) {
+                        log.error("Error while notifying file change", t);
+                    }
                     entry.lastModified = lastModified;
                 }
             }
@@ -86,6 +98,14 @@ public class FileChangeNotifier {
         FileEntry(File file) {
             this.file = file;
             this.lastModified = file.lastModified();
+        }
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) return false;
+            if (obj.getClass() == FileEntry.class) {
+                return file.equals(((FileEntry)obj).file);
+            }
+            return false;
         }
     }
 }
