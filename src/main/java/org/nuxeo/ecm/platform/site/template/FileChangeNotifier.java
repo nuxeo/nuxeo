@@ -41,7 +41,7 @@ public class FileChangeNotifier {
     private Vector<FileEntry> files = new Vector<FileEntry>();
 
     public void start() {
-        start(10000, 10000);
+        start(10000, 2000);
     }
 
     public void start(int startAfter, int interval) {

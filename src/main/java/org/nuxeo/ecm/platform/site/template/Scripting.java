@@ -100,7 +100,7 @@ public class Scripting {
                 } finally {
                     if (in != null) in.close();
                 }
-            } else if (CHAR_FILE_EXT.contains(ext)) {
+            } else if (BINARY_FILE_EXT.contains(ext)) {
                 FileInputStream in = new FileInputStream(script.getFile());
                 try {
                     FileUtils.copy(in, req.getResponse().getOutputStream());
