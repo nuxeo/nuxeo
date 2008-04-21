@@ -202,4 +202,6 @@ public interface ThreadAction extends Serializable {
      */
     boolean isParentPostPublished(int post) throws ClientException;
 
+
+    public ThreadAdapter getAdapter(DocumentModel thread);
 }

@@ -27,6 +27,7 @@
       <schema name="post"/>
       <schema name="dublincore"/>
       <facet name="HiddenInNavigation" />
+      <facet name="Commentable"/>
     </doctype>
   </extension>
 
