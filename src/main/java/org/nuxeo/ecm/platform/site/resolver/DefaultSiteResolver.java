@@ -53,7 +53,7 @@ public class DefaultSiteResolver implements SiteResourceResolver {
         if (searchService != null) {
             ResultSet result = searchService.searchQuery(new ComposedNXQueryImpl(query), 0, 1);
             if (result.isEmpty()) {
-                throw new ClientException("Unable to resolve root " + rootName);
+                return null;
             }
             ResultItem rootResult = result.get(0);
             String ref = (String) rootResult.get("ecm:uuid");

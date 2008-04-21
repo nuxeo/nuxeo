@@ -103,6 +103,7 @@ public class MappingDescriptor {
         if (mapping == null) {
             return null;
         }
+        mapping.mdef = this;
         // it's matching - do the rewrite
         if (traversal != null) {
             mapping.traversalPath = mapping.resolveSegments(traversal);

@@ -41,7 +41,7 @@ import org.nuxeo.ecm.platform.site.mapping.Mapping;
 import org.nuxeo.ecm.platform.site.rendering.ServletRequestView;
 import org.nuxeo.ecm.platform.site.resolver.DefaultSiteResolver;
 import org.nuxeo.ecm.platform.site.resolver.SiteResourceResolver;
-import org.nuxeo.ecm.platform.site.template.ScriptEngine;
+import org.nuxeo.ecm.platform.site.template.Scripting;
 import org.nuxeo.ecm.platform.site.template.SiteManager;
 import org.nuxeo.ecm.platform.site.template.SiteRoot;
 import org.nuxeo.runtime.api.Framework;
@@ -62,7 +62,7 @@ public class SiteServlet extends HttpServlet {
 
     protected static SiteResourceResolver resolver = new DefaultSiteResolver();
 
-    private ScriptEngine scriptEngine;
+    private Scripting scripting;
     private RenderingEngine engine;
     private SiteManager manager;
     //private SiteRenderingContext siteRenderingContext = new SiteRenderingContext();
@@ -78,7 +78,7 @@ public class SiteServlet extends HttpServlet {
         env.put("version", "1.0.0");
         engine.setSharedVariable("env", env);
         engine.setSharedDocumentView(new ServletRequestView());
-        scriptEngine = new ScriptEngine(engine);
+        scripting = new Scripting(engine);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class SiteServlet extends HttpServlet {
 
         double s = System.currentTimeMillis();
         try {
-            scriptEngine.exec(siteRequest);
+            scripting.exec(siteRequest);
             //engine.render(siteRequest.getLastResolvedObject());
         } catch (Exception e) {
             displayError(resp, e, "Error during the rendering process");
@@ -271,7 +271,7 @@ public class SiteServlet extends HttpServlet {
     public void showIndex(SiteRequest request) throws Exception {
         try {
             double s = System.currentTimeMillis();
-            engine.render("index,ftl", new SiteRenderingContext(request));
+            scripting.exec(request);
             System.out.println(">>>>>>>>>> STATIC RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
         } catch (RenderingException e) {
             displayError(request.getResponse(), e, "Error during the rendering process");
