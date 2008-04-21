@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
+import org.nuxeo.ecm.platform.site.template.SiteRoot;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -39,10 +40,12 @@ import org.nuxeo.runtime.api.Framework;
 
 public class DefaultSiteResolver implements SiteResourceResolver {
 
+    public static final DefaultSiteResolver INSTANCE = new DefaultSiteResolver();
+
     public DefaultSiteResolver() {
     }
 
-    public DocumentModel getSiteRoot(String rootName, CoreSession session) throws Exception {
+    public DocumentModel getRootDocument(SiteRoot siteRoot, String rootName, CoreSession session) throws Exception {
         DocumentModel root = null;
         SearchService searchService = Framework.getService(SearchService.class);
 
@@ -61,13 +64,10 @@ public class DefaultSiteResolver implements SiteResourceResolver {
                 root = result.get(0);
             }
         }
-        if (root == null) {
-            throw new ClientException("Unable to resolve root " + rootName);
-        }
         return root;
     }
 
-    public DocumentModel getSiteSegment(DocumentModel parent, String segment, CoreSession session) throws Exception {
+    public DocumentModel getSiteSegment(SiteRoot root, DocumentModel parent, String segment, CoreSession session) throws Exception {
         try {
             return session.getDocument(new PathRef(parent.getPathAsString() + "/" + segment));
         } catch (ClientException e) {

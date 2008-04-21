@@ -17,41 +17,25 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.rendering.api;
-
-import java.io.File;
-
-
-
+package org.nuxeo.ecm.platform.site.mapping;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface RenderingEngine {
+public class IndexedSegment implements ReplacementSegment {
 
-    void setResourceLocator(ResourceLocator locator);
-
-    ResourceLocator getResourceLocator();
-
-    void addResourceDirectories(File ... dir);
-
-    void setSharedDocumentView(RenderingContextView env);
-
-    RenderingContextView getSharedDocumentView();
-
-    void setSharedVariable(String key, Object value);
+    int index;
 
     /**
-     * Start the rendering for the given document context.
      *
-     * @param ctx
-     * @throws RenderingException
      */
-    void render(String template, RenderingContext ctx) throws RenderingException;
+    public IndexedSegment(int index) {
+        this.index = index;
+    }
 
-    void setTransformer(String name, RenderingTransformer transformer);
-
-    RenderingTransformer getTransformer(String name);
+    public String getReplacement(Mapping mapping) {
+      return mapping.getValue(index);
+    }
 
 }

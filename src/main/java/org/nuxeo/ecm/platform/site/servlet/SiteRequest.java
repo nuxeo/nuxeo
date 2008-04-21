@@ -34,7 +34,9 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
 import org.nuxeo.ecm.platform.site.api.SiteException;
+import org.nuxeo.ecm.platform.site.template.ScriptFile;
 import org.nuxeo.ecm.platform.site.template.SiteManager;
+import org.nuxeo.ecm.platform.site.template.SiteRoot;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -42,7 +44,6 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class SiteRequest extends HttpServletRequestWrapper implements SiteConst {
-
 
     public static final String CORESESSION_KEY = "SiteCoreSession";
 
@@ -57,14 +58,43 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
 
     protected HttpServletResponse resp;
 
-    public SiteRequest(HttpServletRequest req, HttpServletResponse resp, SiteManager mgr) {
+    protected String pathInfo;
+
+    protected SiteRoot siteRoot;
+    protected ScriptFile script;
+
+    public SiteRequest(SiteRoot root, HttpServletRequest req, HttpServletResponse resp) {
         super (req);
-        this.siteManager = mgr;
+        this.siteRoot = root;
+        this.siteManager = root.getSiteManager();
         String requestedMode = getParameter(MODE_KEY);
         if (requestedMode != null) {
             this.mode = requestedMode;
         }
         this.resp = resp;
+    }
+
+    public ScriptFile getScript() {
+        if (script == null) {
+            String path = null;
+            SiteObject first = getFirstUnresolvedObject();
+          if (first != null) {
+              if (first != tail) {
+                  path = getPath(first, null);
+              } else {
+                  path = first.getName();
+              }
+          } else {
+              path = "view.ftl";
+          }
+          script  = siteRoot.getScript(path, lastResolved == null ? null : lastResolved.getDocument().getType());
+        }
+        return script;
+    }
+
+    public void setScript(String path) {
+        String type = (lastResolved != null) ? lastResolved.getDocument().getType() : null;
+        this.script = siteRoot.getScript(path, type);
     }
 
     public SiteManager getSiteManager() {
@@ -183,6 +213,11 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
         return head != null && head.next == null;
     }
 
+    public SiteRoot getRoot() {
+        return siteRoot;
+    }
+
+
     /**
     *
     * @return the last traversed object
@@ -235,6 +270,10 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
    public String getResolvedPath() {
        if (lastResolved == null) return "";
        return getPath(head, lastResolved.next);
+   }
+
+   public String toString() {
+       return "Resolved Path: "+getResolvedPath()+"; Unresolved Path:"+getUnresolvedPath()+"; Script: "+(script == null? "none" : script.getPath());
    }
 
 

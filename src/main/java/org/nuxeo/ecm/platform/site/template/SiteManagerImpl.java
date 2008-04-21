@@ -25,9 +25,13 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
+import org.nuxeo.ecm.platform.site.resolver.DefaultSiteResolver;
+import org.nuxeo.ecm.platform.site.resolver.SiteResourceResolver;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -44,6 +48,11 @@ public class SiteManagerImpl implements SiteManager {
     protected LinkedHashMap<String, SitePageTemplate> cache;
 
     protected SiteObjectResolver resolver;
+
+    protected ConcurrentMap<String, SiteRoot> roots = new ConcurrentHashMap<String, SiteRoot>();
+    protected SiteRoot defaultRoot;
+
+    protected SiteResourceResolver siteRootResolver = new DefaultSiteResolver();
 
     protected File root;
     protected RenderingEngine engine;
@@ -63,6 +72,31 @@ public class SiteManagerImpl implements SiteManager {
 
     public File getRootDirectory() {
         return root;
+    }
+
+    public SiteRoot getDefaultSiteRoot() throws Exception {
+        if (defaultRoot == null) {
+            File dir = new File(root, "default");
+            defaultRoot = new SiteRoot(this, dir);
+            defaultRoot.loadConfiguration();
+        }
+        return defaultRoot;
+    }
+
+    public SiteRoot getSiteRoot(String name) throws Exception {
+        SiteRoot sroot = roots.get(name);
+        if (sroot == null) {
+            File dir = new File(root, name);
+            File metadata = new File(dir, name);
+            if (metadata.isFile()) {
+                sroot = new SiteRoot(this, dir);
+                sroot.loadConfiguration();
+                roots.putIfAbsent(name, sroot);
+            } else { // try dynamic binding
+                sroot = getDefaultSiteRoot();
+            }
+        }
+        return sroot;
     }
 
     public SiteObjectBinding[] getBindings() {

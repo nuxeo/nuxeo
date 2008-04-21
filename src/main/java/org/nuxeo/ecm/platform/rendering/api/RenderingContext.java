@@ -50,8 +50,6 @@ public interface RenderingContext {
 
     CoreSession getSession();
 
-    String getTemplate();
-
     OutputStream getOut();
 
     Writer getWriter();

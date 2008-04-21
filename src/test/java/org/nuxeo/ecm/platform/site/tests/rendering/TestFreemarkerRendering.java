@@ -88,11 +88,11 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         engine.setSharedVariable("doc", doc2);
 
         StringWriter writer = new StringWriter();
-        SimpleContext ctx = new SimpleContext(doc1, "c.ftl", writer);
+        SimpleContext ctx = new SimpleContext(doc1, writer);
 
         System.err.flush();
         double s = System.currentTimeMillis();
-        engine.render(ctx);
+        engine.render("c.ftl", ctx);
         double e = System.currentTimeMillis();
         System.out.println("###############################");
         System.out.println(writer.getBuffer());
@@ -103,7 +103,7 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         for (int i=0; i<1; i++) {
             ctx.writer = new StringWriter();
             s = System.currentTimeMillis();
-            engine.render(ctx);
+            engine.render("c.ftl", ctx);
             e = System.currentTimeMillis();
             System.out.println("###############################");
             System.out.println(writer.getBuffer());

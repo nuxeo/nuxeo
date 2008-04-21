@@ -162,10 +162,10 @@ public class FreemarkerEngine implements RenderingEngine {
         return transformers.get(name);
     }
 
-    public void render(RenderingContext ctx)
+    public void render(String template, RenderingContext ctx)
     throws RenderingException {
         try {
-            Template temp = cfg.getTemplate(ctx.getTemplate());
+            Template temp = cfg.getTemplate(template);
             RenderingContextModel root = new RenderingContextModel(this, ctx);
             BlockWriter bw = new BlockWriter("", new BlockWriterRegistry());
             Environment env = temp.createProcessingEnvironment(root,

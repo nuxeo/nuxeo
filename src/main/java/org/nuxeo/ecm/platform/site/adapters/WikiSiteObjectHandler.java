@@ -51,20 +51,20 @@ public class WikiSiteObjectHandler extends FolderishSiteObjectHandler {
     public boolean traverse(SiteRequest request, HttpServletResponse response)
             throws SiteException {
         SiteObject unresolved = request.getFirstUnresolvedObject();
-        if (unresolved != null) {
+        if (unresolved != null && !request.getScript().getFile().isFile()) {
             String createFlag = request.getParameter(CREATE_KEY);
             String pageId = unresolved.getName();
             if ("true".equalsIgnoreCase(createFlag)) {
                 try {
                     DocumentModel newPage = createSubPage(request, pageId);
                     unresolved.resolve(newPage);
-                    request.setMode(SiteRequest.EDIT_MODE);
+                    request.setScript("edit.ftl");
                 } catch (Exception e) {
                     throw new SiteException("Error while creating wiki page", e);
                 }
             } else {
                 request.setAttribute("pageToCreate", pageId);
-                request.setMode(SiteRequest.CREATE_MODE);
+                request.setScript("create.ftl");
             }
 //        } else if (request.isRootRequest()) {
 //            DocumentModel indexPage = null;

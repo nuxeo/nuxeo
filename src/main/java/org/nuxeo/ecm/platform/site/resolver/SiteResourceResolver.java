@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.site.resolver;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.site.template.SiteRoot;
 
 /**
  * Interface for resolving SiteObjects resources from a URL Path
@@ -31,8 +32,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 public interface SiteResourceResolver {
 
-    DocumentModel getSiteRoot(String rootName, CoreSession session) throws Exception;
+    DocumentModel getRootDocument(SiteRoot root, String rootName, CoreSession session) throws Exception;
 
-    DocumentModel getSiteSegment(DocumentModel parent, String segment, CoreSession session) throws Exception;
+    DocumentModel getSiteSegment(SiteRoot root, DocumentModel parent, String segment, CoreSession session) throws Exception;
 
 }

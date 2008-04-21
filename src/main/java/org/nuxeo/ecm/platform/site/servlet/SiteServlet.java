@@ -37,10 +37,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.site.api.SiteException;
+import org.nuxeo.ecm.platform.site.mapping.Mapping;
 import org.nuxeo.ecm.platform.site.rendering.ServletRequestView;
 import org.nuxeo.ecm.platform.site.resolver.DefaultSiteResolver;
 import org.nuxeo.ecm.platform.site.resolver.SiteResourceResolver;
+import org.nuxeo.ecm.platform.site.template.ScriptEngine;
 import org.nuxeo.ecm.platform.site.template.SiteManager;
+import org.nuxeo.ecm.platform.site.template.SiteRoot;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -59,6 +62,7 @@ public class SiteServlet extends HttpServlet {
 
     protected static SiteResourceResolver resolver = new DefaultSiteResolver();
 
+    private ScriptEngine scriptEngine;
     private RenderingEngine engine;
     private SiteManager manager;
     //private SiteRenderingContext siteRenderingContext = new SiteRenderingContext();
@@ -74,6 +78,7 @@ public class SiteServlet extends HttpServlet {
         env.put("version", "1.0.0");
         engine.setSharedVariable("env", env);
         engine.setSharedDocumentView(new ServletRequestView());
+        scriptEngine = new ScriptEngine(engine);
     }
 
     @Override
@@ -90,7 +95,7 @@ public class SiteServlet extends HttpServlet {
             return;
         }
 
-        if (siteRequest.getSiteRoot() == null) { // a request outside the root
+        if (siteRequest.getLastResolvedObject() == null) { // a request outside the root
             try {
                 showIndex(siteRequest);
             } catch (Exception e) {
@@ -137,8 +142,9 @@ public class SiteServlet extends HttpServlet {
 
         double s = System.currentTimeMillis();
         try {
-            engine.render(siteRequest.getLastResolvedObject());
-        } catch (RenderingException e) {
+            scriptEngine.exec(siteRequest);
+            //engine.render(siteRequest.getLastResolvedObject());
+        } catch (Exception e) {
             displayError(resp, e, "Error during the rendering process");
         }
         System.out.println(">>>>>>>>>> RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
@@ -179,45 +185,93 @@ public class SiteServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Build a circular list to describe traversal path
-     * @param pathInfo
-     * @param session
-     * @return
-     * @throws Exception
-     */
+
     public SiteRequest createRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-        SiteRequest siteReq = new SiteRequest(req, resp, manager);
-        Path path = new Path(req.getPathInfo());
-        if (path.segmentCount() == 0) {
-            return siteReq;
+        String pathInfo = req.getPathInfo();
+        SiteRoot root = null;
+        String siteName = null;
+        if (pathInfo == null || "/".equals(pathInfo)) {
+            root = manager.getDefaultSiteRoot();
+        } else {
+            int p = pathInfo.indexOf('/', 1);
+            if (p == -1) {
+                siteName = pathInfo.substring(1);
+                root = manager.getSiteRoot(siteName);
+                if (root != null) {
+                } else {
+                    root = manager.getDefaultSiteRoot();
+                    siteName = null;
+                }
+            } else {
+                siteName = pathInfo.substring(1, p);
+                root = manager.getSiteRoot(siteName);
+                if (root == null) {
+                    root = manager.getDefaultSiteRoot();
+                }
+            }
+        }
+        SiteRequest siteReq = new SiteRequest(root, req, resp);
+        // traverse documents if any
+        String[] traversal = null;
+        Mapping mapping = root.getMapping(pathInfo);
+        if (mapping != null) { // get the traversal defined by the mapping if any
+            traversal = mapping.getTraversalPath();
+        }
+        if (traversal == null) { // no traversal defined - compute it from pathInfo
+            traversal = new Path(pathInfo).segments();
+        }
+        buildTraversalPath(siteReq, traversal);
+        if (mapping != null) {
+            SiteObject obj = siteReq.getLastResolvedObject();
+            if (obj != null) {
+                mapping.addVar("type", obj.getDocument().getType());
+            }
+            siteReq.setScript(mapping.getScript());
+        }
+        return siteReq;
+    }
+
+    public void buildTraversalPath(SiteRequest siteReq, String[] traversal) throws Exception {
+        if (traversal == null || traversal.length == 0) {
+            // nothing to traverse
+            for (int i=0; i<traversal.length; i++) {
+                siteReq.addSiteObject(traversal[i], null);
+            }
+            return;
         }
         CoreSession session = siteReq.getCoreSession();
-        String[] segments = path.segments();
-        String name = segments[0];
-        DocumentModel doc = resolver.getSiteRoot(name, session);
+        String name = traversal[0];
+        SiteRoot root = siteReq.getRoot();
+        SiteResourceResolver resolver = root.getResolver();
+        DocumentModel doc = resolver.getRootDocument(root, name, session);
         siteReq.addSiteObject(name, doc);
-        if (segments.length > 1) {
-            for (int i=1; i<segments.length; i++) {
-                name = segments[i];
-                doc = resolver.getSiteSegment(doc, name, session);
-                siteReq.addSiteObject(segments[i], doc);
+        if (doc == null) { // abort traversing
+            // add the unresolved objects
+            for (int i=1; i<traversal.length; i++) {
+                siteReq.addSiteObject(traversal[i], null);
+            }
+            return;
+        }
+        if (traversal.length > 1) {
+            for (int i=1; i<traversal.length; i++) {
+                name = traversal[i];
+                doc = resolver.getSiteSegment(root, doc, name, session);
+                siteReq.addSiteObject(traversal[i], doc);
                 if (doc == null) {
-                    for (; i<segments.length; i++) {
-                        siteReq.addSiteObject(segments[i], null);
+                    for (i=i+1; i<traversal.length; i++) {
+                        siteReq.addSiteObject(traversal[i], null);
                     }
                     break;
                 }
             }
         }
-        return siteReq;
     }
 
 
     public void showIndex(SiteRequest request) throws Exception {
         try {
             double s = System.currentTimeMillis();
-            engine.render(new SiteRenderingContext(request));
+            engine.render("index,ftl", new SiteRenderingContext(request));
             System.out.println(">>>>>>>>>> STATIC RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
         } catch (RenderingException e) {
             displayError(request.getResponse(), e, "Error during the rendering process");

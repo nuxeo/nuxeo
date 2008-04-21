@@ -33,7 +33,6 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingContextView;
 import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
 import org.nuxeo.ecm.platform.site.rendering.SiteDocumentView;
 import org.nuxeo.ecm.platform.site.template.SiteManager;
-import org.nuxeo.ecm.platform.site.template.SiteObjectView;
 import org.nuxeo.ecm.platform.site.template.SitePageTemplate;
 
 /**
@@ -143,6 +142,10 @@ public class SiteObject implements ServletRenderingContext {
     }
 
 
+    @Override
+    public String toString() {
+        return name + " [ "+ (isResolved()?getDocument().getPath():"unresolved") +" ]";
+    }
 
     /**  --------------- RenderingContext API ----------------  */
 
@@ -156,21 +159,6 @@ public class SiteObject implements ServletRenderingContext {
 
     public RenderingContext getParentContext() {
         return prev;
-    }
-
-    public String getTemplate() {
-        SitePageTemplate template = getSiteTemplate();
-        SiteObjectView view = null;
-        if (isLastResolved()) {
-            view = template.getView(request.getMode().toLowerCase());
-        } else {
-            view = template.getView("view");
-        }
-        if (view != null) {
-            return view.getTemplate().toExternalForm();
-        } else {
-            return "error";
-        }
     }
 
     public RenderingContextView getView() {

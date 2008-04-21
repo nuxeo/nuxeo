@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.site.servlet;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
@@ -70,24 +69,6 @@ public class SiteRenderingContext implements ServletRenderingContext {
             return request.getCoreSession();
         } catch (Exception e) {
             throw new RuntimeException("Failed to open a session", e);
-        }
-    }
-
-    public String getTemplate() {
-        String path = request.getPathInfo();
-        File file = request.getSiteManager().getRootDirectory(); // make a method getResourceFile();
-        if (path != null) {
-            file = new File(file, path);
-        }
-        if (file.isDirectory()) {
-            file = new File(file, "index.ftl");
-        } else if (!file.exists()) {
-            return "error.ftl"; //TODO
-        }
-        try {
-        return file.toURI().toURL().toExternalForm();
-        } catch (Exception e) {
-            return null;
         }
     }
 

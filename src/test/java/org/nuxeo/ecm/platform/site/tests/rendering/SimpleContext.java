@@ -41,15 +41,13 @@ public class SimpleContext implements RenderingContext {
 
     DocumentModel doc;
     Writer writer;
-    String template;
 
     /**
      *
      */
-    public SimpleContext(DocumentModel doc, String template, Writer writer) {
+    public SimpleContext(DocumentModel doc, Writer writer) {
         this.doc =doc;
         this.writer = writer;
-        this.template = template;
     }
 
     public DocumentModel getDocument() {
@@ -58,10 +56,6 @@ public class SimpleContext implements RenderingContext {
 
     public CoreSession getSession() {
         return CoreInstance.getInstance().getSession(doc.getSessionId());
-    }
-
-    public String getTemplate() {
-        return template;
     }
 
     public OutputStream getOut() {

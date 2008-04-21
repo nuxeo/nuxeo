@@ -19,44 +19,32 @@
 
 package org.nuxeo.ecm.platform.site.template;
 
-import java.io.File;
-
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
+import org.nuxeo.ecm.platform.site.api.SiteException;
+import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface SiteManager {
+public class ScriptEngine {
 
-    SiteRoot getDefaultSiteRoot() throws Exception;
+    RenderingEngine renderingEngine;
 
-    SiteRoot getSiteRoot(String name) throws Exception;
+    public ScriptEngine(RenderingEngine engine) {
+        renderingEngine = engine;
+    }
 
-    SitePageTemplate[] getSiteObjects();
+    public void exec(SiteRequest req) throws Exception {
 
-    SitePageTemplate getTemplate(String name);
+        ScriptFile script = req.getScript();
+        String ext = script.getExtension();
+        if ("ftl".equals(ext)) {
+            renderingEngine.render(req.getScript().getPath(), req.getLastResolvedObject());
+        } else {
+            throw new SiteException("Scripts are not yet supported");
+        }
 
-    void registerSiteObject(SitePageTemplate object);
+    }
 
-    void unregisterSiteObject(String name);
-
-    SitePageTemplate resolve(DocumentModel doc);
-
-    void registerBinding(SiteObjectBinding binding);
-
-    void unregisterBinding(SiteObjectBinding binding);
-
-    SiteObjectBinding[] getBindings();
-
-    SitePageTemplate getDefaultSiteObject();
-
-    void setDefaultSiteObject(SitePageTemplate object);
-
-    File getRootDirectory();
-
-    RenderingEngine getRenderingEngine();
-
-    void reset();
 }
