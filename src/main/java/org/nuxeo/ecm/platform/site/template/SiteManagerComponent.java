@@ -24,6 +24,7 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.util.threadpool.ThreadPoolFullException;
 import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
@@ -54,6 +55,8 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
 
     @Override
     public void activate(ComponentContext context) throws Exception {
+        System.out.println("########### STARTING SITE MGR");
+        try {
         File root = new File(Framework.getRuntime().getHome(), "web");
         String val = (String)context.getPropertyValue("engine", null);
         if (val != null) {
@@ -72,6 +75,10 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
         mgr = new SiteManagerImpl(root, engine);
         notifier = new FileChangeNotifier();
         notifier.start();
+        } catch (Throwable t) {
+            System.out.println("############## ERROR ############");
+            t.printStackTrace();
+        }
     }
 
     @Override

@@ -58,12 +58,14 @@ public class SiteManagerImpl implements SiteManager {
     protected Scripting scripting;
 
     public SiteManagerImpl(File root, RenderingEngine engine) {
+        System.out.println("######## SITE MANAGER IMPL CTOR START #########");
         this.bindings = new ArrayList<SiteObjectBinding>();
         this.objects = new HashMap<String, SitePageTemplate>();
         this.root = root;
         this.cache = new LinkedHashMap<String, SitePageTemplate>();
         this.resolver = new FileBasedResolver(this);
         this.scripting = new Scripting(engine);
+        System.out.println("######## SITE MANAGER IMPL CTOR END #########");
     }
 
     public Scripting getScripting() {
