@@ -75,6 +75,7 @@ public class Scripting {
                 try {
                     ScriptContext ctx = new SimpleScriptContext();
                     ctx.setAttribute("req", req, ScriptContext.ENGINE_SCOPE);
+                    ctx.setAttribute("out", req.getResponse().getWriter(), ScriptContext.ENGINE_SCOPE);
                     engine.eval(reader, ctx);
                 } finally {
                     reader.close();
