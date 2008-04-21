@@ -45,6 +45,8 @@ public class SiteRoot implements FileChangeListener {
 
     final static Log log = LogFactory.getLog(SiteRoot.class);
 
+    public final static String SITE_CONFIG = "site.config";
+
     SiteManager manager;
 
     File root;
@@ -84,7 +86,7 @@ public class SiteRoot implements FileChangeListener {
             FileChangeNotifier notifier = Framework.getLocalService(FileChangeNotifier.class);
             if (notifier != null) {
                 notifier.addListener(this);
-                notifier.watch(new File(root, ".metadata"));
+                notifier.watch(new File(root, SITE_CONFIG));
             }
         }
     }
@@ -92,7 +94,7 @@ public class SiteRoot implements FileChangeListener {
     public void dispose() {
         FileChangeNotifier fcn = Framework.getLocalService(FileChangeNotifier.class);
         if (fcn != null) {
-            fcn.unwatch(new File(root, ".metadata"));
+            fcn.unwatch(new File(root, SITE_CONFIG));
             fcn.removeListener(this);
         }
     }
@@ -157,7 +159,7 @@ public class SiteRoot implements FileChangeListener {
     }
 
     public void loadConfiguration() throws IOException {
-        config.loadConfiguration(this, new File(root, ".metadata"));
+        config.loadConfiguration(this, new File(root, SITE_CONFIG));
     }
 
     public void reload() throws IOException {
@@ -170,7 +172,7 @@ public class SiteRoot implements FileChangeListener {
 
     public void fileChanged(File file, long since) {
         if (file.getAbsolutePath().startsWith(root.getAbsolutePath())) {
-            if (file.getName().equals(".metadata")) {
+            if (file.getName().equals(SITE_CONFIG)) {
                 try {
                     reload();
                     log.info("Reloaded site configuration for: "+root.getName());

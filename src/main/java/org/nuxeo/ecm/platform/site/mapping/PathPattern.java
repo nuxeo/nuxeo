@@ -42,7 +42,6 @@ public class PathPattern  {
 
     public PathPattern(String pattern, String[] vars) {
         pattern = tr(pattern);
-        System.out.println("> "+pattern);
         this.pattern = java.util.regex.Pattern.compile(pattern);
         if (vars == null) { // init vars
             Matcher m = this.pattern.matcher("");
