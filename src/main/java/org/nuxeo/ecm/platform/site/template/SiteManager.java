@@ -22,13 +22,14 @@ package org.nuxeo.ecm.platform.site.template;
 import java.io.File;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public interface SiteManager {
+
+    Scripting getScripting();
 
     SiteRoot getDefaultSiteRoot() throws Exception;
 
@@ -55,8 +56,6 @@ public interface SiteManager {
     void setDefaultSiteObject(SitePageTemplate object);
 
     File getRootDirectory();
-
-    RenderingEngine getRenderingEngine();
 
     void reset();
 }

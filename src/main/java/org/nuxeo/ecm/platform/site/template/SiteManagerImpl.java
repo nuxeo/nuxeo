@@ -55,7 +55,7 @@ public class SiteManagerImpl implements SiteManager {
     protected SiteResourceResolver siteRootResolver = new DefaultSiteResolver();
 
     protected File root;
-    protected RenderingEngine engine;
+    protected Scripting scripting;
 
     public SiteManagerImpl(File root, RenderingEngine engine) {
         this.bindings = new ArrayList<SiteObjectBinding>();
@@ -63,11 +63,11 @@ public class SiteManagerImpl implements SiteManager {
         this.root = root;
         this.cache = new LinkedHashMap<String, SitePageTemplate>();
         this.resolver = new FileBasedResolver(this);
-        this.engine = engine;
+        this.scripting = new Scripting(engine);
     }
 
-    public RenderingEngine getRenderingEngine() {
-        return engine;
+    public Scripting getScripting() {
+        return scripting;
     }
 
     public File getRootDirectory() {

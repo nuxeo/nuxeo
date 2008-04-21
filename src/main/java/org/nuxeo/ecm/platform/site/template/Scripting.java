@@ -53,6 +53,10 @@ public class Scripting {
         }
     }
 
+    public RenderingEngine getRenderingEngine() {
+        return renderingEngine;
+    }
+
     public void exec(SiteRequest req) throws Exception {
         ScriptFile script = req.getScript();
         if (script.getFile().isFile()) {
@@ -67,7 +71,7 @@ public class Scripting {
         }
     }
 
-    public void runScript(SiteRequest req, ScriptFile script) throws Exception {
+    protected void runScript(SiteRequest req, ScriptFile script) throws Exception {
         ScriptEngine engine = scriptService.getScriptEngineManager().getEngineByExtension(script.getExtension());
         if (engine != null) {
             try {
@@ -75,6 +79,7 @@ public class Scripting {
                 try {
                     ScriptContext ctx = new SimpleScriptContext();
                     ctx.setAttribute("req", req, ScriptContext.ENGINE_SCOPE);
+                    ctx.setAttribute("scripting", this, ScriptContext.ENGINE_SCOPE);
                     ctx.setAttribute("out", req.getResponse().getWriter(), ScriptContext.ENGINE_SCOPE);
                     engine.eval(reader, ctx);
                 } finally {
@@ -88,4 +93,6 @@ public class Scripting {
                     "No script engine was found for the file: " + script.getPath());
         }
     }
+
+
 }

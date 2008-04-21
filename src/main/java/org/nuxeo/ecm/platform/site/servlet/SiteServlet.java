@@ -63,7 +63,6 @@ public class SiteServlet extends HttpServlet {
     protected static SiteResourceResolver resolver = new DefaultSiteResolver();
 
     private Scripting scripting;
-    private RenderingEngine engine;
     private SiteManager manager;
     //private SiteRenderingContext siteRenderingContext = new SiteRenderingContext();
 
@@ -71,14 +70,14 @@ public class SiteServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         manager = Framework.getLocalService(SiteManager.class);
-        engine = manager.getRenderingEngine();
+        scripting = manager.getScripting();
         HashMap<String, Object> env = new HashMap<String, Object>();
         env.put("installDir", manager.getRootDirectory());
         env.put("engine", "Nuxeo Site Engine");
         env.put("version", "1.0.0");
+        RenderingEngine engine = scripting.getRenderingEngine();
         engine.setSharedVariable("env", env);
         engine.setSharedDocumentView(new ServletRequestView());
-        scripting = new Scripting(engine);
     }
 
     @Override
