@@ -70,7 +70,7 @@ public class PathMapper {
         PathMapper mapper = new PathMapper();
         MappingDescriptor mdef = new MappingDescriptor();
         mdef.setPattern("**/demo/*");
-        mdef.setScript("$1 $2");
+        mdef.setScript("$1$ $2$");
         //mdef.setPattern("/wiki/**/d/*/*");
         //mdef.setScript("$1 $2 $3: $0");
         mapper.addMapping(mdef);

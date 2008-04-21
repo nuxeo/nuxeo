@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.site.template;
 
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -28,6 +29,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
 import org.nuxeo.runtime.api.Framework;
@@ -43,7 +45,8 @@ public class Scripting {
     RenderingEngine renderingEngine;
     ScriptingService  scriptService;
 
-
+    private static final String CHAR_FILE_EXT = "html htm xml css txt java c cpp h";
+    private static final String BINARY_FILE_EXT = "gif jpg jpeg png pdf doc xsl";
 
     public Scripting(RenderingEngine engine) {
         renderingEngine = engine;
@@ -72,7 +75,8 @@ public class Scripting {
     }
 
     protected void runScript(SiteRequest req, ScriptFile script) throws Exception {
-        ScriptEngine engine = scriptService.getScriptEngineManager().getEngineByExtension(script.getExtension());
+        String ext = script.getExtension();
+        ScriptEngine engine = scriptService.getScriptEngineManager().getEngineByExtension(ext);
         if (engine != null) {
             try {
                 Reader reader = new FileReader(script.getFile());
@@ -89,8 +93,24 @@ public class Scripting {
                 throw new ScriptException(e);
             }
         } else {
-            throw new ScriptException(
-                    "No script engine was found for the file: " + script.getPath());
+            if (CHAR_FILE_EXT.contains(ext)) { //TODO use char writer instead of stream
+                FileInputStream in = new FileInputStream(script.getFile());
+                try {
+                    FileUtils.copy(in, req.getResponse().getOutputStream());
+                } finally {
+                    if (in != null) in.close();
+                }
+            } else if (CHAR_FILE_EXT.contains(ext)) {
+                FileInputStream in = new FileInputStream(script.getFile());
+                try {
+                    FileUtils.copy(in, req.getResponse().getOutputStream());
+                } finally {
+                    if (in != null) in.close();
+                }
+            } else {
+                throw new ScriptException(
+                        "No script engine was found for the file: " + script.getPath());
+            }
         }
     }
 

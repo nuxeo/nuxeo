@@ -32,7 +32,8 @@ import org.nuxeo.common.utils.StringUtils;
 public class MappingDescriptor {
 
     //public final static Pattern DOLAR_PATTERN = Pattern.compile("\\$([0-9]+)|\\$\\{([A-Za-z]+)\\}");
-    public final static Pattern DOLAR_PATTERN = Pattern.compile("\\$([0-9]+)");
+    public final static Pattern DOLAR_PATTERN = Pattern.compile("\\$([0-9]+)\\$");
+    //public final static Pattern DOLAR_PATTERN = Pattern.compile("(:?\\$([0-9]+))|(:?\\$([A-Za-z]+))");
     public final static Pattern WILDCARD = Pattern.compile("<([A-Za-z]+):([^>]+)>");
 
     PathPattern pattern;
