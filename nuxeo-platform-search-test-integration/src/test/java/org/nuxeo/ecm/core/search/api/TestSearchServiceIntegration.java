@@ -198,15 +198,14 @@ public class TestSearchServiceIntegration extends RepositoryOSGITestCase {
         Object filesContent = result.getProperty("files", "files");
         assertNotNull(filesContent);
         assertTrue(filesContent instanceof List);
-        List<?> fileMaps = (List<?>) filesContent;
+        List<Map<String, String>> fileMaps = (List<Map<String, String>>) filesContent;
         assertEquals(3, fileMaps.size());
 
         for (int i = 0; i < fileMaps.size(); i++) {
-            Integer fileId = i;
-            Map<?, ?> fileMap = (Map<? extends Object, ? extends Object>) fileMaps.get(i);
+            Map<String, String> fileMap = fileMaps.get(i);
 
             // first check the filename subfield
-            assertEquals(String.format("sample_file_%d.txt", fileId),
+            assertEquals(String.format("sample_file_%d.txt", i),
                     fileMap.get("filename"));
 
             // XXX: list of blobs are not (yet?) rebuilt since they are third

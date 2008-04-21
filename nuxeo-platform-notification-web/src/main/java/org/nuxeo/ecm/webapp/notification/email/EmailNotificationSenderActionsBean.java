@@ -62,9 +62,11 @@ import org.nuxeo.runtime.api.Framework;
 @Name("emailNotifSenderAction")
 @Scope(EVENT)
 public class EmailNotificationSenderActionsBean extends InputController implements
-        EmailNotificationSenderActions {
+        EmailNotificationSenderActions, Serializable {
 
     private static final Log log = LogFactory.getLog(EmailNotificationSenderActionsBean.class);
+
+    private static final long serialVersionUID = 2125646683248052737L;
 
     @In(create = true)
     UserManager userManager;
@@ -177,18 +179,18 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
     private void sendNotificationEvent(String user, String theMailSubject,
             String theMailContent) throws ClientException{
 
-        // Default category
-        String category = DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY;
-
         Map<String, Serializable> options = new HashMap<String, Serializable>();
 
         //options for confirmation email
-        options.put("recipients", (principalListManager.getPrincipalType(user) == PrincipalListManager.USER_TYPE ? "user:" : "group:")+user );
+        options.put("recipients",
+                (principalListManager.getPrincipalType(user) == PrincipalListManager.USER_TYPE ? "user:" : "group:") + user);
         options.put("subject", theMailSubject);
         options.put("content", theMailContent);
 
         NuxeoPrincipal currentUser = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
 
+        // Default category
+        String category = DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY;
         CoreEvent event = new CoreEventImpl(
                 DocumentEventTypes.EMAIL_DOCUMENT_SEND, navigationContext.getCurrentDocument(), options,
                 currentUser, category, null);
@@ -197,7 +199,7 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
 
         DocumentMessage msg = new DocumentMessageImpl(navigationContext.getCurrentDocument(), event);
 
-        DocumentMessageProducer producer=null;
+        DocumentMessageProducer producer = null;
 
         try {
             producer = getMessageProducer();
@@ -212,7 +214,6 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
         } else {
             log.error("Impossible to notify core events !");
         }
-
     }
 
     private DocumentMessageProducer getMessageProducer() {

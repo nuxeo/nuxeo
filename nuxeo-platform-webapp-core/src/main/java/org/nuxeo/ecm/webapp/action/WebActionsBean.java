@@ -280,7 +280,7 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
         if (subTabsList != null) {
             for (Action a : subTabsList) {
                 if (a.getId().equals(tabId)) {
-                    setCurrentSubTabAction(a);
+                    currentSubTabAction = a;
                     set = true;
                     break;
                 }
