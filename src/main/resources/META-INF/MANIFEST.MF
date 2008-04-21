@@ -4,7 +4,8 @@ Bundle-Name: Nuxeo ECM Platform Site Add On
 Bundle-SymbolicName: org.nuxeo.ecm.platform.site;singleton:=true
 Require-Bundle: org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.platform.ui
-Nuxeo-Require: org.nuxeo.ecm.platform.search.api
+Nuxeo-Require: org.nuxeo.ecm.platform.search.api,
+ org.nuxeo.runtime.scripting
 Nuxeo-Component: OSGI-INF/site-adapters-contrib.xml,
  OSGI-INF/site-adapters-service-framework.xml,
  OSGI-INF/site-adapters-service-contrib.xml,
