@@ -52,6 +52,7 @@ import freemarker.cache.TemplateLoader;
 import freemarker.cache.URLTemplateLoader;
 import freemarker.core.Environment;
 import freemarker.template.Configuration;
+import freemarker.template.ObjectWrapper;
 import freemarker.template.Template;
 
 /**
@@ -164,12 +165,23 @@ public class FreemarkerEngine implements RenderingEngine {
 
     public void render(String template, RenderingContext ctx)
     throws RenderingException {
+        render(template, ctx, null);
+    }
+
+    public void render(String template, RenderingContext ctx, Map<String,Object> globals)
+    throws RenderingException {
         try {
+            ObjectWrapper wrapper = getObjectWrapper();
             Template temp = cfg.getTemplate(template);
             RenderingContextModel root = new RenderingContextModel(this, ctx);
             BlockWriter bw = new BlockWriter("", new BlockWriterRegistry());
             Environment env = temp.createProcessingEnvironment(root,
-                    bw, getObjectWrapper());
+                    bw, wrapper);
+            if (globals != null) {
+                for (Map.Entry<String, Object> entry : globals.entrySet()) {
+                    env.setGlobalVariable(entry.getKey(), wrapper.wrap(entry.getValue()));
+                }
+            }
             env.setCustomAttribute(ROOT_CTX_KEY, root);
             env.process();
             bw.copyTo(ctx.getWriter());

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.rendering.api;
 
 import java.io.File;
+import java.util.Map;
 
 
 
@@ -49,6 +50,8 @@ public interface RenderingEngine {
      * @throws RenderingException
      */
     void render(String template, RenderingContext ctx) throws RenderingException;
+
+    void render(String template, RenderingContext ctx, Map<String,Object> globals)  throws RenderingException;
 
     void setTransformer(String name, RenderingTransformer transformer);
 

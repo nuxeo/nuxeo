@@ -48,8 +48,6 @@ import org.nuxeo.ecm.platform.site.template.SiteManager;
 import org.nuxeo.ecm.platform.site.template.SiteRoot;
 import org.nuxeo.runtime.api.Framework;
 
-import freemarker.template.TemplateModelException;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -314,7 +312,7 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
 
    public void render(String template, Map<String,Object> ctx) throws Exception {
        if (lastResolved != null) {
-           siteManager.getScripting().getRenderingEngine().render(template, lastResolved);
+           siteManager.getScripting().getRenderingEngine().render(template, lastResolved, ctx);
        } else {
            throw new SiteException("Rendering outside doc context not impl yet");
        }
