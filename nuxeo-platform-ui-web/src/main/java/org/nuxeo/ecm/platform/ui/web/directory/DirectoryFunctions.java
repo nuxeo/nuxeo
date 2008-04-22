@@ -33,6 +33,8 @@ import org.nuxeo.runtime.api.Framework;
  * Utility functions (directory related) to be used from jsf via nxu: tags.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ * @author Anahide Tchertchian
+ *
  */
 public final class DirectoryFunctions {
 
