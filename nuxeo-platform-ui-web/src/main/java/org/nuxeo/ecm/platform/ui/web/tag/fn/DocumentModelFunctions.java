@@ -50,6 +50,7 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
+import org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
@@ -696,7 +697,9 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @param id the label id
      * @return the label.
      * @throws DirectoryException
+     * @deprecated use {@link DirectoryFunctions#getDirectoryEntry(String, String)}
      */
+    @Deprecated
     public static String getLabelFromId(String directoryName, String id)
             throws DirectoryException {
         if (id == null) {
