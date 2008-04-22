@@ -38,8 +38,8 @@
   </issueManagement>
 
   <ciManagement>
-    <system>TeamCity</system>
-    <url>http://teamcity.nuxeo.org/</url>
+    <system>Hudson</system>
+    <url>http://qa.nuxeo.org/hudson/</url>
   </ciManagement>
 
   <modules>
