@@ -47,8 +47,6 @@ public class MappingSection implements Configurator {
         md.setScript(val);
         val = properties.get("traversal");
         md.setTraversal(val);
-        val = properties.get("vars");
-        md.setTraversal(val);
         root.getPathMapper().addMapping(md);
     }
 

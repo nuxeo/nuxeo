@@ -69,7 +69,7 @@ public class PathMapper {
     public static void main(String[] args) {
         PathMapper mapper = new PathMapper();
         MappingDescriptor mdef = new MappingDescriptor();
-        mdef.setPattern("**/demo/*");
+        mdef.setPattern("(?name1:.*)/demo/(?name2:[^/]+)");
         mdef.setScript("$1 $2 $path");
         //mdef.setPattern("/wiki/**/d/*/*");
         //mdef.setScript("$1 $2 $3: $0");

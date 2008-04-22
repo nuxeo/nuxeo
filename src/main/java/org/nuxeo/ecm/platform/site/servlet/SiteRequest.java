@@ -44,9 +44,11 @@ import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
 import org.nuxeo.ecm.platform.site.api.SiteException;
 import org.nuxeo.ecm.platform.site.mapping.Mapping;
 import org.nuxeo.ecm.platform.site.template.ScriptFile;
+import org.nuxeo.ecm.platform.site.template.Scripting;
 import org.nuxeo.ecm.platform.site.template.SiteManager;
 import org.nuxeo.ecm.platform.site.template.SiteRoot;
 import org.nuxeo.runtime.api.Framework;
+import org.python.core.PyDictionary;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -312,7 +314,13 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
 
    public void render(String template, Object ctx) throws Exception {
        if (lastResolved != null) {
-           siteManager.getScripting().getRenderingEngine().render(template, lastResolved, (Map<String,Object>)ctx);
+           Map map = null;
+           if (ctx instanceof Map) {
+               map = (Map)ctx;
+           } else if (ctx instanceof PyDictionary) {
+               map = Scripting.convertPythonMap((PyDictionary)ctx);
+           }
+           siteManager.getScripting().getRenderingEngine().render(template, lastResolved, (Map<String,Object>)map);
        } else {
            throw new SiteException("Rendering outside doc context not impl yet");
        }

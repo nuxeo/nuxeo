@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.site.mapping;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 
 
@@ -33,97 +34,77 @@ import java.util.regex.Matcher;
  */
 public class PathPattern  {
 
+    static final java.util.regex.Pattern NAMED_WILDCARD = java.util.regex.Pattern.compile("[A-Za-z_][A-Za-z_0-9]*");
+
     java.util.regex.Pattern pattern;
     String[] vars;
 
     public PathPattern(String pattern) {
-        this (pattern, null);
-    }
-
-    public PathPattern(String pattern, String[] vars) {
-        pattern = tr(pattern);
+        pattern = processNamedWildcards(pattern);
         this.pattern = java.util.regex.Pattern.compile(pattern);
-        if (vars == null) { // init vars
-            Matcher m = this.pattern.matcher("");
-            this.vars = new String[m.groupCount()+1];
-            this.vars[0] = "url";
-        } else {
-            this.vars = vars;
-        }
     }
 
     public String tr(String pattern) {
-        if (pattern.startsWith("**/")) {
-            pattern = "(.*)"+pattern.substring(2);
-        }
-        if (pattern.endsWith("/**")) {
-            pattern = pattern.substring(0, pattern.length()-2)+"(.*)";
-        }
-        int p = pattern.indexOf("/**/");
-        while (p > -1) {
-            pattern = pattern.substring(0, p)+"(?:/(.*))?/"+pattern.substring(p+4);
-            p = pattern.indexOf("/**/", p+1);
-        }
-        if (pattern.startsWith("*/")) {
-            pattern = "([^/]+)"+pattern.substring(1);
-        }
-        if (pattern.endsWith("/*")) {
-            pattern = pattern.substring(0, pattern.length()-1)+"([^/]+)";
-        }
-        p = pattern.indexOf("/*/");
-        while (p > -1) {
-            pattern = pattern.substring(0, p+1)+"([^/]+)"+pattern.substring(p+2);
-            p = pattern.indexOf("/*/", p+1);
-        }
-//        String[] ar = pattern.split("[^\\]?\\(");
-        return pattern;
+        return processNamedWildcards(pattern);
     }
 
-//    java.util.regex.Pattern NAMED_WILDCARD = java.util.regex.Pattern.compile("\\(\\?[A-Za-z]+:");
-//    public void processNamedWildcards(String pattern) {
-//        StringBuilder buf = new StringBuilder(pattern.length());
-//        int k = 0;
-//        int len = pattern.length();
-//        int esc = 0;
-//        int inklass = 0;
-//        TOP: for (int i=0; i<len; i++) {
-//            char c = pattern.charAt(i);
-//            switch (c) {
-//            case '\\':
-//                esc = (esc + 1) % 2;
-//                break;
-//            case '[':
-//            case ']':
-//            case '(':
-//                if (esc > 0) continue;
-//                if (inklass > 0) continue;
-//                if (i+3 >= len) break TOP;
-//                k++;
-//                if (pattern.charAt(i+1) == '?') {
-//                    int start = i+2;
-//                    for (int j=start; j<len; j++) {
-//                        if (pattern.charAt(j) == ':') {
-//                            String name = pattern.substring(start, j);
-//                            buf.append(b)
-//                            break;
-//                        }
-//                    }
-//                    i = start;
-//                }
-//            default:
-//
-//            }
-//        }
-//        while (i > -1) {
-//            if ((i > 1) && pattern.charAt(i-1) != '\\') {
-//                NAMED_WILDCARD
-//                if ((i < len-3) && pattern.indexOf("?:", i+1)) {
-//
-//                }
-//            }
-//            i = pattern.indexOf('(');
-//        }
-//    }
+
+    public String processNamedWildcards(String pattern) {
+        StringBuilder buf = new StringBuilder();
+        ArrayList<String> names = new ArrayList<String>();
+        names.add("path");
+        int len = pattern.length();
+        boolean esc = false;
+        int inKlass = 0, s = 0;
+        for (int i=0; i<len; i++) {
+            char c = pattern.charAt(i);
+            if (c == '\\') {
+                if (!esc) { esc = true; continue; } else { esc = true; }
+            }
+            switch (c) {
+            case '[':
+                inKlass++;
+                break;
+            case ']':
+                inKlass--;
+                break;
+            case '(':
+                if (i + 1 == len) continue; // parse error
+                // i + 1 > len
+                char c1 = pattern.charAt(i+1);
+                if (c1 != '?') { names.add(null); continue; }
+                if (i + 2 == len) continue;  //parse error
+                char c2 = pattern.charAt(i+2);
+                if (c2 == ':' || c2=='>') continue; // not a group
+                // should be a named group
+                int p = pattern.indexOf(':', i+2);
+                if (p == -1) { continue; } // parse error
+                String name = pattern.substring(i+2, p);
+                // check name against the regex
+                Matcher m = NAMED_WILDCARD.matcher(name);
+                if (m.matches()) {
+                    names.add(name);
+                    if (i > s) {
+                        buf.append(pattern.substring(s, i));
+                    }
+                    buf.append("(");
+                    s = p+1;
+                } else {
+                    continue; //parse error
+                }
+                i = p;
+            }
+        }
+        vars = names.toArray(new String[names.size()]);
+        if (s > 0) {
+            if (s < len) {
+                buf.append(pattern.substring(s)); //append the end
+            }
+            return buf.toString();
+        } else { // no named wildcards
+            return pattern;
+        }
+    }
 
 
     public Mapping match(String input) {

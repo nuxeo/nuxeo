@@ -23,21 +23,15 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.nuxeo.common.utils.StringUtils;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class MappingDescriptor {
 
-    //public final static Pattern DOLAR_PATTERN = Pattern.compile("\\$([0-9]+)|\\$\\{([A-Za-z]+)\\}");
-    public final static Pattern DOLAR_PATTERN = Pattern.compile("\\$([0-9]+|[A-Za-z]+)");
-    //public final static Pattern DOLAR_PATTERN = Pattern.compile("(:?\\$([0-9]+))|(:?\\$([A-Za-z]+))");
-    public final static Pattern WILDCARD = Pattern.compile("<([A-Za-z]+):([^>]+)>");
+    public final static Pattern DOLAR_PATTERN = Pattern.compile("\\$([0-9]+|[A-Za-z_][A-Za-z_0-9]*)");
 
     PathPattern pattern;
-    String[] vars;
     ReplacementSegment[] script;
     ReplacementSegment[] traversal;
 
@@ -48,9 +42,6 @@ public class MappingDescriptor {
         this.pattern = new PathPattern(pattern);
     }
 
-    public void setVars(String vars) {
-        this.vars = StringUtils.split(vars, ',', true);
-    }
 
     public void setScript(String script) {
         if (script != null) {
@@ -99,10 +90,12 @@ public class MappingDescriptor {
         if (mapping == null) {
             return null;
         }
-        //TODO temporary hack
-        if (vars != null) {
-            for (int i=0; i<vars.length ; i++) {
-                mapping.setName(i, vars[i]);
+        if (mapping.size() != 0) {
+            for (int i=0; i<pattern.vars.length ; i++) {
+                String name = pattern.vars[i];
+                if (name != null) {
+                    mapping.setName(i, name);
+                }
             }
         }
         mapping.mdef = this;

@@ -23,6 +23,8 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -34,6 +36,9 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.scripting.ScriptingService;
+import org.python.core.PyDictionary;
+import org.python.core.PyList;
+import org.python.core.PyTuple;
 
 
 /**
@@ -114,5 +119,17 @@ public class Scripting {
         }
     }
 
+
+    @SuppressWarnings("unchecked")
+    public static Map convertPythonMap(PyDictionary dict) {
+        PyList list = dict.items();
+        Map table = new HashMap();
+        for(int i = list.__len__(); i-- >  0; ) {
+            PyTuple tup = (PyTuple)list.__getitem__(i);
+            String key = tup.__getitem__(0).toString();
+            table.put(key, tup.__getitem__(1));
+        }
+        return table;
+    }
 
 }
