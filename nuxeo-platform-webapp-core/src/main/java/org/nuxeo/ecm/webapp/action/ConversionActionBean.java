@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.ecm.platform.transform.api.TransformException;
 import org.nuxeo.ecm.platform.transform.api.TransformServiceDelegate;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformServiceCommon;
@@ -121,9 +122,11 @@ public class ConversionActionBean implements ConversionAction {
             String mimetype = getMimetypeFromDocument(fieldName);
             TransformServiceCommon nxt = TransformServiceDelegate.getRemoteTransformService();
             isSupported = nxt.isMimetypeSupportedByPlugin("any2pdf", mimetype);
-        } catch (Exception e) {
+        } catch (TransformException e) {
             log.error("error asking the any2pdf plugin whether " + fieldName
-                    + " is supported: " + e.getMessage());
+                    + " is supported: ",e);
+        } catch (Exception e) {
+            log.error(e);
         }
 
         return isSupported;
