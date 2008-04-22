@@ -26,7 +26,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.contexts.ContextAdaptor;
 import org.jboss.seam.contexts.Lifecycle;
 import org.jboss.seam.core.Manager;
 import org.nuxeo.ecm.platform.ui.web.util.SeamComponentCallHelper;
@@ -49,7 +48,7 @@ import com.noelios.restlet.http.HttpRequest;
  */
 
 public class SeamRestletFilter extends Filter {
-    
+
     private static final Log log = LogFactory.getLog(SeamRestletFilter.class);
 
     private Boolean useConversation = false;
@@ -116,7 +115,7 @@ public class SeamRestletFilter extends Filter {
             Restlet next = getNext();
             Restlet seamRestlet = (Restlet) SeamComponentCallHelper.getSeamComponentByRef(next);
             if (seamRestlet == null) {
-                final String errMsg = "Cannot get seam component for restlet ";
+                final String errMsg = "Cannot get Seam component for restlet ";
                 log.error(errMsg + next);
                 response.setEntity(errMsg, MediaType.TEXT_PLAIN);
             } else {
@@ -125,7 +124,7 @@ public class SeamRestletFilter extends Filter {
                 } catch (Exception e) {
                     log.error("Restlet handling error", e);
                     response.setEntity(
-                            "Error while calling seam aware Restlet: "
+                            "Error while calling Seam aware Restlet: "
                                     + e.getMessage(), MediaType.TEXT_PLAIN);
                 }
             }

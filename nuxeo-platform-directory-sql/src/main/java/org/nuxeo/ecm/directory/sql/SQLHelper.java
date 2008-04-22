@@ -199,9 +199,9 @@ public class SQLHelper {
         }
     }
 
-    private String formatColumnValues(String[] columnValues) {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("[");
+    private static String formatColumnValues(String[] columnValues) {
+        StringBuilder buffer = new StringBuilder();
+        buffer.append('[');
         if (columnValues != null) {
             int i = 0;
             List<String> values = new ArrayList<String>();
@@ -211,7 +211,7 @@ public class SQLHelper {
             }
             buffer.append(StringUtils.join(values.iterator(), ", "));
         }
-        buffer.append("]");
+        buffer.append(']');
         return buffer.toString();
     }
 
