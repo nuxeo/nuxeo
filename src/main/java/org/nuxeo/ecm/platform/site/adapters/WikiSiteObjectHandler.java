@@ -19,9 +19,6 @@
 
 package org.nuxeo.ecm.platform.site.adapters;
 
-import javax.servlet.http.HttpServletResponse;
-
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.site.api.SiteException;
@@ -48,8 +45,7 @@ public class WikiSiteObjectHandler extends FolderishSiteObjectHandler {
     }
 
     @Override
-    public boolean traverse(SiteRequest request, HttpServletResponse response)
-            throws SiteException {
+    public boolean traverse(SiteRequest request)  throws SiteException {
         SiteObject unresolved = request.getFirstUnresolvedObject();
         if (unresolved != null && !request.getScript().getFile().isFile()) {
             String createFlag = request.getParameter(CREATE_KEY);
@@ -84,7 +80,7 @@ public class WikiSiteObjectHandler extends FolderishSiteObjectHandler {
     }
 
     @Override
-    public void doGet(SiteRequest request, HttpServletResponse response) {
+    public void doGet(SiteRequest request) {
 
     }
 

@@ -178,6 +178,23 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
         return servletBase;
     }
 
+    public String getAbsolutePath() {
+        return getSiteBaseUrl()+getPathInfo();
+    }
+
+    public String getPath() {
+        return getPathInfo();
+    }
+
+    public String getObjectPath() {
+        return lastResolved == null ? null : lastResolved.getPath();
+    }
+
+    public String getObjectAbsolutePath() {
+        return lastResolved == null ? null : lastResolved.getAbsolutePath();
+    }
+
+
     public SiteObject getLastResolvedObject() {
         return lastResolved;
     }
@@ -259,14 +276,14 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
            return null;
        }
        SiteAwareObject adapter = head.getAdapter();
-       if (adapter == null || !adapter.traverse(this, resp)) {
+       if (adapter == null || !adapter.traverse(this)) {
            return null;
        }
        SiteObject lastTraversed = head;
        SiteObject p = head.next;
        while (p != lastResolved.next) {
            adapter = p.getAdapter();
-           if (adapter == null || !adapter.traverse(this, resp)) {
+           if (adapter == null || !adapter.traverse(this)) {
                return lastTraversed;
            }
            lastTraversed = p;

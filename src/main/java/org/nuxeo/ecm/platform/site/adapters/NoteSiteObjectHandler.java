@@ -22,8 +22,6 @@ package org.nuxeo.ecm.platform.site.adapters;
 import java.io.IOException;
 import java.io.Writer;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.site.api.SiteException;
 import org.nuxeo.ecm.platform.site.servlet.SiteConst;
@@ -39,7 +37,7 @@ public class NoteSiteObjectHandler extends AbstractSiteObjectHandler {
     }
 
     @Override
-    public void doPost(SiteRequest request, HttpServletResponse response) throws SiteException {
+    public void doPost(SiteRequest request) throws SiteException {
         String newContent = request.getParameter("note");
         if (newContent != null) {
             sourceDocument.setProperty("note", "note", newContent);
@@ -51,13 +49,13 @@ public class NoteSiteObjectHandler extends AbstractSiteObjectHandler {
             } catch (Exception e) {
                 throw new SiteException("Error during update process", e);
             }
-            doGet(request, response);
+            doGet(request);
         } else {
             try {
-                Writer writer = response.getWriter();
+                Writer writer = request.getResponse().getWriter();
                 writer.write("Unable to update");
                 request.cancelRendering();
-                response.setStatus(SiteConst.SC_METHOD_FAILURE);
+                request.getResponse().setStatus(SiteConst.SC_METHOD_FAILURE);
             } catch (IOException e) {
                 throw new SiteException("Error during update process", e);
             }

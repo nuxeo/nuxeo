@@ -35,21 +35,21 @@ import org.nuxeo.ecm.platform.site.template.SitePageTemplate;
 public interface SiteAwareObject {
 
     // Http handling methods
-    void doGet(SiteRequest request, HttpServletResponse response) throws SiteException;
+    void doGet(SiteRequest request) throws SiteException;
 
-    void doPut(SiteRequest request, HttpServletResponse response) throws SiteException;
+    void doPut(SiteRequest request) throws SiteException;
 
-    void doPost(SiteRequest request, HttpServletResponse response) throws SiteException;
+    void doPost(SiteRequest request) throws SiteException;
 
-    void doDelete(SiteRequest request, HttpServletResponse response) throws SiteException;
+    void doDelete(SiteRequest request) throws SiteException;
 
-    void doHead(SiteRequest request, HttpServletResponse response) throws SiteException;
+    void doHead(SiteRequest request) throws SiteException;
 
     String getId();
 
     String getName();
 
-    boolean traverse(SiteRequest request, HttpServletResponse response) throws SiteException;
+    boolean traverse(SiteRequest request) throws SiteException;
 
     // Rendering oriented methods
     public SitePageTemplate getTemplate(SiteRequest request);

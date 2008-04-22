@@ -66,7 +66,7 @@ public class SiteDocumentView extends DocumentContextView {
         }
 
         public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
-            return ((SiteObject)ctx).getUrlPath();
+            return ((SiteObject)ctx).getAbsolutePath();
         }
     };
 

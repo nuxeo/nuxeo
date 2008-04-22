@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
 import org.nuxeo.ecm.platform.site.api.SiteException;
-import org.nuxeo.ecm.platform.site.servlet.NoBodyResponse;
 import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
 import org.nuxeo.ecm.platform.site.template.SiteManager;
 import org.nuxeo.ecm.platform.site.template.SitePageTemplate;
@@ -64,24 +63,24 @@ public abstract class AbstractSiteObjectHandler implements SiteAwareObject {
         return sourceDocument.getName();
     }
 
-    public void doGet(SiteRequest request, HttpServletResponse response) {
+    public void doGet(SiteRequest request) {
         // do nothing
     }
 
-    public void doHead(SiteRequest request, HttpServletResponse response) throws SiteException {
-        doGet(request, new NoBodyResponse(response));
+    public void doHead(SiteRequest request) throws SiteException {
+        doGet(request);
     }
 
-    public void doPost(SiteRequest request, HttpServletResponse response) throws SiteException {
-        doGet(request, response);
+    public void doPost(SiteRequest request) throws SiteException {
+        doGet(request);
     }
 
-    public void doPut(SiteRequest request, HttpServletResponse response) throws SiteException {
-        response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+    public void doPut(SiteRequest request) throws SiteException {
+        request.getResponse().setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
     }
 
-    public void doDelete(SiteRequest request, HttpServletResponse response) throws SiteException {
-        response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+    public void doDelete(SiteRequest request) throws SiteException {
+        request.getResponse().setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
     }
 
     public String getURL(SiteRequest request) {
@@ -93,7 +92,7 @@ public abstract class AbstractSiteObjectHandler implements SiteAwareObject {
         return CoreInstance.getInstance().getSession(sourceDocument.getSessionId());
     }
 
-    public boolean traverse(SiteRequest request, HttpServletResponse response)
+    public boolean traverse(SiteRequest request)
             throws SiteException {
         return true;
     }

@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.site.tests.adapters;
 
-import java.util.HashSet;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.platform.site.adapters.DefaultSiteObjectHandler;

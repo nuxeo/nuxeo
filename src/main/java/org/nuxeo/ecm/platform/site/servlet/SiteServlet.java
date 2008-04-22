@@ -114,15 +114,15 @@ public class SiteServlet extends HttpServlet {
                 return;
             }
             if (method.equals(SiteConst.METHOD_POST)) {
-                lastTraversedObject.getAdapter().doPost(siteRequest, resp);
+                lastTraversedObject.getAdapter().doPost(siteRequest);
             } else if (method.equals(SiteConst.METHOD_PUT)) {
-                lastTraversedObject.getAdapter().doPut(siteRequest, resp);
+                lastTraversedObject.getAdapter().doPut(siteRequest);
             } else if (method.equals(SiteConst.METHOD_GET)) {
-                lastTraversedObject.getAdapter().doGet(siteRequest, resp);
+                lastTraversedObject.getAdapter().doGet(siteRequest);
             } else if (method.equals(SiteConst.METHOD_DELETE)) {
-                lastTraversedObject.getAdapter().doDelete(siteRequest, resp);
+                lastTraversedObject.getAdapter().doDelete(siteRequest);
             } else if (method.equals(SiteConst.METHOD_HEAD)) {
-                lastTraversedObject.getAdapter().doHead(siteRequest, resp);
+                lastTraversedObject.getAdapter().doHead(siteRequest);
             }
         } catch (SiteException e) {
             if (lastTraversedObject != null) {

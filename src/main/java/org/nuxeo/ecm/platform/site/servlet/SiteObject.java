@@ -121,7 +121,7 @@ public class SiteObject implements ServletRenderingContext {
         return buf.toString();
     }
 
-    public String getUrlPath() {
+    public String getAbsolutePath() {
         StringBuilder buf = new StringBuilder(request.getSiteBaseUrl());
         collectPath(buf);
         return buf.toString();
