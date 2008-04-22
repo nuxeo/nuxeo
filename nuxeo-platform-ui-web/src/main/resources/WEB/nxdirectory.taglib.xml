@@ -2,6 +2,33 @@
 <!DOCTYPE facelet-taglib PUBLIC "-//Sun Microsystems, Inc.//DTD Facelet Taglib 1.0//EN" "facelet-taglib_1_0.dtd">
 <facelet-taglib>
   <namespace>http://nuxeo.org/nxdirectory</namespace>
+  <function>
+    <function-name>directoryEntry</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions
+    </function-class>
+    <function-signature>
+      DocumentModel getDirectoryEntry(java.lang.String, java.lang.String)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>directoryListEntries</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions
+    </function-class>
+    <function-signature>
+      DocumentModel getDirectoryListEntries(java.lang.String, java.util.Collection)
+    </function-signature>
+  </function>
+  <function>
+    <function-name>directoryEntries</function-name>
+    <function-class>
+      org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions
+    </function-class>
+    <function-signature>
+      DocumentModel getDirectoryEntries(java.lang.String, java.lang.String[])
+    </function-signature>
+  </function>
   <tag>
     <tag-name>selectItems</tag-name>
     <component>

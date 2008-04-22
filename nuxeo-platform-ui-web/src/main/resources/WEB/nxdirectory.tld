@@ -16,7 +16,18 @@
     Exposes specific tags as well as utility functions like:
     </p>
     <ul>
-      <li> getLabelFromId(String, String): gets the Label of a vocabulary entry for the given id and vocabulary.</li>
+      <li> directoryEntry(String, String): gets the document model
+           representing an entry for given directory name and
+           entry id.</li>
+      <li> directoryListEntries(String, Collection<String>): gets the
+           list of document models representing entries for given directory
+           name and entry ids.</li>
+      <li> directoryEntries(String, String[]): gets the list of
+           document models representing entries for given directory
+           name and entry ids.</li>
+      <li> getLabelFromId(String, String): gets the Label of a vocabulary
+           entry for the given id and vocabulary. Deprecated, use
+           directoryEntry(String, String) which is more generic.</li>
     </ul>
     ]]>
 
@@ -308,10 +319,10 @@
       org.nuxeo.ecm.ui.web.vocabulary.DirectoryEntryOutputTag
     </tag-class>
     <attribute>
-      <name>entryId</name>
+      <name>value</name>
       <required>true</required>
       <description>
-        The entry identifier to display - can be a value binding
+        The entry identifier - can be a value binding
       </description>
     </attribute>
     <attribute>
@@ -322,8 +333,8 @@
       </description>
     </attribute>
     <attribute>
-      <name>translate</name>
-      <description>Translate the option values</description>
+      <name>localize</name>
+      <description>Localize the option values</description>
     </attribute>
     <attribute>
       <name>displayIdAndLabel</name>
