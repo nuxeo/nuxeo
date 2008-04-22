@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.site.servlet;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -30,8 +31,15 @@ import javax.servlet.http.HttpSession;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.search.api.client.SearchService;
+import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
+import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
+import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
 import org.nuxeo.ecm.platform.site.api.SiteException;
 import org.nuxeo.ecm.platform.site.mapping.Mapping;
@@ -39,6 +47,8 @@ import org.nuxeo.ecm.platform.site.template.ScriptFile;
 import org.nuxeo.ecm.platform.site.template.SiteManager;
 import org.nuxeo.ecm.platform.site.template.SiteRoot;
 import org.nuxeo.runtime.api.Framework;
+
+import freemarker.template.TemplateModelException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -298,6 +308,32 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
        return "Resolved Path: "+getResolvedPath()+"; Unresolved Path:"+getUnresolvedPath()+"; Script: "+(script == null? "none" : script.getPath());
    }
 
+   public void render(String template) throws Exception {
+       render(template, null);
+   }
+
+   public void render(String template, Map<String,Object> ctx) throws Exception {
+       if (lastResolved != null) {
+           siteManager.getScripting().getRenderingEngine().render(template, lastResolved);
+       } else {
+           throw new SiteException("Rendering outside doc context not impl yet");
+       }
+   }
+
+   public DocumentModelList query(String query) throws Exception {
+       SearchService search = Framework.getService(SearchService.class);
+       if (search == null) {
+           return session.query(query);
+       }
+       ResultSet result = search.searchQuery(new ComposedNXQueryImpl(query), 0, Integer.MAX_VALUE);
+       DocumentModelList docs = new DocumentModelListImpl();
+       for (ResultItem item : result) {
+           String id = (String)item.get("ecm:uuid");
+           DocumentModel doc = session.getDocument(new IdRef(id));
+           docs.add(doc);
+       }
+       return docs;
+   }
 
    public static CoreSession getCoreSession(HttpServletRequest request)
    throws Exception {

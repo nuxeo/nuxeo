@@ -55,8 +55,6 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        System.out.println("########### STARTING SITE MGR");
-        try {
         File root = new File(Framework.getRuntime().getHome(), "web");
         String val = (String)context.getPropertyValue("engine", null);
         if (val != null) {
@@ -75,10 +73,6 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
         mgr = new SiteManagerImpl(root, engine);
         notifier = new FileChangeNotifier();
         notifier.start();
-        } catch (Throwable t) {
-            System.out.println("############## ERROR ############");
-            t.printStackTrace();
-        }
     }
 
     @Override
