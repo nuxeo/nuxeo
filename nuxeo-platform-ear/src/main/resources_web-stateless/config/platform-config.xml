@@ -18,10 +18,9 @@
         (localhost)
       </li>
     </ul>
-
-    @author
-    <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+    @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
   </documentation>
+
   <extension target="org.nuxeo.ecm.platform.api.PlatformService"
     point="servers">
     <documentation>The default platform layout</documentation>
@@ -34,11 +33,13 @@
         description="Default Repository" />
     </server>
   </extension>
+
   <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
     point="repositories">
     <documentation>The default repository</documentation>
     <repository name="default" label="Default Repository" />
   </extension>
+
   <extension target="org.nuxeo.runtime.api.ServiceManagement" point="servers">
     <server class="org.nuxeo.runtime.api.JBossServiceLocator">
       <group>*</group>
@@ -62,40 +63,33 @@
       <!--adapter>org.nuxeo.ecm.core.api.CoreSessionAdapter</adapter-->
       <locator>%DocumentManagerBean</locator>
     </service>
-
     <service class="org.nuxeo.ecm.core.search.api.client.SearchService"
       group="search">
       <locator>%SearchServiceBean</locator>
     </service>
-
     <service class="org.nuxeo.ecm.platform.events.api.DocumentMessageProducer"
       group="core">
       <locator>%JMSDocumentMessageProducerBean</locator>
     </service>
-
     <service class="org.nuxeo.ecm.platform.filemanager.api.FileManager"
       group="platform">
       <locator>%FileManagerBean</locator>
     </service>
-
     <service class="org.nuxeo.ecm.platform.io.api.IOManager"
       group="platform/io">
       <locator>%IOManagerBean</locator>
     </service>
-
-<!--
-    <service class="org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry"
+    <!--
+      <service class="org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry"
       group="platform/mimetype">
       <locator>%MimetypeRegistryBean</locator>
-    </service>
- -->
+      </service>
+    -->
     <service class="org.nuxeo.ecm.platform.publishing.api.PublishingService"
       group="platform">
       <locator>%PublishingServiceBean</locator>
     </service>
-
     <!--service class="org.nuxeo.ecm.platform.types.ejb.TypeManager" group="platform"/-->
-
     <!-- the remote type provider used to import types : see below the provider extension -->
     <service class="org.nuxeo.ecm.core.schema.TypeProvider" group="core">
       <locator>%TypeProviderBean</locator>
@@ -104,48 +98,39 @@
       group="core">
       <locator>%VersioningManagerBean</locator>
     </service>
-
     <service
       class="org.nuxeo.ecm.platform.transform.interfaces.TransformServiceCommon"
       group="platform/transform">
       <locator>%NXTransformBean</locator>
     </service>
-
     <service class="org.nuxeo.ecm.core.api.security.PermissionProvider"
       group="core">
       <locator>%PermissionProviderBean</locator>
     </service>
-
     <service class="org.nuxeo.ecm.platform.usermanager.UserManager"
       group="platform">
       <locator>%UserManagerBean</locator>
     </service>
     <!--service class="org.nuxeo.ecm.platform.types.ejb.TypeManager" group="platform"/-->
-
     <service class="org.nuxeo.ecm.platform.relations.api.RelationManager"
       group="platform/relations">
       <locator>%RelationManagerBean</locator>
     </service>
-
     <service class="org.nuxeo.ecm.platform.audit.api.Logs"
       group="platform/audit">
       <locator>%LogsBean</locator>
     </service>
-
     <service class="org.nuxeo.ecm.platform.comment.api.CommentManager"
       group="platform/comments">
       <locator>%CommentManagerBean</locator>
     </service>
-
     <service class="org.nuxeo.ecm.directory.api.DirectoryService"
       group="platform/directory">
       <locator>%DirectoryManagerBean</locator>
     </service>
-
     <service class="org.nuxeo.ecm.core.schema.TypeProvider" group="core">
       <locator>%TypeProviderBean</locator>
     </service>
-
     <service class="org.nuxeo.ecm.platform.workflow.api.client.wfmc.WAPI"
       group="platform">
       <locator>%WAPIBean</locator>
@@ -185,7 +170,6 @@
       group="platform">
       <locator>%WorkItemsListsBean</locator>
     </service>
-
     <!--
       <service
       class="org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces.PlacefulServiceRemote"
@@ -193,24 +177,18 @@
       <locator>%PlacefulServiceBean</locator>
       </service>
     -->
-
     <service class="org.nuxeo.ecm.platform.notification.api.NotificationManager"
       group="platform">
       <locator>%NotificationServiceBean</locator>
     </service>
-
     <service
       class="org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces.EJBPlacefulService"
       group="platform">
       <locator>%PlacefulServiceBean</locator>
     </service>
-    <!--
-    -->
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="provider">
     <provider group="core" />
   </extension>
 </component>
-
-

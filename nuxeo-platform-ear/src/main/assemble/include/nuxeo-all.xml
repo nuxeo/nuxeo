@@ -93,7 +93,7 @@
   </artifactSet>
 
 
-  <!-- third party libraries embeded in the ear -->
+  <!-- third party libraries embedded in the ear -->
   <artifactSet id="nuxeo-fixed-libs">
     <artifacts>
       <artifact group="org.osgi" name="osgi-core" version="4.1" />
