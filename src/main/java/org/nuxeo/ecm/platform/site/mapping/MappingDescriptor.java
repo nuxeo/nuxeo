@@ -99,6 +99,12 @@ public class MappingDescriptor {
         if (mapping == null) {
             return null;
         }
+        //TODO temporary hack
+        if (vars != null) {
+            for (int i=0; i<vars.length ; i++) {
+                mapping.setName(i, vars[i]);
+            }
+        }
         mapping.mdef = this;
         // it's matching - do the rewrite
         if (traversal != null) {

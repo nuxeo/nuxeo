@@ -310,9 +310,9 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
        render(template, null);
    }
 
-   public void render(String template, Map<String,Object> ctx) throws Exception {
+   public void render(String template, Object ctx) throws Exception {
        if (lastResolved != null) {
-           siteManager.getScripting().getRenderingEngine().render(template, lastResolved, ctx);
+           siteManager.getScripting().getRenderingEngine().render(template, lastResolved, (Map<String,Object>)ctx);
        } else {
            throw new SiteException("Rendering outside doc context not impl yet");
        }
