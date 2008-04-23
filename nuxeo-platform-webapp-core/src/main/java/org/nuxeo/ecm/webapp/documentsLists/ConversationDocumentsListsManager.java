@@ -28,7 +28,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -67,8 +66,7 @@ public class ConversationDocumentsListsManager extends BaseDocumentsListsManager
     // Event listener
     @Observer(value = {EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED},
             create = false)
-    public void refreshLists(DocumentModel selectedDocument)
-            throws ClientException {
+    public void refreshLists(DocumentModel selectedDocument) {
 
         if (lastDocumentRef != null
                 && lastDocumentRef.equals(selectedDocument.getRef())) {

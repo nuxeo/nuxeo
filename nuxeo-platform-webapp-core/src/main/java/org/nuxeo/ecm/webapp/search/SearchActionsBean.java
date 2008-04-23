@@ -114,7 +114,7 @@ public class SearchActionsBean extends InputController implements
     private transient SearchBusinessDelegate searchDelegate;
 
     @In(required = false)
-    private Principal currentUser;
+    private transient Principal currentUser;
 
     @In(required=false, create=false)
     SearchResultsBean searchResults;
@@ -267,12 +267,13 @@ public class SearchActionsBean extends InputController implements
             log.debug("performing searchType: " + searchTypeId);
         }
         try {
-            String page;
-            PagedDocumentsProvider resultsProvider = null;
             // XXX : hack !!!
-            if (searchResults!=null)
+            if (searchResults != null) {
                 searchResults.reset();
+            }
 
+            String page;
+            PagedDocumentsProvider resultsProvider;
             if (searchTypeId == SearchType.NXQL) {
                 if (nxql == null) {
                     log.warn("Direct NXQL search: no nxql query "
@@ -317,13 +318,13 @@ public class SearchActionsBean extends InputController implements
 
             return page;
         } catch (SortNotSupportedException e) {
-            this.queryErrorMsg = e.getMessage();
+            queryErrorMsg = e.getMessage();
             log.debug("Search error: " + e.getMessage(), e);
             return ACTION_PAGE_SEARCH_QUERY_ERROR;
         } catch (ClientException e) {
             // Present to user: TODO we should make the difference between
             // QueryException and actual errors.
-            this.queryErrorMsg = e.getMessage();
+            queryErrorMsg = e.getMessage();
             log.debug("Search error: " + e.getMessage(), e);
             return ACTION_PAGE_SEARCH_QUERY_ERROR;
         }
@@ -440,7 +441,6 @@ public class SearchActionsBean extends InputController implements
             throw new ClientException(
                     "DocumentManager not found in Seam context...");
         }
-
     }
 
     public String reset() throws ClientException {

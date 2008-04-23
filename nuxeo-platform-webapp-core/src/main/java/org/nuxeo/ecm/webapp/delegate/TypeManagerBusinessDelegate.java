@@ -32,7 +32,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.api.ECM;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.runtime.api.Framework;
@@ -87,7 +86,7 @@ public class TypeManagerBusinessDelegate implements Serializable {
 
     @Destroy
     @PermitAll
-    public void destroy() throws ClientException {
+    public void destroy() {
         if (null != typeManager) {
             //typeManager.remove();
             typeManager = null;

@@ -48,8 +48,8 @@ import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallback;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.LoginComponent;
 
 public class NuxeoLoginModule extends AbstractServerLoginModule {
 
