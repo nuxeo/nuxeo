@@ -62,6 +62,7 @@
       <artifact name="nuxeo-platform-mimetype-*" />
       <artifact name="nuxeo-platform-uidgen-core" />
       <artifact name="nuxeo-platform-modifier" />
+      <artifact name="nuxeo-platform-notification-api" />
       <artifact name="nuxeo-platform-usermanager-api" />
       <artifact name="nuxeo-platform-relations-api" />
       <artifact name="nuxeo-platform-search-api" />
