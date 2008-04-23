@@ -140,7 +140,7 @@ start() {
         tail -n1 $LOG |grep "Started in" >/dev/null
         if [ $? = 0 ]; then
             echo "Server started."
-            egrep 'Nuxeo ECM Started|Nuxeo EP Started' -B1 -A5 $LOG|tail -n7
+            egrep 'Nuxeo ECM Started|Nuxeo EP Started' -B1 -A5 $LOGF|tail -n7
             return 0
         fi
         echo -n "."
@@ -238,6 +238,7 @@ case "$1" in
         if status check_alive warn; then
             jps -v | grep $JBOSS_PID
             jmap -heap $JBOSS_PID
+            jstat -gc $JBOSS_PID
         else
             status
         fi
