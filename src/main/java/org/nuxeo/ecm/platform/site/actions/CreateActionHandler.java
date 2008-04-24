@@ -39,14 +39,15 @@ public class CreateActionHandler implements ActionHandler {
             object = object.next();
             String name = object.getName();
             if (object != null && !object.isResolved()) {
-                createSubPage(parent, name, object.getSiteRequest());
+                DocumentModel doc = createSubPage(parent, name, object.getSiteRequest());
+                object.resolve(doc);
                 return;
             }
         }
         throw new SiteException("Faield to create document. The document already exists: "+object.getPath());
     }
 
-    private DocumentModel createSubPage(DocumentModel doc, String name, SiteRequest request)
+    private DocumentModel createSubPage(DocumentModel parent, String name, SiteRequest request)
     throws SiteException {
         try {
             CoreSession session = request.getCoreSession();
@@ -54,8 +55,8 @@ public class CreateActionHandler implements ActionHandler {
             if (type == null) {
                 throw new SiteException("Invalid argument exception. Nos doc type specified");
             }
-            DocumentModel newPage = session.createDocumentModel(doc.getPathAsString(), name, type);
-            DocumentFormHelper.fillDocumentProperties(doc, request);
+            DocumentModel newPage = session.createDocumentModel(parent.getPathAsString(), name, type);
+            DocumentFormHelper.fillDocumentProperties(newPage, request);
             newPage = session.createDocument(newPage);
             session.save();
             return newPage;

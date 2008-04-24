@@ -1,5 +1,5 @@
  
-<@extends src="/default/default/view.ftl">
+<@extends src="/default/WikiPage/view.ftl">
 <@block name="message">
 Created successfully!
 </@block>

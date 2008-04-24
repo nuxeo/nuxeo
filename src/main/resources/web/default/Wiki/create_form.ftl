@@ -4,9 +4,12 @@
 <h2>Create Wiki Page : ${this.title} </h2>
 <form method="POST" action="${this.docURL}/${name}@@create">
 Document Type:
-<input type="text" name="doctype" value="Note"/>
+<select name="doctype">
+  <option>Wiki</option>
+  <option selected="true">WikiPage</option>
+</select>
 <p>
-<textarea name="note:note" cols="80" rows="20"></textarea>
+<textarea name="wp:content" cols="80" rows="20"></textarea>
 </p>
 <p>
 Title: <input type="text" name="dc:title" value="${name}"/>
