@@ -11,4 +11,8 @@ Default Block Content2
 Default Block Content3
 </@block>
 --------------
+<@block name="dynamic">
+dynamic content from wiki
+</@block>
+--------------
 End.

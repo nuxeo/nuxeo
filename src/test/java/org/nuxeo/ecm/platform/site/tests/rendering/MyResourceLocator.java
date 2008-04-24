@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 public class MyResourceLocator implements ResourceLocator {
 
     public URL getResource(String key) {
-        return SimpleContext.class.getClassLoader().getResource(""+key);
+        return SimpleContext.class.getClassLoader().getResource(key);
     }
 
 }

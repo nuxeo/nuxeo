@@ -36,7 +36,7 @@ public class TestWiki {
     public static void main(String[] args) {
         double s = System.currentTimeMillis();
         try {
-            InputStream in = TestWiki.class.getResourceAsStream("test.wiki");
+            InputStream in = TestWiki.class.getResourceAsStream("/test.wiki");
             Reader reader = new InputStreamReader(in);
 
             WikiSerializer engine = new WikiSerializer();

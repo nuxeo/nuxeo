@@ -4,3 +4,8 @@ See NXP-1256
 This is an inline macro {freemarker}doc title: ${dublincore.title}{/freemarker}
 
 This is a doc expression example $doc(dc:title) or $doc(key=dc:title)
+
+%block:dynamic (((
+=== Dynamic Block
+This is a dynamic *block* contributed from a wiki
+)))
