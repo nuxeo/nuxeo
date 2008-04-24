@@ -32,7 +32,7 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 public class RenderVariables {
 
     public static enum globalVariables {
-        value, document, layoutValue,
+        value, document, layoutValue, mode, layoutMode,
     }
 
     public static enum layoutVariables {

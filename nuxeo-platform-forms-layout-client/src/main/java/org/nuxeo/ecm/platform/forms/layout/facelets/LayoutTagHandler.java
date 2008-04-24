@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 import java.io.IOException;
 
 import javax.el.ELException;
+import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
@@ -110,28 +111,41 @@ public class LayoutTagHandler extends TagHandler implements TemplateClient {
         if (ComponentTagUtils.isValueReference(valueName)) {
             valueName = valueName.substring(2, valueName.length() - 1);
         }
-        layout = layoutService.getLayout(ctx, layoutName, modeValue, valueName);
-        if (layout == null) {
-            log.error(String.format("Layout %s not found", layoutName));
-            return;
-        }
-        // set unique id on layout
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-        layout.setId(helper.generateLayoutId(layout.getName()));
-        String template = layout.getTemplate();
-        // expose layout variables
+
+        // expose some layout variables before layout creation so that they can
+        // be used in mode expressions
         VariableMapper orig = ctx.getVariableMapper();
         VariableMapper vm = new VariableMapperWrapper(orig);
         ctx.setVariableMapper(vm);
-        ValueExpression layoutVe = ctx.getExpressionFactory().createValueExpression(
-                layout, Object.class);
-        vm.setVariable(RenderVariables.layoutVariables.layout.name(), layoutVe);
         ValueExpression valueExpr = value.getValueExpression(ctx, Object.class);
         vm.setVariable(RenderVariables.globalVariables.value.name(), valueExpr);
         vm.setVariable(RenderVariables.globalVariables.document.name(),
                 valueExpr);
         vm.setVariable(RenderVariables.globalVariables.layoutValue.name(),
                 valueExpr);
+        ExpressionFactory eFactory = ctx.getExpressionFactory();
+        ValueExpression modeVe = eFactory.createValueExpression(modeValue,
+                String.class);
+        vm.setVariable(RenderVariables.globalVariables.layoutMode.name(),
+                modeVe);
+        // mode as alias to layoutMode
+        vm.setVariable(RenderVariables.globalVariables.mode.name(), modeVe);
+
+        layout = layoutService.getLayout(ctx, layoutName, modeValue, valueName);
+        if (layout == null) {
+            log.error(String.format("Layout %s not found", layoutName));
+            return;
+        }
+
+        // expose layout value
+        ValueExpression layoutVe = eFactory.createValueExpression(layout,
+                Layout.class);
+        vm.setVariable(RenderVariables.layoutVariables.layout.name(), layoutVe);
+
+        // set unique id on layout
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+        layout.setId(helper.generateLayoutId(layout.getName()));
+        String template = layout.getTemplate();
         if (template != null) {
             // XXX same handler is used in different threads => reset counters
             // before use
