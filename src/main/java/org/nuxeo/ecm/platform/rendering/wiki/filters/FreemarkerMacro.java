@@ -41,7 +41,7 @@ public class FreemarkerMacro implements WikiMacro {
     }
 
     public void eval(WikiParameters params, String content, WikiSerializerHandler serializer) throws Exception {
-        Environment env = Environment.getCurrentEnvironment();
+        Environment env = serializer.getEnvironment();
         if (env != null) {
             Template tpl = new Template("inline", new StringReader(content),
                     env.getConfiguration(), env.getTemplate().getEncoding());

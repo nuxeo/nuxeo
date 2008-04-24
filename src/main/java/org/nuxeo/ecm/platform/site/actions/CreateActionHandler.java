@@ -65,21 +65,4 @@ public class CreateActionHandler implements ActionHandler {
         }
     }
 
-    private DocumentModel old_createSubPage(DocumentModel doc, String name, SiteRequest request)
-    throws SiteException {
-        try {
-            CoreSession session = request.getCoreSession();
-            DocumentModel newPage = session.createDocumentModel(doc.getPathAsString(), name,
-            "Note");
-            newPage.setProperty("dublincore", "title", name);
-//          newPage.setProperty("note", "note", "This is new page ${title}");
-            newPage.setProperty("note", "note", "");
-            newPage = session.createDocument(newPage);
-            session.save();
-            return newPage;
-        } catch (Exception e) {
-            throw new SiteException("Failed to create document: "+name, e);
-        }
-    }
-
 }

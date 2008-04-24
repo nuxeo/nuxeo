@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
+import org.nuxeo.ecm.platform.site.actions.ActionDescriptor;
 import org.nuxeo.ecm.platform.site.scripting.Scripting;
 import org.nuxeo.ecm.platform.site.util.DependencyTree;
 
@@ -127,6 +128,16 @@ public class DefaultSiteManager implements SiteManager {
     }
 
 
+    public boolean isActionEnabled(ActionDescriptor action, SiteRequest req) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public ActionDescriptor[] getEnabledActions(ObjectDescriptor obj,
+            SiteRequest req) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     class ObjectRegistry extends DependencyTree<String, ObjectDescriptor> {
 

@@ -19,13 +19,18 @@
 
 package org.nuxeo.ecm.platform.rendering.wiki;
 
+import java.io.IOException;
+import java.io.Writer;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
-import org.wikimodel.wem.IWikiPrinter;
+import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriter;
 import org.wikimodel.wem.PrintListener;
 import org.wikimodel.wem.WikiFormat;
 import org.wikimodel.wem.WikiParameters;
+
+import freemarker.core.Environment;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -34,18 +39,57 @@ import org.wikimodel.wem.WikiParameters;
 public class WikiSerializerHandler extends PrintListener {
     public static final Log log = LogFactory.getLog(WikiSerializerHandler.class);
 
+    protected static String LINE_SEP = System.getProperty("line.separator");
+
     protected WikiSerializer engine;
     protected StringBuilder word = new StringBuilder();
     protected RenderingContext ctx;
+    protected Environment env;
+    protected Writer writer;
+    protected BlockWriter parentWriter; // we allow only one level of block: doc properties
+    protected boolean parentSuppressOutput = false; // suppress output state saved from parent
 
-    public WikiSerializerHandler(WikiSerializer engine, IWikiPrinter printer) {
-        this (engine, printer, null);
+    public WikiSerializerHandler(WikiSerializer engine, Writer writer) {
+        this (engine, writer, null);
     }
 
-    public WikiSerializerHandler(WikiSerializer engine, IWikiPrinter printer, RenderingContext ctx) {
-        super (printer);
+    public WikiSerializerHandler(WikiSerializer engine, Writer writer, RenderingContext ctx) {
+        super (null); // cannot base on the wikiprinter - so we don't use it
         this.engine = engine;
         this.ctx = ctx;
+        this.writer = writer;
+    }
+
+    public void print(String str) {
+        try {
+            writer.write(str);
+        } catch (IOException e) {
+            log.error("Failed to print: "+str, e);
+        }
+    }
+
+    public void println() {
+        try {
+            writer.write(LINE_SEP);
+        } catch (IOException e) {
+            log.error("Failed to print newline", e);
+        }
+    }
+
+    public void println(String str) {
+        try {
+            writer.write(str);
+            writer.write(LINE_SEP);
+        } catch (IOException e) {
+            log.error("Failed to print: "+str, e);
+        }
+    }
+
+    public Environment getEnvironment() {
+        if (env == null) {
+            env = Environment.getCurrentEnvironment();
+        }
+        return env;
     }
 
     /**
@@ -53,21 +97,6 @@ public class WikiSerializerHandler extends PrintListener {
      */
     public RenderingContext getContext() {
         return ctx;
-    }
-
-    @Override
-    public void print(String str) {
-        super.print(str);
-    }
-
-    @Override
-    public void println(String str) {
-        super.println(str);
-    }
-
-    @Override
-    public void println() {
-        super.println();
     }
 
     protected void beginElement() {
@@ -154,7 +183,25 @@ public class WikiSerializerHandler extends PrintListener {
     @Override
     public void beginPropertyBlock(String propertyUri, boolean doc) {
         beginElement();
-        super.beginPropertyBlock(propertyUri, doc);
+        if (propertyUri.startsWith("block:")) {
+            if (parentWriter == null && (writer instanceof BlockWriter)) {
+                String name = propertyUri.substring(6);
+                parentWriter = (BlockWriter)writer;
+                BlockWriter bw = new BlockWriter("__dynamic__wiki", name, parentWriter.getRegistry());
+                try {
+                    parentSuppressOutput = parentWriter.getSuppressOutput();
+                    parentWriter.setSuppressOutput(true);
+                    parentWriter.writeBlock(bw);
+                    writer = bw;
+                } catch (IOException e) {
+                    log.error("Failed to write block", e);
+                }
+            } else {
+                log.error("Illegal state - Rendering block ignored");
+            }
+        } else {
+            super.beginPropertyBlock(propertyUri, doc);
+        }
     }
     @Override
     public void beginPropertyInline(String str) {
@@ -239,7 +286,16 @@ public class WikiSerializerHandler extends PrintListener {
     @Override
     public void endPropertyBlock(String propertyUri, boolean doc) {
         endElement();
-        super.endPropertyBlock(propertyUri, doc);
+        if (propertyUri.startsWith("block:")) {
+            if (parentWriter != null && (writer instanceof BlockWriter)) {
+                parentWriter.setSuppressOutput(parentSuppressOutput);
+                writer = parentWriter;
+            } else {
+                log.error("Illegal state exception - ignoring block end");
+            }
+        } else {
+            super.endPropertyBlock(propertyUri, doc);
+        }
     }
     @Override
     public void endPropertyInline(String inlineProperty) {

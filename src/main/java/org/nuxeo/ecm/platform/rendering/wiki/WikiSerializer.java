@@ -29,7 +29,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.wikimodel.wem.WikiParserException;
-import org.wikimodel.wem.WikiPrinter;
 import org.wikimodel.wem.common.CommonWikiParser;
 
 /**
@@ -65,18 +64,14 @@ public class WikiSerializer {
 
     public void serialize(Reader reader, Writer writer) throws IOException, WikiParserException {
         serialize(reader, writer, null);
-        WikiPrinter printer = new WikiPrinter();
-        WikiSerializerHandler serializer = new WikiSerializerHandler(this, printer);
+        WikiSerializerHandler serializer = new WikiSerializerHandler(this, writer);
         parser.parse(reader, serializer);
-        writer.write(printer.getBuffer().toString());
         writer.flush();
     }
 
     public void serialize(Reader reader, Writer writer, RenderingContext ctx) throws IOException, WikiParserException {
-        WikiPrinter printer = new WikiPrinter();
-        WikiSerializerHandler serializer = new WikiSerializerHandler(this, printer, ctx);
+        WikiSerializerHandler serializer = new WikiSerializerHandler(this, writer, ctx);
         parser.parse(reader, serializer);
-        writer.write(printer.getBuffer().toString());
         writer.flush();
     }
 

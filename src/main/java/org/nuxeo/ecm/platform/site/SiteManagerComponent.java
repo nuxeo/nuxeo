@@ -19,11 +19,17 @@
 
 package org.nuxeo.ecm.platform.site;
 
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.derby.iapi.sql.dictionary.FileInfoDescriptor;
+import org.apache.lucene.store.BufferedIndexInput;
+import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
@@ -36,6 +42,8 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.runtime.model.impl.XMapContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -75,6 +83,11 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
         mgr = new DefaultSiteManager(root, engine);
         notifier = new FileChangeNotifier();
         notifier.start();
+
+        // load configuration (it ill be put in pending until this component will exit activation code)
+        File file = new File(root, "web.xml");
+        XMap xmap = new XMap();
+        xmap.load(new XMapContext(context.getRuntimeContext()), new BufferedInputStream(new FileInputStream(file)));
     }
 
     @Override

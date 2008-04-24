@@ -54,6 +54,20 @@ public class BlockWriter extends Writer {
         return reg;
     }
 
+    /**
+     * @param suppressOutput the suppressOutput to set.
+     */
+    public void setSuppressOutput(boolean suppressOutput) {
+        this.suppressOutput = suppressOutput;
+    }
+
+    /**
+     * @return the suppressOutput.
+     */
+    public boolean getSuppressOutput() {
+        return suppressOutput;
+    }
+
     @Override
     public void close() throws IOException {
         buf = null;
