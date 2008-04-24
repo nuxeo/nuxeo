@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.site.template.SiteManagerComponent">
+<component name="org.nuxeo.ecm.platform.site.SiteManagerComponent">
   <implementation
-          class="org.nuxeo.ecm.platform.site.template.SiteManagerComponent" />
+          class="org.nuxeo.ecm.platform.site.SiteManagerComponent" />
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)
     Manage templates
@@ -13,9 +13,9 @@
 
   <service>
     <provide
-      interface="org.nuxeo.ecm.platform.site.template.SiteManager" />
+      interface="org.nuxeo.ecm.platform.site.SiteManager" />
       <provide
-      interface="org.nuxeo.ecm.platform.site.template.FileChangeNotifier" />
+      interface="org.nuxeo.ecm.platform.site.config.FileChangeNotifier" />
   </service>
 
   <extension-point name="transformer">
@@ -31,6 +31,25 @@
 
     <object
       class="org.nuxeo.ecm.platform.site.rendering.TransformerDescriptor" />
+  </extension-point>
+
+  <extension-point name="siteObject">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Expose the registration of site object descriptors
+    <code>
+      <object id="siteFolder" type="Folder" extends="default">
+        <requestHandler>org.nuxeo.ecm.platform.site.DefaultRequestHandler</requestHandler> <!-- this is the default value -->
+        <actions>
+          <action id="update" enabled="true" permissions=".|WRITE"
+            script="/my/optional/script/path" handler="myOptionalActionHandler"/>
+        </actions>
+      </object>
+   </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.platform.site.ObjectDescriptor" />
   </extension-point>
 
 </component>

@@ -21,8 +21,8 @@ package org.nuxeo.ecm.platform.site.tests.templates;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.platform.site.template.SiteManager;
-import org.nuxeo.ecm.platform.site.template.SiteManagerComponent;
+import org.nuxeo.ecm.platform.site.SiteManager;
+import org.nuxeo.ecm.platform.site.SiteManagerComponent;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 

@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.site.resolver;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.site.template.SiteRoot;
+import org.nuxeo.ecm.platform.site.SiteRoot;
 
 /**
  * Interface for resolving SiteObjects resources from a URL Path

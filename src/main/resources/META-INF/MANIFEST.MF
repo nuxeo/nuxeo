@@ -12,4 +12,5 @@ Nuxeo-Component: OSGI-INF/site-adapters-contrib.xml,
  OSGI-INF/site-core-types-contrib.xml,
  OSGI-INF/site-types-contrib.xml,
  OSGI-INF/wiki-transformer-contrib.xml,
- OSGI-INF/site-manager-framework.xml
+ OSGI-INF/site-manager-framework.xml,
+ OSGI-INF/site-objects-contrib.xml

@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
-import org.nuxeo.ecm.platform.site.template.SiteRoot;
+import org.nuxeo.ecm.platform.site.SiteRoot;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -45,6 +45,18 @@ public class DefaultSiteResolver implements SiteResourceResolver {
     public DefaultSiteResolver() {
     }
 
+//    public DocumentModel getRootDocument(SiteRoot siteRoot, String rootName, CoreSession session) throws Exception {
+//        DocumentModel root = null;
+//        SearchService searchService = Framework.getService(SearchService.class);
+//
+//        String query = "Select * from Document where ecm:name='" + rootName+"'";
+//        DocumentModelList result = session.query(query);
+//        if (!result.isEmpty()) {
+//            root = result.get(0);
+//        }
+//        return root;
+//    }
+//
     public DocumentModel getRootDocument(SiteRoot siteRoot, String rootName, CoreSession session) throws Exception {
         DocumentModel root = null;
         SearchService searchService = Framework.getService(SearchService.class);

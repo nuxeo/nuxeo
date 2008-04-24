@@ -24,11 +24,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.site.SiteManager;
+import org.nuxeo.ecm.platform.site.SiteRequest;
 import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
 import org.nuxeo.ecm.platform.site.api.SiteException;
-import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
-import org.nuxeo.ecm.platform.site.template.SiteManager;
-import org.nuxeo.ecm.platform.site.template.SitePageTemplate;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -63,8 +62,8 @@ public abstract class AbstractSiteObjectHandler implements SiteAwareObject {
         return sourceDocument.getName();
     }
 
-    public void doGet(SiteRequest request) {
-        // do nothing
+    public void doGet(SiteRequest request) throws SiteException {
+
     }
 
     public void doHead(SiteRequest request) throws SiteException {
@@ -109,8 +108,6 @@ public abstract class AbstractSiteObjectHandler implements SiteAwareObject {
         return sourceDocument;
     }
 
-    public SitePageTemplate getTemplate(SiteRequest request) {
-        return getSiteManager().resolve(sourceDocument);
-    }
+
 
 }

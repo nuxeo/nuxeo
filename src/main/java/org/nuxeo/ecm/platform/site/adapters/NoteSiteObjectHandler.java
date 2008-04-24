@@ -23,9 +23,9 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.site.SiteRequest;
 import org.nuxeo.ecm.platform.site.api.SiteException;
 import org.nuxeo.ecm.platform.site.servlet.SiteConst;
-import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
 
 public class NoteSiteObjectHandler extends AbstractSiteObjectHandler {
 

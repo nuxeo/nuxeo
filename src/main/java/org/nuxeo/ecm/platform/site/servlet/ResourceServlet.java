@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.platform.site.template.SiteManager;
+import org.nuxeo.ecm.platform.site.SiteManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**

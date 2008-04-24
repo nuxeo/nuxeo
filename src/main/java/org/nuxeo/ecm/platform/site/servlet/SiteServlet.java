@@ -36,20 +36,26 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
+import org.nuxeo.ecm.platform.site.RequestHandler;
+import org.nuxeo.ecm.platform.site.ScriptFile;
+import org.nuxeo.ecm.platform.site.Scripting;
+import org.nuxeo.ecm.platform.site.SiteManager;
+import org.nuxeo.ecm.platform.site.SiteObject;
+import org.nuxeo.ecm.platform.site.SiteRequest;
+import org.nuxeo.ecm.platform.site.SiteRoot;
+import org.nuxeo.ecm.platform.site.actions.Actions;
 import org.nuxeo.ecm.platform.site.api.SiteException;
 import org.nuxeo.ecm.platform.site.mapping.Mapping;
 import org.nuxeo.ecm.platform.site.rendering.ServletRequestView;
 import org.nuxeo.ecm.platform.site.resolver.DefaultSiteResolver;
 import org.nuxeo.ecm.platform.site.resolver.SiteResourceResolver;
-import org.nuxeo.ecm.platform.site.template.Scripting;
-import org.nuxeo.ecm.platform.site.template.SiteManager;
-import org.nuxeo.ecm.platform.site.template.SiteRoot;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Servlet for publishing SiteObjects
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class SiteServlet extends HttpServlet {
@@ -88,12 +94,29 @@ public class SiteServlet extends HttpServlet {
         SiteRequest siteRequest = null;
         try {
             siteRequest = createRequest(req, resp);
-        } catch (Exception e) {
-            displayError(resp, e, "Failed to get a core session",
-                    SiteConst.SC_INTERNAL_SERVER_ERROR);
-            return;
+            service(siteRequest, req, resp);
+        } catch (Throwable e) {
+            log.error("Site Servlet failed to handle request", e);
+            if (siteRequest == null) {
+                displayError(resp, e, "Failed to create request",
+                        SiteConst.SC_INTERNAL_SERVER_ERROR);
+            } else {
+                SiteRoot root = siteRequest.getRoot();
+                ScriptFile page = root.getScript(root.getErrorPage(), null);
+                try {
+                    siteRequest.setVar("error", e);
+                    manager.getScripting().exec(siteRequest, page);
+                } catch (Exception ee) {
+                    displayError(resp, ee, "Failed to show error page",
+                            SiteConst.SC_INTERNAL_SERVER_ERROR);
+                }
+            }
         }
+        System.out.println(">>> SITE REQUEST TOOK:  "+((System.currentTimeMillis()-start)/1000));
+    }
 
+    protected void service(SiteRequest siteRequest, HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         if (siteRequest.getLastResolvedObject() == null) { // a request outside the root
             try {
                 showIndex(siteRequest);
@@ -101,7 +124,6 @@ public class SiteServlet extends HttpServlet {
                 displayError(resp, null, "Failed to show server main index",
                         SiteConst.SC_INTERNAL_SERVER_ERROR);
             }
-            System.out.println(">>> SITE REQUEST TOOK:  "+((System.currentTimeMillis()-start)/1000));
             return;
         }
 
@@ -113,29 +135,34 @@ public class SiteServlet extends HttpServlet {
                 displayError(resp, null, "Site Root is not a supported object ");
                 return;
             }
-            if (method.equals(SiteConst.METHOD_POST)) {
-                lastTraversedObject.getAdapter().doPost(siteRequest);
-            } else if (method.equals(SiteConst.METHOD_PUT)) {
-                lastTraversedObject.getAdapter().doPut(siteRequest);
-            } else if (method.equals(SiteConst.METHOD_GET)) {
-                lastTraversedObject.getAdapter().doGet(siteRequest);
-            } else if (method.equals(SiteConst.METHOD_DELETE)) {
-                lastTraversedObject.getAdapter().doDelete(siteRequest);
-            } else if (method.equals(SiteConst.METHOD_HEAD)) {
-                lastTraversedObject.getAdapter().doHead(siteRequest);
+            // avoid running default action handling mechanism when invocation is redirected to scripts
+            if (siteRequest.getMapping() == null) {
+                RequestHandler handler = lastTraversedObject.getRequestHandler();
+                if (handler != null) {
+                    if (method.equals(SiteConst.METHOD_POST)) {
+                        handler.doPost(lastTraversedObject);
+                    } else if (method.equals(SiteConst.METHOD_PUT)) {
+                        handler.doPut(lastTraversedObject);
+                    } else if (method.equals(SiteConst.METHOD_GET)) {
+                        handler.doGet(lastTraversedObject);
+                    } else if (method.equals(SiteConst.METHOD_DELETE)) {
+                        handler.doDelete(lastTraversedObject);
+                    } else if (method.equals(SiteConst.METHOD_HEAD)) {
+                        handler.doHead(lastTraversedObject);
+                    }
+                }
+                // return is handler has done the rendering
+                if (siteRequest.isRenderingCanceled()) {
+                    return;
+                }
             }
         } catch (SiteException e) {
             if (lastTraversedObject != null) {
             displayError(resp, e, "Error during calling method " + method
-                    + " on " + lastTraversedObject.getAdapter().getName());
+                    + " on " + lastTraversedObject.getName());
             } else {
                 displayError(resp, e, "Error during traversal");
             }
-            return;
-        }
-
-        // return is handler has done the rendering
-        if (siteRequest.isRenderingCanceled()) {
             return;
         }
 
@@ -148,7 +175,6 @@ public class SiteServlet extends HttpServlet {
         }
         System.out.println(">>>>>>>>>> RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
         resp.setStatus(SiteConst.SC_OK);
-        System.out.println(">>> SITE REQUEST TOOK:  "+((System.currentTimeMillis()-start)/1000));
     }
 
     protected void displayError(HttpServletResponse resp, Throwable t,
@@ -225,7 +251,6 @@ public class SiteServlet extends HttpServlet {
             if (obj != null) {
                 mapping.addVar("type", obj.getDocument().getType());
             }
-            siteReq.setScript(mapping.getScript());
             siteReq.setMapping(mapping); //TODO how to propagate vars without storing them in req?
         }
         return siteReq;
@@ -243,6 +268,11 @@ public class SiteServlet extends HttpServlet {
         String name = traversal[0];
         SiteRoot root = siteReq.getRoot();
         SiteResourceResolver resolver = root.getResolver();
+        int p = name.lastIndexOf(SiteConst.ACTION_SEPARATOR);
+        if (p > -1) {
+            siteReq.setAction(name.substring(p+SiteConst.ACTION_SEPARATOR.length()));
+            name = name.substring(0, p);
+        }
         DocumentModel doc = resolver.getRootDocument(root, name, session);
         siteReq.addSiteObject(name, doc);
         if (doc == null) { // abort traversing
@@ -255,8 +285,13 @@ public class SiteServlet extends HttpServlet {
         if (traversal.length > 1) {
             for (int i=1; i<traversal.length; i++) {
                 name = traversal[i];
+                p = name.lastIndexOf(SiteConst.ACTION_SEPARATOR);
+                if (p > -1) {
+                    siteReq.setAction(name.substring(p+SiteConst.ACTION_SEPARATOR.length()));
+                    name = name.substring(0, p);
+                }
                 doc = resolver.getSiteSegment(root, doc, name, session);
-                siteReq.addSiteObject(traversal[i], doc);
+                siteReq.addSiteObject(name, doc);
                 if (doc == null) {
                     for (i=i+1; i<traversal.length; i++) {
                         siteReq.addSiteObject(traversal[i], null);
@@ -264,6 +299,9 @@ public class SiteServlet extends HttpServlet {
                     break;
                 }
             }
+        }
+        if (!siteReq.hasUnresolvedObjects() && siteReq.getAction() == null) {
+            siteReq.setAction(Actions.DEFAULT_ACTION);
         }
     }
 

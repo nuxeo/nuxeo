@@ -25,9 +25,9 @@ import java.io.Writer;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
+import org.nuxeo.ecm.platform.site.SiteRequest;
 import org.nuxeo.ecm.platform.site.api.SiteException;
 import org.nuxeo.ecm.platform.site.servlet.SiteConst;
-import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 
 public class WikiPageSiteObjectHandler extends NoteSiteObjectHandler {

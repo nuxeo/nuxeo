@@ -7,7 +7,7 @@
     wiki transformer configuration
   </documentation>
 
-  <extension-point name="transformer" target="org.nuxeo.ecm.platform.site.template.SiteManagerComponent">
+  <extension-point name="transformer" target="org.nuxeo.ecm.platform.site.SiteManagerComponent">
         <object
       class="org.nuxeo.ecm.platform.site.rendering.WikiTransformerDescriptor" />
   </extension-point>

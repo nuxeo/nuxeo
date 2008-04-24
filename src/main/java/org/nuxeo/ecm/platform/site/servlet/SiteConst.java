@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface SiteConst {
 
+    public static final String ACTION_SEPARATOR = "@@";
+
     public static final String MODE_KEY = "render_mode";
 
     public static final String ENGINE_KEY = "render_engine";

@@ -23,9 +23,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.api.DocumentContextView;
 import org.nuxeo.ecm.platform.rendering.api.DocumentField;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
+import org.nuxeo.ecm.platform.site.SiteObject;
+import org.nuxeo.ecm.platform.site.SiteRequest;
 import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
-import org.nuxeo.ecm.platform.site.servlet.SiteObject;
-import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
 
 public class SiteDocumentView extends DocumentContextView {
 

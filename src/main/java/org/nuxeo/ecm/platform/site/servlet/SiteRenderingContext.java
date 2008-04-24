@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.api.EmptyContextView;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContextView;
+import org.nuxeo.ecm.platform.site.SiteRequest;
 
 /**
  * A simple context to be able to render templates not linked to document instances

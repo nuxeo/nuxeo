@@ -21,9 +21,9 @@ package org.nuxeo.ecm.platform.site.adapters;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.site.SiteObject;
+import org.nuxeo.ecm.platform.site.SiteRequest;
 import org.nuxeo.ecm.platform.site.api.SiteException;
-import org.nuxeo.ecm.platform.site.servlet.SiteObject;
-import org.nuxeo.ecm.platform.site.servlet.SiteRequest;
 
 public class WikiSiteObjectHandler extends FolderishSiteObjectHandler {
 
@@ -47,21 +47,22 @@ public class WikiSiteObjectHandler extends FolderishSiteObjectHandler {
     @Override
     public boolean traverse(SiteRequest request)  throws SiteException {
         SiteObject unresolved = request.getFirstUnresolvedObject();
-        if (unresolved != null && !request.getScript().getFile().isFile()) {
+        if (unresolved != null && !request.getTargetScript().getFile().isFile()) {
             String createFlag = request.getParameter(CREATE_KEY);
             String pageId = unresolved.getName();
             if ("true".equalsIgnoreCase(createFlag)) {
                 try {
                     DocumentModel newPage = createSubPage(request, pageId);
                     unresolved.resolve(newPage);
-                    request.setScript("edit.ftl");
+//                    request.setScript("edit.ftl");
                 } catch (Exception e) {
                     throw new SiteException("Error while creating wiki page", e);
                 }
             } else {
                 request.setAttribute("pageToCreate", pageId);
-                request.setScript("create.ftl");
+//                request.setScript("create.ftl");
             }
+
 //        } else if (request.isRootRequest()) {
 //            DocumentModel indexPage = null;
 //            try {
