@@ -4,7 +4,7 @@
 <form method="POST" action="${this.docURL}@@update">
 <textarea name="note:note" cols="80" rows="20"></textarea>
 <p>
-Title: <input type="text" name="dc:title" value="${request.getFirstUnresolvedObject().getName()}"/>
+Title: <input type="text" name="dc:title" value="${context.getFirstUnresolvedSegment()}"/>
 </p>
 <p>
 Description: <input type="text" name="dc:description" value=""/>
