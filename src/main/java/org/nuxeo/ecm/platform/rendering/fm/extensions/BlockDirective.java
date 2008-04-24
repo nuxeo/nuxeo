@@ -45,9 +45,10 @@ public class BlockDirective implements TemplateDirectiveModel {
             name = scalar.getAsString();
         }
 
+        String page = env.getTemplate().getName();
         BlockWriter writer = (BlockWriter)env.getOut();
         BlockWriterRegistry reg = writer.getRegistry();
-        BlockWriter bw = new BlockWriter(name, reg);
+        BlockWriter bw = new BlockWriter(page, name, reg);
         writer.writeBlock(bw);
         // render this block
         if (body != null) {

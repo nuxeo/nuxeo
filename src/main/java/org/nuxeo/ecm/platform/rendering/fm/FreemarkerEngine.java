@@ -174,7 +174,7 @@ public class FreemarkerEngine implements RenderingEngine {
             ObjectWrapper wrapper = getObjectWrapper();
             Template temp = cfg.getTemplate(template);
             RenderingContextModel root = new RenderingContextModel(this, ctx);
-            BlockWriter bw = new BlockWriter("", new BlockWriterRegistry());
+            BlockWriter bw = new BlockWriter(temp.getName(), "", new BlockWriterRegistry());
             Environment env = temp.createProcessingEnvironment(root,
                     bw, wrapper);
             if (globals != null) {

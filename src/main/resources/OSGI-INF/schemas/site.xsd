@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  targetNamespace="http://pa.org/schemas/link/"
-  xmlns:smp="http://pa.org/schemas/link/">
-
-  <xs:element name="content" type="xs:string"/>
-
-</xs:schema>

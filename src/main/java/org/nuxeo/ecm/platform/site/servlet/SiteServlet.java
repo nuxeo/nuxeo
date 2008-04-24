@@ -36,19 +36,19 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
+import org.nuxeo.ecm.platform.site.DefaultDocumentResolver;
+import org.nuxeo.ecm.platform.site.DocumentResolver;
 import org.nuxeo.ecm.platform.site.RequestHandler;
-import org.nuxeo.ecm.platform.site.ScriptFile;
-import org.nuxeo.ecm.platform.site.Scripting;
+import org.nuxeo.ecm.platform.site.SiteException;
 import org.nuxeo.ecm.platform.site.SiteManager;
 import org.nuxeo.ecm.platform.site.SiteObject;
 import org.nuxeo.ecm.platform.site.SiteRequest;
 import org.nuxeo.ecm.platform.site.SiteRoot;
 import org.nuxeo.ecm.platform.site.actions.Actions;
-import org.nuxeo.ecm.platform.site.api.SiteException;
 import org.nuxeo.ecm.platform.site.mapping.Mapping;
 import org.nuxeo.ecm.platform.site.rendering.ServletRequestView;
-import org.nuxeo.ecm.platform.site.resolver.DefaultSiteResolver;
-import org.nuxeo.ecm.platform.site.resolver.SiteResourceResolver;
+import org.nuxeo.ecm.platform.site.scripting.ScriptFile;
+import org.nuxeo.ecm.platform.site.scripting.Scripting;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -66,7 +66,7 @@ public class SiteServlet extends HttpServlet {
 
     protected static final int BUFFER_SIZE = 4096 * 16;
 
-    protected static SiteResourceResolver resolver = new DefaultSiteResolver();
+    protected static DocumentResolver resolver = new DefaultDocumentResolver();
 
     private Scripting scripting;
     private SiteManager manager;
@@ -267,7 +267,7 @@ public class SiteServlet extends HttpServlet {
         CoreSession session = siteReq.getCoreSession();
         String name = traversal[0];
         SiteRoot root = siteReq.getRoot();
-        SiteResourceResolver resolver = root.getResolver();
+        DocumentResolver resolver = root.getResolver();
         int p = name.lastIndexOf(SiteConst.ACTION_SEPARATOR);
         if (p > -1) {
             siteReq.setAction(name.substring(p+SiteConst.ACTION_SEPARATOR.length()));

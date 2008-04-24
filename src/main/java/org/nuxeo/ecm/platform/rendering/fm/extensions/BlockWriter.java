@@ -34,6 +34,7 @@ public class BlockWriter extends Writer {
 
     BlockWriterRegistry reg;
 
+    String page;
     String name;
     StringBuilder buf = new StringBuilder();
     List<String> segments = new ArrayList<String>();
@@ -43,10 +44,10 @@ public class BlockWriter extends Writer {
     boolean suppressOutput = false;
 
 
-    public BlockWriter(String name, BlockWriterRegistry reg) {
+    public BlockWriter(String page, String name, BlockWriterRegistry reg) {
         this.reg = reg;
         this.name = name;
-
+        this.page = page;
     }
 
     public final BlockWriterRegistry getRegistry() {
@@ -99,4 +100,8 @@ public class BlockWriter extends Writer {
         writer.write(buf.toString());
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }

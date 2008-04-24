@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.rendering.api.DocumentField;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.site.SiteObject;
 import org.nuxeo.ecm.platform.site.SiteRequest;
-import org.nuxeo.ecm.platform.site.api.SiteAwareObject;
 
 public class SiteDocumentView extends DocumentContextView {
 
@@ -52,11 +51,11 @@ public class SiteDocumentView extends DocumentContextView {
 
     protected static final DocumentField SITEADAPTER = new DocumentField() {
         public String getName() {
-            return "siteAdapter";
+            return "page";
         }
 
         public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
-            return doc.getAdapter(SiteAwareObject.class);
+            return ctx;
         }
     };
 

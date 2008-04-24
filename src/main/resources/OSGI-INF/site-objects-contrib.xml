@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.site.defaultObjects">
+
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Default Objects
+  </documentation>
+
+
+  <extension target="org.nuxeo.ecm.platform.site.SiteManagerComponent"
+  	point="siteObject">
+  	<object id="siteFolder" type="Document" extends="default">
+  		<actions>
+  			<action id="view" enabled="true" permissions="READ" />
+        <action id="print" enabled="true" permissions="READ" />
+        <action id="delete" enabled="true" permissions="WRITE"
+          handler="org.nuxeo.ecm.platform.site.actions.DeleteActionHandler" />
+        <action id="update" enabled="true" permissions="WRITE"
+          handler="org.nuxeo.ecm.platform.site.actions.UpateActionHandler" />
+        <action id="edit" enabled="true" permissions="WRITE" />
+        <action id="create" enabled="true" permissions="WRITE"
+          handler="org.nuxeo.ecm.platform.site.actions.CreateActionHandler" />
+  		</actions>
+  	</object>
+  </extension>
+
+</component>

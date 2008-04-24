@@ -15,7 +15,7 @@
     <provide
       interface="org.nuxeo.ecm.platform.site.SiteManager" />
       <provide
-      interface="org.nuxeo.ecm.platform.site.config.FileChangeNotifier" />
+      interface="org.nuxeo.ecm.platform.site.util.FileChangeNotifier" />
   </service>
 
   <extension-point name="transformer">

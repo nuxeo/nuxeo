@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.api.SimpleContextView;
-import org.nuxeo.ecm.platform.site.servlet.ServletRenderingContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
