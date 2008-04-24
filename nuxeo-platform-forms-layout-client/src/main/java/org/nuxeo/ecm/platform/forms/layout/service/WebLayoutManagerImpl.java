@@ -310,16 +310,22 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
     private Widget getWidget(FaceletContext context, LayoutDefinition lDef,
             WidgetDefinition wDef, String layoutMode, String valueName,
             int level) {
-        // expose widget mode so that it can be used in a mode el expression
-        VariableMapper orig = context.getVariableMapper();
-        VariableMapper vm = new VariableMapperWrapper(orig);
-        context.setVariableMapper(vm);
-        ExpressionFactory eFactory = context.getExpressionFactory();
-        ValueExpression modeVe = eFactory.createValueExpression(layoutMode,
-                String.class);
-        vm.setVariable(RenderVariables.globalVariables.mode.name(), modeVe);
+        VariableMapper orig = null;
+        // avoid variable mapper changes if context is null for tests
+        if (context != null) {
+            // expose widget mode so that it can be used in a mode el expression
+            orig = context.getVariableMapper();
+            VariableMapper vm = new VariableMapperWrapper(orig);
+            context.setVariableMapper(vm);
+            ExpressionFactory eFactory = context.getExpressionFactory();
+            ValueExpression modeVe = eFactory.createValueExpression(layoutMode,
+                    String.class);
+            vm.setVariable(RenderVariables.globalVariables.mode.name(), modeVe);
+        }
         String wMode = getModeFromLayoutMode(context, wDef, layoutMode);
-        context.setVariableMapper(orig);
+        if (context != null) {
+            context.setVariableMapper(orig);
+        }
 
         if (BuiltinWidgetModes.HIDDEN.equals(wMode)) {
             return null;
