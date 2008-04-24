@@ -4,6 +4,9 @@ importPackage(org.nuxeo.runtime.api);
 importPackage(org.nuxeo.runtime.api.login);
 importPackage(org.nuxeo.runtime.model);
 
+
+req.getResponse().getWriter().write("This is a script\n");
+out.write("This is a script 2\n");
 runtime = Framework.getRuntime();
 name = runtime.getName();
 version = runtime.getVersion();

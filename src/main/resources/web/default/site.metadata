@@ -1,9 +1,0 @@
-
-[main]
-version=1.0.0
-debug=true
-
-[mapping]
-pattern=/
-script=/index.ftl
-

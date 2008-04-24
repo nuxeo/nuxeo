@@ -4,15 +4,17 @@
 
 <h3>I am a folder</h3>
 
+<p>${french}</p>
+
 <#--
 <#list query("SELECT * FROM Document") as entry>
         <li>${entry.title}</li>
         </#list>
 -->
+aaaaaaaaaaaaaa
 <ul>
- <#list session.getChildren(this.document.ref) as doc>
+ <#list query("SELECT * FROM Document") as doc>
 <li> ${doc.title} </li>
-<br/>
 </#list>
 </ul>
 </@block>

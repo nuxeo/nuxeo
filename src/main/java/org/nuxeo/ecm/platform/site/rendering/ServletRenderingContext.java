@@ -23,12 +23,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
+import org.nuxeo.ecm.platform.site.SiteRequest;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public interface ServletRenderingContext extends RenderingContext {
+
+    SiteRequest getSiteRequest();
 
     HttpServletRequest getRequest();
 

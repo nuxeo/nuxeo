@@ -49,6 +49,10 @@ public class SiteRenderingContext implements ServletRenderingContext {
         this.request = request;
     }
 
+    public SiteRequest getSiteRequest() {
+        return request;
+    }
+
     public RenderingContext getParentContext() {
         return null;
     }
