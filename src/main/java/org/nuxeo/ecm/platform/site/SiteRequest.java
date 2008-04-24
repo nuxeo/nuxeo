@@ -223,6 +223,11 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
         return lastResolved != tail;
     }
 
+    public String getFirstUnresolvedSegment() {
+        SiteObject obj = getFirstUnresolvedObject();
+        return obj != null ? obj .getName() : null;
+    }
+
     public SiteObject addSiteObject(String name, DocumentModel doc) {
         SiteObject object = new SiteObject(this, name, doc);
         if (head == null) {

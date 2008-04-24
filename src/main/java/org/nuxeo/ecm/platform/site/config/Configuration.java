@@ -69,7 +69,10 @@ public class Configuration {
         }
         while (line != null) {
             line = line.trim();
-            if (line.startsWith("#")) continue;
+            if (line.startsWith("#")) {
+                line = reader.readLine();
+                continue;
+            }
             if (line.startsWith("[") && line.endsWith("]")) {
                 if (!properties.isEmpty() && section != null) {
                     section.configure(root, properties);
