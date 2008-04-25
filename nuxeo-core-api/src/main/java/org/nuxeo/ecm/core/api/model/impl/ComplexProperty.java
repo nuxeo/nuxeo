@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -42,7 +43,8 @@ import org.nuxeo.ecm.core.schema.types.Field;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class ComplexProperty extends AbstractProperty {
+public abstract class ComplexProperty extends AbstractProperty implements
+        Map<String, Property> {
 
     private static final long serialVersionUID = -8189463982083623237L;
 
@@ -287,6 +289,74 @@ public abstract class ComplexProperty extends AbstractProperty {
                     "Cannot iterate over children of scalar properties");
         }
         return new DirtyPropertyIterator(children.values().iterator());
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public void clear() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public boolean containsKey(Object key) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public boolean containsValue(Object value) {
+        throw new UnsupportedOperationException();
+    }
+
+    public Set<java.util.Map.Entry<String, Property>> entrySet() {
+        return children.entrySet();
+    }
+
+    public Property get(Object key) {
+        return children.get(key);
+    }
+
+    public boolean isEmpty() {
+        return children.isEmpty();
+    }
+
+    public Set<String> keySet() {
+        return children.keySet();
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public Property put(String key, Property value) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public void putAll(Map<? extends String, ? extends Property> t) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public Property remove(Object key) {
+        throw new UnsupportedOperationException();
+    }
+
+    public Collection<Property> values() {
+        return children.values();
     }
 
 }
