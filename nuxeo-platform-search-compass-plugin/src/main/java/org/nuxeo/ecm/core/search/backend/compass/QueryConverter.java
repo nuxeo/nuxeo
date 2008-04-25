@@ -183,8 +183,9 @@ public class QueryConverter {
      * @param query
      * @param principal
      * @return The wrapped query, intersected with security query
+     * @throws QueryException if the list of permissions to query cannot be fetched
      */
-    public CompassQuery toCompassQuery(String query, SearchPrincipal principal) {
+    public CompassQuery toCompassQuery(String query, SearchPrincipal principal) throws QueryException {
         CompassQueryBuilder builder = session.queryBuilder();
 
         CompassQuery sQuery = builder.queryString(query).toQuery();
@@ -204,11 +205,15 @@ public class QueryConverter {
      *
      * @param principal
      * @return the security query, wrapped as a CompassQuery
+     * @throws QueryException if the list of permissions to query cannot be fetched
      */
-
-    public CompassQuery makeSecurityQuery(SearchPrincipal principal) {
-        return makeSecurityQuery(principal, SecurityFiltering.GRANT,
-                BuiltinDocumentFields.FIELD_ACP_INDEXED);
+    public CompassQuery makeSecurityQuery(SearchPrincipal principal) throws QueryException {
+        try {
+            return makeSecurityQuery(principal, SecurityFiltering.getBrowsePermissionList(),
+                    BuiltinDocumentFields.FIELD_ACP_INDEXED);
+        } catch (Throwable t) {
+            throw new QueryException(t);
+        }
     }
 
     /**

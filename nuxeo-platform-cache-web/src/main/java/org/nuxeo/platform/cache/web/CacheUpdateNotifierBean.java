@@ -62,8 +62,6 @@ import org.nuxeo.ecm.platform.cache.client.ClientCacheServiceFactory;
 @SerializedConcurrentAccess
 public class CacheUpdateNotifierBean implements CacheUpdateNotifier {
 
-    private static final long serialVersionUID = -4658013073616597630L;
-
     private static final Log log = LogFactory.getLog(CacheUpdateNotifierBean.class);
 
     static int c = 0;
@@ -136,7 +134,7 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier {
     @Create
     @PostActivate
     public void init() {
-        log.info("@Create a CacheListener for Seam session context");
+        log.debug("@Create a CacheListener for Seam session context");
 
         log.debug("sessionContext  " + sessionContext);
         log.debug("sessionContext2  " + Contexts.getSessionContext());
@@ -175,6 +173,7 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier {
      * @param listener
      */
     public void removeCacheListener(CacheListener listener) {
+        assert null != listeners;
         log.debug("<removeCacheListener> " + listener);
         ClientCacheServiceFactory.getCacheService().removeCacheListener(
                 listener);
@@ -200,11 +199,10 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier {
         }
     }
 
-    private static void removeDocumentFromContextStructures(Context ctx,
+    private void removeDocumentFromContextStructures(Context ctx,
             DocumentModel docModelOnNotification) {
         //final String contextVarName = "ListOfDocuments";
         for (String varName : ctx.getNames()) {
-
             removeDocumentFromContextStructure(ctx, varName, docModelOnNotification);
         }
     }
@@ -214,9 +212,8 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier {
      * is a manageable structure which might contain the current
      * docModelOnNotification and removes it.
      *
-     * @param
      */
-    private static void removeDocumentFromContextStructure(Context ctx,
+    private void removeDocumentFromContextStructure(Context ctx,
             final String contextVarName, DocumentModel docModelOnNotification) {
         final String logPrefix = "<removeDocumentFromContextList> "
                 + "contextVarName=" + contextVarName;
@@ -245,10 +242,9 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier {
                 }
             }
         }
-
     }
 
-    private static void removeDocumnentFromList(final String contextVarName,
+    private void removeDocumnentFromList(final String contextVarName,
             DocumentModel docModelOnNotification, final List list) {
         final String logPrefix = "<removeDocumnentFromList> ";
 
@@ -309,7 +305,7 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier {
      *
      * @param ctx
      */
-    private static void printVarsOnContext(Context ctx) {
+    private void printVarsOnContext(Context ctx) {
         final String logPrefix = "VarOnCtx: ";
         log.info(logPrefix + ctx);
         for (String varName : ctx.getNames()) {
@@ -329,4 +325,5 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier {
     public void doNothing() {
         // log.info("<doNothing>" + sessionContext);
     }
+
 }

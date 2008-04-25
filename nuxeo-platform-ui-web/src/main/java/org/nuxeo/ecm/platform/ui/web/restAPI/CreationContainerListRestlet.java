@@ -21,12 +21,11 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
-import java.security.Principal;
+import java.io.Serializable;
 
 import org.dom4j.Element;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
-import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -47,12 +46,9 @@ import org.restlet.data.Response;
 @Name("creationContainerListRestlet")
 @Scope(EVENT)
 public class CreationContainerListRestlet extends BaseNuxeoRestlet implements
-        LiveEditConstants {
+        LiveEditConstants, Serializable {
 
-    protected FileManager fileManager;
-
-    @In(create = true)
-    private Principal currentUser;
+    private static final long serialVersionUID = 5403775170948512675L;
 
     @Override
     public void handle(Request req, Response res) {
@@ -61,7 +57,8 @@ public class CreationContainerListRestlet extends BaseNuxeoRestlet implements
         String docType = getQueryParamValue(req, DOC_TYPE, DEFAULT_DOCTYPE);
         try {
             FileManager fileManager = Framework.getService(FileManager.class);
-            containers = fileManager.getCreationContainers(currentUser, docType);
+            containers = fileManager.getCreationContainers(
+                    getUserPrincipal(req), docType);
         } catch (Exception e) {
             handleError(res, e);
         }

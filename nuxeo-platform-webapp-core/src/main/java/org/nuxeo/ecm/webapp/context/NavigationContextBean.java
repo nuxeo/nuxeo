@@ -26,6 +26,7 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.io.Serializable;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.PostActivate;
@@ -98,7 +99,9 @@ import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 @Name("navigationContext")
 @Scope(CONVERSATION)
 @Install(precedence=FRAMEWORK)
-public class NavigationContextBean implements NavigationContextLocal {
+public class NavigationContextBean implements NavigationContextLocal, Serializable {
+
+    private static final long serialVersionUID = -3708768859028774906L;
 
     private static final Log log = LogFactory.getLog(NavigationContextBean.class);
 
@@ -150,7 +153,7 @@ public class NavigationContextBean implements NavigationContextLocal {
 
 
     @In(create = true, required = false)
-    private CoreSession documentManager;
+    private transient CoreSession documentManager;
 
     @Out(required = false)
     @Deprecated

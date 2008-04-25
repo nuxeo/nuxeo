@@ -74,10 +74,7 @@ public class StartupHelper implements Serializable {
     @In(required = true, create = true)
     ConversationIdGenerator conversationIdGenerator;
 
-    // do not try to create the documentManager since the
-    // initServerAndFindStartupPage method should work without any selected
-    // server location
-    @In(required = false)
+    @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     /**

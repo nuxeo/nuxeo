@@ -1,51 +1,49 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core" xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-  <h3>
-    <h:outputText value="#{messages['label.security.parentDocumentsRights']}" />
-  </h3>
-
-  <nxu:methodResult value="#{securityActions.displayInheritedPermissions()}" name="displayParentsPermissions">
+<h3><h:outputText
+  value="#{messages['label.security.parentDocumentsRights']}" /></h3>
 
 <h:form>
   <h:dataTable var="user" class="dataOutput" rowClasses="dataRowEven,dataRowOdd"
     columnClasses="iconColumn,,,,,"
     value="#{securityActions.parentDocumentsUsers}"
-    rendered="#{displayParentsPermissions}">
+    rendered="#{securityActions.displayInheritedPermissions}">
 
-   <nxu:methodResult name="principalType"
-     value="#{principalListManager.getPrincipalType(user)}">
+    <nxu:methodResult name="principalType"
+      value="#{principalListManager.getPrincipalType(user)}">
 
-    <h:column>
-      <f:facet name="header">
-        <h:outputText value="#{messages['label.content.header.type']}" />
-      </f:facet>
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.content.header.type']}" />
+        </f:facet>
 
         <h:graphicImage value="#{securityActions.iconPathMap[principalType]}"
           alt="#{securityActions.iconAltMap[principalType]}" />
 
-    </h:column>
+      </h:column>
 
-    <h:column>
-      <f:facet name="header">
-        <h:outputText value="#{messages['label.username']}" />
-      </f:facet>
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.username']}" />
+        </f:facet>
 
-      <h:commandLink value="#{nxu:userFullName(user)}" immediate="true"
-                action="#{userManagerActions.viewUser(user)}"  rendered="#{principalType=='USER_TYPE'}">
-      </h:commandLink>
-      <h:commandLink value="#{user}" immediate="true"
-                action="#{groupManagerActions.viewGroup(user)}"  rendered="#{principalType!='USER_TYPE'}">
-      </h:commandLink>
+        <h:commandLink value="#{nxu:userFullName(user)}" immediate="true"
+          action="#{userManagerActions.viewUser(user)}"
+          rendered="#{principalType=='USER_TYPE'}">
+        </h:commandLink>
+        <h:commandLink value="#{user}" immediate="true"
+          action="#{groupManagerActions.viewGroup(user)}"
+          rendered="#{principalType!='USER_TYPE'}">
+        </h:commandLink>
 
-    </h:column>
- </nxu:methodResult>
+      </h:column>
+    </nxu:methodResult>
     <h:column>
       <f:facet name="header">
         <h:outputText value="#{messages['label.security.grantedPerms']}" />
@@ -67,25 +65,18 @@
     </h:column>
   </h:dataTable>
 </h:form>
-  </nxu:methodResult>
 
-  <p>
-   <h:form id="block_inherit">
-       <h:selectBooleanCheckbox value="#{securityActions.blockRightInheritance}"
-       immediate="true" onclick="this.form.submit();"/>
-         <h:outputText value="#{messages['label.security.block.inehritance']}" />
-   </h:form>
-  </p>
-  <p>
-    <h:outputText
-      rendered="${empty securityActions.parentDocumentsUsers}"
-      value="#{messages['label.security.noParentDocumentsRights']}" />
-  </p>
+<p><h:form id="block_inherit">
+  <h:selectBooleanCheckbox value="#{securityActions.blockRightInheritance}"
+    immediate="true" onclick="this.form.submit();" />
+  <h:outputText value="#{messages['label.security.block.inehritance']}" />
+</h:form></p>
+<p><h:outputText rendered="${empty securityActions.parentDocumentsUsers}"
+  value="#{messages['label.security.noParentDocumentsRights']}" /></p>
 
-  <h3>
-    <h:outputText value="#{messages['label.security.localRights']}" />
-  </h3>
+<h3><h:outputText value="#{messages['label.security.localRights']}" /></h3>
 
+<a4j:region renderRegionOnly="true">
   <h:form id="rights_content">
     <t:dataTable var="user" id="dataTable_local_rights"
       rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput"
@@ -114,8 +105,7 @@
         </f:facet>
         <h:selectBooleanCheckbox rendered="${columnHeader.id=='c0'}"
           value="#{securityActions.dataTableModel.currentCellDisplayedValue}">
-          <a4j:support event="onclick"
-            reRender="security_button_remove_script"
+          <a4j:support event="onclick" reRender="security_button_remove_script"
             onsubmit="disableCheckBoxesIn('rights_content:dataTable_local_rights')"
             oncomplete="enableCheckBoxesIn('rights_content:dataTable_local_rights')"
             actionListener="#{securityActions.dataTableModel.process}" />
@@ -128,11 +118,17 @@
 
         <!--  Username -->
         <f:subview rendered="${columnHeader.id == 'c1'}">
-        <h:commandLink value="#{nxu:userFullName(securityActions.dataTableModel.currentCellDisplayedValue)}" immediate="true"
-                action="#{userManagerActions.viewUser(securityActions.dataTableModel.currentCellDisplayedValue)}"  rendered="#{securityActions.dataTableModel.currentUserType=='USER_TYPE'}">
+          <h:commandLink
+            value="#{nxu:userFullName(securityActions.dataTableModel.currentCellDisplayedValue)}"
+            immediate="true"
+            action="#{userManagerActions.viewUser(securityActions.dataTableModel.currentCellDisplayedValue)}"
+            rendered="#{securityActions.dataTableModel.currentUserType=='USER_TYPE'}">
           </h:commandLink>
-          <h:commandLink value="#{securityActions.dataTableModel.currentCellDisplayedValue}" immediate="true"
-                action="#{groupManagerActions.viewGroup(securityActions.dataTableModel.currentCellDisplayedValue)}"  rendered="#{securityActions.dataTableModel.currentUserType!='USER_TYPE'}">
+          <h:commandLink
+            value="#{securityActions.dataTableModel.currentCellDisplayedValue}"
+            immediate="true"
+            action="#{groupManagerActions.viewGroup(securityActions.dataTableModel.currentCellDisplayedValue)}"
+            rendered="#{securityActions.dataTableModel.currentUserType!='USER_TYPE'}">
           </h:commandLink>
         </f:subview>
 
@@ -151,18 +147,16 @@
       </t:columns>
     </t:dataTable>
 
-    <p>
-      <h:outputText
-        rendered="${empty securityActions.currentDocumentUsers}"
-        value="#{messages['label.security.noLocalRights']}" />
-
-      <h:commandButton type="submit" id="security_button_remove"
-        value="#{messages['command.security.delPerm']}" class="button"
-        rendered="${not empty securityActions.currentDocumentUsers}"
-        action="#{securityActions.removePermissionsAndUpdate}"
-        disabled="#{!securityActions.canRemoveSecurityRules}" />
-     <h:panelGroup id="security_button_remove_script">
-     <script>
+    <p><h:outputText
+      rendered="${empty securityActions.currentDocumentUsers}"
+      value="#{messages['label.security.noLocalRights']}" /> <h:commandButton
+      type="submit" id="security_button_remove"
+      value="#{messages['command.security.delPerm']}" class="button"
+      rendered="${not empty securityActions.currentDocumentUsers}"
+      action="#{securityActions.removePermissionsAndUpdate}"
+      disabled="#{!securityActions.canRemoveSecurityRules}" /> <h:panelGroup
+      id="security_button_remove_script">
+      <script>
      <!--
      var checked=isOneCheckBoxChecked("rights_content:dataTable_local_rights");
      var btn = document.getElementById("rights_content:security_button_remove");
@@ -179,32 +173,27 @@
      }
      -->
      </script>
-     </h:panelGroup>
-    </p>
+    </h:panelGroup></p>
   </h:form>
+</a4j:region>
 
-  <h3>
-    <h:outputText value="#{messages['label.security.addNewRule']}" />
-  </h3>
+<h3><h:outputText value="#{messages['label.security.addNewRule']}" /></h3>
 
-
+<a4j:region renderRegionOnly="true">
   <h:form>
     <ui:include src="/incl/select_users_search.xhtml" />
     <table cellspacing="5" cellpadding="0" border="0" class="rightsAddManager">
-    <tbody>
-      <tr>
-      <td valign="top" align="center">
-        <ui:include src="/incl/select_users_results.xhtml" />
-      </td>
-      <td valign="top" align="center">
-        <ui:include src="/incl/select_users_selection.xhtml" />
-      </td>
-      <td>
-        <ui:include src="/incl/document_rights_action.xhtml" />
-      </td>
-      </tr>
-    </tbody>
+      <tbody>
+        <tr>
+          <td valign="top" align="center"><ui:include
+            src="/incl/select_users_results.xhtml" /></td>
+          <td valign="top" align="center"><ui:include
+            src="/incl/select_users_selection.xhtml" /></td>
+          <td><ui:include src="/incl/document_rights_action.xhtml" /></td>
+        </tr>
+      </tbody>
     </table>
   </h:form>
+</a4j:region>
 
 </div>

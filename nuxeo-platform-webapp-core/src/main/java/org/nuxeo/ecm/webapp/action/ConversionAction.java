@@ -20,8 +20,11 @@
 package org.nuxeo.ecm.webapp.action;
 
 import org.jboss.seam.annotations.WebRemote;
+import org.nuxeo.ecm.core.api.Blob;
 
 public interface ConversionAction {
+
+    boolean isExportableToPDF(Blob blob);
 
     @WebRemote
     boolean isFileExportableToPDF(String fieldName);

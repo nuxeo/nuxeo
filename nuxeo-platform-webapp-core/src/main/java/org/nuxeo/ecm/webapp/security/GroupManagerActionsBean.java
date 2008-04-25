@@ -24,6 +24,7 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.io.Serializable;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -60,7 +61,9 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 @Name("groupManagerActions")
 @Scope(CONVERSATION)
 public class GroupManagerActionsBean extends InputController implements
-        GroupManagerActions {
+        GroupManagerActions, Serializable {
+
+    private static final long serialVersionUID = 5592973087289772720L;
 
     private static final Log log = LogFactory.getLog(GroupManagerActionsBean.class);
 
@@ -79,10 +82,10 @@ public class GroupManagerActionsBean extends InputController implements
     protected transient ResourcesAccessor resourcesAccessor;
 
     @In(create = true)
-    UserManager userManager;
+    transient UserManager userManager;
 
-    @In(create = true)
-    CoreSession documentManager;
+    @In(create = true, required = false)
+    transient CoreSession documentManager;
 
     @DataModel("groupList")
     List<NuxeoGroup> groups;

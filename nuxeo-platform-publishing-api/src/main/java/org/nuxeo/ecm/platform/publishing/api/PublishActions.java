@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Narcis Paslaru
+       Florent Guillaume
  */
 
 package org.nuxeo.ecm.platform.publishing.api;
@@ -23,9 +22,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.ejb.Local;
-import javax.ejb.Remove;
 
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.WebRemote;
@@ -41,9 +37,9 @@ import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
  * Interface for publishing documents page action listener. Exposes methods for
  * handling user actions related to the publish button(s).
  *
- * @author <a href="mailto:npaslaru@nuxeo.com">Paslaru Narcis</a>
+ * @author Narcis Paslaru
+ * @author Florent Guillaume
  */
-@Local
 // XXX shouldn't be here : Seam remoting bug
 public interface PublishActions extends SelectDataModelListener {
 
@@ -69,18 +65,25 @@ public interface PublishActions extends SelectDataModelListener {
 
     /**
      * Retrieves all visible proxies for this document.
+     *
+     * @deprecated Unused externally, will be moved to protected
      */
+    @Deprecated
     DocumentModelList getProxies(DocumentModel docModel) throws ClientException;
 
     /**
      * Retrieves all visible proxies for this document, and associated visible
      * sections.
+     *
+     * @deprecated Unused externally, will be moved to protected
+     * @throws ClientException
      */
+    @Deprecated
     List<PublishingInformation> getPublishingInformation(DocumentModel docModel)
             throws ClientException;
 
     /**
-     * Method that executes when a document is published.
+     * Publishes the current document to the selected sections.
      *
      * @throws ClientException
      */
@@ -104,11 +107,11 @@ public interface PublishActions extends SelectDataModelListener {
     void setComment(String comment);
 
     /**
-     * This method is used to unpublish a proxy of the current document, having
-     * as a request parameter with the name 'unPublishSectionRef,' the name of
-     * the section from which to unpublish the current document.
+     * Unpublish a proxy of the current document, having as a request parameter
+     * with the name 'unPublishSectionRef,' the name of the section from which
+     * to unpublish the current document.
      *
-     * @return - the page to which to forward after the unpublish process.
+     * @return the JSF outcome
      * @throws ClientException
      */
     String unPublishDocument() throws ClientException;
@@ -118,16 +121,20 @@ public interface PublishActions extends SelectDataModelListener {
      *
      * @param proxy - the proxy to unpublish.
      * @throws ClientException
+     * @deprecated Unused externally, will be moved to protected
      */
+    @Deprecated
     void unPublishDocument(DocumentModel proxy) throws ClientException;
 
     /**
      * This method is used to unpublish the given list of document models.
      *
      * @param documentsList - the list of the document models which are going to
-     *            be unpublish.
+     *                be unpublish.
      * @throws ClientException
+     * @deprecated Unused externally, will be moved to protected
      */
+    @Deprecated
     void unPublishDocuments(List<DocumentModel> documentsList)
             throws ClientException;
 
@@ -138,16 +145,17 @@ public interface PublishActions extends SelectDataModelListener {
      */
     void unPublishDocumentsFromCurrentSelection() throws ClientException;
 
-    /* Rux NXP-1879: Multiple types can be suitable for publishing. So use array instead 
-     * single element. Also better naming.
+    /*
+     * Rux NXP-1879: Multiple types can be suitable for publishing. So use array
+     * instead single element. Also better naming.
      */
     Set<String> getSectionRootTypes();
 
     Set<String> getSectionTypes();
 
-    void notifyEvent(String eventId,
-            Map<String, Serializable> properties, String comment,
-            String category, DocumentModel dm) throws ClientException;
+    void notifyEvent(String eventId, Map<String, Serializable> properties,
+            String comment, String category, DocumentModel dm)
+            throws ClientException;
 
     @WebRemote
     // XXX shouldn't be here : Seam remoting bug
@@ -168,10 +176,12 @@ public interface PublishActions extends SelectDataModelListener {
     List<DocumentModelTreeNode> getSelectedSections();
 
     /**
-     * Returns true if document is already published in section.
+     * Checks if a document is already published in a section.
      *
+     * @deprecated Unused externally, will be moved to protected
      * @throws ClientException
      */
+    @Deprecated
     boolean isAlreadyPublishedInSection(DocumentModel doc, DocumentModel section)
             throws ClientException;
 
@@ -185,6 +195,5 @@ public interface PublishActions extends SelectDataModelListener {
     // XXX annotations shouldn't be there but this interface used as Local
     // interface because of Seam remoting bug.
     @Destroy
-    @Remove
     void destroy();
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: NXTransformExtensionPointHandler.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Brice Chaffangeon
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.syndication;
 
@@ -25,36 +24,39 @@ import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
 
 /**
- *
  * @author Brice Chaffangeon
+ * @author Florent Guillaume
  */
-@SuppressWarnings("serial")
-public class FeedItem extends SyndEntryImpl implements Comparable {
+public class FeedItem extends SyndEntryImpl implements Comparable<FeedItem> {
+
+    private static final long serialVersionUID = 1L;
 
     /**
-     * This overrides the SyndEntryImpl.setDescription, in order to avoid NPE
-     * when description is null.
+     * Set the description.
+     * <p>
+     * This overloads {@link SyndEntryImpl#setDescription} in order to avoid a
+     * NPE when description is null.
      *
-     * @param description
+     * @param description the description
      */
     public void setDescription(String description) {
         SyndContentImpl content = new SyndContentImpl();
         content.setType("text/plain");
-        if (description != null && !"".equals(description)) {
-            content.setValue(description);
-        } else {
-            content.setValue(" ");
+        if (description == null || "".equals(description)) {
+            description = " ";
         }
+        content.setValue(description);
         super.setDescription(content);
     }
 
     @Override
     public void setAuthor(String author) {
-        if (!"".equals(author)) {
+        if (author != null && !"".equals(author)) {
             super.setAuthor(author);
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     // Can't use List<String> here because we're overriding an external library.
     public void setContributors(List contributors) {
@@ -65,11 +67,15 @@ public class FeedItem extends SyndEntryImpl implements Comparable {
 
     @Override
     public void setTitle(String title) {
-        if (!"".equals(title)) {
+        if (title != null && !"".equals(title)) {
             super.setTitle(title);
         }
     }
 
+    /**
+     * @deprecated Unused
+     */
+    @Deprecated
     public void setTitle(String title, String type) {
         if ("".equals(type)) {
             setTitle(title);
@@ -80,7 +86,7 @@ public class FeedItem extends SyndEntryImpl implements Comparable {
 
     @Override
     public void setLink(String link) {
-        if (!"".equals(link)) {
+        if (link != null && !"".equals(link)) {
             super.setLink(link);
         }
     }
@@ -99,16 +105,12 @@ public class FeedItem extends SyndEntryImpl implements Comparable {
         }
     }
 
-    public int compareTo(Object o) {
-        FeedItem fi = (FeedItem) o;
-        int compare = 0;
+    public int compareTo(FeedItem fi) {
         if (getUpdatedDate() != null && fi.getUpdatedDate() != null) {
-            compare = getUpdatedDate().compareTo(fi.getUpdatedDate());
+            return getUpdatedDate().compareTo(fi.getUpdatedDate());
         } else {
-            compare = getPublishedDate().compareTo(fi.getPublishedDate());
+            return getPublishedDate().compareTo(fi.getPublishedDate());
         }
-
-        return compare;
     }
 
 }

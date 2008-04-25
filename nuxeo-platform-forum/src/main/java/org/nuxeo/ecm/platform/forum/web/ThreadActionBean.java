@@ -48,6 +48,7 @@ import org.nuxeo.ecm.platform.comment.web.CommentManagerActions;
 import org.nuxeo.ecm.platform.comment.web.ThreadEntry;
 import org.nuxeo.ecm.platform.forum.web.api.PostAction;
 import org.nuxeo.ecm.platform.forum.web.api.ThreadAction;
+import org.nuxeo.ecm.platform.forum.web.api.ThreadAdapter;
 import org.nuxeo.ecm.platform.forum.workflow.ForumConstants;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
@@ -76,7 +77,7 @@ public class ThreadActionBean extends InputController implements ThreadAction {
     @In(create = true)
     protected Principal currentUser;
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected CoreSession documentManager;
 
     @In(create = true)
@@ -225,6 +226,12 @@ public class ThreadActionBean extends InputController implements ThreadAction {
             }
         }
         return basicCommentList;
+    }
+
+
+    public ThreadAdapter getAdapter(DocumentModel thread)
+    {
+        return thread.getAdapter(ThreadAdapter.class);
     }
 
     public List<DocumentModel> getAllPosts(DocumentModel thread, String state)

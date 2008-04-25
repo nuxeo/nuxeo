@@ -39,6 +39,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author Florent Guillaume
+ * @author Anahide Tchertchian
  *
  */
 public class TestMultiDirectoryOptional extends NXRuntimeTestCase {

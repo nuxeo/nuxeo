@@ -107,7 +107,7 @@ public class PostActionBean extends InputController implements PostAction {
     @In(create = true)
     protected CommentManagerActions commentManagerActions;
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected CoreSession documentManager;
 
     @In(create = true)

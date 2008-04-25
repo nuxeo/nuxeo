@@ -98,6 +98,8 @@ public class CompassBackend extends AbstractSearchEngineBackend {
 
     private static final int BATCH_SIZE_MARGIN = 10;
 
+    private static List<String> CACHED_BROWSE_PERMISSIONS;
+
     /*
      * TODO Temporary harcoded stuff that has to become dynamic
      */
@@ -225,9 +227,14 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         }
         if (acp != null) {
             // index
-            builder.addSecurityProperty(
-                    BuiltinDocumentFields.FIELD_ACP_INDEXED,
-                    SecurityFiltering.GRANT, acp);
+            try {
+                builder.addSecurityProperty(
+                        BuiltinDocumentFields.FIELD_ACP_INDEXED,
+                        getBrowsePermissions(), acp);
+            } catch (Exception e) {
+                throw new IndexingException("error building indexable ACP: "
+                        + e.getMessage(), e);
+            }
             // store
             builder.addProperty(BuiltinDocumentFields.FIELD_ACP_STORED, acp,
                     null, false, true, false, false,
@@ -396,7 +403,8 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         if (optimizerLock.tryLock()) {
             try {
                 optimize_try += 1;
-                if ((optimize_try >= OPTIMIZER_SAVE_INTERVAL) && (getCompass().getSearchEngineOptimizer().needOptimization())) {
+                if ((optimize_try >= OPTIMIZER_SAVE_INTERVAL)
+                        && (getCompass().getSearchEngineOptimizer().needOptimization())) {
                     optimize_try = 0;
                     log.debug("Running optimizer");
                     getCompass().getSearchEngineOptimizer().optimize();
@@ -567,6 +575,9 @@ public class CompassBackend extends AbstractSearchEngineBackend {
             if (type.equals("text") || type.equals("path")) {
                 return sValue;
             }
+            if (type.equals("boolean")) {
+                return Boolean.valueOf(sValue);
+            }
         }
 
         // Fallback to generic serialization
@@ -578,8 +589,8 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         } catch (IOException e) {
             log.warn(String.format(
                     "While building ResultItem, could not handle contents of stored "
-                            + "field %s. \n"
-                            + "Check Search Service configuration and Compass mappings. ",
+                            + "field %s. "
+                            + "Check Search Service configuration and Compass mappings.",
                     prop.getName()));
         } catch (ClassNotFoundException e) {
             throw new SearchException(String.format(
@@ -924,4 +935,12 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         }
     }
 
+    // TODO: this cached list should be invalidated upon runtime registration of
+    // new permissions
+    private static List<String> getBrowsePermissions() throws Exception {
+        if (CACHED_BROWSE_PERMISSIONS == null) {
+            CACHED_BROWSE_PERMISSIONS = SecurityFiltering.getBrowsePermissionList();
+        }
+        return CACHED_BROWSE_PERMISSIONS;
+    }
 }

@@ -17,4 +17,11 @@
       <exclude>**/.svn</exclude>
     </excludes>
   </fileSet>
+
+  <artifactSet extends="nuxeo-platform">
+    <excludes>
+      <artifact name="nuxeo-platform-filemanager-core-listener" />
+    </excludes>
+  </artifactSet>
+
 </assembly>

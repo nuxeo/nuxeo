@@ -21,7 +21,7 @@ package org.nuxeo.ecm.platform.interfaces.ejb;
 
 import java.util.List;
 
-import javax.ejb.Remove;
+import javax.ejb.Remote;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -34,13 +34,9 @@ import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  *
  */
+@Remote
 public interface ECDomain {
-    /**
-     * Removes the instance from the container once the client has no more
-     * business with it.
-     *
-     */
-    @Remove
+    @Deprecated
     void remove();
 
     /**

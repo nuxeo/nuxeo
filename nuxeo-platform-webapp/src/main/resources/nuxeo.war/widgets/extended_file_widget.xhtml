@@ -18,39 +18,29 @@
     </nxh:outputLink>
 
     <nxu:methodResult name="hasPDFCapabilities"
-      value="#{conversionActions.isFileExportableToPDF(widget.fieldDefinitions[0].propertyName)}">
+      value="#{conversionActions.isExportableToPDF(field_0)}">
       <h:panelGroup rendered="#{hasPDFCapabilities}">
         <h:outputText value=" | " />
         <h:commandLink action="#{conversionActions.generatePdfFile}">
           <f:param name="fileFieldFullName"
             value="#{widget.fieldDefinitions[0].propertyName}" />
+          <f:param name="docRef" value="#{layoutValue.id}" />
           <f:param name="filename" value="#{field_1}" />
           <h:outputText value="#{messages['label.document.generatePdf']}" />
         </h:commandLink>
       </h:panelGroup>
     </nxu:methodResult>
 
-    <nxu:methodResult name="immutable"
-      value="#{currentDocument.hasFacet('Immutable')}">
-      <nxu:methodResult name="onlineEditable"
-        value="#{conversionActions.isFileOnlineEditable(widget.fieldDefinitions[0].propertyName)}">
-        <nxu:methodResult name="isLiveEditable"
-          value="#{lockActions.isCurrentDocumentLiveEditable()}">
-          <h:panelGroup
-            rendered="#{!immutable and onlineEditable and isLiveEditable}">
-            <h:outputText value=" | " />
-            
-            <!-- TODO: factorize rendered logics in a dedicated component: NXP-2190 -->
-            
-            <h:outputLink
-              value="#{nxd:liveEditUrl(changeableDocument, widget.fieldDefinitions[0].schemaName, widget.fieldDefinitions[0].fieldName, widget.fieldDefinitions[1].fieldName)}"
-              rendered="#{documentActions.writeRight}">
-              <h:outputText value="#{messages['label.document.directEdit']}" />
-            </h:outputLink> 
-
-          </h:panelGroup>
-        </nxu:methodResult>
-      </nxu:methodResult>
+    <nxu:methodResult name="isLiveEditable"
+      value="#{liveEditHelper.isLiveEditable(field_0)}">
+      <h:panelGroup
+        rendered="#{isLiveEditable}">
+        <h:outputText value=" | " />
+        <h:outputLink
+          value="#{nxd:liveEditUrl(layoutValue, widget.fieldDefinitions[0].schemaName, widget.fieldDefinitions[0].fieldName, widget.fieldDefinitions[1].fieldName)}">
+          <h:outputText value="#{messages['label.document.directEdit']}" />
+        </h:outputLink> 
+      </h:panelGroup>
     </nxu:methodResult>
 
   </c:if>

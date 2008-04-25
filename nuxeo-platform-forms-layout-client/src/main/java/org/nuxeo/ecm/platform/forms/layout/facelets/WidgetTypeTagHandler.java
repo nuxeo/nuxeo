@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.el.ELException;
+import javax.el.ValueExpression;
+import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
@@ -36,6 +38,7 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.facelets.FaceletContext;
+import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
@@ -101,7 +104,23 @@ public class WidgetTypeTagHandler extends TagHandler {
         }
         Widget widget = layoutService.createWidget(ctx, typeValue, modeValue,
                 valueName, properties, null);
-        WidgetTagHandler.applyWidgetHandler(ctx, parent, config, widget, value,
-                true);
+
+        // expose widget variable
+        VariableMapper orig = ctx.getVariableMapper();
+        VariableMapper vm = new VariableMapperWrapper(orig);
+        ctx.setVariableMapper(vm);
+        ValueExpression widgetVe = ctx.getExpressionFactory().createValueExpression(
+                widget, Widget.class);
+        vm.setVariable(RenderVariables.widgetVariables.widget.name(), widgetVe);
+        vm.setVariable(String.format("%s_%s",
+                RenderVariables.widgetVariables.widget.name(),
+                widget.getLevel()), widgetVe);
+        try {
+            WidgetTagHandler.applyWidgetHandler(ctx, parent, config, widget,
+                    value, true);
+        } finally {
+            ctx.setVariableMapper(orig);
+        }
+
     }
 }

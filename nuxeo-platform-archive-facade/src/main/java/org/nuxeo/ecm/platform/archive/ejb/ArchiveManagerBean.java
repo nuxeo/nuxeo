@@ -28,6 +28,7 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -43,12 +44,12 @@ import org.nuxeo.ecm.platform.archive.ejb.local.ArchiveManagerLocal;
  * @author <a href="mailto:bt@nuxeo.com">Bogdan Tatar</a>
  *
  */
-@Stateful
+@Stateless
 @Local(ArchiveManagerLocal.class)
 @Remote(ArchiveManager.class)
-public class ArchiveManagerBean implements ArchiveManager {
+public class ArchiveManagerBean implements ArchiveManager, ArchiveManagerLocal {
 
-    private static final long serialVersionUID = 6184215911401444935L;
+    private static final long serialVersionUID = -3961006437749775164L;
 
     private static final Log log = LogFactory.getLog(ArchiveManager.class);
 
@@ -81,13 +82,7 @@ public class ArchiveManagerBean implements ArchiveManager {
     }
 
     public ArchiveRecord searchArchiveRecord() {
-        // TODO Auto-generated method stub
         return null;
-    }
-
-    @Remove
-    public void remove() {
-        log.debug("instance remove");
     }
 
     public ArchiveRecord findArchiveRecordById(long archiveRecordId) {
@@ -109,5 +104,6 @@ public class ArchiveManagerBean implements ArchiveManager {
         List<ArchiveRecord> records = (List<ArchiveRecord>) query.getResultList();
         return records;
     }
-
+    @Deprecated
+    public void remove() {}
 }

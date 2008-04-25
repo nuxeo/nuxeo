@@ -71,22 +71,25 @@
         </h:panelGroup>
 
       </t:dataList>
+
+    <nxu:methodResult name="canWrite"
+          value="#{postAction.checkWritePermissionOnThread}">
+
     <h:panelGroup
       rendered="#{currentThreadPosts.size > 0 and !commentManagerActions.commentStarted}"
       layout="block">
-       <nxu:methodResult name="canAnswer"
-            value="#{postAction.checkWritePermissionOnThread}">
       <h:commandButton value="#{messages['command.add']}"
-        action="#{commentManagerActions.beginComment}" styleClass="button" rendered="#{canAnswer}"/>
-       </nxu:methodResult>
+        action="#{commentManagerActions.beginComment}" styleClass="button" rendered="#{canWrite}"/>
     </h:panelGroup>
 
     <h:outputText rendered="false"> This h:panelGroup define the form to add a comment at
       the end of the thread. </h:outputText>
     <h:panelGroup
-      rendered="#{(currentThreadPosts.size == 0 || commentManagerActions.commentStarted)
-       and commentManagerActions.savedReplyCommentId == null }">
+      rendered="#{canWrite and (currentThreadPosts.size == 0 || commentManagerActions.commentStarted)
+       and commentManagerActions.savedReplyCommentId == null}">
       <ui:include src="/incl/create_post_form.xhtml"/>
     </h:panelGroup>
+    </nxu:methodResult>
+
   </h:form>
 </div>

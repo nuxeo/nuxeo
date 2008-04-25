@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webapp.pagination;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.io.Serializable;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.event.PhaseId;
@@ -59,7 +60,6 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * This compononent maintains a cache of {@link PagedDocumentsProvider}
  * instances.
- * </p>
  * <p>
  * It's also capable of instantiating the cache by calling provider farms: other
  * Seam components that also implement the ResultsProviderFarm interface.
@@ -69,7 +69,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("resultsProvidersCache")
 @Scope(ScopeType.CONVERSATION)
-public class ResultsProvidersCacheBean implements ResultsProvidersCache {
+public class ResultsProvidersCacheBean implements ResultsProvidersCache, Serializable {
+
+    private static final long serialVersionUID = 8632024396770685542L;
 
     private static final Log log = LogFactory.getLog(ResultsProvidersCacheBean.class);
 
@@ -77,7 +79,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache {
     protected transient FacesMessages facesMessages;
 
     @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
+    protected transient ResourcesAccessor resourcesAccessor;
 
     private transient HashMap<String, PagedDocumentsProvider> resultsProvidersCache;
 

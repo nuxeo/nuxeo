@@ -48,7 +48,14 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Directory session aggregating entries from different sources.
+ * <p>
+ * Each source can build an entry aggregating fields from one or several
+ * directories.
+ * </p>
+ *
  * @author Florent Guillaume
+ * @author Anahide Tchertchian
  *
  */
 public class MultiDirectorySession implements Session {

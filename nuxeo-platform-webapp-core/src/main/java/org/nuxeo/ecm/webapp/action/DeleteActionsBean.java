@@ -137,7 +137,7 @@ public class DeleteActionsBean extends InputController implements
 
     // Imported from Navigation context - used to get the deleted sub-documents
     @In(create = true)
-    private ResultsProvidersCache resultsProvidersCache;
+    private transient ResultsProvidersCache resultsProvidersCache;
 
     @Out(required = false)
     @Deprecated

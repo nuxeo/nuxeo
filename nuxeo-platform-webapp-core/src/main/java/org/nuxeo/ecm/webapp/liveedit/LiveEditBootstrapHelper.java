@@ -21,11 +21,12 @@ package org.nuxeo.ecm.webapp.liveedit;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.Cookie;
@@ -34,9 +35,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
 import org.dom4j.QName;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.RequestParameter;
@@ -49,6 +53,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
@@ -58,36 +65,38 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * The LiveEdit bootstrap procedure works as follows:
  * <ul>
- * 
+ *
  * <li>browsed page calls a JSF function from the DocumentModelFunctions class
  * (edit a document, create new document, etc.) to generate;</li>
- * 
+ *
  * <li>composing a specifc URL as result, triggering the bootstrap addon to
  * popup;</li>
- * 
+ *
  * <li>the addon come back with the URL composed allowing the present seam
  * component to create the bootstrap file. The file contains various data as
  * requested in the URL;</li>
- * 
+ *
  * <li>the XML file is now available to addon which presents it to the client
  * plugin.</li>
- * 
+ *
  * </ul>
- * 
- * Please refer to the specification files in nuxeo-platform-ws-jaxws/doc/ for
- * details on the format of the nxedit URLs and the XML bootstrap file.
- * 
+ *
+ * Please refer to the nuxeo book chapter on desktop integration for details on
+ * the format of the nxedit URLs and the XML bootstrap file.
+ *
  * @author Thierry Delprat NXP-1959 the bootstrap file is managing the 'create
  *         new document [from template]' case too. The URL is containing an
  *         action identifier.
  * @author Rux rdarlea@nuxeo.com
  * @author Olivier Grisel ogrisel@nuxeo.com (split url functions into JSF
  *         DocumentModelFunctions module)
- * 
+ *
  */
 @Scope(EVENT)
 @Name("liveEditHelper")
 public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants {
+
+    public static final String IMMUTABLE_FACET = "Immutable";
 
     private static final long serialVersionUID = 876879071L;
 
@@ -101,7 +110,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     @In(required = true, create = true)
     protected NavigationContext navigationContext;
 
-    @In(create = true)
+    @In(create = true, required = false)
     protected CoreSession documentManager;
 
     @RequestParameter
@@ -119,27 +128,51 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     @RequestParameter
     private String templateDocRef;
 
+    /**
+     * @deprecated use blobPropertyField and filenamePropertyField instead
+     */
+    @Deprecated
     @RequestParameter
     private String schema;
 
     @RequestParameter
     private String templateSchema;
 
+    /**
+     * @deprecated use blobPropertyField instead
+     */
+    @Deprecated
     @RequestParameter
     private String blobField;
 
     @RequestParameter
+    private String blobPropertyName;
+
+    @RequestParameter
     private String templateBlobField;
 
-    // to be deprecated once all filenames are stored in the blob itself
+    // TODO: to be deprecated once all filenames are stored in the blob itself
+    /**
+     * @deprecated use filenamePropertyField instead
+     */
+    @Deprecated
     @RequestParameter
     private String filenameField;
+
+    // TODO: to be deprecated once all filenames are stored in the blob itself
+    @RequestParameter
+    private String filenamePropertyName;
 
     @RequestParameter
     private String mimetype;
 
     @RequestParameter
     private String docType;
+
+    private MimetypeRegistry mimetypeRegistry;
+
+    // Event-long cache for mimetype lookups - no invalidation required
+    private final Map<String, Boolean> cachedEditableStates = new HashMap<String, Boolean>();
 
     private CoreSession getSession(String repositoryName)
             throws ClientException {
@@ -168,11 +201,11 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
      * URL composition tells the case and what to create. The strucuture is
      * depicted in the NXP-1881. Rux NXP-1959: add new tag on root level
      * describing the action: actionEdit, actionNew or actionFromTemplate.
-     * 
+     *
      * @return the bootstrap file content
      * @throws Exception
      */
-    public String getBootstrap() throws Exception {
+    public void getBootstrap() throws Exception {
 
         String currentRepoID = documentManager.getRepositoryName();
 
@@ -195,15 +228,30 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 // type
                 doc = session.getDocument(new IdRef(docRef));
                 docType = doc.getType();
-                Blob blob = (Blob) doc.getProperty(schema, blobField);
-                if (blob == null) {
-                    throw new ClientException(
-                            String.format(
-                                    "could not find blob to edit with schema '%s' and field '%s'",
-                                    schema, blobField));
+                Blob blob = null;
+                if (blobPropertyName != null) {
+                    blob = (Blob) doc.getPropertyValue(blobPropertyName);
+                    if (blob == null) {
+                        throw new ClientException(
+                                String.format(
+                                        "could not find blob to edit with property '%s'",
+                                        blobPropertyName));
+                    }
+                } else {
+                    blob = (Blob) doc.getProperty(schema, blobField);
+                    if (blob == null) {
+                        throw new ClientException(
+                                String.format(
+                                        "could not find blob to edit with schema '%s' and field '%s'",
+                                        schema, blobField));
+                    }
                 }
                 mimetype = blob.getMimeType();
-                filename = (String) doc.getProperty(schema, filenameField);
+                if (filenamePropertyName != null) {
+                    filename = (String) doc.getPropertyValue(filenamePropertyName);
+                } else {
+                    filename = (String) doc.getProperty(schema, filenameField);
+                }
             } else if (ACTION_CREATE_DOCUMENT.equals(action)) {
                 // creating a new document all parameters are read from the
                 // request parameters
@@ -251,11 +299,16 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 docTitleT.setText(doc.getTitle());
             }
             addTextElement(docInfo, docRepositoryTag, repoID);
-            addTextElement(docInfo, docSchemaNameTag, schema);
-            addTextElement(docInfo, docFieldNameTag, blobField);
             Element docFieldPathT = docInfo.addElement(docfieldPathTag);
-            if (schema != null && blobField != null) {
-                docFieldPathT.setText(schema + '/' + blobField);
+            if (blobPropertyName != null) {
+                // FIXME AT: NXP-2306: send blobPropertyName correctly (?)
+                docFieldPathT.setText(blobPropertyName);
+            } else {
+                addTextElement(docInfo, docSchemaNameTag, schema);
+                addTextElement(docInfo, docFieldNameTag, blobField);
+                if (schema != null && blobField != null) {
+                    docFieldPathT.setText(schema + '/' + blobField);
+                }
             }
             addTextElement(docInfo, docfileNameTag, filename);
             addTextElement(docInfo, docTypeTag, docType);
@@ -289,7 +342,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             addTextElement(templateDocInfo, docMimetypeTag, mimetype);
             addTextElement(templateDocInfo, docFileExtensionTag,
                     getFileExtension(mimetype));
-            
+
             // Browser request related informations
             Element requestInfo = root.addElement(requestInfoTag);
             Cookie[] cookies = request.getCookies();
@@ -338,14 +391,19 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             Element editId = root.addElement(editIdTag);
             editId.setText(getEditId(doc, session, username));
 
-            // response.setHeader("Content-Disposition", "inline;
-            // filename=\"nx5_edit.nuxeo5\");
+            // serialize bootstrap XML document in the response
+            Document xmlDoc = DocumentFactory.getInstance().createDocument();
+            xmlDoc.setRootElement(root);
             response.setContentType("text/xml");
-            response.getWriter().write(root.asXML());
+
+            // use a formatter to make it easier to debug live edit client
+            // implementations
+            OutputFormat format = OutputFormat.createPrettyPrint();
+            XMLWriter writer = new XMLWriter(response.getOutputStream(), format);
+            writer.write(xmlDoc);
 
             response.flushBuffer();
             context.responseComplete();
-            return null;
         } finally {
             if (session != null && session != documentManager) {
                 CoreInstance.getInstance().close(session);
@@ -403,6 +461,93 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         sb.append('-');
         sb.append(modified.getTimeInMillis());
         return sb.toString();
+    }
+
+    //
+    // Methods to check whether or not to display live edit links
+    //
+
+    public boolean isLiveEditable(Blob blob) throws ClientException {
+        if (blob == null) {
+            return false;
+        }
+        String mimetype = blob.getMimeType();
+        Boolean isEditable = cachedEditableStates.get(mimetype);
+        if (isEditable == null) {
+            try {
+                MimetypeEntry mimetypeEntry = getMimetypeRegistry().getMimetypeEntryByMimeType(
+                        mimetype);
+                if (mimetypeEntry == null) {
+                    isEditable = Boolean.FALSE;
+                } else {
+                    isEditable = Boolean.valueOf(mimetypeEntry.isOnlineEditable());
+                }
+            } catch (Throwable t) {
+                throw EJBExceptionHandler.wrapException(t);
+            }
+            cachedEditableStates.put(mimetype, isEditable);
+        }
+        return isEditable.booleanValue();
+    }
+
+    public boolean isCurrentDocumentLiveEditable() throws ClientException {
+        return isDocumentLiveEditable(navigationContext.getCurrentDocument(),
+                DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD);
+    }
+
+    public boolean isCurrentDocumentLiveEditable(String schemaName,
+            String fieldName) throws ClientException {
+        return isDocumentLiveEditable(navigationContext.getCurrentDocument(),
+                schemaName, fieldName);
+    }
+
+    public boolean isCurrentDocumentLiveEditable(String propertyName)
+            throws ClientException {
+        return isDocumentLiveEditable(navigationContext.getCurrentDocument(),
+                propertyName);
+    }
+
+    public boolean isDocumentLiveEditable(DocumentModel documentModel,
+            String schemaName, String fieldName) throws ClientException {
+        return isDocumentLiveEditable(documentModel, schemaName + ":"
+                + fieldName);
+    }
+
+    public boolean isDocumentLiveEditable(DocumentModel documentModel,
+            String propertyName) throws ClientException {
+        if (documentModel == null) {
+            return false;
+            // throw new ClientException(
+            // "cannot check live editable state of null DocumentModel");
+        }
+
+        if (documentModel.hasFacet(IMMUTABLE_FACET)) {
+            return false;
+        }
+
+        if (!documentManager.hasPermission(documentModel.getRef(),
+                SecurityConstants.WRITE_PROPERTIES)) {
+            // the lock state is check as a extension to the
+            // SecurityPolicyManager
+            return false;
+        }
+
+        Blob blob = null;
+        try {
+            blob = documentModel.getProperty(propertyName).getValue(Blob.class);
+        } catch (Exception e) {
+            // this document cannot host a live editable blob is the requested
+            // property, ignore
+            return false;
+        }
+        return isLiveEditable(blob);
+    }
+
+    private MimetypeRegistry getMimetypeRegistry() throws Exception {
+        if (mimetypeRegistry == null) {
+            mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
+        }
+        return mimetypeRegistry;
     }
 
 }

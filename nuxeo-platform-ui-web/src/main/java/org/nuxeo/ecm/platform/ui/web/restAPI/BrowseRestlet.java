@@ -19,11 +19,12 @@
 
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
-import java.util.List;
+import static org.jboss.seam.ScopeType.EVENT;
+
+import java.util.Collection;
 
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
-import static org.jboss.seam.ScopeType.EVENT;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -32,9 +33,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.platform.interfaces.ejb.ECServer;
+import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -49,35 +52,40 @@ public class BrowseRestlet extends BaseNuxeoRestlet {
 
     protected CoreSession documentManager;
 
-    @In(required = true, create = true)
-    protected ECServer ecServer;
-
     @Override
-    public void handle(Request req, Response res)  {
+    public void handle(Request req, Response res) {
         String repo = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");
-        DocumentModel dm=null;
+        DocumentModel dm = null;
         DOMDocumentFactory domfactory = new DOMDocumentFactory();
 
         DOMDocument result = (DOMDocument) domfactory.createDocument();
-        //Element root = result.createElement("browse");
-        //result.setRootElement((org.dom4j.Element) root);
+        // Element root = result.createElement("browse");
+        // result.setRootElement((org.dom4j.Element) root);
 
         if (repo == null || repo.equals("*")) {
-            List<RepositoryLocation> repos = ecServer.getAvailableRepositoryLocations();
+            try {
+                RepositoryManager repmanager = Framework.getService(RepositoryManager.class);
+                Collection<Repository> repos = repmanager.getRepositories();
 
-            Element serversNode = result.createElement("avalaibleServers");
-            result.setRootElement((org.dom4j.Element) serversNode);
+                Element serversNode = result.createElement("avalaibleServers");
+                result.setRootElement((org.dom4j.Element) serversNode);
 
-            for (RepositoryLocation availableRepo : repos) {
-                Element server = result.createElement("server");
-                server.setAttribute("title", availableRepo.getName());
-                server.setAttribute("url", getRelURL(availableRepo.getName(), "*"));
-                serversNode.appendChild(server);
+                for (Repository availableRepo : repos) {
+                    Element server = result.createElement("server");
+                    server.setAttribute("title", availableRepo.getName());
+                    server.setAttribute("url", getRelURL(
+                            availableRepo.getName(), "*"));
+                    serversNode.appendChild(server);
+                }
+            } catch (Exception e) {
+                handleError(result, res, e);
+                return;
             }
         } else {
             try {
-                navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
+                navigationContext.setCurrentServerLocation(new RepositoryLocation(
+                        repo));
                 documentManager = navigationContext.getOrCreateDocumentManager();
                 if (docid == null || docid.equals("*")) {
                     dm = documentManager.getRootDocument();
@@ -97,8 +105,8 @@ public class BrowseRestlet extends BaseNuxeoRestlet {
             result.setRootElement((org.dom4j.Element) current);
 
             if (dm.isFolder()) {
-                //Element childrenElem = result.createElement("children");
-                //root.appendChild(childrenElem);
+                // Element childrenElem = result.createElement("children");
+                // root.appendChild(childrenElem);
 
                 DocumentModelList children;
                 try {
@@ -113,7 +121,8 @@ public class BrowseRestlet extends BaseNuxeoRestlet {
                     el.setAttribute("title", child.getTitle());
                     el.setAttribute("type", child.getType());
                     el.setAttribute("id", child.getId());
-                    el.setAttribute("url", getRelURL(repo, child.getRef().toString()));
+                    el.setAttribute("url", getRelURL(repo,
+                            child.getRef().toString()));
                     current.appendChild(el);
                 }
             }

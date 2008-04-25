@@ -23,7 +23,7 @@ import java.util.List;
 
 import javax.ejb.Local;
 import javax.ejb.Remote;
-import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +39,7 @@ import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusines
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
  */
-@Stateful
+@Stateless
 @Local(DocumentMessageProducer.class)
 @Remote(DocumentMessageProducer.class)
 public class JMSDocumentMessageProducerBean implements DocumentMessageProducer {

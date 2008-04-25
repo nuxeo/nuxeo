@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,101 +12,75 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: NXTransformExtensionPointHandler.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Brice Chaffangeon
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.platform.syndication;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
-
-import javax.ejb.Local;
-import javax.ejb.Remove;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
-
-import com.sun.syndication.io.FeedException;
 
 /**
+ * Syndication bean. This Seam component is used to:
+ * <ol>
+ * <li>find the syndication URL of the current document or current search,</li>
+ * <li>retrieve the actual feed for a URL.</li>
+ * </ol>
  *
- * @author bchaffangeon
- *
+ * @author Brice Chaffangeon
+ * @author Florent Guillaume
  */
-@Local
 public interface SyndicationActions {
 
     /**
-     * This method is called when a syndication URL is called.
-     * It initializes variables thanks to GET paramaters
-     * and launches syndication for a document
-     * syndicateDocument()
-     *
-     * @throws ClientException
-     * @throws FeedException
-     * @throws IOException
-     * @throws ParseException
+     * Called by rss reader for document-based syndication.
      */
-    void getSyndicationDocument() throws ClientException, IOException,
-            FeedException, ParseException;
+    void getSyndicationDocument() throws ClientException;
 
     /**
-     * This method is called when a syndication url is called.
-     * It initializes variables thanks to GET paramaters
-     * and launches syndication for searchs results.
-     *
-     * @throws ClientException
-     * @throws IOException
-     * @throws FeedException
-     * @throws ParseException
-     * @throws ECInvalidParameterException
+     * Called by rss reader for search-based syndication.
      */
-    void getSyndicationSearch() throws ClientException, IOException,
-            FeedException, ParseException, ECInvalidParameterException;
+    void getSyndicationSearch() throws ClientException;
 
     /**
-     * Not used for now.
-     * Will be used with actions-contrib
-     * @return
-     */
-    List<Action> getActionsForSyndication();
-
-
-    /**
-     * @return the complete URL for a Document syndication without the feed format
+     * Called by templates to get a documents feed URL.
      */
     String getFullSyndicationDocumentUrl();
 
     /**
-     * @return the complete URL for a Document syndication in RSS
+     * @deprecated Unused
      */
+    @Deprecated
     String getFullSyndicationDocumentUrlInRss();
 
     /**
-     * @return the complete URL for a Document syndication in ATOM
+     * @deprecated Unused
      */
+    @Deprecated
     String getFullSyndicationDocumentUrlInAtom();
 
     /**
-     * @return the complete URL for Search results syndication without the format
+     * Called by templates to get a search feed URL.
      */
     String getFullSyndicationSearchUrl();
 
     /**
-     * @return the complete URL for Search results syndication in RSS
+     * @deprecated Unused
      */
+    @Deprecated
     String getFullSyndicationSearchUrlInRss();
 
     /**
-     * @return the complete URL for Search results syndication in ATOM
+     * @deprecated Unused
      */
+    @Deprecated
     String getFullSyndicationSearchUrlInAtom();
 
-
-    @Remove
-    void destroy();
-
+    /**
+     * @deprecated Unused
+     */
+    @Deprecated
+    List<Action> getActionsForSyndication();
 }

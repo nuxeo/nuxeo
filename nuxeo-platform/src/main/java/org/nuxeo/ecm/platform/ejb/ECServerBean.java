@@ -22,14 +22,8 @@ package org.nuxeo.ecm.platform.ejb;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jetbrains.annotations.NotNull;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
@@ -46,20 +40,10 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 @Deprecated
-@Stateful
-@Local(ECServerLocal.class)
-@Remote(ECServer.class)
-@SerializedConcurrentAccess
-public class ECServerBean implements ECServer {
+@Stateless
+public class ECServerBean implements ECServer, ECServerLocal {
 
     public static final String DEFAULT_REPOSITORY_LOCATION_KEY = "default";
-
-    private static final Log log = LogFactory.getLog(ECServerBean.class);
-
-    @Remove
-    public void remove() throws ClientException {
-        log.debug("Instance removed.");
-    }
 
     protected LocationManagerService getLocationManagerService() {
         return (LocationManagerService) Framework.getRuntime().getComponent(
@@ -107,6 +91,9 @@ public class ECServerBean implements ECServer {
             }
         }
         return null;
+    }
+
+    public void remove() throws ClientException {
     }
 
 }

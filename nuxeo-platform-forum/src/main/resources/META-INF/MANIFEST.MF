@@ -7,6 +7,8 @@ Nuxeo-Component: OSGI-INF/forum-actions-contrib.xml,
  OSGI-INF/forum-types-contrib.xml,
  OSGI-INF/forum-workflow-rules-contrib.xml,
  OSGI-INF/forum-workflow-definitions-contrib.xml,
- OSGI-INF/forum-workflow-document-security-policy-contrib.xml
+ OSGI-INF/forum-workflow-document-security-policy-contrib.xml,
+ OSGI-INF/thread-adapters-contrib.xml
 Require-Bundle: org.nuxeo.ecm.actions,
  org.nuxeo.ecm.webapp.core
+ 

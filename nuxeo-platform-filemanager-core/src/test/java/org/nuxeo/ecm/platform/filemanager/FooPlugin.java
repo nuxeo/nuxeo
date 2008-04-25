@@ -37,6 +37,17 @@ public class FooPlugin implements Plugin {
 
     protected List<String> filters = new ArrayList<String>();
 
+    public boolean isEnabled()
+    {
+        return true;
+    }
+
+    public void setEnabled(boolean enabled)
+    {
+        //
+    }
+
+
     public List<String> getFilters() {
         return filters;
     }

@@ -61,11 +61,7 @@ public class TypeRegistry {
     }
 
     public Type getType(String id) {
-        final Type type = types.get(id);
-        if (null == type) {
-            log.warn("type '" + id + "' not registered; available types: " + types.keySet());
-        }
-        return type;
+        return types.get(id);
     }
 
 }

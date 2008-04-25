@@ -19,7 +19,7 @@
       <exclude>lib-fragments.xml</exclude>
       <exclude>config/default-versioning-config.xml</exclude>
       <!-- <exclude>config/fileManagerService-config-bundle.xml</exclude> -->
-		</excludes>
+    </excludes>
   </fileSet>
 
   <fileSet id="nuxeo-template-search">
@@ -60,6 +60,7 @@
       <artifact name="nuxeo-platform-types-api" />
     </includes>
     <excludes>
+      <artifact name="nuxeo-platform-filemanager-core-listener" />
       <artifact name="nuxeo-platform-search-core-listener" />
       <!-- remove facade for mime-types -->
       <artifact name="nuxeo-platform-mimetype-facade" />

@@ -4,23 +4,23 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.1.4-SNAPSHOT</version>
+    <version>5.1.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-parent</artifactId>
-  <version>5.1.4-SNAPSHOT</version>
+  <version>5.1.5-SNAPSHOT</version>
   <name>Nuxeo Platform Parent</name>
   <packaging>pom</packaging>
   <description>Nuxeo Enterprise Platform: Parent.</description>
 
   <properties>
-    <nuxeo.common.version>1.4.1-SNAPSHOT</nuxeo.common.version>
-    <nuxeo.runtime.version>1.4.1-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.core.version>1.4.1-SNAPSHOT</nuxeo.core.version>
-    <nuxeo.theme.version>5.1.4-SNAPSHOT</nuxeo.theme.version>
+    <nuxeo.common.version>1.4.2-SNAPSHOT</nuxeo.common.version>
+    <nuxeo.runtime.version>1.4.2-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.core.version>1.4.2-SNAPSHOT</nuxeo.core.version>
+    <nuxeo.theme.version>5.1.5-SNAPSHOT</nuxeo.theme.version>
     <nuxeo.ear.assembly>nuxeo</nuxeo.ear.assembly>
-    <nuxeo.platform.version>5.1.4-SNAPSHOT</nuxeo.platform.version>
+    <nuxeo.platform.version>5.1.5-SNAPSHOT</nuxeo.platform.version>
   </properties>
 
   <modules>
@@ -126,10 +126,6 @@
     <module>nuxeo-platform-ws</module>
     <module>nuxeo-platform-forum</module>
     <module>nuxeo-platform-forum-core</module>
-    <module>nuxeo-platform-imaging-api</module>
-    <module>nuxeo-platform-imaging-core</module>
-    <module>nuxeo-platform-imaging-facade</module>
-    <module>nuxeo-platform-imaging-transform</module>
     <module>nuxeo-platform-publishing-api</module>
     <module>nuxeo-platform-publishing</module>
     <module>nuxeo-platform-publishing-facade</module>
@@ -910,9 +906,9 @@
   </dependencies>
 
   <scm>
-    <connection>scm:svn:http://svn.nuxeo.org/nuxeo/org.nuxeo.ecm.platform/branches/5.1</connection>
-    <developerConnection>scm:svn:https://svn.nuxeo.org/nuxeo/org.nuxeo.ecm.platform/branches/5.1</developerConnection>
-    <url>https://svn.nuxeo.org/trac/nuxeo/browser/org.nuxeo.ecm.platform/branches/5.1</url>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-platform</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-platform</developerConnection>
+    <url>http://hg.nuxeo.org/nuxeo/nuxeo-platform</url>
   </scm>
 
 </project>

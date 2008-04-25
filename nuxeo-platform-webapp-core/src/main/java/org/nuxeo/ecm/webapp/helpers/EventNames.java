@@ -112,7 +112,6 @@ public final class EventNames {
      */
     public static final String PROXY_PUSLISHING_PENDING = "proxyPublishingPending";
 
-
     public static final String DOCUMENT_UNPUBLISHED = "documentUnPublished";
 
     /**
@@ -134,6 +133,11 @@ public final class EventNames {
      * This is raised when a document publication is rejected
      */
     public static final String DOCUMENT_PUBLICATION_APPROVED = "documentPublicationApproved";
+
+    /**
+     * Event raised when security is changed
+     */
+    public static final String DOCUMENT_SECURITY_CHANGED = "documentSecurityChanged";
 
     // Constant utility class.
     private EventNames() {

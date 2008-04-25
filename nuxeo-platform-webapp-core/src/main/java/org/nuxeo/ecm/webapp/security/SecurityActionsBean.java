@@ -21,8 +21,11 @@ package org.nuxeo.ecm.webapp.security;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +44,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.core.FacesMessages;
 import org.nuxeo.common.utils.i18n.Labeler;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -77,12 +81,17 @@ import org.nuxeo.runtime.api.Framework;
 @Name("securityActions")
 @Scope(CONVERSATION)
 public class SecurityActionsBean extends InputController implements
-        SecurityActions {
+        SecurityActions, Serializable {
+
+    private static final long serialVersionUID = -7190826911734958662L;
 
     // XXX temporary
     protected static final String ADMIN_GROUP = "administrators";
 
-    protected static final String[] PERMISSIONS_TO_CHECK = {SecurityConstants.WRITE_SECURITY, SecurityConstants.READ_SECURITY};
+    protected static final String[] SEED_PERMISSIONS_TO_CHECK = {
+            SecurityConstants.WRITE_SECURITY, SecurityConstants.READ_SECURITY };
+
+    protected String[] CACHED_PERMISSION_TO_CHECK = null;
 
     private static final Log log = LogFactory.getLog(SecurityActionsBean.class);
 
@@ -102,10 +111,10 @@ public class SecurityActionsBean extends InputController implements
     protected transient List<String> cachedDeletedUserAndGroups;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
-    @In(create = true)
-    protected CoreSession documentManager;
+    @In(create = true, required = false)
+    protected transient CoreSession documentManager;
 
     @In(create = true)
     protected PermissionActionListManager permissionActionListManager;
@@ -117,15 +126,14 @@ public class SecurityActionsBean extends InputController implements
     protected PrincipalListManager principalListManager;
 
     @In(create = true)
-    protected UserManager userManager;
+    protected transient UserManager userManager;
 
     @In(create = true)
     protected NuxeoPrincipal currentUser;
 
     private Boolean blockRightInheritance;
 
-
-    @Observer(value=EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create=false, inject=false)
+    @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false, inject = false)
     public void resetSecurityData() throws ClientException {
         obsoleteSecurityData = true;
         blockRightInheritance = null;
@@ -172,7 +180,7 @@ public class SecurityActionsBean extends InputController implements
      * @throws ECInvalidParameterException
      */
     protected UserPermissionsTableModel reconstructTableModel()
-            throws ClientException, ECInvalidParameterException {
+            throws ClientException {
         List<TableColHeader> headers = new ArrayList<TableColHeader>();
 
         TableColHeader header = new CheckBoxColHeader(
@@ -278,6 +286,7 @@ public class SecurityActionsBean extends InputController implements
 
             documentManager.setACP(currentDocument.getRef(), acp, true);
             documentManager.save();
+            Events.instance().raiseEvent(EventNames.DOCUMENT_SECURITY_CHANGED);
 
             // Reread data from the backend to be sure the current bean
             // state is uptodate w.r.t. the real backend state
@@ -381,7 +390,8 @@ public class SecurityActionsBean extends InputController implements
 
         if (!checkPermissions()) {
             facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                    resourcesAccessor.getMessages().get("message.updated.rights"));
+                    resourcesAccessor.getMessages().get(
+                            "message.updated.rights"));
             return null;
         }
 
@@ -396,7 +406,8 @@ public class SecurityActionsBean extends InputController implements
             securityData.removeModifiablePrivilege(user);
             if (!checkPermissions()) {
                 facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                        resourcesAccessor.getMessages().get("message.error.removeRight"));
+                        resourcesAccessor.getMessages().get(
+                                "message.error.removeRight"));
                 return null;
             }
         }
@@ -498,6 +509,10 @@ public class SecurityActionsBean extends InputController implements
     }
 
     public Boolean displayInheritedPermissions() throws ClientException {
+        return  getDisplayInheritedPermissions();
+    }
+
+    public boolean getDisplayInheritedPermissions() throws ClientException {
         if (blockRightInheritance == null) {
             rebuildSecurityData();
         }
@@ -599,8 +614,8 @@ public class SecurityActionsBean extends InputController implements
     }
 
     /**
-     * Checks if the current user can still read and write access rights. If
-     * he can't, then the security data are rebuilt.
+     * Checks if the current user can still read and write access rights. If he
+     * can't, then the security data are rebuilt.
      *
      * @return
      * @throws ClientException
@@ -617,11 +632,32 @@ public class SecurityActionsBean extends InputController implements
         }
         acp.setRules(modifiableEntries.toArray(new UserEntry[0]));
 
-        final boolean access = acp.getAccess(principals.toArray(new String[0]), PERMISSIONS_TO_CHECK).toBoolean();
+        final boolean access = acp.getAccess(principals.toArray(new String[0]),
+                getPermissionsToCheck()).toBoolean();
         if (!access) {
             rebuildSecurityData();
         }
         return access;
+    }
+
+    protected String[] getPermissionsToCheck() throws ClientException {
+        if (CACHED_PERMISSION_TO_CHECK == null) {
+            try {
+                PermissionProvider pprovider = Framework.getService(PermissionProvider.class);
+                List<String> aggregatedPerms = new LinkedList<String>();
+                for (String seedPerm : SEED_PERMISSIONS_TO_CHECK) {
+                    aggregatedPerms.add(seedPerm);
+                    String[] compoundPerms = pprovider.getPermissionGroups(seedPerm);
+                    if (compoundPerms != null) {
+                        aggregatedPerms.addAll(Arrays.asList(compoundPerms));
+                    }
+                }
+                CACHED_PERMISSION_TO_CHECK = aggregatedPerms.toArray(new String[aggregatedPerms.size()]);
+            } catch (Exception e) {
+                throw new ClientException(e);
+            }
+        }
+        return CACHED_PERMISSION_TO_CHECK;
     }
 
 }

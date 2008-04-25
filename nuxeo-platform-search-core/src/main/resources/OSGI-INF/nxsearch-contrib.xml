@@ -2,6 +2,7 @@
   <extension
     target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
     point="indexableDocType">
+    <indexableDocType indexAllSchemas="true" name="Root" />
     <indexableDocType indexAllSchemas="true" name="Domain" />
     <indexableDocType indexAllSchemas="true" name="WorkspaceRoot" />
     <indexableDocType indexAllSchemas="true" name="SectionRoot" />
@@ -112,6 +113,7 @@
     <indexingEvent name="documentCreated" action="Index" />
     <indexingEvent name="documentModified" action="ReIndex" />
     <indexingEvent name="documentPublished" action="ReIndex" />
+    <indexingEvent name="documentRestored" action="ReIndex" />
     <indexingEvent name="documentProxyPublished" action="Index" />
     <indexingEvent name="documentCreatedByCopy" action="Index"
       recursive="true" />

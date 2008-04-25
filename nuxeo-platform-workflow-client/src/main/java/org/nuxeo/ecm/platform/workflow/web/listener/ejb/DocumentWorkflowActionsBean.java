@@ -90,8 +90,6 @@ import org.nuxeo.ecm.platform.workflow.web.adapter.ProcessModel;
 import org.nuxeo.ecm.platform.workflow.web.api.DocumentTaskActions;
 import org.nuxeo.ecm.platform.workflow.web.api.DocumentWorkflowActions;
 import org.nuxeo.ecm.platform.workflow.web.api.WorkflowBeansDelegate;
-import org.nuxeo.ecm.platform.workflow.web.api.ejb.remote.DocumentWorkflowActionsRemote;
-import org.nuxeo.ecm.platform.workflow.web.listener.ejb.local.DocumentWorkflowActionsLocal;
 import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 
 /**
@@ -129,20 +127,20 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
     @In(required = true)
     protected RepositoryLocation currentServerLocation;
 
-    @In(required = true)
+    @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected WebActions webActions;
+    protected transient WebActions webActions;
 
     @In(create = true)
-    protected Principal currentUser;
+    protected transient Principal currentUser;
 
     @In(create = true)
-    protected UserManager userManager;
+    protected transient UserManager userManager;
 
     @In(create = true)
     protected Map<String, String> messages;

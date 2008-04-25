@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.utils.DocumentModelUtils;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -49,6 +50,7 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
+import org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
@@ -79,11 +81,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
     private static final String NXEDIT_URL_SCHEME = "nxedit";
 
-    private static transient MimetypeRegistry mimetypeService;
+    private static MimetypeRegistry mimetypeService;
 
-    private static transient TypeManager typeManagerService;
+    private static TypeManager typeManagerService;
 
-    private static transient DirectoryService dirService;
+    private static DirectoryService dirService;
 
     // static cache of default viewId per document type shared all among threads
     private static final Map<String, String> defaultViewCache = Collections.synchronizedMap(new HashMap<String, String>());
@@ -118,8 +120,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return typeManagerService;
     }
 
-    private static String getDefaultView(DocumentModel doc)
-            throws ClientException {
+    private static String getDefaultView(DocumentModel doc) {
         String docType = doc.getType();
 
         if (defaultViewCache.containsKey(docType)) {
@@ -128,8 +129,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             org.nuxeo.ecm.platform.types.Type type = getTypeManager().getType(
                     docType);
             if (type == null) {
-                throw new ClientException("Cannot get default view. Type '"
-                        + docType + "' not registered");
+                return null;
             }
             String defaultView = type.getDefaultView();
             defaultViewCache.put(docType, defaultView);
@@ -245,10 +245,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
     public static boolean hasPermission(DocumentModel document,
             String permission) throws ClientException {
-        if (document == null)
+        if (document == null) {
             return false;
+        }
         String sid = document.getSessionId();
-        CoreSession session = null;
+        CoreSession session;
         boolean sessionOpened = false;
 
         if (sid != null) {
@@ -305,7 +306,9 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @param schemaName the schema name
      * @param fieldName the field name
      * @return the default value.
+     * @deprecated use defaultValue(propertyName) instead
      */
+    @Deprecated
     public static Object defaultValue(String schemaName, String fieldName)
             throws Exception {
         Object value = null;
@@ -316,6 +319,27 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (type.isListType()) {
             Type itemType = ((ListType) type).getFieldType();
             value = itemType.newInstance();
+        }
+        return value;
+    }
+
+    /**
+     * Returns the default value for given property name.
+     *
+     * @param propertyName as xpath
+     * @return the default value.
+     * @throws Exception
+     */
+    public static Object defaultValue(String propertyName) throws Exception {
+        Object value = null;
+        SchemaManager tm = Framework.getService(SchemaManager.class);
+        Field field = tm.getField(propertyName);
+        if (field != null) {
+            Type type = field.getType();
+            if (type.isListType()) {
+                Type itemType = ((ListType) type).getFieldType();
+                value = itemType.newInstance();
+            }
         }
         return value;
     }
@@ -361,7 +385,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     public static String complexFileUrl(String patternName, DocumentModel doc,
             int index, String filename) {
         return complexFileUrl(patternName, doc, "files:files", index,
-                DEFAULT_FILENAME_FIELD, filename);
+                DEFAULT_SUB_BLOB_FIELD, filename);
     }
 
     /**
@@ -388,9 +412,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
                     doc.getRepositoryName(), doc.getRef());
             Map<String, String> params = new HashMap<String, String>();
 
-            String fileProperty = listElement + '/'
-                    + URLEncoder.encode("[" + index + ']', URL_ENCODE_CHARSET)
-                    + '/' + blobPropertyName;
+            String fileProperty = getPropertyPath(listElement, index, blobPropertyName);
 
             params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, fileProperty);
             params.put(DocumentFileCodec.FILENAME_KEY, filename);
@@ -494,9 +516,40 @@ public final class DocumentModelFunctions implements LiveEditConstants {
                 false);
         addQueryParameter(queryParamBuilder, DOC_REF, doc.getRef().toString(),
                 false);
+        if (schemaName == null || "".equals(schemaName)) {
+            // try to extract it from blob field name
+            schemaName = DocumentModelUtils.getSchemaName(blobFieldName);
+            blobFieldName = DocumentModelUtils.getFieldName(blobFieldName);
+            filenameFieldName = DocumentModelUtils.getFieldName(filenameFieldName);
+        }
         addQueryParameter(queryParamBuilder, SCHEMA, schemaName, false);
         addQueryParameter(queryParamBuilder, BLOB_FIELD, blobFieldName, false);
         addQueryParameter(queryParamBuilder, FILENAME_FIELD, filenameFieldName,
+                false);
+        return buildNxEditUrl(queryParamBuilder.toString());
+    }
+
+    /**
+     * Build the nxedit URL for the "edit existing document" use case
+     *
+     * @return the encoded URL string
+     * @throws ClientException if the URL encoding fails
+     */
+    public static String complexLiveEditUrl(DocumentModel doc,
+            String listPropertyName, int index, String blobPropertyName,
+            String filenamePropertyName) throws ClientException {
+
+        StringBuilder queryParamBuilder = new StringBuilder();
+        addQueryParameter(queryParamBuilder, ACTION, ACTION_EDIT_DOCUMENT, true);
+        addQueryParameter(queryParamBuilder, REPO_ID, doc.getRepositoryName(),
+                false);
+        addQueryParameter(queryParamBuilder, DOC_REF, doc.getRef().toString(),
+                false);
+        addQueryParameter(queryParamBuilder, BLOB_PROPERTY_NAME,
+                getPropertyPath(listPropertyName, index, blobPropertyName),
+                false);
+        addQueryParameter(queryParamBuilder, FILENAME_PROPERTY_NAME,
+                getPropertyPath(listPropertyName, index, filenamePropertyName),
                 false);
         return buildNxEditUrl(queryParamBuilder.toString());
     }
@@ -644,19 +697,20 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @param id the label id
      * @return the label.
      * @throws DirectoryException
+     * @deprecated use {@link DirectoryFunctions#getDirectoryEntry(String, String)}
      */
+    @Deprecated
     public static String getLabelFromId(String directoryName, String id)
             throws DirectoryException {
         if (id == null) {
             return "";
         }
         Session directory = null;
-        String schemaName = null;
         try {
             directory = getDirectoryService().open(directoryName);
             // XXX hack, directory entries have only one datamodel
             DocumentModel documentModel = directory.getEntry(id);
-            schemaName = documentModel.getDeclaredSchemas()[0];
+            String schemaName = documentModel.getDeclaredSchemas()[0];
             return (String) documentModel.getProperty(schemaName, "label");
         } catch (Exception e) {
             return "";
@@ -667,4 +721,9 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         }
     }
 
+    public static String getPropertyPath(String listPropertyName, int index,
+            String subPropertyName) {
+        return String.format("%s/%s/%s", listPropertyName, index,
+                subPropertyName);
+    }
 }

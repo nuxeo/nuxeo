@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.interfaces.ejb;
 
 import java.util.List;
 
+import javax.ejb.Remote;
 import javax.ejb.Remove;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -34,6 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  *
  */
+@Remote
 public interface ECContentRoot {
 
     /**

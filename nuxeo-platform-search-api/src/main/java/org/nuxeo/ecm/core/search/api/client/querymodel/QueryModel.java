@@ -175,8 +175,7 @@ public class QueryModel implements Serializable {
         } catch (Exception e) {
             // re-run the query without sort parameters
             try {
-                log.error("sorted query failed: " + query);
-                log.debug("sorted query failed", e);
+                log.error("sorted query failed: " + query, e);
                 if (descriptor.isStateful()) {
                     query = descriptor.getQuery(documentModel, null);
                 } else {

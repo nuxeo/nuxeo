@@ -434,7 +434,7 @@ public class SQLSession implements Session, EntrySource {
                 }
                 String leftSide = column.getQuotedName(dialect);
                 if (value != null) {
-                    if (fulltext.contains(columnName)) {
+                    if (fulltext != null && fulltext.contains(columnName)) {
                         // NB : remove double % in like query NXGED-833
                         filterMap.put(columnName,
                                  String.valueOf(value).toLowerCase() + '%');

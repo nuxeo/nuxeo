@@ -14,7 +14,6 @@
     <schema name="dublincore" src="schema/dublincore.xsd"  prefix="dc" />
     <schema name="file" src="schema/file.xsd" />
     <schema name="note" src="schema/note.xsd" />
-    <schema name="secupolicy" src="schema/secupolicy.xsd" prefix="sp" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"

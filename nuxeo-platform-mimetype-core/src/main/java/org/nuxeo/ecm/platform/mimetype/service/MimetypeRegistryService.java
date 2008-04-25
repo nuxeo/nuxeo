@@ -111,8 +111,7 @@ public class MimetypeRegistryService extends DefaultComponent implements
     }
 
     public void registerMimetype(MimetypeEntry mimetype) {
-        log.info("registering mimetype with normalized name: "
-                + mimetype.getNormalized());
+        log.debug("Registering mimetype: " + mimetype.getNormalized());
         mimetypeByNormalisedRegistry.put(mimetype.getNormalized(), mimetype);
         for (String extension : mimetype.getExtensions()) {
             mimetypeByExtensionRegistry.put(extension, mimetype);
@@ -120,7 +119,8 @@ public class MimetypeRegistryService extends DefaultComponent implements
     }
 
     public void registerFileExtension(ExtensionDescriptor extensionDescriptor) {
-        log.info("Registering file extension: " + extensionDescriptor.getName());
+        log.debug("Registering file extension: " +
+                extensionDescriptor.getName());
         extensionRegistry.put(extensionDescriptor.getName(),
                 extensionDescriptor);
     }
@@ -143,7 +143,7 @@ public class MimetypeRegistryService extends DefaultComponent implements
     }
 
     public void unregisterMimetype(String mimetypeName) {
-        log.info("Unregistering mimetype with normalised name: " + mimetypeName);
+        log.debug("Unregistering mimetype: " + mimetypeName);
         MimetypeEntry mimetype = mimetypeByNormalisedRegistry.get(mimetypeName);
         if (mimetype == null) {
             return;
@@ -160,8 +160,8 @@ public class MimetypeRegistryService extends DefaultComponent implements
     }
 
     public void unregisterFileExtension(ExtensionDescriptor extensionDescriptor) {
-        log.info("Unregistering file extension: "
-                + extensionDescriptor.getName());
+        log.debug("Unregistering file extension: " +
+                extensionDescriptor.getName());
         extensionRegistry.remove(extensionDescriptor.getName());
     }
 
@@ -212,10 +212,10 @@ public class MimetypeRegistryService extends DefaultComponent implements
                 return matchingMimetype;
             }
         } catch (MagicMatchNotFoundException e) {
-            if (file.getAbsolutePath() != null){
+            if (file.getAbsolutePath() != null) {
                 return getMimetypeFromFilename(file.getAbsolutePath());
             }
-           throw new MimetypeNotFoundException(e.getMessage(), e);
+            throw new MimetypeNotFoundException(e.getMessage(), e);
         } catch (Exception e) {
             throw new MimetypeDetectionException(e.getMessage(), e);
         }
@@ -231,7 +231,8 @@ public class MimetypeRegistryService extends DefaultComponent implements
             MimetypeEntry mimetype = mimetypeByExtensionRegistry.get(lowerCaseExtension);
             if (mimetype == null) {
                 throw new MimetypeNotFoundException(
-                        "no registered mimetype has extension: " + lowerCaseExtension);
+                        "no registered mimetype has extension: "
+                                + lowerCaseExtension);
             } else {
                 return mimetype.getNormalized();
             }
@@ -322,7 +323,7 @@ public class MimetypeRegistryService extends DefaultComponent implements
                     mtype = entry;
                     break;
                 }
-              }
+            }
         }
         return mtype;
     }

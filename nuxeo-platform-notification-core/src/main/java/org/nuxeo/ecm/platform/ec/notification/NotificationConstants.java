@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ec.notification;
 
 /**
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
+ * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>
  *
  */
 public class NotificationConstants {
@@ -30,6 +31,8 @@ public class NotificationConstants {
     public static final String SUBJECT_KEY = "subject";
 
     public static final String TEMPLATE_KEY = "template";
+
+    public static final String SUBJECT_TEMPLATE_KEY = "subjectTemplate";
 
     public static final String RECIPIENTS_KEY = "recipients";
 

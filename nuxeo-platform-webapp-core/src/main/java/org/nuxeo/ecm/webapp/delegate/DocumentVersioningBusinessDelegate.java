@@ -55,7 +55,7 @@ public class DocumentVersioningBusinessDelegate implements Serializable {
 
     //@Create
     public void initialize() {
-        log.info("Seam component initialized...");
+        log.debug("Seam component initialized...");
     }
 
     /**
@@ -69,12 +69,10 @@ public class DocumentVersioningBusinessDelegate implements Serializable {
     public VersioningManager getVersioningManager() throws ClientException {
         if (null == versioningManager) {
             try {
-                //versioningManager = ECM.getPlatform().getService(VersioningManager.class);
                 versioningManager = Framework.getService(VersioningManager.class);
             } catch (Exception e) {
                 final String errMsg = "Error connecting to VersioningManager. "
                         + e.getMessage();
-                //log.error(errMsg, e);
                 throw new ClientException(errMsg, e);
             }
 
@@ -89,11 +87,7 @@ public class DocumentVersioningBusinessDelegate implements Serializable {
     @Destroy
     @PermitAll
     public void destroy() throws ClientException {
-        //if (null != versioningManager) {
-        //    versioningManager.remove();
-        //}
-
-        log.info("Destroyed the seam component...");
+        log.debug("Destroyed the seam component...");
     }
 
 }

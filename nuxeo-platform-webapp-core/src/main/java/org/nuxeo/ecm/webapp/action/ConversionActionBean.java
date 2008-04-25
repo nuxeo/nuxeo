@@ -35,13 +35,18 @@ import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.WebRemote;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.ecm.platform.transform.api.TransformException;
 import org.nuxeo.ecm.platform.transform.api.TransformServiceDelegate;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformServiceCommon;
-import org.nuxeo.ecm.webapp.base.InputController;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -49,13 +54,18 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("conversionActions")
 @Transactional
-public class ConversionActionBean extends InputController implements
-        ConversionAction {
+public class ConversionActionBean implements ConversionAction {
 
     private static final Log log = LogFactory.getLog(ConversionActionBean.class);
 
+    @In(create = true, required = false)
+    transient CoreSession documentManager;
+
     @In(create = true)
-    private CoreSession documentManager;
+    transient NavigationContext navigationContext;
+
+    @RequestParameter
+    private String docRef;
 
     @RequestParameter
     private String fileFieldFullName;
@@ -72,10 +82,36 @@ public class ConversionActionBean extends InputController implements
         return "view_file";
     }
 
-    private String getMimetypeFromDocument(String fieldName) {
-        String[] s = fieldName.split(":");
-        Blob blob = (Blob) currentDocument.getProperty(s[0], s[1]);
+    private DocumentModel getDocument() throws ClientException {
+        if (docRef == null) {
+            return navigationContext.getCurrentDocument();
+        } else {
+            return documentManager.getDocument(new IdRef(docRef));
+        }
+    }
+
+    private String getMimetypeFromDocument(String propertyName)
+            throws PropertyException, ClientException {
+        Blob blob = (Blob) getDocument().getPropertyValue(propertyName);
         return blob.getMimeType();
+    }
+
+    public boolean isExportableToPDF(Blob blob) {
+        boolean isSupported = false;
+
+        try {
+            if (blob != null) {
+                String mimetype = blob.getMimeType();
+                TransformServiceCommon nxt = TransformServiceDelegate.getRemoteTransformService();
+                isSupported = nxt.isMimetypeSupportedByPlugin("any2pdf",
+                        mimetype);
+            }
+        } catch (Exception e) {
+            log.error("error asking the any2pdf plugin whether pdf conversion "
+                    + " is supported: " + e.getMessage());
+        }
+
+        return isSupported;
     }
 
     @WebRemote
@@ -86,9 +122,11 @@ public class ConversionActionBean extends InputController implements
             String mimetype = getMimetypeFromDocument(fieldName);
             TransformServiceCommon nxt = TransformServiceDelegate.getRemoteTransformService();
             isSupported = nxt.isMimetypeSupportedByPlugin("any2pdf", mimetype);
-        } catch (Exception e) {
+        } catch (TransformException e) {
             log.error("error asking the any2pdf plugin whether " + fieldName
-                    + " is supported: " + e.getMessage());
+                    + " is supported: ",e);
+        } catch (Exception e) {
+            log.error(e);
         }
 
         return isSupported;
@@ -102,8 +140,7 @@ public class ConversionActionBean extends InputController implements
                 return null;
             }
 
-            String[] s = fileFieldFullName.split(":");
-            Blob blob = (Blob) currentDocument.getProperty(s[0], s[1]);
+            Blob blob = (Blob) getDocument().getPropertyValue(fileFieldFullName);
 
             TransformServiceCommon nxt = Framework.getService(TransformServiceCommon.class);
             List<TransformDocument> resultingDocs = nxt.transform("any2pdf",
@@ -152,6 +189,11 @@ public class ConversionActionBean extends InputController implements
         return "pdf_generation_error";
     }
 
+    /**
+     * @deprecated use LiveEditBootstrapHelper.isCurrentDocumentLiveEditable()
+     *             instead
+     */
+    @Deprecated
     @WebRemote
     public boolean isFileOnlineEditable(String fieldName) {
         try {

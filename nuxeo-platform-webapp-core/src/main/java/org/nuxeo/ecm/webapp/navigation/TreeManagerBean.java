@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.navigation;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -61,12 +62,15 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  */
 @Scope(CONVERSATION)
 @Name("treeManager")
-@Install(precedence=FRAMEWORK)
-public class TreeManagerBean extends InputController implements TreeManager {
+@Install(precedence = FRAMEWORK)
+public class TreeManagerBean extends InputController implements TreeManager,
+        Serializable {
+
+    private static final long serialVersionUID = 4773510417160248991L;
 
     private static final Log log = LogFactory.getLog(TreeManagerBean.class);
 
-    protected boolean initialized;
+    protected boolean initialized = false;
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -84,7 +88,8 @@ public class TreeManagerBean extends InputController implements TreeManager {
 
     public void initialize() throws ClientException {
         try {
-            DocumentModel firstAccessibleParent = getFirstAccessibleParent(navigationContext.getCurrentDocument());
+            DocumentModel currentDocument = navigationContext.getCurrentDocument();
+            DocumentModel firstAccessibleParent = getFirstAccessibleParent(currentDocument);
             if (typesTool != null && firstAccessibleParent != null) {
                 LazyTreeNode treeNode = new LazyTreeNode(typesTool,
                         documentManager, firstAccessibleParent,
@@ -98,7 +103,7 @@ public class TreeManagerBean extends InputController implements TreeManager {
                 }
                 initialized = true;
             } else {
-                log.error("Found currentDomain to be null, not initializing...");
+                log.error("Could not initialize the navigation tree");
             }
         } catch (Throwable t) {
             throw EJBExceptionHandler.wrapException(t);
@@ -108,7 +113,9 @@ public class TreeManagerBean extends InputController implements TreeManager {
         registerCacheListener();
     }
 
-    @Observer(value = { EventNames.GO_HOME, EventNames.DOMAIN_SELECTION_CHANGED }, create = false)
+    @Observer(value = { EventNames.GO_HOME,
+            EventNames.DOMAIN_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED,
+            EventNames.DOCUMENT_SECURITY_CHANGED }, create = false)
     public void reset() {
         cacheUpdateNotifier.removeCacheListener(cacheListener);
         treeModel = null;
@@ -116,9 +123,6 @@ public class TreeManagerBean extends InputController implements TreeManager {
     }
 
     public boolean isInitialized() throws ClientException {
-        if (!initialized) {
-            initialize();
-        }
         return initialized;
     }
 
@@ -192,6 +196,9 @@ public class TreeManagerBean extends InputController implements TreeManager {
     }
 
     public LazyTreeModel getTreeModel() throws ClientException {
+        if (!isInitialized()) {
+            initialize();
+        }
         if (isInitialized() && !isTreeSyncedWithCurrentDocument) {
             expandToCurrentTreeNode();
         }
@@ -202,7 +209,7 @@ public class TreeManagerBean extends InputController implements TreeManager {
         return (LazyTreeNode) treeModel.getNodeById(treeModel.getTreeWalker().getRootNodeId());
     }
 
-    @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false, inject=false)
+    @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false, inject = false)
     public void invalidateSyncedState() {
         isTreeSyncedWithCurrentDocument = false;
     }
@@ -223,23 +230,27 @@ public class TreeManagerBean extends InputController implements TreeManager {
                     // Fix for NXP-1735 and NXP-1846
                     // If showFiles feature is disabled then the tree have to be
                     // kept expanded on parent's node
-                        if (documentFilter.showFiles) {
+                    if (documentFilter.showFiles) {
+                        foundNode = findNode(docModel, true);
+                    } else {
+                        if (docModel.isFolder()) {
                             foundNode = findNode(docModel, true);
                         } else {
-                            if (docModel.isFolder()) {
-                                foundNode = findNode(docModel, true);
+                            if (!documentManager.hasPermission(
+                                    docModel.getParentRef(),
+                                    SecurityConstants.READ)) {
+                                // current user doesn't have the right to the
+                                // parent document.
+                                // reset the tree so it won't be shown on the
+                                // page and let him access the document.
+                                reset();
                             } else {
-                                if (!documentManager.hasPermission(docModel.getParentRef(), SecurityConstants.READ)) {
-                                    // current user doesn't have the right to the parent document.
-                                    //reset the tree so it won't be shown on the page and let him access the document.
-                                    reset();
-                                } else {
-                                    foundNode = findNode(
-                                            documentManager.getDocument(docModel.getParentRef()),
-                                            true);
-                                }
+                                foundNode = findNode(
+                                        documentManager.getDocument(docModel.getParentRef()),
+                                        true);
                             }
                         }
+                    }
 
                     if (foundNode != null) {
                         isTreeSyncedWithCurrentDocument = true;
@@ -347,10 +358,10 @@ public class TreeManagerBean extends InputController implements TreeManager {
      * Goes through all the nodes and refreshes the description of the one that
      * corresponds to the newly selected document.
      */
-    //@Observer(value = EventNames.DOCUMENT_CHANGED, create = false)
+    // @Observer(value = EventNames.DOCUMENT_CHANGED, create = false)
     public void refreshTreeNodeDescription() throws ClientException {
         try {
-            if (null != treeModel) {
+            if (treeModel != null) {
                 LazyTreeNode node = findNode(
                         navigationContext.getCurrentDocument(), false);
                 if (node != null) {
@@ -379,16 +390,14 @@ public class TreeManagerBean extends InputController implements TreeManager {
 
     private DocumentModel getFirstAccessibleParent(DocumentModel doc)
             throws ClientException {
-
         if (doc == null) {
             return null;
         }
         List<DocumentModel> parents = documentManager.getParentDocuments(doc.getRef());
-        if (!parents.isEmpty() && doc.isFolder()) {
+        if (!parents.isEmpty()) {
             return parents.get(0);
-        } else if (!parents.isEmpty() && !doc.isFolder()) {
-            return null;
         } else if (!doc.getType().equals("Root") && doc.isFolder()) {
+            // default on current doc
             return doc;
         } else {
             return null;

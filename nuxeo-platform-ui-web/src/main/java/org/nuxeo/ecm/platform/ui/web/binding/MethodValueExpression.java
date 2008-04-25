@@ -25,6 +25,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import javax.el.ELContext;
+import javax.el.ELException;
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 
@@ -45,6 +46,8 @@ public class MethodValueExpression extends ValueExpression implements
 
     private static final long serialVersionUID = 1228707110702282837L;
 
+    private ELContext context;
+
     private MethodExpression methodExpression;
 
     private Class[] paramTypesClasses;
@@ -52,8 +55,9 @@ public class MethodValueExpression extends ValueExpression implements
     public MethodValueExpression() {
     }
 
-    public MethodValueExpression(MethodExpression methodExpression,
-            Class[] paramTypesClasses) {
+    public MethodValueExpression(ELContext context,
+            MethodExpression methodExpression, Class[] paramTypesClasses) {
+        this.context = context;
         this.methodExpression = methodExpression;
         this.paramTypesClasses = paramTypesClasses;
     }
@@ -102,15 +106,14 @@ public class MethodValueExpression extends ValueExpression implements
     @Override
     public Object getValue(ELContext arg0) {
         // invoke method instead of resolving value
-        Object res;
         try {
-            return methodExpression.invoke(arg0, paramTypesClasses);
-        }
-        catch (Throwable t) {
-            log.error(
-                    "Error while evaluation MethodValueExpression " + methodExpression.getExpressionString());
-            log.error("parameters are : " + paramTypesClasses.toString());
-            return null;
+            EvaluationContext evalCtx = new EvaluationContext(arg0,
+                    context.getFunctionMapper(), context.getVariableMapper());
+            return methodExpression.invoke(evalCtx, paramTypesClasses);
+        } catch (Throwable t) {
+            throw new ELException(
+                    "Error while evaluation MethodValueExpression "
+                            + methodExpression.getExpressionString(), t);
         }
     }
 

@@ -10,11 +10,6 @@
   >
 
 <div class="printButton">
-<!--
-<h:outputLink value="javascript:printView();">
-  <h:graphicImage alt="#{messages['label.print']}" url="/icons/printer.gif" />
-</h:outputLink>
- -->
 <ui:include src="/incl/document_actions_upperbuttons.xhtml"/>
 <script type="text/javascript">
 function printView()
@@ -31,6 +26,9 @@ function printView()
 </script>
 </div>
 
+<div class="printButton">
+  <ui:include src="/incl/liveedit_create_actions.xhtml"/>
+</div>
 
 <div class="breadcrumbs">
   <h:form>

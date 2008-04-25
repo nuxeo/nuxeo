@@ -54,13 +54,11 @@ public class SQLDirectoryFactory extends DefaultComponent implements
 
     @Override
     public void activate(ComponentContext context) {
-        log.info("component activated");
         proxies = new HashMap<String, Directory>();
     }
 
     @Override
     public void deactivate(ComponentContext context) {
-        log.info("component desactivated");
         proxies = null;
     }
 
@@ -78,7 +76,7 @@ public class SQLDirectoryFactory extends DefaultComponent implements
             String descriptorName = descriptor.getName();
 
             if (descriptor.getRemove()) {
-                log.info("removing directory with name: " + descriptorName);
+                log.info("Removing directory: " + descriptorName);
                 proxies.remove(descriptorName);
                 dirService.unregisterDirectory(descriptorName, this);
                 continue;
@@ -90,7 +88,7 @@ public class SQLDirectoryFactory extends DefaultComponent implements
 
             proxies.put(descriptorName, new SQLDirectoryProxy(descriptor));
             dirService.registerDirectory(descriptorName, this);
-            log.info("directory registered: " + descriptorName);
+            log.info("Registered directory: " + descriptorName);
         }
     }
 

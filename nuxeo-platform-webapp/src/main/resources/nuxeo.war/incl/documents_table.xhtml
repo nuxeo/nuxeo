@@ -153,6 +153,19 @@
         </f:facet>
         <h:outputText value="#{messages[row.data.currentLifeCycleState]}" />
       </h:column>
+
+      <!-- Live edit -->
+      <nxu:column styleClass="iconColumn">
+        <nxu:methodResult name="editable"
+          value="#{liveEditHelper.isDocumentLiveEditable(row.data, 'file', 'content')}">
+          <h:outputLink value="#{nxd:liveEditUrl(row.data, 'file', 'content', 'filename')}"
+            rendered="#{editable}">
+            <h:graphicImage value="/icons/application_form_edit.png"
+              alt="#{messages['label.document.directEdit']}"
+              title="#{messages['label.document.directEdit']}"/>
+          </h:outputLink>
+        </nxu:methodResult>
+      </nxu:column>
     </nxu:dataTable>
 
     <ui:include src="/pagination/pageNavigationControls.xhtml" />

@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webapp.documenttemplates;
 
+import java.io.Serializable;
+
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
 
@@ -52,21 +54,21 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  * session.
  *
  */
-
 @Name("documentTemplatesActions")
 @Scope(CONVERSATION)
 public class DocumentTemplatesActionsBean extends InputController implements
-        DocumentTemplatesActions {
+        DocumentTemplatesActions, Serializable {
 
     public static final String TemplateRoot = "TemplateRoot";
 
     private static final Log log = LogFactory.getLog(DocumentTemplatesActionsBean.class);
+    private static final long serialVersionUID = -4031259222075515590L;
+
+    @In(create = true, required = false)
+    private transient CoreSession documentManager;
 
     @In(required = false)
-    private CoreSession documentManager;
-
-    @In(required = false)
-    private DocumentActions documentActions;
+    private transient DocumentActions documentActions;
 
     @In(required = false)
     private TypesTool typesTool;
@@ -75,7 +77,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
     protected DocumentModel changeableDocument;
 
     @In(required = false, create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     // cached list of templates
     private DocumentModelList templates;

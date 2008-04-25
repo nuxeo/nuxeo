@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,137 +12,141 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Razvan Caraghin
+ *     Olivier Grisel
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.webapp.delegate;
 
-
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.security.PermitAll;
-import javax.ejb.Remove;
+import javax.ejb.EJBAccessException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
 import org.jboss.seam.annotations.Destroy;
-import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
-import org.jboss.seam.contexts.Contexts;
+import org.jboss.seam.contexts.Lifecycle;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.platform.api.ECM;
-import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.runtime.api.Framework;
 
 /**
- * Acquires a {@link DocumentManager} handle and sticks it into the Seam
- * context.
+ * Acquires a {@link CoreSession} connection.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
- *
+ * @author Razvan Caraghin
+ * @author Olivier Grisel
+ * @author Thierry Delprat
+ * @author Florent Guillaume
  */
 @Name("documentManager")
 @Scope(CONVERSATION)
 @NuxeoJavaBeanErrorHandler
 public class DocumentManagerBusinessDelegate implements Serializable {
 
-    private static final long serialVersionUID = 7531855222619160585L;
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(DocumentManagerBusinessDelegate.class);
 
-    protected CoreSession documentManager;
+    /**
+     * Map holding the open session for each repository location.
+     */
+    protected Map<RepositoryLocation, CoreSession> sessions = new HashMap<RepositoryLocation, CoreSession>();
 
-    @In(create=true, required = false)
-    protected RepositoryLocation currentServerLocation;
-
-    @In(create=true, required = false)
-    protected NavigationContext navigationContext;
-
-    protected RepositoryLocation oldLocation;
-
-    //@Create
     public void initialize() {
         log.debug("Seam component initialized...");
     }
 
-    //@Begin(join=true)
     @Unwrap
     public CoreSession getDocumentManager() throws ClientException {
-        //log.debug("Getting Document Manager");
+        /*
+         * Explicit lookup, as this method is the only user of the Seam
+         * component. Also, in some cases (Seam remoting), it seems that the
+         * injection is not done correctly.
+         */
+        RepositoryLocation currentServerLocation = (RepositoryLocation) Component.getInstance("currentServerLocation");
         return getDocumentManager(currentServerLocation);
     }
 
     public CoreSession getDocumentManager(RepositoryLocation serverLocation)
             throws ClientException {
 
-    	if (serverLocation==null)
-    	{
-    		// XXX TD : for some reasons the currentServerLocation is not always injected by Seam
-    		// typical reproduction case includes Seam remoting call
-    		// ==> pull from factory by hand !
-    		if (serverLocation==null)
-    			serverLocation = (RepositoryLocation) Component.getInstance("currentServerLocation",true);
-    	}
-
-        if (documentManager == null) {
-            if (serverLocation == null) {
-                log.warn("documentManager could not be retrieved because location is null");
-                return null;
-            } else {
-                try {
-                    documentManager = ECM.getPlatform().openRepository(
-                            serverLocation.getName());
-                    oldLocation = serverLocation;
-                    log.debug("documentManager retrieved");
-                    return documentManager;
-                } catch (Exception e) {
-                    final String errMsg = "Error opening repository "
-                            + e.getMessage();
-                    log.error(errMsg, e);
-                    throw new ClientException(errMsg);
-                }
-            }
-        } else {
-            // check if the existing DM instance is suitable
-            if (null != oldLocation
-                    && 0 == oldLocation.compareTo(serverLocation)) {
-                return documentManager;
-            } else {
-                try {
-                    documentManager = ECM.getPlatform().openRepository(
-                            serverLocation.getName());
-                    oldLocation = serverLocation;
-                    log.debug("documentManager retrieved");
-                    return documentManager;
-                } catch (Exception e) {
-                    final String errMsg = "Error opening repository "
-                            + e.getMessage();
-                    log.error(errMsg, e);
-                    throw new ClientException(errMsg);
-                }
-            }
+        if (serverLocation == null) {
+            /*
+             * currentServerLocation (factory in ServerContextBean) is set
+             * through navigationContext, which itself injects documentManager,
+             * so it will be null the first time.
+             */
+            return null;
         }
+
+        CoreSession session = sessions.get(serverLocation);
+        if (session == null) {
+            if (Lifecycle.isDestroying()) {
+                /*
+                 * During Seam component destroy phases, we don't want to
+                 * recreate a core session just for injection. This happens
+                 * during logout when the session context is destroyed; we don't
+                 * want to cause EJB calls in this case as the authentication
+                 * wouldn't work.
+                 */
+                return null;
+            }
+            String serverName = serverLocation.getName();
+            try {
+                RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
+                Repository repository = repositoryManager.getRepository(serverName);
+                session = repository.open();
+                log.debug("Opened session for repository " + serverName);
+            } catch (Exception e) {
+                throw new ClientException(
+                        "Error opening session for repository " + serverName, e);
+            }
+            sessions.put(serverLocation, session);
+        }
+        return session;
     }
 
     @Destroy
-    @Remove
     @PermitAll
-    public void remove() throws ClientException {
-        log.debug("Destroying seam component...");
-        if (documentManager != null) {
-            documentManager.destroy();
-            documentManager = null;
+    public void remove() {
+        for (Entry<RepositoryLocation, CoreSession> entry : sessions.entrySet()) {
+            String serverName = entry.getKey().getName();
+            CoreSession session = entry.getValue();
+            try {
+                RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
+                Repository repository = repositoryManager.getRepository(serverName);
+                repository.close(session);
+                log.debug("Closed session for repository " + serverName);
+            } catch (EJBAccessException e) {
+                /*
+                 * CoreInstance.close tries to call coreSession.getSessionId()
+                 * which makes another EJB call; don't log an error for this.
+                 *
+                 * XXX but this means we don't close the session correctly
+                 */
+                log.debug("EJBAccessException while closing session for repository " +
+                        serverName);
+            } catch (Exception e) {
+                log.error("Error closing session for repository " + serverName,
+                        e);
+            }
         }
+        sessions.clear();
     }
-
 }

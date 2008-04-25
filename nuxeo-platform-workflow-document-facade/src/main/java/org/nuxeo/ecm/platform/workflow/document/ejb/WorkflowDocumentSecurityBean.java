@@ -126,10 +126,6 @@ public class WorkflowDocumentSecurityBean extends
             CoreSession docManager = getDocumentManager();
             docManager.setACP(docRef, docACP, true);
             docManager.save();
-            log.info("#############################################");
-            log.info("SAVIN' WF ACP................................");
-            log.info("Granting : " + principalName);
-            log.info("#############################################");
         } catch (SecurityException se) {
             throw new WorkflowDocumentSecurityException(se);
         } catch (ClientException ce) {
@@ -162,7 +158,7 @@ public class WorkflowDocumentSecurityBean extends
                     if (ace.getUsername().equals(principalName)
                             && ace.getPermission().equals(
                                     SecurityConstants.WRITE_LIFE_CYCLE)) {
-                        log.info("ACE removal.......");
+                        log.debug("ACE removal.");
                         acl.remove(ace);
                         updated = true;
                     }
@@ -174,9 +170,7 @@ public class WorkflowDocumentSecurityBean extends
                         CoreSession docManager = getDocumentManager();
                         docManager.setACP(docRef, docACP, true);
                         docManager.save();
-                        log.info("#######################################");
-                        log.info("participantName=" + principalName);
-                        log.info("#######################################");
+                        log.debug("participantName=" + principalName);
                     } catch (SecurityException se) {
                         throw new WorkflowDocumentSecurityException(se);
                     } catch (ClientException ce) {
@@ -199,9 +193,7 @@ public class WorkflowDocumentSecurityBean extends
                 CoreSession docManager = getDocumentManager();
                 docManager.setACP(docRef, docACP, true);
                 docManager.save();
-                log.info("#############################################");
-                log.info("REMOVIN' WF ACP..............................");
-                log.info("#############################################");
+                log.debug("Removing wf acp.");
             } catch (ClientException ce) {
                 throw new WorkflowDocumentSecurityException(ce);
             } catch (NamingException e) {
@@ -249,9 +241,7 @@ public class WorkflowDocumentSecurityBean extends
             CoreSession docManager = getDocumentManager();
             docManager.setACP(docRef, docACP, true);
             docManager.save();
-            log.info("#############################################");
-            log.info("SAVIN' WF ACP................................");
-            log.info("#############################################");
+            log.debug("Savign wf acp.");
         } catch (SecurityException se) {
             throw new WorkflowDocumentSecurityException(se);
         } catch (ClientException ce) {

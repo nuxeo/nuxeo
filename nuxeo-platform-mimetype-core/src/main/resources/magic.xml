@@ -7,6 +7,17 @@
 <description>magic file</description>
 </info>
 <match-list>
+<!-- VISIO -->
+<match>
+  <mimetype>application/visio</mimetype>
+  <extension>vsd</extension>
+  <description>Visio document</description>
+  <test offset="1664" type="string" comparator="=">V</test>
+  <test offset="1666" type="string" comparator="=">i</test>
+  <test offset="1668" type="string" comparator="=">s</test>
+  <test offset="1670" type="string" comparator="=">i</test>
+  <test offset="1672" type="string" comparator="=">o</test>
+</match>
 <match>
   <mimetype>audio/mp3</mimetype>
   <extension>mp3</extension>

@@ -20,15 +20,13 @@
 package org.nuxeo.ecm.webapp.search;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.security.PermitAll;
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletResponse;
 
@@ -39,10 +37,13 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.contexts.Context;
+import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -71,7 +72,9 @@ import au.com.bytecode.opencsv.CSVWriter;
 @Name("searchResults")
 @Scope(ScopeType.CONVERSATION)
 @Transactional
-public class SearchResultsBean extends InputController implements SearchResults {
+public class SearchResultsBean extends InputController implements SearchResults, Serializable {
+
+    private static final long serialVersionUID = -8961300556253836623L;
 
     private static final Log log = LogFactory.getLog(SearchResultsBean.class);
 
@@ -92,7 +95,7 @@ public class SearchResultsBean extends InputController implements SearchResults 
     private String newSortColumn;
 
     @In(required = false, create = true)
-    private ResultsProvidersCache resultsProvidersCache;
+    private transient ResultsProvidersCache resultsProvidersCache;
 
     @In(create = true)
     private transient ClipboardActions clipboardActions;
@@ -151,10 +154,6 @@ public class SearchResultsBean extends InputController implements SearchResults 
      * Has the effect of setting the <code>providerName</code> field.
      */
     public PagedDocumentsProvider getProvider(String providerName) throws ClientException {
-        if (providerName.equals(this.providerName) && (provider != null)) {
-            return provider;
-        }
-        this.providerName = providerName;
         provider = resultsProvidersCache.get(providerName);
         if (provider == null) {
             throw new ClientException(
@@ -191,6 +190,15 @@ public class SearchResultsBean extends InputController implements SearchResults 
     @Factory(value="searchSelectModel_simple", scope=ScopeType.EVENT)
     public SelectDataModel getResultsSelectModelSimple() throws ClientException {
         return getResultsSelectModel(SearchActionsBean.QM_SIMPLE);
+    }
+
+    // GR TODO use a provider invalidation event
+    @Observer(value = { org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHILDREN_CHANGED }, create = false)
+    public void refreshSelectModels() {
+        Context context = Contexts.getEventContext();
+        context.remove("searchSelectModel_simple");
+        context.remove("searchSelectModel_nxql");
+        context.remove("searchSelectModel_advanced");
     }
 
     public SelectDataModel getResultsSelectModel(String providerName) throws ClientException {

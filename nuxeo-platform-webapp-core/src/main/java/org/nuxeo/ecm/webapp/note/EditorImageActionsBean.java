@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webapp.note;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +61,7 @@ import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.webapp.base.InputController;
 
 /**
- * Bean implementing actions related to inserting an image in a Note document.
+ * Seam component implementing actions related to inserting an image in a Note document.
  * <p>
  * The uploaded image is stored in the <code>files</code> schema of the
  * document.
@@ -73,11 +74,10 @@ import org.nuxeo.ecm.webapp.base.InputController;
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  *
  */
-
 @Name("editorImageActions")
 @Scope(CONVERSATION)
 public class EditorImageActionsBean extends InputController implements
-        EditorImageActions {
+        EditorImageActions, Serializable {
 
     private static final String SEARCH_QUERY = "SELECT * FROM Document WHERE %s";
 
@@ -99,9 +99,11 @@ public class EditorImageActionsBean extends InputController implements
         SIZES.add(m);
     }
 
+    private static final long serialVersionUID = 8716548847393060676L;
+
     private static final Log log = LogFactory.getLog(EditorImageActionsBean.class);
 
-    @In(create = true)
+    @In(create = true, required = false)
     private transient CoreSession documentManager;
 
     @RequestParameter

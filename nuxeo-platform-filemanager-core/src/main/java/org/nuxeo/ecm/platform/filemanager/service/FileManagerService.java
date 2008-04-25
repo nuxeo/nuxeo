@@ -79,7 +79,7 @@ import org.nuxeo.runtime.model.Extension;
  * FileManager registry service.
  * <p>
  * This is the component to request to perform transformations. See API.
- * 
+ *
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
  *         Kalogeropoulos</a>
  */
@@ -264,7 +264,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
         for (String namePlug : fileImporters.keySet()) {
             Plugin importer = fileImporters.get(namePlug);
-            if (importer.matches(input.getMimeType())) {
+            if (importer.isEnabled() && importer.matches(input.getMimeType())) {
                 return importer.create(documentManager, input, path, overwrite,
                         fullName, getTypeService());
             }
@@ -487,12 +487,41 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         String name = pluginExtension.getName();
         List<String> filters = pluginExtension.getFilters();
         String className = pluginExtension.getClassName();
+        boolean enabled = pluginExtension.isEnabled();
 
-        Plugin plugin = (Plugin) extension.getContext().loadClass(className).newInstance();
-        plugin.setName(name);
-        plugin.setFilters(filters);
-        plugin.setFileManagerService(this);
-        fileImporters.put(name, plugin);
+        if (fileImporters.containsKey(name))
+        {
+            log.info("Overriding FileImporter plugin " + name);
+            if (className!=null)
+            {
+                Plugin plugin = (Plugin) extension.getContext().loadClass(className).newInstance();
+                plugin.setName(name);
+                plugin.setFilters(filters);
+                plugin.setFileManagerService(this);
+                plugin.setEnabled(enabled);
+                fileImporters.put(name, plugin);
+            }
+            else
+            {
+                Plugin plugin = fileImporters.get(name);
+
+                if (filters!=null && filters.size()>0)
+                {
+                    plugin.setFilters(filters);
+                }
+                plugin.setEnabled(enabled);
+                plugin.setFileManagerService(this);
+            }
+        }
+        else
+        {
+            Plugin plugin = (Plugin) extension.getContext().loadClass(className).newInstance();
+            plugin.setName(name);
+            plugin.setFilters(filters);
+            plugin.setFileManagerService(this);
+            plugin.setEnabled(enabled);
+            fileImporters.put(name, plugin);
+        }
         log.info("registered file importer: " + name);
     }
 

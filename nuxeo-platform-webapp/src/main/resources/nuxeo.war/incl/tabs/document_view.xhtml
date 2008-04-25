@@ -65,24 +65,16 @@
           </h:panelGroup>
         </nxu:methodResult>
 
-      <nxu:methodResult name="immutable" value="#{currentDocument.hasFacet('Immutable')}">
-        <nxu:methodResult name="onlineEditable" value="#{conversionActions.isFileOnlineEditable(field.fullName)}">
-          <nxu:methodResult name="isLiveEditable" value="#{lockActions.isCurrentDocumentLiveEditable()}">
-            <h:panelGroup rendered="#{!immutable and onlineEditable and isLiveEditable}">
+        <nxu:methodResult name="isLiveEditable"
+          value="#{liveEditHelper.isCurrentDocumentLiveEditable(field.schemaName, field.fieldName)}">
+          <h:panelGroup rendered="#{isLiveEditable}">
             <h:outputText value=" | " />
-
-            <!-- TODO: factorize rendered logics in a dedicated component: NXP-2190 -->
-            
             <h:outputLink
-              value="#{nxd:liveEditUrl(changeableDocument, field.schemaName, field.fieldName, 'filename')}"
-              rendered="#{documentActions.writeRight}">
+              value="#{nxd:liveEditUrl(changeableDocument, field.schemaName, field.fieldName, 'filename')}">
               <h:outputText value="#{messages['label.document.directEdit']}" />
             </h:outputLink> 
-
-            </h:panelGroup>
-          </nxu:methodResult>
+          </h:panelGroup>
         </nxu:methodResult>
-      </nxu:methodResult>
 
       </h:outputText>
 

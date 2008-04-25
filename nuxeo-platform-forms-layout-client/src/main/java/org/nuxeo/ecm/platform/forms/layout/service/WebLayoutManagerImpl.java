@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
+import javax.el.VariableMapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,6 +48,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutRowImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeImpl;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetTypeDescriptor;
+import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeHandler;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -54,6 +56,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
+import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagConfig;
 
 /**
@@ -149,7 +152,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         WidgetType widgetType = new WidgetTypeImpl(name, widgetTypeClass,
                 desc.getProperties());
         widgetTypeRegistry.put(name, widgetType);
-        log.info(String.format("Widget type %s registered", name));
+        log.info("Registered widget type: " + name);
     }
 
     private void unregisterWidgetType(Object contribution) {
@@ -157,7 +160,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         String name = desc.getName();
         if (widgetTypeRegistry.containsKey(name)) {
             widgetTypeRegistry.remove(name);
-            log.info(String.format("Widget type %s unregistered", name));
+            log.debug("Unregistered widget type: " + name);
         }
     }
 
@@ -171,7 +174,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
             layoutRegistry.remove(name);
         }
         layoutRegistry.put(name, layoutDef);
-        log.info(String.format("Layout %s registered", name));
+        log.info("Registered layout: " + name);
     }
 
     private void unregisterLayout(Object contribution) {
@@ -179,7 +182,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         String name = layoutDef.getName();
         if (layoutRegistry.containsKey(name)) {
             layoutRegistry.remove(name);
-            log.info(String.format("Layout %s unregistered", name));
+            log.debug("Unregistered layout: " + name);
         }
     }
 
@@ -215,17 +218,18 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
     /**
      * Evaluates an EL expression in given context.
      * <p>
-     * If the expression resolves to an EL expression, evaluate it agai: this is
+     * If the expression resolves to an EL expression, evaluate it again this is
      * useful when retrieving the expression from a configuration file.
      * <p>
-     * If given context is null, do no try to evaluarte it and return the
+     * If given context is null, do no try to evaluate it and return the
      * expression itself.
      *
      * @param context the facelet context.
      * @param expression the string expression.
      * @return
      */
-    private static Object evaluateExpression(FaceletContext context, String expression) {
+    private static Object evaluateExpression(FaceletContext context,
+            String expression) {
         if (expression == null) {
             return null;
         }
@@ -253,7 +257,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
     /**
      * Evaluates an expression to a boolean value.
      */
-    private static Boolean getBooleanValue(FaceletContext context, String expression) {
+    private static Boolean getBooleanValue(FaceletContext context,
+            String expression) {
         Object value = evaluateExpression(context, expression);
         if (value instanceof Boolean) {
             return (Boolean) value;
@@ -268,7 +273,8 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
     /**
      * Evaluates an expression to a string value.
      */
-    private static String getStringValue(FaceletContext context, String expression) {
+    private static String getStringValue(FaceletContext context,
+            String expression) {
         Object value = evaluateExpression(context, expression);
         if (value == null || value instanceof String) {
             return (String) value;
@@ -302,14 +308,32 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
      * Sub widgets are also computed recursively.
      */
     private Widget getWidget(FaceletContext context, LayoutDefinition lDef,
-            WidgetDefinition wDef, String layoutMode, String valueName) {
+            WidgetDefinition wDef, String layoutMode, String valueName,
+            int level) {
+        VariableMapper orig = null;
+        // avoid variable mapper changes if context is null for tests
+        if (context != null) {
+            // expose widget mode so that it can be used in a mode el expression
+            orig = context.getVariableMapper();
+            VariableMapper vm = new VariableMapperWrapper(orig);
+            context.setVariableMapper(vm);
+            ExpressionFactory eFactory = context.getExpressionFactory();
+            ValueExpression modeVe = eFactory.createValueExpression(layoutMode,
+                    String.class);
+            vm.setVariable(RenderVariables.globalVariables.mode.name(), modeVe);
+        }
         String wMode = getModeFromLayoutMode(context, wDef, layoutMode);
+        if (context != null) {
+            context.setVariableMapper(orig);
+        }
+
         if (BuiltinWidgetModes.HIDDEN.equals(wMode)) {
             return null;
         }
         List<Widget> subWidgets = new ArrayList<Widget>();
         for (WidgetDefinition swDef : wDef.getSubWidgetDefinitions()) {
-            Widget subWidget = getWidget(context, lDef, swDef, wMode, valueName);
+            Widget subWidget = getWidget(context, lDef, swDef, wMode,
+                    valueName, level + 1);
             if (subWidget != null) {
                 subWidgets.add(subWidget);
             }
@@ -321,7 +345,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
                 wDef.getType(), valueName, wDef.getFieldDefinitions(),
                 wDef.getLabel(layoutMode), wDef.getHelpLabel(layoutMode),
                 wDef.isTranslated(), wDef.getProperties(layoutMode, wMode),
-                required, subWidgets.toArray(new Widget[]{}));
+                required, subWidgets.toArray(new Widget[] {}), level);
         return widget;
     }
 
@@ -354,7 +378,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
                     widgets.add(null);
                     continue;
                 }
-                Widget widget = getWidget(ctx, lDef, wDef, mode, valueName);
+                Widget widget = getWidget(ctx, lDef, wDef, mode, valueName, 0);
                 if (widget != null) {
                     emptyRow = false;
                 }
@@ -383,7 +407,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
                     subHandlersList.add(getFaceletHandler(ctx, config,
                             subWidget));
                 }
-                subHandlers = subHandlersList.toArray(new FaceletHandler[]{});
+                subHandlers = subHandlersList.toArray(new FaceletHandler[] {});
             }
             FaceletHandler fHandler = handler.getFaceletHandler(ctx, config,
                     widget, subHandlers);
@@ -408,7 +432,7 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
         }
         Widget widget = new WidgetImpl("layout", "widget", mode, type,
                 valueName, null, null, null, required, properties, required,
-                subWidgets);
+                subWidgets, 0);
         return widget;
     }
 }

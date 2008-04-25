@@ -27,7 +27,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.faces.component.EditableValueHolder;
@@ -197,9 +196,13 @@ final class StampState implements Externalizable {
             int i = 0;
             for (Map.Entry<String, UIComponent> entry : facetMap.entrySet()) {
                 int base = i * 2;
-                facetState[base] = entry.getKey();
-                facetState[base + 1] = saveStampState(context, entry.getValue());
-                i++;
+                UIComponent facet = entry.getValue();
+                if (!facet.isTransient()) {
+                    facetState[base] = entry.getKey();
+                    facetState[base + 1] = saveStampState(context,
+                            entry.getValue());
+                    i++;
+                }
             }
         }
 
@@ -210,16 +213,15 @@ final class StampState implements Externalizable {
         if (childCount == 0) {
             childStateArray = _EMPTY_ARRAY;
         } else {
-            List<UIComponent> children = stamp.getChildren();
             childStateArray = new Object[childCount];
             boolean wasAllTransient = true;
-            for (int i = 0; i < childCount; i++) {
-                UIComponent child = children.get(i);
-                Object childState = saveStampState(context, child);
-                if (childState != null) {
+            int i = 0;
+            for (UIComponent child: stamp.getChildren()) {
+                if (!child.isTransient()) {
                     wasAllTransient = false;
+                    childStateArray[i] = saveStampState(context, child);
+                    i++;
                 }
-                childStateArray[i] = childState;
             }
 
             // If all we found were transient components, just use
@@ -243,6 +245,9 @@ final class StampState implements Externalizable {
     @SuppressWarnings("unchecked")
     public static void restoreStampState(FacesContext context,
             UIComponent stamp, Object stampState) {
+        if (stampState == null || stamp == null) {
+            return;
+        }
         Object[] state = (Object[]) stampState;
 
         Object[] selfState = (Object[]) state[0];
@@ -270,12 +275,14 @@ final class StampState implements Externalizable {
             restoreStampState(context, stamp.getFacet(facetName), facetState);
         }
 
-        List<UIComponent> children = stamp.getChildren();
         Object[] childStateArray = (Object[]) state[2];
-        int childIndex = 0;
-        for (Object childState : childStateArray) {
-            restoreStampState(context, children.get(childIndex), childState);
-            childIndex++;
+        int childArrayCount = childStateArray.length;
+        int i = 0;
+        for (UIComponent child: stamp.getChildren()) {
+            if (!child.isTransient() && i < childArrayCount) {
+                restoreStampState(context, child, childStateArray[i]);
+                i++;
+            }
         }
     }
 

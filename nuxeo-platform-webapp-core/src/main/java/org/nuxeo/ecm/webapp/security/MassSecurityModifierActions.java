@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webapp.security;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.util.List;
+import java.io.Serializable;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -35,16 +36,18 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 
 @Name("massSecurityModifierActions")
 @Scope(CONVERSATION)
-public class MassSecurityModifierActions {
+public class MassSecurityModifierActions implements Serializable {
+
+    private static final long serialVersionUID = 4978984433628773791L;
 
     @In(required = true, create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
     protected transient DocumentsListsManager documentsListsManager;
 
-    @In(create = true)
-    protected CoreSession documentManager;
+    @In(create = true, required = false)
+    protected transient CoreSession documentManager;
 
     private Boolean blockRightInheritance;
 

@@ -35,8 +35,6 @@ public class TransformerExtensionPointHandler extends
     public static void unregisterExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
 
-        log.info("unregisterExtension()....................................");
-
         for (Object contrib : contribs) {
             TransformerExtension transformerExtension = (TransformerExtension) contrib;
 
@@ -75,7 +73,7 @@ public class TransformerExtensionPointHandler extends
             Transformer transformer = (Transformer) extension.getContext()
                     .loadClass(className).newInstance();
             transformer.setName(name);
-            log.debug("Plugin chains ..........." + pluginsChain.getPluginsChain());
+            log.debug("Registering plugin chain: " + pluginsChain.getPluginsChain());
             transformer.setPluginChains(pluginsChain.getPluginsChain());
             transformer.setDefaultOptions(pluginsChain.getDefaultPluginOptions());
 

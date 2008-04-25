@@ -28,7 +28,6 @@ import org.nuxeo.ecm.platform.workflow.jbpm.util.IDConverter;
 /**
  * This abc overrides the process to document ref binding for the post
  * moderation workflow.
- *
  * <p>
  * Here, we'd like to bind the process not with the post itself but with the
  * thread since the post is right now an hidden object (i.e : comment). Like
@@ -36,13 +35,14 @@ import org.nuxeo.ecm.platform.workflow.jbpm.util.IDConverter;
  * will be able to access it from dashboard. The rest of the API won't be
  * changed since the security and the life cycle will be updated on the post
  * itself.
- * </p>
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
  */
 public abstract class AbstractForumWorkflowDocumentHandler extends
         AbstractWorkflowDocumentActionHandler {
+
+    private static final long serialVersionUID = -6261503316926918463L;
 
     protected AbstractForumWorkflowDocumentHandler() {
     }

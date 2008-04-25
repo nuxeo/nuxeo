@@ -46,7 +46,7 @@ import org.restlet.resource.OutputRepresentation;
 
 /**
  * Restlet to help LiveEdit clients download the blob content of a document
- * 
+ *
  * @author Sun Tan <stan@nuxeo.com>
  * @author Olivier Grisel <ogrisel@nuxeo.com>
  */
@@ -85,17 +85,29 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements
             handleError(res, e);
             return;
         }
-        String schemaName = getQueryParamValue(req, SCHEMA, DEFAULT_SCHEMA);
-        String blobFieldName = getQueryParamValue(req, BLOB_FIELD,
-                DEFAULT_BLOB_FIELD);
-        String filenameFieldName = getQueryParamValue(req, FILENAME_FIELD,
-                DEFAULT_FILENAME_FIELD);
 
         try {
+            final String filename;
+            final Blob blob;
 
-            final String filename = (String) dm.getProperty(schemaName,
-                    filenameFieldName);
-            final Blob blob = (Blob) dm.getProperty(schemaName, blobFieldName);
+            String blobPropertyName = getQueryParamValue(req,
+                    BLOB_PROPERTY_NAME, null);
+            String filenamePropertyName = getQueryParamValue(req,
+                    FILENAME_PROPERTY_NAME, null);
+            if (blobPropertyName != null && filenamePropertyName != null) {
+                filename = (String) dm.getPropertyValue(filenamePropertyName);
+                blob = (Blob) dm.getPropertyValue(blobPropertyName);
+            } else {
+                String schemaName = getQueryParamValue(req, SCHEMA,
+                        DEFAULT_SCHEMA);
+                String blobFieldName = getQueryParamValue(req, BLOB_FIELD,
+                        DEFAULT_BLOB_FIELD);
+                String filenameFieldName = getQueryParamValue(req,
+                        FILENAME_FIELD, DEFAULT_FILENAME_FIELD);
+                filename = (String) dm.getProperty(schemaName,
+                        filenameFieldName);
+                blob = (Blob) dm.getProperty(schemaName, blobFieldName);
+            }
 
             final File tempfile = File.createTempFile(
                     "nuxeo-downloadrestlet-tmp", "");

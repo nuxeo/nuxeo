@@ -20,10 +20,12 @@
 package org.nuxeo.ecm.core.search.service;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,12 +72,15 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.I
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.IndexableDocTypeDescriptor;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.ResourceType;
 import org.nuxeo.ecm.core.search.api.internals.IndexingThreadPoolDescriptor;
+import org.nuxeo.ecm.core.search.api.internals.SearchPolicyDescriptor;
 import org.nuxeo.ecm.core.search.api.internals.SearchServiceInternals;
+import org.nuxeo.ecm.core.search.api.security.SearchPolicy;
 import org.nuxeo.ecm.core.search.api.security.SearchPolicyService;
 import org.nuxeo.ecm.core.search.backend.SearchEngineBackendDescriptor;
 import org.nuxeo.ecm.core.search.threading.IndexingThreadPool;
 import org.nuxeo.ecm.core.search.transaction.Transactions;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -117,6 +122,8 @@ public class SearchServiceImpl extends DefaultComponent implements
     private static final String PT_EVENTS = "indexingEvent";
 
     private static final String PT_INDEXING_THREAD_POOL = "indexingThreadPool";
+
+    private static final String PT_POLICIES = "policies";
 
     /** Is the search service enabled ? */
     private boolean activated = true;
@@ -180,13 +187,30 @@ public class SearchServiceImpl extends DefaultComponent implements
     /** Registry of blob extractors * */
     private final Map<String, BlobExtractor> blobExtractors = new HashMap<String, BlobExtractor>();
 
-    /** Registre of resource types * */
+    /** Registry of resource types * */
     private final Map<String, ResourceTypeDescriptor> resourceTypes = new HashMap<String, ResourceTypeDescriptor>();
+
+    private Map<String, SearchPolicyDescriptor> policyDescriptors;
+
+    private List<SearchPolicy> policies;
 
     private SchemaManager typeManagerService;
 
     /** Used for 2-phase registration of backends * */
     private boolean backendsConstructed = false;
+
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        policyDescriptors = new Hashtable<String, SearchPolicyDescriptor>();
+        super.activate(context);
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) throws Exception {
+        policyDescriptors = null;
+        policies = null;
+        super.deactivate(context);
+    }
 
     /**
      * Adds a computed indexable resource conf in cache.
@@ -342,8 +366,7 @@ public class SearchServiceImpl extends DefaultComponent implements
                         + e.getMessage());
             }
         }
-        log.info("Search Engine backend with name=" + desc.getName()
-                + " has been instantiated");
+        log.debug("Instantiated search engine backend: " + desc.getName());
         String configurationFileName = desc.getConfigurationFileName();
         engine.setName(desc.getName());
         engine.setConfigurationFileName(configurationFileName);
@@ -368,10 +391,9 @@ public class SearchServiceImpl extends DefaultComponent implements
                 try {
                     String name = desc.getName();
                     backendDescriptors.put(name, desc);
-                    log.info("Search engine descriptor " + " with name=" + name
-                            + " has been registered.");
+                    log.debug("Registered search engine descriptor: " + name);
                     defaultBackendName = name;
-                    log.info(name + " registered as DEFAULT backend");
+                    // log.debug(name + " registered as DEFAULT backend");
                 } catch (NullPointerException ne) {
                     ne.printStackTrace();
                 }
@@ -391,11 +413,9 @@ public class SearchServiceImpl extends DefaultComponent implements
                 prefixedResources.put(conf.getPrefix(), conf);
                 removeFromCache(conf);
                 if (isOverride) {
-                    log.info("Indexable resource with name=" + resourceName
-                            + "has been overridden");
+                    log.info("Reregistered resource:" + resourceName);
                 } else {
-                    log.info("Indexable resource with name=" + resourceName
-                            + " has been registered");
+                    log.info("Registered resource: " + resourceName);
                 }
             } else {
                 log.warn("You need to supply a resource name...");
@@ -405,8 +425,7 @@ public class SearchServiceImpl extends DefaultComponent implements
             ResourceTypeDescriptor desc = (ResourceTypeDescriptor) contribution;
             if (desc.getName() != null) {
                 resourceTypes.put(desc.getName(), desc);
-                log.info("Resource type with name = " + desc.getName()
-                        + " has been registered");
+                log.info("Registered resource type: " + desc.getName());
             } else {
                 log.warn("Resource type can't be registered cause no type name specified");
             }
@@ -420,8 +439,7 @@ public class SearchServiceImpl extends DefaultComponent implements
             String docType = desc.getType();
             if (docType != null) {
                 docType2IndexableResourceTypes.put(docType, desc);
-                log.info("Doc type 2 indexable resources done for type="
-                        + docType);
+                log.info("Registered indexable doc type: " + docType);
             } else {
                 log.error("type is compulsory......."
                         + " Skipping contribution...");
@@ -429,13 +447,11 @@ public class SearchServiceImpl extends DefaultComponent implements
 
         } else if (extensionPoint.equals(PT_FULLTEXT)) {
             FulltextFieldDescriptor desc = (FulltextFieldDescriptor) contribution;
-            log.info("Registering fulltext descriptor with name="
-                    + desc.getName());
+            log.info("Registered fulltext: " + desc.getName());
             fullTextDescriptors.put(desc.getName(), desc);
         } else if (extensionPoint.equals(PT_EVENTS)) {
             IndexingEventDescriptor desc = (IndexingEventDescriptor) contribution;
-            log.info("Registering indexing event descriptor with name ="
-                    + desc.getName());
+            log.info("Registered event: " + desc.getName());
             indexingEvents.put(desc.getName(), desc);
         } else if (extensionPoint.equals(PT_BLOB_EXTRACTOR_DESC)) {
             BlobExtractorDescriptor desc = (BlobExtractorDescriptor) contribution;
@@ -451,7 +467,9 @@ public class SearchServiceImpl extends DefaultComponent implements
             IndexingThreadPoolDescriptor desc = (IndexingThreadPoolDescriptor) contribution;
             setNumberOfIndexingThreads(desc.getMaxPoolSize());
             setIndexingDocBatchSize(desc.getDocBatchSize());
-
+        } else if (extensionPoint.equals(PT_POLICIES)) {
+            SearchPolicyDescriptor desc = (SearchPolicyDescriptor) contribution;
+            registerSearchPolicyDescriptor(desc);
         } else {
             log.error("Wrong extension point name for registration..."
                     + " Check your fragments...=>" + extensionPoint);
@@ -469,8 +487,8 @@ public class SearchServiceImpl extends DefaultComponent implements
             SearchEngineBackendDescriptor desc = (SearchEngineBackendDescriptor) contribution;
 
             if (desc.getName() != null) {
-                log.info("Starting a search engine plugin unregistration "
-                        + "with name=" + desc.getName());
+                log.debug("Starting a search engine plugin unregistration " +
+                        "with name=" + desc.getName());
                 backends.remove(desc.getName());
             } else {
                 log.error("No name for the supplied search engine plugin "
@@ -488,15 +506,15 @@ public class SearchServiceImpl extends DefaultComponent implements
 
             removeFromCache(schema);
 
-            log.info("Indexable schema with name=" + schema.getName()
-                    + " has been unregistered");
+            log.debug("Indexable schema with name=" + schema.getName() +
+                    " has been unregistered");
 
         } else if (extensionPoint.equals(PT_RESOURCE_TYPE)) {
             ResourceTypeDescriptor desc = (ResourceTypeDescriptor) contribution;
             if (desc.getName() != null) {
                 resourceTypes.remove(desc.getName());
-                log.info("Resource type with name = " + desc.getName()
-                        + " has been unregistered");
+                log.debug("Resource type with name = " + desc.getName() +
+                        " has been unregistered");
             } else {
                 log.warn("Resource type can't be registered cause no type name specified");
             }
@@ -511,23 +529,26 @@ public class SearchServiceImpl extends DefaultComponent implements
             if (docType != null) {
                 if (docType2IndexableResourceTypes.containsKey(docType)) {
                     docType2IndexableResourceTypes.remove(docType);
-                    log.info("Unregister doctype to indexable resources "
-                            + "mapping for doctype=" + docType);
+                    log.debug("Unregister doctype to indexable resources " +
+                            "mapping for doctype=" + docType);
                 }
             }
 
         } else if (extensionPoint.equals(PT_FULLTEXT)) {
             FulltextFieldDescriptor desc = (FulltextFieldDescriptor) contribution;
             if (fullTextDescriptors.containsKey(desc.getName())) {
-                log.info("Unregistering fulltext descriptor with name"
-                        + desc.getName());
+                log.debug("Unregistering fulltext descriptor with name" +
+                        desc.getName());
                 fullTextDescriptors.remove(desc.getName());
             }
         } else if (extensionPoint.equals(PT_BLOB_EXTRACTOR_DESC)) {
             BlobExtractorDescriptor desc = (BlobExtractorDescriptor) contribution;
             blobExtractors.remove(desc.getName());
-            log.info("Full text extractor with name : " + desc.getName()
-                    + " has been unregistered");
+            log.debug("Full text extractor with name : " + desc.getName() +
+                    " has been unregistered");
+        } else if (extensionPoint.equals(PT_POLICIES)) {
+            SearchPolicyDescriptor desc = (SearchPolicyDescriptor) contribution;
+            unregisterSearchPolicyDescriptor(desc);
         } else {
             log.debug("Nothing to do to unregister contrib=" + extensionPoint);
         }
@@ -620,13 +641,18 @@ public class SearchServiceImpl extends DefaultComponent implements
             String backendName = defaultBackendName;
             SearchEngineBackend backend = getSearchEngineBackendByName(backendName);
             if (backend != null) {
-                // Security Policy
+                // old search policy
                 PolicyService policyService = Framework.getLocalService(PolicyService.class);
                 if (policyService != null) {
                     SearchPolicyService searchPolicyService = (SearchPolicyService) policyService.getSearchPolicy();
                     if (searchPolicyService != null) {
                         nxqlQuery = searchPolicyService.applyPolicy(nxqlQuery);
                     }
+                }
+                // new search policy
+                List<SearchPolicy> policies = getSearchPolicies();
+                for (SearchPolicy policy : policies) {
+                    nxqlQuery = policy.applyPolicy(nxqlQuery);
                 }
                 return backend.searchQuery(nxqlQuery, offset, range);
             } else {
@@ -740,7 +766,7 @@ public class SearchServiceImpl extends DefaultComponent implements
     }
 
     public final void setStatus(boolean active) {
-        log.info("SEARCH SERVICE SET TO STATUS=" + active);
+        log.debug("Set to status: " + active);
         activated = active;
     }
 
@@ -959,13 +985,13 @@ public class SearchServiceImpl extends DefaultComponent implements
 
     public void setIndexingDocBatchSize(int docBatchSize) {
         this.docBatchSize = docBatchSize;
-        log.info("Set the document batch size for indexing session with size="
-                + Integer.toString(this.docBatchSize));
+        log.info("Setting indexing batch size: " +
+                Integer.toString(this.docBatchSize));
     }
 
     public void setNumberOfIndexingThreads(int numberOfIndexingThreads) {
-        log.info("Set the indexing thread pool size with size="
-                + Integer.toString(numberOfIndexingThreads));
+        log.info("Setting indexing thread pool size: " +
+                Integer.toString(numberOfIndexingThreads));
         this.threadPoolSizeMax = numberOfIndexingThreads;
     }
 
@@ -978,7 +1004,7 @@ public class SearchServiceImpl extends DefaultComponent implements
             SearchEngineBackend backend = getDefaultBackend();
             if (backend != null) {
                 backend.saveAllSessions();
-                log.info("Saving all sessions...");
+                log.debug("Saving all sessions");
             } else {
                 log.warn("No search engine backend found !");
             }
@@ -1059,7 +1085,7 @@ public class SearchServiceImpl extends DefaultComponent implements
 
     protected void beginUTransaction() {
         try {
-            log.info("Beginning transaction prior to flushing sessions");
+            log.debug("Beginning transaction prior to flushing sessions");
             Transactions.getUserTransaction().begin();
         } catch (Exception e) {
             throw new IllegalStateException("Could not start transaction", e);
@@ -1069,10 +1095,10 @@ public class SearchServiceImpl extends DefaultComponent implements
     protected void commitOrRollbackUTransaction() {
         try {
             if (Transactions.isTransactionActive()) {
-                log.info("committing transaction after flushing sessions");
+                log.debug("Committing transaction after flushing sessions");
                 Transactions.getUserTransaction().commit();
             } else if (Transactions.isTransactionMarkedRollback()) {
-                log.info("rolling back transaction after flushing sessions");
+                log.debug("Rolling back transaction after flushing sessions");
                 Transactions.getUserTransaction().rollback();
             }
         } catch (Exception e) {
@@ -1080,6 +1106,67 @@ public class SearchServiceImpl extends DefaultComponent implements
             throw new IllegalStateException("Could not commit transaction", e);
         }
 
+    }
+
+    // search policy methods
+
+    private void computeSearchPolicies() {
+        policies = new ArrayList<SearchPolicy>();
+        List<SearchPolicyDescriptor> orderedDescriptors = new ArrayList<SearchPolicyDescriptor>();
+        for (SearchPolicyDescriptor descriptor : policyDescriptors.values()) {
+            if (descriptor.isEnabled()) {
+                orderedDescriptors.add(descriptor);
+            }
+        }
+        Collections.sort(orderedDescriptors);
+        List<String> policyNames = new ArrayList<String>();
+        for (SearchPolicyDescriptor descriptor : orderedDescriptors) {
+            if (descriptor.isEnabled()) {
+                try {
+                    Object policy = descriptor.getPolicy().newInstance();
+                    if (policy instanceof SearchPolicy) {
+                        policies.add((SearchPolicy) policy);
+                        policyNames.add(descriptor.getName());
+                    } else {
+                        log.error(String.format(
+                                "Invalid contribution to search policy %s:"
+                                        + " must implement SearchPolicy interface",
+                                descriptor.getName()));
+                    }
+                } catch (Exception e) {
+                    log.error(e);
+                }
+            }
+        }
+        log.debug("Ordered search policies: " + policyNames.toString());
+    }
+
+    private List<SearchPolicy> getSearchPolicies() {
+        if (policies == null) {
+            computeSearchPolicies();
+        }
+        return policies;
+    }
+
+    private void resetSearchPolicies() {
+        policies = null;
+    }
+
+    private void registerSearchPolicyDescriptor(SearchPolicyDescriptor descriptor) {
+        String id = descriptor.getName();
+        if (policyDescriptors.containsKey(id)) {
+            log.info("Overriding security policy: " + id);
+        }
+        policyDescriptors.put(id, descriptor);
+        resetSearchPolicies();
+    }
+
+    private void unregisterSearchPolicyDescriptor(SearchPolicyDescriptor descriptor) {
+        String id = descriptor.getName();
+        if (policyDescriptors.containsKey(id)) {
+            policyDescriptors.remove(id);
+            resetSearchPolicies();
+        }
     }
 
 }

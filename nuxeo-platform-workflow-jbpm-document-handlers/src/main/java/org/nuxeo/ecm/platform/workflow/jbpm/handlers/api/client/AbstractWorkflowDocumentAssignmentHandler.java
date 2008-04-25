@@ -35,6 +35,8 @@ import org.nuxeo.ecm.platform.workflow.jbpm.handlers.api.common.AbstractWorkflow
 public abstract class AbstractWorkflowDocumentAssignmentHandler extends
         AbstractWorkflowDocumentHandler implements AssignmentHandler {
 
+    private static final long serialVersionUID = -2298626866617618961L;
+
     protected AbstractWorkflowDocumentAssignmentHandler() {
     }
 

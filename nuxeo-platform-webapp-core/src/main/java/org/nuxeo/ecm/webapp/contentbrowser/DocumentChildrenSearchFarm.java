@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.webapp.contentbrowser;
 
+import java.io.Serializable;
+
 import static org.jboss.seam.ScopeType.SESSION;
 
 import org.jboss.seam.annotations.In;
@@ -44,7 +46,9 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 @Name("documentChildrenSearchFarm")
 @Scope(SESSION)
 public class DocumentChildrenSearchFarm extends InputController implements
-        ResultsProviderFarm {
+        ResultsProviderFarm, Serializable {
+
+    private static final long serialVersionUID = 8331654530334881666L;
 
     // Result providers
     // public static final String CHILDREN_BY_SEARCH =
@@ -55,10 +59,10 @@ public class DocumentChildrenSearchFarm extends InputController implements
     private static final String FILTER_FIELD_NAME_PARENT_ID = "query_parentId";
 
     @In(create = true)
-    private QueryModelActions queryModelActions;
+    private transient QueryModelActions queryModelActions;
 
     @In(create = true)
-    private ResultsProvidersCache resultsProvidersCache;
+    private transient ResultsProvidersCache resultsProvidersCache;
 
     public PagedDocumentsProvider getResultsProvider(String name)
             throws ClientException {

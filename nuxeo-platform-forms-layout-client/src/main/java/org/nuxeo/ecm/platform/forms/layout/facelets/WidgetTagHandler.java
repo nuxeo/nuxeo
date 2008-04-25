@@ -140,6 +140,9 @@ public class WidgetTagHandler extends MetaTagHandler implements TemplateClient {
                     Object.class);
             vm.setVariable(RenderVariables.globalVariables.value.name(),
                     valueExpr);
+            vm.setVariable(String.format("%s_%s",
+                    RenderVariables.globalVariables.value.name(),
+                    widget.getLevel()), valueExpr);
             // document as alias to value
             vm.setVariable(RenderVariables.globalVariables.document.name(),
                     valueExpr);
@@ -168,10 +171,21 @@ public class WidgetTagHandler extends MetaTagHandler implements TemplateClient {
             VariableMapper vm = ctx.getVariableMapper();
             ValueExpression subWidgetVe = ctx.getExpressionFactory().createValueExpression(
                     subWidget, Widget.class);
+            vm.setVariable(RenderVariables.widgetVariables.widget.name(),
+                    subWidgetVe);
+            vm.setVariable(String.format("%s_%s",
+                    RenderVariables.widgetVariables.widget.name(),
+                    subWidget.getLevel()), subWidgetVe);
             vm.setVariable(RenderVariables.subWidgetVariables.subWidget.name(),
                     subWidgetVe);
             ValueExpression subWidgetIndexVe = ctx.getExpressionFactory().createValueExpression(
                     subWidgetNumber, Integer.class);
+            vm.setVariable(RenderVariables.widgetVariables.widgetIndex.name(),
+                    subWidgetIndexVe);
+            vm.setVariable(String.format("%s_%s",
+                    RenderVariables.widgetVariables.widgetIndex.name(),
+                    subWidget.getLevel()), subWidgetIndexVe);
+            // BBB
             vm.setVariable(
                     RenderVariables.subWidgetVariables.subWidgetIndex.name(),
                     subWidgetIndexVe);
@@ -179,5 +193,4 @@ public class WidgetTagHandler extends MetaTagHandler implements TemplateClient {
         }
         return false;
     }
-
 }

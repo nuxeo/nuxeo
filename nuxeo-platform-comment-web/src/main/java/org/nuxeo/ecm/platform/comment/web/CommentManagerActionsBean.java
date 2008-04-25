@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.io.Serializable;
 
 import javax.faces.event.ActionEvent;
 
@@ -60,9 +61,11 @@ import org.nuxeo.ecm.webapp.security.UserSession;
 @Name("commentManagerActions")
 @Scope(CONVERSATION)
 public class CommentManagerActionsBean extends InputController implements
-        CommentManagerActions {
+        CommentManagerActions, Serializable {
 
     public static final String COMMENTS_ACTIONS = "COMMENT_ACTIONS";
+
+    private static final long serialVersionUID = 6994714264125958209L;
 
     private static final Log log = LogFactory.getLog(CommentManagerActionsBean.class);
 
@@ -72,11 +75,11 @@ public class CommentManagerActionsBean extends InputController implements
 
     boolean showCreateForm;
 
-    @In(create = true)
-    CoreSession documentManager;
+    @In(create = true, required = false)
+    transient CoreSession documentManager;
 
     @In(create = true)
-    protected WebActions webActions;
+    protected transient WebActions webActions;
 
     String newContent;
 
@@ -103,7 +106,7 @@ public class CommentManagerActionsBean extends InputController implements
     private List<UIComment> flatComments;
 
     @In
-    UserSession userSession;
+    transient UserSession userSession;
 
     @Create
     public void initialize() throws Exception {
@@ -214,7 +217,6 @@ public class CommentManagerActionsBean extends InputController implements
     /**
      * Initializes uiComments with Comments of current document.
      */
-    @Factory("documentComments")
     public void getComments() throws ClientException {
 
         commentableDoc = getCommentableDoc();

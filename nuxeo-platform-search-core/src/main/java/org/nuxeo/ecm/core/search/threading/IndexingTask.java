@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResources;
 import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingHelper;
 import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingThread;
+import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResources;
 
 /**
  * Runnable indexing task.
@@ -66,14 +67,25 @@ public class IndexingTask extends AbstractIndexingTask {
         try {
             if (dm == null) {
                 getSearchService().index(resources);
+                log.debug("Indexing task done for resource: " + resources.getId());
             } else {
                 if (recursive) {
                     IndexingHelper.recursiveIndex(dm);
+                    log.debug("Indexing task done for document: " + dm.getTitle());
+
                 } else {
-                    getSearchService().index(computeResourcesFor(dm), fulltext);
+                    IndexableResources docResources = computeResourcesFor(dm);
+                    if (docResources != null) {
+                        // We are doing asynchronous indexing, thus the document
+                        // model can have been deleted in the core repository
+                        // before we were able to compute the resources.
+                        // We need not log any warning here since
+                        // computeResourcesFor already does so
+                        getSearchService().index(docResources, fulltext);
+                        log.debug("Indexing task done for document: " + dm.getTitle());
+                    }
                 }
             }
-            log.debug("Indexing task done");
             recycledIfNeeded();
         } catch (Exception e) {
             // log complete stack trace since the Runnable.run interface does

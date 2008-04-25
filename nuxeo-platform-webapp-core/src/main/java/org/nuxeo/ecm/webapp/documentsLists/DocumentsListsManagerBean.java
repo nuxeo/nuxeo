@@ -53,11 +53,11 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
     @In(create = true)
     private ConversationDocumentsListsManager conversationDocumentsListsManager;
 
-    @In(create = true)
-    CoreSession documentManager;
+    @In(create = true, required = false)
+    transient CoreSession documentManager;
 
     @In(create=true)
-    Principal currentUser;
+    transient Principal currentUser;
 
     @Override
     protected void notifyListUpdated(String listName) {

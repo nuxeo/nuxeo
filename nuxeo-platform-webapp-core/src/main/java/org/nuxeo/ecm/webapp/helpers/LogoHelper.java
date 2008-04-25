@@ -60,7 +60,7 @@ public class LogoHelper implements Serializable{
     @In(create = true, required = false)
     transient NavigationContext navigationContext;
 
-    @In(create = true, required=false)
+    @In(create = true, required = false)
     transient CoreSession documentManager;
 
     private String lastLogoHolderKey = "";
