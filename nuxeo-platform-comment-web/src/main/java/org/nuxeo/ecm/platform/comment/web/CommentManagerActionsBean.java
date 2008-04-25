@@ -69,44 +69,44 @@ public class CommentManagerActionsBean extends InputController implements
 
     private static final Log log = LogFactory.getLog(CommentManagerActionsBean.class);
 
-    NuxeoPrincipal principal;
+    protected NuxeoPrincipal principal;
 
-    boolean principalIsAdmin;
+    protected boolean principalIsAdmin;
 
-    boolean showCreateForm;
+    protected boolean showCreateForm;
 
     @In(create = true, required = false)
-    transient CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true)
     protected transient WebActions webActions;
 
-    String newContent;
+    protected String newContent;
 
-    CommentableDocument commentableDoc;
+    protected CommentableDocument commentableDoc;
 
-    List<UIComment> uiComments;
+    protected List<UIComment> uiComments;
 
-    List<ThreadEntry> commentThread;
+    protected List<ThreadEntry> commentThread;
 
     // the id of the comment to delete
     @RequestParameter
-    String deleteCommentId;
+    protected String deleteCommentId;
 
     // the id of the comment to reply to
     @RequestParameter
-    String replyCommentId;
+    protected String replyCommentId;
 
-    String savedReplyCommentId;
+    protected String savedReplyCommentId;
 
-    private Map<String, UIComment> commentMap;
+    protected Map<String, UIComment> commentMap;
 
-    private boolean commentStarted;
+    protected boolean commentStarted;
 
-    private List<UIComment> flatComments;
+    protected List<UIComment> flatComments;
 
     @In
-    transient UserSession userSession;
+    protected transient UserSession userSession;
 
     @Create
     public void initialize() throws Exception {
@@ -132,7 +132,7 @@ public class CommentManagerActionsBean extends InputController implements
         return principalIsAdmin;
     }
 
-    private DocumentModel initializeComment(DocumentModel comment) {
+    protected DocumentModel initializeComment(DocumentModel comment) {
         if (comment != null) {
             if (comment.getProperty("dublincore", "contributors") == null) {
                 String[] contributors = new String[1];
@@ -200,7 +200,7 @@ public class CommentManagerActionsBean extends InputController implements
         cleanContextVariable();
     }
 
-    private CommentableDocument getCommentableDoc() {
+    protected CommentableDocument getCommentableDoc() {
         if (commentableDoc == null) {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             commentableDoc = currentDocument.getAdapter(CommentableDocument.class);
@@ -302,7 +302,7 @@ public class CommentManagerActionsBean extends InputController implements
     /**
      * Creates a UIComment wrapping "comment", having "parent" as parent.
      */
-    private UIComment createUIComment(UIComment parent, DocumentModel comment)
+    protected UIComment createUIComment(UIComment parent, DocumentModel comment)
             throws ClientException {
         UIComment wrapper = new UIComment(parent, comment);
         commentMap.put(wrapper.getId(), wrapper);
@@ -320,7 +320,6 @@ public class CommentManagerActionsBean extends InputController implements
             return null;
         }
         try {
-
             UIComment selectedComment = commentMap.get(commentId);
             UIComment parent = selectedComment.getParent();
             commentableDoc.removeComment(selectedComment.getComment());
@@ -424,14 +423,13 @@ public class CommentManagerActionsBean extends InputController implements
 
     public void setShowCreateForm(boolean flag) {
         showCreateForm = flag;
-
     }
 
     public void toggleCreateForm(ActionEvent event) {
         showCreateForm = !showCreateForm;
     }
 
-    private void cleanContextVariable() {
+    protected void cleanContextVariable() {
         commentableDoc = null;
         uiComments = null;
         commentThread = null;
@@ -440,5 +438,4 @@ public class CommentManagerActionsBean extends InputController implements
         savedReplyCommentId = null;
         newContent = null;
     }
-
 }
