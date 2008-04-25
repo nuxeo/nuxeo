@@ -25,6 +25,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.event.CoreEvent;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -34,6 +37,7 @@ import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.SchemaImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.ecm.platform.uidgen.corelistener.DocUIDGeneratorListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -61,6 +65,15 @@ public class TestGen extends NXRuntimeTestCase {
         geideMap.put("application_emetteur", null);
         geideMap.put("atelier_emetteur", null);
         docModel.addDataModel(new DataModelImpl("geide", geideMap));
+
+        Map<String, Object> uidMap = new HashMap<String, Object>();
+        uidMap.put("uid", null);
+        docModel.addDataModel(new DataModelImpl("uid", uidMap));
+        
+        Map<String, Object> uid2Map = new HashMap<String, Object>();
+        uid2Map.put("uid2", null);
+        docModel.addDataModel(new DataModelImpl("other_uid_schema", uid2Map));
+        
         return docModel;
     }
 
@@ -124,4 +137,43 @@ public class TestGen extends NXRuntimeTestCase {
         }
     }
 
+    /**
+     * Test multiple UID properties set.
+     * @throws Exception
+     */
+    public void testUIDGenerator3_multi() throws Exception {
+        deploy("test-uid-CoreExtensions.xml");
+
+        deploy("nxuidgenerator-bundle.xml");
+        deploy("nxuidgenerator-bundle-contrib.xml");
+
+        // create Geide doc
+        String docTypeName = "GeideDoc";
+        DocumentModel gdoc = createDocumentModel(docTypeName);
+        gdoc.setProperty("dublincore", "title", "testGdoc_Title");
+        gdoc.setProperty("dublincore", "description", "testGdoc_description");
+        gdoc.setProperty("geide", "application_emetteur", "T4");
+        gdoc.setProperty("geide", "atelier_emetteur", "ATELIER3_");
+
+        final UIDSequencer sequencer = new DummySequencer();
+        final UIDGenerator generator = UIDGenFactory.createGeneratorForDocType(
+                docTypeName, sequencer);
+
+        for (int i = 1; i < 100; i++) {
+            // local instantiation
+            // TODO make it real
+            CoreEvent event = new CoreEventImpl(DocumentEventTypes.DOCUMENT_CREATED, gdoc, null, null, null, null);
+            new DocUIDGeneratorListener().notifyEvent(event);
+            
+            //String uid = generator.createUID(gdoc);
+            String uid = (String) gdoc.getProperty("uid", "uid");
+            String uid2 = (String) gdoc.getProperty("other_uid_schema", "uid2");
+
+            final int year = new GregorianCalendar().get(Calendar.YEAR);
+            final String suffix = String.format("%05d", i);
+            final String expected = "ATELIER3_" + year + suffix;
+            assertEquals(expected, uid);
+            assertEquals(expected, uid2);
+        }
+    }
 }
