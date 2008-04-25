@@ -255,7 +255,7 @@ public class SchemaManagerImpl implements SchemaManager {
                 schema = getSchema(prefix);
             }
             if (schema != null) {
-                field = schema.getField(qname);
+                field = schema.getField(qname.getLocalName());
                 if (field != null) {
                     fields.put(prefixedName, field);
                 }
