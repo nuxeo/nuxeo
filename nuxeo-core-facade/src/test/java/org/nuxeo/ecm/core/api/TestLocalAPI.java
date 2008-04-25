@@ -546,7 +546,7 @@ public class TestLocalAPI extends TestAPI {
         }
     }
 
-    protected CoreSession openSession(String userName) throws ClientException {
+    protected static CoreSession openSession(String userName) throws ClientException {
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("username", userName);
         ctx.put("principal", new UserPrincipal(userName));
