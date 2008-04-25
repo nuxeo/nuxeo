@@ -59,7 +59,6 @@ public class DocumentContextView implements RenderingContextView {
 
     protected void initialize() {
         addField(SESSION);
-        addField(DOCUMENT);
 
         addField(ID);
         addField(NAME);
@@ -73,6 +72,9 @@ public class DocumentContextView implements RenderingContextView {
         addField(FACETS);
         addField(SCHEMAS);
         addField(LOCKED);
+        addField(LIFE_CYCLE_STATE);
+        addField(LIFE_CYCLE_POLICY);
+        addField(ALLOWED_STATE_TRANSITIONS);
         addField(IS_FOLDER);
         addField(TITLE);
         addField(AUTHOR);
@@ -83,6 +85,10 @@ public class DocumentContextView implements RenderingContextView {
         addField(PARENT);
         addField(CHILDREN);
         addField(REF);
+        addField(VERSIONS);
+        addField(PROXIES);
+        addField(VERSION_LABEL);
+        addField(SOURCE_ID);
 
     }
 
@@ -168,16 +174,6 @@ public class DocumentContextView implements RenderingContextView {
         }
     };
 
-    protected static final DocumentField DOCUMENT = new DocumentField() {
-        public final String getName() {
-            return "document";
-        }
-
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
-            return doc;
-        }
-    };
-
     protected static final DocumentField ID = new DocumentField() {
         public final String getName() {
             return "id";
@@ -257,6 +253,37 @@ public class DocumentContextView implements RenderingContextView {
             return doc.isLocked();
         }
     };
+
+    protected static final DocumentField LIFE_CYCLE_STATE = new DocumentField() {
+        public final String getName() {
+            return "lifeCycleState";
+        }
+
+        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+            return doc.getCurrentLifeCycleState();
+        }
+    };
+
+    protected static final DocumentField LIFE_CYCLE_POLICY = new DocumentField() {
+        public final String getName() {
+            return "lifeCyclePolicy";
+        }
+
+        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+            return doc.getLifeCyclePolicy();
+        }
+    };
+
+    protected static final DocumentField ALLOWED_STATE_TRANSITIONS = new DocumentField() {
+        public final String getName() {
+            return "allowedStateTransitions";
+        }
+
+        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+            return doc.getAllowedStateTransitions();
+        }
+    };
+
 
     protected static final DocumentField IS_FOLDER = new DocumentField() {
         public final String getName() {
@@ -385,6 +412,46 @@ public class DocumentContextView implements RenderingContextView {
 
         public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
             return doc.getRef();
+        }
+    };
+
+    protected static final DocumentField VERSIONS = new DocumentField() {
+        public String getName() {
+            return "versions";
+        }
+
+        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+            return CoreInstance.getInstance().getSession(doc.getSessionId()).getVersions(doc.getRef());
+        }
+    };
+
+    protected static final DocumentField PROXIES = new DocumentField() {
+        public String getName() {
+            return "proxies";
+        }
+
+        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+            return CoreInstance.getInstance().getSession(doc.getSessionId()).getProxies(doc.getRef(), null);
+        }
+    };
+
+    protected static final DocumentField VERSION_LABEL = new DocumentField() {
+        public String getName() {
+            return "versionLabel";
+        }
+
+        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+            return doc.getVersionLabel();
+        }
+    };
+
+    protected static final DocumentField SOURCE_ID = new DocumentField() {
+        public String getName() {
+            return "sourceId";
+        }
+
+        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+            return doc.getSourceId();
         }
     };
 

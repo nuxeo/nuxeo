@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.rendering.fm.adapters;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
@@ -44,9 +45,9 @@ public class DocumentObjectWrapper extends DefaultObjectWrapper {
     protected TemplateModel handleUnknownType(Object obj)
             throws TemplateModelException {
         // we want real document models ... may be we need to add getChildren on the document model
-//        if (obj instanceof DocumentModel) {
-//            return new DocumentTemplate(this, (DocumentModel)obj);
-//        } else
+        if (obj instanceof DocumentModel) {
+            return new DocumentTemplate(this, (DocumentModel)obj);
+        } else
         if (obj instanceof ListProperty) {
             return new ListPropertyTemplate(this, (ListProperty)obj);
         } else if (obj instanceof Property) {
