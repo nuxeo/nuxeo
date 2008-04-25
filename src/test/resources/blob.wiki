@@ -9,3 +9,8 @@ This is a doc expression example $doc(dc:title) or $doc(key=dc:title)
 === Dynamic Block
 This is a dynamic *block* contributed from a wiki
 )))
+
+NXP-1234
+Hello, Bogdan!
+
+End Wiki.

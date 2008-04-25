@@ -28,6 +28,7 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriter;
 import org.wikimodel.wem.PrintListener;
 import org.wikimodel.wem.WikiFormat;
+import org.wikimodel.wem.WikiPageUtil;
 import org.wikimodel.wem.WikiParameters;
 
 import freemarker.core.Environment;
@@ -42,7 +43,7 @@ public class WikiSerializerHandler extends PrintListener {
     protected static String LINE_SEP = System.getProperty("line.separator");
 
     protected WikiSerializer engine;
-    protected StringBuilder word = new StringBuilder();
+    protected StringBuilder words = new StringBuilder();
     protected RenderingContext ctx;
     protected Environment env;
     protected Writer writer;
@@ -100,26 +101,26 @@ public class WikiSerializerHandler extends PrintListener {
     }
 
     protected void beginElement() {
-        flushWord();
+        flushWords();
     }
 
     protected void endElement() {
-        flushWord();
+        flushWords();
     }
 
-    //TODO
-    protected void flushWord() {
-//        if (word.length() == 0) return;
-//        String text = word.toString();
-//        word.setLength(0);
-//        for (int i=0, len=engine.filters.size(); i<len; i++) {
-//            String result = engine.filters.get(i).apply(text);
-//            if (result != null) {
-//                print(result);
-//                return;
-//            }
-//        }
-//        print(text);
+
+    protected void flushWords() {
+        if (words.length() == 0) return;
+        String text = words.toString();
+        words.setLength(0);
+        for (int i=0, len=engine.filters.size(); i<len; i++) {
+            String result = engine.filters.get(i).apply(text);
+            if (result != null) {
+                print(result);
+                return;
+            }
+        }
+        print(text);
     }
 
     @Override
@@ -331,50 +332,50 @@ public class WikiSerializerHandler extends PrintListener {
 
     @Override
     public void onEmptyLines(int count) {
-        flushWord();
+        flushWords();
         super.onEmptyLines(count);
     }
 
     @Override
     public void onHorizontalLine() {
-        flushWord();
+        flushWords();
         super.onHorizontalLine();
     }
 
     @Override
     public void onLineBreak() {
-        flushWord();
+        flushWords();
         super.onLineBreak();
     }
 
     @Override
     public void onReference(String ref, boolean explicitLink) {
-        flushWord();
+        flushWords();
         super.onReference(ref, explicitLink);
     }
 
     @Override
     public void onTableCaption(String str) {
-        flushWord();
+        flushWords();
         super.onTableCaption(str);
     }
 
     @Override
     public void onVerbatimBlock(String str) {
-        flushWord();
+        flushWords();
         super.onVerbatimBlock(str);
     }
 
     @Override
     public void onVerbatimInline(String str) {
-        flushWord();
+        flushWords();
         super.onVerbatimInline(str);
     }
 
     @Override
     public void onMacroBlock(String macroName, WikiParameters params,
             String content) {
-        flushWord();
+        flushWords();
         WikiMacro expression = engine.macros.get(macroName);
         if (expression != null) {
             try {
@@ -390,7 +391,7 @@ public class WikiSerializerHandler extends PrintListener {
     @Override
     public void onMacroInline(String macroName, WikiParameters params,
             String content) {
-        flushWord();
+        flushWords();
         WikiMacro expression = engine.macros.get(macroName);
         if (expression != null) {
             try {
@@ -405,7 +406,7 @@ public class WikiSerializerHandler extends PrintListener {
 
     @Override
     public void onExtensionBlock(String extensionName, WikiParameters params) {
-        flushWord();
+        flushWords();
         WikiExpression expression = engine.expressions.get(extensionName);
         if (expression != null) {
             try {
@@ -420,7 +421,7 @@ public class WikiSerializerHandler extends PrintListener {
 
     @Override
     public void onExtensionInline(String extensionName, WikiParameters params) {
-        flushWord();
+        flushWords();
         WikiExpression expression = engine.expressions.get(extensionName);
         if (expression != null) {
             try {
@@ -436,41 +437,37 @@ public class WikiSerializerHandler extends PrintListener {
 
     @Override
     public void onSpecialSymbol(String str) {
-        super.onSpecialSymbol(str);
-//        if (str.length() != 1) {
-//            super.onSpecialSymbol(str);
-//        }
-//        if ("-$#@~^_=+:*".indexOf(str.charAt(0)) > -1) {
-//            word.append(str);
-//        } else {
-//            super.onSpecialSymbol(str);
-//        }
+        String entity = getSymbolEntity(str);
+        if (entity != null) {
+            words.append(entity);
+        } else { // do not escape - to be able to use filters on it
+            words.append(str);
+        }
     }
 
     @Override
     public void onSpace(String str) {
-        flushWord();
+        flushWords();
         super.onSpace(str);
     }
 
     @Override
     public void onNewLine() {
-        flushWord();
+        flushWords();
         super.onNewLine();
     }
 
 
     @Override
     public void onEscape(String str) {
-        flushWord();
-        //TODO
+        flushWords();
         super.onEscape(str);
     }
 
 
     public void onWord(String word) {
-        //this.word.append(word);
-        writeWord(word);
+        this.words.append(word);
+        //writeWord(word);
     }
 
 
@@ -483,6 +480,52 @@ public class WikiSerializerHandler extends PrintListener {
             }
         }
         print(word);
+    }
+
+
+    /**
+     * Returns an HTML/XML entity corresponding to the specified special symbol.
+     * Depending on implementation it can be real entities (like &amp;amp;
+     * &amp;lt; &amp;gt; or the corresponding digital codes (like &amp;#38;,
+     * &amp;#&amp;#38; or &amp;#8250;). Digital entity representation is better
+     * for generation of XML files.
+     *
+     * @param str the special string to convert to an HTML/XML entity
+     * @return an HTML/XML entity corresponding to the specified special symbol.
+     */
+    protected String getSymbolEntity(String str) {
+        String entity = null;
+        if (isHtmlEntities()) {
+            entity = WikiEntityUtil.getHtmlSymbol(str);
+        } else {
+            int code = WikiEntityUtil.getHtmlCodeByWikiSymbol(str);
+            if (code > 0) {
+                entity = "#" + Integer.toString(code);
+            }
+        }
+        if (entity != null) {
+            entity = "&" + entity + ";";
+            if (str.startsWith(" --")) {
+                entity = "&nbsp;" + entity + " ";
+            }
+        }
+        return entity;
+    }
+
+    /**
+     * Returns <code>true</code> if special Wiki entities should be
+     * represented as the corresponding HTML entities or they should be
+     * visualized using the corresponding XHTML codes (like &amp;amp; and so
+     * on). This method can be overloaded in subclasses to re-define the
+     * visualization style.
+     *
+     * @return <code>true</code> if special Wiki entities should be
+     *         represented as the corresponding HTML entities or they should be
+     *         visualized using the corresponding XHTML codes (like &amp;amp;
+     *         and so on).
+     */
+    protected boolean isHtmlEntities() {
+        return true;
     }
 
 }
