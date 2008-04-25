@@ -14,6 +14,7 @@
  * Contributors:
  *     Narcis Paslaru
  *     Florent Guillaume
+ *     Thierry Martins
  */
 
 package org.nuxeo.ecm.platform.publishing;
@@ -277,8 +278,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
                 } finally {
                     try {
                         repository.close(unrestrictedSession);
-                    } catch (ClientException e) {
-                        throw e;
                     } catch (Exception e) {
                         throw new ClientException(e);
                     }
