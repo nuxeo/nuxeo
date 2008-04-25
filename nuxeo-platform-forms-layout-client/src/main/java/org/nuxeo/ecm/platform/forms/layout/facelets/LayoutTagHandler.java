@@ -221,16 +221,20 @@ public class LayoutTagHandler extends TagHandler implements TemplateClient {
                     widget, Widget.class);
             vm.setVariable(RenderVariables.widgetVariables.widget.name(),
                     widgetVe);
+            Integer level = null;
+            if (widget != null) {
+                level = widget.getLevel();
+            }
             vm.setVariable(String.format("%s_%s",
-                    RenderVariables.widgetVariables.widget.name(),
-                    widget.getLevel()), widgetVe);
+                    RenderVariables.widgetVariables.widget.name(), level),
+                    widgetVe);
             ValueExpression widgetIndexVe = ctx.getExpressionFactory().createValueExpression(
                     widgetNumber, Integer.class);
             vm.setVariable(RenderVariables.widgetVariables.widgetIndex.name(),
                     widgetIndexVe);
             vm.setVariable(String.format("%s_%s",
-                    RenderVariables.widgetVariables.widgetIndex.name(),
-                    widget.getLevel()), widgetIndexVe);
+                    RenderVariables.widgetVariables.widgetIndex.name(), level),
+                    widgetIndexVe);
             widgetCounter = widgetNumber;
             return true;
         }
