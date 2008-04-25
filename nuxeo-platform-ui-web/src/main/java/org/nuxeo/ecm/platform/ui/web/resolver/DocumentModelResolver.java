@@ -81,6 +81,8 @@ public class DocumentModelResolver extends BeanELResolver {
 
     @Override
     public Object getValue(ELContext context, Object base, Object property) {
+        boolean avoidErrors = false;
+        String errorMessage = null;
         Object value = null;
         if (base instanceof DocumentModel) {
             try {
@@ -99,6 +101,9 @@ public class DocumentModelResolver extends BeanELResolver {
                 value = getDocumentPropertyValue(docProperty);
                 context.setPropertyResolved(true);
             } catch (PropertyException pe) {
+                // avoid errors, return null
+                avoidErrors = true;
+                errorMessage = pe.getMessage();
             }
         } else if (base instanceof Property) {
             try {
@@ -108,6 +113,9 @@ public class DocumentModelResolver extends BeanELResolver {
                 value = getDocumentPropertyValue(subProperty);
                 context.setPropertyResolved(true);
             } catch (PropertyException pe) {
+                // avoid errors, return null
+                avoidErrors = true;
+                errorMessage = pe.getMessage();
             }
         }
 
@@ -119,6 +127,11 @@ public class DocumentModelResolver extends BeanELResolver {
             } catch (Exception e) {
                 context.setPropertyResolved(false);
             }
+        }
+
+        if (!context.isPropertyResolved() && avoidErrors) {
+            log.error(errorMessage);
+            context.setPropertyResolved(true);
         }
 
         return value;
@@ -195,6 +208,9 @@ public class DocumentModelResolver extends BeanELResolver {
                 subProperty.setValue(value);
                 context.setPropertyResolved(true);
             } catch (PropertyException pe) {
+                // XXX avoid errors here too?
+                log.error(pe.getMessage());
+                context.setPropertyResolved(true);
             }
         }
     }
