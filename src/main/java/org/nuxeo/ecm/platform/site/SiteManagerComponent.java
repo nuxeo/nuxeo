@@ -85,9 +85,9 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
         notifier.start();
 
         // load configuration (it ill be put in pending until this component will exit activation code)
-        File file = new File(root, "web.xml");
-        XMap xmap = new XMap();
-        xmap.load(new XMapContext(context.getRuntimeContext()), new BufferedInputStream(new FileInputStream(file)));
+//        File file = new File(root, "web.xml");
+//        XMap xmap = new XMap();
+//        xmap.load(new XMapContext(context.getRuntimeContext()), new BufferedInputStream(new FileInputStream(file)));
     }
 
     @Override
