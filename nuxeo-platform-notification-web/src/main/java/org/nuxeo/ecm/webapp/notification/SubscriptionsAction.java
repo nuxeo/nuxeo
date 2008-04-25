@@ -151,7 +151,7 @@ public class SubscriptionsAction extends InputController implements
     }
 
     @Observer(EventNames.DOCUMENT_SELECTION_CHANGED)
-    public void invalidateNotificationsSelection() throws Exception {
+    public void invalidateNotificationsSelection() {
         log.debug("Invalidate archive records.................");
         notificationList = null;
         currentSubscription = null;

@@ -453,7 +453,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     @SuppressWarnings("unchecked")
-    public NuxeoGroup getGroup(DocumentModel groupEntry) throws ClientException {
+    public NuxeoGroup getGroup(DocumentModel groupEntry) {
         NuxeoGroup group = new NuxeoGroupImpl(groupEntry.getId());
         List<String> list = (List<String>) groupEntry.getProperty(
                 groupSchemaName, groupMembersField);
@@ -662,7 +662,7 @@ public class UserManagerImpl implements UserManager {
     }
 
     protected boolean isAnonymousMatching(Map<String, Object> filter,
-            Set<String> fulltext) throws ClientException {
+            Set<String> fulltext) {
         if (anonymousUserId == null) {
             return false;
         }

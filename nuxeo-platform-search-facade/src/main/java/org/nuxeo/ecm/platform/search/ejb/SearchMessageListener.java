@@ -26,6 +26,7 @@ import javax.ejb.EJBException;
 import javax.ejb.MessageDriven;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
@@ -92,6 +93,54 @@ public class SearchMessageListener implements MessageListener {
 
     public void onMessage(Message message) {
 
+        // check first preconditions
+
+        SearchService service = getSearchService();
+
+        // Check if the search service is active
+        if (!service.isEnabled()) {
+            return;
+        }
+
+        Serializable obj = null;
+        try {
+            obj = ((ObjectMessage) message).getObject();
+        } catch (JMSException e) {
+            return;
+        }
+        if (!(obj instanceof DocumentMessage)) {
+            return;
+        }
+        DocumentMessage doc = (DocumentMessage) obj;
+        String eventId = doc.getEventId();
+
+        Boolean duplicatedMessage = (Boolean) doc.getEventInfo().get(
+                EventMessage.DUPLICATED);
+        if (duplicatedMessage != null && duplicatedMessage) {
+            log.debug("Message " + eventId
+                    + " is marked as duplicated, ignoring");
+            return;
+        }
+
+        IndexingEventConf eventConf = service.getIndexingEventConfByName(eventId);
+        if (eventConf == null) {
+            log.debug("not interested about event with id=" + eventId);
+            return;
+        }
+
+        if (eventConf.getMode().equals(IndexingEventConf.ONLY_SYNC)) {
+            log.debug("Event with id=" + eventId
+                    + " should only be processed in sync");
+            return;
+        }
+
+        if (eventConf.getMode().equals(IndexingEventConf.NEVER)) {
+            log.debug("Event with id=" + eventId
+                    + " is desactivated for indexing");
+            return;
+        }
+
+        // event accepted -> login
         try {
             login();
         } catch (Exception e) {
@@ -101,46 +150,6 @@ public class SearchMessageListener implements MessageListener {
         // :XXX: deal with other events such as audit, relations, etc...
 
         try {
-
-            SearchService service = getSearchService();
-
-            // Check if the search service is active
-            if (!service.isEnabled()) {
-                return;
-            }
-
-            Serializable obj = ((ObjectMessage) message).getObject();
-            if (!(obj instanceof DocumentMessage)) {
-                return;
-            }
-            DocumentMessage doc = (DocumentMessage) obj;
-            String eventId = doc.getEventId();
-
-            Boolean duplicatedMessage = (Boolean) doc.getEventInfo().get(
-                    EventMessage.DUPLICATED);
-            if (duplicatedMessage != null && duplicatedMessage == true) {
-                log.debug("Message " + eventId
-                        + " is marked as duplicated, ignoring");
-                return;
-            }
-
-            IndexingEventConf eventConf = service.getIndexingEventConfByName(eventId);
-            if (eventConf == null) {
-                log.debug("not interested about event with id=" + eventId);
-                return;
-            }
-
-            if (eventConf.getMode().equals(IndexingEventConf.ONLY_SYNC)) {
-                log.debug("Event with id=" + eventId
-                        + " should only be processed in sync");
-                return;
-            }
-
-            if (eventConf.getMode().equals(IndexingEventConf.NEVER)) {
-                log.debug("Event with id=" + eventId
-                        + " is desactivated for indexing");
-                return;
-            }
 
             boolean recursive = eventConf.isRecursive();
             String action = eventConf.getAction();

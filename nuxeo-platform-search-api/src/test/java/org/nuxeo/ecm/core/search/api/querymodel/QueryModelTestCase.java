@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="ogrisel@nuxeo.com">Olivier Grisel</a>
- * 
+ *
  */
 public class QueryModelTestCase extends RepositoryOSGITestCase {
 

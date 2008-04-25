@@ -40,7 +40,7 @@ public abstract class AbstractTransformDocumentTestCase extends NXRuntimeTestCas
         assertTrue(stream.available() > 0);
     }
 
-    public void testInstanceSerialization() throws IOException {
+    public void testInstanceSerialization() {
         assertTrue(SerializableHelper.isSerializable(document));
     }
 
