@@ -38,7 +38,7 @@ public interface ChannelNotificator {
      * @throws ClientException
      * @throws Exception
      */
-    void sendNotification(DocumentMessage docMessage) throws ClientException, Exception;
+    void sendNotification(DocumentMessage docMessage) throws Exception;
 
     /**
      * Checks if the cannel is the right one (email, sms, etc.).
