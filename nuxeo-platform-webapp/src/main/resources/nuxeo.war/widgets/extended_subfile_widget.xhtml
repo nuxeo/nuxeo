@@ -26,6 +26,7 @@
           <f:param name="fileFieldFullName"
             value="#{nxd:propertyPath(widget_0.fieldDefinitions[0].propertyName, model.rowIndex, widget.fieldDefinitions[0].propertyName)}" />
           <f:param name="filename" value="#{field_1}" />
+          <f:param name="docRef" value="#{layoutValue.id}" />
           <h:outputText value="#{messages['label.document.generatePdf']}" />
         </h:commandLink>
       </h:panelGroup>

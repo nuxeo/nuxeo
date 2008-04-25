@@ -7,7 +7,6 @@ Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/NotificationService.xml,
  OSGI-INF/notification-contrib.xml,
  OSGI-INF/nxplacefulservice-configs-contrib.xml,
- OSGI-INF/PlatformBindings.xml,
  OSGI-INF/rendering-service.xml
 Export-Package: org.nuxeo.ecm.platform.ec.notification,
  org.nuxeo.ecm.platform.ec.notification.ejb,

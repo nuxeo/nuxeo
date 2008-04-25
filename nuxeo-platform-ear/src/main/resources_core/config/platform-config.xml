@@ -120,6 +120,10 @@
       group="platform/transform">
       <locator>%NXTransformBean</locator>
     </service>
+    <service class="org.nuxeo.ecm.platform.notification.api.NotificationManager"
+      group="platform">
+      <locator>%NotificationServiceBean</locator>
+    </service>
 
     <!--service class="org.nuxeo.ecm.platform.types.ejb.TypeManager" group="platform"/-->
   </extension>

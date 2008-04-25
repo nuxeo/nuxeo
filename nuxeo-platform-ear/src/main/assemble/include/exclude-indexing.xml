@@ -10,6 +10,7 @@ Only the API is preserved
     <artifact name="nuxeo-platform-search-*" file="!*search-api*"/>
     <artifact name="nuxeo-platform-transform-facade"/>
     <artifact name="nuxeo-platform-transform-plugins"/>
+    <artifact name="nuxeo-platform-transform-core"/>
     <artifact name="nuxeo-platform-mimetype-facade"/>
     <artifact name="nuxeo-platform-relations-search"/>
     <artifact name="nuxeo-platform-audit-search"/>

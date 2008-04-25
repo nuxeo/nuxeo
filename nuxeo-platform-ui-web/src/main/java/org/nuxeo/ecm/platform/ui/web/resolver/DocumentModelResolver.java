@@ -33,12 +33,22 @@ import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 
 /**
- * Resolves our custom expressions based on our custom {@link DocumentModel}.
+ * Resolves expressions for the {@link DocumentModel} framework.
  * <p>
- * In order to specify a given property of the {@link DocumentModel} the
- * following syntax is available: <code>myDocumentModel.dublincore.title</code>
- * where common is the schema name and title is the schema property. Using this
- * you can access the document title for example.
+ * To specify a property on a document mode, the following syntax is available:
+ * <code>myDocumentModel.dublincore.title</code> where 'dublincore' is the
+ * schema name and 'title' is the field name. It can be used to get or set the
+ * document title : <h:outputText value="#{currentDocument.dublincore.title}" />
+ * or <h:inputText value="#{currentDocument.dublincore.title}" />.
+ * </p>
+ * <p>
+ * Simple document properties are get/set directly: for instance, the above
+ * expression will return a String value on get, and set this String on the
+ * document for set. Complex properties (maps and lists) are get/set through the
+ * {@link Property} object controlling their value: on get, sub properties will
+ * be resolved at the next iteration, and on set, they will be set on the
+ * property instance so the document model is aware of the change.
+ * </p>
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>

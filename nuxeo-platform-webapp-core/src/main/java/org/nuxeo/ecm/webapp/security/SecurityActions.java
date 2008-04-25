@@ -134,8 +134,8 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
      * @throws ClientException
      * @throws ECInvalidParameterException
      */
-    UserPermissionsTableModel getDataTableModel()
-            throws ClientException, ECInvalidParameterException;
+    UserPermissionsTableModel getDataTableModel() throws ClientException,
+            ECInvalidParameterException;
 
     /**
      * @return the SecurityData object that manages a stateful representation of
@@ -191,7 +191,19 @@ public interface SecurityActions extends StatefulBaseLifeCycle {
     void setBlockRightInheritance(Boolean blockRightInheritance)
             throws ClientException;
 
+    /**
+     * @deprecated use {@link #getDisplayInheritedPermissions()}
+     */
+    @Deprecated
     Boolean displayInheritedPermissions() throws ClientException;
+
+    /**
+     * Returns true if inherited permissions have to be displayed (depending on
+     * rights blocking)
+     *
+     * @throws ClientException
+     */
+    boolean getDisplayInheritedPermissions() throws ClientException;
 
     List<String> getCurrentDocumentUsers() throws ClientException;
 

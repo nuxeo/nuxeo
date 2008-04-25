@@ -27,12 +27,15 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
@@ -63,6 +66,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.types.Type;
@@ -71,6 +75,7 @@ import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListDescriptor;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * This is the action listener behind the copy/paste template that knows how to
@@ -402,13 +407,58 @@ public class ClipboardActionsBean extends InputController implements
             }
         }
 
-        // do the past using core API
-        List<DocumentRef> references = extractReferences(documentsToPast);
-        newDocuments = documentManager.copy(references, parent.getRef());
+        boolean isPublishSpace = isPublishSpace(parent);
+        String parentPath = parent.getPathAsString();
+        List<DocumentRef> docRefs = new ArrayList<DocumentRef>();
+        List<DocumentModel> newDocs = new ArrayList<DocumentModel>();
+        for (DocumentModel doc : documentsToPast) {
+            DocumentRef docRef = doc.getRef();
+            if (!doc.isProxy() || isPublishSpace) {
+                // copy as is
+                docRefs.add(docRef);
+            } else {
+                // in a non-publish space, expand proxies into normal docs
+                DocumentModel newDoc = documentManager.createDocumentModel(
+                        parentPath, doc.getName(), doc.getType());
+                newDoc.copyContent(doc);
+                newDocs.add(newDoc);
+            }
+        }
+        if (!newDocs.isEmpty()) {
+            DocumentModel[] docs = newDocs.toArray(new DocumentModel[newDocs.size()]);
+            newDocuments.addAll(Arrays.asList(documentManager.createDocument(docs)));
+        }
+        if (!docRefs.isEmpty()) {
+            newDocuments.addAll(documentManager.copy(docRefs, parent.getRef()));
+        }
         documentManager.save();
 
         return newDocuments;
     }
+
+    /**
+     * Check if the container is a publish space. If this is not the case, a
+     * proxy copied to it will be recreated as a new document.
+     */
+    protected boolean isPublishSpace(DocumentModel container)
+            throws ClientException {
+        SchemaManager schemaManager;
+        try {
+            schemaManager = Framework.getService(SchemaManager.class);
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+        Set<String> publishSpaces = null;
+        if (schemaManager != null) {
+            publishSpaces = schemaManager.getDocumentTypeNamesForFacet("PublishSpace");
+        }
+        if (publishSpaces == null || publishSpaces.isEmpty()) {
+            publishSpaces = new HashSet<String>();
+            publishSpaces.add("Section");
+        }
+        return publishSpaces.contains(container.getType());
+    }
+
 
     @Destroy
     @Remove

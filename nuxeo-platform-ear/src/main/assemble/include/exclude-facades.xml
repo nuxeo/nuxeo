@@ -1,15 +1,15 @@
 <assembly>
 
 <!--
-Overwrite nuxeo-platform to exclude all unnecessary facades
+Extends nuxeo-platform to exclude all unnecessary facades
 -->
 <artifactSet extends="nuxeo-platform">
-  <excludes>  
+  <excludes>
     <artifact name="nuxeo-platform-usermanager-facade"/>
-    <artifact name="nuxeo-platform-types-facade"/>    
+    <artifact name="nuxeo-platform-types-facade"/>
     <artifact name="nuxeo-platform-mimetype-facade"/>
-    <artifact name="nuxeo-platform-relations-facade"/>    
-    <artifact name="nuxeo-platform-filemanager-facade"/>    
+    <artifact name="nuxeo-platform-relations-facade"/>
+    <artifact name="nuxeo-platform-filemanager-facade"/>
     <artifact name="nuxeo-platform-archive-facade"/>
   </excludes>
 </artifactSet>

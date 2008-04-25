@@ -19,12 +19,22 @@
 package org.nuxeo.ecm.platform.ui.web.directory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Utility functions (directory related) to be used from jsf via nxu: tags.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ * @author Anahide Tchertchian
+ *
  */
 public final class DirectoryFunctions {
 
@@ -36,9 +46,8 @@ public final class DirectoryFunctions {
 
     /**
      *
-     * @param data comma separated values that will be used to create a list
-     *            of structures containing an index also
-     * @param type
+     * @param data comma-separated values that will be used to create a list of
+     *            structures containing an index also
      * @return
      */
     public static List<CSLData> getCSLData(String data) {
@@ -71,4 +80,56 @@ public final class DirectoryFunctions {
 
         return items.length;
     }
+
+    public static DocumentModel getDirectoryEntry(String directoryName,
+            String entryId) throws Exception {
+        if (entryId == null) {
+            return null;
+        }
+        Session session = null;
+        try {
+            DirectoryService dirService = Framework.getService(DirectoryService.class);
+            session = dirService.open(directoryName);
+            return session.getEntry(entryId);
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
+
+    public static DocumentModelList getDirectoryEntries(String directoryName,
+            String... entryIds) throws Exception {
+        if (entryIds == null) {
+            return null;
+        }
+        Session session = null;
+        try {
+            DirectoryService dirService = Framework.getService(DirectoryService.class);
+            session = dirService.open(directoryName);
+            DocumentModelList result = new DocumentModelListImpl();
+            DocumentModel entry;
+            for (String entryId : entryIds) {
+                entry = session.getEntry(entryId);
+                if (entry != null) {
+                    result.add(entry);
+                }
+            }
+            return result;
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
+    }
+
+    public static DocumentModelList getDirectoryListEntries(
+            String directoryName, Collection<String> entryIds) throws Exception {
+        if (entryIds == null) {
+            return null;
+        }
+        return DirectoryFunctions.getDirectoryEntries(directoryName,
+                entryIds.toArray(new String[] {}));
+    }
+
 }

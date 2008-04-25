@@ -58,6 +58,8 @@ public class UIDirectorySelectItems extends UISelectItems {
 
     protected String directoryName;
 
+    protected SelectItem[] allValues;
+
     protected Boolean displayAll;
 
     protected Boolean displayObsoleteEntries;
@@ -94,8 +96,7 @@ public class UIDirectorySelectItems extends UISelectItems {
         ValueExpression ve = getValueExpression("displayAll");
         if (ve != null) {
             try {
-                return !Boolean.FALSE.equals(
-                        ve.getValue(getFacesContext().getELContext()));
+                return !Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext()));
             } catch (ELException e) {
                 throw new FacesException(e);
             }
@@ -116,8 +117,7 @@ public class UIDirectorySelectItems extends UISelectItems {
         ValueExpression ve = getValueExpression("displayObsoleteEntries");
         if (ve != null) {
             try {
-                return !Boolean.FALSE.equals(
-                        ve.getValue(getFacesContext().getELContext()));
+                return !Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext()));
             } catch (ELException e) {
                 throw new FacesException(e);
             }
@@ -157,7 +157,7 @@ public class UIDirectorySelectItems extends UISelectItems {
         Session directorySession = null;
         if (dirName != null) {
             try {
-                DirectoryService service= DirectoryHelper.getDirectoryService();
+                DirectoryService service = DirectoryHelper.getDirectoryService();
                 directorySession = service.open(dirName);
             } catch (Exception e) {
                 log.error(String.format("Error when retrieving directory %s",
@@ -180,7 +180,10 @@ public class UIDirectorySelectItems extends UISelectItems {
     public Object getValue() {
         Boolean showAll = getDisplayAll();
         if (showAll) {
-            return createAllSelectItems();
+            if (allValues == null) {
+                allValues = createAllSelectItems();
+            }
+            return allValues;
         } else {
             Object value = super.getValue();
             return createSelectItems(value);
@@ -263,7 +266,7 @@ public class UIDirectorySelectItems extends UISelectItems {
         if (ordering != null && !"".equals(ordering)) {
             Collections.sort(items, new SelectItemComparator(ordering));
         }
-        return items.toArray(new SelectItem[]{});
+        return items.toArray(new SelectItem[] {});
     }
 
     @SuppressWarnings("unchecked")
@@ -295,17 +298,18 @@ public class UIDirectorySelectItems extends UISelectItems {
         if (ordering != null && !"".equals(ordering)) {
             Collections.sort(items, new SelectItemComparator(ordering));
         }
-        return items.toArray(new SelectItem[]{});
+        return items.toArray(new SelectItem[] {});
     }
 
     @Override
     public Object saveState(FacesContext context) {
-        Object[] values = new Object[5];
+        Object[] values = new Object[6];
         values[0] = super.saveState(context);
         values[1] = directoryName;
         values[2] = displayAll;
-        values[3] = displayObsoleteEntries;
-        values[4] = ordering;
+        values[3] = allValues;
+        values[4] = displayObsoleteEntries;
+        values[5] = ordering;
         return values;
     }
 
@@ -315,8 +319,9 @@ public class UIDirectorySelectItems extends UISelectItems {
         super.restoreState(context, values[0]);
         directoryName = (String) values[1];
         displayAll = (Boolean) values[2];
-        displayObsoleteEntries = (Boolean) values[3];
-        ordering = (String) values[4];
+        allValues = (SelectItem[]) values[3];
+        displayObsoleteEntries = (Boolean) values[4];
+        ordering = (String) values[5];
     }
 
 }

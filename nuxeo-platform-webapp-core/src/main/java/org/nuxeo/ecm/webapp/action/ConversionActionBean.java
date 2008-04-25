@@ -35,9 +35,14 @@ import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.WebRemote;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.ecm.platform.transform.api.TransformException;
 import org.nuxeo.ecm.platform.transform.api.TransformServiceDelegate;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformServiceCommon;
@@ -53,8 +58,14 @@ public class ConversionActionBean implements ConversionAction {
 
     private static final Log log = LogFactory.getLog(ConversionActionBean.class);
 
+    @In(create = true, required = false)
+    transient CoreSession documentManager;
+
     @In(create = true)
-    NavigationContext navigationContext;
+    transient NavigationContext navigationContext;
+
+    @RequestParameter
+    private String docRef;
 
     @RequestParameter
     private String fileFieldFullName;
@@ -71,10 +82,17 @@ public class ConversionActionBean implements ConversionAction {
         return "view_file";
     }
 
+    private DocumentModel getDocument() throws ClientException {
+        if (docRef == null) {
+            return navigationContext.getCurrentDocument();
+        } else {
+            return documentManager.getDocument(new IdRef(docRef));
+        }
+    }
+
     private String getMimetypeFromDocument(String propertyName)
-            throws PropertyException {
-        Blob blob = (Blob) navigationContext.getCurrentDocument().getPropertyValue(
-                propertyName);
+            throws PropertyException, ClientException {
+        Blob blob = (Blob) getDocument().getPropertyValue(propertyName);
         return blob.getMimeType();
     }
 
@@ -104,9 +122,11 @@ public class ConversionActionBean implements ConversionAction {
             String mimetype = getMimetypeFromDocument(fieldName);
             TransformServiceCommon nxt = TransformServiceDelegate.getRemoteTransformService();
             isSupported = nxt.isMimetypeSupportedByPlugin("any2pdf", mimetype);
-        } catch (Exception e) {
+        } catch (TransformException e) {
             log.error("error asking the any2pdf plugin whether " + fieldName
-                    + " is supported: " + e.getMessage());
+                    + " is supported: ",e);
+        } catch (Exception e) {
+            log.error(e);
         }
 
         return isSupported;
@@ -120,8 +140,7 @@ public class ConversionActionBean implements ConversionAction {
                 return null;
             }
 
-            Blob blob = (Blob) navigationContext.getCurrentDocument().getPropertyValue(
-                    fileFieldFullName);
+            Blob blob = (Blob) getDocument().getPropertyValue(fileFieldFullName);
 
             TransformServiceCommon nxt = Framework.getService(TransformServiceCommon.class);
             List<TransformDocument> resultingDocs = nxt.transform("any2pdf",
