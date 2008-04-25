@@ -15,6 +15,19 @@
     <ui:include src="/incl/document_versioning.xhtml" />
   </c:if>
 
+  <table class="dataInput">
+    <tbody>
+      <tr>
+        <td class="labelColumn">
+          <h:outputText value="#{messages['label.comment']}" />
+        </td>
+        <td class="fieldColumn">
+          <h:inputTextarea value="#{changeableDocument.contextData['request/comment']}" />
+        </td>
+      </tr>
+    </tbody> 
+  </table>
+
   <p class="buttonsGadget">
     <h:commandButton type="submit" value="#{messages['command.save']}"
       styleClass="button"
