@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.ecm.core.api.ListDiff;
@@ -38,11 +39,12 @@ import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ListProperty extends AbstractProperty {
+public class ListProperty extends AbstractProperty implements List<Property> {
 
     private static final long serialVersionUID = 2050498811068422820L;
 
@@ -230,7 +232,7 @@ public class ListProperty extends AbstractProperty {
         }
     }
 
-    private void clear() {
+    public void clear() {
         while (!children.isEmpty()) {
             Property property  = children.remove(0);
             markChildAsRemoved(property);
@@ -252,11 +254,12 @@ public class ListProperty extends AbstractProperty {
         return true;
     }
 
-    public void remove(int index) {
+    public Property remove(int index) {
         Property property = children.remove(index);
         // mark the property as removed using the "@removed" application data
         markChildAsRemoved(property);
         setIsModified();
+        return property;
     }
 
     @SuppressWarnings("unchecked")
@@ -429,6 +432,138 @@ public class ListProperty extends AbstractProperty {
             children.remove(i+1);
         }
         return true;
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public void add(int index, Property element) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public boolean add(Property o) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public boolean addAll(Collection<? extends Property> c) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public boolean addAll(int index, Collection<? extends Property> c) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public boolean contains(Object o) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public boolean containsAll(Collection<?> c) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public int indexOf(Object o) {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean isEmpty() {
+        return children.isEmpty();
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public int lastIndexOf(Object o) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public ListIterator<Property> listIterator() {
+        return children.listIterator();
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public ListIterator<Property> listIterator(int index) {
+        return children.listIterator(index);
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public boolean remove(Object o) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public boolean removeAll(Collection<?> c) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public boolean retainAll(Collection<?> c) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public Property set(int index, Property element) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Throws UnsupportedOperationException, added to implement List<Property>
+     * interface
+     */
+    public List<Property> subList(int fromIndex, int toIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    public Object[] toArray() {
+        return children.toArray();
+    }
+
+    public <T> T[] toArray(T[] a) {
+        return children.toArray(a);
     }
 
 }
