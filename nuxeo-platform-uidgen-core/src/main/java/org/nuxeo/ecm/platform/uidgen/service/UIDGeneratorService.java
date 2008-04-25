@@ -142,13 +142,13 @@ public class UIDGeneratorService extends DefaultComponent {
             final UIDGenerator generator = (UIDGenerator) extension.getContext().loadClass(
                     generatorDescriptor.getClassName()).newInstance();
 
-            final String propName = generatorDescriptor.getPropertyName();
-            if (propName == null) {
+            final String[] propNames = generatorDescriptor.getPropertyNames();
+            if (propNames.length == 0) {
                 log.error("no property name defined on generator "
                         + generatorName);
             }
             // set the property name on generator
-            generator.setPropertyName(propName);
+            generator.setPropertyNames(propNames);
 
             // Register Generator for DocTypes and property name
             final String[] docTypes = generatorDescriptor.getDocTypes();
