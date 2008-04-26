@@ -48,6 +48,12 @@ public class TestGen extends NXRuntimeTestCase {
         super.setUp();
         deployBundle("nuxeo-core-schema");
         deployBundle("nuxeo-core"); // for dublincore
+
+        deploy("test-uid-CoreExtensions.xml");
+
+        deploy("nxuidgenerator-bundle.xml");
+        deploy("nxuidgenerator-bundle-contrib.xml");
+
         // define geide schema
         SchemaImpl sch = new SchemaImpl("geide");
         sch.addField(QName.valueOf("application_emetteur"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
@@ -142,11 +148,6 @@ public class TestGen extends NXRuntimeTestCase {
      * @throws Exception
      */
     public void testUIDGenerator3_multi() throws Exception {
-        deploy("test-uid-CoreExtensions.xml");
-
-        deploy("nxuidgenerator-bundle.xml");
-        deploy("nxuidgenerator-bundle-contrib.xml");
-
         // create Geide doc
         String docTypeName = "GeideDoc";
         DocumentModel gdoc = createDocumentModel(docTypeName);
