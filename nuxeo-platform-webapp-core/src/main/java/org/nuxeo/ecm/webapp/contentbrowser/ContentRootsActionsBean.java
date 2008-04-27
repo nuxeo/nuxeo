@@ -100,7 +100,7 @@ public class ContentRootsActionsBean extends InputController implements
     @In
     protected transient Context sessionContext;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected transient ECContentRoot ecContentRoot;
 
     DocumentModel currentItem;

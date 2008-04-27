@@ -75,7 +75,7 @@ public class SubscriptionsAction extends InputController implements
     @DataModelSelection(value="notificationList")
     private SelectableSubscription currentSubscription;
 
-    @In(required = true, create = true)
+    @In(create = true)
     private transient NotificationManager notificationManager;
 
     /**

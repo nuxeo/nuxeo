@@ -107,7 +107,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(LiveEditBootstrapHelper.class);
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected transient NavigationContext navigationContext;
 
     @In(create = true, required = false)

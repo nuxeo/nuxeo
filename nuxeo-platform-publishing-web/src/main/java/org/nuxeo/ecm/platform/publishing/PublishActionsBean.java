@@ -118,7 +118,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
     @In(create = true)
     protected transient VersioningManager versioningManager;
 
-    @In(create = true, required = true)
+    @In(create = true)
     protected transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
