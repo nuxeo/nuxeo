@@ -76,7 +76,7 @@ public class LockActionsBean implements LockActions {
 
     private static final String EDIT_ACTIONS = "EDIT_ACTIONS";
 
-    @In(required = true)
+    @In
     private transient NavigationContext navigationContext;
 
     @In(create = true, required = false)

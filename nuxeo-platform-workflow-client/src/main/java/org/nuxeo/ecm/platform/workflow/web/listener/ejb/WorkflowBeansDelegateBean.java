@@ -54,13 +54,11 @@ import org.nuxeo.ecm.platform.workflow.web.api.WorkflowBeansDelegate;
 
 /**
  * Workflow beans delegate bean.
- *
  * <p>
  * Leverages the delegates and acts as a central access point to core workflow
  * session beans.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 @Name("workflowBeansDelegate")
 @NuxeoJavaBeanErrorHandler
@@ -70,7 +68,7 @@ public class WorkflowBeansDelegateBean implements WorkflowBeansDelegate {
 
     protected static final Log log = LogFactory.getLog(WorkflowBeansDelegateBean.class);
 
-    @In(required = true)
+    @In
     protected RepositoryLocation currentServerLocation;
 
     protected WAPI wapi;
@@ -92,8 +90,7 @@ public class WorkflowBeansDelegateBean implements WorkflowBeansDelegate {
     protected WorkItemsListsBusinessDelegate wiListsBD;
 
     @Create
-    public void init()
-    {
+    public void init() {
         initializeBD();
         Events.instance().raiseEvent(EventNames.WF_INIT);
     }

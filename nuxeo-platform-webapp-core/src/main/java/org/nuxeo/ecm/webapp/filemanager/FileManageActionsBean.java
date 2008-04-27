@@ -95,7 +95,7 @@ public class FileManageActionsBean extends InputController implements
     @In(create = true, required = false)
     protected CoreSession documentManager;
 
-    @In(required = true)
+    @In
     protected TypeManager typeManager;
 
     @In(create = true)

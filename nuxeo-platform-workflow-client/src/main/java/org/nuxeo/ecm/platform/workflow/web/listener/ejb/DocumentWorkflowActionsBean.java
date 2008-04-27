@@ -114,7 +114,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
     @In(create = true)
     protected WorkflowBeansDelegate workflowBeansDelegate;
 
-    @In(required = true)
+    @In
     protected RepositoryLocation currentServerLocation;
 
     @In(create = true, required = false)

@@ -60,7 +60,7 @@ public class SubscriptionsAction extends InputController implements
 
     private static final Log log = LogFactory.getLog(SubscriptionsAction.class);
 
-    @In(required = true)
+    @In
     private transient NavigationContext navigationContext;
 
     @In(create = true, required = false)

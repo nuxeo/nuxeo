@@ -103,7 +103,7 @@ public class ArchiveManagerActionsBean implements ArchiveManagerActions {
     @Out(value = "selectedArchiveRecord", required = false)
     private ArchiveRecord selectedArchiveRecord;
 
-    @In(required = true)
+    @In
     private transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
