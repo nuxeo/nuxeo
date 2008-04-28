@@ -21,13 +21,13 @@ package org.nuxeo.ecm.webapp.security;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.io.Serializable;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.PostActivate;
@@ -44,6 +44,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.core.FacesMessages;
 import org.nuxeo.common.utils.i18n.Labeler;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -87,7 +88,8 @@ public class SecurityActionsBean extends InputController implements
     // XXX temporary
     protected static final String ADMIN_GROUP = "administrators";
 
-    protected static final String[] SEED_PERMISSIONS_TO_CHECK = {SecurityConstants.WRITE_SECURITY, SecurityConstants.READ_SECURITY};
+    protected static final String[] SEED_PERMISSIONS_TO_CHECK = {
+            SecurityConstants.WRITE_SECURITY, SecurityConstants.READ_SECURITY };
 
     protected String[] CACHED_PERMISSION_TO_CHECK = null;
 
@@ -131,8 +133,7 @@ public class SecurityActionsBean extends InputController implements
 
     private Boolean blockRightInheritance;
 
-
-    @Observer(value=EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create=false, inject=false)
+    @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false, inject = false)
     public void resetSecurityData() throws ClientException {
         obsoleteSecurityData = true;
         blockRightInheritance = null;
@@ -285,6 +286,7 @@ public class SecurityActionsBean extends InputController implements
 
             documentManager.setACP(currentDocument.getRef(), acp, true);
             documentManager.save();
+            Events.instance().raiseEvent(EventNames.DOCUMENT_SECURITY_CHANGED);
 
             // Reread data from the backend to be sure the current bean
             // state is uptodate w.r.t. the real backend state
@@ -388,7 +390,8 @@ public class SecurityActionsBean extends InputController implements
 
         if (!checkPermissions()) {
             facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                    resourcesAccessor.getMessages().get("message.updated.rights"));
+                    resourcesAccessor.getMessages().get(
+                            "message.updated.rights"));
             return null;
         }
 
@@ -403,7 +406,8 @@ public class SecurityActionsBean extends InputController implements
             securityData.removeModifiablePrivilege(user);
             if (!checkPermissions()) {
                 facesMessages.add(FacesMessage.SEVERITY_ERROR,
-                        resourcesAccessor.getMessages().get("message.error.removeRight"));
+                        resourcesAccessor.getMessages().get(
+                                "message.error.removeRight"));
                 return null;
             }
         }
@@ -505,6 +509,10 @@ public class SecurityActionsBean extends InputController implements
     }
 
     public Boolean displayInheritedPermissions() throws ClientException {
+        return  getDisplayInheritedPermissions();
+    }
+
+    public boolean getDisplayInheritedPermissions() throws ClientException {
         if (blockRightInheritance == null) {
             rebuildSecurityData();
         }
@@ -606,8 +614,8 @@ public class SecurityActionsBean extends InputController implements
     }
 
     /**
-     * Checks if the current user can still read and write access rights. If
-     * he can't, then the security data are rebuilt.
+     * Checks if the current user can still read and write access rights. If he
+     * can't, then the security data are rebuilt.
      *
      * @return
      * @throws ClientException
@@ -624,7 +632,8 @@ public class SecurityActionsBean extends InputController implements
         }
         acp.setRules(modifiableEntries.toArray(new UserEntry[0]));
 
-        final boolean access = acp.getAccess(principals.toArray(new String[0]), getPermissionsToCheck()).toBoolean();
+        final boolean access = acp.getAccess(principals.toArray(new String[0]),
+                getPermissionsToCheck()).toBoolean();
         if (!access) {
             rebuildSecurityData();
         }

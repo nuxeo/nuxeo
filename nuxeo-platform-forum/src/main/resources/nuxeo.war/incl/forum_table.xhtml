@@ -70,8 +70,11 @@
       </nxu:column>
 
 
+      <nxu:methodResult name="threadAdapter" value="#{threadAction.getAdapter(row.data)}" >
+
+
       <!--  Last post information -->
-      <nxu:methodResult name="lastPost" value="#{threadAction.getLastPostPublished(row.data)}" >
+      <nxu:methodResult name="lastPost" value="#{threadAdapter.getLastPublishedPost()}" >
       <nxu:column>
         <f:facet name="header">
           <h:outputText value="#{messages['label.forum.content.header.last_added']}" />
@@ -85,7 +88,7 @@
       </nxu:methodResult>
 
       <!--  Nb of published posts -->
-      <nxu:methodResult name="allPostsInThread" value="#{threadAction.getPostsPublished(row.data)}" >
+      <nxu:methodResult name="allPostsInThread" value="#{threadAdapter.getPublishedPosts()}" >
       <h:column>
         <f:facet name="header">
           <h:outputText
@@ -96,7 +99,7 @@
       </nxu:methodResult>
 
       <!--  Nb of pending posts -->
-      <nxu:methodResult name="pendingPostsInThread" value="#{threadAction.getPostsPending(row.data)}" >
+      <nxu:methodResult name="pendingPostsInThread" value="#{threadAdapter.getPendingPosts()}" >
       <h:column>
         <f:facet name="header">
           <h:outputText
@@ -104,6 +107,8 @@
         </f:facet>
         <h:outputText value="#{pendingPostsInThread.size}" rendered="#{pendingPostsInThread != null}"/>
       </h:column>
+      </nxu:methodResult>
+
       </nxu:methodResult>
 
      <!--  Is moderated -->

@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
+import javax.el.VariableMapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,6 +48,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutRowImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetTypeImpl;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetTypeDescriptor;
+import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeHandler;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -54,6 +56,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
+import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagConfig;
 
 /**
@@ -215,10 +218,10 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
     /**
      * Evaluates an EL expression in given context.
      * <p>
-     * If the expression resolves to an EL expression, evaluate it agai: this is
+     * If the expression resolves to an EL expression, evaluate it again this is
      * useful when retrieving the expression from a configuration file.
      * <p>
-     * If given context is null, do no try to evaluarte it and return the
+     * If given context is null, do no try to evaluate it and return the
      * expression itself.
      *
      * @param context the facelet context.
@@ -307,7 +310,23 @@ public class WebLayoutManagerImpl extends DefaultComponent implements
     private Widget getWidget(FaceletContext context, LayoutDefinition lDef,
             WidgetDefinition wDef, String layoutMode, String valueName,
             int level) {
+        VariableMapper orig = null;
+        // avoid variable mapper changes if context is null for tests
+        if (context != null) {
+            // expose widget mode so that it can be used in a mode el expression
+            orig = context.getVariableMapper();
+            VariableMapper vm = new VariableMapperWrapper(orig);
+            context.setVariableMapper(vm);
+            ExpressionFactory eFactory = context.getExpressionFactory();
+            ValueExpression modeVe = eFactory.createValueExpression(layoutMode,
+                    String.class);
+            vm.setVariable(RenderVariables.globalVariables.mode.name(), modeVe);
+        }
         String wMode = getModeFromLayoutMode(context, wDef, layoutMode);
+        if (context != null) {
+            context.setVariableMapper(orig);
+        }
+
         if (BuiltinWidgetModes.HIDDEN.equals(wMode)) {
             return null;
         }

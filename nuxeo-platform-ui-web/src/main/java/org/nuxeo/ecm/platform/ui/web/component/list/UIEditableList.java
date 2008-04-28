@@ -43,6 +43,8 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jetbrains.annotations.NotNull;
+import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.platform.ui.web.model.EditableModel;
 import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelImpl;
 import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelRowEvent;
@@ -162,6 +164,19 @@ public class UIEditableList extends UIInput implements NamingContainer {
                     editableModel, model, template, diff, number, removeEmpty };
         }
         return null;
+    }
+
+    // FIXME AT: should use the list property as EditableModel instead
+    @Override
+    public Object getValue() {
+        Object value = super.getValue();
+        if (value instanceof ListProperty) {
+            try {
+                value = ((ListProperty) value).getValue();
+            } catch (PropertyException e) {
+            }
+        }
+        return value;
     }
 
     @SuppressWarnings("unchecked")
@@ -781,7 +796,8 @@ public class UIEditableList extends UIInput implements NamingContainer {
     }
 
     @Override
-    public void processDecodes(@NotNull FacesContext context) {
+    public void processDecodes(@NotNull
+    FacesContext context) {
         if (!isRendered()) {
             return;
         }
@@ -806,7 +822,8 @@ public class UIEditableList extends UIInput implements NamingContainer {
     }
 
     @Override
-    public void processValidators(@NotNull FacesContext context) {
+    public void processValidators(@NotNull
+    FacesContext context) {
         if (!isRendered()) {
             return;
         }
@@ -823,7 +840,8 @@ public class UIEditableList extends UIInput implements NamingContainer {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void processUpdates(@NotNull FacesContext context) {
+    public void processUpdates(@NotNull
+    FacesContext context) {
         if (!isRendered()) {
             return;
         }
