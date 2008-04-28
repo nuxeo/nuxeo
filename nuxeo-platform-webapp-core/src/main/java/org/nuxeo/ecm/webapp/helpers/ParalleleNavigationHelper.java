@@ -43,10 +43,10 @@ public class ParalleleNavigationHelper implements Serializable {
 
     public static final String PARALLELE_URL_PREFIX = "/parallele.faces?";
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected transient NavigationContext navigationContext;
 
-    @In(required = true, create = true)
+    @In(create = true)
     ConversationIdGenerator conversationIdGenerator;
 
     @RequestParameter

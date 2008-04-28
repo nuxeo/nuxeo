@@ -62,7 +62,6 @@ public interface ArchiveManager extends Serializable {
      */
     List<ArchiveRecord> findArchiveRecords(String qlString, Map<String, Object>  parameters);
 
-
     /**
      *
      * @return
@@ -72,21 +71,21 @@ public interface ArchiveManager extends Serializable {
 
     /**
      *
-     * @param record : the archive record info to be added
+     * @param record the archive record info to be added
      * @throws Exception
      */
     void addArchiveRecord(ArchiveRecord record) throws Exception;
 
     /**
      *
-     * @param record : the archive record to edit
+     * @param record the archive record to edit
      * @throws Exception
      */
     void editArchiveRecord(ArchiveRecord record) throws Exception;
 
     /**
      *
-     * @param record : the archive record to delete
+     * @param recordId id for the archive record to delete
      * @throws Exception
      */
     Boolean deleteArchiveRecord(long recordId) throws Exception;

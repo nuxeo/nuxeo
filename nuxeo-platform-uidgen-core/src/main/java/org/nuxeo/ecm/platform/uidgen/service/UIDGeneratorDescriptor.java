@@ -28,116 +28,139 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * immutable?
- *
- * @author dragos
- *
- */
-/**
- * @author dragos
- *
+ * UID generator configuration holder.
+ * 
+ * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
 @XObject("generator")
 public class UIDGeneratorDescriptor {
 
-    private static final Log log = LogFactory.getLog(UIDGeneratorDescriptor.class);
+	private static final Log log = LogFactory
+			.getLog(UIDGeneratorDescriptor.class);
 
-    private static final int DEFAULT_COUNTER_START = 1;
+	private static final int DEFAULT_COUNTER_START = 1;
 
-    // @XNode
-    private String generationExpression;
+	// @XNode
+	private String generationExpression;
 
-    // @XNode
-    private Set generationCriteria;
+	// @XNode
+	private Set generationCriteria;
 
-    // @XNode
-    private int counterStart;
+	// @XNode
+	private int counterStart;
 
-    @XNode("@name")
-    private String name;
+	@XNode("@name")
+	private String name;
 
-    @XNode("@class")
-    private String className;
+	@XNode("@class")
+	private String className;
 
-    @XNode("propertyName")
-    private String propertyName;
+	// @XNode("propertyName")
+	// private String propertyName;
+	@XNodeList(value = "propertyName", type = String[].class, componentType = String.class)
+	private String[] propertyNames;
 
-    @XNodeList(value = "docType", type = String[].class, componentType = String.class)
-    private String[] docTypes;
+	@XNodeList(value = "docType", type = String[].class, componentType = String.class)
+	private String[] docTypes;
 
-    /**
-     * Default constructor - used normally when created as an XObject.
-     *
-     */
-    public UIDGeneratorDescriptor() {
-        log.debug("<UIDGeneratorDescriptor:init>");
-    }
+	/**
+	 * Default constructor - used normally when created as an XObject.
+	 * 
+	 */
+	public UIDGeneratorDescriptor() {
+		log.debug("<UIDGeneratorDescriptor:init>");
+	}
 
-    /**
-     * Explicit constructor.
-     *
-     * @param generationExp
-     * @param generationCrit
-     */
-    public UIDGeneratorDescriptor(String generationExp, Set generationCrit) {
-        this(generationExp, generationCrit, DEFAULT_COUNTER_START);
-    }
+	/**
+	 * Explicit constructor.
+	 * 
+	 * @param generationExp
+	 * @param generationCrit
+	 */
+	public UIDGeneratorDescriptor(String generationExp, Set generationCrit) {
+		this(generationExp, generationCrit, DEFAULT_COUNTER_START);
+	}
 
-    /**
-     * Explicit constructor.
-     *
-     * @param generationExp
-     * @param generationCrit
-     */
-    public UIDGeneratorDescriptor(String generationExp, Set generationCrit,
-            int counterStart) {
-        this.generationExpression = generationExp;
-        this.generationCriteria = generationCrit;
-        this.counterStart = counterStart;
-    }
+	/**
+	 * Explicit constructor.
+	 * 
+	 * @param generationExp
+	 * @param generationCrit
+	 */
+	public UIDGeneratorDescriptor(String generationExp, Set generationCrit,
+			int counterStart) {
+		generationExpression = generationExp;
+		generationCriteria = generationCrit;
+		this.counterStart = counterStart;
+	}
 
-    public String getClassName() {
-        return className;
-    }
+	public String getClassName() {
+		return className;
+	}
 
-    public void setClassName(String className) {
-        this.className = className;
-    }
+	public void setClassName(String className) {
+		this.className = className;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String[] getDocTypes() {
-        return docTypes;
-    }
+	public String[] getDocTypes() {
+		return docTypes;
+	}
 
-    public void setDocTypes(String[] docTypes) {
-        this.docTypes = docTypes;
-    }
+	public void setDocTypes(String[] docTypes) {
+		this.docTypes = docTypes;
+	}
 
-    public int getCounterStart() {
-        return counterStart;
-    }
+	public int getCounterStart() {
+		return counterStart;
+	}
 
-    public Set getGenerationCriteria() {
-        return generationCriteria;
-    }
+	public Set getGenerationCriteria() {
+		return generationCriteria;
+	}
 
-    public String getGenerationExpression() {
-        return generationExpression;
-    }
+	public String getGenerationExpression() {
+		return generationExpression;
+	}
 
-    public String getPropertyName() {
-        return propertyName;
-    }
+	/**
+	 * Kept for convenience. If there is only one property to be set with
+	 * generated UID.
+	 * 
+	 * @return first propertyName
+	 */
+	public String getPropertyName() {
+		if (propertyNames.length == 0) {
+			log.warn("No propertyName specified");
+			return null;
+		}
+		return propertyNames[0];
+	}
 
-    public void setPropertyName(String propertyName) {
-        this.propertyName = propertyName;
-    }
+	/**
+	 * Set the value as first property name.
+	 * Kept for convenience. If there is only one property to be set with
+	 * generated UID.
+	 */
+	public void setPropertyName(String propertyName) {
+		if (propertyNames.length == 0) {
+			log.warn("Cannot set propertyName.");
+		}
+		this.propertyNames[0] = propertyName;
+	}
 
+	public String[] getPropertyNames() {
+		return propertyNames;
+	}
+	
+	public void setPropertyNames(String[] propNames) {
+		this.propertyNames = propNames;
+	}
 }

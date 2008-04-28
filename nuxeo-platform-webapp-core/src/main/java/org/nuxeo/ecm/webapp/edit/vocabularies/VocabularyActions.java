@@ -28,7 +28,6 @@ import javax.faces.model.SelectItem;
 
 import org.jboss.seam.annotations.Destroy;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.ui.web.directory.VocabularyEntry;
 

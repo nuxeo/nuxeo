@@ -22,7 +22,6 @@ package org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -98,8 +97,7 @@ public class ResolvedResourcesFactory implements Serializable {
      * @param resource a document indexable resource.
      * @return a resolved data instance.
      */
-    private static ResolvedData computeFulltext(IndexableResources resources)
-            throws IndexingException {
+    private static ResolvedData computeFulltext(IndexableResources resources) {
 
         String value = "";
         String analyzer = "default";

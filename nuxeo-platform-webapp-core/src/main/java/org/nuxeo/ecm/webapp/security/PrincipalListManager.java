@@ -84,10 +84,10 @@ public class PrincipalListManager implements Serializable {
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected transient UserManager userManager;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;
 
     protected SelectItem[] availablePrincipals;
