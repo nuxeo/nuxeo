@@ -13,7 +13,7 @@
 
       <!-- Icon + Type -->
       <nxu:column styleClass="iconColumn">
-        <div id="docRef:#{doc.ref}" class="cell">
+        <div id="docRef:#{doc.ref}" class="cell popupTarget" docRef="#{row.data.ref}">
          <h:graphicImage value="/icons/lock.gif"
            rendered="#{not empty doc.lock}"/>
         <nxu:graphicImage
@@ -118,4 +118,12 @@
     <a4j:commandButton value="#{messages['label.refresh']}" reRender="#{idParam}" styleClass="button" />
   </h:form>
 
-</a4j:region></div>
+</a4j:region>
+
+<ui:include src="/incl/popupMenu.xhtml"/>
+<script>
+// init menu
+$("table td div div.popupTarget").contextMenu("popupMenu");
+</script>
+
+</div>

@@ -2,25 +2,21 @@
 	xmlns="http://www.w3.org/1999/xhtml"
   	xmlns:ui="http://java.sun.com/jsf/facelets"
   	xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
-  	xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
-  	xmlns:nxu="http://nuxeo.org/nxweb/util"
-  	xmlns:t="http://myfaces.apache.org/tomahawk"
-  	xmlns:nxd="http://nuxeo.org/nxweb/document"
-    xmlns:nxh="http://nuxeo.org/nxweb/html">
-<h:panelGroup id="contextMenuRegion">
-	<div id="contextMenu">
-	<span id="contextMenuInternal">
+  	xmlns:t="http://myfaces.apache.org/tomahawk">
 
-      <t:dataList var="cb_action" value="#{popupHelper.popupActions}">
-        <div class="clipboardFunction">
-          <nxh:commandLink action="#{cb_action.getLink()}">
-            <t:graphicImage value="#{cb_action.icon}"/>
-            <h:outputText value=" #{messages[cb_action.label]}" />
-          </nxh:commandLink>
-        </div>
-      </t:dataList>
+    <script type="text/javascript"  src="#{baseURL}seam/remoting/interface.js?popupHelper&amp;clipboardActions"></script>
+    <script type="text/javascript"  src="#{baseURL}nxthemes-lib/jquery.js"/>
+  	<script type="text/javascript"  src="#{baseURL}scripts/contextmenu.js"/>
+    <script type="text/javascript"  src="#{baseURL}scripts/default-contextmenu-actions.js"/>
 
-	</span>
-	</div>
-</h:panelGroup>
+  	<div style="display: none;" class="contextMenu" id="popupMenu">
+  <ul>
+    <ui:repeat value="#{popupHelper.unfiltredPopupActions}" var="action">
+          <li id="ctxMenu_#{action.id}" action="#{action.link}">
+            <t:graphicImage value="#{action.icon}"/>
+            <h:outputText value=" #{messages[action.label]}" />
+          </li>
+    </ui:repeat>
+  </ul>
+</div>
 </div>

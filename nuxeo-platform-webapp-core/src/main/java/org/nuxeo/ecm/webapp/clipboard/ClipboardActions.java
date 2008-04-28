@@ -22,7 +22,6 @@ package org.nuxeo.ecm.webapp.clipboard;
 import java.util.List;
 
 import javax.annotation.security.PermitAll;
-import javax.ejb.Local;
 import javax.ejb.Remove;
 
 import org.jboss.seam.annotations.Destroy;
@@ -39,7 +38,6 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListDescriptor;
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
-@Local
 public interface ClipboardActions {
 
     /**
@@ -185,6 +183,8 @@ public interface ClipboardActions {
     void putSelectionInClipboard();
 
     void putSelectionInDefaultWorkList();
+
+    public void putInClipboard(String docId) throws ClientException;
 
     /**
      * Retries contents of current WorkList.
