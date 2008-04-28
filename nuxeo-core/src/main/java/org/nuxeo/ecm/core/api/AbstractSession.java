@@ -38,6 +38,7 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.CoreService;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
@@ -1340,6 +1341,9 @@ public abstract class AbstractSession implements CoreSession,
         if (!doc.isVersion()) {
             notifyEvent(DocumentEventTypes.ABOUT_TO_REMOVE, docModel, options,
                     null, null, true);
+            CoreService coreService = Framework.getLocalService(CoreService.class);
+            coreService.getVersionRemovalPolicy().removeVersions(
+                    getSession(), doc, this);
         }
         doc.remove();
         if (!doc.isVersion()) {

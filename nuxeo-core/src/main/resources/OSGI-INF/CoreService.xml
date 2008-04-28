@@ -31,4 +31,16 @@
       class="org.nuxeo.ecm.core.CoreServiceFactoryDescriptor" />
   </extension-point>
 
+  <extension-point name="versionRemovalPolicy">
+    <documentation>
+      Used to register the version removal policy, which must implement
+      VersionRemovalPolicy.
+      <code>
+        <policy class="..."/>
+      </code>
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.core.CoreServicePolicyDescriptor" />
+  </extension-point>
+ 
 </component>

@@ -162,25 +162,15 @@ public class TestCustomVersioningService extends TestVersioning {
 
         assertNotNull(ver);
 
-        String docUuid = doc.getUUID();
         String verUuid = ver.getUUID();
 
-        // remove the document - should trigger versions removal
         doc.remove();
 
         session.save();
 
-        try {
-            // Document rdoc = session.getDocumentByUUID(docUuid);
-            // System.err.println(rdoc);
-            Document vdoc = session.getDocumentByUUID(verUuid);
-            System.err.println(vdoc);
-            fail("source document deleted - version document should be also in remove state");
-        } catch (Exception e) {
-            // ok, normally it should be a cause of
-            // javax.jcr.ItemNotFoundException
-            // e.printStackTrace();
-        }
+        Document version = session.getDocumentByUUID(verUuid);
+        // version not removed as version removal is done in AbstractSession
+        assertNotNull(version);
     }
 
     /**

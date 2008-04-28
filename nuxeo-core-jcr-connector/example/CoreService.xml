@@ -12,4 +12,9 @@
       class="org.nuxeo.ecm.core.CoreServiceFactoryDescriptor" />
   </extension-point>
 
+  <extension-point name="versionRemovalPolicy">
+    <object
+      class="org.nuxeo.ecm.core.CoreServicePolicyDescriptor" />
+  </extension-point>
+
 </component>
