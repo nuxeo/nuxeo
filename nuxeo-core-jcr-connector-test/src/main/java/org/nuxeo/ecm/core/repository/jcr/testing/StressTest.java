@@ -73,7 +73,6 @@ public class StressTest extends RepositoryTestCase {
     }
 
     public static Test suite() {
-
         TestSuite suite = new TestSuite("Test for org.nuxeo.ecm.core.repository.jcr.model");
         for (int i = 0; i < 100; i++) {
             final int k = i + 1;

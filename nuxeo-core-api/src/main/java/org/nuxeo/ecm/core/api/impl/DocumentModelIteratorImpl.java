@@ -45,7 +45,7 @@ public class DocumentModelIteratorImpl implements DocumentModelIterator {
 
     private static final Log log = LogFactory.getLog(DocumentModelIteratorImpl.class);
 
-    public int chunkSize;
+    private int chunkSize;
 
     private String sessionId;
 

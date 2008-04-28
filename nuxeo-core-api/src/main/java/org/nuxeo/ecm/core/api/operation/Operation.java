@@ -22,7 +22,6 @@ package org.nuxeo.ecm.core.api.operation;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -36,184 +35,224 @@ import org.nuxeo.ecm.core.api.DocumentRef;
  */
 public abstract class Operation<T> implements Serializable {
 
-    private static ThreadLocal<Operation<?>> command = new ThreadLocal<Operation<?>>(); // the current command
+    private static final long serialVersionUID = -9191284967153046156L;
 
-    public final static String START_EVENT = "commandStarted";
-    public final static String TERMINATE_EVENT = "commandTerminated";
+    // the current command
+    private static final ThreadLocal<Operation<?>> operation = new ThreadLocal<Operation<?>>();
 
-    public final static int NONE = 0;
-    public final static int RUNNING = 1;
-    public final static int TERMINATED = 2;
-
-    // internal flags from 1 to 256 (8 flags)
-    public final static int PRIVATE       = 1; // an internal command - cannot be created by users
-    public final static int URGENT       = 2; // this command needs urgent feedback - post notification should not be queued - they should be done as quick as possible
-    public final static int READ_ONLY = 4; // this command make modifications on storage
-    public final static int UPDATE_STATE = 8; // this command make modifications on document state
-    public final static int UPDATE_CONTENT = 16; // this command make modifications on storage content
-    public final static int UPDATE_STRUCTURE = 32; // this command make modifications on storage structure
-    public final static int BLOCK_JMS  = 64;  // if set do not send jms events for this command
+    public static final String START_EVENT = "commandStarted";
+    public static final String TERMINATE_EVENT = "commandTerminated";
 
     /**
-     * Whether ot not the data field contains keyed data.
+     * Operation flags.
+     * The first 2 bits are reserved to operation execution state
+     * The first 8 bits are reserved (bits 0-7)
      */
-    public static final int KEYED_DATA = 128;
 
-    private transient ModificationSet modifs = null;
-    private int state = NONE;
-    private boolean isOk = true;
-    protected int flags = NONE;
-    // this key can be used to identify the identity if the command invoker. If null
+    // No flags are set - operation was not yet started
+    public static final int NONE = 0;
+
+    // set if operation is running (bit 0)
+    public static final int RUNNING = 1;
+    // set if operation completed (bit 1)
+    public static final int TERMINATED = 2;
+
+    // an internal operation - not triggered directly by clients
+    public static final int INTERNAL = 4;
+    // priority flag - if set this operation is urgent (should not be queued, neither it's completion notification)
+    public static final int URGENT = 8;
+    // this operation may run asynchronously - this is a hint
+    public static final int ASYNC = 16;
+    // operation completion notification should not be sent over JMS
+    public static final int BLOCK_JMS = 32;
+    // Whether or not the data field contains keyed data.
+    public static final int KEYED_DATA = 64;
+    // block children events
+    public static final int BLOCK_CHILD_NOTIFICATIONS = 128;
+    // reserved by the core for future use
+    public static final int RESERVED = 256;
+
+    /**
+     * User flags may be used by clients to set custom flags on the operation.
+     * These flags must use only the range of bits from 8 to 31 (the first byte is reserved for core use)
+     */
+    // mask for user flags
+    public static final int USER_FLAGS = 0XFFFE00;
+
+    /**
+     * A convenience method to compute the correct user flag from the 0 based representation of that bit
+     * @param n
+     * @return
+     */
+    public static int USER_FLAG(int n) { return n << 16; }
+
+    protected final String name;
+    protected int flags;
     protected Object data;
-    protected String name;
-    protected Object[] args;
+    protected Status status = Status.STATUS_OK;
+    protected T result;
+    private ModificationSet modifs;
     protected transient Operation<?> parent;
     protected transient CoreSession session;
 
 
+    protected Operation(String name, int flags) {
+        this.name = name;
+        this.flags = flags;
+    }
+
+    protected Operation(String name) {
+        this(name, NONE);
+    }
+
     public static Operation<?> getCurrent() {
-        return command.get();
+        return operation.get();
     }
 
     public static Operation<?>[] getStack() {
-        Operation<?> cmd = command.get();
+        Operation<?> cmd = operation.get();
         if (cmd == null) {
             return new Operation<?>[0];
         } else if (cmd.parent == null) {
             return new Operation<?>[] {cmd};
         } else {
-            ArrayList<Operation<?>> cmds = new ArrayList<Operation<?>>();
+            List<Operation<?>> cmds = new ArrayList<Operation<?>>();
             cmd.fillCommandStack(cmds);
             return cmds.toArray(new Operation<?>[cmds.size()]);
         }
     }
 
     public static Operation<?>[] printStack(PrintStream out) {
-        Operation<?> cmd = command.get();
+        Operation<?> cmd = operation.get();
         if (cmd == null) {
             return new Operation<?>[0];
         } else if (cmd.parent == null) {
             return new Operation<?>[] {cmd};
         } else {
-            ArrayList<Operation<?>> cmds = new ArrayList<Operation<?>>();
+            List<Operation<?>> cmds = new ArrayList<Operation<?>>();
             cmd.fillCommandStack(cmds);
             return cmds.toArray(new Operation<?>[cmds.size()]);
         }
     }
 
-    public Operation(String name) {
-        this.name = name;
+    public final Status getStatus() {
+        return status;
     }
 
-    public Operation(String name, int flags) {
-        this.name = name;
-        this.flags = flags;
-    }
-
-    public Operation(String name, int flags, Object ... args) {
-        this.name = name;
-        this.args = args;
-        this.flags = flags;
-    }
-
-    /**
-     * @return the isOk.
-     */
-    public boolean isOk() {
-        return isOk;
-    }
-
-    /**
-     * @return the state.
-     */
-    public int getState() {
-        return state;
-    }
-
-    /**
-     * @return the flags.
-     */
-    public int getFlags() {
+    public final int getFlags() {
         return flags;
     }
 
-    public void setFlags(int flags) {
+    public final void setFlags(int flags) {
         this.flags |= flags;
     }
 
-    public void clearFlags(int flags) {
+    public final void clearFlags(int flags) {
         this.flags &= ~flags;
     }
 
-    public boolean isRunning() {
-        return state == RUNNING;
+    public final boolean isRunning() {
+        return (flags & RUNNING) == RUNNING;
     }
 
-    public boolean isTerminated() {
-        return state == TERMINATED;
+    public final boolean isTerminated() {
+        return (flags & TERMINATED) == TERMINATED;
     }
 
-    /**
-     * @return the name.
-     */
-    public String getName() {
+    public final boolean isFlagSet(int flag) {
+        return (flags & flag) == flag;
+    }
+
+    public final T getResult() {
+        return result;
+    }
+
+    public final String getName() {
         return name;
     }
 
     /**
-     * @return command arguments.
+     * TODO impl this?
+     * @param args
      */
-    public Object[] getArguments() {
-        return args;
-    }
+//    public void setArguments(Object ... args) {
+//
+//    }
+//
+//    /**
+//     * TODO impl this?
+//     * @return command arguments.
+//     */
+//    public Object[] getArguments() {
+//        return null;
+//    }
 
     /**
      * @return the parent.
      */
-    public Operation<?> getParent() {
+    public final Operation<?> getParent() {
         return parent;
     }
 
-    public CoreSession getSession() {
+    public final CoreSession getSession() {
         return session;
     }
 
-    public T run(CoreSession session, ProgressMonitor monitor, Object ... args) throws Exception {
-        if (state != NONE) {
+    public T run(CoreSession session, OperationHandler handler,
+            ProgressMonitor monitor) {
+        if (isRunning()) {
             throw new IllegalStateException("Command was already executed");
         }
         this.session = session;
-        this.args = args;
-        isOk = true;
-        boolean terminatedOk = false;
-        T result = null;
+        result = null;
         start();
-        if (monitor != null) monitor.started(this);
+        boolean isNotificationEnabled = isNotificationEnabled();
+        if (handler != null && isNotificationEnabled) {
+            handler.startOperation(this);
+        }
+        if (monitor != null) {
+            monitor.started(this);
+        }
         try {
             result = doRun(monitor);
-            terminatedOk = true;
+        } catch (Throwable t) {
+            status = new Status(Status.ERROR, t);
         } finally {
-            isOk = terminatedOk;
+            if (handler != null && isNotificationEnabled) {
+                handler.endOperation(this);
+            }
             end();
-            if (monitor != null) monitor.terminated(this);
+            if (monitor != null) {
+                monitor.terminated(this);
+            }
         }
         return result;
     }
 
-
-    private final void start() {
-        state = RUNNING;
-        parent = command.get();
-        command.set(this);
+    private boolean isNotificationEnabled() {
+        while (parent != null) {
+            if (parent.isFlagSet(BLOCK_CHILD_NOTIFICATIONS)) {
+                return false; // notifications were blocked by a parent
+            }
+            parent = parent.parent;
+        }
+        // notifications are enabled
+        return true;
     }
 
-    private final void end() {
-        command.set(parent);
-        state = TERMINATED;
+    private void start() {
+        setFlags(RUNNING);
+        parent = operation.get();
+        operation.set(this);
+    }
+
+    private void end() {
+        operation.set(parent);
+        setFlags(TERMINATED);
     }
 
     public List<Operation<?>> getCommandStack() {
-        ArrayList<Operation<?>> cmds = new ArrayList<Operation<?>>();
+        List<Operation<?>> cmds = new ArrayList<Operation<?>>();
         fillCommandStack(cmds);
         return cmds;
     }
@@ -234,27 +273,8 @@ public abstract class Operation<T> implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name).append(" [ ").append(Arrays.toString(args)).append(" ]");
-        return sb.toString();
+        return name;
     }
-
-    public boolean isReadOnly() {
-        return (flags & READ_ONLY) == READ_ONLY;
-    }
-
-    public boolean isModifyingStructure() {
-        return (flags & UPDATE_STRUCTURE) == UPDATE_STRUCTURE;
-    }
-
-    public boolean isModifyingContent() {
-        return (flags & UPDATE_CONTENT) == UPDATE_CONTENT;
-    }
-
-    public boolean isModifyingState() {
-        return (flags & UPDATE_STATE) == UPDATE_STATE;
-    }
-
 
     public void addModification(Modification modif) {
         if (modifs == null) {
@@ -280,8 +300,12 @@ public abstract class Operation<T> implements Serializable {
         return modifs;
     }
 
+    protected void initModificationSet(ModificationSet modifs) {
+        // do nothing by default
+    }
+
     public abstract T doRun(ProgressMonitor montior) throws Exception;
-    protected abstract void initModificationSet(ModificationSet modifs);
+
 
     // application data support
 

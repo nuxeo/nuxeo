@@ -257,7 +257,7 @@ public class TestCustomVersioningService extends TestVersioning {
         displayVersions(doc3);
     }
 
-    private void displayVersions(Document doc) throws DocumentException {
+    private static void displayVersions(Document doc) throws DocumentException {
         log.info("---------doc versions---------- for: " + doc.getPath());
         DocumentVersionIterator it = doc.getVersions();
         while (it.hasNext()) {
