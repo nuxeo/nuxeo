@@ -63,7 +63,8 @@ public class XAnnotatedContent extends XAnnotatedMember {
         el.normalize();
         Node node = el.getFirstChild();
         if (node == null) {
-            return "";
+            boolean asDOM = setter.getType() == DocumentFragment.class;
+            return asDOM ? null : "";
         }
         Range range = ((DocumentRange) el.getOwnerDocument()).createRange();
         range.setStartBefore(node);
