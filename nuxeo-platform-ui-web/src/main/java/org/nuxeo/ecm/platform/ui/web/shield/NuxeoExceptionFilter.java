@@ -102,13 +102,14 @@ public class NuxeoExceptionFilter implements Filter {
             FilterChain chain) throws IOException, ServletException {
         try {
             chain.doFilter(request, response);
-            if (request.getAttribute("applicationException")!=null)
-            {
-                log.error("An exception was swallowed by the component stack : " +  ((Exception)request.getAttribute("applicationException")).getMessage());
-            }
-            else if (request.getAttribute("securityException")!=null)
-            {
-                log.error("An security exception was swallowed by the component stack : " +  ((Exception)request.getAttribute("securityException")).getMessage());
+            if (request.getAttribute("applicationException") != null) {
+                log.error(
+                        "An exception was swallowed by the component stack : " + ((Exception) request.getAttribute(
+                                "applicationException")).getMessage());
+            } else if (request.getAttribute("securityException") != null) {
+                log.error(
+                        "An security exception was swallowed by the component stack : " + ((Exception) request.getAttribute(
+                                "securityException")).getMessage());
             }
         } catch (ServletException se) {
             handleException(request, response, se);
@@ -140,22 +141,22 @@ public class NuxeoExceptionFilter implements Filter {
     }
 
     public static String getStackTraceElement(Throwable t) {
-        StringBuilder string = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
         if (null != t) {
-            string.append("\n\n");
-            string.append(t.getClass().getName());
-            string.append("\n\n");
-            string.append(t.getLocalizedMessage());
-            string.append("\n\n");
+            sb.append("\n\n");
+            sb.append(t.getClass().getName());
+            sb.append("\n\n");
+            sb.append(t.getLocalizedMessage());
+            sb.append("\n\n");
 
             for (StackTraceElement element : t.getStackTrace()) {
-                string.append(element.toString());
-                string.append('\n');
+                sb.append(element.toString());
+                sb.append('\n');
             }
         }
 
-        return string.toString();
+        return sb.toString();
     }
 
     public static Throwable unwrapException(Throwable t) {
