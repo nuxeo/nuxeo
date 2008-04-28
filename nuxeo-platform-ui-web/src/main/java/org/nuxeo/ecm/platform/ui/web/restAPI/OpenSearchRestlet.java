@@ -46,7 +46,13 @@ import org.restlet.data.Response;
  *
  * TODO: make it possible to change the page size and navigate to next results
  * pages using additional query parameters. See http://opensearch.org for
- * official specifications
+ * official specifications.
+ *
+ * TODO: use a OPENSEARCH stateless query model to be able to override the
+ * currently hardcoded request pattern.
+ *
+ * TODO: add opensearch XML description snippet in the default theme so that
+ * firefox can autodetect the service URL.
  *
  * @author Olivier Grisel
  */
