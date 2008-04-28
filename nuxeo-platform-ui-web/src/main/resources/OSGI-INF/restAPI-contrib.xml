@@ -156,5 +156,19 @@
            </urlPatterns>
    </restletPlugin>
 
+   <documentation>
+    GET /nuxeo/restAPI/opensearch?q=keywords
+
+    Perform a document search on the ecm:fulltext index and return the
+    results as a RSS 2.0 file with opensearch.org metadata
+   </documentation>
+   <restletPlugin name="openSearchRestlet"
+     class="org.nuxeo.ecm.platform.ui.web.restAPI.OpenSearchRestlet"
+     enabled="true" useSeam="false">
+     <urlPatterns>
+       <urlPattern>/opensearch</urlPattern>
+     </urlPatterns>
+   </restletPlugin>
+
   </extension>
 </component>
