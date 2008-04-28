@@ -22,13 +22,13 @@ package org.nuxeo.ecm.platform.comment.web;
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.io.Serializable;
 
 import javax.faces.event.ActionEvent;
 
@@ -140,7 +140,8 @@ public class CommentManagerActionsBean extends InputController implements
                 comment.setProperty("dublincore", "contributors", contributors);
             }
             if (comment.getProperty("dublincore", "created") == null) {
-                comment.setProperty("dublincore", "created", Calendar.getInstance());
+                comment.setProperty("dublincore", "created",
+                        Calendar.getInstance());
             }
         }
 
@@ -168,7 +169,8 @@ public class CommentManagerActionsBean extends InputController implements
             } else {
                 newComment = commentableDoc.addComment(comment);
             }
-            //Events.instance().raiseEvent(CommentEvents.COMMENT_ADDED, null, newComment);
+            // Events.instance().raiseEvent(CommentEvents.COMMENT_ADDED, null,
+            // newComment);
             cleanContextVariable();
 
             return newComment;
@@ -193,12 +195,14 @@ public class CommentManagerActionsBean extends InputController implements
         return null;
     }
 
-    /*@Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_CHANGED, CommentEvents.COMMENT_ADDED,
-            CommentEvents.COMMENT_REMOVED }, create = false, inject=false)*/
+    /*
+     * @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
+     * EventNames.DOCUMENT_CHANGED, CommentEvents.COMMENT_ADDED,
+     * CommentEvents.COMMENT_REMOVED }, create = false, inject=false)
+     */
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED,
             EventNames.CONTENT_ROOT_SELECTION_CHANGED,
-            EventNames.DOCUMENT_CHANGED }, create = false, inject=false)
+            EventNames.DOCUMENT_CHANGED }, create = false, inject = false)
     public void documentChanged() {
         cleanContextVariable();
     }
@@ -218,14 +222,15 @@ public class CommentManagerActionsBean extends InputController implements
      * Initializes uiComments with Comments of current document.
      */
     public void getComments() throws ClientException {
-
         commentableDoc = getCommentableDoc();
-        if (uiComments == null && commentableDoc != null) {
+        if (uiComments == null) {
             uiComments = new ArrayList<UIComment>();
-            List<DocumentModel> comments = commentableDoc.getComments();
-            for (DocumentModel comment : comments) {
-                UIComment uiComment = createUIComment(null, comment);
-                uiComments.add(uiComment);
+            if (commentableDoc != null) {
+                List<DocumentModel> comments = commentableDoc.getComments();
+                for (DocumentModel comment : comments) {
+                    UIComment uiComment = createUIComment(null, comment);
+                    uiComments.add(uiComment);
+                }
             }
         }
     }
@@ -332,7 +337,8 @@ public class CommentManagerActionsBean extends InputController implements
             UIComment parent = selectedComment.getParent();
             commentableDoc.removeComment(selectedComment.getComment());
             cleanContextVariable();
-            //Events.instance().raiseEvent(CommentEvents.COMMENT_REMOVED, null, selectedComment.getComment());
+            // Events.instance().raiseEvent(CommentEvents.COMMENT_REMOVED, null,
+            // selectedComment.getComment());
             return null;
         } catch (Throwable t) {
             log.error("failed to delete comment", t);

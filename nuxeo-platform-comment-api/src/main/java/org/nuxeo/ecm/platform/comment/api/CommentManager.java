@@ -30,21 +30,33 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface CommentManager {
 
-    List<DocumentModel> getComments(DocumentModel docModel) throws ClientException;
+    List<DocumentModel> getComments(DocumentModel docModel)
+            throws ClientException;
 
     List<DocumentModel> getComments(DocumentModel docModel, DocumentModel parent)
             throws ClientException;
 
     /**
-     * @deprecated CommentManager cannot find the author if invoked remote
-     * so one should use CommentManager.createComment(docModel, comment, author)
+     * @deprecated CommentManager cannot find the author if invoked remote so
+     *             one should use CommentManager.createComment(docModel,
+     *             comment, author)
      */
     @Deprecated
-    DocumentModel createComment(DocumentModel docModel,
-            String comment) throws ClientException;
+    DocumentModel createComment(DocumentModel docModel, String comment)
+            throws ClientException;
 
-    DocumentModel createComment(DocumentModel docModel,
-            String comment, String author) throws ClientException;
+    /**
+     * Creates a comment document model, filling its properties with given info
+     * and linking it to given document.
+     *
+     * @param docModel the document to comment
+     * @param comment the comment content
+     * @param author the comment author
+     * @return the comment document model.
+     * @throws ClientException
+     */
+    DocumentModel createComment(DocumentModel docModel, String comment,
+            String author) throws ClientException;
 
     DocumentModel createComment(DocumentModel docModel, DocumentModel comment)
             throws ClientException;
@@ -52,6 +64,7 @@ public interface CommentManager {
     DocumentModel createComment(DocumentModel docModel, DocumentModel parent,
             DocumentModel child) throws ClientException;
 
-    void deleteComment(DocumentModel docModel, DocumentModel comment) throws ClientException;
+    void deleteComment(DocumentModel docModel, DocumentModel comment)
+            throws ClientException;
 
 }
