@@ -36,13 +36,11 @@ import javax.security.auth.login.LoginContext;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
-import org.nuxeo.ecm.platform.ec.notification.email.templates.NuxeoTemplatesLoader;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.rendering.RenderingResult;
 import org.nuxeo.ecm.platform.rendering.RenderingService;
 import org.nuxeo.ecm.platform.rendering.impl.DocumentRenderingContext;
-import org.nuxeo.ecm.platform.rendering.template.DocumentObjectWrapper;
 import org.nuxeo.runtime.api.Framework;
 
 import freemarker.template.Configuration;
@@ -159,9 +157,7 @@ public final class EmailHelper {
      */
     private static Session getSession() {
         Session session = null;
-        /*
-         * First, try to get the session from JNDI, as would be done under J2EE.
-         */
+        // First, try to get the session from JNDI, as would be done under J2EE.
         try {
           NotificationService service = (NotificationService) Framework
                   .getRuntime().getComponent(NotificationService.NAME);

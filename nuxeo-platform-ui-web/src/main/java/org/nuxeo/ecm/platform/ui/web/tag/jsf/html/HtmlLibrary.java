@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.ui.web.tag.jsf.html;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.MetaActionSourceTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.MetaValueHolderTagHandler;
-import org.nuxeo.ecm.platform.ui.web.tag.jsf.MetaValueHolderRule;
 
 import com.sun.facelets.tag.jsf.html.AbstractHtmlLibrary;
 
