@@ -1,9 +1,15 @@
 <?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.CoreService">
 
-<component name="org.nuxeo.ecm.core.api.CoreService">
+  <implementation class="org.nuxeo.ecm.core.CoreService"/>
 
-  <implementation class="org.nuxeo.ecm.core.api.CoreService"/>
+  <service>
+    <provide interface="org.nuxeo.ecm.core.CoreService" />
+  </service>
 
-  <extension-point name="sessionFactory"/>
+  <extension-point name="sessionFactory">
+    <object
+      class="org.nuxeo.ecm.core.CoreServiceFactoryDescriptor" />
+  </extension-point>
 
 </component>
