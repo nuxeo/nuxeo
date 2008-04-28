@@ -323,12 +323,7 @@ public class JCRDocument extends AbstractDocument implements JCRNodeProxy {
             log.debug("removing doc " + getPath());
         }
         try {
-            if (session.getProxies(this, null).isEmpty()) {
-                Versioning.getService().removeVersionHistory(this);
-            }
-            // else we can't delete the version history, there may be
-            // proxies pointing to one of its versions.
-            // TODO Cleanup will have to be done when proxies are removed.
+            // version removal is done at the AbstractSession level
             node.remove();
         } catch (RepositoryException e) {
             throw new DocumentException(e);
