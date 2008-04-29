@@ -67,9 +67,9 @@ public class LazyTreeNode extends TreeNodeBase {
 
     protected boolean noData = true;
 
-    final FacetFilter facetFilter = new FacetFilter("HiddenInNavigation", false);
+    protected final FacetFilter facetFilter = new FacetFilter("HiddenInNavigation", false);
 
-    final DocumentFilter docFilter;
+    protected final DocumentFilter docFilter;
 
     public LazyTreeNode(String type, String description,
             DocumentRef identifier, TypesTool typesTool, CoreSession handle,
