@@ -38,6 +38,8 @@ public class SiteDocumentView extends DocumentContextView {
         addField(SITEADAPTER);
         addField(DOCURL);
         addField(REQUEST);
+        addField(ACTIONS);
+        addField(DESCRIPTOR);
     }
 
     protected static SiteRequest getRequest(RenderingContext ctx, DocumentModel doc) {
@@ -76,6 +78,34 @@ public class SiteDocumentView extends DocumentContextView {
 
         public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
             return getRequest(ctx, doc);
+        }
+    };
+
+    protected static final DocumentField ACTIONS = new DocumentField() {
+        public String getName() {
+            return "actions";
+        }
+
+        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+            if (ctx instanceof SiteObject) {
+                SiteObject sCtx = (SiteObject) ctx;
+                return sCtx.getDescriptor().getEnabledActions(sCtx);
+            }
+            return null;
+        }
+    };
+
+    protected static final DocumentField DESCRIPTOR = new DocumentField() {
+        public String getName() {
+            return "descriptor";
+        }
+
+        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+            if (ctx instanceof SiteObject) {
+                SiteObject sCtx = (SiteObject) ctx;
+                return sCtx.getDescriptor();
+            }
+            return null;
         }
     };
 
