@@ -20,10 +20,10 @@
 package org.nuxeo.ecm.platform.site.tests;
 
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
-import org.nuxeo.ecm.platform.site.servlet.SiteServlet;
 import org.nuxeo.ecm.platform.site.tests.fake.FakeRequest;
 import org.nuxeo.ecm.platform.site.tests.fake.FakeResponse;
 import org.nuxeo.ecm.platform.site.tests.fake.FakeServletInputStream;
+import org.nuxeo.ecm.webengine.servlet.SiteServlet;
 
 public abstract class  BaseSiteRequestTestCase extends RepositoryOSGITestCase {
 
