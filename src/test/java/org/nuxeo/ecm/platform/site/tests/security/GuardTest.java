@@ -84,8 +84,14 @@ public class GuardTest extends NXRuntimeTestCase {
         doc.setProperty("dublincore", "title", "test");
         assertEquals(doc.getTitle(), "test");
         assertTrue(g.check(session, doc));
-
-        //PermissionService.getInstance().getGuard("");
+        doc.setProperty("dublincore", "title", "test3");
+        assertFalse(g.check(session, doc));
+        ad = od.getAction("myAction4");
+        g = ad.getGuard();
+        assertFalse(g.check(session, doc));
+        doc.setProperty("dublincore", "title", "test.py");
+        assertEquals(doc.getTitle(), "test.py");
+        assertTrue(g.check(session, doc));
 
     }
 

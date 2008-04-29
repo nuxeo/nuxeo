@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.site.security.guards;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
 
 import javax.script.Bindings;
@@ -72,17 +70,31 @@ public class ScriptGuard implements Guard {
             Bindings bindings = new SimpleBindings();
             bindings.put("doc", doc);
             bindings.put("session", session);
-            Boolean result;
+            Object result = null;
             if (comp != null) {
-                result = (Boolean)comp.eval(bindings);
+                result = comp.eval(bindings);
+                if (result == null) {
+                    result = bindings.get("__result__");
+                }
             } else {
-                result = (Boolean)engine.eval(new StringReader(script), bindings);
+                result = engine.eval(new StringReader(script), bindings);
             }
-            return result != null ? result.booleanValue() : false;
+            return booleanValue(result);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
+    }
+
+    protected boolean booleanValue(Object obj) {
+        if (obj.getClass() == Boolean.class) {
+            return ((Boolean)obj).booleanValue();
+        } else if (obj instanceof Number) {
+            return ((Number)obj).intValue() != 0;
+        } else if (obj != null) {
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -95,16 +107,7 @@ public class ScriptGuard implements Guard {
             .getScriptEngineManager().getEngineByName(type);
         if (engine != null) {
              if (engine instanceof Compilable) {
-                 try {
-                     Reader reader = new StringReader(content);
-                     try {
-                         return ((Compilable) engine).compile(reader);
-                     } finally {
-                         reader.close();
-                     }
-                 } catch (IOException e) {
-                     throw new ScriptException(e);
-                 }
+                 return ((Compilable) engine).compile(content);
              } else {
                  return null; // script is not compilable
              }

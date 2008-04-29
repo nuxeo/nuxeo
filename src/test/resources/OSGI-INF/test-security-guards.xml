@@ -26,6 +26,11 @@
             <guard type="script" id="MY_SCRIPT" engine="jexl">doc.title == "test"</guard>
           </permission>
         </action>
+        <action id="myAction4" enabled="true">
+          <permission expression="MY_PY_SCRIPT">
+            <guard type="script" id="MY_PY_SCRIPT" engine="python">__result__ = doc.getTitle() == 'test.py'</guard>
+          </permission>
+        </action>
       </actions>
     </object>
   </extension>
