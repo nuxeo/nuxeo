@@ -281,7 +281,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
 
     public LinkedDocument getLogLinkedDocument(LogEntry entry) {
         String oldComment = entry.getComment();
-        if (oldComment != null) {
+        if (oldComment == null) {
             return null;
         }
 
