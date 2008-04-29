@@ -27,7 +27,7 @@ import java.security.Principal;
  * used to change permission in connect.
  */
 //FIXME remove this when connect will be changed to use SystemPrincipal
-class SimplePrincipal implements Principal, Serializable {
+public class SimplePrincipal implements Principal, Serializable {
 
     private static final long serialVersionUID = 4899743263998931844L;
 
