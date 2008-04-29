@@ -137,7 +137,7 @@ start() {
     while [ $count -le $waiting_loops ]; do
 # could use ServerBindPort (8093) from jboss/server/default/deploy/jms/uil2-service.xml ?
 #        netstat -ln |grep $PORT > /dev/null
-        tail -n1 $LOG |grep "Started in" >/dev/null
+        tail -n1 $LOGF |grep "Started in" >/dev/null
         if [ $? = 0 ]; then
             echo "Server started."
             egrep 'Nuxeo ECM Started|Nuxeo EP Started' -B1 -A5 $LOGF|tail -n7
