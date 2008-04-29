@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.site.tests.security;
+package org.nuxeo.ecm.webengine.tests.security;
 
 import java.io.Serializable;
 import java.util.HashMap;

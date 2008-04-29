@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.site.tests.fake;
+package org.nuxeo.ecm.webengine.tests.fake;
 
 import java.io.IOException;
 import java.io.InputStream;

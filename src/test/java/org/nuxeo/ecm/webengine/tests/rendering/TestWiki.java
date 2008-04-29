@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.site.tests.rendering;
+package org.nuxeo.ecm.webengine.tests.rendering;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

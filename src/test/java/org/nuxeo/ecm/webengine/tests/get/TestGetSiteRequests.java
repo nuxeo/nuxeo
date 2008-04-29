@@ -17,13 +17,13 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.site.tests.get;
+package org.nuxeo.ecm.webengine.tests.get;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.platform.site.tests.BaseSiteRequestTestCase;
-import org.nuxeo.ecm.platform.site.tests.fake.FakeResponse;
+import org.nuxeo.ecm.webengine.tests.BaseSiteRequestTestCase;
+import org.nuxeo.ecm.webengine.tests.fake.FakeResponse;
 
 public class TestGetSiteRequests extends BaseSiteRequestTestCase {
 

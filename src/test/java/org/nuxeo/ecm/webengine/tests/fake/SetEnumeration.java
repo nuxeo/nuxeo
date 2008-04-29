@@ -17,25 +17,27 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.site.tests.fake;
+package org.nuxeo.ecm.webengine.tests.fake;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Set;
 
-import javax.servlet.ServletOutputStream;
+public class SetEnumeration implements Enumeration<String> {
 
-public class FakeServletOutputStream extends ServletOutputStream {
+    private final List<String> keys;
 
-    private OutputStream out = new ByteArrayOutputStream();
-
-    public FakeServletOutputStream(OutputStream out) {
-        this.out = out;
+    public SetEnumeration(Set<String> set) {
+        keys = new ArrayList<String>(set);
     }
 
-    @Override
-    public void write(int b) throws IOException {
-        out.write(b);
+    public boolean hasMoreElements() {
+        return !keys.isEmpty();
+    }
+
+    public String nextElement() {
+        return keys.remove(0);
     }
 
 }

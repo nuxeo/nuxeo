@@ -17,27 +17,23 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.site.tests.fake;
+package org.nuxeo.ecm.webengine.tests.fake;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Set;
+import java.util.HashSet;
 
-public class SetEnumeration implements Enumeration<String> {
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 
-    private final List<String> keys;
+public class FakeFolderishDocumentModel extends DocumentModelImpl {
 
-    public SetEnumeration(Set<String> set) {
-        keys = new ArrayList<String>(set);
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    public FakeFolderishDocumentModel(String parentPath, String name, String type)
+    {
+        super(parentPath,name,type);
+        declaredFacets = new HashSet<String>();
+        declaredFacets.add("Folderish");
     }
-
-    public boolean hasMoreElements() {
-        return !keys.isEmpty();
-    }
-
-    public String nextElement() {
-        return keys.remove(0);
-    }
-
 }

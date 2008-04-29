@@ -17,23 +17,25 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.site.tests.fake;
+package org.nuxeo.ecm.webengine.tests.fake;
 
-import java.util.HashSet;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import javax.servlet.ServletOutputStream;
 
-public class FakeFolderishDocumentModel extends DocumentModelImpl {
+public class FakeServletOutputStream extends ServletOutputStream {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+    private OutputStream out = new ByteArrayOutputStream();
 
-    public FakeFolderishDocumentModel(String parentPath, String name, String type)
-    {
-        super(parentPath,name,type);
-        declaredFacets = new HashSet<String>();
-        declaredFacets.add("Folderish");
+    public FakeServletOutputStream(OutputStream out) {
+        this.out = out;
     }
+
+    @Override
+    public void write(int b) throws IOException {
+        out.write(b);
+    }
+
 }
