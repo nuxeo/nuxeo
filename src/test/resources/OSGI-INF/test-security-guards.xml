@@ -17,8 +17,13 @@
           <permission expression="(type=Folder OR type=Workspace)"/>
         </action>
         <action id="myAction2" enabled="true">
-          <permission expression="WRITE OR MY_WRITE">
-            <user id="MY_WRITE">bogdan</user>
+          <permission expression="MY_WRITE">
+            <guard type="user" id="MY_WRITE">bogdan</guard>
+          </permission>
+        </action>
+        <action id="myAction3" enabled="true">
+          <permission expression="MY_SCRIPT">
+            <guard type="script" id="MY_SCRIPT" engine="jexl">doc.title == "test"</guard>
           </permission>
         </action>
       </actions>

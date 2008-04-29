@@ -19,14 +19,19 @@
 
 package org.nuxeo.ecm.platform.site.tests.security;
 
+import java.io.Serializable;
+import java.util.HashMap;
+
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.platform.site.ObjectDescriptor;
 import org.nuxeo.ecm.platform.site.SiteManager;
 import org.nuxeo.ecm.platform.site.actions.ActionDescriptor;
 import org.nuxeo.ecm.platform.site.security.Guard;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -36,6 +41,12 @@ public class GuardTest extends NXRuntimeTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         deployBundle("nuxeo-runtime-scripting");
+        deployBundle("nuxeo-core-schema");
+        deployBundle("nuxeo-core-query");
+        deployBundle("nuxeo-core-api");
+        deployBundle("nuxeo-core");
+        deployContrib("OSGI-INF/DemoRepository.xml");
+        deployContrib("OSGI-INF/site-manager-framework.xml");
         deployContrib("OSGI-INF/site-manager-framework.xml");
         deployContrib("OSGI-INF/test-security-guards.xml");
     }
@@ -52,12 +63,28 @@ public class GuardTest extends NXRuntimeTestCase {
         ad = od.getAction("myAction1");
         Guard g = ad.getGuard();
         assertNotNull(g);
+        LocalSession session = new LocalSession();
         DocumentModelImpl doc = new DocumentModelImpl("/", "test", "Folder");
         assertTrue(g.check(null, doc));
         doc = new DocumentModelImpl("/", "test", "File");
         assertFalse(g.check(null, doc));
         doc = new DocumentModelImpl("/", "test", "Workspace");
         assertTrue(g.check(null, doc));
+
+        ad = od.getAction("myAction2");
+        g = ad.getGuard();
+        HashMap<String, Serializable> ctx = new HashMap<String, Serializable>();
+        NuxeoPrincipal principal = new UserPrincipal("bogdan");
+        ctx.put("principal", principal);
+        session.connect("demo", ctx);
+        assertTrue(g.check(session, doc));
+
+        ad = od.getAction("myAction3");
+        g = ad.getGuard();
+        doc.setProperty("dublincore", "title", "test");
+        assertEquals(doc.getTitle(), "test");
+        assertTrue(g.check(session, doc));
+
         //PermissionService.getInstance().getGuard("");
 
     }

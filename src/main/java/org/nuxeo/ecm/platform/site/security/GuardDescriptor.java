@@ -111,8 +111,28 @@ public class GuardDescriptor {
                         String value = node.getTextContent().trim();
                         guards.put(id, new GroupGuard(value));
                     } else if ("script".equals(type)) {
+                        Node engineNode = map.getNamedItem("engine");
+                        if (engineNode == null) {
+                            throw new IllegalArgumentException("Must specify an engine attribute on script guards");
+                        }
                         String value = node.getTextContent().trim();
-                        guards.put(id, new ScriptGuard(value));
+                        guards.put(id, new ScriptGuard(engineNode.getNodeValue(), value));
+                    } else if ("expression".equals(type)) {
+                        String value = node.getTextContent().trim();
+                        try {
+                            guards.put(id, PermissionService.getInstance().parse(value, guards));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    } else { // the type should be a guard factory
+                        String value = node.getTextContent().trim();
+                        try {
+                            Class<?> factory = Class.forName(type);
+                            Guard guard = ((GuardFactory)factory.newInstance()).newGuard(value);
+                            guards.put(id, guard);
+                        } catch (Exception e) {
+                            e.printStackTrace(); //TODO should throw a DeployException
+                        }
                     }
                 }
             }
@@ -138,76 +158,5 @@ public class GuardDescriptor {
         return new DefaultPermission(id, getGuard());
     }
 
-    public static GuardDescriptor build(Node element) {
-        NamedNodeMap attrs = element.getAttributes();
-        Node idNode = attrs.getNamedItem("id");
-        String id = null;
-        if (idNode != null) {
-            id = idNode.getNodeValue();
-        }
-        GuardDescriptor gd = new GuardDescriptor(id);
-
-        Node node = element.getFirstChild();
-        while (node != null) {
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
-                String name = node.getNodeName();
-                if ("permission".equals(name)) {
-                    Node attr = attrs.getNamedItem("id");
-                    if (attr != null) {
-                        String value = node.getTextContent().trim();
-                        gd.guards.put(attr.getNodeValue(), new PermissionGuard(value));
-                    }
-                } else if ("facet".equals(name)) {
-                    NamedNodeMap map = node.getAttributes();
-                    Node attr = map.getNamedItem("id");
-                    if (attr != null) {
-                        String value = node.getTextContent().trim();
-                        gd.guards.put(attr.getNodeValue(), new FacetGuard(value));
-                    }
-                } else if ("type".equals(name)) {
-                    NamedNodeMap map = node.getAttributes();
-                    Node attr = map.getNamedItem("id");
-                    if (attr != null) {
-                        String value = node.getTextContent().trim();
-                        gd.guards.put(attr.getNodeValue(), new TypeGuard(value));
-                    }
-                } else if ("schema".equals(name)) {
-                    NamedNodeMap map = node.getAttributes();
-                    Node attr = map.getNamedItem("id");
-                    if (attr != null) {
-                        String value = node.getTextContent().trim();
-                        gd.guards.put(attr.getNodeValue(), new SchemaGuard(value));
-                    }
-                } else if ("user".equals(name)) {
-                    NamedNodeMap map = node.getAttributes();
-                    Node attr = map.getNamedItem("id");
-                    if (attr != null) {
-                        String value = node.getTextContent().trim();
-                        gd.guards.put(attr.getNodeValue(), new UserGuard(value));
-                    }
-                } else if ("group".equals(name)) {
-                    NamedNodeMap map = node.getAttributes();
-                    Node attr = map.getNamedItem("id");
-                    if (attr != null) {
-                        String value = node.getTextContent().trim();
-                        gd.guards.put(attr.getNodeValue(), new GroupGuard(value));
-                    }
-                } else if ("script".equals(name)) {
-                    NamedNodeMap map = node.getAttributes();
-                    Node attr = map.getNamedItem("id");
-                    if (attr != null) {
-                        String value = node.getTextContent().trim();
-                        gd.guards.put(attr.getNodeValue(), new ScriptGuard(value));
-                    }
-//                } else if ("guard".equals(name)) {
-//                    GuardDescriptor subGd = build(node);
-//                    gd.guards.put(subGd.getId(), subGd);
-                }
-
-            }
-        }
-
-        return gd;
-    }
 
 }
