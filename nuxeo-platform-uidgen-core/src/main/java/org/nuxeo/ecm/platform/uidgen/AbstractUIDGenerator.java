@@ -28,12 +28,12 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * The abstract class adds some useful methods.
- *
+ * 
  * @author <a href="mailto:dm@nuxeo.com>Dragos Mihalache</a>
  */
 public abstract class AbstractUIDGenerator implements UIDGenerator {
-	
-	private static final Log log = LogFactory.getLog(AbstractUIDGenerator.class);
+
+    private static final Log log = LogFactory.getLog(AbstractUIDGenerator.class);
 
     private UIDSequencer sequencer;
 
@@ -57,28 +57,28 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
     }
 
     public String getPropertyName() {
-		if (propertyNames.length == 0) {
-			log.warn("No propertyName specified");
-			return null;
-		}
-		return propertyNames[0];
+        if (propertyNames.length == 0) {
+            log.warn("No propertyName specified");
+            return null;
+        }
+        return propertyNames[0];
     }
 
     public void setPropertyName(String propertyName) {
-		propertyNames = new String[] {propertyName};
+        propertyNames = new String[] { propertyName };
     }
-    
+
     public void setPropertyNames(String[] propertyNames) {
-    	this.propertyNames = propertyNames;
+        this.propertyNames = propertyNames;
     }
-    
+
     public String[] getPropertyNames() {
-    	return propertyNames;
+        return propertyNames;
     }
 
     /**
      * Checks if the property with the given name is defined and is not null.
-     *
+     * 
      * @param propName
      * @return
      * @throws DocumentException
@@ -124,7 +124,7 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
                         "Cannot set uid %s on property %s for doc %s", uid,
                         propertyName, document));
             }
-		}
+        }
     }
 
     // helper method to deprecate
