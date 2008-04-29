@@ -56,7 +56,7 @@ public class GuardTest extends NXRuntimeTestCase {
 
         SiteManager mgr = Framework.getLocalService(SiteManager.class);
         assertNotNull(mgr);
-        ObjectDescriptor od = mgr.getObject("siteFolder");
+        ObjectDescriptor od = mgr.getObject("siteFolder2");
         assertNotNull(od);
         ActionDescriptor ad = od.getAction("view");
         assertNotNull(ad);

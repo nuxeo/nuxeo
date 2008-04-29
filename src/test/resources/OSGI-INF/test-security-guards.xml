@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.webengine.templates.test.wiki">
+<component name="org.nuxeo.ecm.webengine.test">
 
   <extension target="org.nuxeo.ecm.webengine.SiteManagerComponent"
     point="guard">
@@ -10,9 +10,11 @@
 
   <extension target="org.nuxeo.ecm.webengine.SiteManagerComponent"
     point="siteObject">
-    <object id="siteFolder" type="Document" extends="default">
+    <object id="siteFolder2" type="Folder" extends="default">
       <actions>
-        <action id="view" enabled="true"/>
+        <action id="view" enabled="true">
+          <permission expression="type=Folder"/>
+        </action>
         <action id="myAction1" enabled="true">
           <permission expression="(type=Folder OR type=Workspace)"/>
         </action>
