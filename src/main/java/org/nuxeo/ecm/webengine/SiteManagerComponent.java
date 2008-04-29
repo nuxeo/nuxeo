@@ -24,6 +24,8 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
@@ -38,6 +40,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -56,13 +59,16 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
     private SiteManager mgr;
     private FileChangeNotifier notifier;
     private RenderingEngine engine;
+    private ComponentContext ctx;
 
 
     @Override
     public void activate(ComponentContext context) throws Exception {
+        this.ctx = context;
         File root = new File(Framework.getRuntime().getHome(), "web");
-        if (!root.isDirectory()) {
-            root.mkdirs();
+        if (!root.exists()) {
+            // runtime predeployment is not supporting conditional unziping so we do the predeployment here:
+            deployWebDir(context.getRuntimeContext().getBundle(), root);
         }
         String val = (String)context.getPropertyValue("engine", null);
         if (val != null) {
@@ -82,18 +88,51 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
         notifier = new FileChangeNotifier();
         notifier.start();
 
+
+
         // load configuration (it ill be put in pending until this component will exit activation code)
-//        File file = new File(root, "web.xml");
-//        XMap xmap = new XMap();
-//        xmap.load(new XMapContext(context.getRuntimeContext()), new BufferedInputStream(new FileInputStream(file)));
+        File file = new File(root, "web.xml");
+        if (file.isFile()) {
+            //XMap xmap = new XMap();
+            //WebConfiguration cfg = xmap.load(new XMapContext(context.getRuntimeContext()), new BufferedInputStream(new FileInputStream(file)));
+            //new XMapContext(context.getRuntimeContext());
+            context.getRuntimeContext().deploy(file.toURI().toURL());
+            notifier.watch(file);
+            notifier.addListener(this);
+        }
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        // TODO Auto-generated method stub
-        super.deactivate(context);
+        notifier.stop();
+        notifier.removeListener(this);
+        notifier = null;
+        ctx = null;
     }
 
+    private void deployWebDir(Bundle bundle, File root) throws Exception {
+        root.mkdirs(); // create root dir if not already exists
+        // copy web dir located in the bundle jar into this dir
+        //TODO: getLocation() may not work with some OSGi impl.
+        String location = bundle.getLocation();
+        if (location.startsWith("file:")) {
+            if (location.endsWith(".jar")) {
+                ZipUtils.unzip("web", new URL(location), root);
+            } else {
+                File file = new File(new URL(location).toURI());
+                file = new File(file, "web");
+                FileUtils.copy(file.listFiles(), root);
+            }
+        } else {
+            if (location.endsWith(".jar")) {
+                ZipUtils.unzip("web", new File(location), root);
+            } else {
+                File file = new File(location);
+                file = new File(file, "web");
+                FileUtils.copy(file.listFiles(), root);
+            }
+        }
+    }
 
     @Override
     public void registerContribution(Object contribution,
@@ -146,9 +185,16 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
     }
 
     public void fileChanged(File file, long since) {
-        if (file.getAbsolutePath().startsWith(mgr.getRootDirectory().getAbsolutePath())) {
-            if (file.isDirectory()) {
-               mgr.reset();
+        if (ctx == null) return;
+//        if (file.getAbsolutePath().startsWith(mgr.getRootDirectory().getAbsolutePath())) {
+        if (file.getAbsolutePath().equals(new File(mgr.getRootDirectory(), "web.xml").getAbsolutePath())) {
+            try {
+                //mgr.reset();
+                URL url = file.toURI().toURL();
+                ctx.getRuntimeContext().undeploy(url);
+                ctx.getRuntimeContext().deploy(url);
+            } catch (Exception e) {
+                log.error("Failed to redeploy web.xml", e);
             }
         }
     }

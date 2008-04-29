@@ -40,5 +40,6 @@
       <url-pattern>/site/files/*</url-pattern>
     </servlet-mapping>
   </extension>
+
 </fragment>
 
