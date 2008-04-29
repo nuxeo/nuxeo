@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.site;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,8 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.site.actions.ActionDescriptor;
 
 /**
@@ -137,6 +140,18 @@ public class ObjectDescriptor {
      */
     public Map<String, ActionDescriptor> getActions() {
         return actions;
+    }
+
+    public Collection<ActionDescriptor> getEnabledActions(SiteObject obj) {
+        CoreSession session = obj.getSession();
+        DocumentModel doc = obj.getDocument();
+        ArrayList<ActionDescriptor> ads = new ArrayList<ActionDescriptor>();
+        for (ActionDescriptor ad : actions.values()) {
+            if (ad.getGuard().check(session, doc)) {
+                ads.add(ad);
+            }
+        }
+        return ads;
     }
 
     public ActionDescriptor getAction(String name) {

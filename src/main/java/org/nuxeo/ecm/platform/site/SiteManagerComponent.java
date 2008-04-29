@@ -19,22 +19,18 @@
 
 package org.nuxeo.ecm.platform.site;
 
-import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.derby.iapi.sql.dictionary.FileInfoDescriptor;
-import org.apache.lucene.store.BufferedIndexInput;
-import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.platform.site.rendering.TransformerDescriptor;
+import org.nuxeo.ecm.platform.site.security.GuardDescriptor;
+import org.nuxeo.ecm.platform.site.security.PermissionService;
 import org.nuxeo.ecm.platform.site.util.FileChangeListener;
 import org.nuxeo.ecm.platform.site.util.FileChangeNotifier;
 import org.nuxeo.runtime.api.Framework;
@@ -42,8 +38,6 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.RuntimeContext;
-import org.nuxeo.runtime.model.impl.XMapContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -55,6 +49,7 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
 
     public final static String TRANSFORMER_XP = "transformer";
     public final static String SITE_OBJ_XP = "siteObject";
+    public final static String GUARD_XP = "guard"; // global guards
 
     private final static Log log = LogFactory.getLog(SiteManagerComponent.class);
 
@@ -66,6 +61,9 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
     @Override
     public void activate(ComponentContext context) throws Exception {
         File root = new File(Framework.getRuntime().getHome(), "web");
+        if (!root.isDirectory()) {
+            root.mkdirs();
+        }
         String val = (String)context.getPropertyValue("engine", null);
         if (val != null) {
             try {
@@ -96,6 +94,7 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
         super.deactivate(context);
     }
 
+
     @Override
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
@@ -106,6 +105,9 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
         } else if (SITE_OBJ_XP.equals(extensionPoint)) {
             ObjectDescriptor obj = (ObjectDescriptor)contribution;
             mgr.registerObject(obj);
+        } else if (GUARD_XP.equals(extensionPoint)) {
+            GuardDescriptor gd = (GuardDescriptor)contribution;
+            PermissionService.getInstance().registerGuard(gd.getId(), gd.getGuard());
         }
     }
 
@@ -119,6 +121,9 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
         } else if (SITE_OBJ_XP.equals(extensionPoint)) {
             ObjectDescriptor obj = (ObjectDescriptor)contribution;
             mgr.unregisterObject(obj);
+        } else if (GUARD_XP.equals(extensionPoint)) {
+            GuardDescriptor gd = (GuardDescriptor)contribution;
+            PermissionService.getInstance().unregisterGuard(gd.getId());
         }
     }
 

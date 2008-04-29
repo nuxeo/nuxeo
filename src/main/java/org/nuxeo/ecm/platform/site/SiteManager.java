@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.site;
 import java.io.File;
 import java.util.List;
 
-import org.nuxeo.ecm.platform.site.actions.ActionDescriptor;
 import org.nuxeo.ecm.platform.site.scripting.Scripting;
 
 
@@ -55,10 +54,6 @@ public interface SiteManager {
     public ObjectDescriptor getObject(String id);
 
     public boolean isObjectResolved(String id);
-
-    public boolean isActionEnabled(ActionDescriptor action, SiteRequest req);
-
-    public ActionDescriptor[] getEnabledActions(ObjectDescriptor obj, SiteRequest req);
 
     void reset();
 }

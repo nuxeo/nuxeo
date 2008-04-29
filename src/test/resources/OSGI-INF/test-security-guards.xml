@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.site.templates.test.wiki">
+
+  <extension target="org.nuxeo.ecm.platform.site.SiteManagerComponent"
+    point="guard">
+
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.site.SiteManagerComponent"
+    point="siteObject">
+    <object id="siteFolder" type="Document" extends="default">
+      <actions>
+        <action id="view" enabled="true"/>
+        <action id="myAction1" enabled="true">
+          <permission expression="(type=Folder OR type=Workspace)"/>
+        </action>
+        <action id="myAction2" enabled="true">
+          <permission expression="WRITE OR MY_WRITE">
+            <user id="MY_WRITE">bogdan</user>
+          </permission>
+        </action>
+      </actions>
+    </object>
+  </extension>
+</component>

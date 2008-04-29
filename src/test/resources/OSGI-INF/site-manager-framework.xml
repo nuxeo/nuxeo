@@ -57,14 +57,14 @@
     @author Bogdan Stefanescu (bs@nuxeo.com)
     Register global guards. Guards are used to define permissions
     <code>
-      <guard id="MyGuard" expression="(GUARD1 OR GUARD2) AND user=bogdan">
+      <guard id="MyGuard" expression="(GUARD1|GUARD2) & user=bogdan">
 
       </guard>
    </code>
   </documentation>
 
     <object
-      class="org.nuxeo.ecm.platform.site.security.GuardDescriptor" />
+      class="org.nuxeo.ecm.platform.site.ObjectDescriptor" />
   </extension-point>
 
 </component>

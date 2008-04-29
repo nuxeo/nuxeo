@@ -19,10 +19,14 @@
 
 package org.nuxeo.ecm.platform.site.actions;
 
-import org.nuxeo.common.utils.StringUtils;
+import java.text.ParseException;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.site.SiteException;
+import org.nuxeo.ecm.platform.site.SiteObject;
+import org.nuxeo.ecm.platform.site.security.Guard;
+import org.nuxeo.ecm.platform.site.security.GuardDescriptor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -43,8 +47,10 @@ public class ActionDescriptor {
     @XNode("@enabled")
     protected boolean isEnabled;
 
-    //TODO
-    protected String[] permissions;
+    @XNode("permission")
+    private GuardDescriptor pd;
+
+    protected Guard guard;
 
     protected ActionHandler handler;
 
@@ -53,11 +59,11 @@ public class ActionDescriptor {
         // TODO Auto-generated constructor stub
     }
 
-    public ActionDescriptor(String id, String path, Class<ActionHandler> handler, String[] perms) {
+    public ActionDescriptor(String id, String path, Class<ActionHandler> handler, Guard guard) {
         this.id = id;
         this.script = path;
         this.handlerClass = handler;
-        this.permissions = perms;
+        this.guard = guard;
     }
 
     /**
@@ -72,6 +78,11 @@ public class ActionDescriptor {
      */
     public boolean isEnabled() {
         return isEnabled;
+    }
+
+    public boolean isEnabled(SiteObject obj) throws Exception {
+        if (!isEnabled) return false;
+        return getGuard().check(obj.getSession(), obj.getDocument());
     }
 
     /**
@@ -112,21 +123,20 @@ public class ActionDescriptor {
     /**
      * @return the permissions.
      */
-    public String[] getPermissions() {
-        return permissions;
+    public Guard getGuard() {
+        if (guard == null) {
+            buildGuard();
+        }
+        return guard;
     }
 
     /**
      * @param permissions the permissions to set.
      */
-    public void setPermissions(String[] permissions) {
-        this.permissions = permissions;
+    public void setGuard(Guard guard) {
+        this.guard = guard;
     }
 
-    @XNode("@permissions")
-    public void setPermissionsFromString(String permissions) {
-        this.permissions = StringUtils.split(permissions, '|', true);
-    }
 
     public ActionHandler getHandler() throws SiteException {
         if (handler == null) {
@@ -154,20 +164,21 @@ public class ActionDescriptor {
         if (handlerClass == null) {
             handlerClass = ad.handlerClass;
         }
-        if (permissions == null) {
-            permissions = ad.permissions;
-        } else if (permissions.length > 0) {
-            if (".".equals(permissions[0])) { // append current permissions to the one defined in the base action
-                if (ad.permissions == null || ad.permissions.length == 0) {
-                    String[] tmp = new String[permissions.length-1];
-                    System.arraycopy(permissions, 1, tmp, 0, tmp.length);
-                    permissions = tmp;
-                } else {
-                    String[] tmp = new String[permissions.length+ad.permissions.length];
-                    System.arraycopy(ad.permissions, 0, tmp, 0, ad.permissions.length);
-                    System.arraycopy(permissions, 1, tmp, ad.permissions.length, permissions.length-1);
-                    permissions = tmp;
-                }
+        if (pd == null) {
+            guard = ad.guard;
+        } else {
+            pd.getGuards().put(".", ad.getGuard());
+            buildGuard();
+        }
+    }
+
+    private void buildGuard() {
+        if (pd == null) guard = Guard.DEFAULT;
+        else {
+            try {
+                guard = pd.getGuard(); // compute guards now
+            } catch (ParseException e) {
+                e.printStackTrace(); // TODO
             }
         }
     }
