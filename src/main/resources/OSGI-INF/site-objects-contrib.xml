@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.site.defaultObjects">
+<component name="org.nuxeo.ecm.webengine.defaultObjects">
 
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)
@@ -7,19 +7,19 @@
   </documentation>
 
 
-  <extension target="org.nuxeo.ecm.platform.site.SiteManagerComponent"
+  <extension target="org.nuxeo.ecm.webengine.SiteManagerComponent"
   	point="siteObject">
   	<object id="siteFolder" type="Document" extends="default">
   		<actions>
   			<action id="view" enabled="true" permissions="READ" />
         <action id="print" enabled="true" permissions="READ" />
         <action id="delete" enabled="true" permissions="WRITE"
-          handler="org.nuxeo.ecm.platform.site.actions.DeleteActionHandler" />
+          handler="org.nuxeo.ecm.webengine.actions.DeleteActionHandler" />
         <action id="update" enabled="true" permissions="WRITE"
-          handler="org.nuxeo.ecm.platform.site.actions.UpateActionHandler" />
+          handler="org.nuxeo.ecm.webengine.actions.UpateActionHandler" />
         <action id="edit" enabled="true" permissions="WRITE" />
         <action id="create" enabled="true" permissions="WRITE"
-          handler="org.nuxeo.ecm.platform.site.actions.CreateActionHandler" />
+          handler="org.nuxeo.ecm.webengine.actions.CreateActionHandler" />
   		</actions>
   	</object>
   </extension>

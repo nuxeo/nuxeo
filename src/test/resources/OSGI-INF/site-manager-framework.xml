@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.platform.site.SiteManagerComponent">
+<component name="org.nuxeo.ecm.webengine.SiteManagerComponent">
   <implementation
-          class="org.nuxeo.ecm.platform.site.SiteManagerComponent" />
+          class="org.nuxeo.ecm.webengine.SiteManagerComponent" />
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)
     Manage templates
@@ -13,9 +13,9 @@
 
   <service>
     <provide
-      interface="org.nuxeo.ecm.platform.site.SiteManager" />
+      interface="org.nuxeo.ecm.webengine.SiteManager" />
       <provide
-      interface="org.nuxeo.ecm.platform.site.util.FileChangeNotifier" />
+      interface="org.nuxeo.ecm.webengine.util.FileChangeNotifier" />
   </service>
 
   <extension-point name="transformer">
@@ -30,7 +30,7 @@
   </documentation>
 
     <object
-      class="org.nuxeo.ecm.platform.site.rendering.TransformerDescriptor" />
+      class="org.nuxeo.ecm.webengine.rendering.TransformerDescriptor" />
   </extension-point>
 
   <extension-point name="siteObject">
@@ -39,7 +39,7 @@
     Expose the registration of site object descriptors
     <code>
       <object id="siteFolder" type="Folder" extends="default">
-        <requestHandler>org.nuxeo.ecm.platform.site.DefaultRequestHandler</requestHandler> <!-- this is the default value -->
+        <requestHandler>org.nuxeo.ecm.webengine.DefaultRequestHandler</requestHandler> <!-- this is the default value -->
         <actions>
           <action id="update" enabled="true" permissions=".|WRITE"
             script="/my/optional/script/path" handler="myOptionalActionHandler"/>
@@ -49,7 +49,7 @@
   </documentation>
 
     <object
-      class="org.nuxeo.ecm.platform.site.ObjectDescriptor" />
+      class="org.nuxeo.ecm.webengine.ObjectDescriptor" />
   </extension-point>
 
   <extension-point name="guard">
@@ -64,7 +64,7 @@
   </documentation>
 
     <object
-      class="org.nuxeo.ecm.platform.site.ObjectDescriptor" />
+      class="org.nuxeo.ecm.webengine.ObjectDescriptor" />
   </extension-point>
 
 </component>

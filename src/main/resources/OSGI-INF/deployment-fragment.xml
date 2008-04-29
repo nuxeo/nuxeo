@@ -21,7 +21,7 @@
     <servlet>
       <servlet-name>Nuxeo Site Servlet</servlet-name>
       <servlet-class>
-        org.nuxeo.ecm.platform.site.servlet.SiteServlet
+        org.nuxeo.ecm.webengine.servlet.SiteServlet
       </servlet-class>
     </servlet>
     <servlet-mapping>
@@ -32,7 +32,7 @@
     <servlet>
       <servlet-name>Nuxeo Resource Servlet</servlet-name>
       <servlet-class>
-        org.nuxeo.ecm.platform.site.servlet.ResourceServlet
+        org.nuxeo.ecm.webengine.servlet.ResourceServlet
       </servlet-class>
     </servlet>
     <servlet-mapping>

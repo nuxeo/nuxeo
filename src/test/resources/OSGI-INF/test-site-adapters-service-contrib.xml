@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.platform.site.adapters.contrib">
+<component name="org.nuxeo.ecm.webengine.adapters.contrib">
 
-  <extension target="org.nuxeo.ecm.platform.site.adapters.SiteAdaptersManagerService"
+  <extension target="org.nuxeo.ecm.webengine.adapters.SiteAdaptersManagerService"
     point="siteAdapter">
 
-	<siteAdapter docType="Note" class="org.nuxeo.ecm.platform.site.adapters.NoteSiteObjectHandler"/>
+	<siteAdapter docType="Note" class="org.nuxeo.ecm.webengine.adapters.NoteSiteObjectHandler"/>
 
   </extension>
 

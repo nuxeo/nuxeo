@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.platform.site.templates.test.ftl">
+<component name="org.nuxeo.ecm.webengine.templates.test.ftl">
 
-  <extension target="org.nuxeo.ecm.platform.site.rendering.SiteTemplateManagerService"
+  <extension target="org.nuxeo.ecm.webengine.rendering.SiteTemplateManagerService"
     point="template">
 
 	<template name="folder" src="OSGI-INF/template/folder.ftl"/>
@@ -10,7 +10,7 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.site.rendering.SiteTemplateManagerService"
+  <extension target="org.nuxeo.ecm.webengine.rendering.SiteTemplateManagerService"
     point="binding">
 
 	<templateBinding templateName="folder" docType="Folder" path="*"/>

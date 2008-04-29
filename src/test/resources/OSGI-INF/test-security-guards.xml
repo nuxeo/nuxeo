@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.platform.site.templates.test.wiki">
+<component name="org.nuxeo.ecm.webengine.templates.test.wiki">
 
-  <extension target="org.nuxeo.ecm.platform.site.SiteManagerComponent"
+  <extension target="org.nuxeo.ecm.webengine.SiteManagerComponent"
     point="guard">
 
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.site.SiteManagerComponent"
+  <extension target="org.nuxeo.ecm.webengine.SiteManagerComponent"
     point="siteObject">
     <object id="siteFolder" type="Document" extends="default">
       <actions>
