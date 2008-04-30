@@ -78,7 +78,7 @@ public class DefaultRequestHandler implements RequestHandler, Actions {
         ActionDescriptor actionDesc = object.getAction(action);
         if (actionDesc != null) {
             try {
-                actionDesc.getHandler().run(object);
+                actionDesc.run(object);
             } catch (SiteException e) {
                 throw e;
             } catch (Exception e) {

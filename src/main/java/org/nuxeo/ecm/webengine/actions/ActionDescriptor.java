@@ -153,6 +153,18 @@ public class ActionDescriptor {
         return handler;
     }
 
+    /**
+     * This method should be used to run actions.
+     * Avoid using getHandler().run() since it is not checking permissions
+     */
+    public void run(SiteObject obj) throws SiteException {
+        // check rights first
+        if (!getGuard().check(obj.getSession(), obj.getDocument())) {
+            throw new SiteException("Running action "+id+" is dedined");
+        }
+        getHandler().run(obj);
+    }
+
     public void setHandler(ActionHandler handler) {
         this.handler = handler;
     }
