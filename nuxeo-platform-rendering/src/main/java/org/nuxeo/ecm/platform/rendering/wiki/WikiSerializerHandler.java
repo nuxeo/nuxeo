@@ -110,7 +110,9 @@ public class WikiSerializerHandler extends PrintListener {
 
 
     protected void flushWords() {
-        if (words.length() == 0) return;
+        if (words.length() == 0) {
+            return;
+        }
         String text = words.toString();
         words.setLength(0);
         for (int i=0, len=engine.filters.size(); i<len; i++) {
@@ -329,7 +331,6 @@ public class WikiSerializerHandler extends PrintListener {
         super.endTableRow(params);
     }
 
-
     @Override
     public void onEmptyLines(int count) {
         flushWords();
@@ -465,8 +466,9 @@ public class WikiSerializerHandler extends PrintListener {
     }
 
 
+    @Override
     public void onWord(String word) {
-        this.words.append(word);
+        words.append(word);
         //writeWord(word);
     }
 

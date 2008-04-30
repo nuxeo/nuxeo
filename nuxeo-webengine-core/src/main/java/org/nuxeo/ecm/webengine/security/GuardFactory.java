@@ -31,6 +31,6 @@ public interface GuardFactory {
      * @param value some value to initialize the guard
      * @return
      */
-    public Guard newGuard(String value);
+    Guard newGuard(String value);
 
 }

@@ -35,9 +35,9 @@ import freemarker.template.TemplateModel;
  */
 public class BlockDirective implements TemplateDirectiveModel {
 
-	@SuppressWarnings("unchecked")
-	public void execute(Environment env, Map params, TemplateModel[] loopVars,
-			TemplateDirectiveBody body) throws TemplateException, IOException {
+    @SuppressWarnings("unchecked")
+    public void execute(Environment env, Map params, TemplateModel[] loopVars,
+            TemplateDirectiveBody body) throws TemplateException, IOException {
 
         String name = null;
         SimpleScalar scalar = (SimpleScalar)params.get("name");
@@ -54,6 +54,6 @@ public class BlockDirective implements TemplateDirectiveModel {
         if (body != null) {
             body.render(bw);
         }
-	}
+    }
 
 }

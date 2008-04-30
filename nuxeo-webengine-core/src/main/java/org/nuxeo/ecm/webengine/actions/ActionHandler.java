@@ -32,6 +32,6 @@ public interface ActionHandler {
         public void run(SiteObject obj) throws SiteException {}
     };
 
-    public void run(SiteObject object) throws SiteException;
+    void run(SiteObject object) throws SiteException;
 
 }

@@ -33,9 +33,13 @@ public class DocumentExpression implements WikiExpression {
 
     public void eval(WikiParameters params, WikiSerializerHandler serializer) throws Exception {
         RenderingContext ctx = serializer.getContext();
-        if (ctx == null) return;
+        if (ctx == null) {
+            return;
+        }
         int size = params.getSize();
-        if (size < 1)  return;
+        if (size < 1) {
+            return;
+        }
         org.wikimodel.wem.WikiParameter param = params.getParameter(0);
         String value = param.getValue();
         if (size == 1 && value == null) {

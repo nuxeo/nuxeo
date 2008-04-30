@@ -34,6 +34,6 @@ public interface Guard {
         }
     };
 
-    public boolean check(CoreSession session, DocumentModel doc);
+    boolean check(CoreSession session, DocumentModel doc);
 
 }

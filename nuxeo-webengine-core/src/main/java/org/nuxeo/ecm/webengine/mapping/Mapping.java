@@ -33,7 +33,7 @@ public class Mapping {
     String[] traversalPath;
     String script;
 
-    public Mapping() {        
+    public Mapping() {
         this (null, 4);
     }
 

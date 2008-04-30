@@ -51,9 +51,9 @@ public interface SiteManager {
 
     ObjectDescriptor getInstanceOf(String type);
 
-    public ObjectDescriptor getObject(String id);
+    ObjectDescriptor getObject(String id);
 
-    public boolean isObjectResolved(String id);
+    boolean isObjectResolved(String id);
 
     void reset();
 }

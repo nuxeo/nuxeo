@@ -25,6 +25,6 @@ package org.nuxeo.ecm.platform.rendering.api;
  */
 public interface PropertyValueFilter {
 
-    public Object filter(String key, Object value);
+    Object filter(String key, Object value);
 
 }

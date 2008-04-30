@@ -48,8 +48,8 @@ public class FreemarkerMacro implements WikiMacro {
             Writer oldw = env.getOut();
             Writer neww = new StringWriter();
             try {
-            env.setOut(neww);
-            env.include(tpl);
+                env.setOut(neww);
+                env.include(tpl);
             } finally {
                 env.setOut(oldw);
             }

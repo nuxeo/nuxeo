@@ -125,7 +125,9 @@ public class RenderingContextTemplate implements TemplateHashModelEx, AdapterTem
     }
 
     public final TemplateModel wrap(Object obj) throws TemplateModelException {
-        if (obj == null) return TemplateModel.NOTHING;
+        if (obj == null) {
+            return TemplateModel.NOTHING;
+        }
         return engine.getObjectWrapper().wrap(obj);
     }
 

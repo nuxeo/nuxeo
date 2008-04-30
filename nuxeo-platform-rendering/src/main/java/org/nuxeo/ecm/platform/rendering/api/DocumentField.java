@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public interface DocumentField {
 
     String getName();
+
     Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception;
 
 }

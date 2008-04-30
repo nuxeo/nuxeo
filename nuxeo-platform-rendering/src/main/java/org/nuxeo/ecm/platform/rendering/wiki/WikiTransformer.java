@@ -42,7 +42,7 @@ public class WikiTransformer implements RenderingTransformer {
 
 
     public WikiTransformer() {
-        this (new WikiSerializer());
+        this(new WikiSerializer());
     }
 
     public WikiTransformer(WikiSerializer serializer) {

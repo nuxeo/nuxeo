@@ -24,8 +24,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -49,7 +47,7 @@ public interface RenderingEngine {
     void setSharedVariable(String key, Object value);
 
     /**
-     * Start the rendering for the given document context.
+     * Starts the rendering for the given document context.
      *
      * @param ctx
      * @throws RenderingException

@@ -58,8 +58,11 @@ public class DocumentObjectWrapper extends DefaultObjectWrapper {
         return super.handleUnknownType(obj);
     }
 
+    @Override
     public final TemplateModel wrap(Object obj) throws TemplateModelException {
-        if (obj == null) return TemplateModel.NOTHING;
+        if (obj == null) {
+            return TemplateModel.NOTHING;
+        }
         return super.wrap(obj);
     }
 

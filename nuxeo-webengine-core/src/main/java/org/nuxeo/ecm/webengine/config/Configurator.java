@@ -29,6 +29,6 @@ import org.nuxeo.ecm.webengine.SiteRoot;
  */
 public interface Configurator {
 
-    public void configure(SiteRoot root, Map<String, String> properties);
+    void configure(SiteRoot root, Map<String, String> properties);
 
 }

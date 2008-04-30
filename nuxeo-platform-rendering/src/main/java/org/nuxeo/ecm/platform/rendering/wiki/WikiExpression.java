@@ -27,10 +27,10 @@ import org.wikimodel.wem.WikiParameters;
  */
 public interface WikiExpression {
 
-    public String getName();
+    String getName();
 
-    public void eval(WikiParameters params, WikiSerializerHandler serializer) throws Exception;
+    void eval(WikiParameters params, WikiSerializerHandler serializer) throws Exception;
 
-    public void evalInline(WikiParameters params, WikiSerializerHandler serializer) throws Exception;
+    void evalInline(WikiParameters params, WikiSerializerHandler serializer) throws Exception;
 
 }

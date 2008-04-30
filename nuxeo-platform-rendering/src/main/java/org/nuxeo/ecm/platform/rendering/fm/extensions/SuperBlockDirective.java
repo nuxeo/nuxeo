@@ -35,16 +35,16 @@ import freemarker.template.TemplateModelException;
  */
 public class SuperBlockDirective implements TemplateDirectiveModel {
 
-	@SuppressWarnings("unchecked")
-	public void execute(Environment env, Map params, TemplateModel[] loopVars,
-			TemplateDirectiveBody body) throws TemplateException, IOException {
+    @SuppressWarnings("unchecked")
+    public void execute(Environment env, Map params, TemplateModel[] loopVars,
+            TemplateDirectiveBody body) throws TemplateException, IOException {
 
-	    if (body != null) {
-	        throw new TemplateModelException("Didn't expect a body");
-	    }
+        if (body != null) {
+            throw new TemplateModelException("Didn't expect a body");
+        }
 
-	    BlockWriter writer = (BlockWriter)env.getOut();
+        BlockWriter writer = (BlockWriter)env.getOut();
         writer.writeSuperBlock();
-	}
+    }
 
 }

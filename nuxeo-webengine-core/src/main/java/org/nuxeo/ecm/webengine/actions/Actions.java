@@ -25,11 +25,11 @@ package org.nuxeo.ecm.webengine.actions;
  */
 public interface Actions {
 
-    public final static String VIEW = "view";
-    public final static String PRINT = "print";
-    public final static String UPDATE = "update";
-    public final static String CREATE = "create";
-    public final static String DELETE = "delete";
-    public final static String DEFAULT_ACTION = VIEW;
+    final static String VIEW = "view";
+    final static String PRINT = "print";
+    final static String UPDATE = "update";
+    final static String CREATE = "create";
+    final static String DELETE = "delete";
+    final static String DEFAULT_ACTION = VIEW;
 
 }

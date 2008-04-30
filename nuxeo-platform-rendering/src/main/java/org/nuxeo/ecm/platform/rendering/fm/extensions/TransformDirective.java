@@ -45,63 +45,63 @@ import freemarker.template.TemplateModelException;
  */
 public class TransformDirective implements TemplateDirectiveModel {
 
-	@SuppressWarnings("unchecked")
-	public void execute(Environment env, Map params, TemplateModel[] loopVars,
-			TemplateDirectiveBody body) throws TemplateException, IOException {
+    @SuppressWarnings("unchecked")
+    public void execute(Environment env, Map params, TemplateModel[] loopVars,
+            TemplateDirectiveBody body) throws TemplateException, IOException {
 
-	    String name = null;
-	    SimpleScalar scalar = (SimpleScalar)params.get("name");
-	    if (scalar != null) {
-	        name = scalar.getAsString();
-	    }
+        String name = null;
+        SimpleScalar scalar = (SimpleScalar)params.get("name");
+        if (scalar != null) {
+            name = scalar.getAsString();
+        }
 
-	    if (name == null) {
-	        throw new TemplateModelException("Transformer must have a name. Use name attribute for this");
-	    }
+        if (name == null) {
+            throw new TemplateModelException("Transformer must have a name. Use name attribute for this");
+        }
 
-	    String src = null;
-	    scalar = (SimpleScalar)params.get("src");
-	    if (scalar != null) {
-	        src = scalar.getAsString();
-	    }
+        String src = null;
+        scalar = (SimpleScalar)params.get("src");
+        if (scalar != null) {
+            src = scalar.getAsString();
+        }
 
-	    String property = null;
-	    scalar = (SimpleScalar)params.get("property");
-	    if (scalar != null) {
-	        property = scalar.getAsString();
-	    }
+        String property = null;
+        scalar = (SimpleScalar)params.get("property");
+        if (scalar != null) {
+            property = scalar.getAsString();
+        }
 
-	    RenderingContextModel ctxModel = (RenderingContextModel)env.getCustomAttribute(FreemarkerEngine.ROOT_CTX_KEY);
-	    if (ctxModel == null) {
-	        throw new TemplateModelException("Not in a nuxeo rendering context");
-	    }
+        RenderingContextModel ctxModel = (RenderingContextModel)env.getCustomAttribute(FreemarkerEngine.ROOT_CTX_KEY);
+        if (ctxModel == null) {
+            throw new TemplateModelException("Not in a nuxeo rendering context");
+        }
 
-	    RenderingTransformer tr = ctxModel.getEngine().getTransformer(name);
-	    if (tr == null) {
-	        throw new TemplateModelException("Unknown Transformer: "+name);
-	    }
+        RenderingTransformer tr = ctxModel.getEngine().getTransformer(name);
+        if (tr == null) {
+            throw new TemplateModelException("Unknown Transformer: "+name);
+        }
 
-	    try {
-	        String content = null;
-	        if (property != null) {
+        try {
+            String content = null;
+            if (property != null) {
                 URL url = PropertyURL.getURL(ctxModel.getDocument(), property);
                 tr.transform(url, env.getOut(), ctxModel.getContext());
-	        } else if (src == null) {
-	            if (body == null) {
-	                throw new TemplateModelException("Transform directive must have either a content either a valid 'src' attribute");
-	            }
-	            // render body to get back the result
-	            StringWriter writer = new StringWriter();
-	            body.render(writer);
-	            content = writer.getBuffer().toString();
-	            tr.transform(new StringReader(content), env.getOut(), ctxModel.getContext());
-	        } else {
-	            URL url = ctxModel.getEngine().getResourceLocator().getResource(src);
-	            tr.transform(url, env.getOut(), ctxModel.getContext());
-	        }
-	    } catch (RenderingException e) {
-	        throw new TemplateException("Running "+name+" transformer failed", e, env);
-	    }
-	}
+            } else if (src == null) {
+                if (body == null) {
+                    throw new TemplateModelException("Transform directive must have either a content either a valid 'src' attribute");
+                }
+                // render body to get back the result
+                StringWriter writer = new StringWriter();
+                body.render(writer);
+                content = writer.getBuffer().toString();
+                tr.transform(new StringReader(content), env.getOut(), ctxModel.getContext());
+            } else {
+                URL url = ctxModel.getEngine().getResourceLocator().getResource(src);
+                tr.transform(url, env.getOut(), ctxModel.getContext());
+            }
+        } catch (RenderingException e) {
+            throw new TemplateException("Running "+name+" transformer failed", e, env);
+        }
+    }
 
 }

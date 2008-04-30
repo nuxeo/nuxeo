@@ -77,6 +77,7 @@ public class RenderingContextModel extends RenderingContextTemplate {
         return null;
     }
 
+    @Override
     public Collection<String> getRawKeys() {
         Collection<String> keys = super.getRawKeys();
         keys.addAll(engine.getSharedDocumentView().keys(ctx));
@@ -87,6 +88,7 @@ public class RenderingContextModel extends RenderingContextTemplate {
         return keys;
     }
 
+    @Override
     public int size() throws TemplateModelException {
         return ctx.getView().size(ctx) + engine.getSharedDocumentView().size(ctx) + 4;
     }

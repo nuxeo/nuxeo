@@ -89,11 +89,10 @@ public class DocumentContextView implements RenderingContextView {
         addField(PROXIES);
         addField(VERSION_LABEL);
         addField(SOURCE_ID);
-
     }
 
     public final void addField(DocumentField field) {
-        this.fields.put(field.getName(), field);
+        fields.put(field.getName(), field);
     }
 
     public final void addFields(Collection<DocumentField> fields) {
@@ -103,7 +102,7 @@ public class DocumentContextView implements RenderingContextView {
     }
 
     public final void removeField(String name) {
-        this.fields.remove(name);
+        fields.remove(name);
     }
 
     public DocumentField getField(String name) {
@@ -124,7 +123,8 @@ public class DocumentContextView implements RenderingContextView {
     }
 
     /**
-     * Should be used when not inside a document rendering context
+     * Should be used when not inside a document rendering context.
+     *
      * @param doc
      * @param name
      * @return
@@ -393,7 +393,6 @@ public class DocumentContextView implements RenderingContextView {
         }
     };
 
-
     protected static final DocumentField CHILDREN = new DocumentField() {
         public String getName() {
             return "children";
@@ -462,6 +461,6 @@ public class DocumentContextView implements RenderingContextView {
      * since it will try to register these fields (otherwise fields will not be defined yet at the time of
      * the initialization of that static member
      */
-    public final static DocumentContextView DEFAULT = new DocumentContextView();
+    public static final DocumentContextView DEFAULT = new DocumentContextView();
 
 }

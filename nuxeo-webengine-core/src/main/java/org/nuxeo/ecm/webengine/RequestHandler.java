@@ -26,18 +26,18 @@ package org.nuxeo.ecm.webengine;
  */
 public interface RequestHandler {
 
-    public final static RequestHandler DEFAULT = new DefaultRequestHandler();
+    final static RequestHandler DEFAULT = new DefaultRequestHandler();
 
-    public void doGet(SiteObject object) throws SiteException;
+    void doGet(SiteObject object) throws SiteException;
 
-    public void doHead(SiteObject object) throws SiteException;
+    void doHead(SiteObject object) throws SiteException;
 
-    public void doPost(SiteObject object) throws SiteException;
+    void doPost(SiteObject object) throws SiteException;
 
-    public void doPut(SiteObject object) throws SiteException;
+    void doPut(SiteObject object) throws SiteException;
 
-    public void doDelete(SiteObject object) throws SiteException;
+    void doDelete(SiteObject object) throws SiteException;
 
-    public boolean traverse(SiteObject object)  throws SiteException;
+    boolean traverse(SiteObject object)  throws SiteException;
 
 }

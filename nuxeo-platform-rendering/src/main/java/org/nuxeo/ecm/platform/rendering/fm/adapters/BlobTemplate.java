@@ -38,7 +38,8 @@ import freemarker.template.TemplateModelException;
 public class BlobTemplate extends PropertyWrapper implements TemplateHashModelEx {
 
     protected Blob blob;
-    protected final static String[] keys = new String[] {"name", "data", "length", "mimeType", "encoding", "digest"};
+    protected static final String[] keys = new String[] {
+            "name", "data", "length", "mimeType", "encoding", "digest"};
 
     public BlobTemplate(DocumentObjectWrapper wrapper, Blob blob) {
         super (wrapper);

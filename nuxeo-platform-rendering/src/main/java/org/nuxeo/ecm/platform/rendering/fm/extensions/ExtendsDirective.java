@@ -37,13 +37,13 @@ import freemarker.template.TemplateModelException;
  */
 public class ExtendsDirective implements TemplateDirectiveModel {
 
-	@SuppressWarnings("unchecked")
-	public void execute(Environment env, Map params, TemplateModel[] loopVars,
-			TemplateDirectiveBody body) throws TemplateException, IOException {
+    @SuppressWarnings("unchecked")
+    public void execute(Environment env, Map params, TemplateModel[] loopVars,
+            TemplateDirectiveBody body) throws TemplateException, IOException {
 
-	    if (body == null) {
-	        throw new TemplateModelException("Expecting a body");
-	    }
+        if (body == null) {
+            throw new TemplateModelException("Expecting a body");
+        }
 
 
         String src = null;
@@ -65,6 +65,6 @@ public class ExtendsDirective implements TemplateDirectiveModel {
         Template temp = env.getConfiguration().getTemplate(src);
         env.include(temp);
         //writer.reg.path = oldPath;
-	}
+    }
 
 }

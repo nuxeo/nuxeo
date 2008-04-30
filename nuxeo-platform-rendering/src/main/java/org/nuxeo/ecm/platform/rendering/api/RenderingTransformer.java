@@ -29,8 +29,8 @@ import java.net.URL;
  */
 public interface RenderingTransformer {
 
-    public void transform(Reader reader, Writer writer, RenderingContext ctx) throws RenderingException;
+    void transform(Reader reader, Writer writer, RenderingContext ctx) throws RenderingException;
 
-    public void transform(URL url, Writer writer, RenderingContext ctx) throws RenderingException;
+    void transform(URL url, Writer writer, RenderingContext ctx) throws RenderingException;
 
 }

@@ -27,6 +27,6 @@ package org.nuxeo.ecm.webengine.security;
  */
 public interface Permission extends Guard {
 
-    public String getName();
+    String getName();
 
 }

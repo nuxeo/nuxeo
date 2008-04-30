@@ -27,10 +27,10 @@ import org.wikimodel.wem.WikiParameters;
  */
 public interface WikiMacro {
 
-    public String getName();
+    String getName();
 
-    public void eval(WikiParameters params, String content, WikiSerializerHandler serializer) throws Exception;
+    void eval(WikiParameters params, String content, WikiSerializerHandler serializer) throws Exception;
 
-    public void evalInline(WikiParameters params, String content, WikiSerializerHandler serializer) throws Exception;
+    void evalInline(WikiParameters params, String content, WikiSerializerHandler serializer) throws Exception;
 
 }

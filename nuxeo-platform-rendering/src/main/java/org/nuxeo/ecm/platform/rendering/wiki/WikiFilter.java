@@ -30,6 +30,6 @@ public interface WikiFilter {
      * @param content te input content to filter
      * @return null if input wasn't filtered
      */
-    public String apply(String content);
+    String apply(String content);
 
 }
