@@ -21,8 +21,7 @@ package org.nuxeo.ecm.webengine.mapping;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
-
-
+import java.util.regex.Pattern;
 
 
 /**
@@ -34,14 +33,14 @@ import java.util.regex.Matcher;
  */
 public class PathPattern  {
 
-    static final java.util.regex.Pattern NAMED_WILDCARD = java.util.regex.Pattern.compile("[A-Za-z_][A-Za-z_0-9]*");
+    static final Pattern NAMED_WILDCARD = Pattern.compile("[A-Za-z_][A-Za-z_0-9]*");
 
-    java.util.regex.Pattern pattern;
+    Pattern pattern;
     String[] vars;
 
     public PathPattern(String pattern) {
         pattern = processNamedWildcards(pattern);
-        this.pattern = java.util.regex.Pattern.compile(pattern);
+        this.pattern = Pattern.compile(pattern);
     }
 
     public String tr(String pattern) {
@@ -105,7 +104,6 @@ public class PathPattern  {
             return pattern;
         }
     }
-
 
     public Mapping match(String input) {
         Matcher m = pattern.matcher(input);

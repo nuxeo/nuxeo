@@ -68,8 +68,8 @@ public class PermissionService implements PostfixExpression.Visitor {
     }
 
 
-    public Guard parse(String expr) throws ParseException {
-        return (Guard)new PostfixExpression(expr).visit(instance);
+    public static Guard parse(String expr) throws ParseException {
+        return (Guard) new PostfixExpression(expr).visit(instance);
     }
 
     public Guard parse(String expr, final Map<String,Guard> localGuards) throws ParseException {

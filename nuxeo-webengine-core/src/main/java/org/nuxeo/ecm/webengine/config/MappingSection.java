@@ -32,8 +32,8 @@ import org.nuxeo.ecm.webengine.mapping.MappingDescriptor;
  */
 public class MappingSection implements Configurator {
 
-    private final static Log log = LogFactory.getLog(MappingSection.class);
-    public final static MappingSection INSTANCE = new MappingSection();
+    private static final Log log = LogFactory.getLog(MappingSection.class);
+    public static final MappingSection INSTANCE = new MappingSection();
 
     public void configure(SiteRoot root, Map<String, String> properties) {
         MappingDescriptor md = new MappingDescriptor();

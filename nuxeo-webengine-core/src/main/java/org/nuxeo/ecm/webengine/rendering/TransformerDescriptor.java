@@ -47,4 +47,5 @@ public class TransformerDescriptor {
     public RenderingTransformer newInstance() throws Exception {
         return (RenderingTransformer)klass.newInstance();
     }
+
 }

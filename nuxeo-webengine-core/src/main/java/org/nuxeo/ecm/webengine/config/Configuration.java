@@ -44,7 +44,7 @@ public class Configuration {
     String mainSection;
 
     public Configuration() {
-        this ("main");
+        this("main");
     }
 
     public Configuration(String mainSection) {

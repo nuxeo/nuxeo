@@ -46,9 +46,7 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
 
     protected Token[] expr;
 
-    /**
-     *
-     */
+
     public PostfixExpression(String expr) throws ParseException {
         parse(expr);
     }
@@ -180,31 +178,29 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
         this.expr = result.toArray(new Token[result.size()]);
     }
 
-    private final void pushOp (Token tok, OpStack stack, List<Token> result) {
+    private void pushOp (Token tok, OpStack stack, List<Token> result) {
         if (!stack.isEmpty() && stack.top().type <= tok.type) {
             result.add(stack.pop());
         }
         stack.push(tok);
     }
 
-
     public Object visit(Visitor visitor) {
         LinkedList<Object> stack = new LinkedList<Object>();
-        for (int i=0; i<expr.length; i++) {
-            Token t = expr[i];
-            if (t.type == ARG) {
-                stack.add(visitor.createParameter(t));
+        for (Token token : expr) {
+            if (token.type == ARG) {
+                stack.add(visitor.createParameter(token));
             } else {
-                Object lparam = null;
+                Object lparam;
                 Object rparam = null;
-                int arity = t.type > NOT ? 2 : 1;
+                int arity = token.type > NOT ? 2 : 1;
                 if (arity == 1) {
                     lparam = stack.removeLast();
                 } else {// arity == 2
                     rparam = stack.removeLast();
                     lparam = stack.removeLast();
                 }
-                stack.add(visitor.createOperation(t, lparam, rparam));
+                stack.add(visitor.createOperation(token, lparam, rparam));
             }
         }
         return stack.getLast();
@@ -213,8 +209,8 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (int i=0; i<expr.length; i++) {
-            sb.append(expr[i].name).append(" ");
+        for (Token token : expr) {
+            sb.append(token.name).append(" ");
         }
         return sb.toString();
     }

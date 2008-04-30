@@ -89,9 +89,6 @@ public class SiteRenderingContext implements ServletRenderingContext {
         return request;
     }
 
-    /**
-     * @return the response.
-     */
     public HttpServletResponse getResponse() {
         return request.getResponse();
     }

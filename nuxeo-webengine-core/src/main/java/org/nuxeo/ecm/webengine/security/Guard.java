@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface Guard {
 
-    public final static Guard DEFAULT = new Guard() {
+    Guard DEFAULT = new Guard() {
         public boolean check(CoreSession session, DocumentModel doc) {
             return true;
         }

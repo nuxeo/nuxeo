@@ -105,10 +105,7 @@ public class MappingDescriptor {
         } else {
             mapping.traversalPath = new Path(input).segments; // TODO get parent segments
         }
-       return mapping;
+        return mapping;
     }
-
-
-
 
 }

@@ -27,15 +27,12 @@ public class StringSegment implements ReplacementSegment {
 
     String string;
 
-    /**
-     *
-     */
     public StringSegment(String string) {
         this.string = string;
     }
 
     public String getReplacement(Mapping mapping) {
-      return string;
+        return string;
     }
 
 }

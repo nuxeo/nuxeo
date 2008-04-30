@@ -66,63 +66,41 @@ public class ActionDescriptor {
         this.guard = guard;
     }
 
-    /**
-     * @param isEnabled the isEnabled to set.
-     */
     public void setEnabled(boolean isEnabled) {
         this.isEnabled = isEnabled;
     }
 
-    /**
-     * @return the isEnabled.
-     */
     public boolean isEnabled() {
         return isEnabled;
     }
 
     public boolean isEnabled(SiteObject obj) throws Exception {
-        if (!isEnabled) return false;
+        if (!isEnabled) {
+            return false;
+        }
         return getGuard().check(obj.getSession(), obj.getDocument());
     }
 
-    /**
-     * @return the id.
-     */
     public String getId() {
         return id;
     }
 
-    /**
-     * @return the handler.
-     */
     public Class<ActionHandler> getHandlerClass() {
         return handlerClass;
     }
 
-    /**
-     * @param handlerClass the handlerClass to set.
-     */
     public void setHandlerClass(Class<ActionHandler> handlerClass) {
         this.handlerClass = handlerClass;
     }
 
-    /**
-     * @return the path.
-     */
     public String getScript() {
         return script;
     }
 
-    /**
-     * @param path the path to set.
-     */
-    public void setPath(String path) {
-        this.script = path;
+    public void setScript(String script) {
+        this.script = script;
     }
 
-    /**
-     * @return the permissions.
-     */
     public Guard getGuard() {
         if (guard == null) {
             buildGuard();
@@ -130,13 +108,9 @@ public class ActionDescriptor {
         return guard;
     }
 
-    /**
-     * @param permissions the permissions to set.
-     */
     public void setGuard(Guard guard) {
         this.guard = guard;
     }
-
 
     public ActionHandler getHandler() throws SiteException {
         if (handler == null) {
@@ -171,7 +145,7 @@ public class ActionDescriptor {
 
     public void merge(ActionDescriptor ad) {
         if (script == null) {
-            this.script = ad.script;
+            script = ad.script;
         }
         if (handlerClass == null) {
             handlerClass = ad.handlerClass;
@@ -185,8 +159,9 @@ public class ActionDescriptor {
     }
 
     private void buildGuard() {
-        if (pd == null) guard = Guard.DEFAULT;
-        else {
+        if (pd == null) {
+            guard = Guard.DEFAULT;
+        } else {
             try {
                 guard = pd.getGuard(); // compute guards now
             } catch (ParseException e) {

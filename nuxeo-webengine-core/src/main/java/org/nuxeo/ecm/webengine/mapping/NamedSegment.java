@@ -27,9 +27,6 @@ public class NamedSegment implements ReplacementSegment {
 
     String name;
 
-    /**
-     *
-     */
     public NamedSegment(String name) {
         this.name = name;
     }

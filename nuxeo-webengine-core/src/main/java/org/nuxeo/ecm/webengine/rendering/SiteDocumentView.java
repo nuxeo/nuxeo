@@ -115,6 +115,6 @@ public class SiteDocumentView extends DocumentContextView {
      * since it will try to register these fields (otherwise fields will not be defined yet at the time of
      * the initialization of that static member
      */
-    public final static SiteDocumentView INSTANCE = new SiteDocumentView();
+    public static final SiteDocumentView INSTANCE = new SiteDocumentView();
 
 }

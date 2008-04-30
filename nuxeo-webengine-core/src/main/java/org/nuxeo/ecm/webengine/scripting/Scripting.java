@@ -158,7 +158,6 @@ public class Scripting {
         }
     }
 
-
     @SuppressWarnings("unchecked")
     public static Map convertPythonMap(PyDictionary dict) {
         PyList list = dict.items();
@@ -194,7 +193,8 @@ public class Scripting {
     class Entry {
         public CompiledScript script;
         public long lastModified;
-        public Entry(CompiledScript script, long lastModified) {
+
+        Entry(CompiledScript script, long lastModified) {
             this.lastModified = lastModified;
             this.script = script;
         }

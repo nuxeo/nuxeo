@@ -55,17 +55,14 @@ public class GuardDescriptor {
 
 
     public GuardDescriptor() {
-        this (null);
+        this(null);
     }
 
     public GuardDescriptor(String name) {
-        this.id = name;
-        this.guards = new HashMap<String, Guard>();
+        id = name;
+        guards = new HashMap<String, Guard>();
     }
 
-    /**
-     * @return the guards.
-     */
     public Map<String, Guard> getGuards() {
         return guards;
     }
@@ -147,9 +144,6 @@ public class GuardDescriptor {
         return PermissionService.getInstance().parse(expression, guards);
     }
 
-    /**
-     * @return the name.
-     */
     public String getId() {
         return id;
     }

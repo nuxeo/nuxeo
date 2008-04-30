@@ -66,7 +66,7 @@ public class SiteObject implements ServletRenderingContext {
 
     public String getActionScript(String action) {
         ActionDescriptor desc = getAction(action);
-        String path = null;
+        String path;
         if (desc != null) {
             path = desc.getScript();
             if (path != null) {
@@ -76,7 +76,7 @@ public class SiteObject implements ServletRenderingContext {
         SiteRoot root = request.getRoot();
         if (doc != null) {
             String type = doc.getType();
-            path = type+"/"+action+".ftl";
+            path = type + '/' + action + ".ftl";
             File file = root.getFile(path);
             if (file.isFile()) {
                 return path;
@@ -124,7 +124,6 @@ public class SiteObject implements ServletRenderingContext {
         return request.lastResolved == this;
     }
 
-
     public final ObjectDescriptor getDescriptor() {
         if (desc == null && doc != null) {
             desc = request.siteManager.getInstanceOf(doc.getType());
@@ -153,8 +152,10 @@ public class SiteObject implements ServletRenderingContext {
     }
 
     protected void collectPath(StringBuilder buf) {
-        if (prev != null) prev.collectPath(buf);
-        buf.append("/").append(name);
+        if (prev != null) {
+            prev.collectPath(buf);
+        }
+        buf.append('/').append(name);
     }
 
     public boolean resolve(DocumentModel doc) {
@@ -173,7 +174,7 @@ public class SiteObject implements ServletRenderingContext {
 
     @Override
     public String toString() {
-        return name + " [ "+ (isResolved()?getDocument().getPath():"unresolved") +" ]";
+        return name + " [ " + (isResolved() ? doc.getPath() : "unresolved") + " ]";
     }
 
     /**  --------------- RenderingContext API ----------------  */

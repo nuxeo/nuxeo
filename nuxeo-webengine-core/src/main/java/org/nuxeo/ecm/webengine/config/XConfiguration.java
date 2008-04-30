@@ -42,8 +42,8 @@ public class XConfiguration {
         this.ctx = new XMapContext(ctx);
         this.xmap = new XMap();
         if (xobjs != null) {
-            for (int i=0; i<xobjs.length; i++) {
-                xmap.register(xobjs[i]);
+            for (Class<?> xobj : xobjs) {
+                xmap.register(xobj);
             }
         }
     }
@@ -91,6 +91,7 @@ public class XConfiguration {
             in.close();
         }
     }
+
     public Object load(InputStream in) throws Exception {
         return xmap.load(in);
     }

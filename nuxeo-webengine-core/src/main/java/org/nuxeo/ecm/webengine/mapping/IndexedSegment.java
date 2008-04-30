@@ -27,15 +27,12 @@ public class IndexedSegment implements ReplacementSegment {
 
     int index;
 
-    /**
-     *
-     */
     public IndexedSegment(int index) {
         this.index = index;
     }
 
     public String getReplacement(Mapping mapping) {
-      return mapping.getValue(index);
+        return mapping.getValue(index);
     }
 
 }

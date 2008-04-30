@@ -42,16 +42,10 @@ public class Mapping {
         vars = new String[size<<1];
     }
 
-    /**
-     * @param siteName the siteName to set.
-     */
     public void setSiteName(String siteName) {
         this.siteName = siteName;
     }
 
-    /**
-     * @return the siteName.
-     */
     public String getSiteName() {
         return siteName;
     }
@@ -73,18 +67,18 @@ public class Mapping {
     }
 
     public int indexOf(String name) {
-        for (int i=0; i<size; i+=2) {
+        for (int i = 0; i < size; i += 2) {
             if (name.equals(vars[i])) {
-                return i>>1;
+                return i >> 1;
             }
         }
         return -1;
     }
 
     public String getValue(String name) {
-        for (int i=0; i<size; i+=2) {
+        for (int i = 0; i < size; i += 2) {
             if (name.equals(vars[i])) {
-                return vars[i+1];
+                return vars[i + 1];
             }
         }
         return null;
@@ -101,9 +95,9 @@ public class Mapping {
     }
 
     public void setValue(String name, String value) {
-        for (int i=0; i<size; i+=2) {
+        for (int i = 0; i < size; i += 2) {
             if (name.equals(vars[i])) {
-                vars[i+1] = value;
+                vars[i + 1] = value;
             }
         }
     }
@@ -118,7 +112,7 @@ public class Mapping {
 
     public final String[] resolveSegments(ReplacementSegment[] segments) {
         String[] result = new String[segments.length];
-        for (int i=0; i<result.length; i++) {
+        for (int i = 0; i < result.length; i++) {
             result[i] = segments[i].getReplacement(this);
         }
         return result;
@@ -129,8 +123,8 @@ public class Mapping {
             return segments[0].getReplacement(this);
         }
         StringBuilder buf = new StringBuilder(segments.length * 16);
-        for (int i=0; i<segments.length; i++) {
-            buf.append(segments[i].getReplacement(this));
+        for (ReplacementSegment segment : segments) {
+            buf.append(segment.getReplacement(this));
         }
         return buf.toString();
     }

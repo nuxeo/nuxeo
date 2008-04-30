@@ -91,7 +91,6 @@ public class ResourceServlet extends HttpServlet {
         resp.sendError(404);
     }
 
-
     protected void sendBinaryContent(File file, HttpServletResponse resp) throws IOException {
         OutputStream out = resp.getOutputStream();
         InputStream in = new FileInputStream(file);
