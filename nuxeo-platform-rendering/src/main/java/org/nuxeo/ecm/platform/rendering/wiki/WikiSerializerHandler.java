@@ -28,7 +28,6 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriter;
 import org.wikimodel.wem.PrintListener;
 import org.wikimodel.wem.WikiFormat;
-import org.wikimodel.wem.WikiPageUtil;
 import org.wikimodel.wem.WikiParameters;
 
 import freemarker.core.Environment;
@@ -40,18 +39,19 @@ import freemarker.core.Environment;
 public class WikiSerializerHandler extends PrintListener {
     public static final Log log = LogFactory.getLog(WikiSerializerHandler.class);
 
-    protected static String LINE_SEP = System.getProperty("line.separator");
+    protected static final String LINE_SEP = System.getProperty("line.separator");
 
-    protected WikiSerializer engine;
-    protected StringBuilder words = new StringBuilder();
-    protected RenderingContext ctx;
+    protected final WikiSerializer engine;
+    protected final StringBuilder words = new StringBuilder();
+    protected final RenderingContext ctx;
+
     protected Environment env;
     protected Writer writer;
     protected BlockWriter parentWriter; // we allow only one level of block: doc properties
     protected boolean parentSuppressOutput = false; // suppress output state saved from parent
 
     public WikiSerializerHandler(WikiSerializer engine, Writer writer) {
-        this (engine, writer, null);
+        this(engine, writer, null);
     }
 
     public WikiSerializerHandler(WikiSerializer engine, Writer writer, RenderingContext ctx) {
@@ -93,9 +93,6 @@ public class WikiSerializerHandler extends PrintListener {
         return env;
     }
 
-    /**
-     * @return the context.
-     */
     public RenderingContext getContext() {
         return ctx;
     }
@@ -206,86 +203,103 @@ public class WikiSerializerHandler extends PrintListener {
             super.beginPropertyBlock(propertyUri, doc);
         }
     }
+
     @Override
     public void beginPropertyInline(String str) {
         beginElement();
         super.beginPropertyInline(str);
     }
+
     @Override
     public void beginQuotation(WikiParameters params) {
         beginElement();
         super.beginQuotation(params);
     }
+
     @Override
     public void beginQuotationLine() {
         beginElement();
         super.beginQuotationLine();
     }
+
     @Override
     public void beginTable(WikiParameters params) {
         beginElement();
         super.beginTable(params);
     }
+
     @Override
     public void beginTableCell(boolean tableHead, WikiParameters params) {
         beginElement();
         super.beginTableCell(tableHead, params);
     }
+
     @Override
     public void beginTableRow(WikiParameters params) {
         beginElement();
         super.beginTableRow(params);
     }
+
     @Override
     public void endDefinitionDescription() {
         endElement();
         super.endDefinitionDescription();
     }
+
     @Override
     public void endDefinitionList(WikiParameters parameters) {
         endElement();
         super.endDefinitionList(parameters);
     }
+
     @Override
     public void endDefinitionTerm() {
         endElement();
         super.endDefinitionTerm();
     }
+
     @Override
     public void endDocument() {
         endElement();
         super.endDocument();
     }
+
     @Override
     public void endFormat(WikiFormat format) {
         endElement();
         super.endFormat(format);
     }
+
     @Override
     public void endHeader(int level, WikiParameters params) {
         endElement();
         super.endHeader(level, params);
     }
+
     @Override
     public void endInfoBlock(char infoType, WikiParameters params) {
         endElement();
         super.endInfoBlock(infoType, params);
     }
+
     @Override
     public void endList(WikiParameters parameters, boolean ordered) {
         endElement();
         super.endList(parameters, ordered);
     }
+
     @Override
     public void endListItem() {
         endElement();
         super.endListItem();
     }
+
     @Override
     public void endParagraph(WikiParameters params) {
         endElement();
         super.endParagraph(params);
     }
+
     @Override
     public void endPropertyBlock(String propertyUri, boolean doc) {
         endElement();
@@ -300,31 +314,37 @@ public class WikiSerializerHandler extends PrintListener {
             super.endPropertyBlock(propertyUri, doc);
         }
     }
+
     @Override
     public void endPropertyInline(String inlineProperty) {
         endElement();
         super.endPropertyInline(inlineProperty);
     }
+
     @Override
     public void endQuotation(WikiParameters params) {
         endElement();
         super.endQuotation(params);
     }
+
     @Override
     public void endQuotationLine() {
         endElement();
         super.endQuotationLine();
     }
+
     @Override
     public void endTable(WikiParameters params) {
         endElement();
         super.endTable(params);
     }
+
     @Override
     public void endTableCell(boolean tableHead, WikiParameters params) {
         endElement();
         super.endTableCell(tableHead, params);
     }
+
     @Override
     public void endTableRow(WikiParameters params) {
         endElement();
@@ -435,7 +455,6 @@ public class WikiSerializerHandler extends PrintListener {
         }
     }
 
-
     @Override
     public void onSpecialSymbol(String str) {
         String entity = getSymbolEntity(str);
@@ -458,20 +477,17 @@ public class WikiSerializerHandler extends PrintListener {
         super.onNewLine();
     }
 
-
     @Override
     public void onEscape(String str) {
         flushWords();
         super.onEscape(str);
     }
 
-
     @Override
     public void onWord(String word) {
         words.append(word);
         //writeWord(word);
     }
-
 
     protected void writeWord(String word) {
         for (int i=0, len=engine.filters.size(); i<len; i++) {
@@ -483,7 +499,6 @@ public class WikiSerializerHandler extends PrintListener {
         }
         print(word);
     }
-
 
     /**
      * Returns an HTML/XML entity corresponding to the specified special symbol.

@@ -28,8 +28,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class DefaultPermission implements Permission {
 
-    protected String name;
-    protected Guard guard;
+    protected final String name;
+    protected final Guard guard;
 
 
     public DefaultPermission(String name, Guard guard) {

@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -46,7 +47,7 @@ import org.nuxeo.ecm.core.api.model.DocumentPart;
  */
 public class DocumentContextView implements RenderingContextView {
 
-    protected Map<String, DocumentField> fields;
+    protected final Map<String, DocumentField> fields;
 
     public DocumentContextView() {
         fields = new HashMap<String, DocumentField>();
@@ -146,9 +147,7 @@ public class DocumentContextView implements RenderingContextView {
     public Collection<String> keys(RenderingContext ctx) {
         DocumentModel doc = ctx.getDocument();
         Collection<String> keys = new ArrayList<String>(fields.keySet());
-        for (String schema : doc.getDeclaredSchemas()) {
-            keys.add(schema);
-        }
+        keys.addAll(Arrays.asList(doc.getDeclaredSchemas()));
         return keys;
     }
 
@@ -204,7 +203,7 @@ public class DocumentContextView implements RenderingContextView {
         }
     };
 
-    protected static DocumentField TYPE = new DocumentField() {
+    protected static final DocumentField TYPE = new DocumentField() {
         public final String getName() {
             return "type";
         }
@@ -214,7 +213,7 @@ public class DocumentContextView implements RenderingContextView {
         }
     };
 
-    protected static DocumentField SCHEMAS = new DocumentField() {
+    protected static final DocumentField SCHEMAS = new DocumentField() {
         public final String getName() {
             return "schemas";
         }
@@ -284,7 +283,6 @@ public class DocumentContextView implements RenderingContextView {
         }
     };
 
-
     protected static final DocumentField IS_FOLDER = new DocumentField() {
         public final String getName() {
             return "isFolder";
@@ -343,7 +341,7 @@ public class DocumentContextView implements RenderingContextView {
         }
 
         public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
-            DocumentPart part = (DocumentPart) doc.getPart("file");
+            DocumentPart part = doc.getPart("file");
             Blob blob = null;
             if (part != null) {
                 blob = (Blob) part.get("content").getValue();

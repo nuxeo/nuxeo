@@ -35,10 +35,10 @@ import freemarker.template.TemplateSequenceModel;
 public class ListPropertyTemplate extends PropertyWrapper implements TemplateCollectionModel,
         TemplateSequenceModel {
 
-    protected ListProperty property;
+    protected final ListProperty property;
 
     public ListPropertyTemplate(DocumentObjectWrapper wrapper, ListProperty property) {
-        super (wrapper);
+        super(wrapper);
         this.property = property;
     }
 

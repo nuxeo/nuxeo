@@ -63,26 +63,27 @@ import freemarker.template.Template;
  */
 public class FreemarkerEngine implements RenderingEngine {
 
-    public final static String ROOT_CTX_KEY = "NX_ROOT_CTX";
+    public static final String ROOT_CTX_KEY = "NX_ROOT_CTX";
 
-    protected Configuration cfg;
+    protected final Configuration cfg;
+
     protected ResourceLocator locator;
+
     // the wrapper is not a singleton since it contains some info about the engine instance
     // so we will have one wrapper per engine instance
-    protected DocumentObjectWrapper wrapper;
+    protected final DocumentObjectWrapper wrapper;
+
     // an empty env provider by default
     protected RenderingContextView sharedView = EmptyContextView.INSTANCE;
-    protected Map<String, RenderingTransformer> transformers = new HashMap<String, RenderingTransformer>();
 
-    protected MessagesMethod messages = new MessagesMethod(null);
+    protected final Map<String, RenderingTransformer> transformers = new HashMap<String, RenderingTransformer>();
+
+    protected final MessagesMethod messages = new MessagesMethod(null);
 
     public FreemarkerEngine() {
-        this (null, null, (File[])null);
+        this(null, null, (File[])null);
     }
 
-    /**
-     *
-     */
     public FreemarkerEngine(Configuration cfg, ResourceLocator locator, File ... resourceDirs) {
         this.wrapper = new DocumentObjectWrapper(this);
         this.locator = locator;
@@ -139,7 +140,7 @@ public class FreemarkerEngine implements RenderingEngine {
             loaders[0] = new ResourceTemplateLoader();
             loaders[1] = new ClassTemplateLoader(FreemarkerEngine.class, "");
         }
-        this.cfg.setTemplateLoader(new MultiTemplateLoader(loaders));
+        cfg.setTemplateLoader(new MultiTemplateLoader(loaders));
     }
 
     public void setSharedDocumentView(RenderingContextView sharedView) {
@@ -147,7 +148,7 @@ public class FreemarkerEngine implements RenderingEngine {
     }
 
     public RenderingContextView getSharedDocumentView() {
-        return this.sharedView;
+        return sharedView;
     }
 
     public void setSharedVariable(String key, Object value) {
@@ -179,8 +180,8 @@ public class FreemarkerEngine implements RenderingEngine {
         render(template, ctx, null);
     }
 
-    public void render(String template, RenderingContext ctx, Map<String,Object> globals)
-    throws RenderingException {
+    public void render(String template, RenderingContext ctx, Map<String, Object> globals)
+            throws RenderingException {
         try {
             ObjectWrapper wrapper = getObjectWrapper();
             Template temp = cfg.getTemplate(template);
@@ -201,11 +202,11 @@ public class FreemarkerEngine implements RenderingEngine {
         }
     }
 
-    public final static RenderingContextModel getContextModel() {
+    public static RenderingContextModel getContextModel() {
         return getContextModel(Environment.getCurrentEnvironment());
     }
 
-    public final static RenderingContextModel getContextModel(Environment env) {
+    public static RenderingContextModel getContextModel(Environment env) {
         return (RenderingContextModel)env.getCustomAttribute(ROOT_CTX_KEY);
     }
 

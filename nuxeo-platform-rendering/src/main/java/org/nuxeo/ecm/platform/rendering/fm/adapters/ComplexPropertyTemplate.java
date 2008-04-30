@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.rendering.fm.adapters;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -35,15 +36,15 @@ import freemarker.template.TemplateModelException;
  */
 public class ComplexPropertyTemplate extends PropertyWrapper implements TemplateHashModelEx {
 
-    protected Property property;
+    protected final Property property;
 
     public ComplexPropertyTemplate(DocumentObjectWrapper wrapper, Property property) {
-        super (wrapper);
+        super(wrapper);
         this.property = property;
     }
 
     public TemplateCollectionModel keys() throws TemplateModelException {
-        ArrayList<String> list = new ArrayList<String>(property.size());
+        List<String> list = new ArrayList<String>(property.size());
         for (Property p : property.getChildren()) {
             list.add(p.getName());
         }
@@ -56,7 +57,7 @@ public class ComplexPropertyTemplate extends PropertyWrapper implements Template
 
     public TemplateCollectionModel values() throws TemplateModelException {
         try {
-            ArrayList<Object> list = new ArrayList<Object>(property.size());
+            List<Object> list = new ArrayList<Object>(property.size());
             for (Property p : property.getChildren()) {
                 Object value = p.getValue();
                 list.add(value == null ? "" : value);

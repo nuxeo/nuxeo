@@ -59,14 +59,14 @@ public class TransformDirective implements TemplateDirectiveModel {
             throw new TemplateModelException("Transformer must have a name. Use name attribute for this");
         }
 
+        scalar = (SimpleScalar) params.get("src");
         String src = null;
-        scalar = (SimpleScalar)params.get("src");
         if (scalar != null) {
             src = scalar.getAsString();
         }
 
+        scalar = (SimpleScalar) params.get("property");
         String property = null;
-        scalar = (SimpleScalar)params.get("property");
         if (scalar != null) {
             property = scalar.getAsString();
         }
@@ -82,7 +82,6 @@ public class TransformDirective implements TemplateDirectiveModel {
         }
 
         try {
-            String content = null;
             if (property != null) {
                 URL url = PropertyURL.getURL(ctxModel.getDocument(), property);
                 tr.transform(url, env.getOut(), ctxModel.getContext());
@@ -93,7 +92,7 @@ public class TransformDirective implements TemplateDirectiveModel {
                 // render body to get back the result
                 StringWriter writer = new StringWriter();
                 body.render(writer);
-                content = writer.getBuffer().toString();
+                String content = writer.getBuffer().toString();
                 tr.transform(new StringReader(content), env.getOut(), ctxModel.getContext());
             } else {
                 URL url = ctxModel.getEngine().getResourceLocator().getResource(src);

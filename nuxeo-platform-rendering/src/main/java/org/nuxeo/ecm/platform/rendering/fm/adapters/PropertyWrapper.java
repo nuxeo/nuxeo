@@ -38,7 +38,7 @@ import freemarker.template.TemplateModelException;
  */
 public class PropertyWrapper {
 
-    protected DocumentObjectWrapper wrapper;
+    protected final DocumentObjectWrapper wrapper;
 
     public PropertyWrapper(DocumentObjectWrapper wrapper) {
         this.wrapper = wrapper;

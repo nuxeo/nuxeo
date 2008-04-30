@@ -51,8 +51,7 @@ public class NewMethod implements TemplateMethodModelEx {
         Object[] ar = arguments.toArray();
         size--;
         Constructor<?>[] ctors = klass.getConstructors();
-        for (int i=0; i<ctors.length; i++) {
-            Constructor<?> ctor = ctors[i];
+        for (Constructor<?> ctor : ctors) {
             Class<?>[] params = ctor.getParameterTypes(); // this is cloning params
             if (params.length == size) { // try this one
                 try {

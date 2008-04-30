@@ -39,11 +39,11 @@ public class WikiSerializer {
 
     public static final Log log = LogFactory.getLog(WikiSerializer.class);
 
-    protected CommonWikiParser parser;
+    protected final CommonWikiParser parser;
 
-    protected HashMap<String, WikiMacro> macros = new HashMap<String, WikiMacro>();
-    protected HashMap<String, WikiExpression> expressions = new HashMap<String, WikiExpression>();
-    protected ArrayList<WikiFilter> filters = new ArrayList<WikiFilter>();
+    protected final HashMap<String, WikiMacro> macros = new HashMap<String, WikiMacro>();
+    protected final HashMap<String, WikiExpression> expressions = new HashMap<String, WikiExpression>();
+    protected final ArrayList<WikiFilter> filters = new ArrayList<WikiFilter>();
 
 
     public WikiSerializer() {
@@ -69,7 +69,8 @@ public class WikiSerializer {
         writer.flush();
     }
 
-    public void serialize(Reader reader, Writer writer, RenderingContext ctx) throws IOException, WikiParserException {
+    public void serialize(Reader reader, Writer writer, RenderingContext ctx)
+            throws IOException, WikiParserException {
         WikiSerializerHandler serializer = new WikiSerializerHandler(this, writer, ctx);
         parser.parse(reader, serializer);
         writer.flush();

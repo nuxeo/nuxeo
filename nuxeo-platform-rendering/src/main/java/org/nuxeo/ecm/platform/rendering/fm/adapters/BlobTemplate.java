@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.rendering.fm.adapters;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
 
@@ -37,12 +38,13 @@ import freemarker.template.TemplateModelException;
  */
 public class BlobTemplate extends PropertyWrapper implements TemplateHashModelEx {
 
-    protected Blob blob;
     protected static final String[] keys = new String[] {
             "name", "data", "length", "mimeType", "encoding", "digest"};
 
+    protected final Blob blob;
+
     public BlobTemplate(DocumentObjectWrapper wrapper, Blob blob) {
-        super (wrapper);
+        super(wrapper);
         this.blob = blob;
     }
 
@@ -56,7 +58,7 @@ public class BlobTemplate extends PropertyWrapper implements TemplateHashModelEx
 
     public TemplateCollectionModel values() throws TemplateModelException {
         try {
-            ArrayList<Object> list = new ArrayList<Object>(keys.length);
+            List<Object> list = new ArrayList<Object>(keys.length);
             list.add(blob.getFilename());
             list.add(blob.getString());
             list.add(blob.getLength());

@@ -24,6 +24,7 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiExpression;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiSerializerHandler;
 import org.wikimodel.wem.WikiParameters;
+import org.wikimodel.wem.WikiParameter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -40,7 +41,7 @@ public class DocumentExpression implements WikiExpression {
         if (size < 1) {
             return;
         }
-        org.wikimodel.wem.WikiParameter param = params.getParameter(0);
+        WikiParameter param = params.getParameter(0);
         String value = param.getValue();
         if (size == 1 && value == null) {
             serializer.print(getProperty(ctx, param.getKey()));

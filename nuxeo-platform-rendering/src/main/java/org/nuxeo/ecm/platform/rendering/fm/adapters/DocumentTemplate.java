@@ -44,7 +44,7 @@ import freemarker.template.TemplateModelException;
  */
 public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateModel {
 
-    protected ObjectWrapper wrapper;
+    protected final ObjectWrapper wrapper;
     protected final DocumentModel doc;
 
 

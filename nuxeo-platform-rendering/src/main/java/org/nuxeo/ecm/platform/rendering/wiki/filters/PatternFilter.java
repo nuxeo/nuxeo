@@ -35,6 +35,7 @@ public class PatternFilter implements WikiFilter {
 
     @XNode("pattern")
     protected Pattern pattern;
+
     @XNode("replacement")
     protected String replacement;
 

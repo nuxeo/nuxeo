@@ -29,21 +29,15 @@ import org.nuxeo.ecm.platform.rendering.api.DocumentContextView;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContextView;
 
-
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class SimpleContext implements RenderingContext {
 
-    DocumentModel doc;
+    final DocumentModel doc;
     Writer writer;
 
-    /**
-     *
-     */
     public SimpleContext(DocumentModel doc, Writer writer) {
         this.doc =doc;
         this.writer = writer;

@@ -38,8 +38,7 @@ import org.nuxeo.ecm.platform.rendering.wiki.filters.FreemarkerMacro;
  */
 public class WikiTransformer implements RenderingTransformer {
 
-    protected WikiSerializer serializer;
-
+    protected final WikiSerializer serializer;
 
     public WikiTransformer() {
         this(new WikiSerializer());

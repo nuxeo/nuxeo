@@ -33,10 +33,10 @@ import freemarker.template.TemplateModelIterator;
  */
 public class PropertyIteratorTemplate extends PropertyWrapper implements TemplateModelIterator {
 
-    protected Iterator<Property> iterator;
+    protected final Iterator<Property> iterator;
 
     public PropertyIteratorTemplate(DocumentObjectWrapper wrapper, Iterator<Property> iterator) {
-        super (wrapper);
+        super(wrapper);
         this.iterator = iterator;
     }
 

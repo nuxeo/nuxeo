@@ -28,9 +28,9 @@ import java.util.HashMap;
  */
 public class BlockWriterRegistry {
 
-    protected HashMap<String, BlockWriter> blockMap = new HashMap<String, BlockWriter>();
+    protected final HashMap<String, BlockWriter> blockMap = new HashMap<String, BlockWriter>();
 
-    public void addBlock(String name, BlockWriter bw) throws IOException {
+    public void addBlock(String name, BlockWriter bw) {
         BlockWriter existingBw = blockMap.get(name);
         if (existingBw != null) {
             existingBw.superBlock = bw;

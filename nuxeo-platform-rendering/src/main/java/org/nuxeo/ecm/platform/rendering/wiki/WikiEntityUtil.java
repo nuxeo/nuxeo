@@ -35,11 +35,11 @@ public class WikiEntityUtil {
 
     }
 
-    private static Map<String, Entity> fHtmlToWiki = new HashMap<String, Entity>();
+    private static final Map<String, Entity> fHtmlToWiki = new HashMap<String, Entity>();
 
-    private static Entity[] fIdToWiki = new Entity[65535];
+    private static final Entity[] fIdToWiki = new Entity[65535];
 
-    private static Map<String, Entity> fWikiToHtml = new HashMap<String, Entity>();
+    private static final Map<String, Entity> fWikiToHtml = new HashMap<String, Entity>();
 
     static {
         add("<", "lt", 8249);

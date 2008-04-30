@@ -39,9 +39,8 @@ import freemarker.template.TemplateModelException;
  */
 public class RenderingContextTemplate implements TemplateHashModelEx, AdapterTemplateModel {
 
-    protected FreemarkerEngine engine;
-    protected RenderingContext ctx;
-
+    protected final FreemarkerEngine engine;
+    protected final RenderingContext ctx;
 
     public RenderingContextTemplate(FreemarkerEngine engine, RenderingContext ctx) {
         this.ctx = ctx;

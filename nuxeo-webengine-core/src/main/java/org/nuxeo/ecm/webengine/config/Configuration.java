@@ -39,9 +39,9 @@ public class Configuration {
 
     private static final Log log = LogFactory.getLog(Configuration.class);
 
-    Map<String, Configurator> configurators = new HashMap<String, Configurator>();
+    final Map<String, Configurator> configurators = new HashMap<String, Configurator>();
 
-    String mainSection;
+    final String mainSection;
 
     public Configuration() {
         this("main");
