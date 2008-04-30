@@ -41,15 +41,13 @@ import org.nuxeo.ecm.webengine.security.guards.UserGuard;
  */
 public class PermissionService implements PostfixExpression.Visitor {
 
-    private static PermissionService instance = new PermissionService();
+    private static final PermissionService instance = new PermissionService();
+
+    protected final ConcurrentMap<String, Guard> guards; // global guards
 
     public static PermissionService getInstance() {
         return instance;
     }
-
-
-    protected ConcurrentMap<String, Guard> guards; // global guards
-
 
     protected PermissionService() {
         guards = new ConcurrentHashMap<String, Guard>();
@@ -66,7 +64,6 @@ public class PermissionService implements PostfixExpression.Visitor {
     public Guard getGuard(String name) {
         return guards.get(name);
     }
-
 
     public static Guard parse(String expr) throws ParseException {
         return (Guard) new PostfixExpression(expr).visit(instance);
@@ -127,28 +124,6 @@ public class PermissionService implements PostfixExpression.Visitor {
                 guard = new PermissionGuard(token.name);
             }
             return guard;
-        }
-    }
-
-
-    public static void main(String[] args) {
-        try {
-            PermissionService ptb = new PermissionService();
-            String expr = "a|b&c";
-            PostfixExpression postfix = new PostfixExpression(expr);
-            Guard root = (Guard)postfix.visit(ptb);
-            System.out.println(">>> "+postfix+" : "+expr+" : "+root);
-            expr = "a&b|c";
-            postfix = new PostfixExpression(expr);
-            root = (Guard)postfix.visit(ptb);
-            System.out.println(">>> "+postfix+" : "+expr+" : "+root);
-            expr = "(a|b)&(c|d)";
-            postfix = new PostfixExpression(expr);
-            root = (Guard)postfix.visit(ptb);
-            System.out.println(">>> "+postfix+" : "+expr+" : "+root);
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

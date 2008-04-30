@@ -51,13 +51,13 @@ import org.osgi.framework.Bundle;
  */
 public class SiteManagerComponent extends DefaultComponent implements ResourceLocator, FileChangeListener  {
 
-    public final static ComponentName NAME = new ComponentName(SiteManagerComponent.class.getName());
+    public static final ComponentName NAME = new ComponentName(SiteManagerComponent.class.getName());
 
-    public final static String TRANSFORMER_XP = "transformer";
-    public final static String SITE_OBJ_XP = "siteObject";
-    public final static String GUARD_XP = "guard"; // global guards
+    public static final String TRANSFORMER_XP = "transformer";
+    public static final String SITE_OBJ_XP = "siteObject";
+    public static final String GUARD_XP = "guard"; // global guards
 
-    private final static Log log = LogFactory.getLog(SiteManagerComponent.class);
+    private static final Log log = LogFactory.getLog(SiteManagerComponent.class);
 
     private SiteManager mgr;
     private FileChangeNotifier notifier;
@@ -215,7 +215,7 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
         }
         String relPath = path.substring(rootPath.length());
         if (!relPath.startsWith("/")) {
-            relPath = "/" + relPath;
+            relPath = '/' + relPath;
         }
 //        if (file.getAbsolutePath().startsWith(mgr.getRootDirectory().getAbsolutePath())) {
         if (relPath.equals("/web.xml")) {

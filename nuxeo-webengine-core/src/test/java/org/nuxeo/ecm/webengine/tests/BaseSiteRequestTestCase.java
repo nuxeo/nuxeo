@@ -25,7 +25,7 @@ import org.nuxeo.ecm.webengine.tests.fake.FakeRequest;
 import org.nuxeo.ecm.webengine.tests.fake.FakeResponse;
 import org.nuxeo.ecm.webengine.tests.fake.FakeServletInputStream;
 
-public abstract class  BaseSiteRequestTestCase extends RepositoryOSGITestCase {
+public abstract class BaseSiteRequestTestCase extends RepositoryOSGITestCase {
 
     @Override
     protected void setUp() throws Exception {
@@ -53,10 +53,8 @@ public abstract class  BaseSiteRequestTestCase extends RepositoryOSGITestCase {
         return execSiteRequest(fReq);
     }
 
-
     protected FakeResponse execSiteRequest(FakeRequest fReq)
             throws Exception {
-
         FakeResponse fRes = new FakeResponse();
         fReq.setAttribute("TestCoreSession", getCoreSession());
         SiteServlet siteServlet = new SiteServlet();

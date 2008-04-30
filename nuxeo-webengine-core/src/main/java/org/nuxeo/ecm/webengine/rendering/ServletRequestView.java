@@ -42,17 +42,15 @@ public class ServletRequestView extends SimpleContextView {
        "HTTP_REQUEST_URL" //TODO
     };
 
-    public ServletRequestView() {
-    }
-
-    protected final HttpServletRequest getRequest(RenderingContext ctx) {
+    protected static final HttpServletRequest getRequest(RenderingContext ctx) {
         return ((ServletRenderingContext) ctx).getRequest();
     }
 
-    protected final HttpServletResponse getResponse(RenderingContext ctx) {
+    protected static final HttpServletResponse getResponse(RenderingContext ctx) {
         return ((ServletRenderingContext) ctx).getResponse();
     }
 
+    @Override
     public Object get(String key, RenderingContext ctx) {
         Object val = get(key);
         if (val == null) {

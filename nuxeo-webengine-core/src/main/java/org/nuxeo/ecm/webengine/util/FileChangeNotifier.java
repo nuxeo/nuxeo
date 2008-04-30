@@ -35,11 +35,11 @@ import org.nuxeo.common.collections.ListenerList;
  */
 public class FileChangeNotifier {
 
-    private static Log log = LogFactory.getLog(FileChangeNotifier.class);
+    private static final Log log = LogFactory.getLog(FileChangeNotifier.class);
 
-    private ListenerList listeners = new ListenerList();
-    private Timer timer = new Timer("FileChangeNotifier");
-    private Vector<FileEntry> files = new Vector<FileEntry>();
+    private final ListenerList listeners = new ListenerList();
+    private final Timer timer = new Timer("FileChangeNotifier");
+    private final Vector<FileEntry> files = new Vector<FileEntry>();
 
     public void start() {
         start(10000, 2000);

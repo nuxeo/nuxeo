@@ -29,7 +29,7 @@ import org.nuxeo.ecm.webengine.security.Guard;
  */
 public class Not implements Guard {
 
-    protected Guard perm;
+    protected final Guard perm;
 
     public Not(Guard guard) {
         this.perm = guard;
@@ -43,4 +43,5 @@ public class Not implements Guard {
     public String toString() {
         return "NOT " + perm;
     }
+
 }
