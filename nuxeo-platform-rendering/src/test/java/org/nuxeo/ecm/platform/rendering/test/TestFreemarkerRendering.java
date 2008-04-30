@@ -43,7 +43,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestFreemarkerRendering extends NXRuntimeTestCase {
 
-
     FreemarkerEngine engine;
 
     public static void initSchemaManager() throws Exception {
@@ -55,7 +54,6 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         provider.registerService(SchemaManager.class, mgr);
         DefaultServiceProvider.setProvider(provider);
     }
-
 
     @Override
     protected void setUp() throws Exception {
@@ -71,7 +69,6 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         tr.getSerializer().registerMacro(new FreemarkerMacro());
         tr.getSerializer().registerExpression(new DocumentExpression());
         engine.setTransformer("wiki", tr);
-
     }
 
     public void testRendering() throws Exception {
@@ -111,7 +108,6 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
             System.out.println(">>>>>>>>>> "+(i+2)+" RENDERING TOOK: "+((e-s)/1000));
             System.out.println("###############################");
         }
-
     }
 
 }

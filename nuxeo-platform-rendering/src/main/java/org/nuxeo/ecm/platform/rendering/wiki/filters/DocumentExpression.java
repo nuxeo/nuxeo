@@ -59,8 +59,7 @@ public class DocumentExpression implements WikiExpression {
         return "doc";
     }
 
-
-    protected String getProperty(RenderingContext ctx, String key) throws Exception {
+    protected static String getProperty(RenderingContext ctx, String key) throws Exception {
         Property prop = ctx.getDocument().getProperty(key);
         return prop.getValue().toString();
     }

@@ -23,32 +23,36 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.IOException;
+import java.io.Writer;
+import java.io.StringWriter;
+import java.io.StringReader;
 
 import org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer;
 import org.nuxeo.ecm.platform.rendering.wiki.filters.PatternFilter;
+import org.wikimodel.wem.WikiParserException;
+import junit.framework.TestCase;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
- */
-public class TestWiki {
+/** @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> */
+public class TestWiki extends TestCase {
 
-    public static void main(String[] args) {
+    public void test() throws IOException, WikiParserException {
         double s = System.currentTimeMillis();
-        try {
-            InputStream in = TestWiki.class.getResourceAsStream("/test.wiki");
-            Reader reader = new InputStreamReader(in);
+        InputStream in = TestWiki.class.getResourceAsStream("/test.wiki");
+        Reader reader = new InputStreamReader(in);
 
-            WikiSerializer engine = new WikiSerializer();
-            engine.addFilter(new PatternFilter("_([-A-Za-z0-9]+)_", "<i>$1</i>"));
-            engine.addFilter(new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
-            engine.addFilter(new PatternFilter("NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
-            engine.serialize(reader, new OutputStreamWriter(System.out));
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            System.out.println(">>>>>>> "+((System.currentTimeMillis()-s)/1000));
-        }
+        WikiSerializer engine = new WikiSerializer();
+        engine.addFilter(new PatternFilter("_([-A-Za-z0-9]+)_", "<i>$1</i>"));
+        engine.addFilter(new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
+        engine.addFilter(new PatternFilter("NXP-[0-9]+",
+                "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
+
+        StringWriter writer = new StringWriter();
+        engine.serialize(reader, writer);
+
+        System.out.println(">>>>>>> " + ((System.currentTimeMillis() - s) / 1000));
     }
 
 }
+
+

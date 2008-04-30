@@ -35,7 +35,7 @@ public class WikiName implements WikiFilter {
     public String apply(String content) {
         Matcher matcher = pattern.matcher(content);
         if (matcher.matches())  {
-            return "#link#"+content+"#/link#";
+            return "#link#" + content + "#/link#";
         }
         return null;
     }

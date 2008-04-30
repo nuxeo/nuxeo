@@ -37,7 +37,7 @@ public class NewMethod implements TemplateMethodModelEx {
             throw new TemplateModelException("Invalid number of arguments for new(class, ...) method");
         }
 
-        Class<?> klass = null;
+        Class<?> klass;
         try {
             String className = (String)arguments.get(0);
             klass = Class.forName(className);

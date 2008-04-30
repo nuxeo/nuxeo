@@ -57,12 +57,4 @@ public class PatternFilter implements WikiFilter {
         return sb.toString();
     }
 
-    public static void main(String[] args) {
-        PatternFilter filter = new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>");
-        System.out.println(filter.apply("MyName"));
-        filter = new PatternFilter("NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>");
-        System.out.println(filter.apply("NXP-1234"));
-        System.out.println(filter.apply("NXP1234"));
-    }
-
 }
