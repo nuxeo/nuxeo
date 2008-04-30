@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.tests.rendering;
+package org.nuxeo.ecm.platform.rendering.test;
 
 import java.io.StringWriter;
 
