@@ -88,8 +88,11 @@ public class MessagesMethod implements TemplateMethodModelEx {
             return "!"+key+"!";
         }
         if (size > 1) { // format the string using given args
-            Object args = arguments.subList(1, size).toArray();
-            value = MessageFormat.format(value, args);
+            String[] args = new String[size-1];
+            for (int i=0; i<args.length; i++) {
+                args[i] = ((SimpleScalar)arguments.get(i+1)).getAsString();
+            }
+            value = MessageFormat.format(value, (Object[])args);
         }
         return value;
     }
