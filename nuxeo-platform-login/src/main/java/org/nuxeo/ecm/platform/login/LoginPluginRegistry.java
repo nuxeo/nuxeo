@@ -22,9 +22,13 @@ package org.nuxeo.ecm.platform.login;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.security.auth.callback.CallbackHandler;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.login.CallbackResult;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
@@ -40,24 +44,53 @@ public class LoginPluginRegistry extends DefaultComponent {
 
     private Map<String, LoginPlugin> loginPluginStack;
 
+    private CallbackFactory callbackFactory;
+
     private Map<String, LoginPluginDescriptor> pluginDescriptorStack;
 
     public LoginPluginRegistry() {
         currentLoginPlugin = null;
     }
 
+    public static final String EP_PLUGIN = "plugin";
+
+    public static final String EP_CBFACTORY = "callbackFactory";
+
     @Override
-    public void registerExtension(Extension extension) throws Exception {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
+    public void registerContribution(Object contribution,
+            String extensionPoint, ComponentInstance contributor) {
+
+        if (extensionPoint.equals(EP_PLUGIN)) {
             log.info("registering Login Plugin ... ");
-            register((LoginPluginDescriptor) contrib);
+            registerPlugin((LoginPluginDescriptor) contribution);
         }
+        else  if (extensionPoint.equals(EP_CBFACTORY)) {
+            log.info("registering Callback factory ... ");
+            registerCBFactory((CallbackFactoryDescriptor) contribution);
+        }
+        else
+            log.error("Extension point " + extensionPoint + " is unknown!");
+
     }
 
-    private void register(LoginPluginDescriptor pluginExtension) {
+    private void registerCBFactory(CallbackFactoryDescriptor cbfExtension) {
+
+
+        CallbackFactory factory = null;
+
+        try {
+            factory = (CallbackFactory) cbfExtension.getClassName().newInstance();
+            callbackFactory = factory;
+        }
+        catch (Exception e) {
+            log.error("Unable to create Factory", e);
+        }
+
+
+    }
+
+    private void registerPlugin(LoginPluginDescriptor pluginExtension) {
         Boolean enabled = pluginExtension.getEnabled();
-        //String loginPage = pluginExtension.getLoginPage();
         Class className = pluginExtension.getClassName();
         String pluginName = pluginExtension.getPluginName();
 
@@ -136,6 +169,15 @@ public class LoginPluginRegistry extends DefaultComponent {
     @Deprecated
     public Boolean useCustomLoginPlugin() {
         return currentLoginPlugin != null;
+    }
+
+
+    public CallbackResult handleSpecifcCallbacks(CallbackHandler callbackHandler)
+    {
+        if (callbackFactory==null)
+            return null;
+
+        return callbackFactory.handleSpecificCallbacks(callbackHandler);
     }
 
     public LoginPlugin getPlugin(String pluginName) {
