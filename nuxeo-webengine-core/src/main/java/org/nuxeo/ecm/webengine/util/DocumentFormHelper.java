@@ -34,15 +34,15 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
  */
 public class DocumentFormHelper {
 
-    public static final String DOCTYPE = "doctype";
-    public static final String VERSIONING = "versioning";
-    public static final String MAJOR = "major";
-    public static final String MINOR = "minor";
+    public final static String TITLE = "dc:title";
+    public final static String DOCTYPE = "doctype";
+    public final static String VERSIONING = "versioning";
+    public final static String MAJOR = "major";
+    public final static String MINOR = "minor";
 
 
     /**
-     * Fills the given document model properties using data from request parameters.
-     *
+     * Fill the given document model properties using data from request parameters
      * @param doc
      * @param request
      */
@@ -68,6 +68,7 @@ public class DocumentFormHelper {
                 }
             }
         }
+
     }
 
     public static VersioningActions getVersioningOption(HttpServletRequest request) {
@@ -81,6 +82,10 @@ public class DocumentFormHelper {
 
     public static String getDocumentType(HttpServletRequest request) {
         return request.getParameter(DOCTYPE);
+    }
+
+    public static String getDocumentTitle(HttpServletRequest request) {
+        return request.getParameter(TITLE);
     }
 
 }
