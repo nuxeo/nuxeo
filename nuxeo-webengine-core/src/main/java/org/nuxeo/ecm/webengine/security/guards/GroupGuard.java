@@ -55,7 +55,7 @@ public class GroupGuard implements Guard {
 
     @Override
     public String toString() {
-        return "GROUP["+group+"]";
+        return "GROUP[" + group + "]";
     }
 
 }

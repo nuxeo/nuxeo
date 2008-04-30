@@ -133,11 +133,9 @@ public class PermissionService implements PostfixExpression.Visitor {
 
     public static void main(String[] args) {
         try {
-            String expr = null;
-            PostfixExpression postfix = null;
             PermissionService ptb = new PermissionService();
-            expr = "a|b&c";
-            postfix = new PostfixExpression(expr);
+            String expr = "a|b&c";
+            PostfixExpression postfix = new PostfixExpression(expr);
             Guard root = (Guard)postfix.visit(ptb);
             System.out.println(">>> "+postfix+" : "+expr+" : "+root);
             expr = "a&b|c";

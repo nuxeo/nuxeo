@@ -48,6 +48,6 @@ public class SchemaGuard implements Guard {
 
     @Override
     public String toString() {
-        return "SCHEMA["+schema+"]";
+        return "SCHEMA[" + schema + "]";
     }
 }

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.mapping;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,19 +30,15 @@ import java.util.regex.Pattern;
  */
 public class MappingDescriptor {
 
-    public final static Pattern DOLAR_PATTERN = Pattern.compile("\\$([0-9]+|[A-Za-z_][A-Za-z_0-9]*)");
+    public static final Pattern DOLAR_PATTERN = Pattern.compile("\\$([0-9]+|[A-Za-z_][A-Za-z_0-9]*)");
 
     PathPattern pattern;
     ReplacementSegment[] script;
     ReplacementSegment[] traversal;
 
-    public MappingDescriptor() {
-    }
-
     public void setPattern(String pattern) {
         this.pattern = new PathPattern(pattern);
     }
-
 
     public void setScript(String script) {
         if (script != null) {
@@ -55,12 +52,13 @@ public class MappingDescriptor {
         }
     }
 
-    public ReplacementSegment[] parseReplacement(String replacement) {
+    public static ReplacementSegment[] parseReplacement(String replacement) {
         Matcher m = DOLAR_PATTERN.matcher(replacement);
         if (!m.find()) {
             return new ReplacementSegment[] {new StringSegment(replacement)};
         }
-        ArrayList<ReplacementSegment> ar = new ArrayList<ReplacementSegment>();
+
+        List<ReplacementSegment> ar = new ArrayList<ReplacementSegment>();
         int s = 0;
         do {
             int e = m.start();
@@ -83,7 +81,6 @@ public class MappingDescriptor {
         }
         return ar.toArray(new ReplacementSegment[ar.size()]);
     }
-
 
     public final Mapping match(String input) {
         Mapping mapping = pattern.match(input);

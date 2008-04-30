@@ -57,6 +57,6 @@ public class PermissionGuard implements Guard {
 
     @Override
     public String toString() {
-        return "PERM["+perm+"]";
+        return "PERM[" + perm + "]";
     }
 }

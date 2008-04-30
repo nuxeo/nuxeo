@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
-
 public interface DocumentResolver {
 
     DocumentModel getRootDocument(SiteRoot root, String rootName, CoreSession session) throws Exception;

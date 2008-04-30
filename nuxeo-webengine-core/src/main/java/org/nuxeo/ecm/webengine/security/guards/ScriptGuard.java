@@ -88,9 +88,9 @@ public class ScriptGuard implements Guard {
 
     protected boolean booleanValue(Object obj) {
         if (obj.getClass() == Boolean.class) {
-            return ((Boolean)obj).booleanValue();
+            return ((Boolean) obj).booleanValue();
         } else if (obj instanceof Number) {
-            return ((Number)obj).intValue() != 0;
+            return ((Number) obj).intValue() != 0;
         } else if (obj != null) {
             return true;
         }
@@ -99,7 +99,7 @@ public class ScriptGuard implements Guard {
 
     @Override
     public String toString() {
-        return "SCRIPT:"+type+"["+script+"]";
+        return "SCRIPT:" + type + '[' + script + ']';
     }
 
     private CompiledScript compile(String type, String content) throws ScriptException {

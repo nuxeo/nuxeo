@@ -26,7 +26,7 @@ package org.nuxeo.ecm.webengine;
  */
 public interface RequestHandler {
 
-    final static RequestHandler DEFAULT = new DefaultRequestHandler();
+    RequestHandler DEFAULT = new DefaultRequestHandler();
 
     void doGet(SiteObject object) throws SiteException;
 

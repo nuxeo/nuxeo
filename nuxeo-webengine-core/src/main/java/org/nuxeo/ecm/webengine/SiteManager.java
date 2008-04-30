@@ -56,4 +56,5 @@ public interface SiteManager {
     boolean isObjectResolved(String id);
 
     void reset();
+
 }

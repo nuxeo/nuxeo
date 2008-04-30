@@ -28,8 +28,8 @@ import org.nuxeo.ecm.webengine.SiteObject;
  */
 public interface ActionHandler {
 
-    public final static ActionHandler NULL = new ActionHandler() {
-        public void run(SiteObject obj) throws SiteException {}
+    ActionHandler NULL = new ActionHandler() {
+        public void run(SiteObject object) {}
     };
 
     void run(SiteObject object) throws SiteException;

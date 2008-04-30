@@ -210,15 +210,14 @@ public class SiteServlet extends HttpServlet {
         }
     }
 
-
     public SiteRequest createRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         String pathInfo = req.getPathInfo();
-        SiteRoot root = null;
-        String siteName = null;
+        SiteRoot root;
         if (pathInfo == null || "/".equals(pathInfo)) {
             root = manager.getDefaultSiteRoot();
         } else {
             int p = pathInfo.indexOf('/', 1);
+            String siteName = null;
             if (p == -1) {
                 siteName = pathInfo.substring(1);
                 root = manager.getSiteRoot(siteName);

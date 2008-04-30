@@ -47,7 +47,6 @@ public class PathPattern  {
         return processNamedWildcards(pattern);
     }
 
-
     public String processNamedWildcards(String pattern) {
         StringBuilder buf = new StringBuilder();
         ArrayList<String> names = new ArrayList<String>();

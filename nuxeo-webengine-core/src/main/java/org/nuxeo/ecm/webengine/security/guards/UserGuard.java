@@ -35,24 +35,26 @@ import org.nuxeo.ecm.webengine.security.Guard;
 public class UserGuard implements Guard {
 
     @XContent
-    protected String user;
+    protected String username;
 
     public UserGuard() {
     }
 
     public UserGuard(String username) {
-        this.user = username;
+        this.username = username;
     }
 
     public boolean check(CoreSession session, DocumentModel doc) {
         Principal p = session.getPrincipal();
-        if (p == null) return false;
-        return user.equals(p.getName());
+        if (p == null) {
+            return false;
+        }
+        return username.equals(p.getName());
     }
 
     @Override
     public String toString() {
-        return "USER["+user+"]";
+        return "USER[" + username + ']';
     }
 
 }

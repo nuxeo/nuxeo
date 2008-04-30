@@ -34,7 +34,7 @@ public class Mapping {
     String script;
 
     public Mapping() {
-        this (null, 4);
+        this(null, 4);
     }
 
     public Mapping(String siteName, int size) {

@@ -36,7 +36,6 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-
 public class DefaultDocumentResolver implements DocumentResolver {
 
     public static final DefaultDocumentResolver INSTANCE = new DefaultDocumentResolver();
@@ -58,7 +57,7 @@ public class DefaultDocumentResolver implements DocumentResolver {
         DocumentModel root = null;
         SearchService searchService = Framework.getService(SearchService.class);
 
-        String query = "Select * from Document where ecm:name='" + rootName+"'";
+        String query = "Select * from Document where ecm:name='" + rootName + "'";
         if (searchService != null) {
             ResultSet result = searchService.searchQuery(new ComposedNXQueryImpl(query), 0, 1);
             if (result.isEmpty()) {
@@ -78,7 +77,7 @@ public class DefaultDocumentResolver implements DocumentResolver {
 
     public DocumentModel getSiteSegment(SiteRoot root, DocumentModel parent, String segment, CoreSession session) throws Exception {
         try {
-            return session.getDocument(new PathRef(parent.getPathAsString() + "/" + segment));
+            return session.getDocument(new PathRef(parent.getPathAsString() + '/' + segment));
         } catch (ClientException e) {
             return null;
         }

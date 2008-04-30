@@ -58,7 +58,7 @@ public class WikiTransformerDescriptor extends TransformerDescriptor {
         }
         WikiSerializer serializer = tr.getSerializer();
         for (WikiFilterDescriptor wfd : filters) {
-          serializer.addFilter(new PatternFilter(wfd.pattern, wfd.replacement));
+            serializer.addFilter(new PatternFilter(wfd.pattern, wfd.replacement));
         }
         return tr;
     }

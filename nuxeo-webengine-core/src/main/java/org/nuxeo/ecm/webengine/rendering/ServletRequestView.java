@@ -37,7 +37,7 @@ public class ServletRequestView extends SimpleContextView {
 
     private static final long serialVersionUID = 0L;
 
-    protected final static String[] KEYS = new String[] {
+    protected static final String[] KEYS = new String[] {
        "HTTP_REQUEST_URI",
        "HTTP_REQUEST_URL" //TODO
     };
@@ -46,11 +46,11 @@ public class ServletRequestView extends SimpleContextView {
     }
 
     protected final HttpServletRequest getRequest(RenderingContext ctx) {
-        return ((ServletRenderingContext)ctx).getRequest();
+        return ((ServletRenderingContext) ctx).getRequest();
     }
 
     protected final HttpServletResponse getResponse(RenderingContext ctx) {
-        return ((ServletRenderingContext)ctx).getResponse();
+        return ((ServletRenderingContext) ctx).getResponse();
     }
 
     public Object get(String key, RenderingContext ctx) {

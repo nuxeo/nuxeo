@@ -40,7 +40,7 @@ public class XConfiguration {
 
     public XConfiguration(RuntimeContext ctx, Class<?> ... xobjs) {
         this.ctx = new XMapContext(ctx);
-        this.xmap = new XMap();
+        xmap = new XMap();
         if (xobjs != null) {
             for (Class<?> xobj : xobjs) {
                 xmap.register(xobj);

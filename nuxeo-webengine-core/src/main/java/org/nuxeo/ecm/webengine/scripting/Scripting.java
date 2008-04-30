@@ -73,7 +73,6 @@ public class Scripting {
         return renderingEngine;
     }
 
-
     public void exec(SiteRequest req, ScriptFile script) throws Exception {
         String ext = script.getExtension();
         if ("ftl".equals(ext)) {
@@ -163,13 +162,12 @@ public class Scripting {
         PyList list = dict.items();
         Map table = new HashMap();
         for(int i = list.__len__(); i-- >  0; ) {
-            PyTuple tup = (PyTuple)list.__getitem__(i);
+            PyTuple tup = (PyTuple) list.__getitem__(i);
             String key = tup.__getitem__(0).toString();
             table.put(key, tup.__getitem__(1));
         }
         return table;
     }
-
 
     public CompiledScript getScript(ScriptEngine engine, File file) throws ScriptException {
         Entry entry = cache.get(file);
@@ -180,12 +178,11 @@ public class Scripting {
                 entry.lastModified = tm;
             }
             return entry.script;
-        } else {
-            CompiledScript script = compileScript(engine, file);
-            if (script != null) {
-                cache.putIfAbsent(file, new Entry(script, tm));
-                return script;
-            }
+        }
+        CompiledScript script = compileScript(engine, file);
+        if (script != null) {
+            cache.putIfAbsent(file, new Entry(script, tm));
+            return script;
         }
         return null;
     }

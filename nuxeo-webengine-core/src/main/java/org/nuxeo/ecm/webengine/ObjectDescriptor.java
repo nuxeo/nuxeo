@@ -64,8 +64,8 @@ public class ObjectDescriptor {
         this.base = base;
         this.actions = new HashMap<String, ActionDescriptor>();
         if (actions != null) {
-            for (int i=0; i<actions.length; i++) {
-                this.actions.put(actions[i].getId(), actions[i]);
+            for (ActionDescriptor action : actions) {
+                this.actions.put(action.getId(), action);
             }
         }
     }
@@ -82,37 +82,22 @@ public class ObjectDescriptor {
         }
     }
 
-    /**
-     * @return the id.
-     */
     public String getId() {
         return id;
     }
 
-    /**
-     * @return the base.
-     */
     public String getBase() {
         return base;
     }
 
-    /**
-     * @return the type.
-     */
     public String getType() {
         return type;
     }
 
-    /**
-     * @return the requestHandlerClass.
-     */
     public Class<RequestHandler> getRequestHandlerClass() {
         return requestHandlerClass;
     }
 
-    /**
-     * @return the requestHandler.
-     */
     public RequestHandler getRequestHandler() throws SiteException {
         if (requestHandler == null) {
             if (requestHandlerClass == null) {
@@ -128,16 +113,10 @@ public class ObjectDescriptor {
         return requestHandler;
     }
 
-    /**
-     * @param requestHandler the requestHandler to set.
-     */
     public void setRequestHandler(RequestHandler requestHandler) {
         this.requestHandler = requestHandler;
     }
 
-    /**
-     * @return the actions.
-     */
     public Map<String, ActionDescriptor> getActions() {
         return actions;
     }
@@ -162,7 +141,9 @@ public class ObjectDescriptor {
         if (requestHandlerClass == null) {
             requestHandlerClass = baseObj.requestHandlerClass;
         }
-        if (baseObj.actions == null) return;
+        if (baseObj.actions == null) {
+            return;
+        }
         // merge actions
         for (ActionDescriptor desc : baseObj.actions.values()) {
             ActionDescriptor action = actions.get(desc.getId());

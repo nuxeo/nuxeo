@@ -30,19 +30,19 @@ import java.net.URLClassLoader;
 public class WebClassLoader extends URLClassLoader {
 
     public WebClassLoader() {
-        super (new URL[0], Thread.currentThread().getContextClassLoader());
+        super(new URL[0], Thread.currentThread().getContextClassLoader());
     }
 
     public WebClassLoader(ClassLoader parent) {
-        super (new URL[0], parent);
+        super(new URL[0], parent);
     }
 
     public WebClassLoader(URL[] urls) {
-        super (urls, Thread.currentThread().getContextClassLoader());
+        super(urls, Thread.currentThread().getContextClassLoader());
     }
 
     public WebClassLoader(URL[] urls, ClassLoader parent) {
-        super (urls, parent);
+        super(urls, parent);
     }
 
     @Override

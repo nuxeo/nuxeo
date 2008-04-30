@@ -48,7 +48,7 @@ public class FacetGuard implements Guard {
 
     @Override
     public String toString() {
-        return "FACET["+facet+"]";
+        return "FACET[" + facet + ']';
     }
 
 }

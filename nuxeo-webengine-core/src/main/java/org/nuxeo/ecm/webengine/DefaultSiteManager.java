@@ -47,10 +47,10 @@ public class DefaultSiteManager implements SiteManager {
 
     public DefaultSiteManager(File root, RenderingEngine engine) {
         this.root = root;
-        this.roots = new ConcurrentHashMap<String, SiteRoot>();
-        this.scripting = new Scripting(engine);
-        this.registry = new ObjectRegistry();
-        this.objects = new HashMap<String, ObjectDescriptor>();
+        roots = new ConcurrentHashMap<String, SiteRoot>();
+        scripting = new Scripting(engine);
+        registry = new ObjectRegistry();
+        objects = new HashMap<String, ObjectDescriptor>();
     }
 
     public Scripting getScripting() {
@@ -127,13 +127,14 @@ public class DefaultSiteManager implements SiteManager {
     }
 
 
-
     class ObjectRegistry extends DependencyTree<String, ObjectDescriptor> {
 
         public void resolved(DependencyTree.Entry<String, ObjectDescriptor> entry) {
             ObjectDescriptor obj = entry.get();
             String base = obj.getBase();
-            if (base  == null) base = "default";
+            if (base  == null) {
+                base = "default";
+            }
             ObjectDescriptor baseObj = registry.getResolved(base);
             if (baseObj != null) { // compute inheritance data
                 obj.merge(baseObj);

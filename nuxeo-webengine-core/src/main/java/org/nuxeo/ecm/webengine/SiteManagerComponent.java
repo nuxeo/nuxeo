@@ -68,7 +68,7 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        this.ctx = context;
+        ctx = context;
         File root = new File(Framework.getRuntime().getHome(), "web");
         root = root.getCanonicalFile();
         if (!root.exists()) {
@@ -205,12 +205,18 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
     }
 
     public void fileChanged(File file, long since) {
-        if (ctx == null) return;
+        if (ctx == null) {
+            return;
+        }
         String path = file.getAbsolutePath();
         String rootPath = mgr.getRootDirectory().getAbsolutePath();
-        if (!path.startsWith(rootPath)) return;
+        if (!path.startsWith(rootPath)) {
+            return;
+        }
         String relPath = path.substring(rootPath.length());
-        if (!relPath.startsWith("/")) relPath = "/"+relPath;
+        if (!relPath.startsWith("/")) {
+            relPath = "/" + relPath;
+        }
 //        if (file.getAbsolutePath().startsWith(mgr.getRootDirectory().getAbsolutePath())) {
         if (relPath.equals("/web.xml")) {
             try {

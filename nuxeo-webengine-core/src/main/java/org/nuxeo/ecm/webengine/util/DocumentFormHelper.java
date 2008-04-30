@@ -23,7 +23,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.jboss.util.property.PropertyError;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -35,14 +34,15 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
  */
 public class DocumentFormHelper {
 
-    public final static String DOCTYPE = "doctype";
-    public final static String VERSIONING = "versioning";
-    public final static String MAJOR = "major";
-    public final static String MINOR = "minor";
+    public static final String DOCTYPE = "doctype";
+    public static final String VERSIONING = "versioning";
+    public static final String MAJOR = "major";
+    public static final String MINOR = "minor";
 
 
     /**
-     * Fill the given document model properties using data from request parameters
+     * Fills the given document model properties using data from request parameters.
+     *
      * @param doc
      * @param request
      */
@@ -68,7 +68,6 @@ public class DocumentFormHelper {
                 }
             }
         }
-
     }
 
     public static VersioningActions getVersioningOption(HttpServletRequest request) {

@@ -38,15 +38,15 @@ public final class ScriptFile {
         int p = path.lastIndexOf('.');
         String typedPath = null;
         if (p > -1) {
-            ext = path.substring(p+1);
+            ext = path.substring(p + 1);
             if (type != null) {
-                typedPath = path.substring(0, p)+'_'+type+'.'+ext;
+                typedPath = path.substring(0, p) + '_' + type + '.' + ext;
             }
         } else { // by default use ftl
             ext = "ftl";
             path+=".ftl";
             if (type != null) {
-                typedPath = path+'_'+type;
+                typedPath = path + '_' + type;
             }
         }
         if (typedPath != null) {

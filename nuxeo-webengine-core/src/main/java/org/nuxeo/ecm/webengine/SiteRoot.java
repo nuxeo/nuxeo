@@ -44,9 +44,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class SiteRoot implements FileChangeListener {
 
-    final static Log log = LogFactory.getLog(SiteRoot.class);
+    static final Log log = LogFactory.getLog(SiteRoot.class);
 
-    public final static String SITE_CONFIG = "site.config";
+    public static final String SITE_CONFIG = "site.config";
 
     SiteManager manager;
 
@@ -62,7 +62,7 @@ public class SiteRoot implements FileChangeListener {
 
     PathMapper mapper;
 
-    Configuration config = null;
+    Configuration config;
 
     ConcurrentMap<String, Mapping> cache;
 
@@ -72,7 +72,7 @@ public class SiteRoot implements FileChangeListener {
 
 
     public SiteRoot(SiteManager manager, String name) {
-        this (manager, new File(manager.getRootDirectory(), name));
+        this(manager, new File(manager.getRootDirectory(), name));
     }
 
     public SiteRoot(SiteManager manager, File root) {
@@ -126,33 +126,21 @@ public class SiteRoot implements FileChangeListener {
     }
 
     public boolean isDebugEnabled() {
-        return this.debug;
+        return debug;
     }
 
-    /**
-     * @param defaultPage the defaultPage to set.
-     */
     public void setDefaultPage(String defaultPage) {
         this.defaultPage = defaultPage;
     }
 
-    /**
-     * @return the defaultPage.
-     */
     public String getDefaultPage() {
         return defaultPage;
     }
 
-    /**
-     * @param errorPage the errorPage to set.
-     */
     public void setErrorPage(String errorPage) {
         this.errorPage = errorPage;
     }
 
-    /**
-     * @return the errorPage.
-     */
     public String getErrorPage() {
         return errorPage;
     }
@@ -182,16 +170,17 @@ public class SiteRoot implements FileChangeListener {
     }
 
     /**
-     * Given a relative path to this site get the path relative to the web directory
+     * Given a relative path to this site get the path relative to the web directory.
+     *
      * @param path
      * @return
      */
     public String getWebFilePath(String path) {
         String name = root.getName();
         if (path.startsWith("/")) {
-            return "/"+name+path;
+            return '/' + name + path;
         } else {
-            return "/"+name+"/"+path;
+            return '/' + name + '/' + path;
         }
     }
 
@@ -213,8 +202,6 @@ public class SiteRoot implements FileChangeListener {
         cache.clear();
         loadConfiguration();
     }
-
-
 
     public void fileChanged(File file, long since) {
         if (file.getAbsolutePath().startsWith(root.getAbsolutePath())) {

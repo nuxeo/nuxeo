@@ -48,7 +48,7 @@ public class TypeGuard implements Guard {
 
     @Override
     public String toString() {
-        return "TYPE["+type+"]";
+        return "TYPE[" + type + ']';
     }
 
 }

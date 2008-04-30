@@ -35,17 +35,21 @@ public class Or implements Guard {
 
 
     public Or(Collection<Guard> guards) {
-        this (guards.toArray(new Guard[guards.size()]));
+        this(guards.toArray(new Guard[guards.size()]));
     }
 
     public Or(Guard ... guards) {
-        if (guards == null) throw new IllegalArgumentException("Argument cannot be null");
+        if (guards == null) {
+            throw new IllegalArgumentException("Argument cannot be null");
+        }
         this.perms = guards;
     }
 
     public boolean check(CoreSession session, DocumentModel doc) {
-        for (int i=0; i<perms.length;i++) {
-            if (perms[i].check(session, doc)) return true;
+        for (Guard perm : perms) {
+            if (perm.check(session, doc)) {
+                return true;
+            }
         }
         return false;
     }
@@ -53,11 +57,13 @@ public class Or implements Guard {
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
-        if (perms == null) return " [OR] ";
-        buf.append("(").append(perms[0]);
+        if (perms == null) {
+            return " [OR] ";
+        }
+        buf.append('(').append(perms[0]);
         for (int i=1; i<perms.length; i++) {
             buf.append(" OR ").append(perms[i]);
         }
-        return buf.append(")").toString();
+        return buf.append(')').toString();
     }
 }

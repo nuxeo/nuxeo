@@ -76,11 +76,11 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
     protected Map<String,Object> vars; // global vars to share between scripts
 
     public SiteRequest(SiteRoot root, HttpServletRequest req, HttpServletResponse resp) {
-        super (req);
-        this.siteRoot = root;
-        this.siteManager = root.getSiteManager();
+        super(req);
+        siteRoot = root;
+        siteManager = root.getSiteManager();
         this.resp = resp;
-        this.vars = new HashMap<String, Object>();
+        vars = new HashMap<String, Object>();
     }
 
     public void setVar(String name, Object value) {
@@ -99,9 +99,6 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
         this.action = action;
     }
 
-    /**
-     * @return the view.
-     */
     public String getAction() {
         return action;
     }
@@ -125,9 +122,6 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
     public int getMappingVarCount() {
         return mapping != null ? mapping.size() : 0;
     }
-
-
-
 
     public ScriptFile getTargetScript() throws IOException {
         String type = (lastResolved != null) ? lastResolved.getDocument().getType() : null;
@@ -166,6 +160,7 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
         return resp;
     }
 
+    @Override
     public HttpServletRequest getRequest() {
         return (HttpServletRequest) super.getRequest();
     }
@@ -232,7 +227,7 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
     public SiteObject addSiteObject(String name, DocumentModel doc) {
         SiteObject object = new SiteObject(this, name, doc);
         if (head == null) {
-            this.head = this.tail = object;
+            head = tail = object;
             object.prev = null;
         } else {
             tail.next = object;
@@ -289,10 +284,10 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
     }
 
     /**
-    *
-    * @return the last traversed object
-    */
-   public SiteObject traverse() throws SiteException {
+     *
+     * @return the last traversed object
+     */
+    public SiteObject traverse() throws SiteException {
        if (head == null || lastResolved == null) {
            return null;
        }
@@ -315,11 +310,13 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
     * @return
     */
    public String getPath(SiteObject start, SiteObject end) {
-       if (start == null || start == end) return "";
+       if (start == null || start == end) {
+           return "";
+       }
        StringBuilder buf = new StringBuilder(256);
        SiteObject p = start;
        while (p != end) {
-           buf.append("/").append(p.name);
+           buf.append('/').append(p.name);
            p = p.next;
        }
        return buf.toString();
@@ -333,7 +330,9 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
    }
 
    public String getResolvedPath() {
-       if (lastResolved == null) return "";
+       if (lastResolved == null) {
+           return "";
+       }
        return getPath(head, lastResolved.next);
    }
 
@@ -374,8 +373,8 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
        return docs;
    }
 
-   public static CoreSession getCoreSession(HttpServletRequest request)
-   throws Exception {
+    public static CoreSession getCoreSession(HttpServletRequest request)
+            throws Exception {
 
 //     for testing
        CoreSession session = (CoreSession) request.getAttribute("TestCoreSession");

@@ -41,6 +41,6 @@ public class Not implements Guard {
 
     @Override
     public String toString() {
-        return "NOT "+perm;
+        return "NOT " + perm;
     }
 }

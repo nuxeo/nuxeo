@@ -38,13 +38,17 @@ public class And implements Guard {
     }
 
     public And(Guard ... perms) {
-        if (perms == null) throw new IllegalArgumentException("Argument cannot be null");
+        if (perms == null) {
+            throw new IllegalArgumentException("Argument cannot be null");
+        }
         this.perms = perms;
     }
 
     public boolean check(CoreSession session, DocumentModel doc) {
-        for (int i=0; i<perms.length;i++) {
-            if (!perms[i].check(session, doc)) return false;
+        for (Guard perm : perms) {
+            if (!perm.check(session, doc)) {
+                return false;
+            }
         }
         return true;
     }
@@ -52,12 +56,14 @@ public class And implements Guard {
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
-        if (perms == null) return "[AND]";
-        buf.append("(").append(perms[0]);
+        if (perms == null) {
+            return "[AND]";
+        }
+        buf.append('(').append(perms[0]);
         for (int i=1; i<perms.length; i++) {
             buf.append(" AND ").append(perms[i]);
         }
-        return buf.append(")").toString();
+        return buf.append(')').toString();
     }
 
 }

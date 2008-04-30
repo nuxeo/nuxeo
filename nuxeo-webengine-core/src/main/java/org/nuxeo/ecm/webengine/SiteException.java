@@ -28,32 +28,26 @@ public class SiteException extends ClientException {
 
     private int returnCode = SiteConst.SC_INTERNAL_SERVER_ERROR;
 
-    public SiteException(String message)
-    {
+    public SiteException(String message) {
         super(message);
     }
 
-    public SiteException(String message, int code)
-    {
+    public SiteException(String message, int code) {
         super(message);
-        returnCode=code;
+        returnCode = code;
     }
 
-    public SiteException(String message, Throwable t)
-    {
+    public SiteException(String message, Throwable t) {
         super(message, t);
     }
 
-    public SiteException(String message, Throwable t, int code)
-    {
+    public SiteException(String message, Throwable t, int code) {
         super(message, t);
-        returnCode=code;
+        returnCode = code;
     }
 
-    public int getReturnCode()
-    {
+    public int getReturnCode() {
         return returnCode;
     }
-
 
 }

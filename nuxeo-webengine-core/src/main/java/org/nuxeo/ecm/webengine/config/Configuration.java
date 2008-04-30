@@ -37,7 +37,7 @@ import org.nuxeo.ecm.webengine.SiteRoot;
  */
 public class Configuration {
 
-    private final static Log log = LogFactory.getLog(Configuration.class);
+    private static final Log log = LogFactory.getLog(Configuration.class);
 
     Map<String, Configurator> configurators = new HashMap<String, Configurator>();
 
@@ -60,7 +60,7 @@ public class Configuration {
     }
 
     public void loadConfiguration(SiteRoot root, File file) throws IOException {
-        HashMap<String,String> properties = new HashMap<String, String>();
+        Map<String,String> properties = new HashMap<String, String>();
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String line = reader.readLine();
         Configurator section = configurators.get(mainSection);

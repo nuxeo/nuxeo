@@ -29,7 +29,6 @@ import org.nuxeo.ecm.webengine.actions.Actions;
 public class DefaultRequestHandler implements RequestHandler, Actions {
 
     protected DefaultRequestHandler() {
-
     }
 
     public void doDelete(SiteObject object) throws SiteException {
@@ -66,7 +65,7 @@ public class DefaultRequestHandler implements RequestHandler, Actions {
         return true;
     }
 
-    public void doAction(SiteObject object, String defaultAction) throws SiteException {
+    public static void doAction(SiteObject object, String defaultAction) throws SiteException {
         String action = object.getSiteRequest().getAction();
         if (action == null) {
             action = defaultAction;
