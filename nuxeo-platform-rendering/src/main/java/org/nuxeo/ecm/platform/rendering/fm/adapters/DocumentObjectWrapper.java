@@ -35,16 +35,15 @@ import freemarker.template.TemplateModelException;
  */
 public class DocumentObjectWrapper extends DefaultObjectWrapper {
 
-    protected final FreemarkerEngine engine;
+    protected FreemarkerEngine engine;
 
     public DocumentObjectWrapper(FreemarkerEngine engine) {
         this.engine = engine;
     }
 
-    @Override
-    protected TemplateModel handleUnknownType(Object obj)
-            throws TemplateModelException {
-        // we want real document models ... may be we need to add getChildren on the document model
+
+    public final TemplateModel wrap(Object obj) throws TemplateModelException {
+        if (obj == null) return TemplateModel.NOTHING;
         if (obj instanceof DocumentModel) {
             return new DocumentTemplate(this, (DocumentModel)obj);
         } else
@@ -54,14 +53,6 @@ public class DocumentObjectWrapper extends DefaultObjectWrapper {
             return new ComplexPropertyTemplate(this, (Property)obj);
         } else if (obj instanceof RenderingContext) {
             return new RenderingContextTemplate(engine, (RenderingContext)obj);
-        }
-        return super.handleUnknownType(obj);
-    }
-
-    @Override
-    public final TemplateModel wrap(Object obj) throws TemplateModelException {
-        if (obj == null) {
-            return TemplateModel.NOTHING;
         }
         return super.wrap(obj);
     }
