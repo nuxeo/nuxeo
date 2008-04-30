@@ -19,13 +19,18 @@
 
 package org.nuxeo.ecm.webengine.scripting;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
+import javax.script.Compilable;
+import javax.script.CompiledScript;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
@@ -35,7 +40,6 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.webengine.SiteRequest;
 import org.nuxeo.ecm.webengine.SiteRoot;
-import org.nuxeo.ecm.webengine.servlet.SiteServlet;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.scripting.ScriptingService;
 import org.python.core.PyDictionary;
@@ -48,6 +52,8 @@ import org.python.core.PyTuple;
  *
  */
 public class Scripting {
+
+    private ConcurrentMap<File, Entry> cache = new ConcurrentHashMap<File, Entry>();
 
     RenderingEngine renderingEngine;
     ScriptingService  scriptService;
@@ -88,17 +94,41 @@ public class Scripting {
         }
     }
 
-    protected void runScript(SiteRequest req, ScriptFile script) throws Exception {
+    public CompiledScript compileScript(ScriptEngine engine, File file) throws ScriptException {
+        if (engine instanceof Compilable) {
+            Compilable comp = (Compilable)engine;
+            try {
+                Reader reader = new FileReader(file);
+                try {
+                    return comp.compile(reader);
+                } finally {
+                    reader.close();
+                }
+            } catch (IOException e) {
+                throw new ScriptException(e);
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public void runScript(SiteRequest req, ScriptFile script) throws Exception {
+        // script is not compilable - run slow eval
         String ext = script.getExtension();
         ScriptEngine engine = scriptService.getScriptEngineManager().getEngineByExtension(ext);
         if (engine != null) {
+            ScriptContext ctx = new SimpleScriptContext();
+            ctx.setAttribute("req", req, ScriptContext.ENGINE_SCOPE);
+            ctx.setAttribute("scripting", this, ScriptContext.ENGINE_SCOPE);
+            ctx.setAttribute("out", req.getResponse().getWriter(), ScriptContext.ENGINE_SCOPE);
+            CompiledScript comp = getScript(engine, script.getFile()); // use cache for compiled scripts
+            if (comp != null) {
+                comp.eval(ctx);
+                return;
+            } // compilation not supported - eval it on the fly
             try {
                 Reader reader = new FileReader(script.getFile());
                 try {
-                    ScriptContext ctx = new SimpleScriptContext();
-                    ctx.setAttribute("req", req, ScriptContext.ENGINE_SCOPE);
-                    ctx.setAttribute("scripting", this, ScriptContext.ENGINE_SCOPE);
-                    ctx.setAttribute("out", req.getResponse().getWriter(), ScriptContext.ENGINE_SCOPE);
                     engine.eval(reader, ctx);
                 } finally {
                     reader.close();
@@ -141,4 +171,32 @@ public class Scripting {
         return table;
     }
 
+
+    public CompiledScript getScript(ScriptEngine engine, File file) throws ScriptException {
+        Entry entry = cache.get(file);
+        long tm = file.lastModified();
+        if (entry != null) {
+            if (entry.lastModified < tm) { // recompile
+                entry.script = compileScript(engine, file);
+                entry.lastModified = tm;
+            }
+            return entry.script;
+        } else {
+            CompiledScript script = compileScript(engine, file);
+            if (script != null) {
+                cache.putIfAbsent(file, new Entry(script, tm));
+                return script;
+            }
+        }
+        return null;
+    }
+
+    class Entry {
+        public CompiledScript script;
+        public long lastModified;
+        public Entry(CompiledScript script, long lastModified) {
+            this.lastModified = lastModified;
+            this.script = script;
+        }
+    }
 }

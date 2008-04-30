@@ -195,7 +195,7 @@ public class SiteRoot implements FileChangeListener {
         }
     }
 
-    public ScriptFile getScript(String path, String type) {
+    public ScriptFile getScript(String path, String type) throws IOException {
         path = getWebFilePath(path);
         return new ScriptFile(manager.getRootDirectory(), path, type);
     }

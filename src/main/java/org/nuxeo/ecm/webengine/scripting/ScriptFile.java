@@ -20,19 +20,21 @@
 package org.nuxeo.ecm.webengine.scripting;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ScriptFile {
+public final class ScriptFile {
 
     protected File file;
     protected String ext;
     protected String path;
 
+
     //TODO should remove the typed file name
-    public ScriptFile(File root, String path, String type) {
+    public ScriptFile(File root, String path, String type) throws IOException {
         int p = path.lastIndexOf('.');
         String typedPath = null;
         if (p > -1) {
@@ -58,6 +60,7 @@ public class ScriptFile {
             file = new File(root, path);
             this.path = path;
         }
+        file = file.getCanonicalFile(); // resolve sym links
     }
 
     public String getPath() {
@@ -71,4 +74,5 @@ public class ScriptFile {
     public String getExtension() {
         return ext;
     }
+
 }

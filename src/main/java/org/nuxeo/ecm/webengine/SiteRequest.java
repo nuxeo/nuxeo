@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webengine;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -128,7 +129,7 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
 
 
 
-    public ScriptFile getTargetScript() {
+    public ScriptFile getTargetScript() throws IOException {
         String type = (lastResolved != null) ? lastResolved.getDocument().getType() : null;
         String path = null;
         if (mapping != null) {
