@@ -25,15 +25,12 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 
 public class FakeFolderishDocumentModel extends DocumentModelImpl {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
-    public FakeFolderishDocumentModel(String parentPath, String name, String type)
-    {
-        super(parentPath,name,type);
+    public FakeFolderishDocumentModel(String parentPath, String name, String type) {
+        super(parentPath, name, type);
         declaredFacets = new HashSet<String>();
         declaredFacets.add("Folderish");
     }
+
 }

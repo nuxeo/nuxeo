@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine.tests.security;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -56,25 +57,30 @@ public class GuardTest extends NXRuntimeTestCase {
 
         SiteManager mgr = Framework.getLocalService(SiteManager.class);
         assertNotNull(mgr);
+
         ObjectDescriptor od = mgr.getObject("siteFolder2");
         assertNotNull(od);
+
         ActionDescriptor ad = od.getAction("view");
         assertNotNull(ad);
         assertNotNull(ad.getGuard());
+
         ad = od.getAction("myAction1");
         Guard g = ad.getGuard();
         assertNotNull(g);
         LocalSession session = new LocalSession();
         DocumentModelImpl doc = new DocumentModelImpl("/", "test", "Folder");
         assertTrue(g.check(null, doc));
+
         doc = new DocumentModelImpl("/", "test", "File");
         assertFalse(g.check(null, doc));
+
         doc = new DocumentModelImpl("/", "test", "Workspace");
         assertTrue(g.check(null, doc));
 
         ad = od.getAction("myAction2");
         g = ad.getGuard();
-        HashMap<String, Serializable> ctx = new HashMap<String, Serializable>();
+        Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         NuxeoPrincipal principal = new UserPrincipal("bogdan");
         ctx.put("principal", principal);
         session.connect("demo", ctx);
@@ -83,17 +89,17 @@ public class GuardTest extends NXRuntimeTestCase {
         ad = od.getAction("myAction3");
         g = ad.getGuard();
         doc.setProperty("dublincore", "title", "test");
-        assertEquals(doc.getTitle(), "test");
+        assertEquals("test", doc.getTitle());
         assertTrue(g.check(session, doc));
         doc.setProperty("dublincore", "title", "test3");
         assertFalse(g.check(session, doc));
+
         ad = od.getAction("myAction4");
         g = ad.getGuard();
         assertFalse(g.check(session, doc));
         doc.setProperty("dublincore", "title", "test.py");
-        assertEquals(doc.getTitle(), "test.py");
+        assertEquals("test.py", doc.getTitle());
         assertTrue(g.check(session, doc));
-
     }
 
 }

@@ -26,7 +26,7 @@
     with specific transformer configuration
     <code>
       <transformer name="wiki" class="org.nuxeo.ecm.platform.wiki.WikiTransformer"/>
-   </code>
+    </code>
   </documentation>
 
     <object
@@ -45,7 +45,7 @@
             script="/my/optional/script/path" handler="myOptionalActionHandler"/>
         </actions>
       </object>
-   </code>
+    </code>
   </documentation>
 
     <object
@@ -60,7 +60,7 @@
       <guard id="MyGuard" expression="(GUARD1 OR GUARD2) AND user=bogdan">
 
       </guard>
-   </code>
+    </code>
   </documentation>
 
     <object

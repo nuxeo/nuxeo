@@ -27,8 +27,8 @@ import org.nuxeo.ecm.webengine.tests.fake.FakeResponse;
 
 public class TestWikiRequests extends BaseSiteRequestTestCase {
 
-    DocumentModel page = null;
-    DocumentModel site = null;
+    DocumentModel page;
+    DocumentModel site;
 
     @Override
     protected void setUp() throws Exception {
@@ -92,7 +92,6 @@ public class TestWikiRequests extends BaseSiteRequestTestCase {
         output = response.getOutput();
         System.out.println(output);
         assertTrue(output.contains("updated-testNewPage"));
-
     }
 
 }

@@ -27,7 +27,6 @@ import org.nuxeo.ecm.webengine.tests.fake.FakeResponse;
 
 public class TestGetSiteRequests extends BaseSiteRequestTestCase {
 
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -35,11 +34,13 @@ public class TestGetSiteRequests extends BaseSiteRequestTestCase {
 
         DocumentModel workspaces = session.getDocument(new PathRef("/default-domain/workspaces"));
 
-        DocumentModel site = session.createDocumentModel(workspaces.getPathAsString(),"testSite", "Folder");
+        DocumentModel site = session.createDocumentModel(workspaces.getPathAsString(), "testSite",
+                "Folder");
         site.setProperty("dublincore", "title", "TestSite");
         site = session.createDocument(site);
 
-        DocumentModel page = session.createDocumentModel(site.getPathAsString(),"testPage", "Note");
+        DocumentModel page = session.createDocumentModel(site.getPathAsString(), "testPage",
+                "Note");
         page.setProperty("dublincore", "title", "TestPage");
         page.setProperty("note", "note", "Content");
         page = session.createDocument(page);
@@ -47,13 +48,12 @@ public class TestGetSiteRequests extends BaseSiteRequestTestCase {
         session.save();
     }
 
-    public void testResolver() throws Exception
-    {
+    public void testResolver() throws Exception {
         FakeResponse response = execSiteRequest("GET", "/testSite/testPage");
-        assertEquals(200,response.getStatus());
+        assertEquals(200, response.getStatus());
 
         FakeResponse response2 = execSiteRequest("GET", "/testSite/testPage2");
-        assertEquals(404,response2.getStatus());
+        assertEquals(404, response2.getStatus());
     }
 
 

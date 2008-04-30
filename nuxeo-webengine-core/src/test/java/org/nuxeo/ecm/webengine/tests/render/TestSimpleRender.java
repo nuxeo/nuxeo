@@ -27,7 +27,8 @@ import org.nuxeo.ecm.webengine.tests.fake.FakeResponse;
 
 public class TestSimpleRender extends BaseSiteRequestTestCase {
 
-    DocumentModel site=null;
+    DocumentModel site;
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -40,52 +41,51 @@ public class TestSimpleRender extends BaseSiteRequestTestCase {
 
         DocumentModel workspaces = session.getDocument(new PathRef("/default-domain/workspaces"));
 
-        site = session.createDocumentModel(workspaces.getPathAsString(),"testSite", "Folder");
+        site = session.createDocumentModel(workspaces.getPathAsString(), "testSite", "Folder");
         site.setProperty("dublincore", "title", "TestSite");
         site = session.createDocument(site);
 
-        DocumentModel page = session.createDocumentModel(site.getPathAsString(),"testPage", "Note");
+        DocumentModel page = session.createDocumentModel(site.getPathAsString(), "testPage",
+                "Note");
         page.setProperty("dublincore", "title", "TestPage");
         page.setProperty("note", "note", "${title}");
         page = session.createDocument(page);
 
-        DocumentModel file = session.createDocumentModel(site.getPathAsString(),"testFile", "File");
+        DocumentModel file = session.createDocumentModel(site.getPathAsString(), "testFile",
+                "File");
         file.setProperty("dublincore", "title", "TestPage");
         file = session.createDocument(file);
 
         session.save();
     }
 
-    public void testStaticTemplate() throws Exception
-    {
+    public void testStaticTemplate() throws Exception {
         FakeResponse response = execSiteRequest("GET", "/testSite/testFile");
-        assertEquals(200,response.getStatus());
+        assertEquals(200, response.getStatus());
 
         String output = response.getOutput();
 
         System.out.println(output);
         assertTrue(output.contains("My Path: /default-domain/workspaces/testSite/testFile"));
-        assertTrue(output.contains("My Super Context Doc Path: /default-domain/workspaces/testSite"));
+        assertTrue(
+                output.contains("My Super Context Doc Path: /default-domain/workspaces/testSite"));
     }
 
-    public void testDynamicTemplate() throws Exception
-    {
+    public void testDynamicTemplate() throws Exception {
         FakeResponse response = execSiteRequest("GET", "/testPage");
-        assertEquals(200,response.getStatus());
+        assertEquals(200, response.getStatus());
 
         String output = response.getOutput();
 
         assertEquals("TestPage", output);
         System.out.println(output);
-
     }
 
-    public void testDynamicTemplateWithURLs() throws Exception
-    {
-
+    public void testDynamicTemplateWithURLs() throws Exception {
         CoreSession session = getCoreSession();
 
-        DocumentModel page2 = session.createDocumentModel(site.getPathAsString(),"testPage2", "Note");
+        DocumentModel page2 = session.createDocumentModel(site.getPathAsString(), "testPage2",
+                "Note");
         page2.setProperty("dublincore", "title", "TestPage2");
         page2.setProperty("note", "note", "document url=${docURL}");
         page2 = session.createDocument(page2);
@@ -94,25 +94,21 @@ public class TestSimpleRender extends BaseSiteRequestTestCase {
         FakeResponse response = execSiteRequest("GET", "/testPage2");
         String output = response.getOutput();
         System.out.println(output);
-        assertEquals(200,response.getStatus());
+        assertEquals(200, response.getStatus());
         assertEquals("document url=/nuxeo/site/testPage2", output);
-
 
         response = execSiteRequest("GET", "/testSite/testPage2");
         output = response.getOutput();
         System.out.println(output);
-        assertEquals(200,response.getStatus());
+        assertEquals(200, response.getStatus());
         assertTrue(output.contains("document url=/nuxeo/site/testSite/testPage2"));
-
-
     }
 
-    public void testDynamicTemplateWithRequestParameterAccess() throws Exception
-    {
-
+    public void testDynamicTemplateWithRequestParameterAccess() throws Exception {
         CoreSession session = getCoreSession();
 
-        DocumentModel page2 = session.createDocumentModel(site.getPathAsString(),"testPage2", "Note");
+        DocumentModel page2 = session.createDocumentModel(site.getPathAsString(), "testPage2",
+                "Note");
         page2.setProperty("dublincore", "title", "TestPage2");
         page2.setProperty("note", "note", "param1=${request.getParameter(\"param1\")}");
         page2 = session.createDocument(page2);
@@ -121,11 +117,8 @@ public class TestSimpleRender extends BaseSiteRequestTestCase {
         FakeResponse response = execSiteRequest("GET", "/testPage2?param1=toto");
         String output = response.getOutput();
         System.out.println(output);
-        assertEquals(200,response.getStatus());
+        assertEquals(200, response.getStatus());
         assertEquals("param1=toto", output);
-
-
-
     }
 
 }
