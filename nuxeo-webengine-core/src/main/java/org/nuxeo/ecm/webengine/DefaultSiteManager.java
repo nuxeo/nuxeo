@@ -36,14 +36,14 @@ import org.nuxeo.ecm.webengine.util.DependencyTree;
  */
 public class DefaultSiteManager implements SiteManager {
 
-    protected Scripting scripting;
-    protected File root;
+    protected final Scripting scripting;
+    protected final File root;
 
-    protected ConcurrentMap<String, SiteRoot> roots;
+    protected final ConcurrentMap<String, SiteRoot> roots;
     protected SiteRoot defaultRoot;
 
-    protected ObjectRegistry registry;
-    protected Map<String, ObjectDescriptor> objects; // instances for each document type
+    protected final ObjectRegistry registry;
+    protected final Map<String, ObjectDescriptor> objects; // instances for each document type
 
     public DefaultSiteManager(File root, RenderingEngine engine) {
         this.root = root;
@@ -60,7 +60,6 @@ public class DefaultSiteManager implements SiteManager {
     public File getRootDirectory() {
         return root;
     }
-
 
     public SiteRoot getDefaultSiteRoot() throws Exception {
         if (defaultRoot == null) {

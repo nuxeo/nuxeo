@@ -25,7 +25,7 @@ package org.nuxeo.ecm.webengine.mapping;
  */
 public class IndexedSegment implements ReplacementSegment {
 
-    int index;
+    final int index;
 
     public IndexedSegment(int index) {
         this.index = index;

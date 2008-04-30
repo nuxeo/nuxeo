@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.webengine.SiteManagerComponent">
   <implementation
-          class="org.nuxeo.ecm.webengine.SiteManagerComponent" />
+      class="org.nuxeo.ecm.webengine.SiteManagerComponent"/>
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)
     Manage templates
@@ -13,58 +13,59 @@
 
   <service>
     <provide
-      interface="org.nuxeo.ecm.webengine.SiteManager" />
-      <provide
-      interface="org.nuxeo.ecm.webengine.util.FileChangeNotifier" />
+        interface="org.nuxeo.ecm.webengine.SiteManager"/>
+    <provide
+        interface="org.nuxeo.ecm.webengine.util.FileChangeNotifier"/>
   </service>
 
   <extension-point name="transformer">
-  <documentation>
-    @author Bogdan Stefanescu (bs@nuxeo.com)
-    Expose the registration of rendering transformers contributions.
-    This extension point will generally be extended by other components
-    with specific transformer configuration
-    <code>
-      <transformer name="wiki" class="org.nuxeo.ecm.platform.wiki.WikiTransformer"/>
-   </code>
-  </documentation>
+    <documentation>
+      @author Bogdan Stefanescu (bs@nuxeo.com)
+      Expose the registration of rendering transformers contributions.
+      This extension point will generally be extended by other components
+      with specific transformer configuration
+      <code>
+        <transformer name="wiki" class="org.nuxeo.ecm.platform.wiki.WikiTransformer"/>
+      </code>
+    </documentation>
 
     <object
-      class="org.nuxeo.ecm.webengine.rendering.TransformerDescriptor" />
+        class="org.nuxeo.ecm.webengine.rendering.TransformerDescriptor"/>
   </extension-point>
 
   <extension-point name="siteObject">
-  <documentation>
-    @author Bogdan Stefanescu (bs@nuxeo.com)
-    Expose the registration of site object descriptors
-    <code>
-      <object id="siteFolder" type="Folder" extends="default">
-        <requestHandler>org.nuxeo.ecm.webengine.DefaultRequestHandler</requestHandler> <!-- this is the default value -->
-        <actions>
-          <action id="update" enabled="true" permissions=".|WRITE"
-            script="/my/optional/script/path" handler="myOptionalActionHandler"/>
-        </actions>
-      </object>
-   </code>
-  </documentation>
+    <documentation>
+      @author Bogdan Stefanescu (bs@nuxeo.com)
+      Expose the registration of site object descriptors
+      <code>
+        <object id="siteFolder" type="Folder" extends="default">
+          <requestHandler>org.nuxeo.ecm.webengine.DefaultRequestHandler</requestHandler>
+          <!-- this is the default value -->
+          <actions>
+            <action id="update" enabled="true" permissions=".|WRITE"
+                    script="/my/optional/script/path" handler="myOptionalActionHandler"/>
+          </actions>
+        </object>
+      </code>
+    </documentation>
 
     <object
-      class="org.nuxeo.ecm.webengine.ObjectDescriptor" />
+        class="org.nuxeo.ecm.webengine.ObjectDescriptor"/>
   </extension-point>
 
   <extension-point name="guard">
-  <documentation>
-    @author Bogdan Stefanescu (bs@nuxeo.com)
-    Register global guards. Guards are used to define permissions
-    <code>
-      <guard id="MyGuard" expression="(GUARD1|GUARD2) AND user=bogdan">
+    <documentation>
+      @author Bogdan Stefanescu (bs@nuxeo.com)
+      Register global guards. Guards are used to define permissions
+      <code>
+        <guard id="MyGuard" expression="(GUARD1|GUARD2) AND user=bogdan">
 
-      </guard>
-   </code>
-  </documentation>
+        </guard>
+      </code>
+    </documentation>
 
     <object
-      class="org.nuxeo.ecm.webengine.ObjectDescriptor" />
+        class="org.nuxeo.ecm.webengine.ObjectDescriptor"/>
   </extension-point>
 
 </component>

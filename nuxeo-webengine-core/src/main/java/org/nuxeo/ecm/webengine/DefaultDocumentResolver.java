@@ -40,10 +40,7 @@ public class DefaultDocumentResolver implements DocumentResolver {
 
     public static final DefaultDocumentResolver INSTANCE = new DefaultDocumentResolver();
 
-    public DefaultDocumentResolver() {
-    }
-
-//    public DocumentModel getRootDocument(SiteRoot siteRoot, String rootName, CoreSession session) throws Exception {
+    //    public DocumentModel getRootDocument(SiteRoot siteRoot, String rootName, CoreSession session) throws Exception {
 //        DocumentModel root = null;
 //        String query = "Select * from Document where ecm:name='" + rootName+"'";
 //        DocumentModelList result = session.query(query);

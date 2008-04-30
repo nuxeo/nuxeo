@@ -27,46 +27,41 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
- *
- * @deprecated this test is no more used
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @deprecated this test is no more used
  */
 public class TestTemplates extends NXRuntimeTestCase {
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib("OSGI-INF/site-template-framework.xml");
+        deployContrib("OSGI-INF/site-manager-framework.xml");
         deployContrib("OSGI-INF/test-template-contrib.xml");
     }
 
-    public void testRunTimeComponentRegistration()
-    {
-        SiteManagerComponent stm = (SiteManagerComponent) Framework.getRuntime().getComponent(SiteManagerComponent.NAME);
+    public void testRunTimeComponentRegistration() {
+        SiteManagerComponent stm = (SiteManagerComponent) Framework.getRuntime().getComponent(
+                SiteManagerComponent.NAME);
         assertNotNull(stm);
     }
 
-    public void testTemplateServiceRegistration()
-    {
+    public void testTemplateServiceRegistration() {
         SiteManager stm = Framework.getLocalService(SiteManager.class);
         assertNotNull(stm);
     }
 
-    public void testTemplateRegistration()
-    {
+    public void testTemplateRegistration() {
         SiteManager stm = Framework.getLocalService(SiteManager.class);
 //        assertTrue(stm.getTemplateNames().contains("test"));
     }
 
-
-    public void testTemplateBindingRegistration()
-    {
+    public void testTemplateBindingRegistration() {
 
         SiteManager stm = Framework.getLocalService(SiteManager.class);
 
         DocumentModel testFolder = new DocumentModelImpl("/", "TestFolder", "Folder");
-        DocumentModel testFile1 = new DocumentModelImpl("/default-domain/workspaces", "TestFile1", "File");
+        DocumentModel testFile1 = new DocumentModelImpl("/default-domain/workspaces", "TestFile1",
+                "File");
         DocumentModel testFile2 = new DocumentModelImpl("/", "TestFile2", "File");
 
 //        String template = stm.getTemplateNameForDoc(testFolder);

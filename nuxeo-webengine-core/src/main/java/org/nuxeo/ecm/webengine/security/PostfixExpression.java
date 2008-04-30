@@ -34,15 +34,15 @@ import edu.emory.mathcs.backport.java.util.Arrays;
  */
 public class PostfixExpression implements Iterable<PostfixExpression.Token> {
 
-    public final static Pattern PATTERN = Pattern.compile("\\(|\\)|NOT|AND|OR");
+    public static final Pattern PATTERN = Pattern.compile("\\(|\\)|NOT|AND|OR");
 
-    public final static int ARG = 0;
-    public final static int NOT = 1;
-    public final static int AND = 2;
-    public final static int OR = 3;
-    public final static int PARA = 4;
-    public final static int LPARA = 5;
-    public final static int RPARA = 6;
+    public static final int ARG = 0;
+    public static final int NOT = 1;
+    public static final int AND = 2;
+    public static final int OR = 3;
+    public static final int PARA = 4;
+    public static final int LPARA = 5;
+    public static final int RPARA = 6;
 
     protected Token[] expr;
 
@@ -63,28 +63,26 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
         return Arrays.asList(expr).iterator();
     }
 
-
     private void and(OpStack stack, List<Token> result, String expr, int s, int i) {
-        if (s > -1 && s<i) {
+        if (s > -1 && s < i) {
             result.add(new Token(ARG, expr.substring(s, i)));
         }
         pushOp(new Token(AND, "AND"), stack, result);
     }
 
     private void or(OpStack stack, List<Token> result, String expr, int s, int i) {
-        if (s > -1 && s<i) {
+        if (s > -1 && s < i) {
             result.add(new Token(ARG, expr.substring(s, i)));
         }
         pushOp(new Token(OR, "OR"), stack, result);
     }
 
     private void not(OpStack stack, List<Token> result, String expr, int s, int i) {
-        if (s > -1 && s<i) {
+        if (s > -1 && s < i) {
             result.add(new Token(ARG, expr.substring(s, i)));
         }
         pushOp(new Token(NOT, "NOT"), stack, result);
     }
-
 
     protected void parse(String expr) throws ParseException {
         char[] chars = expr.toCharArray();
@@ -244,31 +242,6 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
         }
         public final Token top() {
             return getLast();
-        }
-    }
-
-    public static void main(String[] args) {
-        try {
-            String expr = "a AND b OR d";
-            //assertEquals(expr, "ab&d|");
-            System.out.println(expr+" => "+new PostfixExpression(expr));
-            expr = "a OR b AND d";
-            //assertEquals(expr, "abd&|");
-            System.out.println(expr+" => "+new PostfixExpression(expr));
-            expr = "a OR b OR d";
-            //assertEquals(expr, "ab|d|");
-            System.out.println(expr+" => "+new PostfixExpression(expr));
-            expr = "(a OR b) AND d";
-            //assertEquals(expr, "ab|d&");
-            System.out.println(expr+" => "+new PostfixExpression(expr));
-            expr = "(a OR b) AND (c OR d) OR e";
-            //assertEquals(expr, "ab|cd|&e|");
-            System.out.println(expr+" => "+new PostfixExpression(expr));
-            expr = "(a AND b OR c) AND ((d OR e) AND f)";
-            //assertEquals(expr, "ab&c|de|f&&");
-            System.out.println(expr+" => "+new PostfixExpression(expr));
-        } catch (ParseException e) {
-            e.printStackTrace();
         }
     }
 

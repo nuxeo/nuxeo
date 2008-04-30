@@ -77,7 +77,8 @@ public class TestWikiRequests extends BaseSiteRequestTestCase {
 
         assertNotNull(newPage);
         assertEquals("testNewPage", newPage.getTitle());
-        assertTrue(((String)newPage.getProperty("note", "note")).contains("<h2>${this.title}</h2>Use the Edit link to edit this newly created page."));
+        assertTrue(((String) newPage.getProperty("note", "note")).contains(
+                "<h2>${this.title}</h2>Use the Edit link to edit this newly created page."));
 
         // Verify page rendering
         response = execSiteRequest("GET", "/testSite/testNewPage");

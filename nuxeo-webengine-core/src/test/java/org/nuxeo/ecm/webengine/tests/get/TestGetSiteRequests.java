@@ -56,5 +56,4 @@ public class TestGetSiteRequests extends BaseSiteRequestTestCase {
         assertEquals(404, response2.getStatus());
     }
 
-
 }

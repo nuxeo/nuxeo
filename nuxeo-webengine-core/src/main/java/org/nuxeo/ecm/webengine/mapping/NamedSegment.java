@@ -25,7 +25,7 @@ package org.nuxeo.ecm.webengine.mapping;
  */
 public class NamedSegment implements ReplacementSegment {
 
-    String name;
+    final String name;
 
     public NamedSegment(String name) {
         this.name = name;

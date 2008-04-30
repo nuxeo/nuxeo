@@ -34,9 +34,9 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class PathMapper {
 
-    List<MappingDescriptor> entries;
+    final List<MappingDescriptor> entries;
 
-    ConcurrentMap<String, Mapping> cache;
+    final ConcurrentMap<String, Mapping> cache;
 
     public PathMapper() {
         entries = new ArrayList<MappingDescriptor>();

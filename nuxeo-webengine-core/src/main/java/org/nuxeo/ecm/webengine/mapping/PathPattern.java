@@ -35,7 +35,7 @@ public class PathPattern  {
 
     static final Pattern NAMED_WILDCARD = Pattern.compile("[A-Za-z_][A-Za-z_0-9]*");
 
-    Pattern pattern;
+    final Pattern pattern;
     String[] vars;
 
     public PathPattern(String pattern) {
