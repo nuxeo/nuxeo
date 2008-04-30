@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo ECM Platform Site Add On
-Bundle-SymbolicName: org.nuxeo.ecm.platform.site;singleton:=true
+Bundle-SymbolicName: org.nuxeo.ecm.webengine.core;singleton:=true
 Require-Bundle: org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.platform.ui
 Nuxeo-Require: org.nuxeo.ecm.platform.search.api,

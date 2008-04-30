@@ -43,10 +43,10 @@
             </goals>
             <configuration>
               <artifactItems>
-                <artifactItem>
+                <!--artifactItem> avoid puting it in the jar - we must put it in the lib dir since it is shared between several projects
 		  <groupId>org.freemarker</groupId>
                   <artifactId>freemarker</artifactId>
-                </artifactItem>
+                </artifactItem-->
                 <artifactItem>
 		  <groupId>org.wikimodel</groupId>
                   <artifactId>wem</artifactId>
