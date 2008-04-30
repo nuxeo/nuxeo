@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.rendering.api;
 
 import java.io.File;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 
 
@@ -30,6 +31,10 @@ import java.util.Map;
  *
  */
 public interface RenderingEngine {
+
+    void setMessageBundle(ResourceBundle messages);
+
+    ResourceBundle getMessageBundle();
 
     void setResourceLocator(ResourceLocator locator);
 

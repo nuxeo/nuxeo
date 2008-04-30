@@ -25,6 +25,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.nuxeo.ecm.platform.rendering.api.EmptyContextView;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
@@ -40,6 +41,7 @@ import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriter;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriterRegistry;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.DocRefMethod;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.ExtendsDirective;
+import org.nuxeo.ecm.platform.rendering.fm.extensions.MessagesMethod;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.NewMethod;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.QueryMethod;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.SuperBlockDirective;
@@ -72,6 +74,7 @@ public class FreemarkerEngine implements RenderingEngine {
     protected RenderingContextView sharedView = EmptyContextView.INSTANCE;
     protected Map<String, RenderingTransformer> transformers = new HashMap<String, RenderingTransformer>();
 
+    protected MessagesMethod messages = new MessagesMethod(null);
 
     public FreemarkerEngine() {
         this (null, null, (File[])null);
@@ -97,8 +100,16 @@ public class FreemarkerEngine implements RenderingEngine {
         this.cfg.setSharedVariable("query", new QueryMethod());
         this.cfg.setSharedVariable("docRef", new DocRefMethod());
         this.cfg.setSharedVariable("new", new NewMethod());
-
+        this.cfg.setSharedVariable("message", messages);
         addResourceDirectories(resourceDirs);
+    }
+
+    public void setMessageBundle(ResourceBundle messages) {
+        this.messages.setBundle(messages);
+    }
+
+    public ResourceBundle getMessageBundle() {
+        return messages.getBundle();
     }
 
     public void setResourceLocator(ResourceLocator locator) {

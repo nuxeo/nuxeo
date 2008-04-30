@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
@@ -53,11 +54,11 @@ public class FileChangeNotifier {
         timer.purge();
     }
 
-    public void watch(File file) {
+    public void watch(File file) throws IOException {
         files.add(new FileEntry(file));
     }
 
-    public void unwatch(File file) {
+    public void unwatch(File file) throws IOException {
         files.remove(new FileEntry(file));
     }
 
@@ -95,8 +96,8 @@ public class FileChangeNotifier {
     class FileEntry {
         File file;
         long lastModified;
-        FileEntry(File file) {
-            this.file = file;
+        FileEntry(File file) throws IOException {
+            this.file = file.getCanonicalFile();
             this.lastModified = file.lastModified();
         }
         @Override

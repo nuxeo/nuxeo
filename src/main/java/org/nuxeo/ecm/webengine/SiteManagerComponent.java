@@ -20,7 +20,10 @@
 package org.nuxeo.ecm.webengine;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,11 +64,13 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
     private RenderingEngine engine;
     private ComponentContext ctx;
 
+    private ResourceBundle messages;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
         this.ctx = context;
         File root = new File(Framework.getRuntime().getHome(), "web");
+        root = root.getCanonicalFile();
         if (!root.exists()) {
             // runtime predeployment is not supporting conditional unziping so we do the predeployment here:
             deployWebDir(context.getRuntimeContext().getBundle(), root);
@@ -83,12 +88,13 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
         }
         engine.setResourceLocator(this);
         engine.addResourceDirectories(root);
-
+        engine.setMessageBundle(messages);
         mgr = new DefaultSiteManager(root, engine);
         notifier = new FileChangeNotifier();
         notifier.start();
 
-
+        // load message bundle
+        loadMessageBundle(root, false);
 
         // load configuration (it ill be put in pending until this component will exit activation code)
         File file = new File(root, "web.xml");
@@ -99,6 +105,20 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
             context.getRuntimeContext().deploy(file.toURI().toURL());
             notifier.watch(file);
             notifier.addListener(this);
+        }
+    }
+
+    private void loadMessageBundle(File root, boolean reload) throws IOException {
+        File file = new File(root, "i18n");
+        WebClassLoader cl = new WebClassLoader();
+        cl.addFile(file);
+        messages = ResourceBundle.getBundle("messages", Locale.getDefault(), cl);
+        engine.setMessageBundle(messages);
+        if (!reload) {
+            notifier.watch(file);
+            for (File f : file.listFiles()) {
+                notifier.watch(f);
+            }
         }
     }
 
@@ -186,8 +206,13 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
 
     public void fileChanged(File file, long since) {
         if (ctx == null) return;
+        String path = file.getAbsolutePath();
+        String rootPath = mgr.getRootDirectory().getAbsolutePath();
+        if (!path.startsWith(rootPath)) return;
+        String relPath = path.substring(rootPath.length());
+        if (!relPath.startsWith("/")) relPath = "/"+relPath;
 //        if (file.getAbsolutePath().startsWith(mgr.getRootDirectory().getAbsolutePath())) {
-        if (file.getAbsolutePath().equals(new File(mgr.getRootDirectory(), "web.xml").getAbsolutePath())) {
+        if (relPath.equals("/web.xml")) {
             try {
                 //mgr.reset();
                 URL url = file.toURI().toURL();
@@ -195,6 +220,12 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
                 ctx.getRuntimeContext().deploy(url);
             } catch (Exception e) {
                 log.error("Failed to redeploy web.xml", e);
+            }
+        } else if (relPath.startsWith("/i18n/")) { // reload message bundle
+            try {
+                loadMessageBundle(mgr.getRootDirectory(), true);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

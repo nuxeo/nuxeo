@@ -92,7 +92,11 @@ public class SiteRoot implements FileChangeListener {
             FileChangeNotifier notifier = Framework.getLocalService(FileChangeNotifier.class);
             if (notifier != null) {
                 notifier.addListener(this);
-                notifier.watch(new File(root, SITE_CONFIG));
+                try {
+                    notifier.watch(new File(root, SITE_CONFIG));
+                } catch (IOException e) {
+                    // do nothing
+                }
             }
         }
     }
@@ -100,7 +104,11 @@ public class SiteRoot implements FileChangeListener {
     public void dispose() {
         FileChangeNotifier fcn = Framework.getLocalService(FileChangeNotifier.class);
         if (fcn != null) {
-            fcn.unwatch(new File(root, SITE_CONFIG));
+            try {
+                fcn.unwatch(new File(root, SITE_CONFIG));
+            } catch (IOException e) {
+                // do nothing
+            }
             fcn.removeListener(this);
         }
     }
