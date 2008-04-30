@@ -5,3 +5,4 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.rendering;singleton:=true
 Require-Bundle: org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.platform.ui
 Nuxeo-Require: org.nuxeo.ecm.platform.search.api
+Bundle-ClassPath: .,lib/freemarker-2.3.11.jar,lib/wem-2.0.2.jar
