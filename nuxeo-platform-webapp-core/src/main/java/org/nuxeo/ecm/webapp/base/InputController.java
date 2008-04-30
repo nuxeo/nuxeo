@@ -201,7 +201,10 @@ public abstract class InputController {
     public String computeOutcome(String actionOutcome) {
         // actionOutcome is currently ignored on purpose but might be useful in
         // the future
-        String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
+        FacesContext facesContextInstance = FacesContext.getCurrentInstance();
+        if (facesContextInstance == null)
+            return null;
+        String viewId = facesContextInstance.getViewRoot().getViewId();
         return viewId.substring(1, viewId.indexOf(".xhtml"));
     }
 

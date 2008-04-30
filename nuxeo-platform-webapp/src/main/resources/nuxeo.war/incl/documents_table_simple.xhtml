@@ -100,7 +100,7 @@
         </f:facet>
         <h:outputText value="#{nxu:userFullName(doc.dublincore.creator)}" />
       </h:column>
-      
+
       <!-- Live edit -->
       <nxu:column styleClass="iconColumn">
         <nxu:methodResult name="editable"
@@ -112,7 +112,7 @@
               title="#{messages['label.document.directEdit']}"/>
           </h:outputLink>
         </nxu:methodResult>
-      </nxu:column>      
+      </nxu:column>
     </nxu:dataTable>
 
     <a4j:commandButton value="#{messages['label.refresh']}" reRender="#{idParam}" styleClass="button" />
@@ -123,7 +123,7 @@
 <ui:include src="/incl/popupMenu.xhtml"/>
 <script>
 // init menu
-$("table td div div.popupTarget").contextMenu("popupMenu");
+jQuery("table td div div.popupTarget").contextMenu("popupMenu");
 </script>
 
 </div>

@@ -7,6 +7,11 @@
     <script type="text/javascript"  src="#{baseURL}seam/remoting/interface.js?popupHelper&amp;clipboardActions"></script>
     <script type="text/javascript"  src="#{baseURL}nxthemes-lib/jquery.js"/>
   	<script type="text/javascript"  src="#{baseURL}scripts/contextmenu.js"/>
+	<script type="text/javascript">
+	function confirmDeleteDocuments() {
+	    return confirm("#{messages['label.documents.confirmDeleteDocuments']}");
+	}
+	</script>
     <script type="text/javascript"  src="#{baseURL}scripts/default-contextmenu-actions.js"/>
 
   	<div style="display: none;" class="contextMenu" id="popupMenu">

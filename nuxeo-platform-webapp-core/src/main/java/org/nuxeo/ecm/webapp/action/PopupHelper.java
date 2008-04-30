@@ -47,33 +47,36 @@ import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 public class PopupHelper {
 
 	public final static String POPUP_CATEGORY="POPUP";
-    
+
     @In(required = true, create = true)
     private transient ActionContextProvider actionContextProvider;
-    
+
     @In(create = true)
     protected WebActions webActions;
+
+    @In(create = true)
+    protected DeleteActions deleteActions;
 
     @In(create=true, required=false)
     CoreSession documentManager;
 
     protected DocumentModel currentContainer;
-    
+
     protected DocumentModel currentPopupDocument;
-    
+
     protected List<Action> unfiltredActions=null;
-    
-    protected void computeUnfiltredPopupActions() {    	    	
-    	unfiltredActions = webActions.getUnfiltredActionsList(POPUP_CATEGORY);    	
-    }        
-    
+
+    protected void computeUnfiltredPopupActions() {
+    	unfiltredActions = webActions.getUnfiltredActionsList(POPUP_CATEGORY);
+    }
+
     /*
      * returns all popup actions : used to construct HTML menu template
      */
     public List<Action> getUnfiltredPopupActions() {
     	if (unfiltredActions==null)
     		computeUnfiltredPopupActions();
-    	
+
     	// post filters links to add docId
         for (Action act : unfiltredActions) {
             String lnk = act.getLink();
@@ -81,16 +84,16 @@ public class PopupHelper {
             {
             	lnk = lnk.replaceFirst("javascript:", "");
             	act.setLink(lnk);
-            }                        
-        }        
+            }
+        }
     	return unfiltredActions;
     }
-    
+
     public List<Action> getAvailablePopupActions(String popupDocId) {
     	return  webActions.getActionsList(POPUP_CATEGORY, createActionContext(popupDocId));
     }
-        
-    
+
+
     @WebRemote
     public List<String> getAvailableActionId(String popupDocId)
     {
@@ -102,19 +105,19 @@ public class PopupHelper {
     	}
     	return availableActionsIds;
     }
-    
+
     @WebRemote
     public List<String> getUnavailableActionId(String popupDocId)
     {
     	List<String> result = new ArrayList<String>();
-    	
+
     	List<Action> allActions = getUnfiltredPopupActions();
     	List<String> allActionsIds = new ArrayList<String>();
     	for (Action act : allActions)
     	{
     		allActionsIds.add(act.getId());
     	}
-    	
+
     	List<Action> availableActions = getAvailablePopupActions(popupDocId);
     	List<String> availableActionsIds = new ArrayList<String>();
     	for (Action act : availableActions)
@@ -126,17 +129,17 @@ public class PopupHelper {
     	{
     		if (!availableActionsIds.contains(act))
     			result.add(act);
-    	}    	
-    	
+    	}
+
     	return result;
     }
-    
+
 
     protected ActionContext createActionContext(String popupDocId) {
-        ActionContext ctx = actionContextProvider.createActionContext();        
-                
+        ActionContext ctx = actionContextProvider.createActionContext();
+
         DocumentModel currentDocument = ctx.getCurrentDocument();
-                        
+
         DocumentRef popupDocRef = new IdRef(popupDocId);
         try {
             DocumentModel popupDoc = documentManager.getDocument(popupDocRef);
@@ -151,54 +154,62 @@ public class PopupHelper {
 
         return ctx;
     }
-    
+
     @WebRemote
     public String getNavigationURL(String docId, String tabId) throws ClientException
     {
         Map<String, String> params = new HashMap<String, String>();
-        
+
         if (tabId!=null)
         	params.put("tabId", tabId);
 
         DocumentModel doc = documentManager.getDocument(new IdRef(docId));
-    	
-        return DocumentModelFunctions.documentUrl(null, doc, null, params, false);    	
+
+        return DocumentModelFunctions.documentUrl(null, doc, null, params, false);
     }
 
     @WebRemote
     public String getNavigationURLOnContainer(String tabId) throws ClientException
     {
         Map<String, String> params = new HashMap<String, String>();
-        
+
         if (tabId!=null)
-        	params.put("tabId", tabId);     
-    	
-        return DocumentModelFunctions.documentUrl(null, currentContainer, null, params, false);    	
+        	params.put("tabId", tabId);
+
+        return DocumentModelFunctions.documentUrl(null, currentContainer, null, params, false);
     }
-    
+
     @WebRemote
     public String getNavigationURLOnPopupdoc(String tabId) throws ClientException
     {
         Map<String, String> params = new HashMap<String, String>();
-        
+
         if (tabId!=null)
-        	params.put("tabId", tabId);     
-    	
-        return DocumentModelFunctions.documentUrl(null, currentPopupDocument, null, params, false);    	
+        	params.put("tabId", tabId);
+
+        return DocumentModelFunctions.documentUrl(null, currentPopupDocument, null, params, false);
     }
 
     @WebRemote
     public String getCurrentURL() throws ClientException
     {
         Map<String, String> params = new HashMap<String, String>();
-        
+
         String tabId = webActions.getCurrentTabId();
-        
+
         if (tabId!=null)
-        	params.put("tabId", tabId);     
-    	
-        return DocumentModelFunctions.documentUrl(null, currentContainer, null, params, false);    	
+        	params.put("tabId", tabId);
+
+        return DocumentModelFunctions.documentUrl(null, currentContainer, null, params, false);
     }
-    
+
+
+    @WebRemote
+    public String deleteDocument(String docId) throws ClientException {
+        DocumentModel doc = documentManager.getDocument(new IdRef(docId));
+        List<DocumentModel> docsToDelete = new ArrayList<DocumentModel>();
+        docsToDelete.add(doc);
+        return deleteActions.deleteSelection(docsToDelete);
+    }
 
 }

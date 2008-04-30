@@ -40,8 +40,9 @@ function doPast(docid)
 
 function doDelete(docid)
 {
- alert("delete doc " + docid);
- refreshPage();
+	if (confirmDeleteDocuments()) {
+		Seam.Component.getInstance("popupHelper").deleteDocument(docid,refreshPage);
+	}
 }
 
 function doView(docid)
