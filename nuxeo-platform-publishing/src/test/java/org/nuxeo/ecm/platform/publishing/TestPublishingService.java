@@ -73,7 +73,6 @@ public class TestPublishingService extends NXRuntimeTestCase {
         deployContrib("test-nuxeo-platform-publishing-contrib.xml");
 
         assertTrue(service.getValidatorsRule() instanceof FakeValidatorsRule);
-
     }
 
     public void testDefaultValidDate() {
@@ -88,7 +87,6 @@ public class TestPublishingService extends NXRuntimeTestCase {
 
         assertEquals("foo", service.getValidDateFieldSchemaPrefixName());
         assertEquals("bar", service.getValidDateFieldName());
-
     }
 
 }

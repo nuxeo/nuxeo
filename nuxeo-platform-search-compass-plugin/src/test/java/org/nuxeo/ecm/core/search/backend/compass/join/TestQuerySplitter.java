@@ -59,7 +59,6 @@ public class TestQuerySplitter extends NXRuntimeTestCase {
         public String[] getJoinFor(String resourceName) {
             return joins.get(resourceName);
         }
-
     }
 
     @Override
@@ -342,7 +341,6 @@ public class TestQuerySplitter extends NXRuntimeTestCase {
 
             assertEquals(ResourceType.SCHEMA, subQuery.getResourceType());
         }
-
     }
 
 }

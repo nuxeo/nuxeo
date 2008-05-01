@@ -46,7 +46,6 @@ public class FakeSecurityManager implements SecurityManager {
         public Access getAccess(String[] principals, String[] permissions) {
             return Access.GRANT;
         }
-
     }
 
     // always return true

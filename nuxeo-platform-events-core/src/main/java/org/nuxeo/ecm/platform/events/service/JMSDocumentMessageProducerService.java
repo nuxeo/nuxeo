@@ -129,7 +129,6 @@ public class JMSDocumentMessageProducerService extends DefaultComponent
                     + " topic destination");
             e.printStackTrace();
         }
-
     }
 
     public void produce(NXCoreEvent event) {

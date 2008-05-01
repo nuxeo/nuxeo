@@ -134,9 +134,9 @@ public class PrincipalListManager implements Serializable {
 
     public void setSearchFilter(String searchFilter) {
         Context pageContext = Contexts.getPageContext();
-    	if (pageContext != null) {
-    	    pageContext.set("searchFilter", searchFilter);
-    	}
+        if (pageContext != null) {
+            pageContext.set("searchFilter", searchFilter);
+        }
         this.searchFilter = searchFilter;
     }
 

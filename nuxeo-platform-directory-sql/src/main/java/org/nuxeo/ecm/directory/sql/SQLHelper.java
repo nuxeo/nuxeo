@@ -132,7 +132,6 @@ public class SQLHelper {
             String createSql = table.getCreateSql(dialect);
             log.debug("creating table: " + createSql);
             stmt.execute(createSql);
-
         } catch (SQLException e) {
             throw new DirectoryException(String.format(
                     "Table '%s' creation failed: %s", table, e.getMessage()), e);
@@ -172,7 +171,6 @@ public class SQLHelper {
             log.debug(String.format("all fields matched for table '%s'",
                     tableName));
             return true;
-
         } catch (SQLException e) {
             log.warn("error while introspecting table: " + tableName, e);
             return false;
@@ -302,7 +300,6 @@ public class SQLHelper {
                 }
                 ps.execute();
             }
-
         } catch (IOException e) {
             throw new DirectoryException("Read error while reading data file: "
                     + dataFileName, e);

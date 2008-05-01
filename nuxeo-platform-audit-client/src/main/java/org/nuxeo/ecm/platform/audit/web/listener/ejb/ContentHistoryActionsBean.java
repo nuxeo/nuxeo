@@ -276,7 +276,6 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         }
 
         return newComment;
-
     }
 
     public LinkedDocument getLogLinkedDocument(LogEntry entry) {

@@ -165,7 +165,6 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
                 return null;
             }
         }
-
     }
 
     /**

@@ -447,7 +447,6 @@ public class SearchPageProvider implements PagedDocumentsProvider {
         }
 
         return docModel;
-
     }
 
     protected Field getSchemaField(String schemaName, String fieldName) {

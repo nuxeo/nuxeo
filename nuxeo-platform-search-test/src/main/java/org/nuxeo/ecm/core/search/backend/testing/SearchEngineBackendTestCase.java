@@ -494,7 +494,6 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
                         + " LIKE '+about +life optional stuff'"), 0, 100);
         assertEquals(1, results.getTotalHits());
         assertEquals("About Life", results.get(0).get("dc:title"));
-
     }
 
     /*
@@ -569,7 +568,6 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
         assertEquals("1350004", results.get(0).get("bk:barcode"));
         assertEquals("1350005", results.get(1).get("bk:barcode"));
         assertEquals("1350006", results.get(2).get("bk:barcode"));
-
     }
 
     public void testResultItem() throws Exception {
@@ -759,7 +757,6 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
                 composeQuery("SELECT * FROM Document WHERE bk:tags = ()"), 0, 2);
         assertEquals(1, results.getTotalHits());
         assertEquals("War and Peace", results.get(0).get("Title"));
-
     }
 
     public void testIntOrderClauses() throws Exception {

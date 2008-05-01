@@ -269,7 +269,6 @@ public class GenericTableModel extends SortableTableModel {
         } else {
             log.error("Null column received");
         }
-
     }
 
     /**

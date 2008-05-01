@@ -28,7 +28,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * The abstract class adds some useful methods.
- * 
+ *
  * @author <a href="mailto:dm@nuxeo.com>Dragos Mihalache</a>
  */
 public abstract class AbstractUIDGenerator implements UIDGenerator {
@@ -78,7 +78,7 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
 
     /**
      * Checks if the property with the given name is defined and is not null.
-     * 
+     *
      * @param propName
      * @return
      * @throws DocumentException

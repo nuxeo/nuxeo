@@ -361,7 +361,6 @@ public class SearchServiceBean implements SearchService {
         } else {
             log.error("Cannot find core search service....");
         }
-
     }
 
     public SearchServiceSession openSession() {

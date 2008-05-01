@@ -365,7 +365,6 @@ public class DocumentActionsBean extends InputController implements
         } catch (Throwable t) {
             throw EJBExceptionHandler.wrapException(t);
         }
-
     }
 
     private void setDocumentIconPath(DocumentModel docModel) {
@@ -396,7 +395,6 @@ public class DocumentActionsBean extends InputController implements
         } else {
             docModel.setProperty("common", "icon", currentType.getIcon());
         }
-
     }
 
     /**

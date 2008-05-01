@@ -864,7 +864,6 @@ public class DeleteActionsBean extends InputController implements
         }
         searchActions.getDocumentModel().setProperty("advanced_search",
                 "currentLifeCycleStates", states);
-
     }
 
     public void restoreCurrentDocument() throws ClientException {

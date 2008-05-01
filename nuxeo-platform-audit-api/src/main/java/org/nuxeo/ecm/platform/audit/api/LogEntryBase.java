@@ -73,7 +73,6 @@ public class LogEntryBase implements LogEntry {
 
     public void setId(long id) {
         this.id = id;
-
     }
 
     public String getPrincipalName() {

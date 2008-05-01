@@ -889,7 +889,6 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         ctx.getContext().save(pi);
 
         ctx.closeContext();
-
     }
 
     @SuppressWarnings("unchecked")
@@ -913,7 +912,6 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         ctx.getContext().save(pi);
 
         ctx.closeContext();
-
     }
 
     /**
@@ -1153,7 +1151,6 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
 
         ctx.getContext().save(pi);
         ctx.closeContext();
-
     }
 
     protected boolean isStateCandidate(TaskInstance taskInstance,
@@ -1223,7 +1220,6 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
 
         ctx.getContext().save(pi);
         ctx.closeContext();
-
     }
 
     public void updateProcessInstanceAttributes(String pid,
@@ -1379,6 +1375,6 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         }
 
         return filtered;
-
     }
+
 }

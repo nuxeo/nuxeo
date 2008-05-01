@@ -67,8 +67,8 @@ public class IndexingEventDescriptor implements IndexingEventConf {
             boolean recursive, String name,String mode) {
         this(action,resources,recursive, name);
         this.mode = mode;
-
     }
+
     public String getAction() {
         return action;
     }

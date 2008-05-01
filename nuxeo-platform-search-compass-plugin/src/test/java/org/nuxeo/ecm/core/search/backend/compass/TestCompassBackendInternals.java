@@ -735,7 +735,6 @@ public class TestCompassBackendInternals extends TestCase {
         public IndexableResourceConf getConfiguration() {
             return conf;
         }
-
     }
 
     public void testGetAlias() throws Exception {

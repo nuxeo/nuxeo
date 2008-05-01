@@ -173,7 +173,6 @@ public class TestMatchBeforeQuery extends TestCase {
                 required, excluded);
         return query.new MatchBeforeScorer(allowedTps,
                 excludedTps, null);
-
     }
 
     @Override

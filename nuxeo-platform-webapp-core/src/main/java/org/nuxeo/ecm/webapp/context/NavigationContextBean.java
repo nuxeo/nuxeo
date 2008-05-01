@@ -447,7 +447,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         }
         currentDocument = documentManager.saveDocument(currentDocument);
         documentManager.save();
-
     }
 
     public List<PathElement> getCurrentPathList() throws ClientException {
@@ -723,7 +722,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         eventContext.remove("currentWorkspace");
         eventContext.remove("currentContentRoot");
         eventContext.remove("currentSuperSpace");
-
     }
 
     // XXX AT: we should let each action listener raise specific events
@@ -1047,7 +1045,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
                 e.printStackTrace();
             }
         }
-
     }
 
     public PagedDocumentsProvider getResultsProvider(String name)

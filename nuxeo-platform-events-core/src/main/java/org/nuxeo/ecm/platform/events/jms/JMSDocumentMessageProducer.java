@@ -181,7 +181,6 @@ public final class JMSDocumentMessageProducer {
                 log.error("An error during JMS cleanup", je);
             }
         }
-
     }
 
     private static void sendMessage(Serializable message,

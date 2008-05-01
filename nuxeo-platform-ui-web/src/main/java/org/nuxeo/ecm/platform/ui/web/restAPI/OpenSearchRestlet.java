@@ -154,6 +154,6 @@ public class OpenSearchRestlet extends BaseNuxeoRestlet {
         } catch (Exception e) {
             handleError(res, e);
         }
-
     }
+
 }

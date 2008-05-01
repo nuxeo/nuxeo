@@ -104,7 +104,6 @@ public class NuxeoLoginModule extends AbstractServerLoginModule {
         } catch (Throwable t) {
             log.error("Unable to load Plugin Registry : " + t.getMessage());
         }
-
     }
 
     /**

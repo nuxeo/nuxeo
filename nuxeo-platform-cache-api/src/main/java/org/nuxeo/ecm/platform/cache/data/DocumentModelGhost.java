@@ -446,12 +446,10 @@ public class DocumentModelGhost implements DocumentModel {
 
     public void prefetchCurrentLifecycleState(String lifecycle) {
         getDM().prefetchCurrentLifecycleState(lifecycle);
-
     }
 
     public void prefetchLifeCyclePolicy(String lifeCyclePolicy) {
         getDM().prefetchLifeCyclePolicy(lifeCyclePolicy);
-
     }
 
     public boolean isLifeCycleLoaded() {

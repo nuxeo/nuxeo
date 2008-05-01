@@ -183,7 +183,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
             }
         }
         return sectionTypes;
-
     }
 
     private DocumentMessageProducer getDocumentMessageProducer()
@@ -299,7 +298,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
          * @throws ClientException
          */
         public abstract void run() throws ClientException;
-
     }
 
     protected void getSectionsSelectModel() throws ClientException {
@@ -366,7 +364,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
             }
 
         }.runUnrestricted();
-
     }
 
     private void accumulateAvailableSections(DocumentModelTree sections,
@@ -820,7 +817,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
         } catch (Exception e) {
             throw new ClientException(e);
         }
-
     }
 
     // TODO move to protected

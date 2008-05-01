@@ -76,6 +76,6 @@ public class ReindexingAllTask extends IndexingTask {
         } finally {
             searchService.setIndexingDocBatchSize(currentBatchSize);
         }
-
     }
+
 }

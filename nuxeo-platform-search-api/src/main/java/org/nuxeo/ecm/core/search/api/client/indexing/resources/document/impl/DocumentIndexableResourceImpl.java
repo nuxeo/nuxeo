@@ -153,7 +153,6 @@ public class DocumentIndexableResourceImpl extends
         if (dm instanceof DocumentModelImpl) {
             flags = dm.getFlags();
         }
-
     }
 
     public DocumentRef getDocRef() {

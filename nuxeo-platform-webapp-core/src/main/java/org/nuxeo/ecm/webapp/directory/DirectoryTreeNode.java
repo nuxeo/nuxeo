@@ -297,6 +297,6 @@ public class DirectoryTreeNode implements TreeNode {
         } else {
             Events.instance().raiseEvent("PATH_PROCESSED", "");
         }
-
     }
+
 }

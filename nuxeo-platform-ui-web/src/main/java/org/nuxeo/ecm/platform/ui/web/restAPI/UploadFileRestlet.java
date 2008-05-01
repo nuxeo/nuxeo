@@ -141,7 +141,6 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
         } catch (Exception e) {
             handleError(res, e);
         }
-
     }
 
     // the stream can be read only once, thus save it first into the

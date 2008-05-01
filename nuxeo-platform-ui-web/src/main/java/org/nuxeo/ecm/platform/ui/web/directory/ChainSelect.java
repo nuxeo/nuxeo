@@ -241,7 +241,6 @@ public class ChainSelect extends UIInput {
                 component.setValue(componentValue);
             }
         }
-
     }
 
     public static String format(Object o) {
@@ -712,7 +711,7 @@ public class ChainSelect extends UIInput {
             }
 
             String[] rows = StringUtils.split(newValueStr, getKeySeparator());
-            if (!allowBranchSelection && rows.length != this.size) {
+            if (!allowBranchSelection && rows.length != size) {
                 String messageStr = ComponentUtils.translate(context,
                         "label.chainSelect.incomplete_selection");
                 FacesMessage message = new FacesMessage(
@@ -721,7 +720,6 @@ public class ChainSelect extends UIInput {
                 setValid(false);
             }
         }
-
     }
 
 }

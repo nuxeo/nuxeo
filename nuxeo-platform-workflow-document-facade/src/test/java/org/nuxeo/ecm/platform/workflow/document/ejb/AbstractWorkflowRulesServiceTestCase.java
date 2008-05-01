@@ -191,7 +191,6 @@ public abstract class AbstractWorkflowRulesServiceTestCase extends
 
         assertEquals(0, workflowRules.getAllowedWorkflowDefinitionNamesByPath(
                 path).size());
-
     }
 
     public void testRulesByPath() {
@@ -219,7 +218,6 @@ public abstract class AbstractWorkflowRulesServiceTestCase extends
         // test case
         assertEquals(1, workflowRules.getAllowedWorkflowDefinitionNamesByPath(
                 "/WorkSPaces").size());
-
     }
 
 }

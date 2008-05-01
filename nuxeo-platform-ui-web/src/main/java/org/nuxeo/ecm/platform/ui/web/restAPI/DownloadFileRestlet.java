@@ -157,7 +157,6 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements
         } catch (Exception e) {
             handleError(res, e);
         }
-
     }
 
 }

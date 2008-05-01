@@ -168,12 +168,10 @@ public class DocModelTableModel extends TableModel implements CacheListener {
 
     public void documentRemoved(String fqn) {
         // TODO Auto-generated method stub
-
     }
 
     public void documentUpdate(DocumentModel docModel, boolean pre) {
         // TODO Auto-generated method stub
-
     }
     // CacheListener intf implementation - end
     // --------------------------------------------------------

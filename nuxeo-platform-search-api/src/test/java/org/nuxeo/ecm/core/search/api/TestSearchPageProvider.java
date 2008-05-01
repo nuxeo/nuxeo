@@ -77,7 +77,6 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
             return new FieldImpl(qname, StringType.INSTANCE,
                     StringType.INSTANCE);
         }
-
     }
 
     private ResultItem resultItem;
@@ -120,7 +119,6 @@ public class TestSearchPageProvider extends NXRuntimeTestCase {
                 Collections.EMPTY_LIST, 17, 10);
         SearchPageProvider provider = new SearchPageProvider(set);
         assertEquals(2, provider.getNumberOfPages());
-
     }
 
     @SuppressWarnings("unchecked")

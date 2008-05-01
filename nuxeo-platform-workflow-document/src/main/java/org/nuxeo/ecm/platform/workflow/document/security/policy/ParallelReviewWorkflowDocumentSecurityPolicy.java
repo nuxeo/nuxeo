@@ -190,7 +190,6 @@ public class ParallelReviewWorkflowDocumentSecurityPolicy extends
                     && getFilteredTasksFor(pid, participant).size() < nbTasks;
         }
         return granted;
-
     }
 
     public boolean canRejectWorkItem(Principal participant,

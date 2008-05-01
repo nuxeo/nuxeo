@@ -169,7 +169,6 @@ public class VocabularyActionsBean implements VocabularyActions {
                 resourcesAccessor.getMessages().get(message));
         showAddEntryForm = false;
         return "view_vocabularies";
-
     }
 
     public String addVocabularyEntry() throws ClientException {

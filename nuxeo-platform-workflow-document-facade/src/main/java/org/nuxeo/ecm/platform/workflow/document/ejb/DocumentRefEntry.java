@@ -52,11 +52,10 @@ public class DocumentRefEntry implements Serializable {
     private Set<WorkflowInstanceRefEntry> workflowInstanceRefs = new HashSet<WorkflowInstanceRefEntry>();
 
     public DocumentRefEntry() {
-
     }
 
     public DocumentRefEntry(DocumentRef docRef) {
-        this.id = docRef.hashCode();
+        id = docRef.hashCode();
         this.docRef = docRef;
     }
 

@@ -80,7 +80,6 @@ public class TestUserManager extends NXRuntimeTestCase {
         assertEquals("Anonymous", principal.getFirstName());
         assertEquals("Coward", principal.getLastName());
         assertNull(principal.getCompany());
-
     }
 
     public void testSearchAnonymous() throws ClientException {

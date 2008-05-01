@@ -330,7 +330,6 @@ public class LDAPSession implements Session, EntrySource {
                         schemaName, referenceFieldName);
                 reference.setTargetIdsForSource(docModel.getId(), targetIds);
             }
-
         } catch (Exception e) {
             throw new DirectoryException("updateEntry failed: "
                     + e.getMessage(), e);
@@ -461,9 +460,7 @@ public class LDAPSession implements Session, EntrySource {
     public DocumentModelList query(Map<String, Object> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws DirectoryException {
-
         return query(filter, fulltext, false, orderBy);
-
     }
 
     public DocumentModelList query(Map<String, Object> filter,
@@ -580,7 +577,6 @@ public class LDAPSession implements Session, EntrySource {
                                 : trimmedValue));
                 return defaultValue;
             }
-
         } else if ("date".equals(typeName)) {
             if ("".equals(trimmedValue)) {
                 return defaultValue;

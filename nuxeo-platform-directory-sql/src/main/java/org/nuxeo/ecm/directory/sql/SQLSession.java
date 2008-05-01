@@ -184,7 +184,6 @@ public class SQLSession implements Session, EntrySource {
             }
             ps.execute();
             entry = fieldMapToDocumentModel(fieldMap);
-
         } catch (SQLException e) {
             throw new DirectoryException("createEntry failed", e);
         }
@@ -544,7 +543,6 @@ public class SQLSession implements Session, EntrySource {
                 list.add(docModel);
             }
             return list;
-
         } catch (SQLException e) {
             try {
                 sqlConnection.close();
@@ -585,7 +583,6 @@ public class SQLSession implements Session, EntrySource {
         } catch (SQLException e) {
             throw new DirectoryException("getFieldValue failed", e);
         }
-
     }
 
     private void setFieldValue(PreparedStatement ps, int index,
@@ -633,7 +630,6 @@ public class SQLSession implements Session, EntrySource {
         } catch (SQLException e) {
             throw new DirectoryException("setFieldValue failed", e);
         }
-
     }
 
     public void commit() throws DirectoryException {

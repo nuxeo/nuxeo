@@ -115,7 +115,6 @@ public abstract class AbstractJRBasedTextExtractorPlugin extends AbstractPlugin 
                 }
             }
         }
-
     }
 
     protected abstract TextExtractor getExtractor();

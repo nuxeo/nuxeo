@@ -233,7 +233,6 @@ public class TestResourceBuilder extends TestCase {
         } finally {
             session.close();
         }
-
     }
 
     // Now with a property that has defined in compass mappings file
@@ -253,6 +252,6 @@ public class TestResourceBuilder extends TestCase {
         } finally {
             session.close();
         }
-
     }
+
 }

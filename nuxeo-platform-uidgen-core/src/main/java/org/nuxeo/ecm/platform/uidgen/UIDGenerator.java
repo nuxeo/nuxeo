@@ -34,32 +34,32 @@ public interface UIDGenerator {
      * <p>
      * The property must be a string like 'schemaPrefix:fieldName' ; the syntax
      * 'schemaName:fieldName' is also accepted.
-     * 
+     *
      * Could be used as a convenient method when there is only one property to set.
      *
      * @param propertyName
-     * 
+     *
      * @see #setPropertyNames(String[])
      */
     void setPropertyName(String propertyName);
 
     /**
      * Get the property name used to set the identifier value.
-     * 
+     *
      * @see #getPropertyNames()
      */
     String getPropertyName();
-    
+
     /**
      * Set the properties used to set the identifier value.
-     * 
+     *
      * @param propertyNames
      */
     void setPropertyNames(String[] propertyNames);
-    
+
     /**
      * Gets the property name used to set the identifier value
-     * 
+     *
      * @return
      */
     String[] getPropertyNames();

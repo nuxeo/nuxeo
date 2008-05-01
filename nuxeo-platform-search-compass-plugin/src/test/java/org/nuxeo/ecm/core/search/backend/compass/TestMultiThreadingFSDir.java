@@ -112,7 +112,6 @@ public class TestMultiThreadingFSDir extends NXRuntimeTestCase {
         System.out.println((NB_DOCS * 1000) / timer.getDuration() + " resources/sec");
 
         System.out.println("DONE............................... !");
-
     }
 
 }

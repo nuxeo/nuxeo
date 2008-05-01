@@ -75,11 +75,11 @@ public class TestGen extends NXRuntimeTestCase {
         Map<String, Object> uidMap = new HashMap<String, Object>();
         uidMap.put("uid", null);
         docModel.addDataModel(new DataModelImpl("uid", uidMap));
-        
+
         Map<String, Object> uid2Map = new HashMap<String, Object>();
         uid2Map.put("uid2", null);
         docModel.addDataModel(new DataModelImpl("other_uid_schema", uid2Map));
-        
+
         return docModel;
     }
 
@@ -165,7 +165,7 @@ public class TestGen extends NXRuntimeTestCase {
             // TODO make it real
             CoreEvent event = new CoreEventImpl(DocumentEventTypes.DOCUMENT_CREATED, gdoc, null, null, null, null);
             new DocUIDGeneratorListener().notifyEvent(event);
-            
+
             //String uid = generator.createUID(gdoc);
             String uid = (String) gdoc.getProperty("uid", "uid");
             String uid2 = (String) gdoc.getProperty("other_uid_schema", "uid2");

@@ -926,7 +926,6 @@ public class UIEditableList extends UIInput implements NamingContainer {
                 throw (RuntimeException) exception;
             }
         }
-
     }
 
     protected final void processComponent(FacesContext context,

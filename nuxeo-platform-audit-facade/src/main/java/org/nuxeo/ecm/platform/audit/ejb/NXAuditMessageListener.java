@@ -88,7 +88,6 @@ public class NXAuditMessageListener implements MessageListener {
             } else {
                 log.debug("Not interested about event with id=" + eventId);
             }
-
         } catch (Exception e) {
             throw new EJBException(e);
         }
@@ -123,7 +122,7 @@ public class NXAuditMessageListener implements MessageListener {
      * @param eventId the actual event identifier
      * @return true / false whether or not we are interested in this event
      */
-    private static boolean isInterestedInEvent(String eventId) {
+    private boolean isInterestedInEvent(String eventId) {
         NXAuditEvents service = NXAudit.getNXAuditEventsService();
         Set<String> eventIds = service.getAuditableEventNames();
         return eventIds.contains(eventId);

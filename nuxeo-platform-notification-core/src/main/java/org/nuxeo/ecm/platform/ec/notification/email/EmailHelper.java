@@ -91,12 +91,12 @@ public final class EmailHelper {
                 (String) mail.get("mail.to"), false));
 
         RenderingService rs = Framework.getService(RenderingService.class);
-        
+
         DocumentRenderingContext context = new DocumentRenderingContext();
         context.remove("doc");
         context.putAll(mail);
         context.setDocument((DocumentModel) mail.get("document"));
-        
+
         String customSubjectTemplate = (String) mail.get(NotificationConstants.SUBJECT_TEMPLATE_KEY);
         if (customSubjectTemplate == null) {
             String subjTemplate = (String) mail.get(NotificationConstants.SUBJECT_KEY);
@@ -106,25 +106,25 @@ public final class EmailHelper {
             templ.process(mail, out);
             out.flush();
 
-            msg.setSubject(out.toString(), "UTF8");        	
+            msg.setSubject(out.toString(), "UTF8");
         } else {
-        	rs.registerEngine(new NotificationsRenderingEngine((String) customSubjectTemplate));
-        	
+            rs.registerEngine(new NotificationsRenderingEngine((String) customSubjectTemplate));
+
             LoginContext lc = Framework.login();
-            
+
             Collection<RenderingResult> results = rs.process(context);
             String subjectMail = "<HTML><P>No parsing Succeded !!!</P></HTML>";
 
             for (RenderingResult result : results) {
-            	subjectMail = (String) result.getOutcome();
+                subjectMail = (String) result.getOutcome();
             }
-            subjectMail = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix() 
-            			+ subjectMail;
+            subjectMail = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix()
+                        + subjectMail;
             msg.setSubject(subjectMail, "UTF8");
 
             lc.logout();
         }
-        
+
         msg.setSentDate(new Date());
 
         rs.registerEngine(new NotificationsRenderingEngine((String) mail.get(NotificationConstants.TEMPLATE_KEY)));

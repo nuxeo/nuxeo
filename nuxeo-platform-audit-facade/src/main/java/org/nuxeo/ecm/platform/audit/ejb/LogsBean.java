@@ -107,7 +107,6 @@ public class LogsBean implements Logs {
                 returned.add(getLogEntryFactory().createLogEntryBase(entry));
             }
             return returned;
-
         } catch (Exception e) {
             throw new AuditException(e);
         }
@@ -173,7 +172,6 @@ public class LogsBean implements Logs {
             }
 
             return returned;
-
         } catch (Exception e) {
             throw new AuditException(e);
         }

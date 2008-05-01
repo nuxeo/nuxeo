@@ -93,6 +93,6 @@ public class VersioningChangeListener extends AbstractEventListener implements
                 .getRuntime().getComponent(VersioningModifierService.NAME);
 
         service.doModifications(newDoc);
-
     }
+
 }

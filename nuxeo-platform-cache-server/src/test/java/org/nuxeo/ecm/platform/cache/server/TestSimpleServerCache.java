@@ -250,7 +250,6 @@ public class TestSimpleServerCache extends TestServerCacheBase {
 
         DocumentModel dm1Cache = (DocumentModel) cache.getObject(parentKey);
         assertEquals(dm1, dm1Cache);
-
     }
 
     public void testListenerObjPut() throws ClientException, CacheServiceException {

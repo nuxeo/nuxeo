@@ -110,7 +110,6 @@ public class RelationsTestHelper {
     }
 
     public static void checkRelation() {
-
     }
 
     private static QNameResource getDocumentResource(DocumentModel document) throws Exception {

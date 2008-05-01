@@ -55,7 +55,6 @@ public class FakeIndexableResourceFactory implements IndexableResourceFactory {
                 throws IndexingException {
             return null;
         }
-
     }
 
     public IndexableResource createEmptyIndexableResource() {

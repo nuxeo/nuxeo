@@ -171,7 +171,6 @@ public class LDAPReference extends AbstractReference {
         Directory sourceDir = super.getSourceDirectory();
         if (sourceDir instanceof LDAPDirectoryProxy) {
             return ((LDAPDirectoryProxy) sourceDir).getDirectory();
-
         } else {
             throw new DirectoryException(
                     sourceDirectoryName
@@ -185,7 +184,6 @@ public class LDAPReference extends AbstractReference {
         Directory targetDir = super.getTargetDirectory();
         if (targetDir instanceof LDAPDirectoryProxy) {
             return ((LDAPDirectoryProxy) targetDir).getDirectory();
-
         } else {
             throw new DirectoryException(
                     targetDirectoryName
@@ -516,7 +514,6 @@ public class LDAPReference extends AbstractReference {
                                     sourceSession.idAttribute).get().toString());
                         }
                     }
-
                 }
             } catch (Exception e) {
                 throw new DirectoryException(

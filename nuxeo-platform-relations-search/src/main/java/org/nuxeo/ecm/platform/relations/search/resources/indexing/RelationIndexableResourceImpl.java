@@ -245,7 +245,6 @@ public class RelationIndexableResourceImpl extends
         }
 
         return sValue;
-
     }
 
     private Serializable getIndexingRepresentation(QNameResource s)

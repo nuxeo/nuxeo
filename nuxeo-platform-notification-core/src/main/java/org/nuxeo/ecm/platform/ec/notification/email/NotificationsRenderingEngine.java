@@ -49,8 +49,8 @@ public class NotificationsRenderingEngine extends DocumentRenderingEngine {
         cfg.setSharedVariable("htmlEscape", new HtmlEscapeMethod() );
         return cfg;
     }
-    
-    
+
+
     @Override
     protected FreemarkerRenderingJob createJob(RenderingContext ctx)
             throws RenderingException {
@@ -88,7 +88,6 @@ public class NotificationsRenderingEngine extends DocumentRenderingEngine {
         public Writer getWriter() throws IOException {
             return strWriter;
         }
-
     }
 
 }

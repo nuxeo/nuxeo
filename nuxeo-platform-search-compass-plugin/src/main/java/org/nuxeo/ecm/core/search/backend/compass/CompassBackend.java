@@ -241,7 +241,6 @@ public class CompassBackend extends AbstractSearchEngineBackend {
                     new HashMap<String, Serializable>(), null);
         }
         return builder.toResource();
-
     }
 
     /**
@@ -886,7 +885,6 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         } catch (Exception e) {
             throw new IndexingException(e);
         }
-
     }
 
     protected boolean mustCommitNow(int queuedNonComitedResources) {

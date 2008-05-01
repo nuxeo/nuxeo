@@ -70,7 +70,6 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
     @Destroy
     @PermitAll
     public void destroy() {
-
     }
 
     @Create

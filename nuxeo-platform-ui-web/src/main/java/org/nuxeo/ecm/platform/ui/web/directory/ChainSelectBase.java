@@ -358,7 +358,6 @@ public abstract class ChainSelectBase extends UIInput implements
             }
         }
         return result;
-
     }
 
     private static void closeSession(Session session) {
@@ -462,7 +461,6 @@ public abstract class ChainSelectBase extends UIInput implements
         }
 
         return myDepth != 0 ? myDepth : getDirectories().length;
-
     }
 
     public void setDepth(int depth) {
@@ -476,7 +474,6 @@ public abstract class ChainSelectBase extends UIInput implements
         } else {
             return style;
         }
-
     }
 
     public void setStyle(String style) {
@@ -628,7 +625,6 @@ public abstract class ChainSelectBase extends UIInput implements
         } else {
             return true;
         }
-
     }
 
 }

@@ -101,7 +101,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                     assertEquals(Arrays.asList("members"), entry2.getProperty(
                             USER_SCHEMANAME, "groups"));
                 }
-
             }
 
             DocumentModel entry3 = session.getEntry("UnexistingEntry");
@@ -120,7 +119,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 DocumentModel entry6 = session.getEntry("(objectClass=*)");
                 assertNull(entry6);
             }
-
         } finally {
             session.close();
         }
@@ -200,7 +198,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                             GROUP_SCHEMANAME, "parentGroups"));
                 }
             }
-
         } finally {
             session.close();
         }
@@ -273,7 +270,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             parentGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME,
                     "parentGroups");
             assertEquals(Arrays.asList("dyngroup1", "members"), parentGroups);
-
         } finally {
             session.close();
         }
@@ -416,7 +412,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
                 assertEquals(Arrays.asList(), dm.getProperty(GROUP_SCHEMANAME,
                         "parentGroups"));
-
             } finally {
                 session.close();
             }
@@ -574,7 +569,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 entry.setProperty(GROUP_SCHEMANAME, "subGroups", Arrays.asList(
                         "submembers", "administrators"));
                 session.updateEntry(entry);
-
             } finally {
                 session.close();
             }
@@ -617,7 +611,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
             entries = session.getEntries();
             assertEquals(0, entries.size());
-
         } finally {
             session.close();
         }
@@ -643,7 +636,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             } else {
                 assertEquals(2, entries.size());
             }
-
         } finally {
             session.close();
         }
@@ -769,7 +761,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             fulltext.add("lastName");
             entries = session.query(filter, fulltext);
             assertEquals(4, entries.size());
-
         } finally {
             session.close();
         }
@@ -904,7 +895,6 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
                 session.updateEntry(entry);
                 assertTrue(((Calendar) entry.getProperty(USER_SCHEMANAME,
                         "dateField")).after(cal1));
-
             } finally {
                 session.close();
             }

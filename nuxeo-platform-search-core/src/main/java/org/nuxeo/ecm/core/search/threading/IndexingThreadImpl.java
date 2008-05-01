@@ -118,7 +118,6 @@ public class IndexingThreadImpl extends Thread implements IndexingThread {
                     "Error when cleaning CoreSession bound to indexing thread",
                     t);
         }
-
     }
 
     /**

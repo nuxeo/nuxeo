@@ -89,7 +89,6 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
         statelessModelWithListParam = new QueryModel(
                 service.getQueryModelDescriptor("statelessModelWithListParam"),
                 null);
-
     }
 
     protected QueryModel initializeStatefulQueryModel(
@@ -116,7 +115,6 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
             fail("Should have raised an exception since stateless models need a parameters array");
         } catch (ClientException e) {
         }
-
     }
 
     // NXP-2059
@@ -152,7 +150,6 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
         assertEquals(query, descriptor.getQuery(new Object[] { typeArray }));
         typeList = Arrays.asList(typeArray);
         assertEquals(query, descriptor.getQuery(new Object[] { typeList }));
-
     }
 
     public void testSerialization() throws Exception {
@@ -368,7 +365,6 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
 
         assertEquals("SELECT * FROM Document",
                 descriptor.getQuery(documentModel2));
-
     }
 
     public void testStatefulQueryModelWithFixedPart() throws ClientException {
