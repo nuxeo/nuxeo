@@ -202,7 +202,7 @@ public class Path implements Serializable {
     }
 
     public boolean hasTrailingSeparator() {
-        return (flags & HAS_TRAILING) == 0;
+        return (flags & HAS_TRAILING) != 0;
     }
 
     public int segmentCount() {
@@ -411,7 +411,7 @@ public class Path implements Serializable {
         }
         Path target = (Path) obj;
         //check leading separators and hash code
-        if ((flags & HASH_MASK) != (target.flags & HASH_MASK)) {
+        if (flags != target.flags) {
             return false;
         }
         String[] targetSegments = target.segments;

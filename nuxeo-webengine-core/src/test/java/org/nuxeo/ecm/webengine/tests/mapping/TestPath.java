@@ -13,8 +13,7 @@ public class TestPath extends TestCase {
         assertFalse(p.isEmpty());
         assertFalse(p.isRelative());
         assertTrue(p.isAbsolute());
-        // FIXME
-        //assertFalse(p.hasTrailingSeparator());
+        assertFalse(p.hasTrailingSeparator());
 
         assertEquals(3, p.segmentCount());
         assertEquals("a", p.segment(0));
@@ -34,8 +33,7 @@ public class TestPath extends TestCase {
         assertFalse(p.isEmpty());
         assertTrue(p.isRelative());
         assertFalse(p.isAbsolute());
-        // FIXME
-        //assertTrue(p.hasTrailingSeparator());
+        assertTrue(p.hasTrailingSeparator());
     }
 
     public void testEquals() {
@@ -44,10 +42,15 @@ public class TestPath extends TestCase {
         assertEquals(p1, p2);
         assertEquals(p2, p1);
 
-        // FIXME: shouldn't happen
-        //Path p3 = new Path("/a/b/c/");
-        //assertFalse(p.equals(p3));
-        //assertFalse(p3.equals(p1));
+        Path p3 = new Path("/a/b/c/");
+        assertFalse(p1.equals(p3));
+        assertFalse(p3.equals(p1));
+
+        Path p4 = new Path("a/b/c");
+        assertFalse(p1.equals(p4));
+        assertFalse(p4.equals(p1));
+        assertFalse(p3.equals(p4));
+        assertFalse(p4.equals(p3));
     }
 
     public void test3() {
