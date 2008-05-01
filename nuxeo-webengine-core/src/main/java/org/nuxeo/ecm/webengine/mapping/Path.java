@@ -281,14 +281,14 @@ public class Path implements Serializable {
         if (!hasTrailingSeparator()) {
             return this;
         }
-        return new Path(segments, flags & HAS_LEADING);
+        return new Path(segments, flags & ~HAS_TRAILING);
     }
 
     public Path addTrailingSeparator() {
         if (hasTrailingSeparator()) {
             return this;
         }
-        return new Path(segments, flags & HAS_LEADING);
+        return new Path(segments, flags | HAS_TRAILING);
     }
 
     public Path removeLastSegments(int count) {
@@ -297,7 +297,7 @@ public class Path implements Serializable {
         }
         if (count >= segments.length) {
             //result will have no trailing separator
-            return (flags & HAS_LEADING) != 0 ? Path.ROOT : Path.EMPTY;
+            return (flags & HAS_LEADING) != 0 ? ROOT : EMPTY;
         }
         assert count > 0;
         final int newSize = segments.length - count;
@@ -311,7 +311,7 @@ public class Path implements Serializable {
             return this;
         }
         if (count >= segments.length) {
-            return Path.EMPTY;
+            return EMPTY;
         }
         assert count > 0;
         int newSize = segments.length - count;
@@ -345,7 +345,7 @@ public class Path implements Serializable {
         String[] newSegments = new String[myLen + 1];
         System.arraycopy(segments, 0, newSegments, 0, myLen);
         newSegments[myLen] = segment;
-        return new Path(newSegments, this.flags);
+        return new Path(newSegments, flags);
     }
 
     public Path append(Path tail) {

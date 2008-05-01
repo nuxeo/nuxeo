@@ -15,6 +15,12 @@ public class TestPath extends TestCase {
         assertTrue(p.isAbsolute());
         assertFalse(p.hasTrailingSeparator());
 
+        assertEquals(p, p.makeAbsolute());
+        assertEquals(new Path("a/b/c"), p.makeRelative());
+
+        assertEquals(p, p.removeTrailingSeparator());
+        assertEquals(new Path("/a/b/c/"), p.addTrailingSeparator());
+
         assertEquals(3, p.segmentCount());
         assertEquals("a", p.segment(0));
         assertEquals("b", p.segment(1));
@@ -28,6 +34,12 @@ public class TestPath extends TestCase {
     public void testRelative() {
         Path p = new Path("a/b/c/");
         assertEquals("a/b/c/", p.toString());
+
+        assertEquals(p, p.makeRelative());
+        assertEquals(new Path("/a/b/c/"), p.makeAbsolute());
+
+        assertEquals(p, p.addTrailingSeparator());
+        assertEquals(new Path("a/b/c"), p.removeTrailingSeparator());
 
         assertFalse(p.isRoot());
         assertFalse(p.isEmpty());
@@ -59,8 +71,28 @@ public class TestPath extends TestCase {
     }
 
     public void test4() {
-        Path p = new Path("/a/./b/../c/");
+        Path p = new Path("/a/./b/../c///");
         assertEquals("/a/c/", p.toString());
+    }
+
+    public void testFile() {
+        Path p = new Path("/a/b/c/test.txt");
+        assertEquals("txt", p.getFileExtension());
+        assertEquals("test", p.getFileName());
+    }
+
+    public void testAppend() {
+        // XXX: check that this are the intended results
+        assertEquals(new Path("a/b/c"), new Path("").append(new Path("/a/b/c")));
+        assertEquals(new Path("/a/b/c"), new Path("/a/b/c").append(new Path("")));
+
+        assertEquals(new Path("/a/b/c/"), new Path("/").append(new Path("a/b/c/")));
+        assertEquals(new Path("/a/b/c"), new Path("/a/b/c").append(new Path("/")));
+    }
+
+    public void testParent() {
+        assertEquals(new Path("/a/b/"), new Path("/a/b/c/").getParent());
+        assertEquals(new Path("/a/b"), new Path("/a/b/c").getParent());
     }
 
 }
