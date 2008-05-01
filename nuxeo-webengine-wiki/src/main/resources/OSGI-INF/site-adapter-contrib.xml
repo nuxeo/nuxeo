@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.webengine.site.adapters">
+
+	<extension
+		target="org.nuxeo.ecm.platform.site.adapters.SiteAdaptersManagerService"
+		point="siteAdapter">
+
+		<siteAdapter docType="WikiPage"
+			class="org.nuxeo.ecm.platform.site.adapters.WikiPageSiteObjectHandler" />
+
+		<siteAdapter docType="Wiki"
+			class="org.nuxeo.ecm.platform.site.adapters.WikiSiteObjectHandler" />
+			
+		<siteAdapter docType="BlogPost"
+			class="org.nuxeo.ecm.platform.site.adapters.DefaultSiteObjectHandler" />
+
+		<siteAdapter docType="Blog"
+			class="org.nuxeo.ecm.platform.site.adapters.FolderishSiteObjectHandler" />			
+
+	</extension>
+
+</component>

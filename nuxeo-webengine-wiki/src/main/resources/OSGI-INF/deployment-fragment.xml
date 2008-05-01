@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<fragment>
+
+  <extension target="application#MODULE">
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+  </extension>
+
+  <extension target="web#CONTEXT-PARAM">
+    <context-param>
+      <param-name>org.jboss.seam.core.init.debug</param-name>
+      <param-value>false</param-value>
+    </context-param>
+  </extension>
+
+  <install>
+    <!-- Unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+
+    <!-- Append .properties files -->
+    <!--
+    <delete path="nuxeo-webengine-wikidir.tmp" />
+    <mkdir path="nuxeo-webengine-wikidir.tmp" />
+    <unzip from="${bundle.fileName}" to="nuxeo-webengine-wikidir.tmp">
+      <include>**/*.properties</include>
+    </unzip>
+    <append from="nuxeo-webengine-wikidir.tmp/OSGI-INF/l10n/messages.properties"
+      to="nuxeo.war/WEB-INF/classes/messages.properties"
+      addNewLine="true" />
+    <append from="nuxeo-webengine-wikidir.tmp/OSGI-INF/l10n/messages_fr.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_fr.properties"
+      addNewLine="true" />
+    <delete path="nuxeo-webengine-wikidir.tmp" />
+    -->
+
+  </install>
+
+</fragment>
