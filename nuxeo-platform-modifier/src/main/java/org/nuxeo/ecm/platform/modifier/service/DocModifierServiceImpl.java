@@ -79,7 +79,7 @@ public class DocModifierServiceImpl extends DefaultComponent implements
     @Override
     public void activate(ComponentContext context) throws Exception {
         log.debug("<activate>");
-        super.activate(context)
+        super.activate(context);
     }
 
     @Override
