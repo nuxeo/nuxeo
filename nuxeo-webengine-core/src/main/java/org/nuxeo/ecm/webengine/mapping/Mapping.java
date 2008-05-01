@@ -142,6 +142,10 @@ public class Mapping {
         return traversalPath;
     }
 
+    public void setDescriptor(MappingDescriptor mdef) {
+        this.mdef = mdef;
+    }
+
     public MappingDescriptor getDescriptor() {
         return mdef;
     }

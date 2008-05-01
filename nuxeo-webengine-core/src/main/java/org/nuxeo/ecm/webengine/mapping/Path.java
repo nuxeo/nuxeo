@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine.mapping;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -28,9 +29,9 @@ import java.util.ArrayList;
  */
 public class Path implements Serializable {
 
+    public static final char SEP = '/';
     private static final long serialVersionUID = 5008948361159403627L;
 
-    public final static char SEP = '/';
     protected static final int HAS_LEADING = 1;
     protected static final int HAS_TRAILING = 2;
     protected static final int HASH_MASK = ~HAS_TRAILING;
@@ -38,11 +39,18 @@ public class Path implements Serializable {
     protected static final int USED_BITS = 2;
     protected static final String[] NO_SEGMENTS = new String[0];
 
-    public final static Path EMPTY = new Path(new String[0], 0) {
-        public String toString() { return ""; };
+    public static final Path EMPTY = new Path(new String[0], 0) {
+        @Override
+        public String toString() {
+            return "";
+        }
     };
-    public final static Path ROOT = new Path(new String[0], 1) {
-        public String toString() {return "/"; }
+
+    public static final Path ROOT = new Path(new String[0], 1) {
+        @Override
+        public String toString() {
+            return "/";
+        }
     };
 
     protected String[] segments;
@@ -66,42 +74,43 @@ public class Path implements Serializable {
     }
 
     public Path(Path path) {
-        this.segments = path.segments;
-        this.flags = path.flags;
+        segments = path.segments;
+        flags = path.flags;
     }
 
-
     protected void init(String path) {
-        ArrayList<String> segments = new ArrayList<String>();
+        List<String> segments = new ArrayList<String>();
         int slash = 0;
         int off = 0;
         int cnt = 0;
         int len = path.length();
         if (len == 0) {
-            this.flags = 0;
+            flags = 0;
             this.segments = NO_SEGMENTS;
             return;
         }
         if (len == 1) {
             char c = path.charAt(0);
             if (c == '/') {
-                this.flags = HAS_LEADING;
+                flags = HAS_LEADING;
                 this.segments = NO_SEGMENTS;
                 return;
             } else if (c == '.'){
-                this.flags = 0;
+                flags = 0;
                 this.segments = NO_SEGMENTS;
                 return;
             } else {
-                this.flags = 0;
+                flags = 0;
                 this.segments = new String[] {path};
                 return;
             }
         }
         char[] chars = path.toCharArray();
         flags = chars[0] == '/' ? HAS_LEADING : 0;
-        if (chars[len-1] == '/') flags |= HAS_TRAILING;
-        for (int i=0; i<len; i++) {
+        if (chars[len-1] == '/') {
+            flags |= HAS_TRAILING;
+        }
+        for (int i = 0; i < len; i++) {
             char c = chars[i];
             switch (c) {
             case SEP:
@@ -127,7 +136,7 @@ public class Path implements Serializable {
                             } else { // remove last segment
                                 segments.remove(segments.size()-1);
                             }
-                            i+=2;
+                            i += 2;
                             slash = 1;
                             continue;
                         } else if (c1 == SEP) { // a . segment - ignore it
@@ -162,7 +171,6 @@ public class Path implements Serializable {
         }
     }
 
-
     protected final void updateHashCode() {
         flags = (flags & ALL_SEPARATORS) | (computeHashCode() << USED_BITS);
     }
@@ -177,13 +185,12 @@ public class Path implements Serializable {
         return hash;
     }
 
-
     public boolean isAbsolute() {
-        return(flags & HAS_LEADING) != 0;
+        return (flags & HAS_LEADING) != 0;
     }
 
     public boolean isRelative() {
-        return(flags & HAS_LEADING) == 0;
+        return (flags & HAS_LEADING) == 0;
     }
 
     public boolean isRoot() {
@@ -219,7 +226,9 @@ public class Path implements Serializable {
 
     public String getFileExtension() {
         int len = segments.length;
-        if (len == 0) return null;
+        if (len == 0) {
+            return null;
+        }
         String name = segments[len - 1];
         int p = name.lastIndexOf('.');
         if (p > -1) {
@@ -230,7 +239,9 @@ public class Path implements Serializable {
 
     public String getFileName() {
         int len = segments.length;
-        if (len == 0) return null;
+        if (len == 0) {
+            return null;
+        }
         String name = segments[len - 1];
         int p = name.lastIndexOf('.');
         if (p > -1) {
@@ -241,7 +252,9 @@ public class Path implements Serializable {
 
     public String[] getFileParts() {
         int len = segments.length;
-        if (len == 0) return null;
+        if (len == 0) {
+            return null;
+        }
         String name = segments[len - 1];
         int p = name.lastIndexOf('.');
         if (p > -1) {
@@ -455,13 +468,13 @@ public class Path implements Serializable {
         System.out.println("----------------------");
 
         double s = System.currentTimeMillis();
-        for (int i=0; i<1000; i++) {
+        for (int i=0; i<100000; i++) {
             new Path("/./abc//asdf/../file.ext");
         }
         System.out.println("new path: >>>> "+(System.currentTimeMillis()-s)/1000);
 
         s = System.currentTimeMillis();
-        for (int i=0; i<1000; i++) {
+        for (int i=0; i<100000; i++) {
             new org.nuxeo.common.utils.Path("/./abc//asdf/../file.ext");
         }
         System.out.println("old path: >>>> "+(System.currentTimeMillis()-s)/1000);

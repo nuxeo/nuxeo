@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.mapping;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,7 +50,7 @@ public class PathPattern  {
 
     public String processNamedWildcards(String pattern) {
         StringBuilder buf = new StringBuilder();
-        ArrayList<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<String>();
         names.add("path");
         int len = pattern.length();
         boolean esc = false;
