@@ -43,7 +43,7 @@ import org.nuxeo.ecm.webengine.SiteRequest;
  */
 public class SiteRenderingContext implements ServletRenderingContext {
 
-    private SiteRequest request;
+    private final SiteRequest request;
 
     public SiteRenderingContext(SiteRequest request) {
         this.request = request;

@@ -93,14 +93,14 @@ public class ResourceServlet extends HttpServlet {
         resp.sendError(404);
     }
 
-    protected void sendBinaryContent(File file, HttpServletResponse resp) throws IOException {
+    protected static void sendBinaryContent(File file, HttpServletResponse resp) throws IOException {
         OutputStream out = resp.getOutputStream();
         InputStream in = new FileInputStream(file);
         FileUtils.copy(in, out);
         out.flush();
     }
 
-    protected void sendTextContent(File file, HttpServletResponse resp) throws IOException {
+    protected static void sendTextContent(File file, HttpServletResponse resp) throws IOException {
         //Writer out = resp.getWriter();
         OutputStream out = resp.getOutputStream();
         InputStream in = new FileInputStream(file);

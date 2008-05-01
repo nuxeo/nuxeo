@@ -25,7 +25,7 @@ package org.nuxeo.ecm.webengine.mapping;
  */
 public class StringSegment implements ReplacementSegment {
 
-    String string;
+    final String string;
 
     public StringSegment(String string) {
         this.string = string;

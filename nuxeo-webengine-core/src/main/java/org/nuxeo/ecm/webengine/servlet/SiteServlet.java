@@ -115,8 +115,7 @@ public class SiteServlet extends HttpServlet {
         System.out.println(">>> SITE REQUEST TOOK:  "+((System.currentTimeMillis()-start)/1000));
     }
 
-    protected void service(SiteRequest siteRequest, HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void service(SiteRequest siteRequest, HttpServletRequest req, HttpServletResponse resp) {
         if (siteRequest.getLastResolvedObject() == null) { // a request outside the root
             try {
                 showIndex(siteRequest);
@@ -177,9 +176,9 @@ public class SiteServlet extends HttpServlet {
         resp.setStatus(SiteConst.SC_OK);
     }
 
-    protected void displayError(HttpServletResponse resp, Throwable t,
+    protected static void displayError(HttpServletResponse resp, Throwable t,
             String message, int code) {
-        PrintWriter writer = null;
+        PrintWriter writer;
         try {
             writer = resp.getWriter();
         } catch (IOException e) {
@@ -255,12 +254,9 @@ public class SiteServlet extends HttpServlet {
         return siteReq;
     }
 
-    public void buildTraversalPath(SiteRequest siteReq, String[] traversal) throws Exception {
+    public static void buildTraversalPath(SiteRequest siteReq, String[] traversal) throws Exception {
         if (traversal == null || traversal.length == 0) {
             // nothing to traverse
-            for (int i=0; i<traversal.length; i++) {
-                siteReq.addSiteObject(traversal[i], null);
-            }
             return;
         }
         CoreSession session = siteReq.getCoreSession();
@@ -303,7 +299,6 @@ public class SiteServlet extends HttpServlet {
             siteReq.setAction(Actions.DEFAULT_ACTION);
         }
     }
-
 
     public void showIndex(SiteRequest request) throws Exception {
         try {

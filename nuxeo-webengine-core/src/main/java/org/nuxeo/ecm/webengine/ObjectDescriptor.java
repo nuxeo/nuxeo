@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -124,7 +125,7 @@ public class ObjectDescriptor {
     public Collection<ActionDescriptor> getEnabledActions(SiteObject obj) {
         CoreSession session = obj.getSession();
         DocumentModel doc = obj.getDocument();
-        ArrayList<ActionDescriptor> ads = new ArrayList<ActionDescriptor>();
+        List<ActionDescriptor> ads = new ArrayList<ActionDescriptor>();
         for (ActionDescriptor ad : actions.values()) {
             if (ad.getGuard().check(session, doc)) {
                 ads.add(ad);

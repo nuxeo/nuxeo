@@ -53,13 +53,13 @@ import org.python.core.PyTuple;
  */
 public class Scripting {
 
-    private ConcurrentMap<File, Entry> cache = new ConcurrentHashMap<File, Entry>();
-
-    RenderingEngine renderingEngine;
-    ScriptingService  scriptService;
-
     private static final String CHAR_FILE_EXT = "html htm xml css txt java c cpp h";
     private static final String BINARY_FILE_EXT = "gif jpg jpeg png pdf doc xsl";
+
+    private final ConcurrentMap<File, Entry> cache = new ConcurrentHashMap<File, Entry>();
+
+    final RenderingEngine renderingEngine;
+    final ScriptingService  scriptService;
 
     public Scripting(RenderingEngine engine) {
         renderingEngine = engine;
@@ -93,7 +93,7 @@ public class Scripting {
         }
     }
 
-    public CompiledScript compileScript(ScriptEngine engine, File file) throws ScriptException {
+    public static CompiledScript compileScript(ScriptEngine engine, File file) throws ScriptException {
         if (engine instanceof Compilable) {
             Compilable comp = (Compilable)engine;
             try {

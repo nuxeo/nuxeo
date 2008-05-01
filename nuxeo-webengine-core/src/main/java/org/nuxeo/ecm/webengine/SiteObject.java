@@ -45,8 +45,8 @@ public class SiteObject implements ServletRenderingContext {
     protected SiteObject prev;
 
     protected DocumentModel doc;
-    protected String name;
-    protected SiteRequest request;
+    protected final String name;
+    protected final SiteRequest request;
     protected ObjectDescriptor desc;
 
 

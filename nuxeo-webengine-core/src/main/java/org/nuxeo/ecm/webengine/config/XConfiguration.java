@@ -35,8 +35,8 @@ import org.nuxeo.runtime.model.impl.XMapContext;
  */
 public class XConfiguration {
 
-    protected XMap xmap;
-    protected XMapContext ctx;
+    protected final XMap xmap;
+    protected final XMapContext ctx;
 
     public XConfiguration(RuntimeContext ctx, Class<?> ... xobjs) {
         this.ctx = new XMapContext(ctx);

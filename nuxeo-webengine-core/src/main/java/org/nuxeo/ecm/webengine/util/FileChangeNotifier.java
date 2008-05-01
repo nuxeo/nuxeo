@@ -96,15 +96,19 @@ public class FileChangeNotifier {
     class FileEntry {
         File file;
         long lastModified;
+
         FileEntry(File file) throws IOException {
             this.file = file.getCanonicalFile();
-            this.lastModified = file.lastModified();
+            lastModified = file.lastModified();
         }
+
         @Override
         public boolean equals(Object obj) {
-            if (obj == null) return false;
+            if (obj == null) {
+                return false;
+            }
             if (obj.getClass() == FileEntry.class) {
-                return file.equals(((FileEntry)obj).file);
+                return file.equals(((FileEntry) obj).file);
             }
             return false;
         }

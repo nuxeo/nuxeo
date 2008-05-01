@@ -54,7 +54,7 @@ public class WikiTransformerDescriptor extends TransformerDescriptor {
         if (serializerClass == null) {
             tr = new WikiTransformer();
         } else {
-            tr = new WikiTransformer((WikiSerializer)serializerClass.newInstance());
+            tr = new WikiTransformer((WikiSerializer) serializerClass.newInstance());
         }
         WikiSerializer serializer = tr.getSerializer();
         for (WikiFilterDescriptor wfd : filters) {

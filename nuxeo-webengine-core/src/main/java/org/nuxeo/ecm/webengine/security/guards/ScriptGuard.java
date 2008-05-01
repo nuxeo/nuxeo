@@ -86,13 +86,13 @@ public class ScriptGuard implements Guard {
         }
     }
 
-    protected boolean booleanValue(Object obj) {
-        if (obj.getClass() == Boolean.class) {
-            return ((Boolean) obj).booleanValue();
+    protected static boolean booleanValue(Object obj) {
+        if (obj == null) {
+            return false;
+        } else if (obj.getClass() == Boolean.class) {
+            return (Boolean) obj;
         } else if (obj instanceof Number) {
             return ((Number) obj).intValue() != 0;
-        } else if (obj != null) {
-            return true;
         }
         return false;
     }

@@ -130,7 +130,7 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
         ctx = null;
     }
 
-    private void deployWebDir(Bundle bundle, File root) throws Exception {
+    private static void deployWebDir(Bundle bundle, File root) throws Exception {
         root.mkdirs(); // create root dir if not already exists
         // copy web dir located in the bundle jar into this dir
         //TODO: getLocation() may not work with some OSGi impl.

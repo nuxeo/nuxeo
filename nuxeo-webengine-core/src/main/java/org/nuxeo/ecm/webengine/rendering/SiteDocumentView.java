@@ -28,9 +28,6 @@ import org.nuxeo.ecm.webengine.SiteRequest;
 
 public class SiteDocumentView extends DocumentContextView {
 
-    public SiteDocumentView() {
-    }
-
     @Override
     protected void initialize() {
         super.initialize();

@@ -24,6 +24,7 @@ package org.nuxeo.ecm.webengine.security;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+// XXX: currently not implemented
 public interface GuardFactory {
 
     /**

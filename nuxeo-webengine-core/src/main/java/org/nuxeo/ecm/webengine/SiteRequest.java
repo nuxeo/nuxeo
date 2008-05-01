@@ -57,7 +57,7 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
 
     public static final String CORESESSION_KEY = "SiteCoreSession";
 
-    protected SiteManager siteManager;
+    protected final SiteManager siteManager;
     protected CoreSession session;
     protected boolean isRenderingCanceled = false;
 
@@ -65,15 +65,15 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
     protected SiteObject tail;
     protected SiteObject lastResolved;
 
-    protected HttpServletResponse resp;
+    protected final HttpServletResponse resp;
 
     protected String pathInfo;
 
-    protected SiteRoot siteRoot;
+    protected final SiteRoot siteRoot;
     protected Mapping mapping;
     protected String action; // the current object view
 
-    protected Map<String,Object> vars; // global vars to share between scripts
+    protected final Map<String,Object> vars; // global vars to share between scripts
 
     public SiteRequest(SiteRoot root, HttpServletRequest req, HttpServletResponse resp) {
         super(req);
@@ -309,7 +309,7 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
     * @param end exclusive
     * @return
     */
-   public String getPath(SiteObject start, SiteObject end) {
+   public static String getPath(SiteObject start, SiteObject end) {
        if (start == null || start == end) {
            return "";
        }
@@ -336,29 +336,32 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
        return getPath(head, lastResolved.next);
    }
 
+   @Override
    public String toString() {
-       return "Resolved Path: "+getResolvedPath()+"; Unresolved Path:"+getUnresolvedPath()+"; Action: "+action+"; Mapping: "+(mapping == null? "none" : mapping.getScript());
+       return "Resolved Path: " + getResolvedPath() + "; Unresolved Path:" + getUnresolvedPath()
+               + "; Action: " + action + "; Mapping: " + (mapping == null ? "none" : mapping.getScript());
    }
 
-   public void render(String template) throws Exception {
+    public void render(String template) throws Exception {
        render(template, vars);
    }
 
-   public void render(String template, Object ctx) throws Exception {
-       if (lastResolved != null) {
-           Map map = null;
-           if (ctx instanceof Map) {
-               map = (Map)ctx;
-           } else if (ctx instanceof PyDictionary) {
-               map = Scripting.convertPythonMap((PyDictionary)ctx);
-           }
-           siteManager.getScripting().getRenderingEngine().render(template, lastResolved, (Map<String,Object>)map);
-       } else {
-           throw new SiteException("Rendering outside doc context not impl yet");
-       }
-   }
+    public void render(String template, Object ctx) throws Exception {
+        if (lastResolved != null) {
+            Map map = null;
+            if (ctx instanceof Map) {
+                map = (Map) ctx;
+            } else if (ctx instanceof PyDictionary) {
+                map = Scripting.convertPythonMap((PyDictionary) ctx);
+            }
+            siteManager.getScripting().getRenderingEngine().render(template, lastResolved,
+                    (Map<String, Object>) map);
+        } else {
+            throw new SiteException("Rendering outside doc context not impl yet");
+        }
+    }
 
-   public DocumentModelList query(String query) throws Exception {
+    public DocumentModelList query(String query) throws Exception {
        SearchService search = Framework.getService(SearchService.class);
        if (search == null) {
            return session.query(query);

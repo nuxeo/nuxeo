@@ -74,7 +74,7 @@ public class ActionDescriptor {
         return isEnabled;
     }
 
-    public boolean isEnabled(SiteObject obj) throws Exception {
+    public boolean isEnabled(SiteObject obj) {
         if (!isEnabled) {
             return false;
         }

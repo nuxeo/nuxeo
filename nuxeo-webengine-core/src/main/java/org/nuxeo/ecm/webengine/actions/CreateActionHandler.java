@@ -65,8 +65,8 @@ public class CreateActionHandler implements ActionHandler {
         throw new SiteException("Faield to create document. The document already exists: "+object.getPath());
     }
 
-    private DocumentModel createSubPage(DocumentModel parent, String name, SiteRequest request)
-    throws SiteException {
+    private static DocumentModel createSubPage(DocumentModel parent, String name,
+            SiteRequest request) throws SiteException {
         try {
             CoreSession session = request.getCoreSession();
             String type = DocumentFormHelper.getDocumentType(request);

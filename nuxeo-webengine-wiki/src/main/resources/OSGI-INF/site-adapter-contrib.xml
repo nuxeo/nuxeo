@@ -11,12 +11,12 @@
 
 		<siteAdapter docType="Wiki"
 			class="org.nuxeo.ecm.platform.site.adapters.WikiSiteObjectHandler" />
-			
+
 		<siteAdapter docType="BlogPost"
 			class="org.nuxeo.ecm.platform.site.adapters.DefaultSiteObjectHandler" />
 
 		<siteAdapter docType="Blog"
-			class="org.nuxeo.ecm.platform.site.adapters.FolderishSiteObjectHandler" />			
+			class="org.nuxeo.ecm.platform.site.adapters.FolderishSiteObjectHandler" />
 
 	</extension>
 

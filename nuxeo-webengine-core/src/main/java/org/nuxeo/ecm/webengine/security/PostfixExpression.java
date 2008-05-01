@@ -176,7 +176,7 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
         this.expr = result.toArray(new Token[result.size()]);
     }
 
-    private void pushOp (Token tok, OpStack stack, List<Token> result) {
+    private static void pushOp(Token tok, OpStack stack, List<Token> result) {
         if (!stack.isEmpty() && stack.top().type <= tok.type) {
             result.add(stack.pop());
         }
@@ -214,13 +214,13 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
     }
 
     public static interface Visitor {
-        public Object createParameter(Token token);
-        public Object createOperation(Token token, Object lparam, Object rparam);
+        Object createParameter(Token token);
+        Object createOperation(Token token, Object lparam, Object rparam);
     }
 
     public static class Token {
-        public int type;
-        public String name;
+        public final int type;
+        public final String name;
 
         public Token(int type, String name) {
             this.type = type;

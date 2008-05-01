@@ -44,13 +44,13 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class SiteRoot implements FileChangeListener {
 
-    static final Log log = LogFactory.getLog(SiteRoot.class);
-
     public static final String SITE_CONFIG = "site.config";
 
-    SiteManager manager;
+    private static final Log log = LogFactory.getLog(SiteRoot.class);
 
-    File root;
+    final SiteManager manager;
+
+    final File root;
 
     boolean debug = false;
 
@@ -60,11 +60,11 @@ public class SiteRoot implements FileChangeListener {
 
     Version version = new Version(1, 0, 0);
 
-    PathMapper mapper;
+    final PathMapper mapper;
 
-    Configuration config;
+    final Configuration config;
 
-    ConcurrentMap<String, Mapping> cache;
+    final ConcurrentMap<String, Mapping> cache;
 
     DocumentResolver resolver = DefaultDocumentResolver.INSTANCE;
 
@@ -78,9 +78,9 @@ public class SiteRoot implements FileChangeListener {
     public SiteRoot(SiteManager manager, File root) {
         this.manager = manager;
         this.root = root;
-        this.mapper = new PathMapper();
-        this.cache = new ConcurrentHashMap<String, Mapping>();
-        this.config = new Configuration("main");
+        mapper = new PathMapper();
+        cache = new ConcurrentHashMap<String, Mapping>();
+        config = new Configuration("main");
         config.putConfigurator("main", MainSection.INSTANCE);
         config.putConfigurator("mapping", MappingSection.INSTANCE);
         try {
