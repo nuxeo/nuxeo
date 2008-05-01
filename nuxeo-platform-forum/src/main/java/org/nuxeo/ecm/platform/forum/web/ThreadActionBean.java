@@ -228,9 +228,7 @@ public class ThreadActionBean extends InputController implements ThreadAction {
         return basicCommentList;
     }
 
-
-    public ThreadAdapter getAdapter(DocumentModel thread)
-    {
+    public ThreadAdapter getAdapter(DocumentModel thread) {
         return thread.getAdapter(ThreadAdapter.class);
     }
 

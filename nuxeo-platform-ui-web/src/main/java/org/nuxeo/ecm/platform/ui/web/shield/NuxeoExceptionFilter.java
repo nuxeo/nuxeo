@@ -236,19 +236,15 @@ public class NuxeoExceptionFilter implements Filter {
         return trace.toString();
     }
 
-    private static void rollbackTransactionIfNecessary()
-    {
-       try {
-          if ( Transactions.isTransactionActiveOrMarkedRollback() )
-          {
-             log.info("killing transaction");
-             Transactions.getUserTransaction().rollback();
-          }
-       }
-       catch (Exception te)
-       {
-          log.error("could not roll back transaction", te);
-       }
+    private static void rollbackTransactionIfNecessary() {
+        try {
+            if (Transactions.isTransactionActiveOrMarkedRollback()) {
+                log.info("killing transaction");
+                Transactions.getUserTransaction().rollback();
+            }
+        } catch (Exception te) {
+            log.error("could not roll back transaction", te);
+        }
     }
 
 }

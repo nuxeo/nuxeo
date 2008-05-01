@@ -248,8 +248,7 @@ public class FakeSearchService implements SearchServiceInternals {
             throws IndexingException {
     }
 
-    public long getIndexingWaitingQueueSize()
-    {
+    public long getIndexingWaitingQueueSize() {
         return 0;
     }
 

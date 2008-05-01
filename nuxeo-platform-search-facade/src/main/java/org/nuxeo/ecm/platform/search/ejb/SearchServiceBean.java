@@ -328,8 +328,7 @@ public class SearchServiceBean implements SearchService {
         }
     }
 
-    public long getIndexingWaitingQueueSize()
-    {
+    public long getIndexingWaitingQueueSize() {
         if (getSearchService() != null) {
             return getSearchService().getIndexingWaitingQueueSize();
         } else {

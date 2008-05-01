@@ -94,11 +94,9 @@ public class WorkItemsListsActionsBean extends InputController implements
     public String workItemsListsEntrySelectionName;
 
     @Create
-    public void init()
-    {
+    public void init() {
         Events.instance().raiseEvent(EventNames.WF_INIT);
     }
-
 
     @Factory(value = "userWorkItemsListsItems", scope = EVENT)
     public List<SelectItem> computeWorkItemsListsMap()
@@ -276,7 +274,7 @@ public class WorkItemsListsActionsBean extends InputController implements
     }
 
     public void setWorkItemsListsEntrySelectionName(String name) {
-        this.workItemsListsEntrySelectionName = name;
+        workItemsListsEntrySelectionName = name;
     }
 
     protected void rebuildTabsList() {

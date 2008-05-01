@@ -151,8 +151,7 @@ public class IndexingThreadImpl extends Thread implements IndexingThread {
     }
 
     @Override
-    public void interrupt()
-    {
+    public void interrupt() {
         closeSearchServiceSession();
         closeCoreSession();
         logout();
@@ -168,7 +167,6 @@ public class IndexingThreadImpl extends Thread implements IndexingThread {
     }*/
 
     public SearchServiceSession getSearchServiceSession() throws Exception {
-
         if (searchServiceSession == null) {
             searchServiceSession = getSearchService().openSession();
         }

@@ -567,33 +567,32 @@ public class UserManagerActionsBean extends InputController implements
     public String searchUsersAdvanced() throws ClientException {
         searchOverflow = false;
         try {
-        Map<String, Object> filter = new HashMap<String, Object>();
-        if ((searchUsername + searchLastname + searchFirstname + searchEmail + searchCompany).trim()
-                .compareTo("*")==0) {
-            allUsers = userManager.getAvailablePrincipals();
+            Map<String, Object> filter = new HashMap<String, Object>();
+            if ((searchUsername + searchLastname + searchFirstname + searchEmail + searchCompany).trim()
+                    .compareTo("*") == 0) {
+                allUsers = userManager.getAvailablePrincipals();
 
-        } else
-        {
-        if (searchUsername != null && !"".equals(searchUsername)) {
-            filter.put(NuxeoPrincipalImpl.USERNAME_COLUMN, searchUsername);
-        }
-        if (searchLastname != null && !"".equals(searchLastname)) {
-            filter.put(NuxeoPrincipalImpl.LASTNAME_COLUMN, searchLastname);
-        }
-        if (searchFirstname != null && !"".equals(searchFirstname)) {
-            filter.put(NuxeoPrincipalImpl.FIRSTNAME_COLUMN, searchFirstname);
-        }
-        if (searchEmail != null && !"".equals(searchEmail)) {
-            filter.put(NuxeoPrincipalImpl.EMAIL_COLUMN, searchEmail);
-        }
-        if (searchCompany != null && !"".equals(searchCompany)) {
-            filter.put(NuxeoPrincipalImpl.COMPANY_COLUMN, searchCompany);
-        }
+            } else {
+                if (searchUsername != null && !"".equals(searchUsername)) {
+                    filter.put(NuxeoPrincipalImpl.USERNAME_COLUMN, searchUsername);
+                }
+                if (searchLastname != null && !"".equals(searchLastname)) {
+                    filter.put(NuxeoPrincipalImpl.LASTNAME_COLUMN, searchLastname);
+                }
+                if (searchFirstname != null && !"".equals(searchFirstname)) {
+                    filter.put(NuxeoPrincipalImpl.FIRSTNAME_COLUMN, searchFirstname);
+                }
+                if (searchEmail != null && !"".equals(searchEmail)) {
+                    filter.put(NuxeoPrincipalImpl.EMAIL_COLUMN, searchEmail);
+                }
+                if (searchCompany != null && !"".equals(searchCompany)) {
+                    filter.put(NuxeoPrincipalImpl.COMPANY_COLUMN, searchCompany);
+                }
 
-        // create a new set because a HashMap.KeySet is not serializable
-        allUsers = userManager.searchByMap(filter, new HashSet<String>(
-                filter.keySet()));
-        }
+                // create a new set because a HashMap.KeySet is not serializable
+                allUsers = userManager.searchByMap(filter, new HashSet<String>(
+                        filter.keySet()));
+            }
         } catch (SizeLimitExceededException e) {
             searchOverflow = true;
             allUsers = Collections.emptyList();
@@ -603,7 +602,6 @@ public class UserManagerActionsBean extends InputController implements
 
         doSearch = true;
         return viewUsers();
-
     }
 
     public String clearSearchAdvanced() throws ClientException {

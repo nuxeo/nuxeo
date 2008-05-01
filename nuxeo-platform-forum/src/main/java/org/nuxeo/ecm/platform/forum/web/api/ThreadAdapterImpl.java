@@ -12,9 +12,6 @@ import org.nuxeo.ecm.platform.forum.workflow.ForumConstants;
 
 public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1876878787587L;
 
     private DocumentModel threadDoc;
@@ -25,9 +22,7 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
 
     private List<DocumentModel> pendingPosts;
 
-
     private DocumentModel lastPublishedPost;
-
 
     public ThreadAdapterImpl(DocumentModel threadDoc) {
         this.threadDoc = threadDoc;
@@ -38,8 +33,9 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
     }
 
     public List<DocumentModel> getAllPosts() throws ClientException {
-        if (posts == null)
+        if (posts == null) {
             fetchAllPosts();
+        }
         return posts;
     }
 
@@ -53,7 +49,6 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
                 }
             }
         }
-
         return publishedPosts;
     }
 
@@ -68,7 +63,6 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
             }
         }
         return pendingPosts;
-
     }
 
     public DocumentModel getLastPublishedPost() throws ClientException {
@@ -79,7 +73,7 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
                 GregorianCalendar postDate = (GregorianCalendar) post.getProperty(
                         "post", "creationDate");
 
-                if ((lastPostDate == null) || (postDate.after(lastPostDate))) {
+                if (lastPostDate == null || postDate.after(lastPostDate)) {
                     lastPostDate = postDate;
                     lastPublishedPost = post;
                 }
@@ -95,13 +89,11 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
 
         CommentableDocument commentDoc = doc.getAdapter(CommentableDocument.class);
 
-        if (commentDoc!=null)
-        {
+        if (commentDoc != null) {
             List<DocumentModel> childComments = commentDoc.getComments();
 
 
-            for (DocumentModel childComment : childComments)
-            {
+            for (DocumentModel childComment : childComments) {
                 allSubPosts.add(childComment);
                 allSubPosts.addAll(getSubComments(childComment));
             }

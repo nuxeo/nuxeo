@@ -489,32 +489,25 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         String className = pluginExtension.getClassName();
         boolean enabled = pluginExtension.isEnabled();
 
-        if (fileImporters.containsKey(name))
-        {
+        if (fileImporters.containsKey(name)) {
             log.info("Overriding FileImporter plugin " + name);
-            if (className!=null)
-            {
+            if (className != null) {
                 Plugin plugin = (Plugin) extension.getContext().loadClass(className).newInstance();
                 plugin.setName(name);
                 plugin.setFilters(filters);
                 plugin.setFileManagerService(this);
                 plugin.setEnabled(enabled);
                 fileImporters.put(name, plugin);
-            }
-            else
-            {
+            } else {
                 Plugin plugin = fileImporters.get(name);
 
-                if (filters!=null && filters.size()>0)
-                {
+                if (filters != null && filters.size() > 0) {
                     plugin.setFilters(filters);
                 }
                 plugin.setEnabled(enabled);
                 plugin.setFileManagerService(this);
             }
-        }
-        else
-        {
+        } else {
             Plugin plugin = (Plugin) extension.getContext().loadClass(className).newInstance();
             plugin.setName(name);
             plugin.setFilters(filters);
@@ -618,7 +611,6 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     public boolean isFileAlreadyPresentInPath(String path, Blob blob,
             Principal principal) {
         return isFileAlreadyPresentInPath(path, blob, principal);
-
     }
 
     public boolean isFileAlreadyPresentInPath(String path, String digest,

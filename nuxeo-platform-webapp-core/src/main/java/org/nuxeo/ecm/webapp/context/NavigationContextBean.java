@@ -492,8 +492,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
      */
     public void setCurrentServerLocation(RepositoryLocation serverLocation)
             throws ClientException {
-        if (serverLocation==null)
-        {
+        if (serverLocation == null) {
             log.warn("Setting ServerLocation to null, is this normal ?");
         }
 
@@ -643,13 +642,10 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         //currentItem = currentDocument;
 
         //sessionContext.set("changeableDocument", currentDocument);
-        if (currentDocument!=null)
-        {
+        if (currentDocument != null) {
             changeableDocument = currentDocument;
             eventContext.set("changeableDocument", changeableDocument);
-        }
-        else
-        {
+        } else {
             changeableDocument = currentDocument;
             eventContext.remove("changeableDocument");
         }

@@ -216,7 +216,8 @@ public final class IndexableResourcesFactory implements Serializable {
         }
 
         // Automatically add builtins
-        IndexableResourceConf builtinConf = getResourceConf(BuiltinDocumentFields.DOC_BUILTINS_RESOURCE_NAME, false);
+        IndexableResourceConf builtinConf = getResourceConf(
+                BuiltinDocumentFields.DOC_BUILTINS_RESOURCE_NAME, false);
 
         if (builtinConf != null) {
             resources.add(new DocumentBuiltinsIndexableResourceImpl(dm,
@@ -235,7 +236,9 @@ public final class IndexableResourcesFactory implements Serializable {
         if (res == null) {
             SearchService service = SearchServiceDelegate.getRemoteSearchService();
             res = service.getIndexableDocTypeFor(type);
-            if (res == null) res = NULL;
+            if (res == null) {
+                res = NULL;
+            }
             synchronized (indexableDocTypeCache) {
                 indexableDocTypeCache.put(type, res);
             }
