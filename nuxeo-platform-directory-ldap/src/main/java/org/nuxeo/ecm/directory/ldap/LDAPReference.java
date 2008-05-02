@@ -75,7 +75,7 @@ public class LDAPReference extends AbstractReference {
 
     private static final Log log = LogFactory.getLog(LDAPReference.class);
 
-    @XNode("forceDnConsistencyCheck")
+    @XNode("@forceDnConsistencyCheck")
     public Boolean forceDnConsistencyCheck = Boolean.FALSE;
 
     protected LDAPDirectoryDescriptor targetDirectoryDescriptor;
@@ -640,7 +640,7 @@ public class LDAPReference extends AbstractReference {
                         // the scope)
                         // this check can be very expensive on large groups
                         // and thus not enabled by default
-                        if (targetSession.hasEntry(id)) {
+                        if (!targetSession.hasEntry(id)) {
                             log.debug("ignoring: " + targetDn
                                     + " (not part of target directory)");
                             continue;
