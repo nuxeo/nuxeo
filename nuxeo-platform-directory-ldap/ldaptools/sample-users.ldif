@@ -14,8 +14,7 @@ objectClass: top
 objectClass: person
 cn: ldapadmin
 sn: Admin
-userPassword: {SSHA}SVoqZZkxxwQXQ2hrMFYqRffB0BOcC0Y3QRWe
-# password is "changeme"
+userPassword: changeme
 
 # Branch to register applicative accounts
 #
@@ -31,8 +30,7 @@ objectClass: top
 objectClass: person
 cn: nuxeo5
 sn: nuxeo5
-userPassword: {SSHA}SVoqZZkxxwQXQ2hrMFYqRffB0BOcC0Y3QRWe
-# password is "changeme"
+userPassword: changeme
 
 # Branch to store real human users
 # (User's passwords are equal to their uids)
@@ -53,7 +51,7 @@ cn: Administrator
 sn: Manager
 initials: A
 mail: ogrisel+Administrator@nuxeo.com
-userPassword: {SSHA}ab0BjYogPKSkIObPrylcLz3owHlZGcnCoJz38Q==
+userPassword: Administrator
 
 dn: uid=user1,ou=people,dc=example,dc=com
 objectClass: top
@@ -73,5 +71,5 @@ facsimileTelephoneNumber: 7160
 mail: ogrisel+user1@nuxeo.com
 o: DIR
 ou: MOS
-userPassword: {SSHA}LYE/IHy43vnqhuPzuXF+qoy1H307iishAHBMZA==
+userPassword: user1
 
