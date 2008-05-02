@@ -423,10 +423,12 @@ public class LDAPReference extends AbstractReference {
 
             // step #1.2: search for entries that reference that dn in the
             // source directory and collect their ids
-            String filterExpr = String.format("%s={0}", staticAttributeId);
+            LDAPDirectory sourceDirectory = getSourceLDAPDirectory();
+
+            String filterExpr = String.format("(&(%s={0})%s)",
+                    staticAttributeId, sourceDirectory.getBaseFilter());
             String[] filterArgs = new String[] { targetDn };
 
-            LDAPDirectory sourceDirectory = getSourceLDAPDirectory();
             String searchBaseDn = sourceDirectory.getConfig().getSearchBaseDn();
             LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
             SearchControls sctls = sourceDirectory.getSearchControls();
