@@ -58,7 +58,6 @@ public class PluginExtension implements Serializable {
     Map<String, Serializable> defaultOptions = new HashMap<String, Serializable>();
 
     public PluginExtension() {
-
     }
 
     public PluginExtension(String name, String className, String sourceMimeType,

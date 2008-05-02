@@ -177,6 +177,6 @@ public class TestIndexingThreadPool extends RepositoryTestCase {
 
         //assertEquals(20,
         //        IndexingThreadPool.getTotalCompletedIndexingTasks());
-
     }
+
 }

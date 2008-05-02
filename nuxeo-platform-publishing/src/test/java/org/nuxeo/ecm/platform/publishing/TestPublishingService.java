@@ -41,18 +41,10 @@ public class TestPublishingService extends NXRuntimeTestCase {
         deployContrib("OSGI-INF/nuxeo-platform-publishing-contrib.xml");
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        // TODO Auto-generated method stub
-        super.tearDown();
-    }
-
     /**
      * Lookup here will be successful since local lookup.
-     *
-     * @throws Exception
      */
-    public void testLocalRuntimeServiceLookup() throws Exception {
+    public void testLocalRuntimeServiceLookup() {
         assertNotNull(Framework.getLocalService(PublishingService.class));
     }
 
@@ -81,10 +73,9 @@ public class TestPublishingService extends NXRuntimeTestCase {
         deployContrib("test-nuxeo-platform-publishing-contrib.xml");
 
         assertTrue(service.getValidatorsRule() instanceof FakeValidatorsRule);
-
     }
 
-    public void testDefaultValidDate() throws Exception {
+    public void testDefaultValidDate() {
         PublishingService service = Framework.getLocalService(
                 PublishingService.class);
 
@@ -96,7 +87,6 @@ public class TestPublishingService extends NXRuntimeTestCase {
 
         assertEquals("foo", service.getValidDateFieldSchemaPrefixName());
         assertEquals("bar", service.getValidDateFieldName());
-
     }
 
 }

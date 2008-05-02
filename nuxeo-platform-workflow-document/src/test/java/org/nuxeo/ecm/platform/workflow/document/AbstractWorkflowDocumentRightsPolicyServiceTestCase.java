@@ -36,9 +36,7 @@ public abstract class AbstractWorkflowDocumentRightsPolicyServiceTestCase
         super.setUp();
         deploy("WorkflowDocumentSecurityPolicyService.xml");
         deploy("WorkflowDocumentSecurityPolicyServiceTestExtensions.xml");
-        service = NXWorkflowDocument
-                .getWorkflowDocumentRightsPolicyService();
-
+        service = NXWorkflowDocument.getWorkflowDocumentRightsPolicyService();
     }
 
     public void testService() {
