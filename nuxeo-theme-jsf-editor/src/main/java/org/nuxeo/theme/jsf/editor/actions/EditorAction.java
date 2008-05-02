@@ -391,6 +391,16 @@ public class EditorAction implements EditorActionLocal {
                 null));
     }
 
+    public void createNamedStyle(final String id, final String styleName,
+            final String themeName) {
+        if (themeManager.getNamedObject(themeName, "style", styleName) == null) {
+            Style style = (Style) FormatFactory.create("style");
+            style.setName(styleName);
+            themeManager.setNamedObject(themeName, "style", style);
+        }
+        makeElementInheritStyle(id, styleName, themeName);
+    }
+
     public void updateElementStyleCss(final String id, String viewName,
             String cssSource) {
         final Element element = getElementById(id);

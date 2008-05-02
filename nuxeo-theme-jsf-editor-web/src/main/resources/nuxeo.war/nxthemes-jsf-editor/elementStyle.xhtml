@@ -21,20 +21,22 @@
 
       <style id="previewCss" type="text/css"></style>
 
-      <c:if test="#{not empty nxthemesUiManager.availableNamedStyles}">
+      
       <form class="nxthemesInheritedStyles" onsubmit="return false"
         element="#{nxthemesUiStates.selectedElement.uid}"
         currentThemeName="#{nxthemesUiManager.currentThemeName}">
-        <div>
-         <label>Inherit style properties from:</label>
+        <span>
+        <label>Inherit style properties from:</label>
         <h:selectOneMenu id="inherited_style" value="#{nxthemesUiManager.inheritedStyleNameOfSelectedElement}"
+          rendered="#{not empty nxthemesUiManager.availableNamedStyles}"
           onchange="NXThemesStyleEditor.makeElementInheritStyle(this)">
           <f:selectItems value="#{nxthemesUiManager.availableNamedStyles}" />
         </h:selectOneMenu>
-        </div>
+        <button onclick="NXThemesStyleEditor.createNamedStyle('#{nxthemesUiStates.selectedElement.uid}', '#{nxthemesUiManager.currentThemeName}')">New</button>
+        </span>
       </form>
-      </c:if>
 
+   
       <div class="nxthemesButtonSelector"
         style="text-align: left; padding: 4px 15px;">
         <span>Layers: </span>

@@ -193,6 +193,18 @@ NXThemesStyleEditor.makeElementInheritStyle = function(select) {
     });
 };
 
+NXThemesStyleEditor.createNamedStyle = function(id, currentThemeName) {
+  var style_name = prompt("Please enter a style name:", "");
+  if (style_name === "") {
+      window.alert("Style names cannot be empty.");
+      return "";
+  }
+  Seam.Component.getInstance("nxthemesEditorAction").createNamedStyle(id, style_name, currentThemeName,
+    function(r) {
+      NXThemes.getViewById("element style").refresh();
+    });
+};
+
 NXThemesStyleEditor.updateFormField = function(value) {
   var currentProperty = NXThemesStyleEditor.currentProperty;
   if (currentProperty !== null) {

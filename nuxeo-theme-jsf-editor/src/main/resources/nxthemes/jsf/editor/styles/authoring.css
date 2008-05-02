@@ -1110,14 +1110,23 @@ img.nxthemesAlignSection:hover {
 }
 
 form.nxthemesInheritedStyles {
-  padding: 5px 15px;
+  padding: 0 0 0 15px;
+  display: inline;
 }
 
 form.nxthemesInheritedStyles label {
   font-style: italic;
-  padding-right: 6px;
+  padding-right: 4px;
 }
 
-form.nxthemesInheritedStyles select {
-  border: 1px solid #ccc;
+form.nxthemesInheritedStyles select, form.nxthemesInheritedStyles button {
+  border-style: solid;
+  border-width: 1px;
+  border-color: #ccc #666 #666 #ccc;
+}
+
+form.nxthemesInheritedStyles button {
+  font-size: 13px;
+  padding: 0 1px;
+  margin: 0 3px;
 }
