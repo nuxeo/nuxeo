@@ -387,6 +387,8 @@ public class EditorAction implements EditorActionLocal {
         }
         eventManager.notify(STYLES_MODIFIED_EVENT, new EventContext(element,
                 null));
+        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(element,
+                null));
     }
 
     public void updateElementStyleCss(final String id, String viewName,
