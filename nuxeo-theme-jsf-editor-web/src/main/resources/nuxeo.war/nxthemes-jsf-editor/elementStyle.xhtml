@@ -21,11 +21,10 @@
 
       <style id="previewCss" type="text/css"></style>
 
-      
       <form class="nxthemesInheritedStyles" onsubmit="return false"
         element="#{nxthemesUiStates.selectedElement.uid}"
         currentThemeName="#{nxthemesUiManager.currentThemeName}">
-        <span>
+        <div>
         <label>Inherit style properties from:</label>
         <h:selectOneMenu id="inherited_style" value="#{nxthemesUiManager.inheritedStyleNameOfSelectedElement}"
           rendered="#{not empty nxthemesUiManager.availableNamedStyles}"
@@ -33,10 +32,9 @@
           <f:selectItems value="#{nxthemesUiManager.availableNamedStyles}" />
         </h:selectOneMenu>
         <button onclick="NXThemesStyleEditor.createNamedStyle('#{nxthemesUiStates.selectedElement.uid}', '#{nxthemesUiManager.currentThemeName}')">New</button>
-        </span>
+        </div>
       </form>
-
-   
+      
       <div class="nxthemesButtonSelector"
         style="text-align: left; padding: 4px 15px;">
         <span>Layers: </span>

@@ -1110,8 +1110,7 @@ img.nxthemesAlignSection:hover {
 }
 
 form.nxthemesInheritedStyles {
-  padding: 0 0 0 15px;
-  display: inline;
+  padding: 0 0 5px 15px;
 }
 
 form.nxthemesInheritedStyles label {
