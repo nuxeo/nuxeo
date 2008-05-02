@@ -345,6 +345,16 @@ public class TestThemeManager extends NXRuntimeTestCase {
         // test transitivity
         themeManager.makeFormatInherit(ancestor2, ancestor3);
         assertTrue(ThemeManager.listAncestorFormatsOf(style).contains(ancestor3));
+        
+        // replace ancestor
+        themeManager.makeFormatInherit(style, ancestor2);
+        assertEquals(ancestor2, ThemeManager.getAncestorFormatOf(style));
+        assertTrue(ThemeManager.listAncestorFormatsOf(style).contains(ancestor2));
+        assertFalse(ThemeManager.listAncestorFormatsOf(style).contains(ancestor1));
+        
+        // remove ancestors
+        themeManager.removeAncestorFormatOf(style);
+        assertNull(ThemeManager.getAncestorFormatOf(style));
     }
 
     public void testStyleInheritanceCycles() {

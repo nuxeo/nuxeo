@@ -365,6 +365,30 @@ public class EditorAction implements EditorActionLocal {
                 null));
     }
 
+    public void makeElementInheritStyle(final String id,
+            final String inheritedName, final String currentThemeName) {
+        final Element element = getElementById(id);
+        final FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(
+                TypeFamily.FORMAT, "style");
+        Style style = (Style) ElementFormatter.getFormatByType(element,
+                styleType);
+        // Make the element no longer inherit if 'inheritedName' is null
+        if (inheritedName == null) {
+            themeManager.removeAncestorFormatOf(style);
+        } else {
+            final String themeName = currentThemeName.split("/")[0];
+            final Style inheritedStyle = (Style) themeManager.getNamedObject(
+                    themeName, "style", inheritedName);
+            if (inheritedStyle == null) {
+                log.error("Unknown style: " + inheritedName);
+            } else {
+                themeManager.makeFormatInherit(style, inheritedStyle);
+            }
+        }
+        eventManager.notify(STYLES_MODIFIED_EVENT, new EventContext(element,
+                null));
+    }
+
     public void updateElementStyleCss(final String id, String viewName,
             String cssSource) {
         final Element element = getElementById(id);

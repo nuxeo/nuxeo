@@ -74,8 +74,7 @@ public interface EditorActionLocal {
             Map<Object, Object> propertyMap);
 
     @WebRemote
-    void updateElementStyleCss(String id, String viewName,
-            String cssSource);
+    void updateElementStyleCss(String id, String viewName, String cssSource);
 
     @WebRemote
     void updateElementLayout(final Map<Object, Object> propertyMap);
@@ -118,6 +117,10 @@ public interface EditorActionLocal {
 
     @WebRemote
     void assignStyleProperty(String id, String property, String value);
+
+    @WebRemote
+    void makeElementInheritStyle(String id, String inheritedName,
+            String currentThemeName);
 
     @WebRemote
     void setCurrentStyleLayer(Integer uid);

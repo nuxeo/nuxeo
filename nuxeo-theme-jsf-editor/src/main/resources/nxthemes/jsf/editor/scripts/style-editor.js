@@ -179,6 +179,20 @@ NXThemesStyleEditor.setStylePropertyCategory = function(category) {
         });
 };
 
+NXThemesStyleEditor.makeElementInheritStyle = function(select) {
+  var value = select.value;
+  if (value === '') {
+    value = null;
+  }
+  var form = $(select).up("form");
+  var id = form.getAttribute("element");
+  var currentThemeName = form.getAttribute("currentThemeName");
+  Seam.Component.getInstance("nxthemesEditorAction").makeElementInheritStyle(id, value, currentThemeName,
+    function(r) {
+      NXThemes.getViewById("element style").refresh();
+    });
+};
+
 NXThemesStyleEditor.updateFormField = function(value) {
   var currentProperty = NXThemesStyleEditor.currentProperty;
   if (currentProperty !== null) {

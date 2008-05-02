@@ -35,6 +35,10 @@ import org.nuxeo.theme.themes.ThemeDescriptor;
 @Local
 public interface UiManagerLocal {
 
+    String getCurrentPagePath();
+    
+    String getCurrentThemeName();
+    
     String startEditor();
 
     List<FragmentInfo> getAvailableFragments();
@@ -70,6 +74,10 @@ public interface UiManagerLocal {
     List<SelectItem> getAvailableStyleProperties();
 
     List<StyleCategory> getStyleCategories();
+
+    List<SelectItem> getAvailableNamedStyles();
+
+    String getInheritedStyleNameOfSelectedElement();
 
     Widget getWidgetOfSelectedElement();
 

@@ -171,8 +171,8 @@ public final class ThemeManager implements Registrable {
         final String themeName = path[3];
         return getThemeByName(themeName);
     }
-
-    public PageElement getThemePageByUrl(final URL url) {
+    
+    public String getPagePathByUrl(final URL url) {
         if (url == null) {
             return null;
         }
@@ -181,6 +181,14 @@ public final class ThemeManager implements Registrable {
             return null;
         }
         final String pagePath = path[3] + '/' + path[4];
+        return pagePath;
+    }
+
+    public PageElement getThemePageByUrl(final URL url) {
+        if (url == null) {
+            return null;
+        }
+        final String pagePath = getPagePathByUrl(url);
         return getPageByPath(pagePath);
     }
 
@@ -522,7 +530,8 @@ public final class ThemeManager implements Registrable {
         }
     }
 
-    public static void saveTheme(final String src, final int indent) throws ThemeIOException {
+    public static void saveTheme(final String src, final int indent)
+            throws ThemeIOException {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         ThemeDescriptor themeDescriptor = (ThemeDescriptor) typeRegistry.lookup(
                 TypeFamily.THEME, src);
@@ -638,9 +647,22 @@ public final class ThemeManager implements Registrable {
             log.error("Cycle detected.in format inheritance, aborting.");
             return;
         }
+        // remove old ancestor
+        removeAncestorFormatOf(format);
+        // set new ancestor
         DyadicRelation relation = new DyadicRelation(PREDICATE_FORMAT_INHERIT,
                 format, ancestor);
         Manager.getRelationStorage().add(relation);
+    }
+
+    public void removeAncestorFormatOf(Format format) {
+        Collection<Relation> relations = Manager.getRelationStorage().search(
+                PREDICATE_FORMAT_INHERIT, format, null);
+        Iterator<Relation> it = relations.iterator();
+        if (it.hasNext()) {
+            Relation relation = it.next();
+            Manager.getRelationStorage().remove(relation);
+        }
     }
 
     public static Format getAncestorFormatOf(Format format) {

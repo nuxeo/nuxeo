@@ -1109,4 +1109,15 @@ img.nxthemesAlignSection:hover {
   padding: 5px;
 }
 
+form.nxthemesInheritedStyles {
+  padding: 5px 15px;
+}
 
+form.nxthemesInheritedStyles label {
+  font-style: italic;
+  padding-right: 6px;
+}
+
+form.nxthemesInheritedStyles select {
+  border: 1px solid #ccc;
+}

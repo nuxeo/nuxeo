@@ -17,6 +17,7 @@ package org.nuxeo.theme.jsf.editor.managers;
 import static org.jboss.seam.ScopeType.SESSION;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -61,9 +62,7 @@ import org.nuxeo.theme.jsf.Utils;
 import org.nuxeo.theme.jsf.editor.previews.Preview;
 import org.nuxeo.theme.jsf.editor.states.UiStatesLocal;
 import org.nuxeo.theme.jsf.negotiation.CookieManager;
-import org.nuxeo.theme.jsf.negotiation.JSFNegotiator;
 import org.nuxeo.theme.models.ModelType;
-import org.nuxeo.theme.negotiation.NegotiationException;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.presets.PresetType;
@@ -74,6 +73,7 @@ import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
+import org.nuxeo.theme.uids.Identifiable;
 import org.nuxeo.theme.views.ViewType;
 import org.nuxeo.theme.vocabularies.VocabularyItem;
 
@@ -104,8 +104,24 @@ public class UiManager implements UiManagerLocal {
     @In(value = "nxthemesUiStates", create = true)
     public UiStatesLocal uiStates;
 
+    private static final ThemeManager themeManager = Manager.getThemeManager();
+
     public UiManager() {
         previewProperties = new Properties();
+    }
+
+    public String getCurrentPagePath() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ExternalContext externalContext = facesContext.getExternalContext();
+        String pagePath = CookieManager.getCookie("nxthemes.theme", externalContext);
+        if (pagePath == null) {
+            pagePath = String.format("%s/default", getDefaultTheme());
+        }
+        return pagePath;
+    }
+    
+    public String getCurrentThemeName() {
+        return getCurrentPagePath().split("/")[0];
     }
 
     public String startEditor() {
@@ -118,22 +134,13 @@ public class UiManager implements UiManagerLocal {
             return null;
         }
         HttpServletResponse response = (HttpServletResponse) externalContext.getResponse();
-        final String root = externalContext.getRequestContextPath();
-        final ApplicationType application = (ApplicationType) Manager.getTypeRegistry().lookup(
-                TypeFamily.APPLICATION, root);
-        final String strategy = application.getNegotiation().getStrategy();
-        final JSFNegotiator negotiator = new JSFNegotiator(strategy,
-                facesContext);
+        Map<String, Object> requestMap = externalContext.getRequestMap();
+        URL themeUrl = (URL) requestMap.get("nxthemesThemeUrl");
+        String pagePath = themeManager.getPagePathByUrl(themeUrl);
 
-        // Store the current theme in a cookie
-        String currentTheme = null;
-        try {
-            currentTheme = negotiator.negotiate("theme");
-        } catch (NegotiationException e) {
-        }
-        if (currentTheme != null) {
-            CookieManager.setCookie("nxthemes.theme", currentTheme,
-                    externalContext);
+        // Store the current page path in a cookie
+        if (pagePath != null) {
+            CookieManager.setCookie("nxthemes.theme", pagePath, externalContext);
         }
 
         // Switch to the editor
@@ -323,9 +330,8 @@ public class UiManager implements UiManagerLocal {
         final String defaultPageName = defaultThemeName.split("/")[1];
 
         final ThemeManager themeManager = Manager.getThemeManager();
-        final ThemeElement currentTheme = uiStates.getCurrentTheme();
-        final String currentThemeName = currentTheme == null ? null
-                : currentTheme.getName();
+        final String currentPagePath = getCurrentPagePath();
+        final String currentThemeName = currentPagePath.split("/")[0];
         for (String themeName : themeManager.getThemeNames()) {
             final String link = String.format("%s/%s", themeName,
                     defaultPageName);
@@ -342,25 +348,21 @@ public class UiManager implements UiManagerLocal {
     public List<PageInfo> getAvailablePages() {
         final String defaultThemeName = getDefaultTheme();
         final String defaultPageName = defaultThemeName.split("/")[1];
-
         final List<PageInfo> availablePages = new ArrayList<PageInfo>();
-        final ThemeElement currentTheme = uiStates.getCurrentTheme();
-        final PageElement currentPage = uiStates.getCurrentPage();
-        final String currentPageName = currentPage == null ? null
-                : currentPage.getName();
-        if (currentTheme != null) {
-            final String currentThemeName = currentTheme.getName();
-            for (PageElement page : ThemeManager.getPagesOf(currentTheme)) {
-                final String pageName = page.getName();
-                final String link = String.format("%s/%s", currentThemeName,
-                        pageName);
-                String className = pageName.equals(currentPageName) ? "selected"
-                        : "";
-                if (defaultPageName.equals(pageName)) {
-                    className += " default";
-                }
-                availablePages.add(new PageInfo(pageName, link, className));
+        final String currentPagePath = getCurrentPagePath();
+        final String currentThemeName = currentPagePath.split("/")[0];
+        final String currentPageName = currentPagePath.split("/")[1];
+        ThemeElement currentTheme = themeManager.getThemeByName(currentThemeName);
+        for (PageElement page : ThemeManager.getPagesOf(currentTheme)) {
+            final String pageName = page.getName();
+            final String link = String.format("%s/%s", currentThemeName,
+                    pageName);
+            String className = pageName.equals(currentPageName) ? "selected"
+                    : "";
+            if (defaultPageName.equals(pageName)) {
+                className += " default";
             }
+            availablePages.add(new PageInfo(pageName, link, className));
         }
         return availablePages;
     }
@@ -687,8 +689,7 @@ public class UiManager implements UiManagerLocal {
                 IGNORE_VIEW_NAME, IGNORE_CLASSNAME, INDENT);
     }
 
-    private FieldInfo getFieldInfo(final Class<?> c,
-            final String name) {
+    private FieldInfo getFieldInfo(final Class<?> c, final String name) {
         try {
             return c.getField(name).getAnnotation(FieldInfo.class);
         } catch (Exception e) {
@@ -759,6 +760,31 @@ public class UiManager implements UiManagerLocal {
             selectItemList.add(new SelectItem(name, name));
         }
         return selectItemList;
+    }
+
+    public List<SelectItem> getAvailableNamedStyles() {
+        final List<SelectItem> selectItemList = new ArrayList<SelectItem>();
+        final String currentPagePath = getCurrentPagePath();
+        final String currentThemeName = currentPagePath.split("/")[0];
+        List<Identifiable> namedStyles = themeManager.getNamedObjects(
+                currentThemeName, "style");
+        if (!namedStyles.isEmpty()) {
+            selectItemList.add(new SelectItem(""));
+            for (Identifiable namedStyle : namedStyles) {
+                final String value = namedStyle.getName();
+                selectItemList.add(new SelectItem(value));
+            }
+        }
+        return selectItemList;
+    }
+
+    public String getInheritedStyleNameOfSelectedElement() {
+        final Style style = getStyleOfSelectedElement();
+        Style ancestor = (Style) ThemeManager.getAncestorFormatOf(style);
+        if (ancestor != null) {
+            return ancestor.getName();
+        }
+        return "";
     }
 
     /* Load properties */
@@ -904,7 +930,8 @@ public class UiManager implements UiManagerLocal {
         String left = "";
         String right = "";
         if (element != null) {
-            Layout layout = (Layout) ElementFormatter.getFormatFor(element, "layout");
+            Layout layout = (Layout) ElementFormatter.getFormatFor(element,
+                    "layout");
             top = layout.getProperty("padding-top");
             bottom = layout.getProperty("padding-bottom");
             left = layout.getProperty("padding-left");

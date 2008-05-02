@@ -89,6 +89,11 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
         URL url = new URL("nxtheme://theme/engine/mode/theme1/page1");
         assertSame(theme, themeManager.getThemeByUrl(url));
     }
+    
+    public void testGetPagePathByUrl() throws MalformedURLException {
+        URL url = new URL("nxtheme://theme/engine/mode/theme1/page1");
+        assertEquals("theme1/page1", themeManager.getPagePathByUrl(url));
+    }
 
     public void testGetPerspectiveByUrl() throws MalformedURLException {
         PerspectiveType perspective = new PerspectiveType("view", "View");
