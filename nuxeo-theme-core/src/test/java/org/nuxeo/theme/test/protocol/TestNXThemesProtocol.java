@@ -40,8 +40,8 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         Manager.initializeProtocols();
-        deploy("nxthemes-core-service.xml");
-        deploy("nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
                 ThemeService.ID);
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");
@@ -57,7 +57,7 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
     public void testGetElementByUrl() throws MalformedURLException {
         Element element = ElementFactory.create("page");
         URL url = new URL("nxtheme://element/engine/" + element.getUid());
-        assertSame(element, themeManager.getElementByUrl(url));
+        assertSame(element, ThemeManager.getElementByUrl(url));
     }
 
     public void testGetEngineByUrl() throws MalformedURLException {
@@ -65,9 +65,9 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
         engine.setName("engine");
         typeRegistry.register(engine);
         URL themeUrl = new URL("nxtheme://theme/engine/a/b");
-        assertSame(engine, themeManager.getEngineByUrl(themeUrl));
+        assertSame(engine, ThemeManager.getEngineByUrl(themeUrl));
         URL elementUrl = new URL("nxtheme://element/engine/123");
-        assertSame(engine, themeManager.getEngineByUrl(elementUrl));
+        assertSame(engine, ThemeManager.getEngineByUrl(elementUrl));
     }
 
     public void testGetThemePageByUrl() throws MalformedURLException {
@@ -89,21 +89,26 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
         URL url = new URL("nxtheme://theme/engine/mode/theme1/page1");
         assertSame(theme, themeManager.getThemeByUrl(url));
     }
+    
+    public void testGetPagePathByUrl() throws MalformedURLException {
+        URL url = new URL("nxtheme://theme/engine/mode/theme1/page1");
+        assertEquals("theme1/page1", themeManager.getPagePathByUrl(url));
+    }
 
     public void testGetPerspectiveByUrl() throws MalformedURLException {
         PerspectiveType perspective = new PerspectiveType("view", "View");
         Manager.getTypeRegistry().register(perspective);
         URL url = new URL("nxtheme://theme/engine/mode/theme/page/view");
-        assertSame(perspective, themeManager.getPerspectiveByUrl(url));
+        assertSame(perspective, ThemeManager.getPerspectiveByUrl(url));
 
         // element urls have no perspective
         url = new URL("nxtheme://element/engine/12345");
-        assertNull(themeManager.getPerspectiveByUrl(url));
+        assertNull(ThemeManager.getPerspectiveByUrl(url));
     }
 
     public void testGetViewModeByUrl() throws MalformedURLException {
         URL url = new URL("nxtheme://theme/engine/view mode/theme/page/view");
-        assertEquals("view mode", themeManager.getViewModeByUrl(url));
+        assertEquals("view mode", ThemeManager.getViewModeByUrl(url));
     }
 
     @Override

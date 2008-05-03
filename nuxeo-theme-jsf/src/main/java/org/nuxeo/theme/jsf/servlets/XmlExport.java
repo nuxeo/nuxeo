@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,8 +36,7 @@ public final class XmlExport extends HttpServlet implements Serializable {
 
     @Override
     protected void doGet(final HttpServletRequest request,
-            final HttpServletResponse response) throws ServletException,
-            IOException {
+            final HttpServletResponse response) throws IOException {
         doPost(request, response);
     }
 
@@ -49,11 +47,10 @@ public final class XmlExport extends HttpServlet implements Serializable {
         final String themeName = request.getParameter("theme");
         final String download = request.getParameter("download");
         final String indent = request.getParameter("indent");
-        final ThemeElement theme;
         if (themeName == null) {
             return;
         }
-        theme = Manager.getThemeManager().getThemeByName(themeName);
+        final ThemeElement theme = Manager.getThemeManager().getThemeByName(themeName);
         if (theme == null) {
             return;
         }

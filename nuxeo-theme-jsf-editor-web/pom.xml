@@ -5,47 +5,11 @@
   <parent>
     <groupId>org.nuxeo.theme</groupId>
     <artifactId>nuxeo-theme-parent</artifactId>
-    <version>5.1.5-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-theme-jsf-editor-web</artifactId>
   <name>Nuxeo Theme JSF Editor Web</name>
   <description>Nuxeo Theme: JSF Editor Web.</description>
 
-  <build>
-    <plugins>
-      <!-- TODO: do we need all these dependencies in the jar? -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-installed</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <!-- TODO: Add it in the repo -->
-                <!-- artifactItem>
-                  <groupId>jboss</groupId>
-                  <artifactId>jboss-seam-ui</artifactId>
-                </artifactItem -->
-                <artifactItem>
-                  <groupId>javax.servlet</groupId>
-                  <artifactId>jstl</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>taglibs</groupId>
-                  <artifactId>standard</artifactId>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>${project.build.outputDirectory}/nuxeo.war/WEB-INF/lib/</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>

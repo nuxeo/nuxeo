@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.1.5-SNAPSHOT</version>
+    <version>5.2-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.theme</groupId>
   <artifactId>nuxeo-theme-parent</artifactId>
-  <version>5.1.5-SNAPSHOT</version>
+  <version>5.2-SNAPSHOT</version>
   <name>Nuxeo Theme Parent</name>
   <packaging>pom</packaging>
   <description>
@@ -18,8 +18,8 @@
   </description>
 
   <properties>
-    <nuxeo.runtime.version>1.4.2-SNAPSHOT</nuxeo.runtime.version>
-    <nuxeo.theme.version>5.1.5-SNAPSHOT</nuxeo.theme.version>
+    <nuxeo.runtime.version>1.5-SNAPSHOT</nuxeo.runtime.version>
+    <nuxeo.theme.version>${pom.version}</nuxeo.theme.version>
   </properties>
 
   <modules>
@@ -28,6 +28,7 @@
     <module>nuxeo-theme-jsf</module>
     <module>nuxeo-theme-jsf-editor</module>
     <module>nuxeo-theme-jsf-editor-web</module>
+    <module>nuxeo-theme-webwidgets</module>
   </modules>
 
   <organization>
@@ -94,6 +95,17 @@
         <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-jsf-editor-web</artifactId>
         <version>${nuxeo.theme.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-webwidgets</artifactId>
+        <version>${nuxeo.theme.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cssparser</groupId>
+        <artifactId>cssparser</artifactId>
+        <version>0.9.4-fix</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

@@ -19,7 +19,6 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.zip.GZIPOutputStream;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,8 +45,7 @@ public final class Styles extends HttpServlet implements Serializable {
 
     @Override
     protected void doGet(final HttpServletRequest request,
-            final HttpServletResponse response) throws ServletException,
-            IOException {
+            final HttpServletResponse response) throws IOException {
         doPost(request, response);
     }
 

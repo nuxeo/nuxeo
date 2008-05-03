@@ -23,7 +23,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,8 +48,7 @@ public final class Resources extends HttpServlet implements Serializable {
 
     @Override
     protected void doGet(final HttpServletRequest request,
-            final HttpServletResponse response) throws ServletException,
-            IOException {
+            final HttpServletResponse response) throws IOException {
         doPost(request, response);
     }
 
@@ -124,7 +122,7 @@ public final class Resources extends HttpServlet implements Serializable {
                 }
                 writeResource(resource, out);
                 source = out.toString();
-                if (resourceName.endsWith(".js")) {
+                if (resourceName.endsWith(".js") && resource.isShrinkable()) {
                     source = JSUtils.compressSource(source);
                 }
                 themeManager.setResource(resourceName, source);

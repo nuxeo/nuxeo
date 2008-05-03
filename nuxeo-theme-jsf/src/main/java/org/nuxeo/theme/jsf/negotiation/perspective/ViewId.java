@@ -44,8 +44,7 @@ public final class ViewId implements Scheme {
         }
 
         final String perspectiveName = view.getPerspective();
-        final PerspectiveManager perspectiveManager = Manager.getPerspectiveManager();
-        if (perspectiveManager.hasPerspective(perspectiveName)) {
+        if (PerspectiveManager.hasPerspective(perspectiveName)) {
             return perspectiveName;
         }
         return null;

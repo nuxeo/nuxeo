@@ -33,9 +33,9 @@ public class TestElementConfiguration extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("nxthemes-core-service.xml");
-        deploy("nxthemes-core-contrib.xml");
-        deploy("element-config.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("element-config.xml");
         ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
                 ThemeService.ID);
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");

@@ -30,11 +30,11 @@ public class NXThemesFaceletViewHandler extends FaceletViewHandler {
     private static final String SEAM_EXPRESSION_FACTORY = "org.jboss.seam.ui.facelet.SeamExpressionFactory";
 
     // Facelets
-    private final static long DEFAULT_REFRESH_PERIOD = 2;
+    private static final long DEFAULT_REFRESH_PERIOD = 2;
 
-    private final static String PARAM_REFRESH_PERIOD = "facelets.REFRESH_PERIOD";
+    private static final String PARAM_REFRESH_PERIOD = "facelets.REFRESH_PERIOD";
 
-    private final static String PARAM_RESOURCE_RESOLVER = "facelets.RESOURCE_RESOLVER";
+    private static final String PARAM_RESOURCE_RESOLVER = "facelets.RESOURCE_RESOLVER";
 
     public NXThemesFaceletViewHandler(ViewHandler parent) {
         super(parent);

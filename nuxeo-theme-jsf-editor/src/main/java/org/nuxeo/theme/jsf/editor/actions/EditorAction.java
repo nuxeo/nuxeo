@@ -176,6 +176,14 @@ public class EditorAction implements EditorActionLocal {
         return id;
     }
 
+    public void clearSelections() {
+        uiStates.setSelectedElement(null);
+        uiStates.setCurrentStyleSelector(null);
+        uiStates.setStyleCategory(null);
+        uiStates.setCurrentStyleLayer(null);
+        clearClipboard();
+    }
+
     public List<String> copyElements(final List<String> ids) {
         // Clear the clipboard before adding elements to it.
         clearClipboard();
@@ -215,7 +223,7 @@ public class EditorAction implements EditorActionLocal {
                 log.debug("Element to paste not found: " + id);
             } else {
                 boolean duplicateFormats = true;
-                if (themeManager.belongToSameTheme(element, destElement)) {
+                if (ThemeManager.belongToSameTheme(element, destElement)) {
                     duplicateFormats = false;
                 }
                 destElement.addChild(themeManager.duplicateElement(element,
@@ -233,11 +241,8 @@ public class EditorAction implements EditorActionLocal {
         final Element element = getElementById(id);
         final Element parent = (Element) element.getParent();
 
-        if (element instanceof ThemeElement) {
-            themeManager.destroyElement((ThemeElement) element);
-
-        } else if (element instanceof PageElement) {
-            themeManager.destroyElement((PageElement) element);
+        if (element instanceof ThemeElement || element instanceof PageElement) {
+            themeManager.destroyElement(element);
 
         } else if (element instanceof CellElement) {
             if (element.hasSiblings()) {
@@ -336,7 +341,7 @@ public class EditorAction implements EditorActionLocal {
     }
 
     public void updateElementStyle(final String id, String viewName,
-            final String path, final Map propertyMap) {
+            final String path, final Map<Object, Object> propertyMap) {
         final Element element = getElementById(id);
         final Properties properties = new Properties();
         for (Object key : propertyMap.keySet()) {
@@ -358,6 +363,48 @@ public class EditorAction implements EditorActionLocal {
         style.setPropertiesFor(viewName, path, properties);
         eventManager.notify(STYLES_MODIFIED_EVENT, new EventContext(element,
                 null));
+    }
+
+    public void makeElementInheritStyle(final String id,
+            final String inheritedName, final String currentThemeName) {
+        final Element element = getElementById(id);
+        final FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(
+                TypeFamily.FORMAT, "style");
+        Style style = (Style) ElementFormatter.getFormatByType(element,
+                styleType);
+        // Make the element no longer inherit if 'inheritedName' is null
+        if (inheritedName == null) {
+            themeManager.removeAncestorFormatOf(style);
+        } else {
+            final String themeName = currentThemeName.split("/")[0];
+            final Style inheritedStyle = (Style) themeManager.getNamedObject(
+                    themeName, "style", inheritedName);
+            if (inheritedStyle == null) {
+                log.error("Unknown style: " + inheritedName);
+            } else {
+                themeManager.makeFormatInherit(style, inheritedStyle);
+            }
+        }
+        eventManager.notify(STYLES_MODIFIED_EVENT, new EventContext(element,
+                null));
+        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(element,
+                null));
+    }
+
+    public void createNamedStyle(final String id, final String styleName,
+            final String themeName) {
+        if (themeManager.getNamedObject(themeName, "style", styleName) == null) {
+            Style style = (Style) FormatFactory.create("style");
+            style.setName(styleName);
+            themeManager.setNamedObject(themeName, "style", style);
+        }
+        makeElementInheritStyle(id, styleName, themeName);
+    }
+
+    public void deleteNamedStyle(final String id, final String styleName,
+            final String themeName) {
+        themeManager.removeNamedObject(themeName, "style", styleName);
+        makeElementInheritStyle(id, null, themeName);
     }
 
     public void updateElementStyleCss(final String id, String viewName,
@@ -402,7 +449,8 @@ public class EditorAction implements EditorActionLocal {
                 null));
     }
 
-    public void updateElementProperties(final String id, final Map propertyMap) {
+    public void updateElementProperties(final String id,
+            final Map<Object, Object> propertyMap) {
         final Element element = getElementById(id);
         final Properties properties = new Properties();
         for (Object key : propertyMap.keySet()) {
@@ -418,7 +466,7 @@ public class EditorAction implements EditorActionLocal {
                 null));
     }
 
-    public void updateElementLayout(final Map propertyMap) {
+    public void updateElementLayout(final Map<Object, Object> propertyMap) {
         final Element element = uiStates.getSelectedElement();
         if (element != null) {
             Layout layout = (Layout) ElementFormatter.getFormatFor(element,
@@ -646,7 +694,7 @@ public class EditorAction implements EditorActionLocal {
             log.error("Theme not found: " + themeName);
             return false;
         }
-        themeManager.repairTheme(theme);
+        ThemeManager.repairTheme(theme);
         eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(theme, null));
         eventManager.notify(STYLES_MODIFIED_EVENT,
                 new EventContext(theme, null));
@@ -667,9 +715,9 @@ public class EditorAction implements EditorActionLocal {
         return true;
     }
 
-    public boolean saveTheme(final String src) {
+    public boolean saveTheme(final String src, final int indent) {
         try {
-            themeManager.saveTheme(src);
+            ThemeManager.saveTheme(src, indent);
         } catch (ThemeIOException e) {
             log.error(e);
             return false;
@@ -679,7 +727,6 @@ public class EditorAction implements EditorActionLocal {
     }
 
     public String renderCssPreview(final String cssPreviewId) {
-        final ThemeManager themeManager = Manager.getThemeManager();
         Style style = uiManager.getStyleOfSelectedElement();
         final Style currentStyleLayer = uiStates.getCurrentStyleLayer();
         if (currentStyleLayer != null) {
@@ -692,7 +739,7 @@ public class EditorAction implements EditorActionLocal {
         // TODO use Utils.styleToCss()
 
         List<Style> styles = new ArrayList<Style>();
-        for (Format ancestor : themeManager.listAncestorFormatsOf(style)) {
+        for (Format ancestor : ThemeManager.listAncestorFormatsOf(style)) {
             styles.add(0, (Style) ancestor);
         }
         styles.add(style);
@@ -709,7 +756,7 @@ public class EditorAction implements EditorActionLocal {
 
                 final Properties styleProperties = s.getPropertiesFor(viewName,
                         path);
-                final Enumeration propertyNames = Utils.getCssProperties().propertyNames();
+                final Enumeration<?> propertyNames = Utils.getCssProperties().propertyNames();
                 while (propertyNames.hasMoreElements()) {
                     final String propertyName = (String) propertyNames.nextElement();
                     String value = styleProperties.getProperty(propertyName);
@@ -718,7 +765,7 @@ public class EditorAction implements EditorActionLocal {
                     }
                     css.append(propertyName);
                     css.append(':');
-                    PresetType preset = themeManager.resolvePreset(value);
+                    PresetType preset = ThemeManager.resolvePreset(value);
                     if (preset != null) {
                         value = preset.getValue();
                     }

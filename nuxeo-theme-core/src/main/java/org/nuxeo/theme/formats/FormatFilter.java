@@ -14,6 +14,8 @@
 
 package org.nuxeo.theme.formats;
 
+import java.net.URL;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.Manager;
@@ -24,6 +26,7 @@ import org.nuxeo.theme.models.ModelType;
 import org.nuxeo.theme.rendering.AbstractFilter;
 import org.nuxeo.theme.rendering.FilterTypeFamily;
 import org.nuxeo.theme.rendering.RenderingInfo;
+import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 import org.nuxeo.theme.views.View;
@@ -77,6 +80,13 @@ public class FormatFilter extends AbstractFilter {
         } else {
             final String markup = view.render(info);
             info.setMarkup(markup);
+
+            // Add resources used by the view (.css, .js, ...)
+            final  URL themeUrl = info.getThemeUrl();
+            final ResourceManager resourceManager = Manager.getResourceManager();
+            for (String resource : view.getViewType().getResources()) {
+                resourceManager.addResource(resource, themeUrl);
+            }
         }
         return info;
     }

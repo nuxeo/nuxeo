@@ -18,17 +18,15 @@ import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
-import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.negotiation.Scheme;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 
 public final class RequestParameter implements Scheme {
 
     public String getOutcome(final Object context) {
-        final Map parameters = ((FacesContext) context).getExternalContext().getRequestParameterMap();
-        final String perspectiveName = (String) parameters.get("perspective");
-        final PerspectiveManager perspectiveManager = Manager.getPerspectiveManager();
-        if (perspectiveManager.hasPerspective(perspectiveName)) {
+        final Map<String, String> parameters = ((FacesContext) context).getExternalContext().getRequestParameterMap();
+        final String perspectiveName = parameters.get("perspective");
+        if (PerspectiveManager.hasPerspective(perspectiveName)) {
             return perspectiveName;
         }
         return null;
