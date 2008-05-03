@@ -119,7 +119,7 @@ public interface EditorActionLocal {
     void assignStyleProperty(String id, String property, String value);
 
     @WebRemote
-    void makeElementInheritStyle(String id, String inheritedName,
+    void makeElementUseNamedStyle(String id, String inheritedName,
             String currentThemeName);
 
     @WebRemote

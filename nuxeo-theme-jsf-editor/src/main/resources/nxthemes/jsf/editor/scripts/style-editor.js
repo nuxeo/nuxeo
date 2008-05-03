@@ -179,7 +179,7 @@ NXThemesStyleEditor.setStylePropertyCategory = function(category) {
         });
 };
 
-NXThemesStyleEditor.makeElementInheritStyle = function(select) {
+NXThemesStyleEditor.makeElementUseNamedStyle = function(select) {
   var value = select.value;
   if (value === '') {
     value = null;
@@ -187,7 +187,7 @@ NXThemesStyleEditor.makeElementInheritStyle = function(select) {
   var form = $(select).up("form");
   var id = form.getAttribute("element");
   var currentThemeName = form.getAttribute("currentThemeName");
-  Seam.Component.getInstance("nxthemesEditorAction").makeElementInheritStyle(id, value, currentThemeName,
+  Seam.Component.getInstance("nxthemesEditorAction").makeElementUseNamedStyle(id, value, currentThemeName,
     function(r) {
       NXThemes.getViewById("element style").refresh();
     });

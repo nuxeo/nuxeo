@@ -1126,7 +1126,13 @@ form.nxthemesInheritedStyles select, form.nxthemesInheritedStyles button {
 
 form.nxthemesInheritedStyles button {
   font-size: 13px;
-  padding: 0 1px;
+  padding: 0px 3px;
   margin: 0 0 0 2px;
   cursor: pointer;
+  color: #333;
+  letter-spacing: -0.03em;
+}
+
+form.nxthemesInheritedStyles button:hover {
+  color: #600;
 }

@@ -28,12 +28,12 @@
         <label>Inherit style properties from:</label>
         <h:selectOneMenu id="inherited_style" value="#{nxthemesUiManager.inheritedStyleNameOfSelectedElement}"
           rendered="#{not empty nxthemesUiManager.availableNamedStyles}"
-          onchange="NXThemesStyleEditor.makeElementInheritStyle(this)">
+          onchange="NXThemesStyleEditor.makeElementUseNamedStyle(this)">
           <f:selectItems value="#{nxthemesUiManager.availableNamedStyles}" />
         </h:selectOneMenu>
-        <button onclick="NXThemesStyleEditor.createNamedStyle('#{nxthemesUiStates.selectedElement.uid}', '#{nxthemesUiManager.currentThemeName}')">New</button>
+        <button onclick="NXThemesStyleEditor.createNamedStyle('#{nxthemesUiStates.selectedElement.uid}', '#{nxthemesUiManager.currentThemeName}')">New style</button>
         <c:if test='#{nxthemesUiManager.inheritedStyleNameOfSelectedElement != ""}'>
-          <button onclick="NXThemesStyleEditor.deleteNamedStyle('#{nxthemesUiStates.selectedElement.uid}', '#{nxthemesUiManager.currentThemeName}', '#{nxthemesUiManager.inheritedStyleNameOfSelectedElement}')">Delete</button>
+          <button onclick="NXThemesStyleEditor.deleteNamedStyle('#{nxthemesUiStates.selectedElement.uid}', '#{nxthemesUiManager.currentThemeName}', '#{nxthemesUiManager.inheritedStyleNameOfSelectedElement}')">Delete '#{nxthemesUiManager.inheritedStyleNameOfSelectedElement}'</button>
         </c:if>
         </div>
       </form>

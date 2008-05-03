@@ -365,16 +365,17 @@ public class EditorAction implements EditorActionLocal {
                 null));
     }
 
-    public void makeElementInheritStyle(final String id,
+    public void makeElementUseNamedStyle(final String id,
             final String inheritedName, final String currentThemeName) {
         final Element element = getElementById(id);
         final FormatType styleType = (FormatType) Manager.getTypeRegistry().lookup(
                 TypeFamily.FORMAT, "style");
         Style style = (Style) ElementFormatter.getFormatByType(element,
                 styleType);
-        // Make the element no longer inherit if 'inheritedName' is null
+        // Make the style no longer inherits from other another style if
+        // 'inheritedName' is null
         if (inheritedName == null) {
-            themeManager.removeAncestorFormatOf(style);
+            ThemeManager.removeInheritanceTowards(style);
         } else {
             final String themeName = currentThemeName.split("/")[0];
             final Style inheritedStyle = (Style) themeManager.getNamedObject(
@@ -385,9 +386,9 @@ public class EditorAction implements EditorActionLocal {
                 themeManager.makeFormatInherit(style, inheritedStyle);
             }
         }
-        eventManager.notify(STYLES_MODIFIED_EVENT, new EventContext(element,
-                null));
         eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(element,
+                null));
+        eventManager.notify(STYLES_MODIFIED_EVENT, new EventContext(element,
                 null));
     }
 
@@ -397,14 +398,18 @@ public class EditorAction implements EditorActionLocal {
             Style style = (Style) FormatFactory.create("style");
             style.setName(styleName);
             themeManager.setNamedObject(themeName, "style", style);
+            themeManager.registerFormat(style);
         }
-        makeElementInheritStyle(id, styleName, themeName);
+        makeElementUseNamedStyle(id, styleName, themeName);
     }
 
     public void deleteNamedStyle(final String id, final String styleName,
             final String themeName) {
+        final Style inheritedStyle = (Style) themeManager.getNamedObject(
+                themeName, "style", styleName);
+        themeManager.deleteFormat(inheritedStyle);
+        makeElementUseNamedStyle(id, null, themeName);
         themeManager.removeNamedObject(themeName, "style", styleName);
-        makeElementInheritStyle(id, null, themeName);
     }
 
     public void updateElementStyleCss(final String id, String viewName,

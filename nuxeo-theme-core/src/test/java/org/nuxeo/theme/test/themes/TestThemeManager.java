@@ -323,13 +323,13 @@ public class TestThemeManager extends NXRuntimeTestCase {
     public void testStyleInheritance() {
         ThemeManager themeManager = Manager.getThemeManager();
 
-        Style style = new StyleFormat();
+        Style style = (Style) FormatFactory.create("style");
         style.setUid(1);
-        Style ancestor1 = new StyleFormat();
+        Style ancestor1 = (Style) FormatFactory.create("style");
         ancestor1.setUid(2);
-        Style ancestor2 = new StyleFormat();
+        Style ancestor2 = (Style) FormatFactory.create("style");
         ancestor2.setUid(3);
-        Style ancestor3 = new StyleFormat();
+        Style ancestor3 = (Style) FormatFactory.create("style");
         ancestor3.setUid(4);
 
         assertNull(ThemeManager.getAncestorFormatOf(style));
@@ -346,27 +346,55 @@ public class TestThemeManager extends NXRuntimeTestCase {
         themeManager.makeFormatInherit(ancestor2, ancestor3);
         assertTrue(ThemeManager.listAncestorFormatsOf(style).contains(ancestor3));
         
+        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor1).contains(style));
+        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor2).contains(ancestor1));
+        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor3).contains(ancestor2));
+        
         // replace ancestor
         themeManager.makeFormatInherit(style, ancestor2);
         assertEquals(ancestor2, ThemeManager.getAncestorFormatOf(style));
         assertTrue(ThemeManager.listAncestorFormatsOf(style).contains(ancestor2));
         assertFalse(ThemeManager.listAncestorFormatsOf(style).contains(ancestor1));
         
-        // remove ancestors
-        themeManager.removeAncestorFormatOf(style);
+        assertFalse(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor1).contains(style));
+        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor2).contains(style));
+        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor2).contains(ancestor1));
+        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor3).contains(ancestor2));
+        
+        // remove old inheritance relation 
+        ThemeManager.removeInheritanceTowards(style);
         assertNull(ThemeManager.getAncestorFormatOf(style));
+        assertFalse(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor2).contains(style));
+        
+        // test common inheritance
+        Style ancestor = (Style) FormatFactory.create("style");
+        ancestor.setUid(5);
+        Style style1 = (Style) FormatFactory.create("style");
+        style1.setUid(6);
+        Style style2 = (Style) FormatFactory.create("style");
+        style1.setUid(7);
+        themeManager.makeFormatInherit(style1, ancestor);
+        themeManager.makeFormatInherit(style2, ancestor);
+        assertTrue(ThemeManager.listAncestorFormatsOf(style1).contains(ancestor));
+        assertTrue(ThemeManager.listAncestorFormatsOf(style2).contains(ancestor));
+        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor).contains(style1));
+        assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor).contains(style2));
+        
+        // test deleting a format that is inherited
+        themeManager.deleteFormat(ancestor);
+        assertTrue(ThemeManager.listAncestorFormatsOf(style1).isEmpty());
     }
 
     public void testStyleInheritanceCycles() {
         ThemeManager themeManager = Manager.getThemeManager();
 
-        Style style = new StyleFormat();
+        Style style = (Style) FormatFactory.create("style");
         style.setUid(1);
-        Style ancestor1 = new StyleFormat();
+        Style ancestor1 = (Style) FormatFactory.create("style");
         ancestor1.setUid(2);
-        Style ancestor2 = new StyleFormat();
+        Style ancestor2 = (Style) FormatFactory.create("style");
         ancestor2.setUid(3);
-        Style ancestor3 = new StyleFormat();
+        Style ancestor3 = (Style) FormatFactory.create("style");
         ancestor3.setUid(4);
 
         // a style cannot inherit from itself.

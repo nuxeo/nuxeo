@@ -171,7 +171,7 @@ public final class ThemeManager implements Registrable {
         final String themeName = path[3];
         return getThemeByName(themeName);
     }
-    
+
     public String getPagePathByUrl(final URL url) {
         if (url == null) {
             return null;
@@ -277,11 +277,12 @@ public final class ThemeManager implements Registrable {
         return objects;
     }
 
-    public void removeNamedObject(final String themeName, final String realm, final String name) {
+    public void removeNamedObject(final String themeName, final String realm,
+            final String name) {
         final String key = String.format("%s/%s", realm, name);
         namedObjects.get(themeName).remove(key);
     }
-    
+
     public void removeNamedObjects(final String themeName) {
         namedObjects.remove(themeName);
     }
@@ -652,15 +653,15 @@ public final class ThemeManager implements Registrable {
             log.error("Cycle detected.in format inheritance, aborting.");
             return;
         }
-        // remove old ancestor
-        removeAncestorFormatOf(format);
+        // remove old inheritance relations
+        removeInheritanceTowards(format);
         // set new ancestor
         DyadicRelation relation = new DyadicRelation(PREDICATE_FORMAT_INHERIT,
                 format, ancestor);
         Manager.getRelationStorage().add(relation);
     }
 
-    public void removeAncestorFormatOf(Format format) {
+    public static void removeInheritanceTowards(Format format) {
         Collection<Relation> relations = Manager.getRelationStorage().search(
                 PREDICATE_FORMAT_INHERIT, format, null);
         Iterator<Relation> it = relations.iterator();
@@ -695,6 +696,24 @@ public final class ThemeManager implements Registrable {
             ancestors.add(current);
         }
         return ancestors;
+    }
+
+    public static List<Format> listFormatsDirectlyInheritingFrom(Format format) {
+        List<Format> formats = new ArrayList<Format>();
+        Collection<Relation> relations = Manager.getRelationStorage().search(
+                PREDICATE_FORMAT_INHERIT, null, format);
+        Iterator<Relation> it = relations.iterator();
+        while (it.hasNext()) {
+            formats.add((Format) it.next().getRelate(1));
+        }
+        return formats;
+    }
+
+    public void deleteFormat(Format format) {
+        for (Format f : ThemeManager.listFormatsDirectlyInheritingFrom(format)) {
+            ThemeManager.removeInheritanceTowards(f);
+        }
+        unregisterFormat(format);
     }
 
     // Cached styles
