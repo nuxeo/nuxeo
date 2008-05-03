@@ -48,8 +48,8 @@ public class TestGen extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployBundle("nuxeo-core-schema");
-        deployBundle("nuxeo-core"); // for dublincore
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core"); // for dublincore
         // define geide schema
         SchemaImpl sch = new SchemaImpl("geide");
         sch.addField(QName.valueOf("application_emetteur"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
