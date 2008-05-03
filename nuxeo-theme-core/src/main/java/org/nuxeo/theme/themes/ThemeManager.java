@@ -277,6 +277,11 @@ public final class ThemeManager implements Registrable {
         return objects;
     }
 
+    public void removeNamedObject(final String themeName, final String realm, final String name) {
+        final String key = String.format("%s/%s", realm, name);
+        namedObjects.get(themeName).remove(key);
+    }
+    
     public void removeNamedObjects(final String themeName) {
         namedObjects.remove(themeName);
     }

@@ -32,6 +32,9 @@
           <f:selectItems value="#{nxthemesUiManager.availableNamedStyles}" />
         </h:selectOneMenu>
         <button onclick="NXThemesStyleEditor.createNamedStyle('#{nxthemesUiStates.selectedElement.uid}', '#{nxthemesUiManager.currentThemeName}')">New</button>
+        <c:if test='#{nxthemesUiManager.inheritedStyleNameOfSelectedElement != ""}'>
+          <button onclick="NXThemesStyleEditor.deleteNamedStyle('#{nxthemesUiStates.selectedElement.uid}', '#{nxthemesUiManager.currentThemeName}', '#{nxthemesUiManager.inheritedStyleNameOfSelectedElement}')">Delete</button>
+        </c:if>
         </div>
       </form>
       

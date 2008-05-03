@@ -194,15 +194,26 @@ NXThemesStyleEditor.makeElementInheritStyle = function(select) {
 };
 
 NXThemesStyleEditor.createNamedStyle = function(id, currentThemeName) {
-  var style_name = prompt("Please enter a style name:", "");
-  if (style_name === null) {
+  var styleName = prompt("Please enter a style name:", "");
+  if (styleName === null) {
     return;
   }
-  if (style_name === "") {
+  if (styleName === "") {
     window.alert("Style names cannot be empty.");
     return;
   }
-  Seam.Component.getInstance("nxthemesEditorAction").createNamedStyle(id, style_name, currentThemeName,
+  Seam.Component.getInstance("nxthemesEditorAction").createNamedStyle(id, styleName, currentThemeName,
+    function(r) {
+      NXThemes.getViewById("element style").refresh();
+    });
+};
+
+NXThemesStyleEditor.deleteNamedStyle = function(id, currentThemeName, styleName) {
+  var ok = confirm("Deleting style, are you sure?");
+  if (!ok) {
+    return;
+  }
+  Seam.Component.getInstance("nxthemesEditorAction").deleteNamedStyle(id, styleName, currentThemeName,
     function(r) {
       NXThemes.getViewById("element style").refresh();
     });

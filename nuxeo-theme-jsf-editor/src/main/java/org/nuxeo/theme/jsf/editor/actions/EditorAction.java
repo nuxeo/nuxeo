@@ -401,6 +401,12 @@ public class EditorAction implements EditorActionLocal {
         makeElementInheritStyle(id, styleName, themeName);
     }
 
+    public void deleteNamedStyle(final String id, final String styleName,
+            final String themeName) {
+        themeManager.removeNamedObject(themeName, "style", styleName);
+        makeElementInheritStyle(id, null, themeName);
+    }
+
     public void updateElementStyleCss(final String id, String viewName,
             String cssSource) {
         final Element element = getElementById(id);

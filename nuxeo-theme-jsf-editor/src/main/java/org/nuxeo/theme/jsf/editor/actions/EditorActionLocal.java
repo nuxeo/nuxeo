@@ -123,8 +123,10 @@ public interface EditorActionLocal {
             String currentThemeName);
 
     @WebRemote
-    void createNamedStyle(final String id, final String styleName,
-            final String currentThemeName);
+    void createNamedStyle(String id, String styleName, String currentThemeName);
+
+    @WebRemote
+    void deleteNamedStyle(String id, String styleName, String themeName);
 
     @WebRemote
     void setCurrentStyleLayer(Integer uid);
