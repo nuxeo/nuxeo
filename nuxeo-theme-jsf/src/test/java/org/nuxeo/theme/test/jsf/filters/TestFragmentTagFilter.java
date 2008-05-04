@@ -44,8 +44,8 @@ public class TestFragmentTagFilter extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         Manager.initializeProtocols();
-        deploy("nxthemes-core-service.xml");
-        deploy("nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.jsf.tests", "nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.jsf.tests", "nxthemes-core-contrib.xml");
 
         // create the elements to render
         page = new PageElement();

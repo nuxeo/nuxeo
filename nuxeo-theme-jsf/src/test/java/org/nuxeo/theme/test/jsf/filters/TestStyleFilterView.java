@@ -39,9 +39,9 @@ public class TestStyleFilterView extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("nxthemes-core-service.xml");
-        deploy("nxthemes-core-contrib.xml");
-        deploy("nxthemes-jsf-contrib.xml");
+        deployContrib("org.nuxeo.theme.jsf.tests", "nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.jsf.tests", "nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.jsf.tests", "nxthemes-jsf-contrib.xml");
 
         // create the elements to render
         PageElement page = new PageElement();

@@ -40,8 +40,8 @@ public class TestNXThemesProtocol extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         Manager.initializeProtocols();
-        deploy("nxthemes-core-service.xml");
-        deploy("nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-contrib.xml");
         ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
                 ThemeService.ID);
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");

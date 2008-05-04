@@ -31,8 +31,8 @@ public class TestJSFView extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("nxthemes-core-service.xml");
-        deploy("nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.jsf.tests", "nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.jsf.tests", "nxthemes-core-contrib.xml");
 
         info = new DummyRenderingInfo(new PageElement(), null);
 

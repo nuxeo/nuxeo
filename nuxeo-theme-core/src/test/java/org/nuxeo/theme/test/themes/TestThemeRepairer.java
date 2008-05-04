@@ -36,8 +36,8 @@ public class TestThemeRepairer extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("nxthemes-core-service.xml");
-        deploy("nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-contrib.xml");
         themeManager = Manager.getThemeManager();
     }
 

@@ -25,10 +25,13 @@ public class TestUIManager extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("nxthemes-core-service.xml");
-        deployContrib("nxthemes-core-contrib.xml");
-        deployContrib("nxthemes-jsf-contrib.xml");
-        deployContrib("fragment-config.xml");
+        deployContrib("org.nuxeo.theme.jsf.editor.tests",
+                "nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.jsf.editor.tests",
+                "nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.jsf.editor.tests",
+                "nxthemes-jsf-contrib.xml");
+        deployContrib("org.nuxeo.theme.jsf.editor.tests", "fragment-config.xml");
     }
 
     public void testGetList() {
