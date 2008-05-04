@@ -19,9 +19,9 @@
 
 package org.nuxeo.common.utils;
 
-import junit.framework.TestCase;
-
 import java.io.Serializable;
+
+import junit.framework.TestCase;
 
 /**
  * @author sfermigier

@@ -11,6 +11,6 @@ Provide-Package: org.nuxeo.common.collections,
  org.nuxeo.common.xmap,
  org.nuxeo.common.xmap.annotation,
  org.nuxeo.runtime.util,
- org.nuxeo.xmap
+ org.nuxeo.common.xmap
 Require-Bundle: system.bundle;reprovide=true,
  org.nuxeo.logging;optional=true;reprovide=true
