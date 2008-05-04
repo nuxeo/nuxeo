@@ -39,6 +39,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>jboss</groupId>
       <artifactId>jnp-client</artifactId>
       <scope>test</scope>
