@@ -91,6 +91,7 @@ public class TestLocalAPI extends TestAPI {
 
     // Duplicated from NXRuntimeTestCase
     @Override
+    @Deprecated
     public void deploy(String bundle) {
         URL url = getResource(bundle);
         assertNotNull("Test resource not found " + bundle, url);

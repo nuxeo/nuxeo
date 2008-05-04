@@ -53,7 +53,8 @@ public class TestComplexProperty extends RepositoryTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deploy("CoreTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector",
+                "CoreTestExtensions.xml");
         // creating the session
         session = getRepository().getSession(null);
         root = session.getRootDocument();

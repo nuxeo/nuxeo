@@ -43,11 +43,13 @@ public abstract class RepositoryTestCase extends NXRuntimeTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         // the core bundle
-        deployContrib("CoreService.xml");
-        deployContrib("TypeService.xml");
-        deployContrib("SecurityService.xml");
-        deployContrib("RepositoryService.xml");
-        deployContrib("test-CoreExtensions.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector", "CoreService.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector", "TypeService.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector", "SecurityService.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector",
+                "RepositoryService.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector",
+                "test-CoreExtensions.xml");
     }
 
     @Override
@@ -60,7 +62,8 @@ public abstract class RepositoryTestCase extends NXRuntimeTestCase {
         if (repository == null) {
             // the repository should be deployContribed the last
             // after any other bundle that is deployContribing doctypes
-            deployContrib("DemoRepository.xml");
+            deployContrib("org.nuxeo.ecm.core.jcr-connector",
+                    "DemoRepository.xml");
             repository = NXCore.getRepositoryService()
                 .getRepositoryManager().getRepository("demo");
         }

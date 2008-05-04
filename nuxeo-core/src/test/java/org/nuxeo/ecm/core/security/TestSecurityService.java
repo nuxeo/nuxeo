@@ -105,9 +105,10 @@ public class TestSecurityService extends NXRuntimeTestCase {
                 "Everything"), Arrays.asList(orderedVisiblePermissions));
     }
 
-    public void testOverridedPermissions1() {
+    public void testOverridedPermissions1() throws Exception {
         // deploy a new atomic permission and a new compound permission
-        deployContrib("permissions-override1-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.tests",
+                "permissions-override1-contrib.xml");
 
         PermissionProvider pp = service.getPermissionProvider();
 
@@ -143,7 +144,8 @@ public class TestSecurityService extends NXRuntimeTestCase {
     }
 
     public void testOverridedVisiblePermission1() throws Exception {
-        deployContrib("permissions-override1-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.tests",
+                "permissions-override1-contrib.xml");
 
         PermissionProvider pp = service.getPermissionProvider();
 
@@ -170,9 +172,10 @@ public class TestSecurityService extends NXRuntimeTestCase {
                 Arrays.asList(orderedVisiblePermissions));
     }
 
-    public void testOverriddenPermissions2() {
+    public void testOverriddenPermissions2() throws Exception {
         // deploy a new atomic permission and a new compound permission
-        deployContrib("permissions-override2-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.tests",
+                "permissions-override2-contrib.xml");
 
         PermissionProvider pp = service.getPermissionProvider();
 
@@ -190,7 +193,8 @@ public class TestSecurityService extends NXRuntimeTestCase {
 
     public void testOverridedVisiblePermission2() throws Exception {
 
-        deployContrib("permissions-override2-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.tests",
+                "permissions-override2-contrib.xml");
 
         PermissionProvider pp = service.getPermissionProvider();
 

@@ -35,7 +35,8 @@ public class TestFacets extends RepositoryTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deploy("CoreTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector",
+                "CoreTestExtensions.xml");
     }
 
     public void testFolderishFacet() throws Exception {

@@ -47,15 +47,19 @@ public class TestVersioning extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib("CoreService.xml");
-        deployContrib("TypeService.xml");
-        deployContrib("SecurityService.xml");
-        deployContrib("RepositoryService.xml");
-        deployContrib("test-CoreExtensions.xml");
-        deployContrib("CoreTestExtensions.xml");
-        deployContrib("LifeCycleService.xml");
-        deployContrib("LifeCycleServiceExtensions.xml");
-        deployContrib("DemoRepository.xml");
+        deployContrib("org.nuxeo.ecm.core.facade.tests", "CoreService.xml");
+        deployContrib("org.nuxeo.ecm.core.facade.tests", "TypeService.xml");
+        deployContrib("org.nuxeo.ecm.core.facade.tests", "SecurityService.xml");
+        deployContrib("org.nuxeo.ecm.core.facade.tests",
+                "RepositoryService.xml");
+        deployContrib("org.nuxeo.ecm.core.facade.tests",
+                "test-CoreExtensions.xml");
+        deployContrib("org.nuxeo.ecm.core.facade.tests",
+                "CoreTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.core.facade.tests", "LifeCycleService.xml");
+        deployContrib("org.nuxeo.ecm.core.facade.tests",
+                "LifeCycleServiceExtensions.xml");
+        deployContrib("org.nuxeo.ecm.core.facade.tests", "DemoRepository.xml");
 
         deployCustomVersioning();
 
@@ -64,7 +68,7 @@ public class TestVersioning extends NXRuntimeTestCase {
         coreSession = CoreInstance.getInstance().open("default", ctx);
     }
 
-    protected void deployCustomVersioning() {
+    protected void deployCustomVersioning() throws Exception {
         // do nothing - will be overridden by a subclass that tests custom versioning
     }
 

@@ -47,7 +47,8 @@ public class TestRepository extends RepositoryTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deploy("CoreTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector",
+                "CoreTestExtensions.xml");
 
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         assertNotNull(ctx);

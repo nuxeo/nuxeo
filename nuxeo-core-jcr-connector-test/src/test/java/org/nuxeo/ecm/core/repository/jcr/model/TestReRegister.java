@@ -70,7 +70,7 @@ public class TestReRegister extends RepositoryTestCase {
         getRepository(); // reopen the same repository as before
 
         // deploy a new doctype (MyDocType)
-        deploy("CoreTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector", "CoreTestExtensions.xml");
 
         // it should be registered in type manager
         docType =  typeMgr.getDocumentType("MyDocType");
@@ -164,10 +164,12 @@ public class TestReRegister extends RepositoryTestCase {
         undeploy("TypeService.xml");
         undeploy("RepositoryService.xml");
 
-        deploy("CoreService.xml");
-        deploy("TypeService.xml");
-        deploy("RepositoryService.xml");
-        deploy("test-CoreExtensions.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector", "CoreService.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector", "TypeService.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector",
+                "RepositoryService.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector",
+                "test-CoreExtensions.xml");
 
         getRepository(); // reopen the same repository as before
         session = getSession();

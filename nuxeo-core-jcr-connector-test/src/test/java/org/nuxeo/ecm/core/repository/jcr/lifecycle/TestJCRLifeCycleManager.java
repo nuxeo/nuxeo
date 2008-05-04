@@ -43,8 +43,10 @@ public class TestJCRLifeCycleManager extends RepositoryTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deploy("LifeCycleService.xml");
-        deploy("LifeCycleManagerTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector.tests",
+                "LifeCycleService.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector.tests",
+                "LifeCycleManagerTestExtensions.xml");
         session = getRepository().getSession(null);
         root = session.getRootDocument();
         manager = new JCRLifeCycleManager();

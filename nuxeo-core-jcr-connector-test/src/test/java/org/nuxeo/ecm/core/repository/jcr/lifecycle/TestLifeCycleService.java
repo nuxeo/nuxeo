@@ -51,9 +51,12 @@ public class TestLifeCycleService extends RepositoryTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deploy("LifeCycleService.xml");
-        deploy("LifeCycleManagerTestExtensions.xml");
-        deploy("CoreEventListenerService.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector.tests",
+                "LifeCycleService.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector.tests",
+                "LifeCycleManagerTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector.tests",
+                "CoreEventListenerService.xml");
         session = getRepository().getSession(null);
         root = session.getRootDocument();
         lifeCycleService = NXCore.getLifeCycleService();

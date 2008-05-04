@@ -28,8 +28,9 @@ package org.nuxeo.ecm.core.api;
 public class TestCustomVersioning  extends TestVersioning {
 
     @Override
-    protected void deployCustomVersioning() {
-        deployContrib("CustomVersioningService.xml");
+    protected void deployCustomVersioning() throws Exception {
+        deployContrib("org.nuxeo.ecm.core.facade.tests",
+                "CustomVersioningService.xml");
     }
 
 }
