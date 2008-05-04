@@ -198,12 +198,12 @@ public class EditorAction implements EditorActionLocal {
 
     public String duplicateElement(final String id) {
         final Element element = getElementById(id);
-        final Element duplicate = themeManager.duplicateElement(element, false);
+        final Element duplicate = themeManager.duplicateElement(element, true);
 
         // insert the duplicated element
         element.getParent().addChild(duplicate);
         duplicate.moveTo(element.getParent(), element.getOrder() + 1);
-
+        eventManager.notify(STYLES_MODIFIED_EVENT, new EventContext(null, null));
         eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(null,
                 element));
         log.debug("Duplicated the element: " + element);

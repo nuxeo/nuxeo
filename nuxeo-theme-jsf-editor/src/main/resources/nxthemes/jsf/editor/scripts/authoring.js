@@ -279,8 +279,12 @@ NXThemesEditor.alignElement = function(info) {
 
 NXThemesEditor.duplicateElement = function(info) {
     var id =  info.target.getAttribute('id');
-    Seam.Component.getInstance("nxthemesEditorAction").duplicateElement(
-       id, NXThemesEditor.refreshCanvas);
+    Seam.Component.getInstance("nxthemesEditorAction").duplicateElement(id, 
+      function(r) {
+        NXThemes.getViewById("style css").hide();
+        NXThemes.getViewById("style css").show();
+        NXThemesEditor.refreshCanvas();
+      });
 };
 
 NXThemesEditor.pasteElement = function(info) {
