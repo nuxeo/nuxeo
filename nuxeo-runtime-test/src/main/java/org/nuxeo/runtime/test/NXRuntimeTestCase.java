@@ -234,8 +234,11 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
      * The path will be relative to the bundle root.
      * Example:
      * <code>
-     * deployContrib("nuxeo-core", "OSGI-INF/CoreExtensions.xml")
+     * deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreExtensions.xml")
      * </code>
+     * <p>
+     * For compatibility reasons the name of the bundle may be a jar name, but
+     * this use is discouraged and deprecated.
      *
      * @param bundle The name of the bundle to peek the contrib in
      * @param contrib The path to contrib in the bundle.
