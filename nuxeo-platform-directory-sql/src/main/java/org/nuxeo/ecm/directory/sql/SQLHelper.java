@@ -132,7 +132,6 @@ public class SQLHelper {
             String createSql = table.getCreateSql(dialect);
             log.debug("creating table: " + createSql);
             stmt.execute(createSql);
-
         } catch (SQLException e) {
             throw new DirectoryException(String.format(
                     "Table '%s' creation failed: %s", table, e.getMessage()), e);
@@ -172,7 +171,6 @@ public class SQLHelper {
             log.debug(String.format("all fields matched for table '%s'",
                     tableName));
             return true;
-
         } catch (SQLException e) {
             log.warn("error while introspecting table: " + tableName, e);
             return false;
@@ -199,9 +197,9 @@ public class SQLHelper {
         }
     }
 
-    private String formatColumnValues(String[] columnValues) {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("[");
+    private static String formatColumnValues(String[] columnValues) {
+        StringBuilder buffer = new StringBuilder();
+        buffer.append('[');
         if (columnValues != null) {
             int i = 0;
             List<String> values = new ArrayList<String>();
@@ -211,7 +209,7 @@ public class SQLHelper {
             }
             buffer.append(StringUtils.join(values.iterator(), ", "));
         }
-        buffer.append("]");
+        buffer.append(']');
         return buffer.toString();
     }
 
@@ -302,7 +300,6 @@ public class SQLHelper {
                 }
                 ps.execute();
             }
-
         } catch (IOException e) {
             throw new DirectoryException("Read error while reading data file: "
                     + dataFileName, e);

@@ -54,10 +54,10 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
     private ConversationDocumentsListsManager conversationDocumentsListsManager;
 
     @In(create = true, required = false)
-    transient CoreSession documentManager;
+    private transient CoreSession documentManager;
 
     @In(create=true)
-    transient Principal currentUser;
+    private transient Principal currentUser;
 
     @Override
     protected void notifyListUpdated(String listName) {
@@ -70,7 +70,6 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
     @Destroy
     @PermitAll
     public void destroy() {
-
     }
 
     @Create

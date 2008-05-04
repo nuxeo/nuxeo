@@ -624,7 +624,6 @@ public class NuxeoAuthenticationFilter implements Filter {
                 return null;
             }
         });
-
     }
 
     // Plugin API
