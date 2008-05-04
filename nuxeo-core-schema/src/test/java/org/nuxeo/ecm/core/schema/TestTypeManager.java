@@ -33,7 +33,7 @@ public class TestTypeManager extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib("nuxeo-core-schema", "OSGI-INF/SchemaService.xml");
+        deployContrib("org.nuxeo.ecm.core.schema", "OSGI-INF/SchemaService.xml");
         typeManager = (SchemaManagerImpl) getTypeManager();
     }
 
