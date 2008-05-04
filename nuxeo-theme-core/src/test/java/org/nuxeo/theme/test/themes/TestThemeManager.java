@@ -53,7 +53,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         super.setUp();
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
-        deployContrib("fragment-config.xml");
+        deployContrib("org.nuxeo.theme.core.tests", "fragment-config.xml");
         themeManager = Manager.getThemeManager();
         typeRegistry = Manager.getTypeRegistry();
     }

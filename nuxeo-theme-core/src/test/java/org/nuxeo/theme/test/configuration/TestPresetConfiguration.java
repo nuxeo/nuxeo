@@ -30,7 +30,7 @@ public class TestPresetConfiguration extends NXRuntimeTestCase {
         super.setUp();
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
-        deployContrib("preset-config.xml");
+        deployContrib("org.nuxeo.theme.core.tests", "preset-config.xml");
         ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
                 ThemeService.ID);
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");

@@ -35,7 +35,7 @@ public class TestElementConfiguration extends NXRuntimeTestCase {
         super.setUp();
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
-        deployContrib("element-config.xml");
+        deployContrib("org.nuxeo.theme.core.tests", "element-config.xml");
         ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
                 ThemeService.ID);
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");

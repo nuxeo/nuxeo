@@ -28,7 +28,7 @@ public class TestUIManager extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.jsf", "OSGI-INF/nxthemes-jsf-contrib.xml");
-        deployContrib("fragment-config.xml");
+        deployContrib("org.nuxeo.theme.jsf.editor.tests", "fragment-config.xml");
     }
 
     public void testGetList() {

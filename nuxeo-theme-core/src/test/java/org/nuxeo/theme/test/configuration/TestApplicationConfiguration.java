@@ -33,7 +33,7 @@ public class TestApplicationConfiguration extends NXRuntimeTestCase {
         super.setUp();
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
-        deployContrib("application-config.xml");
+        deployContrib("org.nuxeo.theme.core.tests", "application-config.xml");
         ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
                 ThemeService.ID);
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");
@@ -76,9 +76,10 @@ public class TestApplicationConfiguration extends NXRuntimeTestCase {
         assertTrue(app2a.getViewDefs().isEmpty());
     }
 
-    public void testOverrideProperties() {
+    public void testOverrideProperties() throws Exception {
         // Override default application settings
-        deployContrib("application-config-override.xml");
+        deployContrib("org.nuxeo.theme.core.tests",
+                "application-config-override.xml");
         ApplicationType app1b = (ApplicationType) typeRegistry.lookup(TypeFamily.APPLICATION,
                 "/my-app");
 
@@ -110,9 +111,10 @@ public class TestApplicationConfiguration extends NXRuntimeTestCase {
         assertEquals("my-theme/default", view4.getTheme());
     }
 
-    public void testOverrideProperties2() {
+    public void testOverrideProperties2() throws Exception {
         // Override default application settings
-        deployContrib("application-config-override.xml");
+        deployContrib("org.nuxeo.theme.core.tests",
+                "application-config-override.xml");
         ApplicationType app2b = (ApplicationType) typeRegistry.lookup(TypeFamily.APPLICATION,
                 "/my-app2");
 

@@ -24,7 +24,7 @@ public class TestThemeConfiguration extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
-        deployContrib("theme-config.xml");
+        deployContrib("org.nuxeo.theme.core.tests", "theme-config.xml");
     }
 
     public void testRegisterTheme() throws IOException {
