@@ -28,12 +28,16 @@ public final class VocabularyType implements Type {
     @XNode("class")
     public String className;
 
+    @XNode("path")
+    public String path;
+
     public VocabularyType() {
     }
 
-    public VocabularyType(String name, String className) {
+    public VocabularyType(String name, String className, String path) {
         this.name = name;
         this.className = className;
+        this.path = path;
     }
 
     public TypeFamily getTypeFamily() {
@@ -50,6 +54,10 @@ public final class VocabularyType implements Type {
 
     public String getName() {
         return name;
+    }
+
+    public String getPath() {
+        return path;
     }
 
 }
