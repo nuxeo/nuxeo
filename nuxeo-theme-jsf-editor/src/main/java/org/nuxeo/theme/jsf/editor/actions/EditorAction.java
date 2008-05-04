@@ -222,15 +222,11 @@ public class EditorAction implements EditorActionLocal {
             if (element == null) {
                 log.debug("Element to paste not found: " + id);
             } else {
-                boolean duplicateFormats = true;
-                if (ThemeManager.belongToSameTheme(element, destElement)) {
-                    duplicateFormats = false;
-                }
                 destElement.addChild(themeManager.duplicateElement(element,
-                        duplicateFormats));
+                        true));
             }
         }
-
+        eventManager.notify(STYLES_MODIFIED_EVENT, new EventContext(null, null));
         eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(null,
                 destElement));
         log.debug("Pasted the elements: " + ids + " from the clipboard.");

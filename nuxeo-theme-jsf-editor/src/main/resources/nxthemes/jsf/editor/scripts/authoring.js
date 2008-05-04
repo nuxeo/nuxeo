@@ -289,8 +289,11 @@ NXThemesEditor.duplicateElement = function(info) {
 
 NXThemesEditor.pasteElement = function(info) {
     var dest_id =  info.target.getAttribute('id');
-    Seam.Component.getInstance("nxthemesEditorAction").pasteElements(
-       dest_id, NXThemesEditor.refreshCanvas);
+    Seam.Component.getInstance("nxthemesEditorAction").pasteElements(dest_id, function(r) {
+        NXThemes.getViewById("style css").hide();
+        NXThemes.getViewById("style css").show();
+        NXThemesEditor.refreshCanvas();
+      });
 };
 
 NXThemesEditor.deleteElement = function(info) {
