@@ -37,7 +37,7 @@ import org.nuxeo.runtime.remoting.transporter.TransporterServer;
  */
 public class StreamingService extends DefaultComponent{
 
-    private final static Log log = LogFactory.getLog(StreamingService.class);
+    private static final Log log = LogFactory.getLog(StreamingService.class);
 
     public static final ComponentName NAME = new ComponentName("org.nuxeo.runtime.streaming");
 

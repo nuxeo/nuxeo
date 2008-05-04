@@ -19,9 +19,9 @@
 
 package org.nuxeo.runtime.model;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
-import java.io.Serializable;
 
 import org.nuxeo.runtime.Version;
 

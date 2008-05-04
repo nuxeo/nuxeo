@@ -23,7 +23,8 @@ package org.nuxeo.runtime.api;
 /**
  * A service provider.
  *
- * A service provider is used by the framework to be able to change the local services are found
+ * A service provider is used by the framework to be able to change the way
+ * local services are found.
  * <p>
  * For example you may want to use a simple service provider for testing pourpose to avoid loading
  * the nuxeo runtime framework to register services.
@@ -37,7 +38,8 @@ package org.nuxeo.runtime.api;
 public interface ServiceProvider {
 
     /**
-     * Get the service instance given its API class
+     * Gets the service instance given its API class.
+     *
      * @param <T>
      * @param serviceClass
      * @return
