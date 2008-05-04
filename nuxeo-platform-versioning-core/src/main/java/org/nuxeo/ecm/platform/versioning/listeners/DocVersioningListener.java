@@ -142,7 +142,7 @@ public class DocVersioningListener extends AbstractEventListener implements
 
                     req = getChangeDocVersionsRequest(doc, from, to);
 
-                } else if (eventId.equals(DOCUMENT_CREATED)) {
+                } else if (eventId.equals(DOCUMENT_CREATED) && !doc.isProxy()) {
                     // set major version at 1
                     doc.setProperty(DocumentModelUtils.getSchemaName(majorPropName),
                             DocumentModelUtils.getFieldName(majorPropName), 1L);
