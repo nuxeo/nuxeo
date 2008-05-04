@@ -38,8 +38,9 @@ public class TestDefaultSchemaFIeldDescriptorFactory extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployBundle("nuxeo-core-schema");
-        deployContrib("default-fieldfactory-components-test-setup.xml");
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployContrib("org.nuxeo.ecm.platform.search.api.tests",
+                "default-fieldfactory-components-test-setup.xml");
     }
 
     public void testConfiguration() throws Exception {

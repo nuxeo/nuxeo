@@ -41,7 +41,8 @@ public class TestRelationService extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deploy("nxrelations-test-bundle.xml");
+        deployContrib("org.nuxeo.ecm.relations.tests",
+                "nxrelations-test-bundle.xml");
         this.service = (RelationService) Framework.getRuntime().getComponent(
                 RelationService.NAME);
     }

@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: nxnotificationservice-core
+Bundle-Name: NXNotification Core
 Bundle-SymbolicName: org.nuxeo.ecm.platform.notification.core
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo

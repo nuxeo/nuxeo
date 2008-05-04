@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: org.nuxeo.ecm.platform.audit.search
+Bundle-Name: NXAudit Search
 Bundle-SymbolicName: org.nuxeo.ecm.platform.audit.search
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo

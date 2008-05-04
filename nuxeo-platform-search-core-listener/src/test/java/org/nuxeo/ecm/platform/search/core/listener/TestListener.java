@@ -76,35 +76,57 @@ public class TestListener extends RepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deploy("ServiceManagement.xml");
-        deploy("LoginComponent.xml");
-        deploy("RepositoryManager.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "ServiceManagement.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "LoginComponent.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "RepositoryManager.xml");
 
-        deploy("EventService.xml");
+        deployContrib("org.nuxeo.runtime", "OSGI-INF/EventService.xml");
 
-        deploy("CoreService.xml");
-        deploy("TypeService.xml");
-        deploy("PolicyService.xml");
-        deploy("SecurityService.xml");
-        deploy("RepositoryService.xml");
-        deploy("test-CoreExtensions.xml");
-        deploy("CoreTestExtensions.xml");
-        deploy("DemoRepository.xml");
-        deploy("LifeCycleService.xml");
-        deploy("LifeCycleServiceExtensions.xml");
-        deploy("CoreEventListenerService.xml");
-        deploy("PlatformService.xml");
-        deploy("DefaultPlatform.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "CoreService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "TypeService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/PolicyService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "SecurityService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "RepositoryService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "test-CoreExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "CoreTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "DemoRepository.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "LifeCycleService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "LifeCycleServiceExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "CoreEventListenerService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "PlatformService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "DefaultPlatform.xml");
 
-        deploy("nxmimetype-bundle.xml");
-        deploy("nxtransform-framework.xml");
-        deploy("nxtransform-platform-contrib.xml");
-        deploy("nxtransform-plugins-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "nxmimetype-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "nxtransform-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "nxtransform-platform-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "nxtransform-plugins-bundle.xml");
 
-        deploy("nxsearch-test-framework.xml");
-        deploy("nxsearch-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "nxsearch-test-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "nxsearch-test-contrib.xml");
 
-        deploy("nxsearch-" + ENGINE_NAME + "-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.core.listener.tests",
+                "nxsearch-" + ENGINE_NAME + "-test-contrib.xml");
 
         service = NXSearch.getSearchService();
         assertNotNull(service);

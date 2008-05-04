@@ -62,16 +62,21 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         // setup the client environment
-        deploy("ldap-test-setup/CoreService.xml");
-        deploy("ldap-test-setup/TypeService.xml");
+        deployContrib("org.nuxeo.ecm.directory.ldap.tests",
+                "ldap-test-setup/CoreService.xml");
+        deployContrib("org.nuxeo.ecm.directory.ldap.tests",
+                "ldap-test-setup/TypeService.xml");
 
-        deploy("ldap-test-setup/DirectoryTypes.xml");
-        deploy("ldap-test-setup/DirectoryService.xml");
-        deploy("ldap-test-setup/LDAPDirectoryFactory.xml");
+        deployContrib("org.nuxeo.ecm.directory.ldap.tests",
+                "ldap-test-setup/DirectoryTypes.xml");
+        deployContrib("org.nuxeo.ecm.directory.ldap.tests",
+                "ldap-test-setup/DirectoryService.xml");
+        deployContrib("org.nuxeo.ecm.directory.ldap.tests",
+                "ldap-test-setup/LDAPDirectoryFactory.xml");
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            deployContrib(EXTERNAL_SERVER_SETUP);
+            deployContrib("org.nuxeo.ecm.directory.ldap.tests", EXTERNAL_SERVER_SETUP);
         } else {
-            deployContrib(INTERNAL_SERVER_SETUP);
+            deployContrib("org.nuxeo.ecm.directory.ldap.tests", INTERNAL_SERVER_SETUP);
             getLDAPDirectory("userDirectory").setTestServer(SERVER);
             getLDAPDirectory("groupDirectory").setTestServer(SERVER);
         }

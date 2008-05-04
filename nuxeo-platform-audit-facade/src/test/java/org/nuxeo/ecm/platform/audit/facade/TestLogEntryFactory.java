@@ -39,8 +39,10 @@ public class TestLogEntryFactory extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("nxaudit-service-definitions.xml");
-        deployContrib("nxaudit-service-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.audit.ejb.tests",
+                "nxaudit-service-definitions.xml");
+        deployContrib("org.nuxeo.ecm.platform.audit.ejb.tests",
+                "nxaudit-service-contrib.xml");
 
         aes = (NXAuditEventsService) runtime.getComponent(NXAuditEventsService.NAME);
     }

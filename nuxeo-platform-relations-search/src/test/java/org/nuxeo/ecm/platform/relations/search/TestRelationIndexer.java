@@ -95,13 +95,17 @@ public class TestRelationIndexer extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deploy("nxsearch-relations-test-framework.xml");
-        deploy("nxsearch-relations-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.relations.search.tests",
+                "nxsearch-relations-test-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.relations.search.tests",
+                "nxsearch-relations-test-contrib.xml");
         // All-in-one for relation
-        deploy("nxrelations-test-search-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.relations.search.tests",
+                "nxrelations-test-search-bundle.xml");
 
         indexer = new RelationIndexer();
-        deploy("jena-test-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.relations.search.tests",
+                "jena-test-bundle.xml");
         service = (RelationService) Framework.getRuntime()
                 .getComponent(RelationService.NAME);
         Graph graph = service.getGraphByName("myrelations");

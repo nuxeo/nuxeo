@@ -19,9 +19,6 @@
 
 package org.nuxeo.ecm.platform.uidgen;
 
-import org.nuxeo.ecm.core.NXCore;
-import org.nuxeo.ecm.core.model.Repository;
-import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -31,55 +28,33 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public abstract class UIDGenBaseTestCase extends NXRuntimeTestCase {
 
-    private Repository repository;
-
-    public Repository getRepository() throws Exception {
-        if (repository == null) {
-            // the repository should be deployed the last
-            // after any other bundle that is deploying doctypes
-            deploy("DemoRepository.xml");
-            repository = NXCore.getRepositoryService().getRepositoryManager()
-                    .getRepository("demo");
-        }
-        return repository;
-    }
-
-    public void releaseRepository() {
-        if (repository != null) {
-            repository.shutdown();
-            repository = null;
-        }
-    }
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         // the core bundle
-        deploy("CoreService.xml");
-        deploy("TypeService.xml");
-        deploy("SecurityService.xml");
-        deploy("RepositoryService.xml");
-        deploy("test-CoreExtensions.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector", "TypeService.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector", "SecurityService.xml");
+        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests",
+                "RepositoryService.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector",
+                "test-CoreExtensions.xml");
 
-        deploy("DemoRepository.xml");
-        deploy("CoreEventListenerService.xml");
-        deploy("LifeCycleService.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector", "DemoRepository.xml");
+        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests",
+                "CoreEventListenerService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/LifeCycleService.xml");
 
         // UID specific
-        deploy("nxuidgenerator-bundle.xml");
-        deploy("nxuidgenerator-bundle-contrib.xml");
-
-        deploy("GeideDocTypes.xml");
+        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests",
+                "nxuidgenerator-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests",
+                "nxuidgenerator-bundle-contrib.xml");
     }
 
     @Override
     protected void tearDown() throws Exception {
-        releaseRepository();
         super.tearDown();
-    }
-
-    protected Session getSession() throws Exception {
-        return getRepository().getSession(null);
     }
 
 }

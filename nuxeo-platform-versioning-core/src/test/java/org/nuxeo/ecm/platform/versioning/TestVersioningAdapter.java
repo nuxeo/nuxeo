@@ -52,7 +52,8 @@ public class TestVersioningAdapter extends VersioningBaseTestCase {
     public void setUp() throws Exception {
         log.info("Initializing NX Core for local tests");
         super.setUp();
-        deployContrib("DocumentAdapterService.xml");
+        deployContrib("org.nuxeo.ecm.platform.versioning.tests",
+                "DocumentAdapterService.xml");
         openCoreSession();
     }
 

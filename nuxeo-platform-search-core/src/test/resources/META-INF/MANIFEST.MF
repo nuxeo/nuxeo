@@ -1,6 +1,3 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Nuxeo ECM Search Core
-Bundle-SymbolicName: org.nuxeo.ecm.platform.search.tests;singleton:=true
-Bundle-Vendor: Nuxeo
-Eclipse-LazyStart: false
+Bundle-SymbolicName: org.nuxeo.ecm.platform.search.tests

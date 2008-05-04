@@ -65,20 +65,21 @@ public class TestSearchServiceIntegration extends RepositoryOSGITestCase {
         super.setUp();
 
         // transform plugins are needed for fulltext indexing
-        deployBundle("nuxeo-platform-transform-api");
-        deployBundle("nuxeo-platform-transform-core");
-        deployBundle("nuxeo-platform-transform-plugins");
+        deployBundle("org.nuxeo.ecm.platform.transform.api");
+        deployBundle("org.nuxeo.ecm.platform.transform");
+        deployBundle("org.nuxeo.ecm.platform.transform.plugin");
 
         // deploy the default search service
-        deployBundle("nuxeo-platform-search-api");
-        deployBundle("nuxeo-platform-search-core");
-        deployBundle("nuxeo-platform-search-compass-plugin");
+        deployBundle("org.nuxeo.ecm.platform.search.api");
+        deployBundle("org.nuxeo.ecm.platform.search");
+        deployBundle("org.nuxeo.ecm.platform.search.compass-plugin");
 
         // override the default compass configuration to instead use
         // a non-JXTA memory backend
-        deployContrib("nxsearch-compass-test-integration-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.test.integration.tests",
+                "nxsearch-compass-test-integration-contrib.xml");
 
-        deployBundle("nuxeo-platform-search-core-listener");
+        deployBundle("org.nuxeo.ecm.platform.search.core.listener");
 
         openRepository();
         sservice = Framework.getService(SearchService.class);

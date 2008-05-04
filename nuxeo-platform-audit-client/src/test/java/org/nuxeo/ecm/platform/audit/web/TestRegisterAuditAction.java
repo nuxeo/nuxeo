@@ -34,8 +34,10 @@ public class TestRegisterAuditAction extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("actions-bundle.xml");
-        deployContrib("nxauditclient-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.audit.web.tests",
+                "actions-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.audit.web.tests",
+                "nxauditclient-bundle.xml");
         as = (ActionService) runtime.getComponent(ActionService.ID);
     }
 

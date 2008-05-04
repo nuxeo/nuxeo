@@ -37,8 +37,8 @@ public class TestAction extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deploy("test-actions-service.xml");
-        deploy("test-actions-contrib.xml");
+        deployContrib("org.nuxeo.ecm.actions.tests", "test-actions-service.xml");
+        deployContrib("org.nuxeo.ecm.actions.tests", "test-actions-contrib.xml");
         as = (ActionService) runtime.getComponent(ActionService.ID);
     }
 
@@ -162,7 +162,7 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals("principal.getName()=='gandalf'", rule.conditions[0]);
     }
 
-    public void testActionOverride() {
+    public void testActionOverride() throws Exception {
         Action act1 = as.getActionRegistry().getAction("TAB_VIEW");
         assertNotNull(act1);
         assertEquals(2, act1.getCategories().length);
@@ -170,7 +170,8 @@ public class TestAction extends NXRuntimeTestCase {
         assertEquals(1, act1.getFilterIds().size());
         assertTrue(act1.getFilterIds().contains("MyCustomFilter"));
 
-        deploy("test-actions-override-contrib.xml");
+        deployContrib("org.nuxeo.ecm.actions.tests",
+                "test-actions-override-contrib.xml");
 
         act1 = as.getActionRegistry().getAction("TAB_VIEW");
         assertNotNull(act1);

@@ -35,12 +35,18 @@ public class TestTransformComponent extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib("PlatformService.xml");
-        deployContrib("DefaultPlatform.xml");
-        deployContrib("nxmimetype-service.xml");
-        deployContrib("nxtransform-bundle.xml");
-        deployContrib("nxtransform-test-plugins-bundle.xml");
-        deployContrib("nxtransform-platform-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.transform.tests",
+                "PlatformService.xml");
+        deployContrib("org.nuxeo.ecm.platform.transform.tests",
+                "DefaultPlatform.xml");
+        deployContrib("org.nuxeo.ecm.platform.transform.tests",
+                "nxmimetype-service.xml");
+        deployContrib("org.nuxeo.ecm.platform.transform.tests",
+                "nxtransform-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.transform.tests",
+                "nxtransform-test-plugins-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.transform.tests",
+                "nxtransform-platform-contrib.xml");
         service = Framework.getLocalService(TransformServiceCommon.class);
     }
 

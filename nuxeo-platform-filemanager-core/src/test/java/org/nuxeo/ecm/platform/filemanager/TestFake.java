@@ -47,17 +47,28 @@ public abstract class TestFake extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("CoreService.xml");
-        deploy("TypeService.xml");
-        deploy("SecurityService.xml");
-        deploy("RepositoryService.xml");
-        deploy("test-CoreExtensions.xml");
-        deploy("LifeCycleService.xml");
-        deploy("CoreTestExtensions.xml");
-        deploy("DemoRepository.xml");
-        deploy("nxmimetype-bundle.xml");
-        deploy("nxfilemanag-bundle-points.xml");
-        deploy("nxfilemanag-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.filemanager.core.tests",
+                "CoreService.xml");
+        deployContrib("org.nuxeo.ecm.platform.filemanager.core.tests",
+                "TypeService.xml");
+        deployContrib("org.nuxeo.ecm.platform.filemanager.core.tests",
+                "SecurityService.xml");
+        deployContrib("org.nuxeo.ecm.platform.filemanager.core.tests",
+                "RepositoryService.xml");
+        deployContrib("org.nuxeo.ecm.platform.filemanager.core.tests",
+                "test-CoreExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.filemanager.core.tests",
+                "LifeCycleService.xml");
+        deployContrib("org.nuxeo.ecm.platform.filemanager.core.tests",
+                "CoreTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.filemanager.core.tests",
+                "DemoRepository.xml");
+        deployContrib("org.nuxeo.ecm.platform.filemanager.core.tests",
+                "nxmimetype-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.filemanager.core.tests",
+                "nxfilemanag-bundle-points.xml");
+        deployContrib("org.nuxeo.ecm.platform.filemanager.core.tests",
+                "nxfilemanag-bundle.xml");
         CoreInstance instance =  CoreInstance.getInstance();
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("username", SecurityConstants.ADMINISTRATOR);

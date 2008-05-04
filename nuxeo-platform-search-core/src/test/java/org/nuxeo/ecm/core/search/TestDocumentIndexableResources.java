@@ -50,19 +50,32 @@ public class TestDocumentIndexableResources extends RepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deploy("ServiceManagement.xml");
-        deploy("LoginComponent.xml");
-        deploy("RepositoryManager.xml");
-        deploy("CoreTestExtensions.xml");
-        deploy("DemoRepository.xml");
-        deploy("LifeCycleService.xml");
-        deploy("LifeCycleServiceExtensions.xml");
-        deploy("CoreEventListenerService.xml");
-        deploy("PlatformService.xml");
-        deploy("DefaultPlatform.xml");
-        deploy("nxsearch-test-framework.xml");
-        deploy("nxsearch-test-contrib.xml");
-        deploy("PolicyService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "ServiceManagement.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "LoginComponent.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "RepositoryManager.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "CoreTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "DemoRepository.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "LifeCycleService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "LifeCycleServiceExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "CoreEventListenerService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "PlatformService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "DefaultPlatform.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "nxsearch-test-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "nxsearch-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "PolicyService.xml");
 
         service = NXSearch.getSearchService();
         assertNotNull(service);

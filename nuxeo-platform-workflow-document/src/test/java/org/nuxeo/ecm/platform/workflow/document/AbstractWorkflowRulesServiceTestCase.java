@@ -47,7 +47,8 @@ public abstract class AbstractWorkflowRulesServiceTestCase extends
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("WorkflowRulesService.xml");
+        deployContrib("org.nuxeo.ecm.platform.workflow.document.tests",
+                "WorkflowRulesService.xml");
     }
 
     public void testRulesByDocTypes() {

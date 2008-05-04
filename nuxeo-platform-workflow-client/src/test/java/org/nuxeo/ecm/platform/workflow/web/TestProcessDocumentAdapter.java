@@ -48,10 +48,13 @@ public class TestProcessDocumentAdapter extends RepositoryTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("DemoRepository.xml");
-        deployContrib("DocumentAdapterService.xml");
+        deployContrib("org.nuxeo.ecm.platform.workflow.web.tests",
+                "DemoRepository.xml");
+        deployContrib("org.nuxeo.ecm.platform.workflow.web.tests",
+                "DocumentAdapterService.xml");
 
-        deployContrib("OSGI-INF/document-adapter-service-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.workflow.web",
+                "OSGI-INF/document-adapter-service-contrib.xml");
     }
 
     @Override
@@ -65,7 +68,8 @@ public class TestProcessDocumentAdapter extends RepositoryTestCase {
         if (repository == null) {
             // the repository should be deployed the last
             // after any other bundle that is deploying doctypes
-            deployContrib("DemoRepository.xml");
+            deployContrib("org.nuxeo.ecm.platform.workflow.web.tests",
+                    "DemoRepository.xml");
             repository = NXCore.getRepositoryService().getRepositoryManager().getRepository(
                     "demo");
         }

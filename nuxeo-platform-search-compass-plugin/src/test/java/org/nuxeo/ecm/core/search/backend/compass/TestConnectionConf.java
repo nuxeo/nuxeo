@@ -31,23 +31,28 @@ public class TestConnectionConf extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("nxsearch-backendtest-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.test",
+                "nxsearch-backendtest-framework.xml");
         SearchServiceInternals service = (SearchServiceInternals)
                         SearchServiceDelegate.getRemoteSearchService();
         assertNotNull(service);
-        deploy("test-nxsearch-backend-compass-framework.xml");
-        deploy("nxsearch-compass-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "test-nxsearch-backend-compass-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "nxsearch-compass-test-contrib.xml");
         compass = (CompassBackend) service.getSearchEngineBackendByName("compass");
         assertNotNull(compass);
     }
 
     public void testFS() throws Exception {
-        deploy("test-fs-connection.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "test-fs-connection.xml");
         assertEquals("file:///foo/bar", compass.getConnectionString());
     }
 
     public void testRelativeFS() throws Exception {
-        deploy("test-fs-relative-connection.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "test-fs-relative-connection.xml");
         // exactly the same construction as in tested code so this just
         // tests the branching part of the code...
         String expected = "file://" +
@@ -59,18 +64,21 @@ public class TestConnectionConf extends NXRuntimeTestCase {
     }
 
     public void testLastWins() throws Exception {
-        deploy("test-fs-relative-connection.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "test-fs-relative-connection.xml");
         testFS();
     }
 
     public void testDefault() throws Exception {
-        deploy("test-default-connection.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "test-default-connection.xml");
         assertNull(compass.getConnectionString());
     }
 
     public void testDefaultLastWins() throws Exception {
         // this one is really vital
-        deploy("test-fs-relative-connection.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "test-fs-relative-connection.xml");
         testDefault();
     }
 

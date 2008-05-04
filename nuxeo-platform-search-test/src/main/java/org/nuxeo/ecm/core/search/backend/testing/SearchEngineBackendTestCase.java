@@ -66,8 +66,8 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployBundle("nuxeo-core-schema");
-        deployBundle("nuxeo-core");
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.core");
         deployContrib("nuxeo-platform-search-test","nxsearch-backendtest-types-contrib.xml");
         deployContrib("nuxeo-platform-search-test","nxsearch-backendtest-framework.xml");
         service = SearchServiceDelegate.getRemoteSearchService();

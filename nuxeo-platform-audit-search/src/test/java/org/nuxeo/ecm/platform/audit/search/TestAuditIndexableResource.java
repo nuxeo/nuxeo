@@ -42,10 +42,14 @@ public class TestAuditIndexableResource extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("nxsearch-test-framework.xml");
-        deployContrib("nxsearch-test-contrib.xml");
-        deployContrib("test-nxsearch-backend-compass-framework.xml");
-        deployContrib("nxsearch-compass-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.audit.search",
+                "nxsearch-test-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.audit.search",
+                "nxsearch-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.audit.search",
+                "test-nxsearch-backend-compass-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.audit.search",
+                "nxsearch-compass-test-contrib.xml");
 
         // Local lookup is enough
         service = Framework.getLocalService(SearchService.class);

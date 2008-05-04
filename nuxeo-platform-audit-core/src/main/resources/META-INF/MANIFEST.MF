@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: NXAudit
+Bundle-Name: NXAudit Core
 Bundle-SymbolicName: org.nuxeo.ecm.platform.audit
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo

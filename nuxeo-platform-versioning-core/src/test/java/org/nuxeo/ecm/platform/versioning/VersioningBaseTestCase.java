@@ -64,7 +64,8 @@ public abstract class VersioningBaseTestCase extends RepositoryTestCase {
         if (repository == null) {
             // the repository should be deployed the last
             // after any other bundle that is deploying doctypes
-            deployContrib("DemoRepository.xml");
+            deployContrib("org.nuxeo.ecm.platform.versioning.tests",
+                    "DemoRepository.xml");
             repository = NXCore.getRepositoryService().getRepositoryManager().getRepository(
                     "demo");
         }
@@ -100,19 +101,28 @@ public abstract class VersioningBaseTestCase extends RepositoryTestCase {
         log.info("Initializing NX Core for local tests");
         super.setUp();
 
-        deployContrib("DemoRepository.xml");
-        deployContrib("CoreEventListenerService.xml");
-        deployContrib("DocumentAdapterService.xml");
+        deployContrib("org.nuxeo.ecm.platform.versioning.tests",
+                "DemoRepository.xml");
+        deployContrib("org.nuxeo.ecm.platform.versioning.tests",
+                "CoreEventListenerService.xml");
+        deployContrib("org.nuxeo.ecm.platform.versioning.tests",
+                "DocumentAdapterService.xml");
 
-        deployContrib("LifeCycleService.xml");
-        deployContrib("JCRLifeCycleManager.xml");
-        deployContrib("LifeCycleCoreExtensions-versioningtest.xml");
+        deployContrib("org.nuxeo.ecm.platform.versioning.tests",
+                "LifeCycleService.xml");
+        deployContrib("org.nuxeo.ecm.platform.versioning.tests",
+                "JCRLifeCycleManager.xml");
+        deployContrib("org.nuxeo.ecm.platform.versioning.tests",
+                "LifeCycleCoreExtensions-versioningtest.xml");
 
         // Versioning specific extensions
-        deployContrib("nxversioning-bundle.xml");
-        deployContrib("test-nxversioning-contrib-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.versioning.tests",
+                "nxversioning-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.versioning.tests",
+                "test-nxversioning-contrib-bundle.xml");
 
-        deployContrib("VersionDocTypes.xml");
+        deployContrib("org.nuxeo.ecm.platform.versioning.tests",
+                "VersionDocTypes.xml");
 
         // open session
         session = getSession();

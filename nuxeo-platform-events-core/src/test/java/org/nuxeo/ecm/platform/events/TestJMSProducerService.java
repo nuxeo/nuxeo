@@ -42,15 +42,21 @@ public class TestJMSProducerService extends NXRuntimeTestCase {
         super.setUp();
 
         /** NXCore descriptors * */
-        deployContrib("CoreService.xml");
-        deployContrib("TypeService.xml");
-        deployContrib("RepositoryService.xml");
-        deployContrib("test-CoreExtensions.xml");
-        deployContrib("CoreTestExtensions.xml");
-        deployContrib("DemoRepository.xml");
-        deployContrib("CoreEventListenerService.xml");
+        deployContrib("org.nuxeo.ecm.platform.events.tests", "CoreService.xml");
+        deployContrib("org.nuxeo.ecm.platform.events.tests", "TypeService.xml");
+        deployContrib("org.nuxeo.ecm.platform.events.tests",
+                "RepositoryService.xml");
+        deployContrib("org.nuxeo.ecm.platform.events.tests",
+                "test-CoreExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.events.tests",
+                "CoreTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.events.tests",
+                "DemoRepository.xml");
+        deployContrib("org.nuxeo.ecm.platform.events.tests",
+                "CoreEventListenerService.xml");
 
-        deployContrib("OSGI-INF/nxevents-jms-service.xml");
+        deployContrib("org.nuxeo.ecm.platform.events",
+                "OSGI-INF/nxevents-jms-service.xml");
 
         service = DocumentMessageProducerBusinessDelegate.getLocalDocumentMessageProducer();
     }

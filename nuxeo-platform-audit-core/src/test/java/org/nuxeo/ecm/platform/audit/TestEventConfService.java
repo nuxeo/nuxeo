@@ -34,7 +34,8 @@ public class TestEventConfService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("nxaudit-test-definitions.xml");
+        deployContrib("org.nuxeo.ecm.platform.audit.tests",
+                "nxaudit-test-definitions.xml");
 
         service = NXAudit.getNXAuditEventsService();
         assertNotNull(service);

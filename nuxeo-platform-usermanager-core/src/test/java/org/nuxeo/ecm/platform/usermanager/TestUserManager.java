@@ -52,9 +52,12 @@ public class TestUserManager extends NXRuntimeTestCase {
         deployContrib("nuxeo-platform-directory-sql",
                 "OSGI-INF/SQLDirectoryFactory.xml");
 
-        deployContrib("test-usermanagerimpl/schemas-config.xml");
-        deployContrib("test-usermanagerimpl/directory-config.xml");
-        deployContrib("test-usermanagerimpl/userservice-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                "test-usermanagerimpl/schemas-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                "test-usermanagerimpl/directory-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                "test-usermanagerimpl/userservice-config.xml");
 
         UserService service = (UserService) Framework.getRuntime().getComponent(
                 UserService.NAME);

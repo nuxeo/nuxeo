@@ -37,8 +37,10 @@ public class TestWorkflowEventRegistration extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("nxaudit-event-service.xml");
-        deploy("nxaudit-events-workflow.xml");
+        deployContrib("org.nuxeo.ecm.platform.workflow.tests",
+                "nxaudit-event-service.xml");
+        deployContrib("org.nuxeo.ecm.platform.workflow.tests",
+                "nxaudit-events-workflow.xml");
 
         service = NXAudit.getNXAuditEventsService();
         assertNotNull(service);

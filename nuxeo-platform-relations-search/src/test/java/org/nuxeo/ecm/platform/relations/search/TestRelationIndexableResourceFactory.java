@@ -57,12 +57,17 @@ public class TestRelationIndexableResourceFactory extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("nxsearch-relations-test-framework.xml");
-        deployContrib("nxsearch-relations-test-contrib.xml");
-        deployContrib("relations-test-nxsearch-backend-compass-framework.xml");
-        deployContrib("nxsearch-compass-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.relations.search.tests",
+                "nxsearch-relations-test-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.relations.search.tests",
+                "nxsearch-relations-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.relations.search.tests",
+                "relations-test-nxsearch-backend-compass-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.relations.search.tests",
+                "nxsearch-compass-test-contrib.xml");
         // all-in-one for relations
-        deployContrib("nxrelations-test-search-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.relations.search.tests",
+                "nxrelations-test-search-bundle.xml");
 
         factory = new RelationIndexableResourceFactory();
 

@@ -60,8 +60,10 @@ public class TestUIDGeneratorService extends NXRuntimeTestCase {
         sch.addField(QName.valueOf("atelier_emetteur"), new TypeRef<Type>(SchemaNames.BUILTIN, StringType.ID));
         Framework.getLocalService(SchemaManager.class).registerSchema(sch);
 
-        deploy("nxuidgenerator-bundle.xml");
-        deploy("nxuidgenerator-bundle-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests",
+                "nxuidgenerator-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.uidgen.core.tests",
+                "nxuidgenerator-bundle-contrib.xml");
 
     }
 

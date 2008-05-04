@@ -63,13 +63,19 @@ public class TestDublinCoreStorage extends RepositoryTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        deploy("CoreService.xml");
-        deploy("test-CoreExtensions.xml");
-        deploy("DemoRepository.xml");
-        deploy("CoreEventListenerService.xml");
-        deploy("LifeCycleService.xml");
+        deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
+                "CoreService.xml");
+        deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
+                "test-CoreExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
+                "DemoRepository.xml");
+        deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
+                "CoreEventListenerService.xml");
+        deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
+                "LifeCycleService.xml");
 
-        deploy("nxdublincore-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.dublincore.tests",
+                "nxdublincore-bundle.xml");
 
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         context.put("username", "Administrator");

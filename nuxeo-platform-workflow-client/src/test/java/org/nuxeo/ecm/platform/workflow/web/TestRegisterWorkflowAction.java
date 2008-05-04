@@ -34,8 +34,10 @@ public class TestRegisterWorkflowAction extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("actions-bundle.xml");
-        deployContrib("nxworkflow-client-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.workflow.web.tests",
+                "actions-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.workflow.web.tests",
+                "nxworkflow-client-bundle.xml");
 
         as = (ActionService) runtime.getComponent(ActionService.ID);
     }

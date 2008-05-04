@@ -90,44 +90,62 @@ public class TestIORemoteCopy extends NXRuntimeTestCase {
         super.setUp();
 
         // the core bundle
-        deployContrib("CoreService.xml");
-        deployContrib("TypeService.xml");
-        deployContrib("SecurityService.xml");
-        deployContrib("RepositoryService.xml");
-        deployContrib("test-CoreExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests", "CoreService.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests", "TypeService.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "SecurityService.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "RepositoryService.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "test-CoreExtensions.xml");
 
-        deployContrib("CoreEventListenerService.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "CoreEventListenerService.xml");
 
         // repo test case misc
-        deployContrib("DefaultPlatform.xml");
-        deployContrib("RepositoryManager.xml");
-        deployContrib("LifeCycleCoreExtensions.xml");
-        deployContrib("LifeCycleService.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "DefaultPlatform.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "RepositoryManager.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "LifeCycleCoreExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "LifeCycleService.xml");
         // specific files
-        deployContrib("io-test-framework.xml");
-        deployContrib("io-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "io-test-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "io-test-contrib.xml");
 
-        deployContrib("RemotingService.xml");
-        deployContrib("JBossLoginConfig.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "RemotingService.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "JBossLoginConfig.xml");
         // donnot : deployContrib("StreamingServer.xml");
 
-        deployContrib("DemoRepository.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "DemoRepository.xml");
 
-        deployContrib("nxrelations.xml");
-        deployContrib("nxrelations-default-jena-bundle.xml");
-        deployContrib("nxrelations-jena-plugin.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests", "nxrelations.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "nxrelations-default-jena-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "nxrelations-jena-plugin.xml");
 
         InitialContext ctx1 = new InitialContext();
         System.err.println(ctx1.lookup("java:/comment-relations"));
         NamingEnumeration<NameClassPair> en = ctx1.list("/");
-        while(en.hasMore()) {
+        while (en.hasMore()) {
             Object o = en.nextElement();
             System.err.println(o);
         }
 
-        deployContrib("comment-schemas-contrib.xml");
-        deployContrib("CommentService.xml");
-        deployContrib("commentService-config-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "comment-schemas-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "CommentService.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "commentService-config-bundle.xml");
 
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("username", SecurityConstants.ADMINISTRATOR);

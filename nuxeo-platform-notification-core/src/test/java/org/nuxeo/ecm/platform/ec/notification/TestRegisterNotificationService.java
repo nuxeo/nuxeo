@@ -39,9 +39,12 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deploy("NotificationService.xml");
-        deploy("notification-contrib.xml");
-        deploy("notification-contrib-overridden.xml");
+        deployContrib("org.nuxeo.ecm.platform.notification.core.tests",
+                "NotificationService.xml");
+        deployContrib("org.nuxeo.ecm.platform.notification.core.tests",
+                "notification-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.notification.core.tests",
+                "notification-contrib-overridden.xml");
         notificationService = (NotificationService) runtime.getComponent(NotificationService.NAME);
         notificationRegistry = notificationService.getNotificationRegistry();
     }
