@@ -37,7 +37,8 @@ public class TestCustomVersioningService extends TestVersioning {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("CustomVersioningService.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector",
+                "CustomVersioningService.xml");
     }
 
     public void testRetrieveLastVersion() throws Exception {

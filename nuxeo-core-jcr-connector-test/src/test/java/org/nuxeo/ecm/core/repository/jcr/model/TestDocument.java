@@ -45,7 +45,8 @@ public class TestDocument extends RepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("CoreTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector",
+                "CoreTestExtensions.xml");
         prepareTest();
     }
 

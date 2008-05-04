@@ -96,7 +96,8 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
     }
 
     public void testFeature() throws Exception {
-        deployContrib("CoreTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.core.schema.tests",
+                "CoreTestExtensions.xml");
         DocumentType docType = typeMgr.getDocumentType("myDoc");
 
         assertNotNull(docType);

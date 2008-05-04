@@ -194,9 +194,10 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
         assertEquals("default", lifeCycleName);
     }
 
-    public void testLifeCycleReverse() {
+    public void testLifeCycleReverse() throws Exception {
 
-        deployContrib("LifeCycleManagerReverseTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.core.tests",
+                "LifeCycleManagerReverseTestExtensions.xml");
 
         LifeCycle lifeCycle = lifeCycleService.getLifeCycleByName("defaultReverse");
 

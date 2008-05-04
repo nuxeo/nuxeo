@@ -51,7 +51,8 @@ public class TestProperty extends RepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("CoreTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector",
+                "CoreTestExtensions.xml");
         // start the repository -> types will be automatically imported on
         // the first start of the repo
         session = getRepository().getSession(null);

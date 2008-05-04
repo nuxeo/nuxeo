@@ -42,8 +42,10 @@ public class LocalClientTest extends RepositoryTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deploy("LifeCycleService.xml");
-        deploy("CoreTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector.tests",
+                "LifeCycleService.xml");
+        deployContrib("org.nuxeo.ecm.core.jcr-connector",
+                "CoreTestExtensions.xml");
         getRepository(); // force deploying repository
 
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
