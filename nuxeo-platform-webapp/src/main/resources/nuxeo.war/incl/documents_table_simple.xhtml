@@ -48,7 +48,9 @@
         </f:facet>
 
         <nxd:restDocumentLink title="#{nxd:titleOrId(doc)}" document="#{doc}">
+          <span id="title_#{row.data.ref}">
           <h:outputText value="#{nxd:titleOrId(doc)}" />
+          </span>
         </nxd:restDocumentLink>
       </nxu:column>
 
@@ -123,7 +125,8 @@
 <ui:include src="/incl/popupMenu.xhtml"/>
 <script>
 // init menu
-jQuery("table td div div.popupTarget").contextMenu("popupMenu");
+//jQuery("table td div div.popupTarget").contextMenu("popupMenu");
+setupContextMenu("table td div div.popupTarget");
 </script>
 
 </div>

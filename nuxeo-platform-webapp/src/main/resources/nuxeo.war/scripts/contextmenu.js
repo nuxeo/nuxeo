@@ -178,7 +178,6 @@ var currentMenuContext = {};
 function getMenuItemsToHide(docRef)
 {
     Seam.Component.getInstance("popupHelper").getUnavailableActionId(docRef,getMenuItemsToHideCallBacks);
-	//window.setTimeout('getMenuItemsToHideCallBacks()',300);
 }
 
 // Seam remoting callback
@@ -233,4 +232,10 @@ function hideMenu()
     shadow=currentMenuContext['shadow'];
     menu.hide();
     shadow.hide();
+}
+
+
+function setupContextMenu(target)
+{
+  window.onload=function (e) {jQuery(target).contextMenu("popupMenu")}
 }

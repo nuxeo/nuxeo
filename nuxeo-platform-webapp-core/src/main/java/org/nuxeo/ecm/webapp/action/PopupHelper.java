@@ -212,4 +212,13 @@ public class PopupHelper {
         return deleteActions.deleteSelection(docsToDelete);
     }
 
+    @WebRemote
+    public String editTitle(String docId,String newTitle) throws ClientException {
+        DocumentModel doc = documentManager.getDocument(new IdRef(docId));
+        doc.setProperty("dublincore","title", newTitle);
+        documentManager.saveDocument(doc);
+        documentManager.save();
+        return "OK";
+    }
+
 }

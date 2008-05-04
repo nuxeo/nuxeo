@@ -72,7 +72,9 @@
           document="#{row.data}" rendered="false"/>
 
       <nxd:restDocumentLink document="#{row.data}">
+      <span id="title_#{row.data.ref}">
        <nxh:outputText value="#{nxd:titleOrId(row.data)}"/>
+       </span>
       </nxd:restDocumentLink>
 
       <nxd:restDocumentLink document="#{row.data}" newConversation="true" target="_tab">
@@ -184,7 +186,8 @@
 <ui:include src="/incl/popupMenu.xhtml"/>
 <script>
 // init menu
-jQuery("table td div div.popupTarget").contextMenu("popupMenu");
+//jQuery("table td div div.popupTarget").contextMenu("popupMenu");
+setupContextMenu("table td div div.popupTarget");
 </script>
 
 </div>

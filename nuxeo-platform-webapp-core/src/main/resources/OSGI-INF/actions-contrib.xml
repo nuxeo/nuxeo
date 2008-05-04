@@ -437,6 +437,18 @@
       </filter>
     </action>
 
+   <action id="POPUP_EDIT" link="javascript:doEdit"
+      enabled="true" label="action.view.edit" icon="/icons/application_form_edit.png">
+      <category>POPUP</category>
+      <filter-id>edit</filter-id>
+    </action>
+
+   <action id="POPUP_RENAME" link="javascript:doRename"
+      enabled="true" label="command.rename" icon="/icons/txt.png">
+      <category>POPUP</category>
+      <filter-id>edit</filter-id>
+    </action>
+
     <!--  Actions for the document lock/unlock -->
 
     <action id="DOCUMENT_LOCK" link="#{lockActions.lockCurrentDocument}"
