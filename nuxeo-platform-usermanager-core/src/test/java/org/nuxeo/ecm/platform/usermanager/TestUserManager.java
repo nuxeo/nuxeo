@@ -44,12 +44,12 @@ public class TestUserManager extends NXRuntimeTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("nuxeo-core-schema", "OSGI-INF/SchemaService.xml");
-        deployContrib("nuxeo-platform-directory-core",
+        deployContrib("org.nuxeo.ecm.core.schema", "OSGI-INF/SchemaService.xml");
+        deployContrib("org.nuxeo.ecm.directory",
                 "OSGI-INF/DirectoryService.xml");
-        deployContrib("nuxeo-platform-usermanager-core",
+        deployContrib("org.nuxeo.ecm.platform.usermanager",
                 "OSGI-INF/UserService.xml");
-        deployContrib("nuxeo-platform-directory-sql",
+        deployContrib("org.nuxeo.ecm.directory.sql",
                 "OSGI-INF/SQLDirectoryFactory.xml");
 
         deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
