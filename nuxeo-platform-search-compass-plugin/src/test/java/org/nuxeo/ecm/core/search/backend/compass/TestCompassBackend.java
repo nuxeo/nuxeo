@@ -28,7 +28,8 @@ public class TestCompassBackend extends SearchEngineBackendTestCase {
         ENGINE_NAME = "compass";
 
         super.setUp();
-        deploy("nxsearch-" + ENGINE_NAME + "-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "nxsearch-" + ENGINE_NAME + "-test-contrib.xml");
     }
 
 }

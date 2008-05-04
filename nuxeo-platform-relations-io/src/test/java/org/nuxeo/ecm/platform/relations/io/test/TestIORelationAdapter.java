@@ -102,15 +102,20 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         // fake repo setup
-        deploy("RepositoryManager.xml");
-        deploy("RepositoryService.xml");
-        deploy("FakeRepository.xml");
-        deploy("SecurityService.xml");
+        deployContrib("org.nuxeo.ecm.relations.io.tests",
+                "RepositoryManager.xml");
+        deployContrib("org.nuxeo.ecm.relations.io.tests",
+                "RepositoryService.xml");
+        deployContrib("org.nuxeo.ecm.relations.io.tests", "FakeRepository.xml");
+        deployContrib("org.nuxeo.ecm.relations.io.tests", "SecurityService.xml");
 
         // specific files
-        deploy("io-test-framework.xml");
-        deploy("io-relations-test-contrib.xml");
-        deploy("jena-test-bundle.xml");
+        deployContrib("org.nuxeo.ecm.relations.io.tests",
+                "io-test-framework.xml");
+        deployContrib("org.nuxeo.ecm.relations.io.tests",
+                "io-relations-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.relations.io.tests",
+                "jena-test-bundle.xml");
         ioService = Framework.getService(IOManager.class);
         assertNotNull(ioService);
         assertNotNull(ioService);

@@ -37,8 +37,10 @@ public class TestWSRemotingSessionManager extends NXRuntimeTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        deploy("test-nxws_remoting_session_manager-framework.xml");
-        deploy("test-nxws_remoting_session_manager-platform-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.tests",
+                "test-nxws_remoting_session_manager-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.tests",
+                "test-nxws_remoting_session_manager-platform-contrib.xml");
 
         service = WSRemotingSessionServiceDelegate.getRemoteWSRemotingSessionManager();
         assertNotNull(service);

@@ -53,29 +53,47 @@ public class TestIndexingThreadPool extends RepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("RepositoryManager.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "RepositoryManager.xml");
 
-        deployContrib("CoreService.xml");
-        deployContrib("TypeService.xml");
-        deployContrib("PolicyService.xml");
-        deployContrib("SecurityService.xml");
-        deployContrib("RepositoryService.xml");
-        deployContrib("test-CoreExtensions.xml");
-        deployContrib("CoreTestExtensions.xml");
-        deployContrib("DemoRepository.xml");
-        deployContrib("LifeCycleService.xml");
-        deployContrib("LifeCycleServiceExtensions.xml");
-        deployContrib("CoreEventListenerService.xml");
-        deployContrib("PlatformService.xml");
-        deployContrib("DefaultPlatform.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests", "CoreService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests", "TypeService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "PolicyService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "SecurityService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "RepositoryService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "test-CoreExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "CoreTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "DemoRepository.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "LifeCycleService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "LifeCycleServiceExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "CoreEventListenerService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "PlatformService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "DefaultPlatform.xml");
 
-        deployContrib("nxmimetype-bundle.xml");
-        deployContrib("nxtransform-framework.xml");
-        deployContrib("nxtransform-platform-contrib.xml");
-        deployContrib("nxtransform-plugins-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "nxmimetype-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "nxtransform-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "nxtransform-platform-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "nxtransform-plugins-bundle.xml");
 
-        deployContrib("nxsearch-test-framework.xml");
-        deployContrib("nxsearch-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "nxsearch-test-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests",
+                "nxsearch-test-contrib.xml");
 
         SearchService service = NXSearch.getSearchService();
         assertNotNull(service);

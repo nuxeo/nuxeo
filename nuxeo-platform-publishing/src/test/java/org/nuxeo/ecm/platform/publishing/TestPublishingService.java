@@ -37,8 +37,10 @@ public class TestPublishingService extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib("OSGI-INF/nuxeo-platform-publishing-framework.xml");
-        deployContrib("OSGI-INF/nuxeo-platform-publishing-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.publishing",
+                "OSGI-INF/nuxeo-platform-publishing-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.publishing",
+                "OSGI-INF/nuxeo-platform-publishing-contrib.xml");
     }
 
     /**
@@ -70,12 +72,13 @@ public class TestPublishingService extends NXRuntimeTestCase {
         assertTrue(service.getValidatorsRule() instanceof DefaultValidatorsRule);
 
         // Override
-        deployContrib("test-nuxeo-platform-publishing-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.publishing.tests",
+                "test-nuxeo-platform-publishing-contrib.xml");
 
         assertTrue(service.getValidatorsRule() instanceof FakeValidatorsRule);
     }
 
-    public void testDefaultValidDate() {
+    public void testDefaultValidDate() throws Exception {
         PublishingService service = Framework.getLocalService(
                 PublishingService.class);
 
@@ -83,7 +86,8 @@ public class TestPublishingService extends NXRuntimeTestCase {
         assertEquals("valid", service.getValidDateFieldName());
 
         // Override
-        deployContrib("test-nuxeo-platform-publishing-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.publishing.tests",
+                "test-nuxeo-platform-publishing-contrib.xml");
 
         assertEquals("foo", service.getValidDateFieldSchemaPrefixName());
         assertEquals("bar", service.getValidDateFieldName());

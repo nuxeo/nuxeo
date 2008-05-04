@@ -31,8 +31,10 @@ public class TypeTest extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deploy("types-bundle.xml");
-        deploy("test-types-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.types.core.tests",
+                "types-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.types.core.tests",
+                "test-types-bundle.xml");
         typeService = (TypeService) runtime.getComponent(TypeService.ID);
     }
 
@@ -103,11 +105,12 @@ public class TypeTest extends NXRuntimeTestCase {
         assertNull(map.get("xxx"));
     }
 
-    public void testDeploymentOverride() {
+    public void testDeploymentOverride() throws Exception {
         Collection<Type> types = typeService.getTypeRegistry().getTypes();
         assertEquals(3, types.size());
 
-        deploy("test-types-override-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.types.core.tests",
+                "test-types-override-bundle.xml");
 
         // One removed
         types = typeService.getTypeRegistry().getTypes();
@@ -145,13 +148,14 @@ public class TypeTest extends NXRuntimeTestCase {
         assertEquals(2, views.length);
     }
 
-    public void testLayoutOverride() {
+    public void testLayoutOverride() throws Exception {
         Type type = typeService.getTypeRegistry().getType("DocTypeWithLayout");
         assertEquals("doc type with layout", type.getLabel());
         assertEquals(2, type.getLayout().length);
         assertEquals(2, type.getLayouts().size());
 
-        deploy("test-types-override-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.types.core.tests",
+                "test-types-override-bundle.xml");
 
         // Test layout is left unchanged
         assertEquals("overridden doc type, but layout left unchanged",

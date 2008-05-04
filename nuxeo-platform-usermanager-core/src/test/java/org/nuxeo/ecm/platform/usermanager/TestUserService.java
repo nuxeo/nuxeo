@@ -38,8 +38,10 @@ public class TestUserService extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib("nuxeo-platform-usermanager-core", "OSGI-INF/UserService.xml");
-        deployContrib("test-userservice-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager",
+                "OSGI-INF/UserService.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                "test-userservice-config.xml");
         userManager = Framework.getService(UserManager.class);
     }
 
@@ -73,7 +75,8 @@ public class TestUserService extends NXRuntimeTestCase {
     }
 
     public void testOverride() throws Exception {
-        deployContrib("test-userservice-override-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                "test-userservice-override-config.xml");
         FakeUserManagerImpl fum = (FakeUserManagerImpl) userManager;
         assertEquals("bob", fum.rootLogin);
         assertEquals("id", userManager.getUserSortField());
@@ -86,10 +89,11 @@ public class TestUserService extends NXRuntimeTestCase {
         assertNull(fum.anonymousUser);
     }
 
-    public void testValidatePassword() {
+    public void testValidatePassword() throws Exception {
         FakeUserManagerImpl fum = (FakeUserManagerImpl) userManager;
         assertTrue(fum.validatePassword(""));
-        deployContrib("test-userservice-override-config.xml");
+        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                "test-userservice-override-config.xml");
         fum = (FakeUserManagerImpl) userManager;
         assertFalse(fum.validatePassword(""));
         assertFalse(fum.validatePassword("azerty"));

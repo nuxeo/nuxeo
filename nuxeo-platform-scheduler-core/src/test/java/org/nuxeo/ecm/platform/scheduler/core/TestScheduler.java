@@ -30,20 +30,28 @@ public class TestScheduler extends NXRuntimeTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         // platform
-        deploy("test-PlatformService.xml");
-        deploy("test-DefaultPlatform.xml");
+        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
+                "test-PlatformService.xml");
+        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
+                "test-DefaultPlatform.xml");
         // core services and registrations
-        deploy("CoreService.xml");
-        deploy("TypeService.xml");
-        deploy("SecurityService.xml");
-        deploy("test-RepositoryService.xml");
-        deploy("CoreEventListenerService.xml");
-        deploy("test-CoreExtensions.xml");
-        deploy("test-DemoRepository.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreService.xml");
+        deployContrib("org.nuxeo.ecm.core.tests", "TypeService.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/SecurityService.xml");
+        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
+                "test-RepositoryService.xml");
+        deployContrib("org.nuxeo.ecm.core",
+                "OSGI-INF/CoreEventListenerService.xml");
+        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
+                "test-CoreExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
+                "test-DemoRepository.xml");
         // scheduler service
-        deploy("test-nxscheduler-service.xml");
+        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
+                "test-nxscheduler-service.xml");
         // our event listener
-        deploy("test-eventlistener.xml");
+        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
+                "test-eventlistener.xml");
     }
 
     @Override
@@ -52,11 +60,12 @@ public class TestScheduler extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    public void testScheduleRegistration() {
+    public void testScheduleRegistration() throws Exception {
         Whiteboard whiteboard = Whiteboard.getWhiteboard();
         whiteboard.setCount(0);
 
-        deploy("test-nxscheduler.xml");
+        deployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
+                "test-nxscheduler.xml");
         try {
             Thread.sleep(2000); // 1s so that job is called at least once
         } catch (InterruptedException e) {

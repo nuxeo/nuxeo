@@ -40,8 +40,10 @@ public class TestWorkflowService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("WorkflowService.xml");
-        deploy("WorkflowServiceTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.workflow.tests",
+                "WorkflowService.xml");
+        deployContrib("org.nuxeo.ecm.platform.workflow.tests",
+                "WorkflowServiceTestExtensions.xml");
 
         workflowService = NXWorkflow.getWorkflowService();
         assertNotNull(workflowService);

@@ -42,7 +42,8 @@ public class TestMimetypeRegistryBean extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deploy("nxmimetype-service.xml");
+        deployContrib("org.nuxeo.ecm.platform.mimetype.facade.tests",
+                "nxmimetype-service.xml");
         mimetypeRegistry = new MimetypeRegistryBean();
     }
 

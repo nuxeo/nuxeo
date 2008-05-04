@@ -34,10 +34,14 @@ public class TestSearchService extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("PlatformService.xml");
-        deployContrib("nxsearch-framework.xml");
-        deployContrib("nxsearch-contrib.xml");
-        deployContrib("nxsearch-platform-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.ejb.tests",
+                "PlatformService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.ejb.tests",
+                "nxsearch-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.ejb.tests",
+                "nxsearch-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.ejb.tests",
+                "nxsearch-platform-contrib.xml");
 
         SearchService service = NXSearch.getSearchService();
         assertNotNull(service);

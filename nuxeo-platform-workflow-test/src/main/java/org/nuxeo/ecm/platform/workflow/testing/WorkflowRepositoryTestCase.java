@@ -57,13 +57,13 @@ public abstract class WorkflowRepositoryTestCase extends RepositoryOSGITestCase 
         super.setUp();
         wapi = new WAPIImpl();
         // bundles
-        deployBundle("nuxeo-platform-workflow-core");
-        deployBundle("nuxeo-platform-workflow-jbpm");
+        deployBundle("org.nuxeo.ecm.platform.workflow");
+        deployBundle("org.nuxeo.ecm.platform.workflow.jbpm");
         JbpmWorkflowExecutionContext.setConfigurationFile("jbpm.cfg.test.xml");
         jbpmConfiguration = JbpmWorkflowExecutionContext.getJbpmConfiguration();
         // contribute a mock component that will provide bean services on
         // the runtime layer for the test wapi instance
-        deployBundle("nuxeo-platform-workflow-test");
+        deployBundle("org.nuxeo.ecm.platform.workflow.test");
         // set wapi on the mock wapi service
         MockWAPIService wapiServ = getMockWapiService();
         wapiServ.setWAPI(wapi);

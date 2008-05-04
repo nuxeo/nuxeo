@@ -46,7 +46,8 @@ public class TestMimetypeRegistryServiceExtensions extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deploy("nxmimetype-service.xml");
+        deployContrib("org.nuxeo.ecm.platform.mimetype.core.tests",
+                "nxmimetype-service.xml");
         mimetypeRegistryService = NXMimeType.getMimetypeRegistryService();
 
         wordMimeType = mimetypeRegistryService.getMimetypeEntryByName("application/msword");
@@ -121,9 +122,10 @@ public class TestMimetypeRegistryServiceExtensions extends NXRuntimeTestCase {
         assertNotNull(iconPath);
     }
 
-    public void xtestRemote (){
+    public void xtestRemote () throws Exception{
 
-        deploy("nxmimetype-service.xml");
+        deployContrib("org.nuxeo.ecm.platform.mimetype.core.tests",
+                "nxmimetype-service.xml");
 
         MimetypeRegistry mimetypeRegistryService = null;
         try{

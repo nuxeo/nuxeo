@@ -64,30 +64,46 @@ public class TestQuerySplitter extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployBundle("nuxeo-core-schema");
-        deploy("EventService.xml");
-        deploy("CoreService.xml");
-        deploy("SecurityService.xml");
-        deploy("RepositoryService.xml");
-        deploy("test-CoreExtensions.xml");
-        deployContrib("nxsearch-backendtest-types-contrib.xml");
-        deploy("DemoRepository.xml");
-        deploy("LifeCycleService.xml");
-        deploy("LifeCycleServiceExtensions.xml");
-        deploy("CoreEventListenerService.xml");
-        deploy("PlatformService.xml");
-        deploy("DefaultPlatform.xml");
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployContrib("org.nuxeo.runtime", "OSGI-INF/EventService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "CoreService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "SecurityService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "RepositoryService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "test-CoreExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.test",
+                "nxsearch-backendtest-types-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "DemoRepository.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "LifeCycleService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "LifeCycleServiceExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "CoreEventListenerService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "PlatformService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "DefaultPlatform.xml");
 
-        deploy("nxtransform-framework.xml");
-        deploy("nxtransform-platform-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "nxtransform-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "nxtransform-platform-contrib.xml");
 
-        deploy("nxsearch-backendtest-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.test",
+                "nxsearch-backendtest-framework.xml");
         service = (SearchServiceInternals)
             SearchServiceDelegate.getRemoteSearchService();
         assertNotNull(service);
 
-        deploy("nxsearch-backendtest-contrib.xml");
-        deploy("nxsearch-jointest-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.test",
+                "nxsearch-backendtest-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.compass-plugin.tests",
+                "nxsearch-jointest-contrib.xml");
 
         checkConf();
     }

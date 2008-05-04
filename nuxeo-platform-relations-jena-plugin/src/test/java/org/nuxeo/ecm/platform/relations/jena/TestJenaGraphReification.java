@@ -66,7 +66,8 @@ public class TestJenaGraphReification extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deploy("jena-test-bundle.xml");
+        deployContrib("org.nuxeo.ecm.relations.jena.tests",
+                "jena-test-bundle.xml");
         RelationService service = (RelationService) Framework.getRuntime().getComponent(
                 RelationService.NAME);
         Graph graph = service.getGraphByName("myrelations");

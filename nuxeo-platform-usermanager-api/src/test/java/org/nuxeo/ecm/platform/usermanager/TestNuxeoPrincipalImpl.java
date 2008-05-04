@@ -31,8 +31,8 @@ public class TestNuxeoPrincipalImpl extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployBundle("nuxeo-core-schema");
-        deployBundle("nuxeo-platform-directory-types-contrib");
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployBundle("org.nuxeo.ecm.directory.types.contrib");
     }
 
     @SuppressWarnings({"SimplifiableJUnitAssertion", "ObjectEqualsNull"})

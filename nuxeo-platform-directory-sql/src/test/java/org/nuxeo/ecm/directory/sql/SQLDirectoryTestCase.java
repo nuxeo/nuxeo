@@ -43,13 +43,19 @@ public abstract class SQLDirectoryTestCase extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib("test-CoreService.xml");
-        deployContrib("test-TypeService.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests",
+                "test-CoreService.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests",
+                "test-TypeService.xml");
 
-        deployContrib("sql-test-setup/DirectoryTypes.xml");
-        deployContrib("sql-test-setup/DirectoryService.xml");
-        deployContrib("sql-test-setup/SQLDirectoryFactory.xml");
-        deployContrib("test-sql-directories-bundle.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests",
+                "sql-test-setup/DirectoryTypes.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests",
+                "sql-test-setup/DirectoryService.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests",
+                "sql-test-setup/SQLDirectoryFactory.xml");
+        deployContrib("org.nuxeo.ecm.directory.sql.tests",
+                "test-sql-directories-bundle.xml");
     }
 
     @Override

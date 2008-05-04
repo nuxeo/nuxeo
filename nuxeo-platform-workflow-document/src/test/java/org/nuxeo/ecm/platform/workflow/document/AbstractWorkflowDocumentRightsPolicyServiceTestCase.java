@@ -34,8 +34,10 @@ public abstract class AbstractWorkflowDocumentRightsPolicyServiceTestCase
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("WorkflowDocumentSecurityPolicyService.xml");
-        deploy("WorkflowDocumentSecurityPolicyServiceTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.workflow.document.tests",
+                "WorkflowDocumentSecurityPolicyService.xml");
+        deployContrib("org.nuxeo.ecm.platform.workflow.document.tests",
+                "WorkflowDocumentSecurityPolicyServiceTestExtensions.xml");
         service = NXWorkflowDocument.getWorkflowDocumentRightsPolicyService();
     }
 

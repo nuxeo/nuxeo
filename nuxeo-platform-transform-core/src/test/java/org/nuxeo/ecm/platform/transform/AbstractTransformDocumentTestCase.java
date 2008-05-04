@@ -32,7 +32,8 @@ public abstract class AbstractTransformDocumentTestCase extends NXRuntimeTestCas
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deploy("nxmimetype-service.xml");
+        deployContrib("org.nuxeo.ecm.platform.transform.tests",
+                "nxmimetype-service.xml");
     }
 
     public void testFileGeneration() throws Exception {

@@ -46,16 +46,25 @@ public class TestContentTemplateFactory extends RepositoryTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("RepositoryManager.xml");
-        deployContrib("CoreTestExtensions.xml");
-        deployContrib("DemoRepository.xml");
-        deployContrib("LifeCycleService.xml");
-        deployContrib("CoreEventListenerService.xml");
-        deployContrib("DefaultPlatform.xml");
+        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
+                "RepositoryManager.xml");
+        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
+                "CoreTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
+                "DemoRepository.xml");
+        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
+                "LifeCycleService.xml");
+        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
+                "CoreEventListenerService.xml");
+        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
+                "DefaultPlatform.xml");
 
-        deployContrib("test-content-template-framework.xml");
-        deployContrib("test-content-template-contrib.xml");
-        deployContrib("test-content-template-listener.xml");
+        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
+                "test-content-template-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
+                "test-content-template-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.content.template.tests",
+                "test-content-template-listener.xml");
 
         // Framework.login();
         RepositoryManager mgr = Framework.getService(RepositoryManager.class);

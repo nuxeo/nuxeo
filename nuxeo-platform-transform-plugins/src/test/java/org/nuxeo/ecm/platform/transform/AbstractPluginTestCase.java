@@ -37,12 +37,18 @@ public abstract class AbstractPluginTestCase extends NXRuntimeTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         //deploy("ServiceManagement.xml");
-        deployContrib("PlatformService.xml");
-        deployContrib("DefaultPlatform.xml");
-        deployContrib("nxmimetype-bundle.xml");
-        deployContrib("nxtransform-bundle.xml");
-        deployContrib("nxtransform-plugins-bundle.xml");
-        deployContrib("nxtransform-platform-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.transform.plugin.tests",
+                "PlatformService.xml");
+        deployContrib("org.nuxeo.ecm.platform.transform.plugin.tests",
+                "DefaultPlatform.xml");
+        deployContrib("org.nuxeo.ecm.platform.transform.plugin.tests",
+                "nxmimetype-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.transform.plugin.tests",
+                "nxtransform-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.transform.plugin.tests",
+                "nxtransform-plugins-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.transform.plugin.tests",
+                "nxtransform-platform-contrib.xml");
         service = NXTransform.getTransformService();
     }
 

@@ -93,20 +93,28 @@ public class TestIORemoteCopy2 extends NXRuntimeTestCase {
         super.setUp();
 
         // the core bundle
-        deployContrib("CoreService.xml");
-        deployContrib("TypeService.xml");
-        deployContrib("SecurityService.xml");
-        deployContrib("RepositoryService.xml");
-        deployContrib("RepositoryManager.xml");
-        deployContrib("test-CoreExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests", "CoreService.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests", "TypeService.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "SecurityService.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "RepositoryService.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "RepositoryManager.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "test-CoreExtensions.xml");
 
-        deployContrib("CoreEventListenerService.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "CoreEventListenerService.xml");
 
         // repo test case misc
-        deployContrib("DefaultPlatform2WayCopy.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "DefaultPlatform2WayCopy.xml");
 
-        deployContrib("RemotingService.xml");
-        deployContrib("JBossLoginConfig.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "RemotingService.xml");
+        deployContrib("org.nuxeo.ecm.platform.io.core.tests",
+                "JBossLoginConfig.xml");
         // donnot : deployContrib("StreamingServer.xml");
 
         acquireCoreSessions();

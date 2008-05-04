@@ -40,17 +40,24 @@ public abstract class AbstractPluginTestCase extends RepositoryTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        deploy("DemoRepository.xml");
-        deploy("CoreEventListenerService.xml");
+        deployContrib("org.nuxeo.ecm.platform.modifier.tests",
+                "DemoRepository.xml");
+        deployContrib("org.nuxeo.ecm.platform.modifier.tests",
+                "CoreEventListenerService.xml");
 
         // needed to avoid npe when creating DocumentModel
-        deploy("LifeCycleService.xml");
+        deployContrib("org.nuxeo.ecm.platform.modifier.tests",
+                "LifeCycleService.xml");
 
-        deploy("nxtransform-bundle-dmtest.xml");
-        deploy("nxtransform-plugins-bundle-dmtest.xml");
+        deployContrib("org.nuxeo.ecm.platform.modifier.tests",
+                "nxtransform-bundle-dmtest.xml");
+        deployContrib("org.nuxeo.ecm.platform.modifier.tests",
+                "nxtransform-plugins-bundle-dmtest.xml");
 
-        deploy("nxdocmodifier-bundle.xml");
-        deploy("nxdocmodifier-test-contrib-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.modifier.tests",
+                "nxdocmodifier-bundle.xml");
+        deployContrib("org.nuxeo.ecm.platform.modifier.tests",
+                "nxdocmodifier-test-contrib-bundle.xml");
     }
 
     @Override
@@ -64,7 +71,8 @@ public abstract class AbstractPluginTestCase extends RepositoryTestCase {
         if (repository == null) {
             // the repository should be deployed the last
             // after any other bundle that is deploying doctypes
-            deploy("DemoRepository.xml");
+            deployContrib("org.nuxeo.ecm.platform.modifier.tests",
+                    "DemoRepository.xml");
             repository = NXCore.getRepositoryService().getRepositoryManager()
                     .getRepository("demo");
         }

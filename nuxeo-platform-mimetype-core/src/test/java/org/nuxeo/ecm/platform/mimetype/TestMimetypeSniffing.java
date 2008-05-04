@@ -41,7 +41,8 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib("nxmimetype-service.xml");
+        deployContrib("org.nuxeo.ecm.platform.mimetype.core.tests",
+                "nxmimetype-service.xml");
         mimetypeRegistry = NXMimeType.getMimetypeRegistryService();
     }
 

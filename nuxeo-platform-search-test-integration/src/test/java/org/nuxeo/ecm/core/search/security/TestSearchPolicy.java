@@ -63,16 +63,16 @@ public class TestSearchPolicy extends RepositoryOSGITestCase {
         super.setUp();
 
         // deploy the default search service
-        deployBundle("nuxeo-platform-search-api");
-        deployBundle("nuxeo-platform-search-core");
-        deployBundle("nuxeo-platform-search-compass-plugin");
+        deployBundle("org.nuxeo.ecm.platform.search.api");
+        deployBundle("org.nuxeo.ecm.platform.search");
+        deployBundle("org.nuxeo.ecm.platform.search.compass-plugin");
 
         // override the default compass configuration to instead use
         // a non-JXTA memory backend
         deployContrib(SearchTestConstants.SEARCH_INTEGRATION_TEST_BUNDLE,
                 "nxsearch-compass-test-integration-contrib.xml");
 
-        deployBundle("nuxeo-platform-search-core-listener");
+        deployBundle("org.nuxeo.ecm.platform.search.core.listener");
 
         // setup specific schemas
         deployContrib(SearchTestConstants.SEARCH_INTEGRATION_TEST_BUNDLE,

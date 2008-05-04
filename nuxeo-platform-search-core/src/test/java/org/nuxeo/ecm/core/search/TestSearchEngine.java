@@ -66,21 +66,21 @@ public class TestSearchEngine extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        deploy("CoreService.xml");
-        deploy("TypeService.xml");
-        deploy("SecurityService.xml");
-        deploy("RepositoryService.xml");
-        deploy("test-CoreExtensions.xml");
-        deploy("CoreTestExtensions.xml");
-        deploy("DemoRepository.xml");
-        deploy("LifeCycleService.xml");
-        deploy("LifeCycleServiceExtensions.xml");
-        deploy("CoreEventListenerService.xml");
-        deploy("PlatformService.xml");
-        deploy("DefaultPlatform.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests", "CoreService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests", "TypeService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests", "SecurityService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests", "RepositoryService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests", "test-CoreExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests", "CoreTestExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests", "DemoRepository.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests", "LifeCycleService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests", "LifeCycleServiceExtensions.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests", "CoreEventListenerService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests", "PlatformService.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests", "DefaultPlatform.xml");
 
-        deploy("nxsearch-test-framework.xml");
-        deploy("nxsearch-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests", "nxsearch-test-framework.xml");
+        deployContrib("org.nuxeo.ecm.platform.search.tests", "nxsearch-test-contrib.xml");
 
         service = NXSearch.getSearchService();
         assertNotNull(service);
