@@ -29,15 +29,15 @@ import junit.framework.AssertionFailedError;
 public class RuntimeInitializationTest extends NXRuntimeTestCase {
 
     public void testContributions() throws Exception {
-        deployContrib("MyComp1.xml");
-        deployContrib("MyComp2.xml");
+        deployContrib("org.nuxeo.runtime.test.tests", "MyComp1.xml");
+        deployContrib("org.nuxeo.runtime.test.tests", "MyComp2.xml");
     }
 
     public void testContributionsWithDuplicateComponent() throws Exception {
-        deployContrib("MyComp1.xml");
-        deployContrib("MyComp2.xml");
+        deployContrib("org.nuxeo.runtime.test.tests", "MyComp1.xml");
+        deployContrib("org.nuxeo.runtime.test.tests", "MyComp2.xml");
         try {
-            deployContrib("CopyOfMyComp2.xml");
+            deployContrib("org.nuxeo.runtime.test.tests", "CopyOfMyComp2.xml");
             fail("An exception should have been raised.");
         } catch (AssertionFailedError e) {
             // OK.

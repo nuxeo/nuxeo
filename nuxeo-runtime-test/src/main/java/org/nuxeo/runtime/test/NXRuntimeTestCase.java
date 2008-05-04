@@ -139,8 +139,8 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
     protected void initTestRuntime() throws Exception {
         runtime = new TestRuntime();
         Framework.initialize(runtime);
-        deployContrib("EventService.xml");
-        deployContrib("DeploymentService.xml");
+        deployContrib("org.nuxeo.runtime.test", "EventService.xml");
+        deployContrib("org.nuxeo.runtime.test", "DeploymentService.xml");
     }
 
     protected void initUrls() {
