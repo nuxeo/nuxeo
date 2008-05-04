@@ -29,18 +29,18 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class RuntimeInitializationTest extends NXRuntimeTestCase {
 
-    public void testContributions() {
-        deployContrib("MyComp1.xml");
-        deployContrib("MyComp2.xml");
+    public void testContributions() throws Exception {
+        deployContrib("org.nuxeo.runtime.test.tests", "MyComp1.xml");
+        deployContrib("org.nuxeo.runtime.test.tests", "MyComp2.xml");
     }
 
     // Deactivated for now since duplicate contributions are still allowed.
-    public void XXXtestContributionsWithDuplicateComponent() {
-        deployContrib("MyComp1.xml");
-        deployContrib("MyComp2.xml");
+    public void XXXtestContributionsWithDuplicateComponent() throws Exception {
+        deployContrib("org.nuxeo.runtime.test.tests", "MyComp1.xml");
+        deployContrib("org.nuxeo.runtime.test.tests", "MyComp2.xml");
         boolean success = false;
         try {
-            deployContrib("CopyOfMyComp2.xml");
+            deployContrib("org.nuxeo.runtime.test.tests", "CopyOfMyComp2.xml");
             success = true;
         } catch (AssertionFailedError e) {
             // OK.
