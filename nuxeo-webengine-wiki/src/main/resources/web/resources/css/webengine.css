@@ -1,0 +1,220 @@
+body,
+html {
+    margin:0;
+    padding:0;
+    color:#000;
+}
+
+body {
+    min-width:900px;
+    background-color:#DCDFE6;
+    background-image:url(/nuxeo/site/files/resources/image/bg_grey.gif);
+    background-position:left top;
+    background-repeat:repeat-x;
+    color:#333333;
+}
+
+#wrap {
+    margin:0 auto;
+    width:900px;
+    height: 100%;
+}
+
+#header {
+    background-image: url(/nuxeo/site/files/resources/image/banner_community.png);
+    background-color: transparent;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-position: left top;
+    height: 100px;
+    width: 650px;
+    /*margin-right:220px;*/
+    padding:0px;
+    text-align: middle;
+    border: 1px solid #999;
+    border-bottom-style: none;
+}
+
+#header img {
+    float: left;
+}
+
+#header h1 {
+    float: right;
+    font-size: 2em;
+    font-color: white;
+    text-align: left;
+    padding-right: 20px;
+}
+
+#header a {
+    color: white;
+}
+
+#main_title h1 {
+    padding:5px;
+    margin:0;
+    float: left;
+}
+
+#nav {
+    padding: 5px;
+    background: white;
+    width: 650px;
+}
+
+#nav ul{
+    margin:0;
+    padding:0;
+    list-style:none;
+}
+#nav li{
+    display:inline;
+    margin:0;
+    padding:0;
+}
+
+#main {
+    background:#FFF;
+    float:left;
+    width:650px;
+    border: 1px solid #999;
+    border-top-style: none;
+    border-bottom-style: none;
+}
+
+#main h2, #main h3, #main p {
+    padding:0 10px;
+}
+
+#sidebar {
+    /*background:white;*/
+    float:right;
+    width:240px;
+}
+#sidebar h3, #sidebar p {
+    padding:0 10px 0 0;
+}
+#footer {
+    background: white;
+    clear:both;
+    vertical-align: middle;
+    width: 650px;
+    border: 1px solid #999;
+    border-top-style: dotted;
+}
+
+#footer p {
+    padding: 10px 0px 0px 0px;
+    margin:0;
+    font-size: 0.8em;
+    color: #999;
+    text-align: center;
+}
+
+.sideblock {
+    border: 1px solid #999;
+    background: white;
+    padding: 6px;
+    margin: 0px;
+    margin: 0px 0px 10px 0px;
+    font-size: 0.8em;
+}
+
+.diff {
+    /* XXX */
+    white-space: normal;
+}
+
+.diff ins {
+    background: lightgreen;
+    color: darkgreen;
+}
+
+.diff del {
+    background: lightred;
+    color: darkred;
+}
+
+.diff span {
+    color: darkgrey;
+}
+
+
+h1 {
+    /* H1 */
+    font: normal small-caps bold 1.5em Verdana, sans-serif;
+    color: #0066CC;
+}
+
+h2 {
+    /* H2 */
+    font: normal normal bold 1.1em Verdana, sans-serif;
+    color: #0066CC;
+    border-top: 1px solid #0066CC;
+    background: #F1F7FF;
+    margin: 0px;
+    margin: 30px 0px 10px 0px; 
+}
+
+h3 {
+    /* H3 */
+    font: normal normal bold 1em Verdana, sans-serif;
+    margin: 0px;    
+}
+
+.doc h3 {
+    /* H3 */
+    font: normal normal bold 1em Verdana, sans-serif;
+    border-top: 1px solid #0066CC;
+    background: #F1F7FF;
+}
+
+p, li {
+    /* Paragraph */    
+    font: 11pt "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+    color black;
+}
+
+pre {
+    background-color:#F1F7FF;
+    border:1px dotted #555555;
+    margin:10px;
+    padding:7px;
+    white-space:pre;
+    font-size: 0.9em;
+}
+
+.hidden {
+    /* Use this to hide elements */
+    display: none;
+}
+
+.summary-byline {
+    /* Byline */
+    font: italic normal normal .8em Arial, sans-serif;
+    text-align: right;
+}
+
+.summary-entries {
+    /* Entries */
+    padding: 0px 20px;
+}
+
+.summary-title {
+    /* title of entries */
+    font-variant: small-caps;
+    border-top: 1px solid #0066CC;
+    background: #F1F7FF;
+}
+
+.summary-content h1, .summary-content h2, .summary-content p{
+    /* smaller title for summaries */
+    font-size: 80%;
+}
+
+.doc {
+    /* document content */
+    padding: 0px 15px 15px 15px;
+    
+}

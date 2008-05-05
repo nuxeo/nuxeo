@@ -1,0 +1,10 @@
+body {
+background-image:url(/nuxeo/site/files/resources/image/bg_grey.gif);
+}
+
+#header {
+    background-image: url(/nuxeo/site/files/resources/image/banner_blog.gif);
+    height: 100px;
+    width: 900px;
+}
+
