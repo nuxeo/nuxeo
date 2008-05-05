@@ -5,8 +5,12 @@
 
   <element name="content" type="string"></element>
 
-  <element name="accept-comment" type="boolean"></element>
+    <element name="content" type="string"></element>
+    <element name="content-format" type="string"></element>
 
-  <element name="accept-trackback" type="boolean"></element>
+
+    <element name="accept-comment" type="boolean"></element>
+
+    <element name="accept-trackback" type="boolean"></element>
 
 </schema>
