@@ -74,6 +74,8 @@ public class SQLHelper {
 
     private static final String SQL_SCRIPT_CHARSET = "UTF-8";
 
+    public static final int VARCHAR_SIZE_LIMIT = 255;
+
     public SQLHelper(Connection connection, Dialect dialect, Table table,
             String dataFileName, String policy) {
         this.table = table;
@@ -108,7 +110,8 @@ public class SQLHelper {
 
             if (dataFileName == null) {
                 // no dataFile found, do not try to execute it
-                log.warn("no data file found");
+                log.warn(String.format("Table '%s': no data file found",
+                        tableName));
                 return true;
             }
 
@@ -132,7 +135,6 @@ public class SQLHelper {
             String createSql = table.getCreateSql(dialect);
             log.debug("creating table: " + createSql);
             stmt.execute(createSql);
-
         } catch (SQLException e) {
             throw new DirectoryException(String.format(
                     "Table '%s' creation failed: %s", table, e.getMessage()), e);
@@ -172,7 +174,6 @@ public class SQLHelper {
             log.debug(String.format("all fields matched for table '%s'",
                     tableName));
             return true;
-
         } catch (SQLException e) {
             log.warn("error while introspecting table: " + tableName, e);
             return false;
@@ -199,9 +200,9 @@ public class SQLHelper {
         }
     }
 
-    private String formatColumnValues(String[] columnValues) {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("[");
+    private static String formatColumnValues(String[] columnValues) {
+        StringBuilder buffer = new StringBuilder();
+        buffer.append('[');
         if (columnValues != null) {
             int i = 0;
             List<String> values = new ArrayList<String>();
@@ -211,7 +212,7 @@ public class SQLHelper {
             }
             buffer.append(StringUtils.join(values.iterator(), ", "));
         }
-        buffer.append("]");
+        buffer.append(']');
         return buffer.toString();
     }
 
@@ -261,6 +262,11 @@ public class SQLHelper {
                 for (int i = 0; i < columnNames.length; i++) {
                     Column column = columns.get(i);
                     String value = columnValues[i];
+                    if (value != null && value.length() > VARCHAR_SIZE_LIMIT) {
+                        log.warn(String.format(
+                                "Possible invalid value (size > %s): %s",
+                                VARCHAR_SIZE_LIMIT, value));
+                    }
                     switch (column.getSqlType()) {
                     case Types.VARCHAR:
                         if (SQL_NULL_MARKER.equals(value)) {
@@ -302,7 +308,6 @@ public class SQLHelper {
                 }
                 ps.execute();
             }
-
         } catch (IOException e) {
             throw new DirectoryException("Read error while reading data file: "
                     + dataFileName, e);
@@ -314,9 +319,11 @@ public class SQLHelper {
         } finally {
             try {
                 csvReader.close();
-            } catch (Exception e) {
+            } catch (IOException e) {
+                throw new DirectoryException("Error closing data file: "
+                        + dataFileName, e);
+
             }
         }
     }
-
 }
