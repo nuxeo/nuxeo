@@ -58,6 +58,9 @@ public class DateProperty extends ScalarProperty {
             cal.setTime((Date)value);
             return cal;
         }
+        if (value instanceof CharSequence) {
+            return (Calendar)field.getType().decode(value.toString());
+        }
         throw new PropertyConversionException(value.getClass(), Calendar.class);
     }
 
