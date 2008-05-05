@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.usermanager;
 
+import java.io.Serializable;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +33,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -251,8 +251,7 @@ public class UserManagerImpl implements UserManager {
             String userDirName;
             // BBB backward compat for userDirectory + userAuthentication
             if ("userDirectory".equals(userDirectoryName)
-                    && dirService.getDirectoryNames().contains(
-                            "userAuthentication")) {
+                    && dirService.getDirectory("userAuthentication") != null) {
                 userDirName = "userAuthentication";
             } else {
                 userDirName = userDirectoryName;
@@ -460,11 +459,13 @@ public class UserManagerImpl implements UserManager {
         if (list != null) {
             group.setMemberUsers(list);
         }
-        list = (List<String>) groupEntry.getProperty(groupSchemaName, groupSubGroupsField);
+        list = (List<String>) groupEntry.getProperty(groupSchemaName,
+                groupSubGroupsField);
         if (list != null) {
             group.setMemberGroups(list);
         }
-        list = (List<String>) groupEntry.getProperty(groupSchemaName, groupParentGroupsField);
+        list = (List<String>) groupEntry.getProperty(groupSchemaName,
+                groupParentGroupsField);
         if (list != null) {
             group.setParentGroups(list);
         }

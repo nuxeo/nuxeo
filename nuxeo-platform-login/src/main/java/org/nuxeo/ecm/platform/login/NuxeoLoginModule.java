@@ -244,7 +244,9 @@ public class NuxeoLoginModule extends AbstractServerLoginModule {
         } catch (LoginException e) {
             throw e;
         } catch (Exception e) {
-            LoginException le = new LoginException("Authentications Failure - "
+            // jboss catches LoginException, so show it at least in the logs
+            log.error(e);
+            LoginException le = new LoginException("Authentication Failure - "
                     + e.getMessage());
             le.initCause(e);
             throw le;
