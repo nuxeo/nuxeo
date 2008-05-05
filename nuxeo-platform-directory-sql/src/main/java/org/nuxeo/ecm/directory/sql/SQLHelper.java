@@ -74,8 +74,6 @@ public class SQLHelper {
 
     private static final String SQL_SCRIPT_CHARSET = "UTF-8";
 
-    public static final int VARCHAR_SIZE_LIMIT = 255;
-
     public SQLHelper(Connection connection, Dialect dialect, Table table,
             String dataFileName, String policy) {
         this.table = table;
@@ -262,10 +260,11 @@ public class SQLHelper {
                 for (int i = 0; i < columnNames.length; i++) {
                     Column column = columns.get(i);
                     String value = columnValues[i];
-                    if (value != null && value.length() > VARCHAR_SIZE_LIMIT) {
+                    int columnLength = column.getLength();
+                    if (value != null && value.length() > columnLength) {
                         log.warn(String.format(
-                                "Possible invalid value (size > %s): %s",
-                                VARCHAR_SIZE_LIMIT, value));
+                                "Possible invalid value (length > %s): %s",
+                                columnLength, value));
                     }
                     switch (column.getSqlType()) {
                     case Types.VARCHAR:
