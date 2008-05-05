@@ -66,10 +66,10 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 public class VersionedActionsBean implements VersionedActions, Serializable {
 
     private static final long serialVersionUID = 4472648747609642493L;
-    
+
     private static final Log log = LogFactory.getLog(VersionedActionsBean.class);
 
-    @In(create = true, required = true)
+    @In(create = true)
     protected transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
@@ -88,7 +88,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     @Out(required = false)
     protected VersionModel newVersion;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected transient DocumentVersioning documentVersioning;
 
     protected transient List<VersionModel> versionModelList;

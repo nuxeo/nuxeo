@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webapp.directory;
 
-import javax.ejb.Local;
 import javax.faces.event.ActionEvent;
 
 import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
