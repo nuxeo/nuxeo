@@ -150,7 +150,7 @@ public class LayoutTagHandler extends TagHandler implements TemplateClient {
             // XXX same handler is used in different threads => reset counters
             // before use
             resetCounters();
-            ctx.extendClient(this);
+            ctx.pushClient(this);
             try {
                 ctx.includeFacelet(parent, template);
             } finally {

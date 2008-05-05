@@ -92,9 +92,23 @@ public class WidgetTagHandler extends MetaTagHandler implements TemplateClient {
                 valueName = valueName.substring(2, valueName.length() - 1);
             }
             widgetInstance.setValueName(valueName);
-            ctx.extendClient(this);
+            ctx.pushClient(this);
             applyWidgetHandler(ctx, parent, config, widgetInstance, value, true);
             ctx.popClient(this);
+        }
+    }
+
+    public static void generateWidgetIdsRecursive(FaceletHandlerHelper helper,
+            Widget widget) {
+        if (widget == null) {
+            return;
+        }
+        widget.setId(helper.generateWidgetId(widget.getName()));
+        Widget[] subWidgets = widget.getSubWidgets();
+        if (subWidgets != null) {
+            for (Widget subWidget : subWidgets) {
+                generateWidgetIdsRecursive(helper, subWidget);
+            }
         }
     }
 
@@ -113,15 +127,7 @@ public class WidgetTagHandler extends MetaTagHandler implements TemplateClient {
 
         // set unique id on widget and sub widgets before building handler.
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-        widget.setId(helper.generateWidgetId(widget.getName()));
-        Widget[] subWidgets = widget.getSubWidgets();
-        if (subWidgets != null) {
-            for (Widget subWidget : subWidgets) {
-                if (subWidget != null) {
-                    subWidget.setId(helper.generateWidgetId(subWidget.getName()));
-                }
-            }
-        }
+        generateWidgetIdsRecursive(helper, widget);
 
         // log.debug("thread=" + String.valueOf(Thread.currentThread().getId())
         // + ", handler=" + tHandler.hashCode() + ", w=" + widget.getId());
