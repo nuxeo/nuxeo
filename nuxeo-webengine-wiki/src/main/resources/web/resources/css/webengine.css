@@ -8,6 +8,7 @@ body {
     min-width:1000px;
     background:#fff url(/nuxeo/site/files/resources/image/background_page.gif) top left repeat-x;
     color:#333;
+    font:normal 12px Verdana, sans-serif;
 }
 
 #wrap {
@@ -29,12 +30,13 @@ body {
 }
 
 #header h1 {
-    font-size: 28px;
+    font-size: 240%;
     font-color: white;
     text-align: left;
     padding:0;
     padding-top:6px;
     margin:0;
+    font-family: "Century Gothic","Trebuchet MS";
 }
 
 #header h1 a {
@@ -70,15 +72,17 @@ body {
 #main-wrapper {
   width:100%;
   height:100%;
-  background:url(/nuxeo/site/files/resources/image/background_main-wrapper.gif) top right repeat-y; 
+  background:#fff url(/nuxeo/site/files/resources/image/background_main-wrapper.gif) top right repeat-y; 
   border:1px solid #fff;
+  border-bottom:none;
 
 }
 
 #main {
     background:#fff url(/nuxeo/site/files/resources/image/background-main.gif) top left repeat-x;
     float:left;
-    width:760px;
+    width:740px;
+    padding:10px 0pt 10px 20px;
 }
 
 #main h2, #main h3, #main p {
@@ -89,26 +93,35 @@ body {
     background:url(/nuxeo/site/files/resources/image/background_sidebar.gif) top left repeat-x;
     float:right;
     width:240px;
-}
-#sidebar h3, #sidebar p {
-    padding:0 10px 0 0;
-}
+}  
+    
 #footer {
-    background: white;
+    background-color:#ccc;
     clear:both;
     vertical-align: middle;
     width: 1000px;
-    border: 1px solid #999;
-    border-top-style: dotted;
+    border:1px solid #fff;
+    border-width: 0 1px;
+    padding:10px 0;
 }
 
 #footer p {
     padding: 10px 0px 0px 0px;
     margin:0;
-    font-size: 0.8em;
-    color: #999;
+    font-size: 80%;
+    color: #666;
     text-align: center;
 }
+
+#sidebar h3, #sidebar p {
+    padding:0 10px 0 0;
+    margin:0;
+    }
+    
+#sidebar h3 {
+  color:#fff;
+
+}  
 
 #sidebar .sideblock {
     padding: 6px;
@@ -117,10 +130,35 @@ body {
     font-size: 0.8em;
 }
 
-#sidebar .contextual {
-    background: white;
+#sidebar .general {
+  margin-left:20px;
 }
 
+#sidebar .contextual {
+  width:226px;
+  background:url(/nuxeo/site/files/resources/image/background_box_box.gif) top left repeat-y;
+  padding:0;
+  margin-bottom:0;
+}
+
+#sidebar .contextual h3 {
+  background:url(/nuxeo/site/files/resources/image/background_box_title.gif) top left no-repeat;
+  height:25px;
+  padding:0;
+  padding-left:25px;
+  padding-top:6px;
+  color:#fff;
+}
+
+#sidebar .sideblock-content {
+  background:url(/nuxeo/site/files/resources/image/background_box_content.gif) top left no-repeat;
+ padding:10px 25px;
+}
+
+#sidebar .sideblock-content-bottom {
+  background:url(/nuxeo/site/files/resources/image/background_box_bottom.gif) top left no-repeat;
+  height:5px;
+}
 
 .diff {
     /* XXX */
@@ -144,13 +182,13 @@ body {
 
 h1 {
     /* H1 */
-    font: normal small-caps bold 1.5em Verdana, sans-serif;
+    font: normal small-caps bold 240% "Century Gothic","Trebuchet MS", sans-serif;
     color: #0066CC;
 }
 
 h2 {
     /* H2 */
-    font: normal normal bold 1.1em Verdana, sans-serif;
+    font: normal normal bold 150% "Century Gothic","Trebuchet MS", sans-serif;
     color: #0066CC;
     border-top: 1px solid #0066CC;
     background: #F1F7FF;
@@ -160,7 +198,7 @@ h2 {
 
 h3 {
     /* H3 */
-    font: normal normal bold 1em Verdana, sans-serif;
+    font: normal normal bold 133% "Century Gothic","Trebuchet MS", sans-serif;
     margin: 0px;    
 }
 
@@ -169,12 +207,6 @@ h3 {
     font: normal normal bold 1em Verdana, sans-serif;
     border-top: 1px solid #0066CC;
     background: #F1F7FF;
-}
-
-p, li {
-    /* Paragraph */    
-    font: 11pt "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
-    color black;
 }
 
 pre {

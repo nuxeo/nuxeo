@@ -1,4 +1,4 @@
-<div class="sideblock">
+<div class="sideblock general">
     <h3>Search</h3>
     <form action="${root.docURL}@@search" method="get" accept-charset="utf-8">
         <input class="complete" type="text" name="q" id="q" autosave="com.mysite" results="5">
@@ -6,8 +6,21 @@
     </form>
 </div>
 
+<!-- let other templates add more things to the sidebar -->
 
-<div class="sideblock">
+  <@block name="sidebar"/>
+
+  <!-- See other related document should contributed by the wiki-->
+  <!--  JQuery-needed : appears only if wiki page contains seeother -->
+  <div class="sideblock contextual">
+    <h3>Related documents</h3>
+    <div class="sideblock-content">
+      <@block name="seeother"/>
+    </div>  
+  </div>
+  <div class="sideblock-content-bottom"></div>
+
+<div class="sideblock general">
     <h3>Last Items</h3>
     <ul>
         <#list root.children?reverse as entry>
@@ -17,25 +30,5 @@
     </ul>
 </div>
 
-<!-- See other related document should contributed by the wiki-->
-<div class="sideblock">
-  <@block name="seeother"/>
-</div>
-
-<!-- let other templates add more things to the sidebar -->
-<@block name="sidebar"/>
-
-<div class="sideblock">
-<h3>Actions</h3>
-<ul>
-<#list this.actions as action>
-<li> ${message("action."+action.id)}
-</#list>
-</ul>
 
 
-<li><a href="${this.docURL}@@edit">Edit</a></li>
-<li><a href="${this.docURL}@@view">View</a></li>
-<li><a href="${this.docURL}@@show_versions">History</a></li>
-
-</div>
