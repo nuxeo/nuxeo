@@ -26,15 +26,16 @@ import java.io.IOException;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
+import javax.faces.event.PhaseId;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.contexts.Lifecycle;
-import org.jboss.seam.jsf.TransactionalSeamPhaseListener;
-import org.jboss.seam.util.Transactions;
+import org.jboss.seam.contexts.FacesLifecycle;
+import org.jboss.seam.jsf.SeamPhaseListener;
+import org.jboss.seam.transaction.Transaction;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.ui.web.shield.ExceptionHelper;
 import org.nuxeo.ecm.platform.ui.web.shield.NuxeoExceptionFilter;
@@ -45,9 +46,11 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author tiry
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ * @author Florent Guillaume
  *
  */
-public class RestfulPhaseListener extends TransactionalSeamPhaseListener {
+
+public class RestfulPhaseListener extends SeamPhaseListener {
 
     private static final long serialVersionUID = -1064952127559721398L;
 
@@ -63,60 +66,63 @@ public class RestfulPhaseListener extends TransactionalSeamPhaseListener {
     }
 
     @Override
+    public PhaseId getPhaseId() {
+        return RENDER_RESPONSE;
+    }
+
+    @Override
     public void beforePhase(PhaseEvent event) {
-        if (RENDER_RESPONSE.equals(event.getPhaseId())) {
-            FacesContext context = event.getFacesContext();
-            HttpServletRequest httpRequest = (HttpServletRequest) context.getExternalContext().getRequest();
+
+        FacesContext context = event.getFacesContext();
+        HttpServletRequest httpRequest = (HttpServletRequest) context.getExternalContext().getRequest();
+        try {
+            URLPolicyService service = getURLPolicyService();
+            if (service.isCandidateForDecoding(httpRequest)) {
+                super.beforePhase(event);
+                // restore state
+                service.navigate(context);
+                // apply requests parameters after - they may need the state
+                // to be restored first.
+                service.applyRequestParameters(context);
+            }
+        } catch (Exception e) {
+            FacesLifecycle.setPhaseId(INVOKE_APPLICATION); // XXX Hack !
+            Throwable unwrappedException = NuxeoExceptionFilter.unwrapException(e);
+            String userMessage = NuxeoExceptionFilter.getMessageForException(unwrappedException);
+            String exceptionMessage = unwrappedException.getLocalizedMessage();
+            HttpServletResponse httpResponse = (HttpServletResponse) context.getExternalContext().getResponse();
+            httpRequest.setAttribute("applicationException", null);
+            // Do the rollback
             try {
-                URLPolicyService service = getURLPolicyService();
-                if (service.isCandidateForDecoding(httpRequest)) {
-                    super.beforePhase(event);
-
-                    // restore state
-                    service.navigate(context);
-
-                    // apply requests parameters after - they may need the state
-                    // to be restored first.
-                    service.applyRequestParameters(context);
-
-                    return;
+                if (Transaction.instance().isMarkedRollback()) {
+                    Transaction.instance().rollback();
                 }
-            } catch (Exception e) {
-                Lifecycle.setPhaseId(INVOKE_APPLICATION); // XXX Hack !
-                Throwable unwrappedException = NuxeoExceptionFilter.unwrapException(e);
-                String userMessage = NuxeoExceptionFilter.getMessageForException(
-                        unwrappedException);
-                String exceptionMessage = unwrappedException.getLocalizedMessage();
-                HttpServletResponse httpResponse = (HttpServletResponse) context.getExternalContext().getResponse();
-                httpRequest.setAttribute("applicationException", null);
-                // Do the rollback
-                try {
-                    if (Transactions.isTransactionMarkedRollback()) {
-                        Transactions.getUserTransaction().rollback();
-                    }
-                } catch (Exception te) {
-                    throw new IllegalStateException("Could not rollback transaction", te);
-                }
+            } catch (Exception te) {
+                throw new IllegalStateException(
+                        "Could not rollback transaction", te);
+            }
 
-                try {
-                    NuxeoExceptionFilter.forwardToErrorPage(httpRequest,
-                            httpResponse,
-                            NuxeoExceptionFilter.getStackTrace(e),
-                            exceptionMessage, userMessage, ExceptionHelper.isSecurityError(e));
+            try {
+                NuxeoExceptionFilter.forwardToErrorPage(httpRequest,
+                        httpResponse, NuxeoExceptionFilter.getStackTrace(e),
+                        exceptionMessage, userMessage,
+                        ExceptionHelper.isSecurityError(e));
 
-                    Lifecycle.endRequest(context.getExternalContext());
-                    context.responseComplete();
-                    return;
-                } catch (ServletException e1) {
-                    log.error("Error During redirect in PhaseListener : "
-                            + e1.getMessage());
-                } catch (IOException e1) {
-                    log.error("Error During redirect in PhaseListener : "
-                            + e1.getMessage());
-                }
+                FacesLifecycle.endRequest(context.getExternalContext());
+                context.responseComplete();
+                return;
+            } catch (ServletException e1) {
+                log.error("Error During redirect in PhaseListener : "
+                        + e1.getMessage());
+            } catch (IOException e1) {
+                log.error("Error During redirect in PhaseListener : "
+                        + e1.getMessage());
             }
         }
-        super.beforePhase(event);
+    }
+
+    public void afterPhase(PhaseEvent event) {
+        // nothing
     }
 
 }

@@ -229,17 +229,17 @@
                 <artifactItem>
                   <groupId>org.jboss.seam</groupId>
                   <artifactId>jboss-seam-mail</artifactId>
-                  <version>1.1.5.GA</version>
+                  <version>2.0.2.CR1</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.jboss.seam</groupId>
                   <artifactId>jboss-seam-ui</artifactId>
-                  <version>1.1.5.GA</version>
+                  <version>2.0.2.CR1</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.jboss.seam</groupId>
                   <artifactId>jboss-seam-debug</artifactId>
-                  <version>1.1.5.GA</version>
+                  <version>2.0.2.CR1</version>
                 </artifactItem>
                 <!--  also in parent pom but shouldn't -->
                 <artifactItem>
