@@ -2,53 +2,46 @@ body,
 html {
     margin:0;
     padding:0;
-    color:#000;
 }
 
 body {
-    min-width:900px;
-    background-color:#DCDFE6;
-    background-image:url(/nuxeo/site/files/resources/image/bg_grey.gif);
-    background-position:left top;
-    background-repeat:repeat-x;
-    color:#333333;
+    min-width:1000px;
+    background:#fff url(/nuxeo/site/files/resources/image/background_page.gif) top left repeat-x;
+    color:#333;
 }
 
 #wrap {
     margin:0 auto;
-    width:900px;
+    width:1000px;
     height: 100%;
 }
 
 #header {
-    background-image: url(/nuxeo/site/files/resources/image/banner_community.png);
-    background-color: transparent;
-    background-repeat: repeat;
-    background-attachment: scroll;
-    background-position: left top;
-    height: 100px;
-    width: 650px;
+    width: 1000px;
     /*margin-right:220px;*/
     padding:0px;
     text-align: middle;
-    border: 1px solid #999;
-    border-bottom-style: none;
-}
+    height:50px;
+    }
 
 #header img {
     float: left;
 }
 
 #header h1 {
-    float: right;
-    font-size: 2em;
+    font-size: 28px;
     font-color: white;
     text-align: left;
-    padding-right: 20px;
+    padding:0;
+    padding-top:6px;
+    margin:0;
 }
 
-#header a {
+#header h1 a {
     color: white;
+    text-decoration: none;
+    background:url(/nuxeo/site/files/resources/image/nuxeo_web_engine.gif) top right no-repeat;
+    padding-right:80px;
 }
 
 #main_title h1 {
@@ -74,13 +67,18 @@ body {
     padding:0;
 }
 
+#main-wrapper {
+  width:100%;
+  height:100%;
+  background:url(/nuxeo/site/files/resources/image/background_main-wrapper.gif) top right repeat-y; 
+  border:1px solid #fff;
+
+}
+
 #main {
-    background:#FFF;
+    background:#fff url(/nuxeo/site/files/resources/image/background-main.gif) top left repeat-x;
     float:left;
-    width:650px;
-    border: 1px solid #999;
-    border-top-style: none;
-    border-bottom-style: none;
+    width:760px;
 }
 
 #main h2, #main h3, #main p {
@@ -88,7 +86,7 @@ body {
 }
 
 #sidebar {
-    /*background:white;*/
+    background:url(/nuxeo/site/files/resources/image/background_sidebar.gif) top left repeat-x;
     float:right;
     width:240px;
 }
@@ -99,7 +97,7 @@ body {
     background: white;
     clear:both;
     vertical-align: middle;
-    width: 650px;
+    width: 1000px;
     border: 1px solid #999;
     border-top-style: dotted;
 }
@@ -112,14 +110,17 @@ body {
     text-align: center;
 }
 
-.sideblock {
-    border: 1px solid #999;
-    background: white;
+#sidebar .sideblock {
     padding: 6px;
     margin: 0px;
     margin: 0px 0px 10px 0px;
     font-size: 0.8em;
 }
+
+#sidebar .contextual {
+    background: white;
+}
+
 
 .diff {
     /* XXX */

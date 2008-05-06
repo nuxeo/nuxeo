@@ -17,21 +17,19 @@
 
 <div id="wrap">
     <div id="header">
-       <h1><a href="/nuxeo/site/wikione/">${root.title}</a></h1>
-       <img alt="Nuxeo Wiki" src="/nuxeo/site/files/resources/image/logo-community.png"/>
-        
+       <h1><a href="/nuxeo/site/${root.name}">${root.title}</a></h1>
     </div>
+    <div id="main-wrapper">
+      <div id="main">
+          <@block name="content">
+          ##This is the content block##
+          </@block>
+      </div>
 
-    <div id="main">
-        <@block name="content">
-        ##This is the content block##
-        </@block>
+      <div id="sidebar">
+          <#include "/default/includes/sidebar.ftl"/>
+      </div>
     </div>
-
-    <div id="sidebar">
-        <#include "/default/includes/sidebar.ftl"/>
-    </div>
-    
     <div id="footer">
        <p>Last modified by ${this.author} @ ${this.dublincore.modified?datetime}</p>
        <p>Copyright <a href="">Nuxeo SAS</a> 2000-2015</p>
