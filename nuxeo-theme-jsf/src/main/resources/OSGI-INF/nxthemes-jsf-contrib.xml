@@ -59,9 +59,9 @@
       <require>prototype.js</require>
     </resource>
 
-    <!-- Seam 1.0.1.GA -->
+    <!-- Seam 2-->
     <resource name="seam-remote.js">
-      <path>nxthemes/jsf/scripts/seam-remote.js</path>
+      <url>/nuxeo/seam/resource/remoting/resource/remote.js</url>
     </resource>
 
     <resource name="nxthemes.css">

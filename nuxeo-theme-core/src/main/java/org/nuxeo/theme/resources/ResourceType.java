@@ -29,6 +29,9 @@ public final class ResourceType implements Type {
     @XNode("path")
     public String path;
 
+    @XNode("url")
+    public String url;
+
     @XNode("shrinkable")
     public boolean shrinkable = true;
 
@@ -66,6 +69,10 @@ public final class ResourceType implements Type {
 
     public boolean isShrinkable() {
         return shrinkable;
+    }
+
+    public String getUrl() {
+        return url;
     }
 
 }

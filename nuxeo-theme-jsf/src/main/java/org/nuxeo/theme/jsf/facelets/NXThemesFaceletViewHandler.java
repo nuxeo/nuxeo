@@ -27,7 +27,10 @@ import com.sun.facelets.impl.ResourceResolver;
 public class NXThemesFaceletViewHandler extends FaceletViewHandler {
 
     // Seam
-    private static final String SEAM_EXPRESSION_FACTORY = "org.jboss.seam.ui.facelet.SeamExpressionFactory";
+
+
+    private static final String SEAM_EXPRESSION_FACTORY = "org.jboss.seam.el.SeamExpressionFactoryImpl";
+
 
     // Facelets
     private static final long DEFAULT_REFRESH_PERIOD = 2;
