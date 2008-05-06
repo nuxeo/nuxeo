@@ -56,7 +56,8 @@ public class TestScheduler extends NXRuntimeTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        undeploy("test-nxscheduler-service.xml");
+        undeployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
+                "test-nxscheduler-service.xml");
         super.tearDown();
     }
 
@@ -75,7 +76,8 @@ public class TestScheduler extends NXRuntimeTestCase {
 
         Integer count = whiteboard.getCount();
         log.info("count " + count);
-        undeploy("test-nxscheduler.xml");
+        undeployContrib("org.nuxeo.ecm.platform.scheduler.core.tests",
+                "test-nxscheduler.xml");
         assertTrue("count " + count, count >= 1);
     }
 
