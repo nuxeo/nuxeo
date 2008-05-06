@@ -1,11 +1,11 @@
 <html>
 <head>
-  <title>Nuxeo Site Server</title>
+  <title>Nuxeo WebEngine</title>
 </head>
 <body>
-<h1>Nuxeo Site Server</h1>
+<h1>Nuxeo WebEngine</h1>
 <p>
-Hello ${user}! This is the root of your site server.
+Hello ${user}! This is the root of your web site.
 </p>
 <hr>
 <p>
