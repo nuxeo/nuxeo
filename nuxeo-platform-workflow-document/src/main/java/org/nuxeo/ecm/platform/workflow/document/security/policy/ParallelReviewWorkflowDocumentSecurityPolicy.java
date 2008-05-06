@@ -166,12 +166,6 @@ public class ParallelReviewWorkflowDocumentSecurityPolicy extends
         return grant;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicy#hasParticipantImmediateAction(java.lang.String,
-     *      java.security.Principal)
-     */
     public boolean hasParticipantImmediateAction(String pid, Principal principal)
             throws WMWorkflowException {
         boolean hasAction = false;
@@ -185,12 +179,6 @@ public class ParallelReviewWorkflowDocumentSecurityPolicy extends
         return hasAction;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicy#canEndWorkItem(org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMParticipant,
-     *      org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance)
-     */
     public boolean canEndWorkItem(Principal participant, WMWorkItemInstance wi)
             throws WMWorkflowException {
         boolean granted = false;
@@ -202,15 +190,8 @@ public class ParallelReviewWorkflowDocumentSecurityPolicy extends
                     && getFilteredTasksFor(pid, participant).size() < nbTasks;
         }
         return granted;
-
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicy#canRejectWorkItem(org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMParticipant,
-     *      org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance)
-     */
     public boolean canRejectWorkItem(Principal participant,
             WMWorkItemInstance wi) throws WMWorkflowException {
         boolean granted = false;
@@ -219,15 +200,8 @@ public class ParallelReviewWorkflowDocumentSecurityPolicy extends
                     && (!wi.hasEnded()) && (!wi.isRejected()));
         }
         return granted;
-
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicy#canRemoveWorkItem(org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMParticipant,
-     *      org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance)
-     */
     public boolean canRemoveWorkItem(Principal participant,
             WMWorkItemInstance wi) throws WMWorkflowException {
         boolean granted = false;
@@ -239,23 +213,11 @@ public class ParallelReviewWorkflowDocumentSecurityPolicy extends
         return granted;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicy#canMoveDown(java.security.Principal,
-     *      org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance)
-     */
     public boolean canMoveDown(Principal participant, WMWorkItemInstance wi)
             throws WMWorkflowException {
         return false;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicy#canMoveUp(java.security.Principal,
-     *      org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance)
-     */
     public boolean canMoveUp(Principal participant, WMWorkItemInstance wi)
             throws WMWorkflowException {
         return false;

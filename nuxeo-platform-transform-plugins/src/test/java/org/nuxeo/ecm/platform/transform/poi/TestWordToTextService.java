@@ -77,7 +77,6 @@ public class TestWordToTextService extends AbstractPluginTestCase {
         // FileUtils.copy(textFile, dst);
         // assertEquals("text content", "Hello from a Microsoft Word Document!",
         // DocumentTestUtils.readContent(textFile));
-
     }
 
 }
