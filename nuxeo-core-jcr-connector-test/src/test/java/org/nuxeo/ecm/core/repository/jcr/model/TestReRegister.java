@@ -67,7 +67,8 @@ public class TestReRegister extends RepositoryTestCase {
         // close repository and reopen it
         session.close();
         releaseRepository();
-        undeploy("DemoRepository.xml");
+        undeployContrib(CoreJCRConnectorTestConstants.BUNDLE,
+                "DemoRepository.xml");
         getRepository(); // reopen the same repository as before
 
         // deploy a new doctype (MyDocType)
@@ -159,11 +160,14 @@ public class TestReRegister extends RepositoryTestCase {
         session.close();
         releaseRepository();
         //redeploy components
-        undeploy("DemoRepository.xml");
-        undeploy("test-CoreExtensions.xml");
-        undeploy("CoreService.xml");
-        undeploy("TypeService.xml");
-        undeploy("RepositoryService.xml");
+        undeployContrib(CoreJCRConnectorTestConstants.BUNDLE,
+                "DemoRepository.xml");
+        undeployContrib(CoreJCRConnectorTestConstants.BUNDLE,
+                "test-CoreExtensions.xml");
+        undeployContrib(CoreJCRConnectorTestConstants.BUNDLE, "CoreService.xml");
+        undeployContrib(CoreJCRConnectorTestConstants.BUNDLE, "TypeService.xml");
+        undeployContrib(CoreJCRConnectorTestConstants.BUNDLE,
+                "RepositoryService.xml");
 
         deployContrib(CoreJCRConnectorTestConstants.BUNDLE, "CoreService.xml");
         deployContrib(CoreJCRConnectorTestConstants.BUNDLE, "TypeService.xml");
