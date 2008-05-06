@@ -113,7 +113,7 @@ public class EventManager implements Serializable {
             // XXX AT: kind of BBB, not sure why this was used like this
             eventsFired = raiseEventsOnLocationSelectionChanged();
         } else {
-        	Events evtManager = Events.instance();
+            Events evtManager = Events.instance();
 
             String docType = document.getType();
             String eventName;

@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.platform.versioning.wfintf;
 
+import static org.nuxeo.ecm.platform.workflow.document.api.versioning.WorkflowDocumentVersioningPolicyConstants.WORKFLOW_DOCUMENT_VERSIONING_AUTO;
+import static org.nuxeo.ecm.platform.workflow.document.api.versioning.WorkflowDocumentVersioningPolicyConstants.WORKFLOW_DOCUMENT_VERSIONING_CASE_DEPENDENT;
+import static org.nuxeo.ecm.platform.workflow.document.api.versioning.WorkflowDocumentVersioningPolicyConstants.WORKFLOW_DOCUMENT_VERSIONING_NO_INCREMENT;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,9 +35,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
 import org.nuxeo.ecm.platform.versioning.api.WFDocVersioning;
 import org.nuxeo.ecm.platform.workflow.document.api.ejb.delegate.WorkflowDocumentVersioningPolicyBusinessDelegate;
-import static org.nuxeo.ecm.platform.workflow.document.api.versioning.WorkflowDocumentVersioningPolicyConstants.WORKFLOW_DOCUMENT_VERSIONING_AUTO;
-import static org.nuxeo.ecm.platform.workflow.document.api.versioning.WorkflowDocumentVersioningPolicyConstants.WORKFLOW_DOCUMENT_VERSIONING_CASE_DEPENDENT;
-import static org.nuxeo.ecm.platform.workflow.document.api.versioning.WorkflowDocumentVersioningPolicyConstants.WORKFLOW_DOCUMENT_VERSIONING_NO_INCREMENT;
 import org.nuxeo.ecm.platform.workflow.document.api.versioning.WorkflowDocumentVersioningPolicyManager;
 
 /**
@@ -101,7 +102,8 @@ public final class WFVersioningPolicyProvider {
         final String logPrefix = "<getVersioningPolicyFor> ";
 
         try {
-            WorkflowDocumentVersioningPolicyManager wfVersionPolicy = new WorkflowDocumentVersioningPolicyBusinessDelegate().getWorkflowVersioningPolicy();
+            WorkflowDocumentVersioningPolicyManager wfVersionPolicy
+                    = new WorkflowDocumentVersioningPolicyBusinessDelegate().getWorkflowVersioningPolicy();
 
             final String wfpol = wfVersionPolicy.getVersioningPolicyFor(docRef);
 
