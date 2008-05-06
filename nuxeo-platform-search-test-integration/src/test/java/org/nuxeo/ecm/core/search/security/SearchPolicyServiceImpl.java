@@ -67,7 +67,7 @@ public class SearchPolicyServiceImpl implements SearchPolicyService {
                     query.getOrderByClause());
         }
         log.debug(query);
-        return new ComposedNXQueryImpl(query);
+        return new ComposedNXQueryImpl(query, sPrincipal);
     }
 
 }
