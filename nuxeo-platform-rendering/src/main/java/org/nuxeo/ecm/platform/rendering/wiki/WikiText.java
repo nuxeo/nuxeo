@@ -30,6 +30,6 @@ import java.io.Writer;
  */
 public interface WikiText {
 
-    public void writeTo(WikiSerializerHandler handler, Writer writer) throws IOException;
+    void writeTo(WikiSerializerHandler handler, Writer writer) throws IOException;
 
 }
