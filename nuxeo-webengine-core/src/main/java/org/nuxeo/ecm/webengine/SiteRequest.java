@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
+import org.nuxeo.ecm.webengine.rendering.SiteRenderingContext;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.servlet.SiteConst;
@@ -347,17 +348,18 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
    }
 
     public void render(String template, Object ctx) throws Exception {
-        if (lastResolved != null) {
             Map map = null;
             if (ctx instanceof Map) {
                 map = (Map) ctx;
             } else if (ctx instanceof PyDictionary) {
                 map = Scripting.convertPythonMap((PyDictionary) ctx);
             }
+            if (lastResolved != null) {
             siteManager.getScripting().getRenderingEngine().render(template, lastResolved,
                     (Map<String, Object>) map);
         } else {
-            throw new SiteException("Rendering outside doc context not impl yet");
+            siteManager.getScripting().getRenderingEngine().render(template, new SiteRenderingContext(this),
+                    (Map<String, Object>) map);
         }
     }
 

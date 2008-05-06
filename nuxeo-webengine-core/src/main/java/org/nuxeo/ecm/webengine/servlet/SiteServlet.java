@@ -70,7 +70,6 @@ public class SiteServlet extends HttpServlet {
 
     private Scripting scripting;
     private SiteManager manager;
-    //private SiteRenderingContext siteRenderingContext = new SiteRenderingContext();
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -91,6 +90,10 @@ public class SiteServlet extends HttpServlet {
             throws ServletException, IOException {
         double start = System.currentTimeMillis();
 
+        if (req.getMethod().equals(SiteConst.METHOD_HEAD)) {
+            resp = new NoBodyResponse(resp);
+        }
+
         SiteRequest siteRequest = null;
         try {
             siteRequest = createRequest(req, resp);
@@ -106,7 +109,7 @@ public class SiteServlet extends HttpServlet {
                 try {
                     siteRequest.setVar("error", e);
                     manager.getScripting().exec(siteRequest, page);
-                } catch (Exception ee) {
+                } catch (Throwable ee) {
                     displayError(resp, ee, "Failed to show error page",
                             SiteConst.SC_INTERNAL_SERVER_ERROR);
                 }
@@ -115,20 +118,14 @@ public class SiteServlet extends HttpServlet {
         System.out.println(">>> SITE REQUEST TOOK:  "+((System.currentTimeMillis()-start)/1000));
     }
 
-    protected void service(SiteRequest siteRequest, HttpServletRequest req, HttpServletResponse resp) {
+    protected void service(SiteRequest siteRequest, HttpServletRequest req, HttpServletResponse resp) throws Exception {
         if (siteRequest.getLastResolvedObject() == null) { // a request outside the root
-            try {
-                showIndex(siteRequest);
-            } catch (Exception e) {
-                displayError(resp, null, "Failed to show server main index",
-                        SiteConst.SC_INTERNAL_SERVER_ERROR);
-            }
+            showIndex(siteRequest);
             return;
         }
 
         String method = req.getMethod();
         SiteObject lastTraversedObject = null;
-        try {
             lastTraversedObject = siteRequest.traverse();
             if (lastTraversedObject == null) {
                 displayError(resp, null, "Site Root is not a supported object ");
@@ -155,25 +152,10 @@ public class SiteServlet extends HttpServlet {
                     return;
                 }
             }
-        } catch (SiteException e) {
-            if (lastTraversedObject != null) {
-            displayError(resp, e, "Error during calling method " + method
-                    + " on " + lastTraversedObject.getName());
-            } else {
-                displayError(resp, e, "Error during traversal");
-            }
-            return;
-        }
 
         double s = System.currentTimeMillis();
-        try {
-            scripting.exec(siteRequest);
-            //engine.render(siteRequest.getLastResolvedObject());
-        } catch (Exception e) {
-            displayError(resp, e, "Error during the rendering process");
-        }
+        scripting.exec(siteRequest);
         System.out.println(">>>>>>>>>> RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
-        resp.setStatus(SiteConst.SC_OK);
     }
 
     protected static void displayError(HttpServletResponse resp, Throwable t,
@@ -214,6 +196,7 @@ public class SiteServlet extends HttpServlet {
         SiteRoot root;
         if (pathInfo == null || "/".equals(pathInfo)) {
             root = manager.getDefaultSiteRoot();
+            pathInfo = "/index.ftl"; //TODO use the config to get the name of the index
         } else {
             int p = pathInfo.indexOf('/', 1);
             String siteName = null;
