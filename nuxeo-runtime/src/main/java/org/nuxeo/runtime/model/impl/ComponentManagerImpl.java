@@ -434,8 +434,11 @@ public class ComponentManagerImpl implements ComponentManager {
                     if (ri.isResolved()) {
                         ri.activate(); // activate the component if not yet activated
                     } else {
-                        log.warn("The component exposing the service " + serviceClass
-                                + " is not resolved - should be a bug.");
+                        // Hack to avoid messages during TypeService activation
+                        if (!serviceClass.getSimpleName().equals("TypeProvider")) {
+                            log.debug("The component exposing the service " +
+                                    serviceClass + " is not resolved");
+                        }
                         return null;
                     }
                 }
