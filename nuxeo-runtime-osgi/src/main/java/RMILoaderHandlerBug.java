@@ -21,7 +21,7 @@ public class RMILoaderHandlerBug {
         } else if (urls.length == 1) {
             return urls[0].toExternalForm();
         } else {
-            StringBuffer path = new StringBuffer(urls[0].toExternalForm());
+            StringBuilder path = new StringBuilder(urls[0].toExternalForm());
             for (int i = 1; i < urls.length; i++) {
                 path.append(' ');
                 path.append(urls[i].toExternalForm());

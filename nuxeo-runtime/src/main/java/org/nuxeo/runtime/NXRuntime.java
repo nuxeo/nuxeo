@@ -78,8 +78,7 @@ public final class NXRuntime {
      * runtime is found an exception is thrown.
      *
      * @return the runtime service instance or null if no runtime is found
-     * @throws RuntimeServiceException
-     *             if no runtime was initialized
+     * @throws IllegalStateException if no runtime was initialized
      * @see NXRuntime#getInstance()
      */
     public static synchronized RuntimeService getInstance() {
@@ -101,7 +100,7 @@ public final class NXRuntime {
      *
      * @param instance
      *            the runtime instance
-     * @throws RuntimeServiceException
+     * @throws IllegalStateException
      *             if a runtime service was already intialized
      */
     public static synchronized void setInstance(RuntimeService instance) {
@@ -119,13 +118,11 @@ public final class NXRuntime {
      * runtime implementations in the bootstrap process to initialize the
      * instance used by the facade.
      * <p>
-     * This is not checking if a runtime was already set. If a runtime is
+     * This doesn't check if a runtime was already set. If a runtime is
      * already set it will be replaced with the given instance.
      *
      * @param runtime
      *            the runtime instance
-     * @throws RuntimeServiceException
-     *             if a runtime service was already intialized
      */
     public static synchronized void setRuntime(RuntimeService runtime) {
         NXRuntime.runtime = runtime;

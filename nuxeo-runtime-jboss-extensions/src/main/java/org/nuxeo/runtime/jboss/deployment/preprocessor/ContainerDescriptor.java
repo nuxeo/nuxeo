@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -34,8 +36,6 @@ import org.nuxeo.runtime.jboss.deployment.preprocessor.install.CommandContext;
 import org.nuxeo.runtime.jboss.deployment.preprocessor.install.CommandProcessor;
 import org.nuxeo.runtime.jboss.deployment.preprocessor.install.DOMCommandsParser;
 import org.w3c.dom.DocumentFragment;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

@@ -133,6 +133,7 @@ public class RemoteInputStream extends InputStream {
             end = buffer.length;
             return buffer.length > initialCount ? initialCount : buffer.length;
         } catch (IOException e) {
+            // TODO: do something here, or remove the try/catch construct.
             throw e;
         }
     }

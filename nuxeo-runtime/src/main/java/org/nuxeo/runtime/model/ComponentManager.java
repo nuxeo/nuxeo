@@ -57,7 +57,6 @@ public interface ComponentManager {
      * If true is returned, the object will be added to the main registry under
      * the name given in RegistrationInfo.
      *
-     * @param reg the main registry
      * @param ri the registration info
      * @return true if the object should be added to the main registry, false
      *         otherwise
@@ -71,7 +70,6 @@ public interface ComponentManager {
      * <p>
      * If true is returned, the object will be removed from the main registry.
      *
-     * @param reg the main registry
      * @param ri the registration info
      * @return true if the object should be removed from the main registry,
      *         false otherwise

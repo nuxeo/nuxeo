@@ -19,11 +19,11 @@
 
 package org.nuxeo.runtime;
 
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -38,7 +38,7 @@ public class ComponentDeploymentTest extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp2.xml");
     }
 
-    public void testContributions() throws Exception {
+    public void testContributions() {
         RuntimeService runtime = Framework.getRuntime();
         ComponentManager mgr = runtime.getComponentManager();
         assertTrue(mgr.size() > 0);
