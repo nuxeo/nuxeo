@@ -48,6 +48,7 @@ public class WikiSerializer {
 
     public WikiSerializer() {
         parser = new CommonWikiParser();
+        registerMacro(new TocMacro());
     }
 
     public void registerMacro(WikiMacro macro) {
@@ -64,15 +65,17 @@ public class WikiSerializer {
 
     public void serialize(Reader reader, Writer writer) throws IOException, WikiParserException {
         serialize(reader, writer, null);
-        WikiSerializerHandler serializer = new WikiSerializerHandler(this, writer);
+        WikiSerializerHandler serializer = new WikiSerializerHandler(this);
         parser.parse(reader, serializer);
+        serializer.getWriter().writeTo(serializer, writer);
         writer.flush();
     }
 
     public void serialize(Reader reader, Writer writer, RenderingContext ctx)
             throws IOException, WikiParserException {
-        WikiSerializerHandler serializer = new WikiSerializerHandler(this, writer, ctx);
+        WikiSerializerHandler serializer = new WikiSerializerHandler(this, ctx);
         parser.parse(reader, serializer);
+        serializer.getWriter().writeTo(serializer, writer);
         writer.flush();
     }
 

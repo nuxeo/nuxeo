@@ -29,7 +29,7 @@ import java.io.StringWriter;
 import java.io.StringReader;
 
 import org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer;
-import org.nuxeo.ecm.platform.rendering.wiki.filters.PatternFilter;
+import org.nuxeo.ecm.platform.rendering.wiki.extensions.PatternFilter;
 import org.wikimodel.wem.WikiParserException;
 import junit.framework.TestCase;
 
@@ -50,7 +50,24 @@ public class TestWiki extends TestCase {
         StringWriter writer = new StringWriter();
         engine.serialize(reader, writer);
 
+        System.out.println(writer.getBuffer());
         System.out.println(">>>>>>> " + ((System.currentTimeMillis() - s) / 1000));
+    }
+
+    public void test2() throws IOException, WikiParserException {
+        InputStream in = TestWiki.class.getResourceAsStream("/test2.wiki");
+        Reader reader = new InputStreamReader(in);
+
+        WikiSerializer engine = new WikiSerializer();
+        engine.addFilter(new PatternFilter("_([-A-Za-z0-9]+)_", "<i>$1</i>"));
+        engine.addFilter(new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
+        engine.addFilter(new PatternFilter("NXP-[0-9]+",
+                "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
+
+        StringWriter writer = new StringWriter();
+        engine.serialize(reader, writer);
+
+        System.out.println(writer.getBuffer());
     }
 
 }

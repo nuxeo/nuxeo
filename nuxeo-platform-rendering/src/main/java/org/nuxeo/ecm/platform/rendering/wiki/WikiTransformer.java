@@ -29,8 +29,8 @@ import java.net.URL;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
-import org.nuxeo.ecm.platform.rendering.wiki.filters.DocumentExpression;
-import org.nuxeo.ecm.platform.rendering.wiki.filters.FreemarkerMacro;
+import org.nuxeo.ecm.platform.rendering.wiki.extensions.DocumentExpression;
+import org.nuxeo.ecm.platform.rendering.wiki.extensions.FreemarkerMacro;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

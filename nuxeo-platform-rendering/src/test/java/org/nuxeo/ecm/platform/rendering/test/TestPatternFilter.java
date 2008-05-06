@@ -1,7 +1,8 @@
 package org.nuxeo.ecm.platform.rendering.test;
 
 import junit.framework.TestCase;
-import org.nuxeo.ecm.platform.rendering.wiki.filters.PatternFilter;
+
+import org.nuxeo.ecm.platform.rendering.wiki.extensions.PatternFilter;
 
 public class TestPatternFilter extends TestCase {
 

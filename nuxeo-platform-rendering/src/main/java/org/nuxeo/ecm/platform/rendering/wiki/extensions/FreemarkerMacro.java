@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.rendering.wiki.filters;
+package org.nuxeo.ecm.platform.rendering.wiki.extensions;
 
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -53,7 +53,7 @@ public class FreemarkerMacro implements WikiMacro {
             } finally {
                 env.setOut(oldw);
             }
-            serializer.print(neww.toString());
+            serializer.getWriter().print(neww.toString());
         }
     }
 

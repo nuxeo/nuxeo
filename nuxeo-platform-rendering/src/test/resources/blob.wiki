@@ -1,13 +1,20 @@
+
+= Heading 1
 Here is some wiki in the *document* content.\
 See NXP-1256
 
+== Heading 1.1
 This is an inline macro {freemarker}doc title: ${dublincore.title}{/freemarker}
 
+= Heading 2
 This is a doc expression example $doc(dc:title) or $doc(key=dc:title)
 
 %block:dynamic (((
-=== Dynamic Block
+*Dynamic Block*
 This is a dynamic *block* contributed from a wiki
+
+{toc}The Wiki Toc{/toc}
+
 )))
 
 NXP-1234

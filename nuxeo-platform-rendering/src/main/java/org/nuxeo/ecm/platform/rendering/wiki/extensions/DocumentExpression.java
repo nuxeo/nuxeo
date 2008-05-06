@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.rendering.wiki.filters;
+package org.nuxeo.ecm.platform.rendering.wiki.extensions;
 
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
@@ -44,9 +44,9 @@ public class DocumentExpression implements WikiExpression {
         WikiParameter param = params.getParameter(0);
         String value = param.getValue();
         if (size == 1 && value == null) {
-            serializer.print(getProperty(ctx, param.getKey()));
+            serializer.getWriter().print(getProperty(ctx, param.getKey()));
         } else {
-            serializer.print(getProperty(ctx, param.getValue()));
+            serializer.getWriter().print(getProperty(ctx, param.getValue()));
         }
     }
 

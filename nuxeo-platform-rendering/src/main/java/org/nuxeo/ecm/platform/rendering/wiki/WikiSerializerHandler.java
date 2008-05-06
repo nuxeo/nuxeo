@@ -19,13 +19,10 @@
 
 package org.nuxeo.ecm.platform.rendering.wiki;
 
-import java.io.IOException;
-import java.io.Writer;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
-import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriter;
+import org.nuxeo.ecm.platform.rendering.wiki.extensions.WikiBlockWriter;
 import org.wikimodel.wem.PrintListener;
 import org.wikimodel.wem.WikiFormat;
 import org.wikimodel.wem.WikiParameters;
@@ -33,7 +30,9 @@ import org.wikimodel.wem.WikiParameters;
 import freemarker.core.Environment;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailt
+import com.sun.corba.se.impl.ior.WireObjectKeyTemplate;
+o:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class WikiSerializerHandler extends PrintListener {
@@ -46,44 +45,44 @@ public class WikiSerializerHandler extends PrintListener {
     protected final RenderingContext ctx;
 
     protected Environment env;
-    protected Writer writer;
-    protected BlockWriter parentWriter; // we allow only one level of block: doc properties
-    protected boolean parentSuppressOutput = false; // suppress output state saved from parent
+    protected WikiWriter writer;
+    protected int mark = -1; // used to mark the current buffer to be able to retrieve printed text that starts at the mark
+    protected Toc toc;
 
-    public WikiSerializerHandler(WikiSerializer engine, Writer writer) {
-        this(engine, writer, null);
+    public WikiSerializerHandler(WikiSerializer engine) {
+        this (engine, null);
     }
 
-    public WikiSerializerHandler(WikiSerializer engine, Writer writer, RenderingContext ctx) {
+    public WikiSerializerHandler(WikiSerializer engine, RenderingContext ctx) {
         super (null); // cannot base on the wikiprinter - so we don't use it
         this.engine = engine;
         this.ctx = ctx;
-        this.writer = writer;
-    }
-
-    public void print(String str) {
-        try {
-            writer.write(str);
-        } catch (IOException e) {
-            log.error("Failed to print: "+str, e);
+        this.writer = new WikiWriter();
+        if (engine.macros.containsKey("toc")) {
+            this.toc =new Toc();
         }
     }
 
-    public void println() {
-        try {
-            writer.write(LINE_SEP);
-        } catch (IOException e) {
-            log.error("Failed to print newline", e);
-        }
+    @Override
+    protected void print(String str) {
+        writer.print(str);
     }
 
-    public void println(String str) {
-        try {
-            writer.write(str);
-            writer.write(LINE_SEP);
-        } catch (IOException e) {
-            log.error("Failed to print: "+str, e);
-        }
+    @Override
+    protected void println() {
+        writer.println();
+    }
+
+    @Override
+    protected void println(String str) {
+        writer.println(str);
+    }
+
+    /**
+     * @return the writer.
+     */
+    public WikiWriter getWriter() {
+        return writer;
     }
 
     public Environment getEnvironment() {
@@ -156,6 +155,11 @@ public class WikiSerializerHandler extends PrintListener {
     public void beginHeader(int level, WikiParameters params) {
         beginElement();
         super.beginHeader(level, params);
+        if (toc != null) {
+            String id = toc.addHeading(null, level); // we don't know the title yet
+            print("<a name=\"heading_"+id+"\">");
+            mark = writer.getBuffer().length();
+        }
     }
 
     @Override
@@ -184,21 +188,10 @@ public class WikiSerializerHandler extends PrintListener {
     public void beginPropertyBlock(String propertyUri, boolean doc) {
         beginElement();
         if (propertyUri.startsWith("block:")) {
-            if (parentWriter == null && (writer instanceof BlockWriter)) {
-                String name = propertyUri.substring(6);
-                parentWriter = (BlockWriter)writer;
-                BlockWriter bw = new BlockWriter("__dynamic__wiki", name, parentWriter.getRegistry());
-                try {
-                    parentSuppressOutput = parentWriter.getSuppressOutput();
-                    parentWriter.setSuppressOutput(true);
-                    parentWriter.writeBlock(bw);
-                    writer = bw;
-                } catch (IOException e) {
-                    log.error("Failed to write block", e);
-                }
-            } else {
-                log.error("Illegal state - Rendering block ignored");
-            }
+            String name = propertyUri.substring(6);
+           WikiBlockWriter bwriter = new WikiBlockWriter(writer, name);
+           writer.writeText(bwriter);
+           writer = bwriter;
         } else {
             super.beginPropertyBlock(propertyUri, doc);
         }
@@ -272,8 +265,16 @@ public class WikiSerializerHandler extends PrintListener {
 
     @Override
     public void endHeader(int level, WikiParameters params) {
+        if (toc != null) {
+            if (mark == -1) throw new IllegalStateException("marker was not set");
+            toc.tail.title = writer.getBuffer().substring(mark);
+            mark = -1;
+            print("</a>");
+            super.endHeader(level, params);
+        } else {
+            super.endHeader(level, params);
+        }
         endElement();
-        super.endHeader(level, params);
     }
 
     @Override
@@ -304,11 +305,9 @@ public class WikiSerializerHandler extends PrintListener {
     public void endPropertyBlock(String propertyUri, boolean doc) {
         endElement();
         if (propertyUri.startsWith("block:")) {
-            if (parentWriter != null && (writer instanceof BlockWriter)) {
-                parentWriter.setSuppressOutput(parentSuppressOutput);
-                writer = parentWriter;
-            } else {
-                log.error("Illegal state exception - ignoring block end");
+            writer = writer.getParent();
+            if (writer == null) {
+                throw new IllegalStateException("block macro underflow");
             }
         } else {
             super.endPropertyBlock(propertyUri, doc);
