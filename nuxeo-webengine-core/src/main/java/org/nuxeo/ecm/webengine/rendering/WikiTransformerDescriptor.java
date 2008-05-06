@@ -27,7 +27,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiTransformer;
-import org.nuxeo.ecm.platform.rendering.wiki.filters.PatternFilter;
+import org.nuxeo.ecm.platform.rendering.wiki.extensions.PatternFilter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
