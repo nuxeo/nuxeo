@@ -22,8 +22,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -71,9 +73,9 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
 
     private StandaloneBundleLoader bundleLoader;
 
-    private Set<URL> readUrls;
+    private Set<URI> readUris;
 
-    private HashMap<String, BundleFile> bundles;
+    private Map<String, BundleFile> bundles;
 
     @Override
     protected void setUp() throws Exception {
@@ -93,12 +95,12 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
         if (workingDir != null) {
             FileUtils.deleteTree(workingDir);
         }
-        readUrls = null;
+        readUris = null;
         bundles = null;
         super.tearDown();
     }
 
-    private synchronized String generateId() {
+    private static synchronized String generateId() {
         long stamp = System.currentTimeMillis();
         counter ++;
         return Long.toHexString(stamp) + '-'
@@ -159,7 +161,7 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
             sb.append('\n');
         }
         log.debug(sb.toString());
-        readUrls = new HashSet<URL>();
+        readUris = new HashSet<URI>();
         bundles = new HashMap<String, BundleFile>();
     }
 
@@ -206,8 +208,9 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
 
     /**
      * Deploys a contribution file by looking for it in the class loader.
-     * <p>The first contribution file found by the class loader will be used.
-     * You have no guarantee in case of name collisions</p>
+     * <p>
+     * The first contribution file found by the class loader will be used.
+     * You have no guarantee in case of name collisions.
      *
      * @deprecated use the less ambiguous {@method deployContrib(bundleName, contrib)}
      * @param contrib the relative path to the contribution file
@@ -240,8 +243,8 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
      * For compatibility reasons the name of the bundle may be a jar name, but
      * this use is discouraged and deprecated.
      *
-     * @param bundle The name of the bundle to peek the contrib in
-     * @param contrib The path to contrib in the bundle.
+     * @param bundle the name of the bundle to peek the contrib in
+     * @param contrib the path to contrib in the bundle.
      * @throws Exception
      */
     public void deployContrib(String bundle, String contrib) throws Exception {
@@ -307,8 +310,9 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
     }
 
     /**
-     * Deploy a whole OSGI bundle.
-     * <p>The lookup is first done on symbolic name, as set in <code>MANIFEST.MF</code>
+     * Deploys a whole OSGI bundle.
+     * <p>
+     * The lookup is first done on symbolic name, as set in <code>MANIFEST.MF</code>
      * and then falls back to the bundle url (e.g., <code>nuxeo-platform-search-api</code>)
      * for backwards compatibility.
      *
@@ -327,7 +331,7 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
             return null;
         }
         Attributes attrs = manifest.getMainAttributes();
-        String name = (String) attrs.getValue("Bundle-SymbolicName");
+        String name = attrs.getValue("Bundle-SymbolicName");
         if (name == null) {
             return null;
         }
@@ -341,11 +345,12 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
             return bundleFile;
         }
         for (URL url: urls) {
-            if (readUrls.contains(url)) {
+            URI uri = url.toURI();
+            if (readUris.contains(uri)) {
                 continue;
             }
-            File file = new File(url.toURI());
-            readUrls.add(url);
+            File file = new File(uri);
+            readUris.add(uri);
             try {
                 if (file.isDirectory()) {
                     bundleFile = new DirectoryBundleFile(file);

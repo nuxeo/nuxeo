@@ -20,6 +20,8 @@
 package org.nuxeo.runtime.jboss.osgi;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -161,13 +163,26 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
     }
 
     public String listBundles() {
+        double total = 0;
         BundleImpl[] bundles = osgi.getInstalledBundles();
+        Arrays.sort(bundles, new Comparator<BundleImpl>() {
+            public int compare(BundleImpl o1, BundleImpl o2) {
+                return (int)(o1.getStartupTime() - o2.getStartupTime());
+            }
+        });
         StringBuilder buf = new StringBuilder();
         for (BundleImpl bundle : bundles) {
             buf.append(bundle.getBundleId()).append(": ")
-                    .append(bundle.getSymbolicName()).append(" [")
-                    .append(bundle.getState()).append("]\n");
+                    .append(bundle.getSymbolicName()).append(" [ state: ")
+                    .append(bundle.getState());
+            double tm = bundle.getStartupTime();
+            buf.append("; startup time: ").append(tm/1000);
+            total += tm;
+            buf.append(" ]\n");
         }
+        buf.append("\n------------------------------------------------------------\nDeployed ")
+            .append(bundles.length)
+            .append("  bundles in ").append(total/1000).append(" sec.");
         return buf.toString();
     }
 

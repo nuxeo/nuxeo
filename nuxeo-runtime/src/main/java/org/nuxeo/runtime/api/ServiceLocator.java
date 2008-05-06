@@ -20,6 +20,7 @@
 package org.nuxeo.runtime.api;
 
 import java.util.Properties;
+import java.io.Serializable;
 
 /**
  * A service locator is used to locate services given a service ID or descriptor.
@@ -29,7 +30,7 @@ import java.util.Properties;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public interface ServiceLocator extends java.io.Serializable {
+public interface ServiceLocator extends Serializable {
 
     /**
      * Initializes the service locator.

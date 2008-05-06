@@ -23,11 +23,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import javax.management.MalformedObjectNameException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.deployment.DeploymentInfo;
-import org.jboss.system.ServiceMBeanSupport;
 import org.jboss.mx.util.MBeanProxyCreationException;
+import org.jboss.system.ServiceMBeanSupport;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.ComponentListener;
 import org.nuxeo.runtime.NXRuntime;
@@ -39,8 +41,6 @@ import org.nuxeo.runtime.jboss.util.DeploymentHelper;
 import org.nuxeo.runtime.jboss.util.ServiceLocator;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RegistrationInfo;
-
-import javax.management.MalformedObjectNameException;
 
 /**
  * Adapts NXRuntime components to JBoss MBeans.
