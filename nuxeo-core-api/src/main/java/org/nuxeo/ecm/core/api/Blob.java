@@ -31,18 +31,18 @@ import java.io.Writer;
  * <p>
  * Document fields holding Blob data are by default fetched in a lazy manner.
  * <p>
- * A Blob object hides the data source and it also describes data
- * properties like the encoding or mime-type.
+ * A Blob object hides the data source and it also describes data properties
+ * like the encoding or mime-type.
  * <p>
  * The encoding is used to decode Unicode text content that was stored in an
- * encoded form. If not encoding is specified, the default java encoding is used.
- * The encoding is ignored fot binary content.
+ * encoded form. If not encoding is specified, the default java encoding is
+ * used. The encoding is ignored fot binary content.
  * <p>
  * When retrieving the content from a document, it will be returned as source
  * content instead of returning the content bytes.
  * <p>
- * The same is true when setting the content for a document: you set a
- * content source and not directly the content bytes. Ex:
+ * The same is true when setting the content for a document: you set a content
+ * source and not directly the content bytes. Ex:
  * <code><pre>
  * File file = new File("/tmp/index.html");
  * FileBlob fb = new FileBlob(file);
@@ -57,7 +57,6 @@ import java.io.Writer;
  * </pre></code>
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface Blob {
 
@@ -99,10 +98,11 @@ public interface Blob {
     void transferTo(File file) throws IOException;
 
     /**
-     * Persist this stream so that getStream() method can be called successfully several times.
-     * The persistence is done in a temp file or in memory - this is up to the implemention.
+     * Persist this stream so that getStream() method can be called successfully
+     * several times. The persistence is done in a temp file or in memory - this
+     * is up to the implementation.
      * <p>
-     * Blobs that are alredy persistent return themselves.
+     * Blobs that are already persistent return themselves.
      *
      * @return a persistent version of the blob
      * @throws IOException

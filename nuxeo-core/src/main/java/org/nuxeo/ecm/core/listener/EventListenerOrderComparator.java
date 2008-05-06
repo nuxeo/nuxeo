@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.core.listener;
 
-import java.util.Comparator;
 import java.io.Serializable;
+import java.util.Comparator;
 
 /**
  * Comparator for event listeners using their order setting.

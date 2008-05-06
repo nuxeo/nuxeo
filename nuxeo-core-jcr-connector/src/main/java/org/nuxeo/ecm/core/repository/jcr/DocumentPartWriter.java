@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.repository.jcr;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -128,26 +127,27 @@ public class DocumentPartWriter {
      * @param prop
      * @throws Exception
      */
+    @SuppressWarnings({"ObjectEquality"})
     public static void writePrimitiveProperty(Node parent, Property prop) throws Exception {
-        SimpleType type = ((SimpleType)prop.getType()).getPrimitiveType();
+        SimpleType type = ((SimpleType) prop.getType()).getPrimitiveType();
         if (type == StringType.INSTANCE) {
-            parent.setProperty(prop.getName(), (String)prop.getValue());
+            parent.setProperty(prop.getName(), (String) prop.getValue());
         } else if (type == LongType.INSTANCE || type == IntegerType.INSTANCE) {
-            Number value = (Number)prop.getValue();
+            Number value = (Number) prop.getValue();
             long v = value == null ? 0 : value.longValue();
             parent.setProperty(prop.getName(), v);
         } else if (type == DoubleType.INSTANCE) {
-            Number value = (Number)prop.getValue();
+            Number value = (Number) prop.getValue();
             double v = value == null ? 0 : value.doubleValue();
             parent.setProperty(prop.getName(), v);
         } else if (type == DateType.INSTANCE) {
             parent.setProperty(prop.getName(), (Calendar) prop.getValue());
         } else if (type == BooleanType.INSTANCE) {
-            Boolean value = (Boolean)prop.getValue();
+            Boolean value = (Boolean) prop.getValue();
             boolean v = value == null ? false : value.booleanValue();
             parent.setProperty(prop.getName(), v);
         } else if (type == BinaryType.INSTANCE) {
-            InputStream in = (InputStream)prop.getValue();
+            InputStream in = (InputStream) prop.getValue();
             try {
                 parent.setProperty(prop.getName(), in);
             } finally {
@@ -165,7 +165,7 @@ public class DocumentPartWriter {
      */
     public static void writeArrayProperty(Node parent, Property prop) throws Exception {
         ValueFactory vf = parent.getSession().getValueFactory();
-        Value[] values = toValueArray((ListType)prop.getType(), prop.getValue(), vf);
+        Value[] values = toValueArray((ListType) prop.getType(), prop.getValue(), vf);
         parent.setProperty(prop.getName(), values);
     }
 
@@ -183,7 +183,6 @@ public class DocumentPartWriter {
             writeComplexProperty(node, property);
         }
     }
-
 
     /**
      * Writes content of the complex property to the its corresponding node.
@@ -269,7 +268,7 @@ public class DocumentPartWriter {
         } catch (PathNotFoundException e) {
             node = ModelAdapter.addPropertyNode(parent,
                     name, type.getName());
-            if (type.isComplexType() && ((ComplexType)type).isUnstructured()) {
+            if (type.isComplexType() && ((ComplexType) type).isUnstructured()) {
                 ModelAdapter.setUnstructured(node);
             }
         }
@@ -305,6 +304,7 @@ public class DocumentPartWriter {
         throw new IllegalArgumentException("Unsupported type for setting array values "+array);
     }
 
+    @SuppressWarnings({"ObjectEquality"})
     public static Value[] arrayToJCRValues(ListType type, Object array, ValueFactory vf) {
         Type itemType = type.getFieldType();
 
@@ -399,6 +399,7 @@ public class DocumentPartWriter {
         return null;
     }
 
+    @SuppressWarnings({"ObjectEquality"})
     public static Value[] listToJCRValues(ListType type, List<?> list,
             ValueFactory vf) {
         Type itemType = type.getFieldType();

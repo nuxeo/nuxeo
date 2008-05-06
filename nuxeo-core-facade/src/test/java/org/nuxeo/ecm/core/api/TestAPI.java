@@ -2128,7 +2128,7 @@ public abstract class TestAPI extends TestConnection {
         remote.saveDocument(childFile);
 
         childFile = remote.getDocument(childFile.getRef());
-        blob = (Blob)childFile.getProperty("file", "content");
+        blob = (Blob) childFile.getProperty("file", "content");
 
         assertEquals("XXX", blob.getDigest());
         assertEquals("blob.txt", blob.getFilename());
@@ -2156,7 +2156,7 @@ public abstract class TestAPI extends TestConnection {
         remote.save();
 
         DocumentModel doc = remote.getDocument(new IdRef(UID));
-        Blob blob = (Blob)doc.getProperty("file", "content");
+        Blob blob = (Blob) doc.getProperty("file", "content");
         String digest = blob.getDigest();
         String filename = blob.getFilename();
         long length = blob.getLength();
@@ -2177,7 +2177,7 @@ public abstract class TestAPI extends TestConnection {
         remote.saveDocument(doc);
 
         remote.getDocument(doc.getRef());
-        b2 = (Blob)doc.getProperty("file", "content");
+        b2 = (Blob) doc.getProperty("file", "content");
         assertEquals("XXX", b2.getDigest());
         assertEquals("blob.txt", b2.getFilename());
         assertEquals(length, b2.getLength());

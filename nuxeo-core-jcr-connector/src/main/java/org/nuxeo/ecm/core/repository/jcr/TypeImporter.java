@@ -42,6 +42,7 @@ import org.apache.jackrabbit.core.nodetype.PropDefImpl;
 import org.apache.jackrabbit.name.QName;
 import org.nuxeo.ecm.core.repository.jcr.versioning.JCRVersioningService;
 import org.nuxeo.ecm.core.repository.jcr.versioning.VersioningService;
+import org.nuxeo.ecm.core.repository.jcr.versioning.Versioning;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.Namespace;
@@ -289,7 +290,7 @@ public class TypeImporter implements NodeConstants {
         return ntd;
     }
 
-    protected NodeTypeDef createFieldDefinition(ListType fieldType, QName qname) {
+    protected static NodeTypeDef createFieldDefinition(ListType fieldType, QName qname) {
         // create the mixin node type
         NodeTypeDef ntd = new NodeTypeDef();
         ntd.setName(qname);
@@ -311,7 +312,7 @@ public class TypeImporter implements NodeConstants {
      * @param ctype the complex type
      * @param ntd the JCR node type def for the complex type
      */
-    protected void createChildrenDefs(ComplexType ctype, NodeTypeDef ntd) {
+    protected static void createChildrenDefs(ComplexType ctype, NodeTypeDef ntd) {
         List<PropDef> propDefs = new ArrayList<PropDef>();
         List<NodeDef> nodeDefs = new ArrayList<NodeDef>();
         Namespace ns = ctype.getNamespace();
@@ -385,7 +386,7 @@ public class TypeImporter implements NodeConstants {
         }
     }
 
-    protected void createUnstructuredChildren(NodeTypeDef ntd) {
+    protected static void createUnstructuredChildren(NodeTypeDef ntd) {
         PropDefImpl pd = new PropDefImpl();
         pd.setDeclaringNodeType(ntd.getName());
         NodeDefImpl nd = new NodeDefImpl();
@@ -452,7 +453,7 @@ public class TypeImporter implements NodeConstants {
      * @param qname the qname of the node  type to create
      * @return the node type definition
      */
-    protected NodeTypeDef createDocTypeDefinition(DocumentType docType,
+    protected static NodeTypeDef createDocTypeDefinition(DocumentType docType,
             QName qname) {
 
         // create the mixin node type
@@ -491,7 +492,7 @@ public class TypeImporter implements NodeConstants {
         }
         // check if this document is versionable
         if (docType.getFacets().contains(FacetNames.VERSIONABLE)) {
-            final VersioningService vs = org.nuxeo.ecm.core.repository.jcr.versioning.Versioning.getService();
+            final VersioningService vs = Versioning.getService();
 
             //
             // the versioning system to be used can be specified from
@@ -530,8 +531,6 @@ public class TypeImporter implements NodeConstants {
     public boolean isSchemaRegistered(Schema type) {
         return ntReg.isRegistered(TypeAdapter.getSchemaName(type));
     }
-
-
 
     public static NodeTypeDef createContentNodeType() {
         NodeTypeDef ntd = new NodeTypeDef();
