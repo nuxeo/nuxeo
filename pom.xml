@@ -244,16 +244,15 @@
         <artifactId>jboss-remoting</artifactId>
         <version>${jboss.version}</version>
       </dependency>
-      <!-- BBB old version for the benefit of dependent poms -->
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-seam</artifactId>
-        <version>1.1.5.NX3</version>
-      </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam</artifactId>
-        <version>1.1.5.NX3</version>
+        <version>2.0.2.CR1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam</groupId>
+        <artifactId>jboss-seam-remoting</artifactId>
+        <version>2.0.2.CR1</version>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
