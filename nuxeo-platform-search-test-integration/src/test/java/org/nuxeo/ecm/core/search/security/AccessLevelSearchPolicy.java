@@ -72,6 +72,6 @@ public class AccessLevelSearchPolicy extends AbstractSearchPolicy {
                     query.getOrderByClause());
         }
         log.debug(query);
-        return new ComposedNXQueryImpl(query);
+        return new ComposedNXQueryImpl(query, sPrincipal);
     }
 }
