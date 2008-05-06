@@ -312,12 +312,10 @@ public abstract class AbstractSession implements CoreSession,
         CoreEventListenerService service = NXCore.getCoreEventListenerService();
 
         if (service != null) {
-            log.debug("Notify RepositoryEventListener listeners list for event=" +
-                    eventId);
             service.notifyEventListeners(coreEvent);
         } else {
-            log.error("Impossible to notify core events ! "
-                    + "CoreEventListenerService service is missing...");
+            log.debug("No CoreEventListenerService, cannot notify event " +
+                    eventId);
         }
     }
 
@@ -642,10 +640,10 @@ public abstract class AbstractSession implements CoreSession,
                     service.initialize(doc);
                 } catch (Exception e) {
                     throw new ClientException(
-                            "Failed to initialize documnent life cycle", e);
+                            "Failed to initialize document lifecycle", e);
                 }
             } else {
-                log.error("No life cycle service registered");
+                log.debug("No lifecycle service registered");
             }
 
             // init document with data from doc model

@@ -1358,7 +1358,7 @@ public abstract class TestAPI extends TestConnection {
         childFile = createChildDocument(childFile);
 
         Property p= childFile.getProperty("/file:/filename");
-        System.out.println(p.getPath());
+        // System.out.println(p.getPath());
 
         // TODO: this should be tested across sessions - when it can be done
         assertTrue(remote.exists(childFile.getRef()));

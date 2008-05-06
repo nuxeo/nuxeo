@@ -46,7 +46,7 @@ public class StressTest extends RepositoryTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.jcr-connector",
+        deployContrib(CoreJCRConnectorTestConstants.BUNDLE,
                 "CoreTestExtensions.xml");
         // creating the session
         session = getRepository().getSession(null);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,25 +12,18 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.api;
-
+package org.nuxeo.ecm.core.repository.jcr.testing;
 
 /**
- *
- * @author <a href="mailto:dms@nuxeo.com">Dragos Mihalache</a>
- *
+ * @author Florent Guillaume
  */
-public class TestCustomVersioning  extends TestVersioning {
+public class CoreJCRConnectorTestConstants {
 
-    @Override
-    protected void deployCustomVersioning() throws Exception {
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
-                "CustomVersioningService.xml");
-    }
+    public static final String BUNDLE = "org.nuxeo.ecm.core.jcr-connector";
+
+    public static final String TESTS_BUNDLE = "org.nuxeo.ecm.core.jcr-connector.tests";
 
 }

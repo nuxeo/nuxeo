@@ -505,9 +505,6 @@ public class SchemaManagerImpl implements SchemaManager {
             }
 
             if (getDocumentType(docTypeName) == null) {
-                log.warn(String.format(
-                        "Asking for the descendant of unknown type '%s',",
-                        docTypeName));
                 return null;
             }
             res = new HashSet<String>();

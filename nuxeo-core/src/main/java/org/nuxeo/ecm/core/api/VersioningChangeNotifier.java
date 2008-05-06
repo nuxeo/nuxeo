@@ -86,12 +86,10 @@ public final class VersioningChangeNotifier {
     private static void notifyEvent(final CoreEvent coreEvent) {
         CoreEventListenerService service = NXCore.getCoreEventListenerService();
         if (service != null) {
-            log.debug("Notify RepositoryEventListener listeners list for event="
-                    + coreEvent.getEventId());
             service.notifyEventListeners(coreEvent);
         } else {
-            log.error("Impossible to notify core events ! "
-                    + "CoreEventListenerService service is missing...");
+            log.debug("No CoreEventListenerService, cannot notify event " +
+                    coreEvent.getEventId());
         }
     }
 

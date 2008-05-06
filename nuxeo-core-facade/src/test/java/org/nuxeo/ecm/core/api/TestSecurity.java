@@ -55,10 +55,9 @@ public class TestSecurity extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        deployBundle(CoreFacadeTestConstants.SCHEMA_BUNDLE);
         deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
                 "OSGI-INF/CoreService.xml");
-        deployContrib(CoreFacadeTestConstants.SCHEMA_BUNDLE,
-                "OSGI-INF/SchemaService.xml");
         deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
                 "OSGI-INF/SecurityService.xml");
         deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,

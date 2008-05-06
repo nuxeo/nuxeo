@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.repository.jcr.testing.CoreJCRConnectorTestConstants;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;
 import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
 
@@ -37,7 +38,7 @@ public class TestCustomVersioningService extends TestVersioning {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.jcr-connector",
+        deployContrib(CoreJCRConnectorTestConstants.BUNDLE,
                 "CustomVersioningService.xml");
     }
 
@@ -144,7 +145,7 @@ public class TestCustomVersioningService extends TestVersioning {
         // XXX: what path should be here?
         // kind of /versionStorage/5e/ca/de/5ecade1a-e764-493f-a4d6-aac3468b944b/version1/5ecade1a-e764-493f-a4d6-aac3468b944b
         // or normal /ecm:root//......
-        System.err.println(verPath);
+        // System.err.println(verPath);
     }
 
     public void testRemoveDocument() throws Exception {

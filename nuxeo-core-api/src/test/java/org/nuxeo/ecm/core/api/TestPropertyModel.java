@@ -746,11 +746,11 @@ public class TestPropertyModel extends TestCase {
 
         dp.init(map);
 
-        double s = System.currentTimeMillis();
+        // double s = System.currentTimeMillis();
         ValueExporter me = new ValueExporter();
         Map<String, Serializable> export = me.run(dp);
-        double e = System.currentTimeMillis();
-        System.out.println("#########visitor >>>> "+((e-s)/1000));
+        // double e = System.currentTimeMillis();
+        // System.out.println("#########visitor >>>> "+((e-s)/1000));
 
         assertEquals(map, export);
     }

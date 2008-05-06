@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.ecm.core.repository.jcr.testing.CoreJCRConnectorTestConstants;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 
@@ -45,7 +46,7 @@ public class TestDocument extends RepositoryTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.jcr-connector",
+        deployContrib(CoreJCRConnectorTestConstants.BUNDLE,
                 "CoreTestExtensions.xml");
         prepareTest();
     }

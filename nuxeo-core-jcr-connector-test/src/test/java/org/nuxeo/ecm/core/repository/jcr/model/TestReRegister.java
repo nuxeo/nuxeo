@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.repository.jcr.JCRSession;
 import org.nuxeo.ecm.core.repository.jcr.TypeImporter;
+import org.nuxeo.ecm.core.repository.jcr.testing.CoreJCRConnectorTestConstants;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.NXSchema;
@@ -70,7 +71,7 @@ public class TestReRegister extends RepositoryTestCase {
         getRepository(); // reopen the same repository as before
 
         // deploy a new doctype (MyDocType)
-        deployContrib("org.nuxeo.ecm.core.jcr-connector", "CoreTestExtensions.xml");
+        deployContrib(CoreJCRConnectorTestConstants.BUNDLE, "CoreTestExtensions.xml");
 
         // it should be registered in type manager
         docType =  typeMgr.getDocumentType("MyDocType");
@@ -164,11 +165,11 @@ public class TestReRegister extends RepositoryTestCase {
         undeploy("TypeService.xml");
         undeploy("RepositoryService.xml");
 
-        deployContrib("org.nuxeo.ecm.core.jcr-connector", "CoreService.xml");
-        deployContrib("org.nuxeo.ecm.core.jcr-connector", "TypeService.xml");
-        deployContrib("org.nuxeo.ecm.core.jcr-connector",
+        deployContrib(CoreJCRConnectorTestConstants.BUNDLE, "CoreService.xml");
+        deployContrib(CoreJCRConnectorTestConstants.BUNDLE, "TypeService.xml");
+        deployContrib(CoreJCRConnectorTestConstants.BUNDLE,
                 "RepositoryService.xml");
-        deployContrib("org.nuxeo.ecm.core.jcr-connector",
+        deployContrib(CoreJCRConnectorTestConstants.BUNDLE,
                 "test-CoreExtensions.xml");
 
         getRepository(); // reopen the same repository as before

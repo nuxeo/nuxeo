@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.ecm.core.repository.jcr.testing.CoreJCRConnectorTestConstants;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 
 /**
@@ -47,7 +48,7 @@ public class TestRepository extends RepositoryTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.jcr-connector",
+        deployContrib(CoreJCRConnectorTestConstants.BUNDLE,
                 "CoreTestExtensions.xml");
 
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();

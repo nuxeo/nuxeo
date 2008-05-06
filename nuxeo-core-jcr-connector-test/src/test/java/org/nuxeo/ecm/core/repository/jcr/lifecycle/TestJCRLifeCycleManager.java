@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.repository.jcr.JCRLifeCycleManager;
+import org.nuxeo.ecm.core.repository.jcr.testing.CoreJCRConnectorTestConstants;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 
 /**
@@ -43,9 +44,9 @@ public class TestJCRLifeCycleManager extends RepositoryTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.jcr-connector.tests",
+        deployContrib(CoreJCRConnectorTestConstants.TESTS_BUNDLE,
                 "LifeCycleService.xml");
-        deployContrib("org.nuxeo.ecm.core.jcr-connector.tests",
+        deployContrib(CoreJCRConnectorTestConstants.TESTS_BUNDLE,
                 "LifeCycleManagerTestExtensions.xml");
         session = getRepository().getSession(null);
         root = session.getRootDocument();

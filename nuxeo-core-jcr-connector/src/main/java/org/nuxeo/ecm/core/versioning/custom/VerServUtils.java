@@ -638,11 +638,15 @@ final class VerServUtils {
         while (pit.hasNext()) {
             final Property prop = pit.nextProperty();
 
-            log.debug("restore prop: " + prop.getName());
+            String name = prop.getName();
+            propNames.add(name);
+            if (name.equals("jcr:uuid") || name.equals("jcr:primaryType")) {
+                // protected, cannot be written
+                continue;
+            }
 
-            propNames.add(prop.getName());
             try {
-                destNode.setProperty(prop.getName(), prop.getValue());
+                destNode.setProperty(name, prop.getValue());
             } catch (ConstraintViolationException e) {
                 log.error(logPrefix + "err: " + e.getMessage());
             } catch (ValueFormatException e) {
@@ -651,7 +655,7 @@ final class VerServUtils {
                 // log.error(logPrefix + "err2: " + e.getMessage());
 
                 try {
-                    destNode.setProperty(prop.getName(), prop.getValues());
+                    destNode.setProperty(name, prop.getValues());
                 } catch (ConstraintViolationException e3) {
                     log.error(logPrefix + "err3: " + e3.getMessage());
                 }

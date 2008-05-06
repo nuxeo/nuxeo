@@ -209,8 +209,8 @@ public class DocumentModelFactory {
             String lifeCyclePolicy = doc.getLifeCyclePolicy();
             docModel.prefetchLifeCyclePolicy(lifeCyclePolicy);
         } catch (LifeCycleException e) {
-            log.warn("Cannot prefetch lifecycle for doc: " + doc.getName()
-                    + ". Error: " + e.getMessage());
+            log.debug("Cannot prefetch lifecycle for doc: " + doc.getName() +
+                    ". Error: " + e.getMessage());
         }
 
         return docModel;

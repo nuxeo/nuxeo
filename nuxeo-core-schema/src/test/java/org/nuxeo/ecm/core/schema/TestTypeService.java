@@ -32,7 +32,7 @@ public class TestTypeService extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.ecm.core.schema", "OSGI-INF/SchemaService.xml");
+        deployBundle("org.nuxeo.ecm.core.schema");
         ts = (TypeService) Framework.getRuntime().getComponent(
                 TypeService.NAME);
     }
