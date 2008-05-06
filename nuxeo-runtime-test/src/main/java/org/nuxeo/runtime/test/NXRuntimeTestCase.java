@@ -249,23 +249,56 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
     }
 
     /**
-     * @deprecated use <code>undeployContrib()</code> instead
+     * @deprecated use {@link #undeployContrib(String, String)} instead
      */
     @Deprecated
     public void undeploy(String contrib) {
         undeployContrib(contrib);
     }
 
+    /**
+     * @deprecated use {@link #undeployContrib(String, String)} instead
+     */
+    @Deprecated
     public void undeployContrib(String contrib) {
         URL url = getResource(contrib);
-        assertNotNull("Test resource not found: " + contrib, url);
+        assertNotNull("Test contribution not found: " + contrib, url);
+        deployContrib(url);
+    }
+
+    /**
+     * Undeploys a contribution from a given bundle.
+     * <p>
+     * The path will be relative to the bundle root.
+     * Example:
+     * <code>
+     * undeployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreExtensions.xml")
+     * </code>
+     *
+     * @param bundle the bundle
+     * @param contrib the contribution
+     * @throws Exception
+     */
+    public void undeployContrib(String bundle, String contrib) throws Exception {
+        BundleFile b = lookupBundle(bundle);
+        URL url = b.getEntry(contrib);
+        if (url == null) {
+            fail(String.format("Could not find entry %s in bundle '%s'",
+                    contrib, b.getURL()));
+        }
+        runtime.getContext().undeploy(url);
+    }
+
+    protected void undeployContrib(URL url, String contrib) throws Exception {
         assertEquals(runtime, Framework.getRuntime());
+        log.info("Undeploying contribution from " + url.toString());
         try {
             runtime.getContext().undeploy(url);
         } catch (Exception e) {
             e.printStackTrace();
-            fail("Failed to undeploy contribution " + contrib);
+            fail("Failed to undeploy contrib " + url.toString());
         }
+
     }
 
     protected static boolean isVersionSuffix(String s) {
