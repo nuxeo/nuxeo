@@ -4,9 +4,7 @@
 import javax.servlet.http.HttpServletResponse
 
 response = req.getResponse()
-//response.setStatus(HttpServletResponse.SC_NO_CONTENT)
-//response.setStatus(404, 'Page not found!')
-//response.sendError(HttpServletResponse.SC_NOT_FOUND, 'Yeah')
+response.setStatus(HttpServletResponse.SC_NO_CONTENT)
 response.setCharacterEncoding('utf-8')
 
 response.setHeader('Error', 'Yes')

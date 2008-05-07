@@ -1,7 +1,7 @@
 <@extends src="/default/base.ftl">
 <@block name="content">
 <h2>Edit Wiki Page : ${this.title} </h2>
-<form method="POST" action="${this.docURL}@@update">
+<form method="POST" action="${this.docURL}@@update" accept-charset="utf-8">
 <textarea name="note:note" cols="80" rows="20">${this.note.note}</textarea>
 <p>
 Title: <input type="text" name="dc:title" value="${this.dublincore.title}"/>

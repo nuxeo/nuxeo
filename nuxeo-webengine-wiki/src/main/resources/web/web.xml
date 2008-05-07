@@ -21,9 +21,18 @@
             <permission  expression="READ"/>
           </action>
           
-          <action id="update" enabled="true" script="update.groovy" handler="org.nuxeo.ecm.webengine.actions.UpateActionHandler">
+          <action id="update" enabled="true" script="WikiPage/update.groovy" handler="org.nuxeo.ecm.webengine.actions.UpateActionHandler">
             <permission expression="WRITE" />
           </action>
+          
+          <action id="create" enabled="true" script="WikiPage/create.groovy" handler="org.nuxeo.ecm.webengine.actions.CreateActionHandler">
+            <permission expression="WRITE" />
+          </action>
+          
+          <action id="delete" enabled="true" handler="org.nuxeo.ecm.webengine.actions.DeleteActionHandler">
+            <permission expression="WRITE" />
+          </action>
+          
           
 	    </actions>
       </object>
