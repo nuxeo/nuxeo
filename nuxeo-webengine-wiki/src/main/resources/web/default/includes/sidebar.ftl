@@ -25,7 +25,7 @@
     <h3>Last Items</h3>
     <ul>
         <#list root.children?reverse as entry>
-            <li><a href="${entry.name}">${entry.title}</a></li>
+            <li><a href="/nuxeo/site/${root.name}/${entry.name}">${entry.title}</a></li>
             <#if entry_index = 3><#break></#if>
         </#list>
     </ul>
