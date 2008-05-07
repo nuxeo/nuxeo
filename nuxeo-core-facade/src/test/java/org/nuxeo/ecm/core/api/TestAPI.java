@@ -45,12 +45,13 @@ import org.nuxeo.ecm.core.api.model.Property;
  *
  */
 public abstract class TestAPI extends TestConnection {
-    // if: java.io.InvalidClassException: javax.resource.ResourceException;
-    // local
-    // class incompatible: stream classdesc serialVersionUID
-    // see
-    // http://www.jboss.com/index.html?module=bb&op=viewtopic&t=65840&view=previous
-    // probably this is because too many opened JCR sessions
+    /*
+     * if: java.io.InvalidClassException: javax.resource.ResourceException;
+     * local class incompatible: stream classdesc serialVersionUID see
+     * http://www
+     * .jboss.com/index.html?module=bb&op=viewtopic&t=65840&view=previous
+     * probably this is because too many opened JCR sessions
+     */
 
     protected final Random random = new Random(new Date().getTime());
 
@@ -116,9 +117,6 @@ public abstract class TestAPI extends TestConnection {
         remote.save();
     }
 
-    /*
-     * Test method for 'org.nuxeo.ecm.core.api.impl.AbstractClient.cancel()'
-     */
     public void testCancel() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -131,11 +129,6 @@ public abstract class TestAPI extends TestConnection {
         assertFalse(remote.exists(childFolder.getRef()));
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.createDocument(DocumentRef,
-     * DocumentModel)'
-     */
     public void testCreateDomainDocumentRefDocumentModel()
             throws ClientException {
         DocumentModel root = getRootDocument();
@@ -149,11 +142,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(name, childFolder.getName());
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.createDocument(DocumentRef,
-     * DocumentModel)'
-     */
     public void testCreateFolderDocumentRefDocumentModel()
             throws ClientException {
         DocumentModel root = getRootDocument();
@@ -167,11 +155,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(name, childFolder.getName());
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.createDocument(DocumentRef,
-     * DocumentModel)'
-     */
     public void testCreateFileDocumentRefDocumentModel() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -185,11 +168,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(name, childFile.getName());
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.createDocument(DocumentRef,
-     * DocumentModel[])'
-     */
     public void testCreateFolderDocumentRefDocumentModelArray()
             throws ClientException {
         DocumentModel root = getRootDocument();
@@ -211,11 +189,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(name2, returnedChildFolders.get(1).getName());
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.createDocument(DocumentRef,
-     * DocumentModel[])'
-     */
     public void testCreateFileDocumentRefDocumentModelArray()
             throws ClientException {
         DocumentModel root = getRootDocument();
@@ -237,21 +210,12 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(name2, returnedChildFiles.get(1).getName());
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.exists(DocumentRef)'
-     */
     public void testExists() throws ClientException {
         DocumentModel root = getRootDocument();
 
         assertTrue(remote.exists(root.getRef()));
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getChild(DocumentRef,
-     * String)'
-     */
     public void testGetChild() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -292,10 +256,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(name2, retrievedChild.getName());
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getChildren(DocumentRef)'
-     */
     public void testGetChildrenDocumentRef() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -304,10 +264,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(0, docs.size());
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getChildrenIterator(DocumentRef)'
-     */
     public void testGetChildrenDocumentRef2() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -316,11 +272,6 @@ public abstract class TestAPI extends TestConnection {
         assertFalse(docs.hasNext());
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getChildren(DocumentRef,
-     * String)'
-     */
     public void testGetFileChildrenDocumentRefString() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -357,11 +308,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("File", retrievedChilds.get(0).getType());
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getChildrenIterator(DocumentRef,
-     * String)'
-     */
     public void testGetFileChildrenDocumentRefString2() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -401,11 +347,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("File", doc.getType());
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getChildren(DocumentRef,
-     * String)'
-     */
     public void testGetFolderChildrenDocumentRefString() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -442,11 +383,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("Folder", retrievedChilds.get(0).getType());
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getChildrenIterator(DocumentRef,
-     * String)'
-     */
     public void testGetFolderChildrenDocumentRefString2()
             throws ClientException {
         DocumentModel root = getRootDocument();
@@ -487,11 +423,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("Folder", doc.getType());
     }
 
-    // /*
-    // * Test method for
-    // * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getChildren(DocumentRef,
-    // * String, String, Filter, Sorter)'
-    // */
     public void testGetChildrenDocumentRefStringFilter() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -580,8 +511,8 @@ public abstract class TestAPI extends TestConnection {
         DocumentModel root = getRootDocument();
 
         String name = "folder#" + generateUnique();
-        DocumentModel folder = new DocumentModelImpl(
-                root.getPathAsString(), name, "FolderWithSearch");
+        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
+                name, "FolderWithSearch");
 
         folder = createChildDocument(folder);
 
@@ -604,10 +535,6 @@ public abstract class TestAPI extends TestConnection {
         }
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getDocument(DocumentRef)'
-     */
     public void testGetDocumentDocumentRef() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -639,11 +566,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("Folder", doc.getType());
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getDocument(DocumentRef,
-     * String[])'
-     */
     // TODO: fix this test.
     public void XXXtestGetDocumentDocumentRefStringArray()
             throws ClientException {
@@ -710,10 +632,6 @@ public abstract class TestAPI extends TestConnection {
                 "filename"));
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getFiles(DocumentRef)'
-     */
     public void testGetFilesDocumentRef() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -749,10 +667,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("File", retrievedChilds.get(0).getType());
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getFilesIterator(DocumentRef)'
-     */
     public void testGetFilesDocumentRef2() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -791,21 +705,11 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("File", doc.getType());
     }
 
-    // /*
-    // * Test method for
-    // * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getFiles(DocumentRef,
-    // Filter,
-    // * Sorter)'
-    // */
     // public void testGetFilesDocumentRefFilterSorter() {
     // not used at the moment
     //
     // }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getFolders(DocumentRef)'
-     */
     public void testGetFoldersDocumentRef() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -841,10 +745,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("Folder", retrievedChilds.get(0).getType());
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getFoldersIterator(DocumentRef)'
-     */
     public void testGetFoldersDocumentRef2() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -883,20 +783,10 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("Folder", doc.getType());
     }
 
-    // /*
-    // * Test method for
-    // * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getFolders(DocumentRef,
-    // * Filter, Sorter)'
-    // */
     // public void testGetFoldersDocumentRefFilterSorter() {
     // not used at the moment
     // }
 
-    /*
-     * Test method for
-     *
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getParentDocument(DocumentRef)'
-     */
     public void testGetParentDocument() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -922,18 +812,10 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(root.getPathAsString(), shouldBeRoot.getPathAsString());
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getRootDocument()'
-     */
     public void testGetRootDocument() throws ClientException {
         getRootDocument();
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.hasChildren(DocumentRef)'
-     */
     public void testHasChildren() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -941,11 +823,6 @@ public abstract class TestAPI extends TestConnection {
         assertFalse(remote.hasChildren(root.getRef()));
     }
 
-    /*
-     * Test method for
-     *
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.removeChildren(DocumentRef)'
-     */
     public void testRemoveChildren() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -971,11 +848,6 @@ public abstract class TestAPI extends TestConnection {
         assertFalse(remote.exists(returnedChildDocs.get(1).getRef()));
     }
 
-    /*
-     * Test method for
-     *
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.removeDocument(DocumentRef)'
-     */
     public void testRemoveDocument() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -1000,11 +872,6 @@ public abstract class TestAPI extends TestConnection {
         assertFalse(remote.exists(returnedChildDocs.get(0).getRef()));
     }
 
-    /*
-     * Test method for
-     *
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.query(String)'
-     */
     public void testQuery() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -1146,11 +1013,6 @@ public abstract class TestAPI extends TestConnection {
         remote.removeDocument(docModel.getRef());
     }
 
-    /*
-     * Test method for
-     *
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.removeDocuments(DocumentRef[])'
-     */
     public void testRemoveDocuments() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -1180,9 +1042,6 @@ public abstract class TestAPI extends TestConnection {
     }
 
     /*
-     * Test method for
-     *
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.removeDocuments(DocumentRef[])'
      * case where some documents are actually children of other ones from the
      * list
      */
@@ -1195,18 +1054,15 @@ public abstract class TestAPI extends TestConnection {
         // careless removing this one after the folder would fail
         String name2 = "file#" + generateUnique();
         DocumentModel folderChildFile = new DocumentModelImpl(
-                childFolder.getPathAsString(),
-                name2, "File");
+                childFolder.getPathAsString(), name2, "File");
         // one more File object, whose path is greater than the folder's
         String name3 = "file#" + generateUnique();
         DocumentModel folderChildFile2 = new DocumentModelImpl(
-                childFolder.getPathAsString(),
-                name3, "File");
+                childFolder.getPathAsString(), name3, "File");
         // one more File object at the root,
         // whose path is greater than the folder's
         String name4 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(
-                root.getPathAsString(),
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name4, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
@@ -1225,8 +1081,7 @@ public abstract class TestAPI extends TestConnection {
         DocumentRef[] refs = { returnedChildDocs.get(0).getRef(),
                 returnedChildDocs.get(1).getRef(),
                 returnedChildDocs.get(2).getRef(),
-                returnedChildDocs.get(3).getRef()
-                };
+                returnedChildDocs.get(3).getRef() };
         remote.removeDocuments(refs);
 
         assertFalse(remote.exists(returnedChildDocs.get(0).getRef()));
@@ -1236,9 +1091,8 @@ public abstract class TestAPI extends TestConnection {
     }
 
     /*
-     * Same as testRemoveDocumentWithDeps with a different given
-     * ordering of documents to delete
-     *
+     * Same as testRemoveDocumentWithDeps with a different given ordering of
+     * documents to delete
      */
     public void testRemoveDocumentsWithDeps2() throws ClientException {
         DocumentModel root = getRootDocument();
@@ -1249,18 +1103,15 @@ public abstract class TestAPI extends TestConnection {
         // careless removing this one after the folder would fail
         String name2 = "file#" + generateUnique();
         DocumentModel folderChildFile = new DocumentModelImpl(
-                childFolder.getPathAsString(),
-                name2, "File");
+                childFolder.getPathAsString(), name2, "File");
         // one more File object, whose path is greater than the folder's
         String name3 = "file#" + generateUnique();
         DocumentModel folderChildFile2 = new DocumentModelImpl(
-                childFolder.getPathAsString(),
-                name3, "File");
+                childFolder.getPathAsString(), name3, "File");
         // one more File object at the root,
         // whose path is greater than the folder's
         String name4 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(
-                root.getPathAsString(),
+        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
                 name4, "File");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
@@ -1280,8 +1131,7 @@ public abstract class TestAPI extends TestConnection {
         DocumentRef[] refs = { returnedChildDocs.get(1).getRef(),
                 returnedChildDocs.get(0).getRef(),
                 returnedChildDocs.get(3).getRef(),
-                returnedChildDocs.get(2).getRef()
-                };
+                returnedChildDocs.get(2).getRef() };
         remote.removeDocuments(refs);
 
         assertFalse(remote.exists(returnedChildDocs.get(0).getRef()));
@@ -1290,9 +1140,6 @@ public abstract class TestAPI extends TestConnection {
         assertFalse(remote.exists(returnedChildDocs.get(3).getRef()));
     }
 
-    /*
-     * Test method for 'org.nuxeo.ecm.core.api.impl.AbstractClient.save()'
-     */
     public void testSave() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -1313,11 +1160,6 @@ public abstract class TestAPI extends TestConnection {
         assertTrue(remote.exists(childFile.getRef()));
     }
 
-    /*
-     * Test method for
-     *
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.saveDocument(DocumentModel)'
-     */
     public void testSaveFolder() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -1336,14 +1178,10 @@ public abstract class TestAPI extends TestConnection {
         assertTrue(remote.exists(childFolder.getRef()));
 
         assertEquals("f1", childFolder.getProperty("dublincore", "title"));
-        assertEquals("desc 1", childFolder.getProperty("dublincore", "description"));
+        assertEquals("desc 1", childFolder.getProperty("dublincore",
+                "description"));
     }
 
-    /*
-     * Test method for
-     *
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.saveDocument(DocumentModel)'
-     */
     public void testSaveFile() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -1357,7 +1195,7 @@ public abstract class TestAPI extends TestConnection {
 
         childFile = createChildDocument(childFile);
 
-        Property p= childFile.getProperty("/file:/filename");
+        Property p = childFile.getProperty("/file:/filename");
         // System.out.println(p.getPath());
 
         // TODO: this should be tested across sessions - when it can be done
@@ -1371,11 +1209,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("filename1", retrievedFile.getProperty("file", "filename"));
     }
 
-    /*
-     * Test method for
-     *
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.saveDocuments(DocumentModel[])'
-     */
     public void testSaveDocuments() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -1398,11 +1231,6 @@ public abstract class TestAPI extends TestConnection {
         assertTrue(remote.exists(childFile.getRef()));
     }
 
-    /*
-     * Test method for
-     *
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getVersionsForDocument(DocumentRef)'
-     */
     public void testGetVersionsForDocument() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -1455,12 +1283,6 @@ public abstract class TestAPI extends TestConnection {
         assertNull(versions2.get(1).getDescription());
     }
 
-    /*
-     * Test method for
-     *
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.restoreToVersion(DocumentRef,
-     * VersionModel)'
-     */
     // TODO: fix and reenable SF 2007/05/23
     public void XXXtestRestoreToVersion() throws ClientException {
         DocumentModel root = getRootDocument();
@@ -1517,11 +1339,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("second name", restoredDoc.getProperty("file", "filename"));
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.checkIn(DocumentRef,
-     * VersionModel)'
-     */
     public void testCheckIn() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -1540,10 +1357,6 @@ public abstract class TestAPI extends TestConnection {
         remote.checkIn(childFile.getRef(), version);
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.checkOut(DocumentRef)'
-     */
     // TODO: fix and reenable SF 2007/05/23
     public void XXXtestCheckOut() throws ClientException {
         // restore to versions does checkout in order to submit more than one
@@ -1551,10 +1364,6 @@ public abstract class TestAPI extends TestConnection {
         XXXtestRestoreToVersion();
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getCheckedOut(DocumentRef)'
-     */
     public void testGetCheckedOut() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -1576,12 +1385,6 @@ public abstract class TestAPI extends TestConnection {
         assertTrue(remote.isCheckedOut(childFile.getRef()));
     }
 
-    /*
-     * Test method for
-     *
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getDocumentWithVersion(DocumentRef,
-     * VersionModel)'
-     */
     // TODO: fix and reenable SF 2007/05/23
     public void XXXtestGetDocumentWithVersion() throws ClientException {
         DocumentModel root = getRootDocument();
@@ -1636,11 +1439,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("second name", restoredDoc.getProperty("file", "filename"));
     }
 
-    /*
-     * Test method for
-     *
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getAvailableSecurityPermissions()'
-     */
     public void xxxtestGetAvailableSecurityPermissions() throws ClientException {
         List<String> permissions = remote.getAvailableSecurityPermissions();
 
@@ -1648,11 +1446,6 @@ public abstract class TestAPI extends TestConnection {
         assertTrue(permissions.contains("Everything"));
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getDataModel(DocumentRef,
-     * String)'
-     */
     public void testGetDataModel() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -1687,12 +1480,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("second name", dm.getData("filename"));
     }
 
-    /*
-     * Test method for
-     *
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getDataModelField(DocumentRef,
-     * String, String)'
-     */
     public void testGetDataModelField() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -1717,12 +1504,6 @@ public abstract class TestAPI extends TestConnection {
                 childFile.getRef(), "file", "filename"));
     }
 
-    /*
-     * Test method for
-     *
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getDataModelFields(DocumentRef,
-     * String, String[])'
-     */
     public void testGetDataModelFields() throws ClientException {
         DocumentModel root = getRootDocument();
 
@@ -1758,11 +1539,6 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("second name", values[0]);
     }
 
-    /*
-     * Test method for
-     * 'org.nuxeo.ecm.core.api.impl.AbstractClient.getContentData(DocumentRef,
-     * String)'
-     */
     // TODO: Fix this test!
     public void XXXtestGetContentData() throws ClientException {
         DocumentModel root = getRootDocument();
@@ -1840,7 +1616,7 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(root.getRef(), retrievedChild.getParentRef());
     }
 
-    @SuppressWarnings({ "SimplifiableJUnitAssertion" })
+    @SuppressWarnings( { "SimplifiableJUnitAssertion" })
     public void testDocumentReferenceEqualitySameInstance()
             throws ClientException {
         DocumentModel root = getRootDocument();
@@ -2128,7 +1904,7 @@ public abstract class TestAPI extends TestConnection {
         remote.saveDocument(childFile);
 
         childFile = remote.getDocument(childFile.getRef());
-        blob = (Blob)childFile.getProperty("file", "content");
+        blob = (Blob) childFile.getProperty("file", "content");
 
         assertEquals("XXX", blob.getDigest());
         assertEquals("blob.txt", blob.getFilename());
@@ -2140,8 +1916,10 @@ public abstract class TestAPI extends TestConnection {
     }
 
     /**
-     * This test should be done on a repo that contains deprecated blob node types (nt:resource blobs)
-     * You should specify the File document UID to test
+     * This test should be done on a repo that contains deprecated blob node
+     * types (nt:resource blobs) You should specify the File document UID to
+     * test
+     *
      * @throws Exception
      */
     public void xxx_testBlobCompat() throws Exception {
@@ -2156,7 +1934,7 @@ public abstract class TestAPI extends TestConnection {
         remote.save();
 
         DocumentModel doc = remote.getDocument(new IdRef(UID));
-        Blob blob = (Blob)doc.getProperty("file", "content");
+        Blob blob = (Blob) doc.getProperty("file", "content");
         String digest = blob.getDigest();
         String filename = blob.getFilename();
         long length = blob.getLength();
@@ -2165,7 +1943,6 @@ public abstract class TestAPI extends TestConnection {
         byte[] content = blob.getByteArray();
         assertNull(digest);
         assertNull(filename);
-
 
         Blob b2 = StreamingBlob.createFromByteArray(content);
         b2.setDigest("XXX");
@@ -2177,7 +1954,7 @@ public abstract class TestAPI extends TestConnection {
         remote.saveDocument(doc);
 
         remote.getDocument(doc.getRef());
-        b2 = (Blob)doc.getProperty("file", "content");
+        b2 = (Blob) doc.getProperty("file", "content");
         assertEquals("XXX", b2.getDigest());
         assertEquals("blob.txt", b2.getFilename());
         assertEquals(length, b2.getLength());
@@ -2383,7 +2160,8 @@ public abstract class TestAPI extends TestConnection {
         // remote.publishDocument(file, sectionB);
 
         // Retrieving proxies
-        DocumentModelList proxies = remote.getProxies(file.getRef(), sectionA.getRef());
+        DocumentModelList proxies = remote.getProxies(file.getRef(),
+                sectionA.getRef());
 
         assertFalse(proxies.isEmpty());
         assertEquals(1, proxies.size());

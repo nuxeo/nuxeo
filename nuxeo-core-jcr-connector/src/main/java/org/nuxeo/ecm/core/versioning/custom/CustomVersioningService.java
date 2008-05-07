@@ -76,7 +76,8 @@ public class CustomVersioningService implements VersioningService {
         }
     }
 
-    private static boolean hasPendingChanges(Node docNode) throws RepositoryException {
+    private static boolean hasPendingChanges(Node docNode)
+            throws RepositoryException {
         boolean dirty = docNode.isNew() || docNode.isModified();
         if (dirty) {
             return true;
@@ -105,16 +106,16 @@ public class CustomVersioningService implements VersioningService {
             // TODO Auto-generated catch block
             e.printStackTrace();
 
-            throw new DocumentException("Failed to checkin document "
-                    + doc.getName() + " : " + label);
+            throw new DocumentException("Failed to checkin document " +
+                    doc.getName() + " : " + label);
         }
 
         final Node docNode = jdoc.getNode();
 
         if (hasPendingChangesSafe(docNode)) {
-            throw new DocumentException("Failed to checkin document "
-                    + doc.getName() + " : " + label
-                    + ". Document changes pending.");
+            throw new DocumentException("Failed to checkin document " +
+                    doc.getName() + " : " + label +
+                    ". Document changes pending.");
         }
 
         // jdoc.getSession().getRepository().getTypeManager().get
@@ -138,8 +139,8 @@ public class CustomVersioningService implements VersioningService {
             // TODO Auto-generated catch block
             e.printStackTrace();
 
-            throw new DocumentException("Failed to checkin document "
-                    + doc.getName() + " : " + label, e);
+            throw new DocumentException("Failed to checkin document " +
+                    doc.getName() + " : " + label, e);
         }
 
         // VersionableDocument
@@ -159,11 +160,11 @@ public class CustomVersioningService implements VersioningService {
 
     /**
      * The checkout operation will do the following:
+     * <p>
      * <ul>
      * <li>fail if ecm:isCheckedOut is not false,
      * <li>set ecm:isCheckedOut to true.
      * </ul>
-     *
      */
     public void checkout(Document doc) throws DocumentException {
         final JCRDocument jdoc = (JCRDocument) doc;
@@ -171,15 +172,15 @@ public class CustomVersioningService implements VersioningService {
         final Node docNode = jdoc.getNode();
         try {
             if (VerServUtils.isCheckedOut(docNode)) {
-                throw new DocumentException("document " + doc.getName()
-                        + " is not checked in");
+                throw new DocumentException("document " + doc.getName() +
+                        " is not checked in");
             }
             docNode.setProperty(NodeConstants.ECM_VER_ISCHECKEDOUT.rawname,
                     true);
         } catch (RepositoryException e) {
             // e.printStackTrace();
-            throw new DocumentException("Failed to checkout document "
-                    + doc.getName());
+            throw new DocumentException("Failed to checkout document " +
+                    doc.getName());
         }
     }
 
@@ -222,8 +223,7 @@ public class CustomVersioningService implements VersioningService {
                 // XXX or throw an error?
                 return null;
             }
-            final Node lastVersionNode = VerServUtils
-                    .getLastVersionNode(versionHistoryNode);
+            final Node lastVersionNode = VerServUtils.getLastVersionNode(versionHistoryNode);
 
             return new CustomDocumentVersion(jdoc.jcrSession(), lastVersionNode);
         } catch (RepositoryException e) {
@@ -273,7 +273,7 @@ public class CustomVersioningService implements VersioningService {
                         NodeConstants.ECM_VERSION_HISTORY.rawname).getNode();
             } else {
                 final String msg = "versionHistory not initialized";
-                log.debug(logPrefix  + msg + " for doc: " + doc.getUUID());
+                log.debug(logPrefix + msg + " for doc: " + doc.getUUID());
 
                 // do not throw new DocumentException(msg);
                 // will return an iterator over an empty list
@@ -324,19 +324,21 @@ public class CustomVersioningService implements VersioningService {
     public void restore(Document doc, String label) throws DocumentException {
         JCRDocument jdoc = (JCRDocument) doc;
         try {
-            final DocumentVersion version = (DocumentVersion) getVersion(doc, label);
+            final DocumentVersion version = (DocumentVersion) getVersion(doc,
+                    label);
 
             if (null == version) {
-                throw new DocumentException("no version for document uuid: "
-                        + doc.getUUID() + " with label: '" + label + "'");
+                throw new DocumentException("no version for document uuid: " +
+                        doc.getUUID() + " with label: '" + label + "'");
             }
 
             final Node liveNode = jdoc.getNode();
 
             // restore identified version
-            //VerServUtils.restore(jdoc.getNode(), ((JCRDocument) version)
-            //        .getNode());
-            VerServUtils.restoreNodeProps(((JCRDocument) version).getNode(), liveNode, true);
+            // VerServUtils.restore(jdoc.getNode(), ((JCRDocument) version)
+            // .getNode());
+            VerServUtils.restoreNodeProps(((JCRDocument) version).getNode(),
+                    liveNode, true);
 
             // As in jcr impl
             // 3. N's jcr:isCheckedOut property is set to false.
@@ -364,13 +366,14 @@ public class CustomVersioningService implements VersioningService {
 
     public boolean isVersionNode(Node node) throws RepositoryException {
         // TODO Auto-generated method stub
-        //return node.getPrimaryNodeType().getName().equals("nt:frozenNode");
+        // return node.getPrimaryNodeType().getName().equals("nt:frozenNode");
         if (!node.hasProperty(NodeConstants.ECM_FROZEN_NODE_UUID.rawname)) {
             // non versionable node
             return false;
         }
 
-        final String frozenUuid = node.getProperty(NodeConstants.ECM_FROZEN_NODE_UUID.rawname).getString();
+        final String frozenUuid = node.getProperty(
+                NodeConstants.ECM_FROZEN_NODE_UUID.rawname).getString();
 
         return frozenUuid != null;
     }
@@ -388,16 +391,15 @@ public class CustomVersioningService implements VersioningService {
      *
      * @param jdoc
      *
-     * @throws DocumentException
-     *             if this node is not versionable
+     * @throws DocumentException if this node is not versionable
      * @throws RepositoryException
      */
-    private static void checkVersionable(JCRDocument jdoc) throws DocumentException,
-            RepositoryException {
+    private static void checkVersionable(JCRDocument jdoc)
+            throws DocumentException, RepositoryException {
         if (!jdoc.getNode().isNodeType(
                 NodeConstants.ECM_VERSIONABLE_MIXIN.rawname)) {
-            String msg = "Unable to perform versioning operation on non versionable node: "
-                    + jdoc.getPath();
+            String msg = "Unable to perform versioning operation on non versionable node: " +
+                    jdoc.getPath();
             log.debug(msg);
             throw new DocumentException(msg);
         }
@@ -408,7 +410,8 @@ public class CustomVersioningService implements VersioningService {
             VerServUtils.removeVersionHistory(jdoc);
         } catch (RepositoryException e) {
             throw new DocumentException(
-                    "unable to remove version history for doc '" + jdoc.getPath() + "'", e);
+                    "unable to remove version history for doc '" +
+                            jdoc.getPath() + "'", e);
         }
     }
 
@@ -416,8 +419,8 @@ public class CustomVersioningService implements VersioningService {
             throws RepositoryException {
         if (log.isDebugEnabled()) {
             try {
-                log.info("remove document (" + doc.getName()
-                        + ") version with label " + versionLabel);
+                log.info("remove document (" + doc.getName() +
+                        ") version with label " + versionLabel);
             } catch (DocumentException e) {
                 log.error(e);
             }
