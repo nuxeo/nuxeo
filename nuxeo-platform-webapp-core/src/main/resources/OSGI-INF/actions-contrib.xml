@@ -417,14 +417,37 @@
       </filter>
     </action>
 
+    <action id="POPUP_VIEW" link="javascript:doView"
+      enabled="true" label="command.view" icon="/icons/doc.png">
+      <category>POPUP</category>
+    </action>
+
+    <action id="POPUP_EDIT" link="javascript:doEdit"
+      enabled="true" label="action.view.edit" icon="/icons/application_form_edit.png">
+      <category>POPUP</category>
+      <filter-id>edit</filter-id>
+    </action>
+
     <action id="POPUP_COPY" link="javascript:doCopy"
       enabled="true" label="command.clipboard.copy" icon="/icons/action_clipboard_copy.gif">
       <category>POPUP</category>
     </action>
 
-    <action id="POPUP_VIEW" link="javascript:doView"
-      enabled="true" label="command.view" icon="/icons/doc.png">
+    <action id="POPUP_PASTE" link="javascript:doPaste"
+      enabled="true" label="command.clipboard.paste" icon="/icons/action_paste_all.gif">
       <category>POPUP</category>
+      <filter id="canPastePopup">
+        <rule grant="true">
+          <facet>Folderish</facet>
+          <!--<condition>#{clipboardActions.canPasteFromClipboardInside}</condition>-->
+        </rule>
+      </filter>
+    </action>
+
+    <action id="POPUP_RENAME" link="javascript:doRename"
+      enabled="true" label="command.rename" icon="/icons/txt.png">
+      <category>POPUP</category>
+      <filter-id>edit</filter-id>
     </action>
 
     <action id="POPUP_DEL" link="javascript:doDelete"
@@ -435,18 +458,6 @@
           <condition>#{deleteActions.getCanDeleteItem(container)}</condition>
         </rule>
       </filter>
-    </action>
-
-   <action id="POPUP_EDIT" link="javascript:doEdit"
-      enabled="true" label="action.view.edit" icon="/icons/application_form_edit.png">
-      <category>POPUP</category>
-      <filter-id>edit</filter-id>
-    </action>
-
-   <action id="POPUP_RENAME" link="javascript:doRename"
-      enabled="true" label="command.rename" icon="/icons/txt.png">
-      <category>POPUP</category>
-      <filter-id>edit</filter-id>
     </action>
 
     <!--  Actions for the document lock/unlock -->

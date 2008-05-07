@@ -286,6 +286,10 @@ public class ClipboardActionsBean extends InputController implements
         return pasteDocumentList(documentsListsManager.getWorkingList(listName));
     }
 
+    public String pasteDocumentListInside(String listName, String docId) throws ClientException {
+        return pasteDocumentListInside(documentsListsManager.getWorkingList(listName), docId);
+    }
+
     public String pasteDocumentList(List<DocumentModel> docPaste)
             throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -301,6 +305,29 @@ public class ClipboardActionsBean extends InputController implements
             eventManager.raiseEventsOnDocumentSelected(currentDocument);
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                     currentDocument);
+
+            log.debug("Elements pasted and created into the backend...");
+        } else {
+            log.debug("No docPaste to process paste on...");
+        }
+
+        return computeOutcome(PASTE_OUTCOME);
+    }
+
+    public String pasteDocumentListInside(List<DocumentModel> docPaste, String docId) throws ClientException {
+        DocumentModel targetDoc = documentManager.getDocument(new IdRef(docId));
+        if (null != docPaste) {
+            List<DocumentModel> newDocs = recreateDocumentsWithNewParent(
+                    targetDoc, docPaste);
+
+            Object[] params = { newDocs.size() };
+            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+                    + resourcesAccessor.getMessages().get("n_pasted_docs"),
+                    params);
+
+            eventManager.raiseEventsOnDocumentSelected(targetDoc);
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                    targetDoc);
 
             log.debug("Elements pasted and created into the backend...");
         } else {
@@ -379,6 +406,12 @@ public class ClipboardActionsBean extends InputController implements
     public String pasteClipboard() throws ClientException {
         pasteDocumentList(DocumentsListsManager.CLIPBOARD);
         returnToPreviouslySelectedList();
+        return computeOutcome(PASTE_OUTCOME);
+    }
+
+    @WebRemote
+    public String pasteClipboardInside(String docId) throws ClientException {
+        pasteDocumentListInside(DocumentsListsManager.CLIPBOARD, docId);
         return computeOutcome(PASTE_OUTCOME);
     }
 
@@ -645,6 +678,33 @@ public class ClipboardActionsBean extends InputController implements
         }
     }
 
+    public boolean getCanPasteInside(String listName) throws ClientException {
+
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+
+        if (documentsListsManager.isWorkingListEmpty(listName)
+                || currentDocument == null) {
+            return false;
+        }
+
+        if (!documentManager.hasPermission(currentDocument.getRef(),
+                SecurityConstants.ADD_CHILDREN)) {
+            return false;
+        } else {
+            // filter on allowed content types
+            // see if at least one doc can be pasted
+            // String pasteTypeName = clipboard.getClipboardDocumentType();
+            List<String> pasteTypesName = documentsListsManager.getWorkingListTypes(listName);
+            Collection<Type> allowed = typeManager.getAllowedSubTypes(currentDocument.getType());
+            for (Type allowedType : allowed) {
+                if (pasteTypesName.contains(allowedType.getId())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
     /**
      * Checks if the Move action is available in the context of the current
      * Document. Conditions:
@@ -705,6 +765,10 @@ public class ClipboardActionsBean extends InputController implements
 
     public boolean getCanPasteFromClipboard() throws ClientException {
         return getCanPaste(DocumentsListsManager.CLIPBOARD);
+    }
+
+    public boolean getCanPasteFromClipboardInside() throws ClientException {
+        return getCanPasteInside(DocumentsListsManager.CLIPBOARD);
     }
 
     // Misc internal function for Ziping Clipboard

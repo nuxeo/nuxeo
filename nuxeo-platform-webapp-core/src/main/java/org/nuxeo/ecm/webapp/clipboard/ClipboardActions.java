@@ -88,6 +88,8 @@ public interface ClipboardActions {
      */
     String pasteDocumentList(List<DocumentModel> docPaste) throws ClientException;
 
+    String pasteDocumentListInside(List<DocumentModel> docPaste, String docId) throws ClientException;
+
     /**
      * Pastes the content of the list listName into the current context document.
      *
@@ -96,8 +98,12 @@ public interface ClipboardActions {
      */
     String pasteDocumentList(String listName) throws ClientException;
 
+    String pasteDocumentListInside(String listName, String docId) throws ClientException;
+
 
     String pasteClipboard() throws ClientException;
+
+    String pasteClipboardInside(String docId) throws ClientException;
 
     /**
      * Removes the component.
@@ -138,6 +144,8 @@ public interface ClipboardActions {
      */
     boolean getCanPasteFromClipboard() throws ClientException;
 
+    boolean getCanPasteFromClipboardInside() throws ClientException;
+
     /**
      * Checks if the content of a given workList can be pasted.
      * <p>
@@ -149,6 +157,8 @@ public interface ClipboardActions {
      * @throws ClientException
      */
     boolean getCanPaste(String listName) throws ClientException;
+
+    boolean getCanPasteInside(String listName) throws ClientException;
 
     /**
      * Checks if there are selected items that can be copied into the current Worklist.

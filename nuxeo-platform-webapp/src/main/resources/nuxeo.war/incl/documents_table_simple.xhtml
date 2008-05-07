@@ -13,7 +13,7 @@
 
       <!-- Icon + Type -->
       <nxu:column styleClass="iconColumn">
-        <div id="docRef:#{doc.ref}" class="cell popupTarget" docRef="#{row.data.ref}">
+        <div id="docRef:#{doc.ref}" class="cell popupTarget" docRef="#{doc.ref}">
          <h:graphicImage value="/icons/lock.gif"
            rendered="#{not empty doc.lock}"/>
         <nxu:graphicImage

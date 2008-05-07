@@ -36,10 +36,9 @@ function doCopy(docid)
  Seam.Component.getInstance("clipboardActions").putInClipboard(docid,refreshPage);
 }
 
-function doPast(docid)
+function doPaste(docid)
 {
- alert("past doc " + docid);
- refreshPage();
+	Seam.Component.getInstance("clipboardActions").pasteClipboardInside(docid,refreshPage);
 }
 
 function doDelete(docid)
