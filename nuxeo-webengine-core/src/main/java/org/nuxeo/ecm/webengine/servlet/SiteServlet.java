@@ -147,15 +147,16 @@ public class SiteServlet extends HttpServlet {
                         handler.doHead(lastTraversedObject);
                     }
                 }
-                // return is handler has done the rendering
-                if (siteRequest.isRenderingCanceled()) {
-                    return;
-                }
             }
 
-        double s = System.currentTimeMillis();
-        scripting.exec(siteRequest);
-        System.out.println(">>>>>>>>>> RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
+            // return is handler has done the rendering
+            if (siteRequest.isCanceled()) {
+                return;
+            }
+
+            double s = System.currentTimeMillis();
+            scripting.exec(siteRequest);
+            System.out.println(">>>>>>>>>> RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
     }
 
     protected static void displayError(HttpServletResponse resp, Throwable t,

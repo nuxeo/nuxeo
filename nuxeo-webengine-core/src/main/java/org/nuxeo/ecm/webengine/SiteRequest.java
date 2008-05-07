@@ -61,7 +61,7 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
 
     protected final SiteManager siteManager;
     protected CoreSession session;
-    protected boolean isRenderingCanceled = false;
+    protected boolean isCanceled = false;
 
     protected SiteObject head; // the site root
     protected SiteObject tail;
@@ -185,12 +185,8 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
         return session;
     }
 
-    public boolean isRenderingCanceled() {
-        return isRenderingCanceled;
-    }
-
-    public void cancelRendering() {
-        isRenderingCanceled = true;
+    public boolean isCanceled() {
+        return isCanceled;
     }
 
     public String getSiteBaseUrl() {
@@ -420,5 +416,14 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
        return "default";
    }
 
+   public void cancel(int status) {
+       resp.setStatus(status);
+       isCanceled = true;
+   }
+
+   public void cancel() {
+       resp.setStatus(200);
+       isCanceled = true;
+   }
 
 }

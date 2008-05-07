@@ -54,10 +54,11 @@ public class GetFileActionHandler implements ActionHandler {
             Property p = doc.getProperty(xpath);
             Blob blob = (Blob)p.getValue();
             if (blob == null) {
-                req.getResponse().setStatus(SiteConst.SC_NOT_FOUND);
+                req.cancel(SiteConst.SC_NOT_FOUND);
+                return;
             }
             blob.transferTo(req.getResponse().getOutputStream());
-            req.cancelRendering(); // avoid the rendering to be able to download the file
+            req.cancel(); // avoid the rendering to be able to download the file
         } catch (Exception e) {
             throw new SiteException("Failed to get the attached file", e);
         }
