@@ -38,16 +38,15 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedData;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.impl.ResolvedDataImpl;
-import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.FieldConstants;
 
 public class TestResourceBuilder extends TestCase {
 
-    ResourceBuilder builder;
-    CompassSession session;
-    IntrospectableCompassBackend backend;
-    Map<String, FakeIndexableResourceDataDescriptor> dataConfs;
+    private ResourceBuilder builder;
+    private CompassSession session;
+    private IntrospectableCompassBackend backend;
+    private Map<String, FakeIndexableResourceDataDescriptor> dataConfs;
 
     @Override
     public void setUp() {
@@ -234,7 +233,6 @@ public class TestResourceBuilder extends TestCase {
         } finally {
             session.close();
         }
-
     }
 
     // Now with a property that has defined in compass mappings file
@@ -254,6 +252,6 @@ public class TestResourceBuilder extends TestCase {
         } finally {
             session.close();
         }
-
     }
+
 }
