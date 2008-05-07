@@ -20,6 +20,9 @@
 package org.nuxeo.ecm.webengine.actions;
 
 
+import java.io.Serializable;
+import java.util.HashMap;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -46,7 +49,7 @@ public class AddFileActionHandler implements ActionHandler {
             if (doc.hasSchema("file")) {
                 xpath = "file:content";
             } else if (doc.hasSchema("files")) {
-                xpath = "files:file";
+                xpath = "files:files";
             } else {
                 throw new IllegalArgumentException("Missing request parameter named 'property' that specify the blob property xpath to fetch");
             }
@@ -58,8 +61,18 @@ public class AddFileActionHandler implements ActionHandler {
         try {
             Property p = doc.getProperty(xpath);
             if (p.isList()) { // add the file to the list
-                p.add(blob);
+                if (p.getSchema().getName().equals("files")) { // treat the files schema separately
+                    HashMap<String, Serializable> map = new HashMap<String, Serializable>();
+                    map.put("filename", blob.getFilename());
+                    map.put("file", (Serializable)blob);
+                    p.add(map);
+                } else {
+                    p.add(blob);
+                }
             } else {
+                if (p.getSchema().getName().equals("file")) { // for compatibility with deprecated filename
+                    p.getParent().get("filename").setValue(blob.getFilename());
+                }
                 p.setValue(blob);
             }
             object.getSession().saveDocument(doc);
