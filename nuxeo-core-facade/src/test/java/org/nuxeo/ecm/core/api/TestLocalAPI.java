@@ -56,8 +56,7 @@ public class TestLocalAPI extends TestAPI {
 
     private static final Log log = LogFactory.getLog(TestLocalAPI.class);
 
-    @Override
-    protected void setUp() throws Exception {
+    protected void doDeployments() throws Exception {
         // Duplicated from NXRuntimeTestCase
         runtime = Framework.getRuntime();
         if (runtime != null) {
@@ -86,6 +85,12 @@ public class TestLocalAPI extends TestAPI {
         deploy("CoreEventListenerService.xml");
         deploy("DocumentAdapterService.xml");
 
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        doDeployments();
         openSession();
     }
 

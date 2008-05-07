@@ -30,8 +30,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.nuxeo.common.collections.ScopeType;
+import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.adapter.AnnotatedDocument;
+import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
@@ -2025,6 +2028,80 @@ public abstract class TestAPI extends TestConnection {
         assertTrue(remote.exists(new PathRef("folder2/file")));
         assertTrue(remote.getChildren(folder1.getRef()).contains(copy5));
         assertNotSame(copy1.getName(), copy5.getName());
+
+        remote.cancel();
+    }
+
+    public void testCopyVersionable() throws Exception {
+        DocumentModel note = new DocumentModelImpl("/", "note", "Note");
+        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
+        note = remote.createDocument(note);
+        folder = remote.createDocument(folder);
+        remote.save();
+
+        assertTrue(remote.exists(new PathRef("note")));
+        assertTrue(remote.exists(new PathRef("folder")));
+
+        // no versions at first
+        List<DocumentRef> versions = remote.getVersionsRefs(note.getRef());
+        assertEquals(0, versions.size());
+
+        // version the note
+        note.setProperty("dublincore", "title", "blah");
+        ScopedMap context = note.getContextData();
+        context.putScopedValue(ScopeType.REQUEST,
+                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        remote.saveDocument(note);
+        remote.save();
+
+        // check versions
+        versions = remote.getVersionsRefs(note.getRef());
+        assertEquals(1, versions.size());
+
+        // copy
+        DocumentModel copy = remote.copy(note.getRef(), folder.getRef(), null);
+
+        // check no versions on copy
+        versions = remote.getVersionsRefs(copy.getRef());
+        assertEquals(0, versions.size());
+
+        remote.cancel();
+    }
+
+    public void testCopyFolderOfVersionable() throws Exception {
+        DocumentModel root = getRootDocument();
+        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
+        DocumentModel note = new DocumentModelImpl("/folder", "note", "Note");
+        folder = remote.createDocument(folder);
+        note = remote.createDocument(note);
+        remote.save();
+
+        assertTrue(remote.exists(new PathRef("/folder")));
+        assertTrue(remote.exists(new PathRef("/folder/note")));
+
+        // no versions at first
+        List<DocumentRef> versions = remote.getVersionsRefs(note.getRef());
+        assertEquals(0, versions.size());
+
+        // version the note
+        note.setProperty("dublincore", "title", "blah");
+        ScopedMap context = note.getContextData();
+        context.putScopedValue(ScopeType.REQUEST,
+                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
+        remote.saveDocument(note);
+        remote.save();
+
+        // check versions
+        versions = remote.getVersionsRefs(note.getRef());
+        assertEquals(1, versions.size());
+
+        // copy folder
+        DocumentModel copy = remote.copy(folder.getRef(), root.getRef(), null);
+
+        // check no versions on copied note
+        DocumentModel note2 = remote.getChild(copy.getRef(), "note");
+        versions = remote.getVersionsRefs(note2.getRef());
+        assertEquals(0, versions.size());
 
         remote.cancel();
     }

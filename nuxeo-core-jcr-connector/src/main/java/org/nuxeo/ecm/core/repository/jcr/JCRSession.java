@@ -317,7 +317,10 @@ public class JCRSession implements Session {
             }
             session.getWorkspace().copy(
                     ((JCRDocument) src).getNode().getPath(), dstPath);
-            return dstContainer.getChild(dstName);
+            Document child = dstContainer.getChild(dstName);
+            Versioning.getService().fixupAfterCopy((JCRDocument) child);
+            session.save();
+            return child;
 
         } catch (RepositoryException e) {
             throw new DocumentException("Could not copy the document to "
