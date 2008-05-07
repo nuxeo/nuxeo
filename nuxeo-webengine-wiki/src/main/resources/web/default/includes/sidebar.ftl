@@ -1,9 +1,10 @@
 <div class="sideblock general">
-    <h3>Search</h3>
-    <form action="${root.docURL}@@search" method="get" accept-charset="utf-8">
-        <input class="complete" type="text" name="q" id="q" autosave="com.mysite" results="5">
+     <div class="searchBox">
+      <form action="${root.docURL}@@search" method="get" accept-charset="utf-8">
+        <input class="complete" type="text" name="q" id="q" autosave="com.mysite" results="5" value="Search">
         <input type="hidden" name="p" value="${root.path}">
-    </form>
+      </form>
+     </div>  
 </div>
 
 <!-- let other templates add more things to the sidebar -->

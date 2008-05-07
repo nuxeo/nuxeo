@@ -19,6 +19,9 @@ body {
     text-align:left;
 }
 
+
+/* Header */
+
 #header {
     width: 1000px;
     /*margin-right:220px;*/
@@ -38,7 +41,7 @@ body {
     padding:0;
     padding-top:6px;
     margin:0;
-    font-family: "Century Gothic","Trebuchet MS";
+    font-family: "Century Gothic","Trebuchet MS", Verdana;
 }
 
 #header h1 a {
@@ -48,6 +51,7 @@ body {
     padding-right:80px;
 }
 
+/* Begin : IS THIS USED - it's not in Wiki !*/
 #main_title h1 {
     padding:5px;
     margin:0;
@@ -70,13 +74,90 @@ body {
     margin:0;
     padding:0;
 }
+/* End : IS THIS USED - it's not in Wiki !*/
+
+/* SideBar */
+
+#sidebar {
+    background:url(/nuxeo/site/files/resources/image/background_sidebar.gif) top left repeat-x;
+    float:right;
+    width:240px;
+    color:#f1f2f3;
+}  
+
+#sidebar h3, #sidebar p {
+    padding:0 10px 0 0;
+    margin:0;
+    }
+    
+#sidebar h3 {
+  color:#fff;
+  background-color:transparent;
+  border-bottom:1px solid #ccc;
+  padding-bottom: 5px;
+}  
+
+#sidebar a, #sidebar a:link, #sidebar a:visited, #sidebar a:hover {
+  color:#fff;
+}  
+
+#sidebar .sideblock {
+    padding: 6px;
+    margin: 0px;
+    margin: 0px 0px 10px 0px;
+    font-size: 0.8em;
+}
+
+#sidebar .general {
+  margin-left:20px;
+  margin-right:5px;
+}
+
+#sidebar .contextual {
+  width:226px;
+  background:url(/nuxeo/site/files/resources/image/background_box_box.gif) top left repeat-y;
+  padding:0;
+  margin-bottom:0;
+  color:#333;
+}
+
+#sidebar .contextual h3 {
+  background:url(/nuxeo/site/files/resources/image/background_box_title.gif) top left no-repeat;
+  height:25px;
+  padding:0;
+  padding-left:25px;
+  padding-top:6px;
+  color:#fff;
+  border-bottom:none;
+}
+
+#sidebar .sideblock-content {
+  background:url(/nuxeo/site/files/resources/image/background_box_content.gif) top left no-repeat;
+ padding:10px 25px;
+}
+
+#sidebar .sideblock-content-bottom {
+  background:url(/nuxeo/site/files/resources/image/background_box_bottom.gif) top left no-repeat;
+  height:5px;
+}
+
+
+#sidebar .sideblock .searchBox {
+ padding-top: 10px;
+ }
+
+#sidebar .sideblock .searchBox input {
+  width:200px;  
+}
+
+
+/* Structure */
 
 #main-wrapper {
   width:100%;
   height:100%;
   background:#fff url(/nuxeo/site/files/resources/image/background_main-wrapper.gif) top right repeat-y; 
   border-top:1px solid #fff;
-
 }
 
 #main {
@@ -85,15 +166,6 @@ body {
     width:760px;
 }
 
-#main h2, #main h3, #main p {
-    padding:0 10px;
-}
-
-#sidebar {
-    background:url(/nuxeo/site/files/resources/image/background_sidebar.gif) top left repeat-x;
-    float:right;
-    width:240px;
-}  
     
 #footer {
     background-color:#ccc;
@@ -113,55 +185,15 @@ body {
     text-align: center;
 }
 
-#sidebar h3, #sidebar p {
-    padding:0 10px 0 0;
-    margin:0;
-    }
-    
-#sidebar h3 {
-  color:#fff;
 
-}  
+/* Main content styles */
 
-#sidebar .sideblock {
-    padding: 6px;
-    margin: 0px;
-    margin: 0px 0px 10px 0px;
-    font-size: 0.8em;
-}
-
-#sidebar .general {
-  margin-left:20px;
-}
-
-#sidebar .contextual {
-  width:226px;
-  background:url(/nuxeo/site/files/resources/image/background_box_box.gif) top left repeat-y;
-  padding:0;
-  margin-bottom:0;
-}
-
-#sidebar .contextual h3 {
-  background:url(/nuxeo/site/files/resources/image/background_box_title.gif) top left no-repeat;
-  height:25px;
-  padding:0;
-  padding-left:25px;
-  padding-top:6px;
-  color:#fff;
-}
-
-#sidebar .sideblock-content {
-  background:url(/nuxeo/site/files/resources/image/background_box_content.gif) top left no-repeat;
- padding:10px 25px;
-}
-
-#sidebar .sideblock-content-bottom {
-  background:url(/nuxeo/site/files/resources/image/background_box_bottom.gif) top left no-repeat;
-  height:5px;
+#main h2, #main h3, #main h4, #main p {
+    padding:0 10px;
 }
 
 .main-content {
-  padding:0 20px;
+  padding:10px 20px;
 }
 
 .diff {
@@ -183,33 +215,50 @@ body {
     color: darkgrey;
 }
 
+a, a:link {
+  text-decoration: none;
+  color:#0066ff;
+}
+
+a:visited {
+  color:#6666cc;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+  color:#0066ff;  
+}
 
 h1 {
     /* H1 */
-    font: normal small-caps bold 240% "Century Gothic","Trebuchet MS", sans-serif;
+    font: normal small-caps bold 240% "Century Gothic","Trebuchet MS", Verdana, sans-serif;
     color: #0066ff;
     border-bottom: 1px solid #0066ff;
+    margin:0;
+    margin-bottom:10px;
 }
 
 h2 {
     /* H2 */
-    font: normal normal bold 150% "Century Gothic","Trebuchet MS", sans-serif;
-    color: #0066CC;
+    background-color:#ddeeff;
+    font: normal normal bold 150% "Century Gothic","Trebuchet MS", Verdana, sans-serif;
+    color: #0066ff;
     margin: 0px;
-    margin: 30px 0px 10px 0px; 
+    margin: 5px 0px 10px 0px; 
+
 }
 
 h3 {
     /* H3 */
-    font: normal normal bold 133% "Century Gothic","Trebuchet MS", sans-serif;
-    margin: 0px;    
+    background-color:#fff;
+    font: normal normal bold 133% "Century Gothic","Trebuchet MS", Verdana, sans-serif;
+    margin: 2px 0 5px 0;    
 }
 
-.doc h3 {
-    /* H3 */
-    font: normal normal bold 1em Verdana, sans-serif;
-    border-top: 1px solid #0066CC;
-    background: #F1F7FF;
+h4 {
+  margin:1px 0 2px 0;
+  background-color:#fff;
 }
 
 pre {
@@ -226,29 +275,107 @@ pre {
     display: none;
 }
 
-.summary-byline {
-    /* Byline */
-    font: italic normal normal .8em Arial, sans-serif;
-    text-align: right;
+/* for safari (wtf?) */
+
+#main .main-content h2 {
+  background-color:#ddeeff;
 }
 
-.summary-entries {
-    /* Entries */
+#main .main-content h3, #main .main-content h4, #main .main-content .summary-content h2  {
+  background-color:white;
+}
+
+
+/* Summary */
+
+.summary-entry{
+  border:1px solid #0066ff;
+
 }
 
 .summary-title {
     /* title of entries */
     font-variant: small-caps;
-    border-top: 1px solid #0066CC;
+    font-size:28px;
     background: #F1F7FF;
+    margin-top:0;
+    margin-bottom:2px;
+    border-bottom:1px solid #A9D4FF;    
 }
 
-.summary-content h1, .summary-content h2, .summary-content p{
-    /* smaller title for summaries */
-    font-size: 80%;
+
+.summary-byline {
+    /* Byline */
+    font: italic normal normal .8em Verdana, sans-serif;
+    color:#666;
+    padding:2px 0 0 0;
+    text-align: right;
+    margin-bottom:15px;
 }
 
-.doc {
-    /* document content */
-    
+.summary-content h2 {
+    background-color:transparent;
+}
+
+
+/* Buttons */
+
+#main p.buttonsGadget {
+  padding:5px;
+}
+
+#main p.buttonsGadget input.button {}
+
+/* Edit page */
+
+#main h1 input {
+    /* H1 */
+    font: normal small-caps bold 28px "Century Gothic","Trebuchet MS", Verdana, sans-serif;
+    color: #0066ff;
+    border-bottom: 1px inset #ccc;
+    margin:0;
+    margin-bottom:5px;
+    width:695px;
+}
+
+#main textarea.wikiEdit {
+  width:695px;
+}
+
+#main  p.wikiEditOptions {
+  padding:15px 5px;
+  background-color:#f1f2f3;
+}
+
+/* Tabs (overrides jquerys flora) */
+
+#wikipage-actions .ui-tabs-nav li {
+  font-family: "Century Gothic","Trebuchet MS", Verdana;
+  float:right;
+  font-weight:normal;
+  font-size:9px;
+}
+
+#wikipage-actions .ui-tabs-nav a,#wikipage-actions .ui-tabs-nav a span {
+  background-image:url(/nuxeo/site/files/resources/image/background_tabs.gif);
+}
+
+
+#wikipage-actions .ui-tabs-panel {
+  border-color:#0066ff;
+  }
+  
+/* History */
+
+#main .ui-tabs-nav, #main .ui-tabs-panel {
+ font-family: Verdana, sans-serif;
+}  
+
+#main .version_list {
+  padding:5px;
+  font-size:10px;
+}
+
+#main .version_list td {
+  padding:2px 0;
 }

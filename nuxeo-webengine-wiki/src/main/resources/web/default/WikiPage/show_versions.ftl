@@ -1,5 +1,5 @@
-<h1>Versions for ${this.title}</h1>
-
+<h1>${this.title}</h1>
+<h2>Versions</h2>
 <script>
 
 $("compare_versions").submit(function() {
@@ -40,5 +40,7 @@ $("compare_versions").submit(function() {
     </tr>
     
 </table>
-<input type="submit" name="Compare" value="Compare" id="compare_versions">
+<p class="buttonsGadget">
+  <input type="submit" name="Compare" value="Compare" id="compare_versions" class="button">
+</p>
 </form>
