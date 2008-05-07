@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webengine.config">
+
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Default Objects
+  </documentation>
+
+
+  <extension target="org.nuxeo.ecm.webengine.SiteManagerComponent"
+      point="siteObject">
+      <object id="wikiPage" type="WikiPage" extends="default">
+        <actions> 
+            <action id="view_wiki" enabled="true">
+              <permission  expression="READ"/>
+            </action>
+            <action id="edit" enabled="true">
+              <permission  expression="READ"/>
+            </action>          
+    	  <action id="show_versions" enabled="true">
+            <permission  expression="READ"/>
+          </action>
+          
+          <action id="update" enabled="true" script="update.groovy" handler="org.nuxeo.ecm.webengine.actions.UpateActionHandler">
+            <permission expression="WRITE" />
+          </action>
+          
+	    </actions>
+      </object>
+  </extension>    
+
+
+
+  <extension target="org.nuxeo.ecm.webengine.SiteManagerComponent"
+  	point="siteObject">
+  	<object id="siteFolder" type="Document" extends="default">
+  		<actions> 
+  			<action id="view" enabled="true">
+          <permission  expression="READ"/>
+        </action>
+        <action id="print" enabled="true">
+          <permission expression="READ" />
+        </action>
+        <action id="delete" enabled="true" handler="org.nuxeo.ecm.webengine.actions.DeleteActionHandler">
+          <permission expression="WRITE" />
+        </action>
+        <action id="update" enabled="true" handler="org.nuxeo.ecm.webengine.actions.UpateActionHandler">
+          <permission expression="WRITE" />
+        </action>
+        <action id="edit" enabled="true">
+          <permission expression="WRITE" />
+        </action>
+        <action id="create" enabled="true" handler="org.nuxeo.ecm.webengine.actions.CreateActionHandler">
+          <permission expression="WRITE" />
+        </action>
+      </actions>
+  	</object>
+  </extension>
+
+</component>
