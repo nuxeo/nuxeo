@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webengine;
 import java.io.File;
 import java.util.List;
 
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 
 
@@ -43,13 +44,19 @@ public interface SiteManager {
 
     void unregisterObject(ObjectDescriptor obj);
 
+    String getBingding(String type);
+
+    void registerBingding(String type, String objectId);
+
+    void unregisterBingding(String type);
+
     List<ObjectDescriptor> getRegisteredObjects();
 
     List<ObjectDescriptor> getPendingObjects();
 
     List<ObjectDescriptor> getResolvedObjects();
 
-    ObjectDescriptor getInstanceOf(String type);
+    ObjectDescriptor getInstanceOf(Type type);
 
     ObjectDescriptor getObject(String id);
 

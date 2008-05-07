@@ -54,7 +54,8 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
     public static final ComponentName NAME = new ComponentName(SiteManagerComponent.class.getName());
 
     public static final String TRANSFORMER_XP = "transformer";
-    public static final String SITE_OBJ_XP = "siteObject";
+    public static final String WEB_OBJ_XP = "webObject";
+    public static final String BINDING_XP = "binding";
     public static final String GUARD_XP = "guard"; // global guards
 
     private static final Log log = LogFactory.getLog(SiteManagerComponent.class);
@@ -161,12 +162,15 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
         if (TRANSFORMER_XP.equals(extensionPoint)) {
             TransformerDescriptor td = (TransformerDescriptor)contribution;
             engine.setTransformer(td.getName(), td.newInstance());
-        } else if (SITE_OBJ_XP.equals(extensionPoint)) {
+        } else if (WEB_OBJ_XP.equals(extensionPoint)) {
             ObjectDescriptor obj = (ObjectDescriptor)contribution;
             mgr.registerObject(obj);
         } else if (GUARD_XP.equals(extensionPoint)) {
             GuardDescriptor gd = (GuardDescriptor)contribution;
             PermissionService.getInstance().registerGuard(gd.getId(), gd.getGuard());
+        } else if (BINDING_XP.equals(extensionPoint)) {
+            ObjectBindingDescriptor binding = (ObjectBindingDescriptor)contribution;
+            mgr.registerBingding(binding.type, binding.objectId);
         }
     }
 
@@ -177,12 +181,15 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
         if (TRANSFORMER_XP.equals(extensionPoint)) {
 //            TransformerDescriptor td = (TransformerDescriptor)contribution;
 //            engine.setTransformer(td.getName(), td.newInstance());
-        } else if (SITE_OBJ_XP.equals(extensionPoint)) {
+        } else if (WEB_OBJ_XP.equals(extensionPoint)) {
             ObjectDescriptor obj = (ObjectDescriptor)contribution;
             mgr.unregisterObject(obj);
         } else if (GUARD_XP.equals(extensionPoint)) {
             GuardDescriptor gd = (GuardDescriptor)contribution;
             PermissionService.getInstance().unregisterGuard(gd.getId());
+        } else if (BINDING_XP.equals(extensionPoint)) {
+            ObjectBindingDescriptor binding = (ObjectBindingDescriptor)contribution;
+            mgr.unregisterBingding(binding.type);
         }
     }
 
@@ -220,7 +227,7 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
 //        if (file.getAbsolutePath().startsWith(mgr.getRootDirectory().getAbsolutePath())) {
         if (relPath.equals("/web.xml")) {
             try {
-                //mgr.reset();
+                mgr.reset();
                 URL url = file.toURI().toURL();
                 ctx.getRuntimeContext().undeploy(url);
                 ctx.getRuntimeContext().deploy(url);

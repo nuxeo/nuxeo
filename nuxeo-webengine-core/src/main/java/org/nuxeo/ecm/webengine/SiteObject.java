@@ -126,7 +126,7 @@ public class SiteObject implements ServletRenderingContext {
 
     public final ObjectDescriptor getDescriptor() {
         if (desc == null && doc != null) {
-            desc = request.siteManager.getInstanceOf(doc.getType());
+            desc = request.siteManager.getInstanceOf(doc.getDocumentType());
         }
         return desc;
     }

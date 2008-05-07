@@ -22,8 +22,8 @@ package org.nuxeo.ecm.webengine;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
@@ -42,9 +42,6 @@ public class ObjectDescriptor {
     @XNode("@id") // internal id needed to uniquely identify the object
     protected String id;
 
-    @XNode("@type")
-    protected String type;
-
     @XNode("@extends")
     protected String base;
 
@@ -59,9 +56,8 @@ public class ObjectDescriptor {
 
     public ObjectDescriptor() {}
 
-    public ObjectDescriptor(String id, String type, String base, ActionDescriptor ... actions) {
+    public ObjectDescriptor(String id, String base, ActionDescriptor ... actions) {
         this.id = id;
-        this.type = type;
         this.base = base;
         this.actions = new HashMap<String, ActionDescriptor>();
         if (actions != null) {
@@ -71,9 +67,8 @@ public class ObjectDescriptor {
         }
     }
 
-    public ObjectDescriptor(String id, String type, String base, Collection<ActionDescriptor> actions) {
+    public ObjectDescriptor(String id, String base, Collection<ActionDescriptor> actions) {
         this.id = id;
-        this.type = type;
         this.base = base;
         this.actions = new HashMap<String, ActionDescriptor>();
         if (actions != null) {
@@ -91,9 +86,6 @@ public class ObjectDescriptor {
         return base;
     }
 
-    public String getType() {
-        return type;
-    }
 
     public Class<RequestHandler> getRequestHandlerClass() {
         return requestHandlerClass;
@@ -107,7 +99,7 @@ public class ObjectDescriptor {
                 try {
                     requestHandler = requestHandlerClass.newInstance();
                 } catch (Exception e) {
-                    throw new SiteException("Failed to instantiate request handler for object type: "+type, e);
+                    throw new SiteException("Failed to instantiate request handler for object id: "+id, e);
                 }
             }
         }
@@ -122,16 +114,74 @@ public class ObjectDescriptor {
         return actions;
     }
 
+    public Collection<ActionDescriptor> getActions(String category) {
+        List<ActionDescriptor> ads = new ArrayList<ActionDescriptor>();
+        for (ActionDescriptor ad : actions.values()) {
+            if (ad.hasCategory(category)) {
+                ads.add(ad);
+            }
+        }
+        return ads;
+    }
+
+    public Map<String, Collection<ActionDescriptor>> getActionsByCategory() {
+        HashMap<String, Collection<ActionDescriptor>> result = new HashMap<String, Collection<ActionDescriptor>>();
+        for (ActionDescriptor ad : actions.values()) {
+            String[] cats = ad.getCategories();
+            for (String cat : cats) {
+                Collection<ActionDescriptor> list = result.get(cat);
+                if (list == null) {
+                    list = new ArrayList<ActionDescriptor>();
+                    result.put(cat, list);
+                }
+                list.add(ad);
+            }
+        }
+        return result;
+    }
+
     public Collection<ActionDescriptor> getEnabledActions(SiteObject obj) {
         CoreSession session = obj.getSession();
         DocumentModel doc = obj.getDocument();
         List<ActionDescriptor> ads = new ArrayList<ActionDescriptor>();
         for (ActionDescriptor ad : actions.values()) {
-            if (ad.getGuard().check(session, doc)) {
+            if (ad.isEnabled() && ad.getGuard().check(session, doc)) {
                 ads.add(ad);
             }
         }
         return ads;
+    }
+
+    public Collection<ActionDescriptor> getEnabledActions(SiteObject obj, String category) {
+        CoreSession session = obj.getSession();
+        DocumentModel doc = obj.getDocument();
+        List<ActionDescriptor> ads = new ArrayList<ActionDescriptor>();
+        for (ActionDescriptor ad : actions.values()) {
+            if (ad.isEnabled() && ad.hasCategory(category) && ad.getGuard().check(session, doc)) {
+                ads.add(ad);
+            }
+        }
+        return ads;
+    }
+
+    public Map<String, Collection<ActionDescriptor>> getEnabledActionsByCategory(SiteObject obj) {
+        CoreSession session = obj.getSession();
+        DocumentModel doc = obj.getDocument();
+        HashMap<String, Collection<ActionDescriptor>> result = new HashMap<String, Collection<ActionDescriptor>>();
+        for (ActionDescriptor ad : actions.values()) {
+            if (ad.isEnabled() && ad.getGuard().check(session, doc)) {
+                String[] cats = ad.getCategories();
+                for (String cat : cats) {
+                    Collection<ActionDescriptor> list = result.get(cat);
+                    if (list == null) {
+                        list = new ArrayList<ActionDescriptor>();
+                        result.put(cat, list);
+                    }
+                    list.add(ad);
+                }
+            }
+        }
+        return result;
     }
 
     public ActionDescriptor getAction(String name) {

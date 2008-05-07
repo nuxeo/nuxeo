@@ -56,6 +56,7 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
  */
 public class FormData {
 
+    public final static String PROPERTY = "property";
     public final static String TITLE = "dc:title";
     public final static String DOCTYPE = "doctype";
     public final static String VERSIONING = "versioning";
@@ -148,6 +149,18 @@ public class FormData {
             }
         }
         return ar;
+    }
+
+    public Blob getFirstBlob() throws SiteException {
+        Map<String, List<FileItem>> items = getMultiPartItems();
+        for (List<FileItem> list : items.values()) {
+            for (FileItem item : list) {
+                if (!item.isFormField()) {
+                    return getBlob(item);
+                }
+            }
+        }
+        return null;
     }
 
     protected Blob getBlob(FileItem item) throws SiteException {

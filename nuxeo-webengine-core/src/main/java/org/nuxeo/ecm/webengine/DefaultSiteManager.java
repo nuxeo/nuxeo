@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.util.DependencyTree;
@@ -44,6 +45,7 @@ public class DefaultSiteManager implements SiteManager {
 
     protected final ObjectRegistry registry;
     protected final Map<String, ObjectDescriptor> objects; // instances for each document type
+    protected final Map<String, String> bindings;
 
     public DefaultSiteManager(File root, RenderingEngine engine) {
         this.root = root;
@@ -51,6 +53,7 @@ public class DefaultSiteManager implements SiteManager {
         scripting = new Scripting(engine);
         registry = new ObjectRegistry();
         objects = new HashMap<String, ObjectDescriptor>();
+        bindings = new HashMap<String, String>();
     }
 
     public Scripting getScripting() {
@@ -87,12 +90,51 @@ public class DefaultSiteManager implements SiteManager {
     }
 
     public void reset() {
-        //TODO
+        objects.clear(); // clear cache
     }
 
-    public synchronized ObjectDescriptor getInstanceOf(String type) {
-        ObjectDescriptor obj = objects.get(type);
-        return obj != null ? obj : objects.get("Document");
+    public synchronized ObjectDescriptor getDefaultObject() {
+        ObjectDescriptor obj = objects.get("Document");
+        if (obj == null) {
+            String id = bindings.get("Document");
+            if (id == null) {
+                throw new IllegalStateException("The web object bindings are not correctly configured. You must specify a binding for the Document type.");
+            }
+            obj = registry.get(id);
+            if (obj == null) {
+                throw new IllegalStateException("The web object bindings are not correctly configured. The object "+id+" bound to Document type was not found.");
+            }
+            objects.put("Document", obj);
+        }
+        return obj;
+    }
+
+    public synchronized ObjectDescriptor getInstanceOf(Type type) {
+        String typeName = type.getName();
+        ObjectDescriptor obj = objects.get(typeName);
+        if (obj == null) {
+            String id = bindings.get(typeName);
+            if (id == null) {
+                Type stype = type.getSuperType();
+                if (stype == null || stype.getName().equals("Document")) {// the default
+                    obj = getDefaultObject();
+                } else {
+                    obj = getInstanceOf(stype);
+                }
+            } else {
+                obj = registry.get(id);
+                if (obj == null) {
+                    Type stype = type.getSuperType();
+                    if (stype == null || stype.getName().equals("Document")) {// the default
+                        obj = getDefaultObject();
+                    } else {
+                        obj = getInstanceOf(stype);
+                    }
+                }
+            }
+            objects.put(typeName, obj);
+        }
+        return obj;
     }
 
     public synchronized ObjectDescriptor getObject(String id) {
@@ -117,12 +159,23 @@ public class DefaultSiteManager implements SiteManager {
 
     public synchronized void registerObject(ObjectDescriptor obj) {
         registry.add(obj.getId(), obj);
-        objects.put(obj.getType(), obj); // TODO keep a stack of objects or use a chained list
     }
 
     public synchronized void unregisterObject(ObjectDescriptor obj) {
         registry.remove(obj.getId());
-        objects.remove(obj.getType());
+    }
+
+    //TODO bindings are not correctly redeployed when contributed from several web.xml files
+    public String getBingding(String type) {
+        return bindings.get(type);
+    }
+
+    public void registerBingding(String type, String objectId) {
+        bindings.put(type, objectId);
+    }
+
+    public void unregisterBingding(String type) {
+        bindings.remove(type);
     }
 
 
@@ -131,9 +184,6 @@ public class DefaultSiteManager implements SiteManager {
         public void resolved(DependencyTree.Entry<String, ObjectDescriptor> entry) {
             ObjectDescriptor obj = entry.get();
             String base = obj.getBase();
-            if (base  == null) {
-                base = "default";
-            }
             ObjectDescriptor baseObj = registry.getResolved(base);
             if (baseObj != null) { // compute inheritance data
                 obj.merge(baseObj);

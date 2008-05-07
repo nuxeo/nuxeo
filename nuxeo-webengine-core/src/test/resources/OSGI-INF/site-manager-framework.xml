@@ -33,12 +33,12 @@
         class="org.nuxeo.ecm.webengine.rendering.TransformerDescriptor"/>
   </extension-point>
 
-  <extension-point name="siteObject">
+  <extension-point name="webObject">
     <documentation>
       @author Bogdan Stefanescu (bs@nuxeo.com)
       Expose the registration of site object descriptors
       <code>
-        <object id="siteFolder" type="Folder" extends="default">
+        <object id="WebFolder" extends="default">
           <requestHandler>org.nuxeo.ecm.webengine.DefaultRequestHandler</requestHandler>
           <!-- this is the default value -->
           <actions>
@@ -51,6 +51,17 @@
 
     <object
         class="org.nuxeo.ecm.webengine.ObjectDescriptor"/>
+  </extension-point>
+
+  <extension-point name="binding">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Binds web objects to document types. Bindings are used at runtime
+    to adapt a document to a web object given the document type
+    <code>
+      <binding type="Folder" object="WebFolder"/>
+    </code>
+  </documentation>
   </extension-point>
 
   <extension-point name="guard">

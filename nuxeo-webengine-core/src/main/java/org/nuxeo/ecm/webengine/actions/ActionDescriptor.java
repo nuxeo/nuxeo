@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webengine.actions;
 import java.text.ParseException;
 
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.SiteException;
 import org.nuxeo.ecm.webengine.SiteObject;
@@ -34,6 +35,8 @@ import org.nuxeo.ecm.webengine.security.GuardDescriptor;
  */
 @XObject("action")
 public class ActionDescriptor {
+
+    public static final String[] EMPTY_CATEGORIES = new String[0];
 
     @XNode("@id")
     protected String id;
@@ -49,6 +52,9 @@ public class ActionDescriptor {
 
     @XNode("permission")
     private GuardDescriptor pd;
+
+    @XNodeList(value = "category", type = String[].class, componentType = String.class)
+    protected String[] categories = EMPTY_CATEGORIES;
 
     protected Guard guard;
 
@@ -110,6 +116,29 @@ public class ActionDescriptor {
 
     public void setGuard(Guard guard) {
         this.guard = guard;
+    }
+
+    /**
+     * @param categories the categories to set.
+     */
+    public void setCategories(String ... categories) {
+        this.categories = categories;
+    }
+
+    /**
+     * @return the categories.
+     */
+    public String[] getCategories() {
+        return categories;
+    }
+
+    public boolean hasCategory(String name) {
+        for (int i = categories.length-1; i>=0; i--) {
+            if (name.equals(categories[i])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public ActionHandler getHandler() throws SiteException {
