@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.TypeService;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.AbstractDirectory;
@@ -54,7 +53,8 @@ public class MemoryDirectory extends AbstractDirectory {
 
     public MemoryDirectorySession session;
 
-    public MemoryDirectory(String name, String schema, String idField, String passwordField) throws DirectoryException {
+    public MemoryDirectory(String name, String schema, String idField,
+            String passwordField) throws DirectoryException {
         this(name, schema, new HashSet<String>(), idField, passwordField);
 
         SchemaManager sm = getSchemaManager();
@@ -66,7 +66,6 @@ public class MemoryDirectory extends AbstractDirectory {
         for (Field f: fields) {
             schemaSet.add(f.getName().getLocalName());
         }
-
     }
 
     public SchemaManager getSchemaManager() throws DirectoryException {

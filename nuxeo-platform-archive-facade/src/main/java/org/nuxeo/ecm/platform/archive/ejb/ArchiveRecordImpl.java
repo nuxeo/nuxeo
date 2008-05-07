@@ -113,7 +113,6 @@ public class ArchiveRecordImpl implements ArchiveRecord {
             setDocTitle((String) currentDocument.getProperty("dublincore",
                     "title"));
             setParentDocPath(currentDocument.getPath().removeLastSegments(1).toString());
-
         } catch (ClientException e) {
             log.debug(
                     "there was an error while generating the archive record from the current document ",

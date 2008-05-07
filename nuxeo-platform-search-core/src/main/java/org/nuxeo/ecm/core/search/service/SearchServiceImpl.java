@@ -1105,7 +1105,6 @@ public class SearchServiceImpl extends DefaultComponent implements
             // TODO: what should we *really* do here??
             throw new IllegalStateException("Could not commit transaction", e);
         }
-
     }
 
     // search policy methods

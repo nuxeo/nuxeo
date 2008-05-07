@@ -65,12 +65,11 @@ public class DirectoryEntryOutputRenderer extends Renderer {
             DocumentModel entry = DirectoryHelper.getEntry(directoryName, entryId);
 
             if (entry != null) {
-                Boolean displayIdAndLabel = (Boolean) dirComponent
-                        .getDisplayIdAndLabel();
+                Boolean displayIdAndLabel = dirComponent.getDisplayIdAndLabel();
                 if (displayIdAndLabel == null) {
                     displayIdAndLabel = Boolean.FALSE; // unboxed later
                 }
-                Boolean translate = (Boolean) dirComponent.getLocalize();
+                Boolean translate = dirComponent.getLocalize();
 
                 String label = (String) entry.getProperty(
                         keySeparator != null ? "xvocabulary" : "vocabulary",
