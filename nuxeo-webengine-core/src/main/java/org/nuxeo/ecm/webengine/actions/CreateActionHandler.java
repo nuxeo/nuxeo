@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.SiteException;
 import org.nuxeo.ecm.webengine.SiteObject;
 import org.nuxeo.ecm.webengine.SiteRequest;
-import org.nuxeo.ecm.webengine.util.DocumentFormHelper;
+import org.nuxeo.ecm.webengine.util.FormData;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -69,14 +69,15 @@ public class CreateActionHandler implements ActionHandler {
             SiteRequest request) throws SiteException {
         try {
             CoreSession session = request.getCoreSession();
-            String type = DocumentFormHelper.getDocumentType(request);
+            FormData form = request.getForm();
+            String type = form.getDocumentType();
             if (type == null) {
                 throw new SiteException("Invalid argument exception. Nos doc type specified");
             }
             String path = parent.getPathAsString();
             // TODO  not the best method to create an unnamed doc - should refactor core API
             if (name == null) {
-                name = DocumentFormHelper.getDocumentTitle(request);
+                name = form.getDocumentTitle();
                 if (name == null) {
                     name = IdUtils.generateId(type);
                 } else {
@@ -97,7 +98,7 @@ public class CreateActionHandler implements ActionHandler {
                 }
             }
             DocumentModel newPage = session.createDocumentModel(parent.getPathAsString(), name, type);
-            DocumentFormHelper.fillDocumentProperties(newPage, request);
+            form.fillDocument(newPage);
             newPage = session.createDocument(newPage);
             session.save();
             return newPage;

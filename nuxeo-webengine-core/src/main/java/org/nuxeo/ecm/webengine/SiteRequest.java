@@ -47,6 +47,7 @@ import org.nuxeo.ecm.webengine.rendering.SiteRenderingContext;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.servlet.SiteConst;
+import org.nuxeo.ecm.webengine.util.FormData;
 import org.nuxeo.runtime.api.Framework;
 import org.python.core.PyDictionary;
 
@@ -73,6 +74,7 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
     protected final SiteRoot siteRoot;
     protected Mapping mapping;
     protected String action; // the current object view
+    protected FormData form;
 
     protected final Map<String,Object> vars; // global vars to share between scripts
 
@@ -102,6 +104,16 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
 
     public String getAction() {
         return action;
+    }
+
+    /**
+     * @return the form.
+     */
+    public FormData getForm() {
+        if (form == null) {
+            form = new FormData(this);
+        }
+        return form;
     }
 
     public void setMapping(Mapping mapping) {
