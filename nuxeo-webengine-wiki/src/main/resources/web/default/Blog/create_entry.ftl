@@ -1,18 +1,14 @@
 <@extends src="/default/Blog/base.ftl">
 <@block name="content">
 
-<h2>Create Wiki Page : ${this.title} </h2>
+<h2>New blog post : ${this.title} </h2>
 <form method="POST" action="${this.docURL}@@create">
 
-<p>
-<label for="dc:title">Title</label>
+<h1>
 <input type="text" name="dc:title" value="${name}" size=75/>
-</p>
+</h1>
 
-<p>
-<label for="bp:content">Content</label>
-<textarea name="bp:content" cols="75" rows="30"></textarea>
-</p>
+<textarea name="bp:content" cols="75" rows="30" class="entryEdit"></textarea>
 
 <p class="entryEditOptions">
     Allow Trackbacks:
