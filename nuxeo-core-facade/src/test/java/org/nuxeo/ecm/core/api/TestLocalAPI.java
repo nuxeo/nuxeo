@@ -53,9 +53,7 @@ public class TestLocalAPI extends TestAPI {
 
     private static final Log log = LogFactory.getLog(TestLocalAPI.class);
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    protected void doDeployments() throws Exception {
         deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
                 "OSGI-INF/CoreService.xml");
         deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
@@ -80,7 +78,12 @@ public class TestLocalAPI extends TestAPI {
                 "CoreEventListenerService.xml");
         deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "DocumentAdapterService.xml");
+    }
 
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        doDeployments();
         openSession();
     }
 

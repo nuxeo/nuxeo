@@ -101,4 +101,12 @@ public interface VersioningService {
     void removeDocumentVersion(JCRDocument doc, String versionLabel)
             throws RepositoryException;
 
+    /**
+     * Do versioning-related fixups after a copy.
+     *
+     * @param doc the new document just created by copy
+     * @throws RepositoryException
+     */
+    void fixupAfterCopy(JCRDocument doc) throws RepositoryException;
+
 }

@@ -288,4 +288,9 @@ public class JCRVersioningService implements VersioningService {
             log.debug("version: " + version.getName());
         }
     }
+
+    public void fixupAfterCopy(JCRDocument doc) {
+        // nothing to do
+    }
+
 }

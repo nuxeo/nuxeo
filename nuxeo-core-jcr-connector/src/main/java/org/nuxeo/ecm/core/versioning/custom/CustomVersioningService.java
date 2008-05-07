@@ -21,11 +21,19 @@ package org.nuxeo.ecm.core.versioning.custom;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+import javax.jcr.version.VersionException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,6 +41,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.repository.jcr.versioning.VersioningService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.repository.jcr.JCRDocument;
+import org.nuxeo.ecm.core.repository.jcr.JCRName;
 import org.nuxeo.ecm.core.repository.jcr.JCRSession;
 import org.nuxeo.ecm.core.repository.jcr.NodeConstants;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;
@@ -427,6 +436,31 @@ public class CustomVersioningService implements VersioningService {
         }
 
         VerServUtils.removeVersion(doc, versionLabel);
+    }
+
+    /*
+     * Make sure that after a copy we create new version histories for all
+     * versionable documents.
+     */
+    public void fixupAfterCopy(JCRDocument doc) throws RepositoryException {
+        String queryString = String.format("/jcr:root%s//element(*, %s)[%s]",
+                doc.getNode().getPath(),
+                NodeConstants.ECM_VERSIONABLE_MIXIN.rawname,
+                NodeConstants.ECM_VERSION_HISTORY.rawname);
+        QueryManager queryManager = doc.jcrSession().getSession().getWorkspace().getQueryManager();
+        Query query = queryManager.createQuery(queryString, Query.XPATH);
+        NodeIterator nodes = query.execute().getNodes();
+        while (nodes.hasNext()) {
+            clearHistoryReference(nodes.nextNode());
+        }
+        // then doc itself (not found by XPath descendant search)
+        clearHistoryReference(doc.getNode());
+    }
+
+    protected void clearHistoryReference(Node node) throws RepositoryException {
+        if (node.hasProperty(NodeConstants.ECM_VERSION_HISTORY.rawname)) {
+            node.getProperty(NodeConstants.ECM_VERSION_HISTORY.rawname).remove();
+        }
     }
 
 }
