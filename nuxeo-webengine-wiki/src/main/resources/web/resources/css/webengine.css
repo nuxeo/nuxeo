@@ -34,6 +34,20 @@ body {
     float: left;
 }
 
+
+#header .searchBox {
+ padding-top: 10px;
+ float:right;
+ margin-right:15px;
+ }
+
+#header .searchBox input {
+  width:200px;  
+  padding-left:5px;
+}
+
+
+
 #header h1 {
     font-size: 240%;
     font-color: white;
@@ -85,6 +99,37 @@ body {
     width:240px;
     color:#f1f2f3;
 }  
+
+#sidebar .createButton {
+ text-align:center;
+ padding:0;
+ font: bold 21px "Century Gothic","Trebuchet MS", Verdana, sans-serif;
+ margin-top:10px;
+ padding-left: 8px;
+ }
+ 
+ #sidebar .createButton a {
+ color:#fff;
+ background:url(/nuxeo/site/files/resources/image/create_button.gif) top left no-repeat;
+ display:block; 
+ width:192px;
+ height:40px;
+ }
+ 
+#sidebar .createButton a:visited {
+ color:#fff;
+ }
+ 
+#sidebar .createButton a:hover {
+ color:#fff;
+ background-position: bottom left;
+ text-decoration:none;
+ } 
+
+ #sidebar .createButton a span {
+ display:block;
+ padding-top:5px;
+ }
 
 #sidebar h3, #sidebar p {
     padding:0 10px 0 0;
@@ -142,16 +187,6 @@ body {
   height:5px;
 }
 
-
-#sidebar .sideblock .searchBox {
- padding-top: 10px;
- }
-
-#sidebar .sideblock .searchBox input {
-  width:200px;  
-}
-
-
 /* Structure */
 
 #main-wrapper {
@@ -187,7 +222,7 @@ body {
 
 /* Main content styles */
 
-#main h2, #main h3, #main h4, #main p {
+#main h2, #main h3, #main h4, #main p,  #main div.toc {
     padding:0 10px;
 }
 
@@ -337,30 +372,30 @@ pre {
     width:695px;
 }
 
-#main textarea.wikiEdit {
+#main textarea.entryEdit {
   width:695px;
 }
 
-#main  p.wikiEditOptions {
+#main  p.entryEditOptions {
   padding:15px 5px;
   background-color:#ffebac;
 }
 
 /* Tabs (overrides jquerys flora) */
 
-#wikipage-actions .ui-tabs-nav li {
+#entry-actions .ui-tabs-nav li {
   font-family: "Century Gothic","Trebuchet MS", Verdana;
   float:right;
   font-weight:normal;
   font-size:9px;
 }
 
-#wikipage-actions .ui-tabs-nav a,#wikipage-actions .ui-tabs-nav a span {
+#entry-actions .ui-tabs-nav a,#entry-actions .ui-tabs-nav a span {
   background-image:url(/nuxeo/site/files/resources/image/background_tabs.gif);
 }
 
 
-#wikipage-actions .ui-tabs-panel {
+#entry-actions .ui-tabs-panel {
   border-color:#000;
   }
   

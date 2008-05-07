@@ -1,10 +1,7 @@
 <div class="sideblock general">
-     <div class="searchBox">
-      <form action="${root.docURL}@@search" method="get" accept-charset="utf-8">
-        <input class="complete" type="text" name="q" id="q" autosave="com.mysite" results="5" value="Search">
-        <input type="hidden" name="p" value="${root.path}">
-      </form>
-     </div>  
+  <p class="createButton">
+   <a href="/nuxeo/site/${root.name}@@create_entry"><span>Create NOW!</span></a>
+  </p>
 </div>
 
 <!-- let other templates add more things to the sidebar -->

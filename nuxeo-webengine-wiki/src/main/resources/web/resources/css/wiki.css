@@ -18,11 +18,19 @@ h2 {
 }
 
 
-#wikipage-actions .ui-tabs-nav a,#wikipage-actions .ui-tabs-nav a span {
+#entry-actions .ui-tabs-nav a,#entry-actions .ui-tabs-nav a span {
   background-image:url(/nuxeo/site/files/resources/image/wiki/background_tabs.gif);
 }
 
-#wikipage-actions .ui-tabs-panel {
+#entry-actions .ui-tabs-nav a:link,#entry-actions .ui-tabs-nav a:visited {
+color:#0066ff;
+}
+
+#entry-actions .ui-tabs-nav .ui-tabs-selected a:link,#entry-actions .ui-tabs-nav .ui-tabs-selected a:visited {
+color:#fff;
+}
+
+#entry-actions .ui-tabs-panel {
   border-color:#0066ff;
   }
 

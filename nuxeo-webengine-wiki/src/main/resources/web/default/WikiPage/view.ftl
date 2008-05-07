@@ -2,7 +2,7 @@
 <@block name="content">
 <script>
 $(document).ready(function(){
-  $("#wikipage-actions > ul").tabs();
+  $("#entry-actions > ul").tabs();
 });
 </script>
 
@@ -12,7 +12,7 @@ $(document).ready(function(){
 
 <div id="message">${request.getParameter('msg')}</div>
 
-<div id="wikipage-actions">
+<div id="entry-actions">
   <ul>
     <li><a href="${this.docURL}@@view_content" title="page_content"><span>View</span></a></li>
     <li><a href="${this.docURL}@@edit" title="edit"><span>Edit</span></a></li>

@@ -32,22 +32,28 @@ h2 {
   background-color:#ffebac;
 }
 
-#wikipage-actions .ui-tabs-nav a,#wikipage-actions .ui-tabs-nav a span {
+#entry-actions .ui-tabs-nav a,#entry-actions .ui-tabs-nav a span {
   background-image:url(/nuxeo/site/files/resources/image/blog/background_tabs.gif);
 }
 
-#wikipage-actions .ui-tabs-panel {
+#entry-actions .ui-tabs-panel {
   border-color:#7fb2ff;
   }
   
-#wikipage-actions .ui-tabs-nav a:link,#wikipage-actions .ui-tabs-nav a:visited {
+#entry-actions .ui-tabs-nav a:link,#entry-actions .ui-tabs-nav a:visited {
 color:#0066cc;
 }
 
-#wikipage-actions .ui-tabs-nav .ui-tabs-selected a:link,#wikipage-actions .ui-tabs-nav .ui-tabs-selected a:visited {
+#entry-actions .ui-tabs-nav .ui-tabs-selected a:link,#entry-actions .ui-tabs-nav .ui-tabs-selected a:visited {
 color:#fff;
 }
 
 #sidebar .contextual h3 {
   background:url(/nuxeo/site/files/resources/image/blog/background_box_title.gif) top left no-repeat;
   color:#333;}
+
+.summary-entry{
+  border:1px solid #666;
+  border-width: 1px 0;
+
+}

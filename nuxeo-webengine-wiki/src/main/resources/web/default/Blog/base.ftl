@@ -16,6 +16,12 @@
 
 <div id="wrap">
     <div id="header">
+      <div class="searchBox">
+      <form action="${root.docURL}@@search" method="get" accept-charset="utf-8">
+        <input class="complete" type="text" name="q" id="q" autosave="com.mysite" results="5" value="Search">
+        <input type="hidden" name="p" value="${root.path}">
+      </form>
+     </div>  
        <h1><a href="/nuxeo/site/${root.name}">${root.title}</a></h1>
     </div>
     <div id="main-wrapper">
