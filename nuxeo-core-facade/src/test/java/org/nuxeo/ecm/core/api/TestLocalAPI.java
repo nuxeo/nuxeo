@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -42,8 +41,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.RuntimeService;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.TestRuntime;
 
 /**
  *
@@ -58,61 +55,33 @@ public class TestLocalAPI extends TestAPI {
 
     @Override
     protected void setUp() throws Exception {
-        // Duplicated from NXRuntimeTestCase
-        runtime = Framework.getRuntime();
-        if (runtime != null) {
-            Framework.shutdown();
-            runtime = null; // be sure no runtime is intialized (this may happen
-            // when some test crashes)
-        }
-        runtime = new TestRuntime();
-        Framework.initialize(runtime);
-
-        deploy("EventService.xml");
-
-        // TODO: use deployBundle / deployContrib for all of them instead but
-        // that will probably induce a circular dependency, hence the need to
-        // move those test in a dedicated maven project
-        deploy("CoreService.xml");
-        deploy("TypeService.xml");
-        deploy("SecurityService.xml");
-        deploy("permissions-contrib.xml");
-        deploy("RepositoryService.xml");
-        deploy("test-CoreExtensions.xml");
-        deploy("CoreTestExtensions.xml");
-        deploy("DemoRepository.xml");
-        deploy("LifeCycleService.xml");
-        deploy("LifeCycleServiceExtensions.xml");
-        deploy("CoreEventListenerService.xml");
-        deploy("DocumentAdapterService.xml");
+        super.setUp();
+        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+                "OSGI-INF/CoreService.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+                "OSGI-INF/SecurityService.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "TypeService.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "permissions-contrib.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "RepositoryService.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "test-CoreExtensions.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "CoreTestExtensions.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "DemoRepository.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "LifeCycleService.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "LifeCycleServiceExtensions.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "CoreEventListenerService.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "DocumentAdapterService.xml");
 
         openSession();
-    }
-
-    // Duplicated from NXRuntimeTestCase
-    @Override
-    @Deprecated
-    public void deploy(String bundle) {
-        URL url = getResource(bundle);
-        assertNotNull("Test resource not found " + bundle, url);
-        try {
-            runtime.getContext().deploy(url);
-        } catch (Exception e) {
-            log.error(e);
-            fail("Failed to deploy bundle " + bundle);
-        }
-    }
-
-    // Duplicated from NXRuntimeTestCase
-    @Override
-    public void undeploy(String bundle) {
-        URL url = getResource(bundle);
-        assertNotNull("Test resource not found " + bundle, url);
-        try {
-            runtime.getContext().undeploy(url);
-        } catch (Exception e) {
-            fail("Failed to undeploy bundle " + bundle);
-        }
     }
 
     public void testPropertyModel() throws Exception {
