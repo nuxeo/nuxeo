@@ -182,47 +182,6 @@ public class TestSQLWithPath extends RepositoryTestCase {
         assertEquals(7, qr.count());
     }
 
-    public void testEcmName() throws Exception {
-        // all nodes having a given ecm:name
-        final String sql = "SELECT * FROM document WHERE ecm:name = 'testfolder2'";
-
-        Query qry = session.createQuery(sql, Query.Type.NXQL);
-        QueryResult qr = qry.execute();
-
-        for (DocumentModel doc: qr.getDocumentModels()) {
-            System.out.println(">>"+doc.getPathAsString());
-        }
-        assertEquals(1, qr.count());
-    }
-
-    public void testSQLSubpath() throws Exception {
-        // all nodes in a sub-tree
-        final String sql = "SELECT * FROM document WHERE ecm:path STARTSWITH 'testfolder2'";
-
-        Query qry = session.createQuery(sql, Query.Type.NXQL);
-        QueryResult qr = qry.execute();
-
-        for (DocumentModel doc: qr.getDocumentModels()) {
-            System.out.println(">>"+doc.getPathAsString());
-        }
-        assertEquals(2, qr.count());
-    }
-
-    public void testSQLSubpath2() throws Exception {
-        //final String sql = "SELECT * FROM document WHERE ecm:path STARTSWITH '/'";
-        //final String sql = "SELECT * FROM document WHERE ecm:path='/testfolder2/testfolder3' OR ecm:path STARTSWITH '/testfolder2/testfolder3'";
-        final String sql = "SELECT * FROM document WHERE ecm:path LIKE '%/testfolder2/testfolder3' OR ecm:path LIKE '/testfolder2/testfolder3'";
-
-        Query qry = session.createQuery(sql, Query.Type.NXQL);
-        QueryResult qr = qry.execute();
-
-        for (DocumentModel doc: qr.getDocumentModels()) {
-            System.out.println(">>"+doc.getPathAsString());
-        }
-        assertEquals(7, qr.count());
-    }
-
-
     public void OBSOLETEtestSQLSubpathWithLike1() throws Exception {
         final String logPrefix = "<testJCRXPathContain> ";
         log.info(logPrefix + "...");

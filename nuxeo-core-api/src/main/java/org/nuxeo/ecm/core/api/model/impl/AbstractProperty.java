@@ -399,12 +399,13 @@ public abstract class AbstractProperty implements Property {
                 index = segment.substring(p+1, segment.length()-1);
                 segment = segment.substring(0, p);
             }
-            property = property.get(segment);
-            if (property == null) {
-                throw new PropertyNotFoundException(path.toString(), "segment "
-                        + segments[i] + " cannot be resolved");
-            }
-            if (index != null) {
+            if (index == null) {
+                property = property.get(segment);
+                if (property == null) {
+                    throw new PropertyNotFoundException(path.toString(), "segment "
+                            + segments[i] + " cannot be resolved");
+                }
+            } else {
                 property = property.get(index);
             }
         }

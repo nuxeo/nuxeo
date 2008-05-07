@@ -23,7 +23,6 @@
   <target name="scanner"> <jflex file="nxql.flex"/> </target>
 
   <target name="cup">
-  	<echo>Generating to: ${project.dir}/${src_gen.dir}</echo>
     <cup srcfile="${basedir}/nxql.cup" interface="yes" destdir="${project.dir}/${src_gen.dir}" force="true"/>
   </target>
 
