@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>${this.title}</title>
+    <title>${root.title} : ${this.title}</title>
 <link rel="stylesheet" href="/nuxeo/site/files/resources/css/webengine.css" type="text/css" media="screen" charset="utf-8">
 <link rel="stylesheet" href="/nuxeo/site/files/resources/css/wiki.css" type="text/css" media="screen" charset="utf-8">
 <script src="/nuxeo/site/files/resources/script/jquery/jquery.js"></script>
@@ -21,9 +21,11 @@
     </div>
     <div id="main-wrapper">
       <div id="main">
+        <div class="main-content">
           <@block name="content">
           ##This is the content block##
           </@block>
+        </div>  
       </div>
 
       <div id="sidebar">
@@ -32,7 +34,7 @@
     </div>
     <div id="footer">
        <p>Last modified by ${this.author} @ ${this.dublincore.modified?datetime}</p>
-       <p>Copyright <a href="">Nuxeo SAS</a> 2000-2015</p>
+       <p>© 2000-2008 <a href="http://www.nuxeo.com/en/">Nuxeo</a>.</p>
     </div>
     
 </div>
