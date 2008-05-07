@@ -30,6 +30,11 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface SiteConst {
 
+    /**
+     * Part of HTTP content type header.
+     */
+    static final String MULTIPART = "multipart/";
+
     static final String ACTION_SEPARATOR = "@@";
 
     static final String MODE_KEY = "render_mode";
