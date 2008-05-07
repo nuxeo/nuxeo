@@ -1,8 +1,5 @@
-<@extends src="/default/Wiki/base.ftl">
-<@block name="content">
-
-<h2>Edit Wiki Page : ${this.title} </h2>
-<form method="GET" action="${this.docURL}@@update">
+<h1>Edit Wiki Page : ${this.title} </h1>
+<form method="POST" action="${this.docURL}@@update">
 <textarea name="wp:content" cols="75" rows="30">${this.wikiPage.content}</textarea>
 <p>
 Title: <input type="text" name="dc:title" value="${this.dublincore.title}"/>
@@ -17,5 +14,3 @@ Title: <input type="text" name="dc:title" value="${this.dublincore.title}"/>
 
 <input type="submit"/>
 </form>
-</@block>
-</@extends>

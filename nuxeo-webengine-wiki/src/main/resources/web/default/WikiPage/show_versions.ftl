@@ -1,9 +1,16 @@
-<@extends src="/default/WikiPage/view.ftl">
-<@block name="content">
-
 <h1>Versions for ${this.title}</h1>
 
-<form action="${this.docURL}@@compare_versions" method="get" accept-charset="utf-8">
+<script>
+
+$("compare_versions").submit(function() {
+    alert("Are you sure?");
+     return false;
+});
+
+
+</script>
+
+<form id="version_list" action="${this.docURL}@@compare_versions" method="get" accept-charset="utf-8">
 <table class="version_list">
     <tr>
         <td>From</td>
@@ -35,5 +42,3 @@
 </table>
 <input type="submit" name="Compare" value="Compare" id="compare_versions">
 </form>
-</@block>
-</@extends>
