@@ -64,9 +64,10 @@ public class JCRQuery implements Query {
         //log.debug("SQL query: " + rawQuery);
         try {
             sqlQuery = SQLQueryParser.parse(rawQuery);
-            //log.info("!nxql Query: " + sqlQuery.getStatement());
+            //log.info("!nxql Query: " + sqlQuery.toString());
             javax.jcr.query.Query jcrQuery = buildJcrQuery(sqlQuery);
             //log.info("!jcr Query: " + jcrQuery.getStatement());
+            System.out.println("!jcr Query: " + jcrQuery.getStatement());
             // run query within a controlable thread
             // use
             javax.jcr.query.QueryResult qr = jcrQuery.execute();
@@ -144,9 +145,35 @@ public class JCRQuery implements Query {
         }
         StringBuilder buffer = new StringBuilder();
         buffer.append(" '/");
-        buffer.append(NodeConstants.ECM_ROOT.rawname).append('/');
-        buffer.append(ModelAdapter.path2Jcr(new Path(s.replaceAll("\\.", "/"))));
+        buffer.append(NodeConstants.ECM_ROOT.rawname).append("/ecm:children/");
+        Path path = new Path(s);
+        for (int i=0, len=path.segmentCount(); i<len; i++) {
+            buffer.append(path.segment(i)).append("/ecm:children/");//append("[%]/ecm:children/"); --> DO NOT USE [%] since documents cannot have same names
+        }
+        //buffer.append(ModelAdapter.path2Jcr(path));
         buffer.append("%' ");
+        return buffer.toString();
+    }
+
+    private static String buildExactJcrPath(String s) {
+        // trim quotes if present
+        s = s.trim();
+        if (s.startsWith("'") && s.endsWith("'")) {
+            s = s.substring(1, s.length() - 1);
+        }
+        StringBuilder buffer = new StringBuilder();
+        buffer.append(" '/");
+        buffer.append(NodeConstants.ECM_ROOT.rawname).append("/ecm:children/");
+        Path path = new Path(s);
+        int len = path.segmentCount()-1;
+        for (int i=0; i<len; i++) {
+            buffer.append(path.segment(i)).append("/ecm:children/");//append("[%]/ecm:children/"); --> DO NOT USE [%] since documents cannot have same names
+        }
+        if (len >-1) {
+            buffer.append(path.segment(len));
+        }
+        //buffer.append(ModelAdapter.path2Jcr(path));
+        buffer.append("' ");
         return buffer.toString();
     }
 
@@ -173,17 +200,29 @@ public class JCRQuery implements Query {
         if (operand instanceof Expression) {
             Expression expression = (Expression) operand;
 
-            if (expression.lvalue.toString().equals("'ecm:path'")) {
+            if (expression.lvalue.toString().equals("ecm:path")) {
                 if (expression.operator.equals(Operator.STARTSWITH)) {
-                    // log.info(operand);
-
                     buff.append("jcr:path LIKE ");
                     buff.append(buildJcrPath(expression.rvalue.toString()));
-                    buff.append("");
+                    return;
+                } else if (expression.operator.equals(Operator.EQ)) {
+                    buff.append("jcr:path = ");
+                    buff.append(buildExactJcrPath(expression.rvalue.toString()));
+                    return;
+                } else if (expression.operator.equals(Operator.LIKE)) {
+                    buff.append("jcr:path LIKE ");
+                    buff.append(buildExactJcrPath(expression.rvalue.toString()));
                     return;
                 } else {
                     log.warn("Operator '" + expression.operator
                             + "' not supported for ecm:path. Ignored.");
+                    return;
+                }
+            } else if (expression.lvalue.toString().equals("ecm:name")) {
+                if (expression.operator.equals(Operator.EQ) || expression.operator.equals(Operator.LIKE)) {
+                    String name = expression.rvalue.toString();
+                    // SELECT * FROM nt:base WHERE (jcr:path LIKE '/%/abc[%]' OR jcr:path LIKE '/abc[%]')
+                    buff.append("(jcr:path LIKE '/%/"+name+"') OR jcr:path LIKE '/"+name+"')");
                     return;
                 }
             }
@@ -200,10 +239,24 @@ public class JCRQuery implements Query {
     public javax.jcr.query.Query buildJcrQuery(SQLQuery sqlQuery)
             throws QueryException {
         try {
-            final String jcrQuery = buildJCRQueryString(sqlQuery);
+            String jcrQuery = buildJCRQueryString(sqlQuery);
+            //jcrQuery = "SELECT * FROM nt:base WHERE (jcr:path LIKE '/%/testfolder2[%]' OR jcr:path LIKE '/testfolder2[%]')";
+            //jcrQuery = "SELECT * FROM nt:base WHERE (jcr:path LIKE '/%/testfolder2[%]' OR jcr:path LIKE '/testfolder2[%]')";
+            //jcrQuery = "SELECT * FROM nt:base WHERE jcr:path='/ecm:root/ecm:children/testfolder2'";
+            //jcrQuery = "SELECT * FROM nt:base WHERE jcr:path='/ecm:root/ecm:children/testfolder2' OR jcr:path = '/ecm:root/ecm:children'";
             //log.info("!JCR query: " + jcrQuery);
+            //jcrQuery = "SELECT * FROM ecmdt:Document WHERE jcr:path LIKE '/%/testfolder%'";
+            // XPATh ------------------
+            // all documents of a given type
+            // jcrQuery = "//element(*, ecmdt:Document)";
+            // match an element given its name
+            jcrQuery = "//element(testfolder3, ecmdt:Document)";
+            jcrQuery = "//workspaces/wiki/*[(jcr:primaryType='WikiPage' or jcr:primaryType='Wiki') and jcr:like(dc:title, '%test%')]";
+            // this should work in 1.4
+            //jcrQuery = "//element(*, ecmdt:Document)[fn:name() = 'testfolder3']";
             final QueryManager qm = session.jcrSession().getWorkspace().getQueryManager();
-            return qm.createQuery(jcrQuery, javax.jcr.query.Query.SQL);
+            //return qm.createQuery(jcrQuery, javax.jcr.query.Query.SQL);
+            return qm.createQuery(jcrQuery, javax.jcr.query.Query.XPATH);
         } catch (RepositoryException e) {
             throw new QueryException("Invalid JCR query", e);
         }
