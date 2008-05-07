@@ -247,7 +247,7 @@
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam</artifactId>
-        <version>2.0.2.CR1</version>
+        <version>2.0.2.CR1-NX</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
