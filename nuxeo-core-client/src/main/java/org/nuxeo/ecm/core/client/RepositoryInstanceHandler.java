@@ -19,13 +19,18 @@
 
 package org.nuxeo.ecm.core.client;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.HashMap;
 
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.WrappedException;
 import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryInstance;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -35,11 +40,12 @@ public class RepositoryInstanceHandler implements InvocationHandler {
 
     private final Repository repository;
     private CoreSession session;
-    private RepositoryExceptionHandler exceptionHandler;
+    private final RepositoryExceptionHandler exceptionHandler;
+    private RepositoryInstance  proxy;
 
 
     public RepositoryInstanceHandler(Repository repository) {
-        this (repository, null);
+        this(repository, null);
     }
 
     public RepositoryInstanceHandler(Repository repository, RepositoryExceptionHandler exceptionHandler) {
@@ -47,43 +53,61 @@ public class RepositoryInstanceHandler implements InvocationHandler {
         this.exceptionHandler = exceptionHandler;
     }
 
-    /**
-     * @return the exceptionHandler.
-     */
     public RepositoryExceptionHandler getExceptionHandler() {
         return exceptionHandler;
     }
 
-    private void rethrownException(Throwable t) throws Exception {
+    public RepositoryInstance  getProxy() {
+        if (proxy == null) {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            if (cl == null) {
+                cl = Repository.class.getClassLoader();
+            }
+            proxy = (RepositoryInstance)Proxy.newProxyInstance(cl,
+                    new Class[] { RepositoryInstance.class },
+                    this);
+        }
+        return proxy;
+    }
+
+    private static void rethrowException(Throwable t) throws Exception {
         if (t instanceof Exception) {
-            throw (Exception)t;
+            throw (Exception) t;
         } else if (t instanceof Error) {
-            throw (Error)t;
+            throw (Error) t;
         } else {
             throw WrappedException.wrap(t);
         }
     }
 
-    /**
-     * @return the session.
-     */
     public CoreSession getSession() throws Exception {
         if (session == null) {
             synchronized (this) {
                 if (session == null) {
                     try {
-                        session = repository.open();
+                        open(repository);
                     } catch (Throwable t) {
                         if (exceptionHandler != null) {
                             session = exceptionHandler.handleAuthenticationFailure(repository, t);
                         } else {
-                            rethrownException(t);
+                            rethrowException(t);
                         }
                     }
                 }
             }
         }
         return session;
+    }
+
+    private void open(Repository repository) throws Exception {
+        session = Framework.getService(CoreSession.class, repository.getName());
+        String repositoryUri = repository.getRepositoryUri();
+        if (repositoryUri == null) {
+            repositoryUri = repository.getName();
+        }
+        String sid = session.connect(repositoryUri, new HashMap<String, Serializable>());
+        // register session on local JVM so it can be used later by doc models
+        CoreInstance.getInstance().registerSession(sid, proxy);
     }
 
     public void closeSession() throws Exception {
@@ -96,7 +120,7 @@ public class RepositoryInstanceHandler implements InvocationHandler {
                         if (exceptionHandler != null) {
                             exceptionHandler.handleException(t);
                         } else {
-                            rethrownException(t);
+                            rethrowException(t);
                         }
                     } finally {
                         session = null;
@@ -116,7 +140,7 @@ public class RepositoryInstanceHandler implements InvocationHandler {
                 if (exceptionHandler != null) {
                     exceptionHandler.handleException(t);
                 } else {
-                    rethrownException(t);
+                    rethrowException(t);
                 }
             }
         } else {

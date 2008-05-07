@@ -45,12 +45,12 @@ public class EventManagerComponent extends DefaultComponent {
     @Override
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
-        String klass = (String)context.getPropertyValue("class", null);
+        String klass = (String) context.getPropertyValue("class", null);
         if (klass == null) {
             service = new DefaultEventService();
         } else {
-            service = (CoreEventListenerService)context
-                .getRuntimeContext().loadClass(klass).newInstance();
+            service = (CoreEventListenerService) context.getRuntimeContext().loadClass(
+                    klass).newInstance();
         }
     }
 
