@@ -10,8 +10,11 @@
   rendered="#{documents != null}">
 
   <h:form id="#{documents.name}">
-    <h:outputText value="#{messages['label.content.emptyFolder']}"
-      rendered="#{documents.rowCount == 0}" />
+    
+    <ui:insert name="empty_folder_label">
+      <h:outputText value="#{messages['label.content.emptyFolder']}"
+        rendered="#{documents.rowCount == 0}" />
+    </ui:insert>
 
     <ui:include src="/pagination/pageNavigationControls.xhtml" />
 
@@ -172,11 +175,14 @@
 
     <ui:insert name="buttons" />
     
-    <f:subview rendered="#{currentDocument.folder or currentDocument.type == 'section'}">
-      <ui:include src="/incl/syndication_buttons.xhtml">
-        <ui:param name="type" value="document" />
-      </ui:include>
-    </f:subview>
+    <ui:insert name="syndication_buttons">
+      <f:subview rendered="#{currentDocument.folder or currentDocument.type == 'section'}">
+        <ui:include src="/incl/syndication_buttons.xhtml">
+          <ui:param name="type" value="document" />
+        </ui:include>
+      </f:subview>
+    </ui:insert>
+
     <div style="clear:both"></div>
   </h:form>
 
