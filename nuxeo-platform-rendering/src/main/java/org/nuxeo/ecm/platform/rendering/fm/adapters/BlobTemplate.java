@@ -59,12 +59,21 @@ public class BlobTemplate extends PropertyWrapper implements TemplateHashModelEx
     public TemplateCollectionModel values() throws TemplateModelException {
         try {
             List<Object> list = new ArrayList<Object>(keys.length);
-            list.add(blob.getFilename());
-            list.add(blob.getString());
-            list.add(blob.getLength());
-            list.add(blob.getMimeType());
-            list.add(blob.getEncoding());
-            list.add(blob.getDigest());
+            if (blob != null) {
+                list.add(blob.getFilename());
+                list.add(blob.getString());
+                list.add(blob.getLength());
+                list.add(blob.getMimeType());
+                list.add(blob.getEncoding());
+                list.add(blob.getDigest());
+            } else {
+                list.add("");
+                list.add("");
+                list.add("");
+                list.add("");
+                list.add("");
+                list.add("");
+            }
             return (TemplateCollectionModel)wrapper.wrap(list);
         } catch (Exception  e) {
             throw new TemplateModelException("Failed to adapt complex property values", e);
@@ -73,18 +82,20 @@ public class BlobTemplate extends PropertyWrapper implements TemplateHashModelEx
 
     public TemplateModel get(String name) throws TemplateModelException {
         try {
-            if (keys[0].equals(name)) {
-                return new SimpleScalar(blob.getFilename());
-            } else if (keys[1].equals(name)) {
-                return new SimpleScalar(blob.getString());
-            } else if (keys[2].equals(name)) {
-                return new SimpleNumber(blob.getLength());
-            } else if (keys[3].equals(name)) {
-                return new SimpleScalar(blob.getMimeType());
-            } else if (keys[4].equals(name)) {
-                return new SimpleScalar(blob.getEncoding());
-            } else if (keys[5].equals(name)) {
-                return new SimpleScalar(blob.getDigest());
+            if (blob != null) {
+                if (keys[0].equals(name)) {
+                    return new SimpleScalar(blob.getFilename());
+                } else if (keys[1].equals(name)) {
+                    return new SimpleScalar(blob.getString());
+                } else if (keys[2].equals(name)) {
+                    return new SimpleNumber(blob.getLength());
+                } else if (keys[3].equals(name)) {
+                    return new SimpleScalar(blob.getMimeType());
+                } else if (keys[4].equals(name)) {
+                    return new SimpleScalar(blob.getEncoding());
+                } else if (keys[5].equals(name)) {
+                    return new SimpleScalar(blob.getDigest());
+                }
             }
             return TemplateModel.NOTHING;
         } catch (IOException e) {
