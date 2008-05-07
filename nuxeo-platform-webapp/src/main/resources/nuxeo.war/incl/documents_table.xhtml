@@ -176,7 +176,7 @@
     <ui:insert name="buttons" />
     
     <ui:insert name="syndication_buttons">
-      <f:subview rendered="#{currentDocument.folder or currentDocument.type == 'section'}">
+      <f:subview rendered="#{currentDocument.folder}">
         <ui:include src="/incl/syndication_buttons.xhtml">
           <ui:param name="type" value="document" />
         </ui:include>
