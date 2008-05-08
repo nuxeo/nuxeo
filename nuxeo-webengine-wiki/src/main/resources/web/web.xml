@@ -9,43 +9,53 @@
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="binding">
-    <binding type="Document" object="WebObject" />
+    <binding type="Document" objectId="WebObject" />
+    <binding type="WikiPage" objectId="WikiPage" />
   </extension>
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
   	point="webObject">
-  	<object id="WebObject" extends="default">
+  	<object id="WebObject">
   		<actions>
   			<action id="view" enabled="true">
           <permission  expression="READ"/>
           <category>VIEW</category>
         </action>
         <action id="print" enabled="true">
+
           <permission expression="READ" />
         </action>
         <action id="delete" enabled="true" handler="org.nuxeo.ecm.webengine.actions.DeleteActionHandler">
           <permission expression="WRITE" />
         </action>
-        <action id="update" enabled="true" handler="org.nuxeo.ecm.webengine.actions.UpateActionHandler">
+        <action id="update" enabled="true" script="common/update.groovy" handler="org.nuxeo.ecm.webengine.actions.UpateActionHandler">
           <permission expression="WRITE" />
         </action>
         <action id="edit" enabled="true">
+
           <permission expression="WRITE" />
         </action>
-        <action id="create" enabled="true" handler="org.nuxeo.ecm.webengine.actions.CreateActionHandler">
+        <action id="create" enabled="true" script="common/create.groovy" handler="org.nuxeo.ecm.webengine.actions.CreateActionHandler">
           <permission expression="WRITE" />
         </action>
-        <!--action id="getfile" enabled="true" handler="org.nuxeo.ecm.webengine.actions.GetFileActionHandler">
+        <action id="getfile" enabled="true" handler="org.nuxeo.ecm.webengine.actions.GetFileActionHandler">
           <permission expression="READ" />
         </action>
         <action id="addfile" enabled="true" handler="org.nuxeo.ecm.webengine.actions.AddFileActionHandler">
+
           <permission expression="WRITE" />
         </action>
         <action id="deletefile" enabled="true" handler="org.nuxeo.ecm.webengine.actions.DeleteFileActionHandler">
           <permission expression="WRITE" />
-        </action-->
+        </action>        
       </actions>
   	</object>
+    <object id="WikiPage" extends="WebObject">
+      <actions>
+
+        <action id="print" enabled="false"/>
+      </actions>
+    </object>
   </extension>
 
 </component>
