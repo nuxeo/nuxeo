@@ -78,8 +78,8 @@ public class EventManagerComponent extends DefaultComponent {
                         }
                     }
                     service.addEventListener(listener);
-                    log.info("Repository listener with name=" + desc.getName()
-                            + " has  been registered !");
+                    log.info("Registered core event listener: " +
+                            desc.getName());
                 }
             }
         }
@@ -93,9 +93,8 @@ public class EventManagerComponent extends DefaultComponent {
                 for (Object contribution : contributions) {
                     CoreEventListenerDescriptor desc = (CoreEventListenerDescriptor) contribution;
                     service.removeEventListener(service.getEventListenerByName(desc.getName()));
-                    log.info("Repository listener with name=" + desc.getName()
-                            + " has been unregistered");
-
+                    log.info("Unregistered core event listener: " +
+                            desc.getName());
                 }
             }
         }
