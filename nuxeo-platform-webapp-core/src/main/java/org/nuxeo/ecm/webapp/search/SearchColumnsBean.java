@@ -176,8 +176,9 @@ public class SearchColumnsBean extends InputController implements SearchColumns,
             String groupLabel = fieldGroupDescriptor.getLabel();
             String groupName = fieldGroupDescriptor.getName();
             if (groupLabel == null) {
-                log.warn("no label for fieldGroup: " + groupName);
                 groupLabel = "label.schema." + groupName;
+                log.debug(String.format("no label for fieldGroup %s, using %s",
+                        groupName, groupLabel));
             }
             VocabularyEntry fieldGroupEntry = new VocabularyEntry(groupName,
                     groupLabel);
