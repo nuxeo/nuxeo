@@ -332,51 +332,51 @@
     </style>
     
     <style name="breadcrumbs style">
-    <selector path="" view="nuxeo5 breadcrumbs">
+    <selector path="">
         <padding>5px 0px</padding>
       </selector>
-      <selector path="div" view="nuxeo5 breadcrumbs">
+      <selector path="div">
         <font preset="small (Nuxeo default fonts)"/>
         <margin>0</margin>
         <line-height>1.25em</line-height>
         <padding>0</padding>
       </selector>
-      <selector path="a" view="nuxeo5 breadcrumbs">
+      <selector path="a">
         <color preset="link (Nuxeo psd colors)"/>
         <text-decoration>none</text-decoration>
       </selector>
-      <selector path="a:visited" view="nuxeo5 breadcrumbs">
+      <selector path="a:visited">
         <color preset="link.visited (Nuxeo psd colors)"/>
       </selector>
-      <selector path="a:active" view="nuxeo5 breadcrumbs">
+      <selector path="a:active">
         <color preset="link.active (Nuxeo psd colors)"/>
       </selector>
-      <selector path="a:hover" view="nuxeo5 breadcrumbs">
+      <selector path="a:hover">
         <color preset="link (Nuxeo psd colors)"/>
         <text-decoration>underline</text-decoration>
       </selector>
       <selector
-        path=".breadcrumbs a, .breadcrumbs a:link, .breadcrumbs a:visited" view="nuxeo5 breadcrumbs">
+        path=".breadcrumbs a, .breadcrumbs a:link, .breadcrumbs a:visited">
         <font-weight>normal</font-weight>
         <text-decoration>none</text-decoration>
       </selector>
-      <selector path=".breadcrumbs a:hover, .breadcrumbs a:active" view="nuxeo5 breadcrumbs">
+      <selector path=".breadcrumbs a:hover, .breadcrumbs a:active">
         <font-weight>normal</font-weight>
         <text-decoration>underline</text-decoration>
       </selector>
-      <selector path=".printButton" view="nuxeo5 breadcrumbs">
+      <selector path=".printButton">
         <float>right</float>
         <padding-right>1px</padding-right>
       </selector>
-      <selector path=".printButton div a img" view="nuxeo5 breadcrumbs">
+      <selector path=".printButton div a img">
         <margin-left>5px</margin-left>
       </selector>
-      <selector path=".printButton .liveEditCreateButtons" view="nuxeo5 breadcrumbs">
+      <selector path=".printButton .liveEditCreateButtons">
         <margin-right>5px</margin-right>
         <padding-right>8px</padding-right>
         <border-right>1px solid #ccc</border-right>
       </selector>
-      <selector path=".breadcrumbs" view="nuxeo5 breadcrumbs">
+      <selector path=".breadcrumbs">
         <float>left</float>
         <font-size>9px</font-size>
         <padding>5px 4px 0px 0px</padding>
