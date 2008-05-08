@@ -49,18 +49,18 @@ import org.osgi.framework.Bundle;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class SiteManagerComponent extends DefaultComponent implements ResourceLocator, FileChangeListener  {
+public class WebEngineComponent extends DefaultComponent implements ResourceLocator, FileChangeListener  {
 
-    public static final ComponentName NAME = new ComponentName(SiteManagerComponent.class.getName());
+    public static final ComponentName NAME = new ComponentName(WebEngineComponent.class.getName());
 
     public static final String TRANSFORMER_XP = "transformer";
     public static final String WEB_OBJ_XP = "webObject";
     public static final String BINDING_XP = "binding";
     public static final String GUARD_XP = "guard"; // global guards
 
-    private static final Log log = LogFactory.getLog(SiteManagerComponent.class);
+    private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
-    private SiteManager mgr;
+    private WebEngine mgr;
     private FileChangeNotifier notifier;
     private RenderingEngine engine;
     private ComponentContext ctx;
@@ -90,7 +90,7 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
         engine.setResourceLocator(this);
         engine.addResourceDirectories(root);
         engine.setMessageBundle(messages);
-        mgr = new DefaultSiteManager(root, engine);
+        mgr = new DefaultWebEngine(root, engine);
         notifier = new FileChangeNotifier();
         notifier.start();
 
@@ -195,7 +195,7 @@ public class SiteManagerComponent extends DefaultComponent implements ResourceLo
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (adapter == SiteManager.class) {
+        if (adapter == WebEngine.class) {
             return adapter.cast(mgr);
         } else if (adapter == FileChangeNotifier.class) {
             return adapter.cast(notifier);

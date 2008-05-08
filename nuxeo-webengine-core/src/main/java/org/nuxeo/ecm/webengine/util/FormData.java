@@ -44,8 +44,8 @@ import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
-import org.nuxeo.ecm.webengine.SiteException;
-import org.nuxeo.ecm.webengine.servlet.SiteConst;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.servlet.WebConst;
 import org.nuxeo.runtime.services.streaming.ByteArraySource;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 import org.nuxeo.runtime.services.streaming.StreamSource;
@@ -88,7 +88,7 @@ public class FormData {
         if (contentType == null) {
             return false;
         }
-        if (contentType.toLowerCase().startsWith(SiteConst.MULTIPART)) {
+        if (contentType.toLowerCase().startsWith(WebConst.MULTIPART)) {
             return true;
         }
         return false;
@@ -99,7 +99,7 @@ public class FormData {
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String, List<FileItem>> getMultiPartItems() throws SiteException {
+    public Map<String, List<FileItem>> getMultiPartItems() throws WebException {
         if (items == null) {
             if (!isMultipartContent()) {
                 throw new IllegalStateException("Not in a multi part form request");
@@ -118,7 +118,7 @@ public class FormData {
                     list.add(item);
                 }
             } catch (FileUploadException e) {
-                throw new SiteException("Failed to get uploaded files", e);
+                throw new WebException("Failed to get uploaded files", e);
             }
         }
         return items;
@@ -126,7 +126,7 @@ public class FormData {
 
 
 
-    public Collection<String> getKeys() throws SiteException {
+    public Collection<String> getKeys() throws WebException {
         if (isMultipart) {
             return getMultiPartItems().keySet();
         } else {
@@ -134,12 +134,12 @@ public class FormData {
         }
     }
 
-    public Blob getBlob(String key) throws SiteException {
+    public Blob getBlob(String key) throws WebException {
         FileItem item = getFileItem(key);
         return item == null ? null : getBlob(item);
     }
 
-    public Blob[] getBlobs(String key) throws SiteException {
+    public Blob[] getBlobs(String key) throws WebException {
         List<FileItem> list = getFileItems(key);
         Blob[] ar = null;
         if (list != null) {
@@ -151,7 +151,7 @@ public class FormData {
         return ar;
     }
 
-    public Blob getFirstBlob() throws SiteException {
+    public Blob getFirstBlob() throws WebException {
         Map<String, List<FileItem>> items = getMultiPartItems();
         for (List<FileItem> list : items.values()) {
             for (FileItem item : list) {
@@ -163,7 +163,7 @@ public class FormData {
         return null;
     }
 
-    protected Blob getBlob(FileItem item) throws SiteException {
+    protected Blob getBlob(FileItem item) throws WebException {
         StreamSource src = null;
         if (item.isInMemory()) {
             src = new ByteArraySource(item.get());
@@ -171,7 +171,7 @@ public class FormData {
             try {
                 src = new InputStreamSource(item.getInputStream());
             } catch (IOException e) {
-                throw new SiteException("Failed to get blob data", e);
+                throw new WebException("Failed to get blob data", e);
             }
         }
         String ctype  = item.getContentType();
@@ -180,7 +180,7 @@ public class FormData {
         return blob;
     }
 
-    public final FileItem getFileItem(String key) throws SiteException {
+    public final FileItem getFileItem(String key) throws WebException {
         Map<String, List<FileItem>> items = getMultiPartItems();
         List<FileItem> list = items.get(key);
         if (list != null && !list.isEmpty()) {
@@ -189,16 +189,16 @@ public class FormData {
         return null;
     }
 
-    public final List<FileItem> getFileItems(String key) throws SiteException {
+    public final List<FileItem> getFileItems(String key) throws WebException {
         return getMultiPartItems().get(key);
     }
 
-    public String getMultiPartFormProperty(String key) throws SiteException {
+    public String getMultiPartFormProperty(String key) throws WebException {
         FileItem item = getFileItem(key);
         return item == null ? null : item.getString();
     }
 
-    public String[] getMultiPartFormListProperty(String key) throws SiteException {
+    public String[] getMultiPartFormListProperty(String key) throws WebException {
         List<FileItem> list = getFileItems(key);
         String[] ar = null;
         if (list != null) {
@@ -215,11 +215,11 @@ public class FormData {
      * @param key
      * @return an array of strings or an array of blobs
      */
-    public Object[] getMultiPartFormItems(String key) throws SiteException {
+    public Object[] getMultiPartFormItems(String key) throws WebException {
         return getMultiPartFormItems(getFileItems(key));
     }
 
-    public Object[] getMultiPartFormItems(List<FileItem> list) throws SiteException {
+    public Object[] getMultiPartFormItems(List<FileItem> list) throws WebException {
         Object[] ar = null;
         if (list != null) {
             if (list.isEmpty()) return null;
@@ -241,7 +241,7 @@ public class FormData {
         return ar;
     }
 
-    public final Object getFileItemValue(FileItem item) throws SiteException {
+    public final Object getFileItemValue(FileItem item) throws WebException {
         if (item.isFormField()) {
             return item.getString();
         } else {
@@ -262,7 +262,7 @@ public class FormData {
         return request.getParameterValues(key);
     }
 
-    public String getString(String key) throws SiteException {
+    public String getString(String key) throws WebException {
         if (isMultipart) {
             return getMultiPartFormProperty(key);
         } else {
@@ -270,7 +270,7 @@ public class FormData {
         }
     }
 
-    public String[] getList(String key) throws SiteException {
+    public String[] getList(String key) throws WebException {
         if (isMultipart) {
             return getMultiPartFormListProperty(key);
         } else {
@@ -278,7 +278,7 @@ public class FormData {
         }
     }
 
-    public Object[] get(String key) throws SiteException {
+    public Object[] get(String key) throws WebException {
         if (isMultipart) {
             return getMultiPartFormItems(key);
         } else {
@@ -286,7 +286,7 @@ public class FormData {
         }
     }
 
-    public void fillDocument(DocumentModel doc) throws SiteException {
+    public void fillDocument(DocumentModel doc) throws WebException {
         try {
             if (isMultipart) {
                 fillDocumentFromMultiPartForm(doc);
@@ -294,11 +294,11 @@ public class FormData {
                 fillDocumentFromForm(doc);
             }
         } catch (PropertyException e) {
-            throw new SiteException("Failed to fill document properties from request properties", e);
+            throw new WebException("Failed to fill document properties from request properties", e);
         }
     }
 
-    public void fillDocumentFromForm(DocumentModel doc) throws PropertyException, SiteException {
+    public void fillDocumentFromForm(DocumentModel doc) throws PropertyException, WebException {
         Map<String,String[]> map = (Map<String,String[]>)request.getParameterMap();
         for (Map.Entry<String,String[]> entry : map.entrySet()) {
             String key = entry.getKey();
@@ -315,7 +315,7 @@ public class FormData {
         }
     }
 
-    public void fillDocumentFromMultiPartForm(DocumentModel doc) throws PropertyException, SiteException {
+    public void fillDocumentFromMultiPartForm(DocumentModel doc) throws PropertyException, WebException {
         Map<String,List<FileItem>> map = getMultiPartItems();
         for (Map.Entry<String,List<FileItem>> entry : map.entrySet()) {
             String key = entry.getKey();
@@ -337,7 +337,7 @@ public class FormData {
         }
     }
 
-    void fillDocumentProperty(Property p, String key, Object[] ar) throws PropertyException, SiteException {
+    void fillDocumentProperty(Property p, String key, Object[] ar) throws PropertyException, WebException {
         if (ar == null || ar.length == 0) {
             p.remove();
         } else if (p.isScalar()) {
@@ -363,7 +363,7 @@ public class FormData {
                     }
                     p.setValue(blobs);
                 } else {
-                    throw new SiteException("Cannot create complex lists properties from HTML forms");
+                    throw new WebException("Cannot create complex lists properties from HTML forms");
                 }
             }
         } else if (p.isComplex()) {
@@ -377,12 +377,12 @@ public class FormData {
                 }
                 p.setValue(blob);
             } else {
-                throw new SiteException("Cannot set complext properties from HTML forms. You need to set each sub-scalar property explicitelly");
+                throw new WebException("Cannot set complext properties from HTML forms. You need to set each sub-scalar property explicitelly");
             }
         }
     }
 
-    public VersioningActions getVersioningOption() throws SiteException {
+    public VersioningActions getVersioningOption() throws WebException {
         String val = getString(VERSIONING);
         if (val != null) {
             return val.equals(MAJOR) ? VersioningActions.ACTION_INCREMENT_MAJOR
@@ -391,11 +391,11 @@ public class FormData {
         return null;
     }
 
-    public String getDocumentType() throws SiteException {
+    public String getDocumentType() throws WebException {
         return getString(DOCTYPE);
     }
 
-    public String getDocumentTitle() throws SiteException {
+    public String getDocumentTitle() throws WebException {
         return getString(TITLE);
     }
 

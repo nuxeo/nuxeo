@@ -23,8 +23,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.api.DocumentContextView;
 import org.nuxeo.ecm.platform.rendering.api.DocumentField;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
-import org.nuxeo.ecm.webengine.SiteObject;
-import org.nuxeo.ecm.webengine.SiteRequest;
+import org.nuxeo.ecm.webengine.WebObject;
+import org.nuxeo.ecm.webengine.WebContext;
 
 public class SiteDocumentView extends DocumentContextView {
 
@@ -38,10 +38,10 @@ public class SiteDocumentView extends DocumentContextView {
         addField(DESCRIPTOR);
     }
 
-    protected static SiteRequest getRequest(RenderingContext ctx, DocumentModel doc) {
-        if (ctx instanceof SiteObject) {
-            SiteObject sCtx = (SiteObject) ctx;
-            SiteRequest request = sCtx.getSiteRequest();
+    protected static WebContext getRequest(RenderingContext ctx, DocumentModel doc) {
+        if (ctx instanceof WebObject) {
+            WebObject sCtx = (WebObject) ctx;
+            WebContext request = sCtx.getSiteRequest();
             return request;
         }
         return null;
@@ -63,7 +63,7 @@ public class SiteDocumentView extends DocumentContextView {
         }
 
         public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
-            return ((SiteObject)ctx).getAbsolutePath();
+            return ((WebObject)ctx).getAbsolutePath();
         }
     };
 
@@ -83,8 +83,8 @@ public class SiteDocumentView extends DocumentContextView {
         }
 
         public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
-            if (ctx instanceof SiteObject) {
-                SiteObject sCtx = (SiteObject) ctx;
+            if (ctx instanceof WebObject) {
+                WebObject sCtx = (WebObject) ctx;
                 return sCtx.getDescriptor().getEnabledActions(sCtx);
             }
             return null;
@@ -97,8 +97,8 @@ public class SiteDocumentView extends DocumentContextView {
         }
 
         public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
-            if (ctx instanceof SiteObject) {
-                SiteObject sCtx = (SiteObject) ctx;
+            if (ctx instanceof WebObject) {
+                WebObject sCtx = (WebObject) ctx;
                 return sCtx.getDescriptor();
             }
             return null;

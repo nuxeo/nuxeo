@@ -24,7 +24,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.DocumentResolver;
-import org.nuxeo.ecm.webengine.SiteRoot;
+import org.nuxeo.ecm.webengine.WebRoot;
 import org.nuxeo.runtime.Version;
 
 /**
@@ -37,7 +37,7 @@ public class MainSection implements Configurator {
     public final static MainSection INSTANCE = new MainSection();
 
     @SuppressWarnings("unchecked")
-    public void configure(SiteRoot root, Map<String, String> properties) {
+    public void configure(WebRoot root, Map<String, String> properties) {
         String val = properties.get("version");
         if (val != null) {
             root.setVersion(Version.parseString(val));

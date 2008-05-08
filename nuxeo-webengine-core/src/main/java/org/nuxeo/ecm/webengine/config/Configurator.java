@@ -21,7 +21,7 @@ package org.nuxeo.ecm.webengine.config;
 
 import java.util.Map;
 
-import org.nuxeo.ecm.webengine.SiteRoot;
+import org.nuxeo.ecm.webengine.WebRoot;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -29,6 +29,6 @@ import org.nuxeo.ecm.webengine.SiteRoot;
  */
 public interface Configurator {
 
-    void configure(SiteRoot root, Map<String, String> properties);
+    void configure(WebRoot root, Map<String, String> properties);
 
 }

@@ -39,11 +39,11 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.webengine.DefaultDocumentResolver;
 import org.nuxeo.ecm.webengine.DocumentResolver;
 import org.nuxeo.ecm.webengine.RequestHandler;
-import org.nuxeo.ecm.webengine.SiteException;
-import org.nuxeo.ecm.webengine.SiteManager;
-import org.nuxeo.ecm.webengine.SiteObject;
-import org.nuxeo.ecm.webengine.SiteRequest;
-import org.nuxeo.ecm.webengine.SiteRoot;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.WebObject;
+import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.WebRoot;
 import org.nuxeo.ecm.webengine.actions.Actions;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.rendering.ServletRequestView;
@@ -58,23 +58,23 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class SiteServlet extends HttpServlet {
+public class WebServlet extends HttpServlet {
 
     private static final long serialVersionUID = 965764764858L;
 
-    private static final Log log = LogFactory.getLog(SiteServlet.class);
+    private static final Log log = LogFactory.getLog(WebServlet.class);
 
     protected static final int BUFFER_SIZE = 4096 * 16;
 
     protected static DocumentResolver resolver = new DefaultDocumentResolver();
 
     private Scripting scripting;
-    private SiteManager manager;
+    private WebEngine manager;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        manager = Framework.getLocalService(SiteManager.class);
+        manager = Framework.getLocalService(WebEngine.class);
         scripting = manager.getScripting();
         HashMap<String, Object> env = new HashMap<String, Object>();
         env.put("installDir", manager.getRootDirectory());
@@ -90,11 +90,11 @@ public class SiteServlet extends HttpServlet {
             throws ServletException, IOException {
         double start = System.currentTimeMillis();
 
-        if (req.getMethod().equals(SiteConst.METHOD_HEAD)) {
+        if (req.getMethod().equals(WebConst.METHOD_HEAD)) {
             resp = new NoBodyResponse(resp);
         }
 
-        SiteRequest siteRequest = null;
+        WebContext siteRequest = null;
         try {
             siteRequest = createRequest(req, resp);
             service(siteRequest, req, resp);
@@ -102,30 +102,30 @@ public class SiteServlet extends HttpServlet {
             log.error("Site Servlet failed to handle request", e);
             if (siteRequest == null) {
                 displayError(resp, e, "Failed to create request",
-                        SiteConst.SC_INTERNAL_SERVER_ERROR);
+                        WebConst.SC_INTERNAL_SERVER_ERROR);
             } else {
-                SiteRoot root = siteRequest.getRoot();
+                WebRoot root = siteRequest.getRoot();
                 ScriptFile page = root.getScript(root.getErrorPage(), null);
                 try {
                     siteRequest.setVar("error", e);
                     manager.getScripting().exec(siteRequest, page);
                 } catch (Throwable ee) {
                     displayError(resp, ee, "Failed to show error page",
-                            SiteConst.SC_INTERNAL_SERVER_ERROR);
+                            WebConst.SC_INTERNAL_SERVER_ERROR);
                 }
             }
         }
         System.out.println(">>> SITE REQUEST TOOK:  "+((System.currentTimeMillis()-start)/1000));
     }
 
-    protected void service(SiteRequest siteRequest, HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    protected void service(WebContext siteRequest, HttpServletRequest req, HttpServletResponse resp) throws Exception {
         if (siteRequest.getLastResolvedObject() == null) { // a request outside the root
             showIndex(siteRequest);
             return;
         }
 
         String method = req.getMethod();
-        SiteObject lastTraversedObject = null;
+        WebObject lastTraversedObject = null;
             lastTraversedObject = siteRequest.traverse();
             if (lastTraversedObject == null) {
                 displayError(resp, null, "Site Root is not a supported object ");
@@ -135,15 +135,15 @@ public class SiteServlet extends HttpServlet {
             if (siteRequest.getMapping() == null) {
                 RequestHandler handler = lastTraversedObject.getRequestHandler();
                 if (handler != null) {
-                    if (method.equals(SiteConst.METHOD_POST)) {
+                    if (method.equals(WebConst.METHOD_POST)) {
                         handler.doPost(lastTraversedObject);
-                    } else if (method.equals(SiteConst.METHOD_PUT)) {
+                    } else if (method.equals(WebConst.METHOD_PUT)) {
                         handler.doPut(lastTraversedObject);
-                    } else if (method.equals(SiteConst.METHOD_GET)) {
+                    } else if (method.equals(WebConst.METHOD_GET)) {
                         handler.doGet(lastTraversedObject);
-                    } else if (method.equals(SiteConst.METHOD_DELETE)) {
+                    } else if (method.equals(WebConst.METHOD_DELETE)) {
                         handler.doDelete(lastTraversedObject);
-                    } else if (method.equals(SiteConst.METHOD_HEAD)) {
+                    } else if (method.equals(WebConst.METHOD_HEAD)) {
                         handler.doHead(lastTraversedObject);
                     }
                 }
@@ -184,17 +184,17 @@ public class SiteServlet extends HttpServlet {
 
     protected void displayError(HttpServletResponse resp, Throwable t,
             String message) {
-        if (t instanceof SiteException) {
-            SiteException st = (SiteException) t;
+        if (t instanceof WebException) {
+            WebException st = (WebException) t;
             displayError(resp, t, message, st.getReturnCode());
         } else {
-            displayError(resp, t, message, SiteConst.SC_INTERNAL_SERVER_ERROR);
+            displayError(resp, t, message, WebConst.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public SiteRequest createRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    public WebContext createRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         String pathInfo = req.getPathInfo();
-        SiteRoot root;
+        WebRoot root;
         if (pathInfo == null || "/".equals(pathInfo)) {
             root = manager.getDefaultSiteRoot();
             pathInfo = "/index.ftl"; //TODO use the config to get the name of the index
@@ -217,7 +217,7 @@ public class SiteServlet extends HttpServlet {
                 }
             }
         }
-        SiteRequest siteReq = new SiteRequest(root, req, resp);
+        WebContext siteReq = new WebContext(root, req, resp);
         // traverse documents if any
         String[] traversal = null;
         Mapping mapping = root.getMapping(pathInfo);
@@ -229,7 +229,7 @@ public class SiteServlet extends HttpServlet {
         }
         buildTraversalPath(siteReq, traversal);
         if (mapping != null) {
-            SiteObject obj = siteReq.getLastResolvedObject();
+            WebObject obj = siteReq.getLastResolvedObject();
             if (obj != null) {
                 mapping.addVar("type", obj.getDocument().getType());
             }
@@ -238,18 +238,18 @@ public class SiteServlet extends HttpServlet {
         return siteReq;
     }
 
-    public static void buildTraversalPath(SiteRequest siteReq, String[] traversal) throws Exception {
+    public static void buildTraversalPath(WebContext siteReq, String[] traversal) throws Exception {
         if (traversal == null || traversal.length == 0) {
             // nothing to traverse
             return;
         }
         CoreSession session = siteReq.getCoreSession();
         String name = traversal[0];
-        SiteRoot root = siteReq.getRoot();
+        WebRoot root = siteReq.getRoot();
         DocumentResolver resolver = root.getResolver();
-        int p = name.lastIndexOf(SiteConst.ACTION_SEPARATOR);
+        int p = name.lastIndexOf(WebConst.ACTION_SEPARATOR);
         if (p > -1) {
-            siteReq.setAction(name.substring(p+SiteConst.ACTION_SEPARATOR.length()));
+            siteReq.setAction(name.substring(p+WebConst.ACTION_SEPARATOR.length()));
             name = name.substring(0, p);
         }
         DocumentModel doc = resolver.getRootDocument(root, name, session);
@@ -264,9 +264,9 @@ public class SiteServlet extends HttpServlet {
         if (traversal.length > 1) {
             for (int i=1; i<traversal.length; i++) {
                 name = traversal[i];
-                p = name.lastIndexOf(SiteConst.ACTION_SEPARATOR);
+                p = name.lastIndexOf(WebConst.ACTION_SEPARATOR);
                 if (p > -1) {
-                    siteReq.setAction(name.substring(p+SiteConst.ACTION_SEPARATOR.length()));
+                    siteReq.setAction(name.substring(p+WebConst.ACTION_SEPARATOR.length()));
                     name = name.substring(0, p);
                 }
                 doc = resolver.getSiteSegment(root, doc, name, session);
@@ -284,7 +284,7 @@ public class SiteServlet extends HttpServlet {
         }
     }
 
-    public void showIndex(SiteRequest request) throws Exception {
+    public void showIndex(WebContext request) throws Exception {
         try {
             double s = System.currentTimeMillis();
             scripting.exec(request);

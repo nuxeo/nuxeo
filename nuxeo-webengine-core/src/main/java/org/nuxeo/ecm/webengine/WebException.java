@@ -20,28 +20,28 @@
 package org.nuxeo.ecm.webengine;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.webengine.servlet.SiteConst;
+import org.nuxeo.ecm.webengine.servlet.WebConst;
 
-public class SiteException extends ClientException {
+public class WebException extends ClientException {
 
     private static final long serialVersionUID = 176876876786L;
 
-    private int returnCode = SiteConst.SC_INTERNAL_SERVER_ERROR;
+    private int returnCode = WebConst.SC_INTERNAL_SERVER_ERROR;
 
-    public SiteException(String message) {
+    public WebException(String message) {
         super(message);
     }
 
-    public SiteException(String message, int code) {
+    public WebException(String message, int code) {
         super(message);
         returnCode = code;
     }
 
-    public SiteException(String message, Throwable t) {
+    public WebException(String message, Throwable t) {
         super(message, t);
     }
 
-    public SiteException(String message, Throwable t, int code) {
+    public WebException(String message, Throwable t, int code) {
         super(message, t);
         returnCode = code;
     }

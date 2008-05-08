@@ -24,8 +24,8 @@ import java.text.ParseException;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.webengine.SiteException;
-import org.nuxeo.ecm.webengine.SiteObject;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.WebObject;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 
@@ -80,7 +80,7 @@ public class ActionDescriptor {
         return isEnabled;
     }
 
-    public boolean isEnabled(SiteObject obj) {
+    public boolean isEnabled(WebObject obj) {
         if (!isEnabled) {
             return false;
         }
@@ -141,7 +141,7 @@ public class ActionDescriptor {
         return false;
     }
 
-    public ActionHandler getHandler() throws SiteException {
+    public ActionHandler getHandler() throws WebException {
         if (handler == null) {
             if (handlerClass == null) {
                 handler = ActionHandler.NULL;
@@ -149,7 +149,7 @@ public class ActionDescriptor {
                 try {
                     handler = handlerClass.newInstance();
                 } catch (Exception e) {
-                    throw new SiteException("Failed to instantiate action handler for action: "+id, e);
+                    throw new WebException("Failed to instantiate action handler for action: "+id, e);
                 }
             }
         }
@@ -160,10 +160,10 @@ public class ActionDescriptor {
      * This method should be used to run actions.
      * Avoid using getHandler().run() since it is not checking permissions
      */
-    public void run(SiteObject obj) throws SiteException {
+    public void run(WebObject obj) throws WebException {
         // check rights first
         if (!getGuard().check(obj.getSession(), obj.getDocument())) {
-            throw new SiteException("Running action "+id+" is dedined");
+            throw new WebException("Running action "+id+" is dedined");
         }
         getHandler().run(obj);
     }

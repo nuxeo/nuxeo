@@ -25,9 +25,9 @@ import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
-import org.nuxeo.ecm.webengine.SiteException;
-import org.nuxeo.ecm.webengine.SiteObject;
-import org.nuxeo.ecm.webengine.SiteRequest;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.WebObject;
+import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.util.FormData;
 
 /**
@@ -36,8 +36,8 @@ import org.nuxeo.ecm.webengine.util.FormData;
  */
 public class UpateActionHandler implements ActionHandler {
 
-    public void run(SiteObject object) throws SiteException {
-        SiteRequest request = object.getSiteRequest();
+    public void run(WebObject object) throws WebException {
+        WebContext request = object.getSiteRequest();
         DocumentModel doc = object.getDocument();
         try {
             FormData form = request.getForm();
@@ -56,7 +56,7 @@ public class UpateActionHandler implements ActionHandler {
             doc = request.getCoreSession().saveDocument(doc);
             request.getCoreSession().save();
         } catch (Exception e) {
-            throw new SiteException("Failed to update document", e);
+            throw new WebException("Failed to update document", e);
         }
     }
 

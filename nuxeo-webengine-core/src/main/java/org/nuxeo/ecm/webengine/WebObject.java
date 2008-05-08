@@ -39,18 +39,18 @@ import org.nuxeo.ecm.webengine.rendering.SiteDocumentView;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class SiteObject implements ServletRenderingContext {
+public class WebObject implements ServletRenderingContext {
 
-    protected SiteObject next;
-    protected SiteObject prev;
+    protected WebObject next;
+    protected WebObject prev;
 
     protected DocumentModel doc;
     protected final String name;
-    protected final SiteRequest request;
+    protected final WebContext request;
     protected ObjectDescriptor desc;
 
 
-    public SiteObject(SiteRequest request, String name, DocumentModel doc) {
+    public WebObject(WebContext request, String name, DocumentModel doc) {
         this.request = request;
         this.name = name;
         this.doc = doc;
@@ -73,7 +73,7 @@ public class SiteObject implements ServletRenderingContext {
                 return path;
             }
         }
-        SiteRoot root = request.getRoot();
+        WebRoot root = request.getRoot();
         if (doc != null) {
             String type = doc.getType();
             path = type + '/' + action + ".ftl";
@@ -88,7 +88,7 @@ public class SiteObject implements ServletRenderingContext {
     /**
      * @return the request.
      */
-    public SiteRequest getSiteRequest() {
+    public WebContext getSiteRequest() {
         return request;
     }
 
@@ -104,11 +104,11 @@ public class SiteObject implements ServletRenderingContext {
         return doc != null;
     }
 
-    public final SiteObject next() {
+    public final WebObject next() {
         return next;
     }
 
-    public final SiteObject prev() {
+    public final WebObject prev() {
         return prev;
     }
 
@@ -126,12 +126,12 @@ public class SiteObject implements ServletRenderingContext {
 
     public final ObjectDescriptor getDescriptor() {
         if (desc == null && doc != null) {
-            desc = request.siteManager.getInstanceOf(doc.getDocumentType());
+            desc = request.engine.getInstanceOf(doc.getDocumentType());
         }
         return desc;
     }
 
-    public final RequestHandler getRequestHandler() throws SiteException {
+    public final RequestHandler getRequestHandler() throws WebException {
         ObjectDescriptor desc = getDescriptor();
         if (desc != null) {
             return desc.getRequestHandler();
@@ -167,7 +167,7 @@ public class SiteObject implements ServletRenderingContext {
         return false;
     }
 
-    public boolean traverse() throws SiteException {
+    public boolean traverse() throws WebException {
         ObjectDescriptor desc = getDescriptor();
         return desc != null ? desc.getRequestHandler().traverse(this) : false;
     }

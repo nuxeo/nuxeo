@@ -20,7 +20,7 @@
 package org.nuxeo.ecm.webengine.tests;
 
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
-import org.nuxeo.ecm.webengine.servlet.SiteServlet;
+import org.nuxeo.ecm.webengine.servlet.WebServlet;
 import org.nuxeo.ecm.webengine.tests.fake.FakeRequest;
 import org.nuxeo.ecm.webengine.tests.fake.FakeResponse;
 import org.nuxeo.ecm.webengine.tests.fake.FakeServletInputStream;
@@ -57,7 +57,7 @@ public abstract class BaseSiteRequestTestCase extends RepositoryOSGITestCase {
             throws Exception {
         FakeResponse fRes = new FakeResponse();
         fReq.setAttribute("TestCoreSession", getCoreSession());
-        SiteServlet siteServlet = new SiteServlet();
+        WebServlet siteServlet = new WebServlet();
         siteServlet.service(fReq, fRes);
         return fRes;
     }

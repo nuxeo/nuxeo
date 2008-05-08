@@ -42,13 +42,13 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class SiteRoot implements FileChangeListener {
+public class WebRoot implements FileChangeListener {
 
     public static final String SITE_CONFIG = "site.config";
 
-    private static final Log log = LogFactory.getLog(SiteRoot.class);
+    private static final Log log = LogFactory.getLog(WebRoot.class);
 
-    final SiteManager manager;
+    final WebEngine manager;
 
     final File root;
 
@@ -71,11 +71,11 @@ public class SiteRoot implements FileChangeListener {
     ConcurrentMap<String, ScriptFile> scriptFileCache;
 
 
-    public SiteRoot(SiteManager manager, String name) {
+    public WebRoot(WebEngine manager, String name) {
         this(manager, new File(manager.getRootDirectory(), name));
     }
 
-    public SiteRoot(SiteManager manager, File root) {
+    public WebRoot(WebEngine manager, File root) {
         this.manager = manager;
         this.root = root;
         mapper = new PathMapper();
@@ -117,7 +117,7 @@ public class SiteRoot implements FileChangeListener {
         return root;
     }
 
-    public SiteManager getSiteManager() {
+    public WebEngine getWebEngine() {
         return manager;
     }
 

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.ecm.webengine.SiteManagerComponent">
+<component name="org.nuxeo.ecm.webengine.WebEngineComponent">
   <implementation
-      class="org.nuxeo.ecm.webengine.SiteManagerComponent"/>
+      class="org.nuxeo.ecm.webengine.WebEngineComponent"/>
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)
     Manage templates
@@ -13,7 +13,7 @@
 
   <service>
     <provide
-        interface="org.nuxeo.ecm.webengine.SiteManager"/>
+        interface="org.nuxeo.ecm.webengine.WebEngine"/>
     <provide
         interface="org.nuxeo.ecm.webengine.util.FileChangeNotifier"/>
   </service>

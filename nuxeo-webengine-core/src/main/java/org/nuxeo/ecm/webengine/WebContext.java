@@ -46,7 +46,7 @@ import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.rendering.SiteRenderingContext;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
-import org.nuxeo.ecm.webengine.servlet.SiteConst;
+import org.nuxeo.ecm.webengine.servlet.WebConst;
 import org.nuxeo.ecm.webengine.util.FormData;
 import org.nuxeo.runtime.api.Framework;
 import org.python.core.PyDictionary;
@@ -55,33 +55,33 @@ import org.python.core.PyDictionary;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class SiteRequest extends HttpServletRequestWrapper implements SiteConst {
+public class WebContext extends HttpServletRequestWrapper implements WebConst {
 
     public static final String CORESESSION_KEY = "SiteCoreSession";
 
-    protected final SiteManager siteManager;
+    protected final WebEngine engine;
     protected CoreSession session;
     protected boolean isCanceled = false;
 
-    protected SiteObject head; // the site root
-    protected SiteObject tail;
-    protected SiteObject lastResolved;
+    protected WebObject head; // the site root
+    protected WebObject tail;
+    protected WebObject lastResolved;
 
     protected final HttpServletResponse resp;
 
     protected String pathInfo;
 
-    protected final SiteRoot siteRoot;
+    protected final WebRoot siteRoot;
     protected Mapping mapping;
     protected String action; // the current object view
     protected FormData form;
 
     protected final Map<String,Object> vars; // global vars to share between scripts
 
-    public SiteRequest(SiteRoot root, HttpServletRequest req, HttpServletResponse resp) {
+    public WebContext(WebRoot root, HttpServletRequest req, HttpServletResponse resp) {
         super(req);
         siteRoot = root;
-        siteManager = root.getSiteManager();
+        engine = root.getWebEngine();
         this.resp = resp;
         vars = new HashMap<String, Object>();
     }
@@ -147,7 +147,7 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
             }
         }
         if (path == null) {
-            SiteObject first = getFirstUnresolvedObject();
+            WebObject first = getFirstUnresolvedObject();
             if (first != null) {
                 if (first != tail) {
                     path = getPath(first, null);
@@ -161,11 +161,11 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
         return siteRoot.getScript(path, type);
     }
 
-    public SiteManager getSiteManager() {
-        return siteManager;
+    public WebEngine getWebEngine() {
+        return engine;
     }
 
-    public SiteObject getSiteRoot() {
+    public WebObject getSiteRoot() {
         return head;
     }
 
@@ -216,11 +216,11 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
     }
 
 
-    public SiteObject getLastResolvedObject() {
+    public WebObject getLastResolvedObject() {
         return lastResolved;
     }
 
-    public SiteObject getFirstUnresolvedObject() {
+    public WebObject getFirstUnresolvedObject() {
         return lastResolved == null ? head : lastResolved.next;
     }
 
@@ -229,12 +229,12 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
     }
 
     public String getFirstUnresolvedSegment() {
-        SiteObject obj = getFirstUnresolvedObject();
+        WebObject obj = getFirstUnresolvedObject();
         return obj != null ? obj .getName() : null;
     }
 
-    public SiteObject addSiteObject(String name, DocumentModel doc) {
-        SiteObject object = new SiteObject(this, name, doc);
+    public WebObject addSiteObject(String name, DocumentModel doc) {
+        WebObject object = new WebObject(this, name, doc);
         if (head == null) {
             head = tail = object;
             object.prev = null;
@@ -250,9 +250,9 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
         return object;
     }
 
-    public List<SiteObject> getSiteObjects() {
-        ArrayList<SiteObject> objects = new ArrayList<SiteObject>();
-        SiteObject p = head;
+    public List<WebObject> getSiteObjects() {
+        ArrayList<WebObject> objects = new ArrayList<WebObject>();
+        WebObject p = head;
         while (p != null) {
             objects.add(p);
             p = p.next;
@@ -260,9 +260,9 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
         return objects;
     }
 
-    public List<SiteObject> getUnresolvedSiteObjects() {
-        ArrayList<SiteObject> objects = new ArrayList<SiteObject>();
-        SiteObject p = head;
+    public List<WebObject> getUnresolvedSiteObjects() {
+        ArrayList<WebObject> objects = new ArrayList<WebObject>();
+        WebObject p = head;
         while (p != null) {
             objects.add(p);
             p = p.next;
@@ -270,9 +270,9 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
         return objects;
     }
 
-    public List<SiteObject> getResolvedSiteObjects() {
-        ArrayList<SiteObject> objects = new ArrayList<SiteObject>();
-        SiteObject p = head;
+    public List<WebObject> getResolvedSiteObjects() {
+        ArrayList<WebObject> objects = new ArrayList<WebObject>();
+        WebObject p = head;
         while (p != null) {
             objects.add(p);
             p = p.next;
@@ -280,7 +280,7 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
         return objects;
     }
 
-    public SiteObject getLastObject() {
+    public WebObject getLastObject() {
         return tail;
     }
 
@@ -288,7 +288,7 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
         return head != null && head.next == null;
     }
 
-    public SiteRoot getRoot() {
+    public WebRoot getRoot() {
         return siteRoot;
     }
 
@@ -296,12 +296,12 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
      *
      * @return the last traversed object
      */
-    public SiteObject traverse() throws SiteException {
+    public WebObject traverse() throws WebException {
        if (head == null || lastResolved == null) {
            return null;
        }
-       SiteObject lastTraversed = head;
-       SiteObject p = head;
+       WebObject lastTraversed = head;
+       WebObject p = head;
        while (p != lastResolved.next) {
            if (!p.traverse()) {
                return lastTraversed;
@@ -318,12 +318,12 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
     * @param end exclusive
     * @return
     */
-   public static String getPath(SiteObject start, SiteObject end) {
+   public static String getPath(WebObject start, WebObject end) {
        if (start == null || start == end) {
            return "";
        }
        StringBuilder buf = new StringBuilder(256);
-       SiteObject p = start;
+       WebObject p = start;
        while (p != end) {
            buf.append('/').append(p.name);
            p = p.next;
@@ -363,10 +363,10 @@ public class SiteRequest extends HttpServletRequestWrapper implements SiteConst 
                 map = Scripting.convertPythonMap((PyDictionary) ctx);
             }
             if (lastResolved != null) {
-            siteManager.getScripting().getRenderingEngine().render(template, lastResolved,
+            engine.getScripting().getRenderingEngine().render(template, lastResolved,
                     (Map<String, Object>) map);
         } else {
-            siteManager.getScripting().getRenderingEngine().render(template, new SiteRenderingContext(this),
+            engine.getScripting().getRenderingEngine().render(template, new SiteRenderingContext(this),
                     (Map<String, Object>) map);
         }
     }

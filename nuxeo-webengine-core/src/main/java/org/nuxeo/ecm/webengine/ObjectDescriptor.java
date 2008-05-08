@@ -91,7 +91,7 @@ public class ObjectDescriptor {
         return requestHandlerClass;
     }
 
-    public RequestHandler getRequestHandler() throws SiteException {
+    public RequestHandler getRequestHandler() throws WebException {
         if (requestHandler == null) {
             if (requestHandlerClass == null) {
                 requestHandler = RequestHandler.DEFAULT;
@@ -99,7 +99,7 @@ public class ObjectDescriptor {
                 try {
                     requestHandler = requestHandlerClass.newInstance();
                 } catch (Exception e) {
-                    throw new SiteException("Failed to instantiate request handler for object id: "+id, e);
+                    throw new WebException("Failed to instantiate request handler for object id: "+id, e);
                 }
             }
         }
@@ -140,7 +140,7 @@ public class ObjectDescriptor {
         return result;
     }
 
-    public Collection<ActionDescriptor> getEnabledActions(SiteObject obj) {
+    public Collection<ActionDescriptor> getEnabledActions(WebObject obj) {
         CoreSession session = obj.getSession();
         DocumentModel doc = obj.getDocument();
         List<ActionDescriptor> ads = new ArrayList<ActionDescriptor>();
@@ -152,7 +152,7 @@ public class ObjectDescriptor {
         return ads;
     }
 
-    public Collection<ActionDescriptor> getEnabledActions(SiteObject obj, String category) {
+    public Collection<ActionDescriptor> getEnabledActions(WebObject obj, String category) {
         CoreSession session = obj.getSession();
         DocumentModel doc = obj.getDocument();
         List<ActionDescriptor> ads = new ArrayList<ActionDescriptor>();
@@ -164,7 +164,7 @@ public class ObjectDescriptor {
         return ads;
     }
 
-    public Map<String, Collection<ActionDescriptor>> getEnabledActionsByCategory(SiteObject obj) {
+    public Map<String, Collection<ActionDescriptor>> getEnabledActionsByCategory(WebObject obj) {
         CoreSession session = obj.getSession();
         DocumentModel doc = obj.getDocument();
         HashMap<String, Collection<ActionDescriptor>> result = new HashMap<String, Collection<ActionDescriptor>>();

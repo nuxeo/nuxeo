@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.webengine.SiteRoot;
+import org.nuxeo.ecm.webengine.WebRoot;
 import org.nuxeo.ecm.webengine.mapping.MappingDescriptor;
 
 /**
@@ -35,7 +35,7 @@ public class MappingSection implements Configurator {
     private static final Log log = LogFactory.getLog(MappingSection.class);
     public static final MappingSection INSTANCE = new MappingSection();
 
-    public void configure(SiteRoot root, Map<String, String> properties) {
+    public void configure(WebRoot root, Map<String, String> properties) {
         MappingDescriptor md = new MappingDescriptor();
         String val = properties.get("pattern");
         if (val == null) {

@@ -22,8 +22,8 @@ package org.nuxeo.ecm.webengine.actions;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webengine.SiteException;
-import org.nuxeo.ecm.webengine.SiteObject;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.WebObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -31,13 +31,13 @@ import org.nuxeo.ecm.webengine.SiteObject;
  */
 public class DeleteActionHandler implements ActionHandler {
 
-    public void run(SiteObject object) throws SiteException {
+    public void run(WebObject object) throws WebException {
         DocumentModel doc = object.getDocument();
         if (doc != null) {
             try {
                 object.getSession().removeDocument(doc.getRef());
             } catch (ClientException e) {
-                throw new SiteException("Failed to delete document", e);
+                throw new WebException("Failed to delete document", e);
             }
         }
     }

@@ -29,7 +29,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.webengine.SiteRoot;
+import org.nuxeo.ecm.webengine.WebRoot;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -59,7 +59,7 @@ public class Configuration {
         return configurators.get(name);
     }
 
-    public void loadConfiguration(SiteRoot root, File file) throws IOException {
+    public void loadConfiguration(WebRoot root, File file) throws IOException {
         Map<String,String> properties = new HashMap<String, String>();
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String line = reader.readLine();

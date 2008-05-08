@@ -21,9 +21,9 @@ package org.nuxeo.ecm.webengine.actions;
 
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webengine.SiteException;
-import org.nuxeo.ecm.webengine.SiteObject;
-import org.nuxeo.ecm.webengine.SiteRequest;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.WebObject;
+import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.util.FormData;
 
 /**
@@ -32,12 +32,12 @@ import org.nuxeo.ecm.webengine.util.FormData;
  */
 public class DeleteFileActionHandler implements ActionHandler {
 
-    public void run(SiteObject object) throws SiteException {
+    public void run(WebObject object) throws WebException {
         if (!object.isResolved()) {
-            throw new SiteException("Cannot run getFile action on a non resolved object: "+object);
+            throw new WebException("Cannot run getFile action on a non resolved object: "+object);
         }
         DocumentModel doc = object.getDocument();
-        SiteRequest req = object.getSiteRequest();
+        WebContext req = object.getSiteRequest();
         FormData form = req.getForm();
         String xpath = form.getString(FormData.PROPERTY);
         if (xpath == null) {
@@ -51,7 +51,7 @@ public class DeleteFileActionHandler implements ActionHandler {
             doc.getProperty(xpath).remove();
             object.getSession().saveDocument(doc);
         } catch (Exception e) {
-            throw new SiteException("Failed to delete attached file", e);
+            throw new WebException("Failed to delete attached file", e);
         }
     }
 

@@ -2,13 +2,13 @@
 
 <component name="org.nuxeo.ecm.webengine.test">
 
-  <extension target="org.nuxeo.ecm.webengine.SiteManagerComponent"
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="guard">
 
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.webengine.SiteManagerComponent"
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="webObject">
     <object id="siteFolder2" extends="default">
       <actions>

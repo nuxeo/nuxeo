@@ -30,13 +30,13 @@ import org.nuxeo.ecm.webengine.scripting.Scripting;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface SiteManager {
+public interface WebEngine {
 
     Scripting getScripting();
 
-    SiteRoot getDefaultSiteRoot() throws Exception;
+    WebRoot getDefaultSiteRoot() throws Exception;
 
-    SiteRoot getSiteRoot(String name) throws Exception;
+    WebRoot getSiteRoot(String name) throws Exception;
 
     File getRootDirectory();
 

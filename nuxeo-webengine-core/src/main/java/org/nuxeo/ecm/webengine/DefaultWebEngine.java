@@ -35,21 +35,21 @@ import org.nuxeo.ecm.webengine.util.DependencyTree;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DefaultSiteManager implements SiteManager {
+public class DefaultWebEngine implements WebEngine {
 
     protected final Scripting scripting;
     protected final File root;
 
-    protected final ConcurrentMap<String, SiteRoot> roots;
-    protected SiteRoot defaultRoot;
+    protected final ConcurrentMap<String, WebRoot> roots;
+    protected WebRoot defaultRoot;
 
     protected final ObjectRegistry registry;
     protected final Map<String, ObjectDescriptor> objects; // instances for each document type
     protected final Map<String, String> bindings;
 
-    public DefaultSiteManager(File root, RenderingEngine engine) {
+    public DefaultWebEngine(File root, RenderingEngine engine) {
         this.root = root;
-        roots = new ConcurrentHashMap<String, SiteRoot>();
+        roots = new ConcurrentHashMap<String, WebRoot>();
         scripting = new Scripting(engine);
         registry = new ObjectRegistry();
         objects = new HashMap<String, ObjectDescriptor>();
@@ -64,22 +64,22 @@ public class DefaultSiteManager implements SiteManager {
         return root;
     }
 
-    public SiteRoot getDefaultSiteRoot() throws Exception {
+    public WebRoot getDefaultSiteRoot() throws Exception {
         if (defaultRoot == null) {
             File dir = new File(root, "default");
-            defaultRoot = new SiteRoot(this, dir);
+            defaultRoot = new WebRoot(this, dir);
             defaultRoot.loadConfiguration();
         }
         return defaultRoot;
     }
 
-    public SiteRoot getSiteRoot(String name) throws Exception {
-        SiteRoot sroot = roots.get(name);
+    public WebRoot getSiteRoot(String name) throws Exception {
+        WebRoot sroot = roots.get(name);
         if (sroot == null) {
             File dir = new File(root, name);
             File metadata = new File(dir, name);
             if (metadata.isFile()) {
-                sroot = new SiteRoot(this, dir);
+                sroot = new WebRoot(this, dir);
                 sroot.loadConfiguration();
                 roots.putIfAbsent(name, sroot);
             } else { // try dynamic binding

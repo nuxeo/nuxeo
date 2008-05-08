@@ -26,9 +26,9 @@ import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.webengine.SiteException;
-import org.nuxeo.ecm.webengine.SiteObject;
-import org.nuxeo.ecm.webengine.SiteRequest;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.WebObject;
+import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.util.FormData;
 
 /**
@@ -37,10 +37,10 @@ import org.nuxeo.ecm.webengine.util.FormData;
  */
 public class CreateActionHandler implements ActionHandler {
 
-    public void run(SiteObject object) throws SiteException {
+    public void run(WebObject object) throws WebException {
         if (object.isResolved()) {
             DocumentModel parent = object.getDocument();
-            SiteObject child = object.next();
+            WebObject child = object.next();
             if (child == null) { /// create a child with a generated name
                 DocumentModel doc = createSubPage(parent, null, object.getSiteRequest());
                 String path = object.getAbsolutePath();
@@ -52,7 +52,7 @@ public class CreateActionHandler implements ActionHandler {
                 try {
                     object.getSiteRequest().getResponse().sendRedirect(path);
                 } catch (IOException e) {
-                    throw new SiteException("Failed to redirect to the newly created page: "+path, e);
+                    throw new WebException("Failed to redirect to the newly created page: "+path, e);
                 }
                 return;
             } else if (!child.isResolved()) {
@@ -62,17 +62,17 @@ public class CreateActionHandler implements ActionHandler {
                 return;
             }
         }
-        throw new SiteException("Faield to create document. The document already exists: "+object.getPath());
+        throw new WebException("Faield to create document. The document already exists: "+object.getPath());
     }
 
     private static DocumentModel createSubPage(DocumentModel parent, String name,
-            SiteRequest request) throws SiteException {
+            WebContext request) throws WebException {
         try {
             CoreSession session = request.getCoreSession();
             FormData form = request.getForm();
             String type = form.getDocumentType();
             if (type == null) {
-                throw new SiteException("Invalid argument exception. Nos doc type specified");
+                throw new WebException("Invalid argument exception. Nos doc type specified");
             }
             String path = parent.getPathAsString();
             // TODO  not the best method to create an unnamed doc - should refactor core API
@@ -87,7 +87,7 @@ public class CreateActionHandler implements ActionHandler {
                 int i = 0;
                 while (true) {
                     try {
-                        if (i == 10) throw new SiteException("Failed to create document. Giving up.");
+                        if (i == 10) throw new WebException("Failed to create document. Giving up.");
                         session.getDocument(new PathRef(path, name));
                         name = baseTitle+"_"+Long.toHexString(IdUtils.generateLongId());
                         i++;
@@ -103,7 +103,7 @@ public class CreateActionHandler implements ActionHandler {
             session.save();
             return newPage;
         } catch (Exception e) {
-            throw new SiteException("Failed to create document: "+name, e);
+            throw new WebException("Failed to create document: "+name, e);
         }
     }
 

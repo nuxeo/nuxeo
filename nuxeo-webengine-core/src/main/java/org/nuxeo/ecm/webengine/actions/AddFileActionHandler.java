@@ -26,9 +26,9 @@ import java.util.HashMap;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.webengine.SiteException;
-import org.nuxeo.ecm.webengine.SiteObject;
-import org.nuxeo.ecm.webengine.SiteRequest;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.WebObject;
+import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.util.FormData;
 
 /**
@@ -37,12 +37,12 @@ import org.nuxeo.ecm.webengine.util.FormData;
  */
 public class AddFileActionHandler implements ActionHandler {
 
-    public void run(SiteObject object) throws SiteException {
+    public void run(WebObject object) throws WebException {
         if (!object.isResolved()) {
-            throw new SiteException("Cannot run getFile action on a non resolved object: "+object);
+            throw new WebException("Cannot run getFile action on a non resolved object: "+object);
         }
         DocumentModel doc = object.getDocument();
-        SiteRequest req = object.getSiteRequest();
+        WebContext req = object.getSiteRequest();
         FormData form = req.getForm();
         String xpath = form.getString(FormData.PROPERTY);
         if (xpath == null) {
@@ -77,7 +77,7 @@ public class AddFileActionHandler implements ActionHandler {
             }
             object.getSession().saveDocument(doc);
         } catch (Exception e) {
-            throw new SiteException("Failed to attach file", e);
+            throw new WebException("Failed to attach file", e);
         }
     }
 

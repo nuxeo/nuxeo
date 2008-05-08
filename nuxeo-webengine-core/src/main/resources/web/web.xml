@@ -7,12 +7,12 @@
   </documentation>
 
 
-  <extension target="org.nuxeo.ecm.webengine.SiteManagerComponent"
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="binding">
     <binding type="Document" object="WebObject" />
   </extension>
 
-  <extension target="org.nuxeo.ecm.webengine.SiteManagerComponent"
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
   	point="webObject">
   	<object id="WebObject" extends="default">
   		<actions>

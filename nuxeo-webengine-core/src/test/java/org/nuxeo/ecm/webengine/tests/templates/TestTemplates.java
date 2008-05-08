@@ -21,8 +21,8 @@ package org.nuxeo.ecm.webengine.tests.templates;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.webengine.SiteManager;
-import org.nuxeo.ecm.webengine.SiteManagerComponent;
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.WebEngineComponent;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -40,24 +40,24 @@ public class TestTemplates extends NXRuntimeTestCase {
     }
 
     public void testRunTimeComponentRegistration() {
-        SiteManagerComponent stm = (SiteManagerComponent) Framework.getRuntime().getComponent(
-                SiteManagerComponent.NAME);
+        WebEngineComponent stm = (WebEngineComponent) Framework.getRuntime().getComponent(
+                WebEngineComponent.NAME);
         assertNotNull(stm);
     }
 
     public void testTemplateServiceRegistration() {
-        SiteManager stm = Framework.getLocalService(SiteManager.class);
+        WebEngine stm = Framework.getLocalService(WebEngine.class);
         assertNotNull(stm);
     }
 
     public void testTemplateRegistration() {
-        SiteManager stm = Framework.getLocalService(SiteManager.class);
+        WebEngine stm = Framework.getLocalService(WebEngine.class);
 //        assertTrue(stm.getTemplateNames().contains("test"));
     }
 
     public void testTemplateBindingRegistration() {
 
-        SiteManager stm = Framework.getLocalService(SiteManager.class);
+        WebEngine stm = Framework.getLocalService(WebEngine.class);
 
         DocumentModel testFolder = new DocumentModelImpl("/", "TestFolder", "Folder");
         DocumentModel testFile1 = new DocumentModelImpl("/default-domain/workspaces", "TestFile1",

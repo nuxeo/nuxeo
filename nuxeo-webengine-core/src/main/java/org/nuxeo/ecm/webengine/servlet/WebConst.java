@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  */
 
-public interface SiteConst {
+public interface WebConst {
 
     /**
      * Part of HTTP content type header.
