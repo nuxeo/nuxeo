@@ -165,9 +165,7 @@ public class CompassBackendSession extends SearchServiceSessionImpl {
             // TODO: what should we *really* do here??
             throw new IllegalStateException("Could not commit transaction", e);
         }
-
     }
-
 
     public void saveAndCommit(boolean userTxn) throws CompassException {
         try {

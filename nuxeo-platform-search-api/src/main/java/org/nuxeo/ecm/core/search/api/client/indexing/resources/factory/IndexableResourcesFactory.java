@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory.BuiltinDocumentFields;
-import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
 import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingThread;
@@ -44,6 +43,7 @@ import org.nuxeo.ecm.core.search.api.client.indexing.resources.document.impl.Doc
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.impl.IndexableResourcesImpl;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableResourceConf;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.IndexableDocType;
+import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.IndexableDocTypeDescriptor;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.ResourceType;
 
 /**
@@ -65,12 +65,11 @@ public final class IndexableResourcesFactory implements Serializable {
 
     private static final Log log = LogFactory.getLog(IndexableResourcesFactory.class);
 
+    private static final Map<String, IndexableResourceConf> resourceConfCache = new ConcurrentHashMap<String, IndexableResourceConf>();
+    private static final Map<String, IndexableResourceConf> fullResourceConfCache = new ConcurrentHashMap<String, IndexableResourceConf>();
+    private static final Map<String, IndexableDocType> indexableDocTypeCache = new ConcurrentHashMap<String, IndexableDocType>();
 
-    private static Map<String, IndexableResourceConf> resourceConfCache = new ConcurrentHashMap<String, IndexableResourceConf>();
-    private static Map<String, IndexableResourceConf> fullResourceConfCache = new ConcurrentHashMap<String, IndexableResourceConf>();
-    private static Map<String, IndexableDocType> indexableDocTypeCache = new ConcurrentHashMap<String, IndexableDocType>();
-
-
+    private static final IndexableDocType NULL = new IndexableDocTypeDescriptor();
 
     // Utility class.
     private IndexableResourcesFactory() {
@@ -81,13 +80,12 @@ public final class IndexableResourcesFactory implements Serializable {
         return dm.getId();
     }
 
-    public static IndexableResources computeResourcesFor(DocumentModel dm)
-            throws IndexingException {
+    public static IndexableResources computeResourcesFor(DocumentModel dm) {
         return computeResourcesFor(dm, null);
     }
 
     public static IndexableResources computeResourcesFor(DocumentModel dm,
-            String managedSessionId) throws IndexingException {
+            String managedSessionId) {
 
         if (dm == null) {
             log.error("No document model given.... Nothing to compute.");
@@ -95,8 +93,7 @@ public final class IndexableResourcesFactory implements Serializable {
         }
 
         String sid = managedSessionId;
-        if (managedSessionId==null)
-        {
+        if (managedSessionId == null) {
             // called from ThreadPool
             // => we need to refetch the dm from a new CoreSession
 
@@ -214,13 +211,13 @@ public final class IndexableResourcesFactory implements Serializable {
             }
 
             IndexableResourceConf conf = getResourceConf(schemaName, true);
-            resources.add(new DocumentIndexableResourceImpl(dm, conf,
-                    sid));
+            resources.add(new DocumentIndexableResourceImpl(dm, conf, sid));
 
         }
 
         // Automatically add builtins
-        IndexableResourceConf builtinConf = getResourceConf(BuiltinDocumentFields.DOC_BUILTINS_RESOURCE_NAME, false);
+        IndexableResourceConf builtinConf = getResourceConf(
+                BuiltinDocumentFields.DOC_BUILTINS_RESOURCE_NAME, false);
 
         if (builtinConf != null) {
             resources.add(new DocumentBuiltinsIndexableResourceImpl(dm,
@@ -233,38 +230,35 @@ public final class IndexableResourcesFactory implements Serializable {
     }
 
     // Caching methods
-    private static IndexableDocType getIndexableDocType(String type)
-    {
-        IndexableDocType res=indexableDocTypeCache.get(type);
+    private static IndexableDocType getIndexableDocType(String type) {
+        IndexableDocType res = indexableDocTypeCache.get(type);
 
-        if (res==null)
-        {
+        if (res == null) {
             SearchService service = SearchServiceDelegate.getRemoteSearchService();
             res = service.getIndexableDocTypeFor(type);
-
+            if (res == null) {
+                res = NULL;
+            }
             synchronized (indexableDocTypeCache) {
                 indexableDocTypeCache.put(type, res);
             }
         }
-
+        if (res == NULL) {
+            return null;
+        }
         return res;
     }
 
-    private static IndexableResourceConf getResourceConf(String resourceName,Boolean full)
-    {
-        IndexableResourceConf res=null;
+    private static IndexableResourceConf getResourceConf(String resourceName, Boolean full) {
+        IndexableResourceConf res;
 
-        if (full)
-        {
+        if (full) {
             res = fullResourceConfCache.get(resourceName);
-        }
-        else
-        {
+        } else {
             res = resourceConfCache.get(resourceName);
         }
 
-        if (res==null)
-        {
+        if (res == null) {
             SearchService service = SearchServiceDelegate.getRemoteSearchService();
             res = service.getIndexableResourceConfByName(resourceName, full);
             setIndexableResourceConfIntoCache(resourceName, full, res);
@@ -273,15 +267,13 @@ public final class IndexableResourcesFactory implements Serializable {
         return res;
     }
 
-    private static synchronized void setIndexableResourceConfIntoCache(String resourceName, Boolean full, IndexableResourceConf conf)
-    {
-        if (full)
-        {
+    private static synchronized void setIndexableResourceConfIntoCache(String resourceName,
+            Boolean full, IndexableResourceConf conf) {
+        if (full) {
             fullResourceConfCache.put(resourceName, conf);
-
-        }
-        else
+        } else {
             resourceConfCache.put(resourceName, conf);
+        }
     }
 
 }

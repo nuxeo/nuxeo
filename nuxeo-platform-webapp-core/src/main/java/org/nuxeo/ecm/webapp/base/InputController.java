@@ -53,16 +53,16 @@ public abstract class InputController {
     @In(value = CacheUpdateNotifier.SEAM_NAME_CACHE_NOTIFIER, create = true)
     protected CacheUpdateNotifier cacheUpdateNotifier;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected ActionManager actionManager;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected TypeManager typeManager;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected NavigationContext navigationContext;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected EventManager eventManager;
 
     @In(required = false, create = true)
@@ -75,15 +75,15 @@ public abstract class InputController {
     protected DocumentModel currentDocument;
 
     @In(create = true, required = false)
-    protected transient FacesMessages facesMessages;
+    protected FacesMessages facesMessages;
 
     @In(create = true)
     // won't inject this because of seam problem after activation
     // ::protected Map<String, String> messages;
     protected ResourcesAccessor resourcesAccessor;
 
-    @In(required = true, create = true)
-    protected transient TypesTool typesTool;
+    @In(create = true)
+    protected TypesTool typesTool;
 
     /**
      * Utility method that helps remove a {@link DocumentModel} from a list. The

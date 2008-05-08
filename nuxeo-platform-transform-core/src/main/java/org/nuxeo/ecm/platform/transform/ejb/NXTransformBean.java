@@ -77,8 +77,7 @@ public class NXTransformBean implements TransformServiceCommon {
         return null;
     }
 
-    public Plugin getPluginByMimeTypes(String sourceMT, String destinationMT)
-    {
+    public Plugin getPluginByMimeTypes(String sourceMT, String destinationMT) {
         if (getService() != null) {
             return getService().getPluginByMimeTypes(sourceMT, destinationMT);
         }

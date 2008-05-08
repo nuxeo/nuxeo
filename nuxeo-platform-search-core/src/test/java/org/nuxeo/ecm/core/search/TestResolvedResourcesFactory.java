@@ -298,7 +298,7 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         dm.setProperty("dublincore", "title", "A document of my type");
 
         HashMap<String, Serializable> task;
-        ArrayList<HashMap<String, Serializable>> tasks = new ArrayList<HashMap<String, Serializable>>(2);
+        List<HashMap<String, Serializable>> tasks = new ArrayList<HashMap<String, Serializable>>(2);
         task = new HashMap<String, Serializable>();
         task.put("what", "eat");
         tasks.add(task);
@@ -494,7 +494,7 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
 
         // Test doc resources metadata
 
-        docRes = (DocumentIndexableResource) oneRes;
+        docRes = oneRes;
         assertEquals(dm.getRef(), docRes.getDocRef());
         assertEquals(dm.getParentRef(), docRes.getDocParentRef());
         assertEquals(dm.getType(), docRes.getDocType());
@@ -505,7 +505,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         // assertEquals(dm.getRepositoryName(), docRes.getDocURL());
 
         oneRes.closeCoreSession();
-
     }
 
     public void testResolvedResourcesGeneration() throws Exception {
@@ -860,8 +859,7 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         assertTrue(data.getTermVector().isEmpty());
         // note: no conversion available for text/html from here
         assertTextEquals("a b Indexable data Indexable description text/html ISO-8859-15 foo.pdf",
-                (String)data.getValue());
-
+                (String) data.getValue());
     }
 
     public void testFullTextAllOneResource() throws Exception {
@@ -1012,15 +1010,11 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
     }
 
     public void xtestReindexAll() throws Exception {
-
         final int NB_DOCS = 100;
-
         for (int i=0; i< NB_DOCS; i++) {
             createSampleFileTextPlain();
         }
-
         service.reindexAll("demo", "/", false);
-
     }
 
 }
