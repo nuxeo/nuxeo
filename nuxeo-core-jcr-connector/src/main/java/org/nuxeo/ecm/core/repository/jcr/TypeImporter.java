@@ -499,11 +499,14 @@ public class TypeImporter implements NodeConstants {
             // TODO: delegate this to the versioning service
             //
             if (vs instanceof JCRVersioningService) {
-                log.info("add mixin: " + QName.MIX_VERSIONABLE + " for doc type: " + docType.getName());
+                log.debug("add mixin: " + QName.MIX_VERSIONABLE +
+                        " for doc type: " + docType.getName());
                 superTypes.add(QName.MIX_VERSIONABLE);
             } else if (vs instanceof CustomVersioningService) {
                 // add our custom versionhistory mix
-                log.info("add mixin: " + NodeConstants.ECM_VERSIONABLE_MIXIN.qname + " for doc type: " + docType.getName());
+                log.debug("add mixin: " +
+                        NodeConstants.ECM_VERSIONABLE_MIXIN.qname +
+                        " for doc type: " + docType.getName());
                 superTypes.add(NodeConstants.ECM_VERSIONABLE_MIXIN.qname);
             } else {
                 log.error("Cannot identify enabled versioning service " + vs);
