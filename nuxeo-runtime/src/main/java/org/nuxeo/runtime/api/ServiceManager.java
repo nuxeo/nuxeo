@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public final class ServiceManager {
 
@@ -78,10 +78,14 @@ public final class ServiceManager {
         String key = sd.getInstanceName();
         synchronized (services) {
             if (services.containsKey(key)) {
-                log.warn("Service " + key + " already registered!");
+                String msg = "Duplicate service registration: " + key;
+                log.error(msg);
+                Framework.getRuntime().getWarnings().add(msg);
+                return;
             }
             services.put(key, sd);
             sd.getGroup().addService(sd);
+            log.info("Registered service: " + key);
         }
     }
 
@@ -95,6 +99,7 @@ public final class ServiceManager {
                                 + " unregistered or not registered at all", key));
             } else {
                 sd.getGroup().removeService(sd);
+                log.info("Unregistered service: " + key);
             }
         }
     }
@@ -135,7 +140,7 @@ public final class ServiceManager {
      * <li><code>glassfish://localhost:1234/org.nuxeo.ecm.platform.types.TypeManager</code> -
      * locate a service on glassfish</li>
      * </ul>
-     * 
+     *
      * @param serviceUri the service uri
      * @return the service
      * @throws Exception
