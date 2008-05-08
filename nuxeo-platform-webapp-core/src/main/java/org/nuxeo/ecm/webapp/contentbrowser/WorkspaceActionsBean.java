@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.contentbrowser;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,64 +69,57 @@ import org.nuxeo.ecm.webapp.security.SecurityActions;
 @Name("workspaceActions")
 @Scope(CONVERSATION)
 public class WorkspaceActionsBean extends InputController implements
-        WorkspaceActions {
+        WorkspaceActions, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(WorkspaceActionsBean.class);
 
     protected static final String ADMIN_GROUP = "administrators";
 
     @In(create = true, required = false)
-    private CoreSession documentManager;
+    private transient CoreSession documentManager;
+
+    @In(create = true)
+    private transient Principal currentUser;
 
     @In(required = false)
-    private DocumentModel currentDomain;
-
-    private Blob logo;
-
-    private DocumentModel logoHolder;
+    private transient DocumentActions documentActions;
 
     @In(create = true)
-    private Principal currentUser;
-
-    @In(required = false)
-    private DocumentActions documentActions;
+    private transient PrincipalListManager principalListManager;
 
     @In(create = true)
-    private PrincipalListManager principalListManager;
-
-    @In(create = true)
-    private SecurityActions securityActions;
+    private transient SecurityActions securityActions;
 
     @In(value = "org.jboss.seam.core.manager")
-    private Manager conversationManager;
+    private transient Manager conversationManager;
 
     // Wizard implementation : driven by PageFlow addWorkspace
 
-    // @Out(required=false)
     private Boolean useTemplateFlag;
 
     @In(required = false)
-    private DocumentModel tmpWorkspace;
+    private transient DocumentModel tmpWorkspace;
 
     @In(create = true)
-    private DocumentModelList availableTemplates;
+    private transient DocumentModelList availableTemplates;
 
     // inject wizard vars
     @In(value = "#{selectedTemplateId.value}", required = false)
-    private String selectedTemplateId;
+    private transient String selectedTemplateId;
 
     @In(value = "#{selectedSecurityModel.value}", required = false)
-    private String selectedSecurityModel;
+    private transient String selectedSecurityModel;
 
     @In(value = "#{selectedOwnerModel.value}", required = false)
-    private String selectedOwnerModel;
+    private transient String selectedOwnerModel;
 
     @In(create = true)
-    private DocumentTemplatesActions documentTemplatesActions;
+    private transient DocumentTemplatesActions documentTemplatesActions;
 
     @Create
-    public void initialize() throws ClientException {
-        logo = null;
+    public void initialize() {
     }
 
     @Destroy

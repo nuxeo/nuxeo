@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,71 +12,69 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Olivier Grisel
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.webapp.contentbrowser;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.security.PermitAll;
-import javax.ejb.PostActivate;
-import javax.ejb.PrePassivate;
-import javax.ejb.Remove;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
-import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Action listener that knows how to retrieve a list of core servers.
  *
- * @author <a href="mailto:ogriseln@nuxeo.com">Olivier Grisel</a>
+ * @author Olivier Grisel
+ * @author Florent Guillaume
  */
 @Name("serverActions")
 @Scope(CONVERSATION)
-public class ServerActionsBean extends InputController implements ServerActions {
+public class ServerActionsBean implements ServerActions, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     // XXX AT: hardcoded right now
     protected static final String DEFAULT_VIEW = "view_domains";
 
     private static final Log log = LogFactory.getLog(ServerActionsBean.class);
 
-    private RepositoryManager repositoryManager;
+    @In(required = true, create = true)
+    protected NavigationContext navigationContext;
 
-    private Collection<Repository> availableRepositories;
+    private transient RepositoryManager repositoryManager;
+
+    private transient Collection<Repository> availableRepositories;
 
     @Destroy
-    @Remove
     @PermitAll
     public void destroy() {
-        log.debug("Seam component destroyed...");
     }
 
-    @PrePassivate
     public void saveState() {
-        log.debug("PrePassivate");
     }
 
-    @PostActivate
     public void readState() {
-        log.debug("PostActivate");
     }
 
     private RepositoryManager getRepositoryManager() throws Exception {
