@@ -24,12 +24,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.listener.CoreEventListenerService;
+import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -90,14 +90,14 @@ public abstract class RepositoryOSGITestCase extends NXRuntimeTestCase {
         return repository;
     }
 
-    protected void openCoreSession(String userName) throws Exception {
+    protected void openCoreSession(String userName) throws ClientException {
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("username", userName);
         coreSession = CoreInstance.getInstance().open(REPOSITORY_NAME, ctx);
         assertNotNull(coreSession);
     }
 
-    public void changeUser(String newUser) throws Exception {
+    public void changeUser(String newUser) throws ClientException {
         releaseCoreSession();
         openCoreSession(newUser);
     }
@@ -109,14 +109,14 @@ public abstract class RepositoryOSGITestCase extends NXRuntimeTestCase {
         }
     }
 
-    public void releaseCoreSession() throws Exception {
+    public void releaseCoreSession() throws ClientException {
         if (coreSession != null) {
             CoreInstance.getInstance().close(coreSession);
             coreSession = null;
         }
     }
 
-    protected Session getSession() throws Exception {
+    protected Session getSession() throws DocumentException {
         return repository.getSession(null);
     }
 
