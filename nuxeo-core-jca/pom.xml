@@ -86,6 +86,40 @@
           <manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+	    </goals>
+	  </execution>
+	</executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+	    </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${project.build.directory}/${artifactId}-${version}.jar</file>
+                  <type>jar</type>
+		</artifact>
+	      </artifacts>
+	    </configuration>
+	  </execution>
+	</executions>
+      </plugin>
     </plugins>
     <finalName>${pom.artifactId}-${pom.version}</finalName>
   </build>
