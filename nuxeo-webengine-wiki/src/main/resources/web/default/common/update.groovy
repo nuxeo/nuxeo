@@ -1,2 +1,3 @@
 response = req.getResponse()
-response.sendError(this.docURL + "@@update")
+msg="The document has been updated successfully."
+response.sendRedirect("${req.getLastResolvedObject().getAbsolutePath()}?msg=${msg}")
