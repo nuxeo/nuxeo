@@ -151,7 +151,7 @@ public final class ModelAdapter {
      * Marks the given node as an unstructured node.
      *
      * @param node the node to mark
-     * @throws javax.jcr.RepositoryException
+     * @throws RepositoryException
      */
     public static void setUnstructured(Node node) throws RepositoryException {
         node.addMixin(NodeConstants.ECM_MIX_UNSTRUCTURED.rawname);

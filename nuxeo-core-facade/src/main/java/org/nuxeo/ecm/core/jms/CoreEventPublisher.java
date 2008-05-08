@@ -23,6 +23,7 @@ import java.io.Serializable;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.Session;
 import javax.jms.Topic;
 import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
@@ -44,15 +45,16 @@ public class CoreEventPublisher {
 
     private static final Log log = LogFactory.getLog(CoreEventPublisher.class);
 
-    public final static String XA_TOPIC_CONNECTION_FACTORY = "JmsNX";
-    public final static String TOPIC_CONNECTION_FACTORY = "JmsNX";
-    public final static String CORE_EVENTS_TOPIC = "topic/NXCoreEvents";
+    public static final String XA_TOPIC_CONNECTION_FACTORY = "JmsNX";
+    public static final String TOPIC_CONNECTION_FACTORY = "JmsNX";
+    public static final String CORE_EVENTS_TOPIC = "topic/NXCoreEvents";
 
     private boolean isXa = false; //TODO
     private TopicConnectionFactory topicConnectionFactory;
     private Topic coreEventsTopic;
 
-    private static CoreEventPublisher instance = new CoreEventPublisher();
+    private static final CoreEventPublisher instance = new CoreEventPublisher();
+
     public static CoreEventPublisher getInstance() {
         return instance;
     }
@@ -62,10 +64,10 @@ public class CoreEventPublisher {
         coreEventsTopic = null;
     }
 
-    private final TopicConnectionFactory getTopicConnectionFactory()
+    private TopicConnectionFactory getTopicConnectionFactory()
             throws NamingException {
         if (topicConnectionFactory == null) {
-            Context jndi = new InitialContext();
+            InitialContext jndi = new InitialContext();
             topicConnectionFactory = (TopicConnectionFactory) jndi.lookup(isXa
                     ? XA_TOPIC_CONNECTION_FACTORY : TOPIC_CONNECTION_FACTORY);
             if (coreEventsTopic == null) { // initialize the default topic too
@@ -75,7 +77,7 @@ public class CoreEventPublisher {
         return topicConnectionFactory;
     }
 
-    private final Topic getDefaultTopic() throws NamingException {
+    private Topic getDefaultTopic() throws NamingException {
         if (coreEventsTopic == null) {
             Context jndi = new InitialContext();
             coreEventsTopic = (Topic) jndi.lookup(CORE_EVENTS_TOPIC);
@@ -125,7 +127,7 @@ public class CoreEventPublisher {
             // get a connection from topic connection pool
             connection = getTopicConnection();
             // create a not transacted session
-            session = connection.createTopicSession(false, TopicSession.AUTO_ACKNOWLEDGE);
+            session = connection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
             // create the publisher
             publisher = session.createPublisher(topic);
             // create the message using the given factory
@@ -145,7 +147,7 @@ public class CoreEventPublisher {
         }
     }
 
-    public MessagePublisher createPublisher() throws NamingException, JMSException {
+    public MessagePublisher createPublisher() throws NamingException {
         return new MessagePublisher(getDefaultTopic(), getTopicConnectionFactory());
     }
 

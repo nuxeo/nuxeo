@@ -42,23 +42,29 @@ public class PostgreSQLNameIndex extends DbNameIndex {
      * @param schemaObjectPrefix the prefix for table names
      * @throws SQLException if the statements cannot be prepared.
      */
+    @Override
     protected void init(Connection con, String schemaObjectPrefix)
             throws SQLException {
-        nameSelect = con.prepareStatement("select NAME from " + schemaObjectPrefix + "NAMES where ID = ?");
-        indexSelect = con.prepareStatement("select ID from " + schemaObjectPrefix + "NAMES where NAME = ?");
-        nameInsert = con.prepareStatement("insert into " + schemaObjectPrefix + "NAMES (NAME) values (?)");
-        generatedKeySelect = con.prepareStatement("select currval('" + schemaObjectPrefix + "NAMES_ID_SEQ')");
+        nameSelect = con.prepareStatement(
+                "select NAME from " + schemaObjectPrefix + "NAMES where ID = ?");
+        indexSelect = con.prepareStatement(
+                "select ID from " + schemaObjectPrefix + "NAMES where NAME = ?");
+        nameInsert = con.prepareStatement(
+                "insert into " + schemaObjectPrefix + "NAMES (NAME) values (?)");
+        generatedKeySelect = con.prepareStatement(
+                "select currval('" + schemaObjectPrefix + "NAMES_ID_SEQ')");
     }
 
     /**
      * Inserts a string into the database and returns the new index.
-     * <p/>
+     * <p>
      * Instead of using the {@link java.sql.Statement#RETURN_GENERATED_KEYS}
      * feature, the newly inserted index is retrieved by a 2nd select statement.
      *
      * @param string the string to insert
      * @return the new index.
      */
+    @Override
     protected int insertString(String string) {
         // assert index does not exist
         try {
