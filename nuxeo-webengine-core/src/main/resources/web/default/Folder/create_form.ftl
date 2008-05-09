@@ -2,7 +2,7 @@
 <@extends src="/default/base.ftl">
 <@block name="content">
 <h2>Create Wiki Page : ${this.document.title} </h2>
-<form method="POST" action="${this.absolutePath}/${name}@@create">
+<form method="POST" action="${this.urlPath}/${name}@@create">
 Document Type:
 <input type="text" name="doctype" value="Note"/>
 <p>

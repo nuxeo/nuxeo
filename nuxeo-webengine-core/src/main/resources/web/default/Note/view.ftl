@@ -3,7 +3,7 @@
 <h2>${this.document.title}</h2>
 
 <hr/>
-<A href="${this.absolutePath}@@edit">Edit</A><BR/>
+<A href="${this.urlPath}@@edit">Edit</A><BR/>
 <hr/>
 
 <p>

@@ -5,7 +5,7 @@
 <h3>I am a Wiki Page</h3>
 
 <hr/>
-<A href="${this.absolutePath}@@edit">Edit</A><BR/>
+<A href="${this.urlPath}@@edit">Edit</A><BR/>
 <hr/>
 
 <p>

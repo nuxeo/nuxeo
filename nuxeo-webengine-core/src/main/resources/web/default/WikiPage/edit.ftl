@@ -1,7 +1,7 @@
 <@extends src="/default/base.ftl">
 <@block name="content">
 <h2>Edit Wiki Page : ${this.document.title} </h2>
-<form method="POST" action="${this.absolutePath}@@update">
+<form method="POST" action="${this.urlPath}@@update">
 <textarea name="wp:content" cols="80" rows="20">${this.document.wikiPage.content}</textarea>
 <p>
 Title: <input type="text" name="dc:title" value="${this.document.dublincore.title}"/>
@@ -18,7 +18,7 @@ Add File:
 Files:
 <hr/>
 
-<form method="POST" enctype="multipart/form-data" action="${this.absolutePath}@@addfile">
+<form method="POST" enctype="multipart/form-data" action="${this.urlPath}@@addfile">
 <p>
 <input type="file" name="files:files"/>
 </p>
@@ -27,9 +27,9 @@ Files:
 <hr/>
 
 <#list this.document.files.files as file>
-Current File: <a href="${this.absolutePath}@@getfile?property=files:files/item[${file_index}]/file">${file.filename}</a>
+Current File: <a href="${this.urlPath}@@getfile?property=files:files/item[${file_index}]/file">${file.filename}</a>
 -
-<a href="${this.absolutePath}@@deletefile?property=files:files/item[${file_index}]">Remove</a>
+<a href="${this.urlPath}@@deletefile?property=files:files/item[${file_index}]">Remove</a>
 <br/>
 
 </#list>
