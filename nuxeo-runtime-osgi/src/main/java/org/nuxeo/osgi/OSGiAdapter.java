@@ -133,7 +133,9 @@ public class OSGiAdapter {
     }
 
     public void install(BundleImpl bundle) throws BundleException {
+        double s = System.currentTimeMillis();
         registry.install(bundle);
+        bundle.startupTime = System.currentTimeMillis() - s;
     }
 
     public void uninstall(BundleImpl bundle) throws BundleException {

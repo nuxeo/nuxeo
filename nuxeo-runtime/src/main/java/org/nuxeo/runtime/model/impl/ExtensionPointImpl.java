@@ -44,6 +44,9 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
     @XNode("@name")
     public String name;
 
+    @XNode("@target")
+    public String superComponent;
+
     @XContent("documentation")
     public String documentation;
 
@@ -68,11 +71,21 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
         return documentation;
     }
 
+    public String getSuperComponent() {
+        return superComponent;
+    }
+
     public Extension createExtension(Element element) {
         return null;
     }
 
     public Object[] loadContributions(final RegistrationInfo owner, Extension extension) throws Exception {
+        Object[] contribs = extension.getContributions();
+        if (contribs != null) {
+            // contributions already computed - this should e an overloaded (extended) extension point
+            return contribs;
+        }
+        // should compute now the contributions
         if (contributions != null) {
             if (xmap == null) {
                 xmap = new XMap();
@@ -80,13 +93,12 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
                     xmap.register(contrib);
                 }
             }
-            Object[] contribs = xmap.loadAll(
+            contribs = xmap.loadAll(
                     new XMapContext(extension.getContext()),
                     extension.getElement());
             extension.setContributions(contribs);
-            return contribs;
         }
-        return null;
+        return contribs;
     }
 
 }

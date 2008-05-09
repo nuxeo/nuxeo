@@ -25,7 +25,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestService extends NXRuntimeTestCase {
 
-    public void testServiceLookup() throws Exception {
+    public void testServiceLookup() {
         EventService eventComponent = (EventService) runtime.getComponent(EventService.NAME);
         EventService eventService = runtime.getService(EventService.class);
         assertSame(eventComponent, eventService);

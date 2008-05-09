@@ -45,7 +45,7 @@ import org.nuxeo.runtime.remoting.transporter.TransporterServer;
  */
 public class RemotingService extends DefaultComponent {
 
-    public final static String INVOKER_NAME = "nx:service=invoker,name=remoting";
+    public static final String INVOKER_NAME = "nx:service=invoker,name=remoting";
 
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.runtime.remoting.RemotingService");
@@ -60,7 +60,7 @@ public class RemotingService extends DefaultComponent {
 
     private InvokerLocator serverLocator;
 
-    public static final Server connect(String locatorURI) throws Exception {
+    public static Server connect(String locatorURI) throws Exception {
         return (Server) TransporterClient.createTransporterClient(new InvokerLocator(locatorURI), Server.class);
     }
 
@@ -71,7 +71,7 @@ public class RemotingService extends DefaultComponent {
      * @param port the remote port
      * @return the server object
      */
-    public static final Server connect(String host, int port) throws Exception {
+    public static Server connect(String host, int port) throws Exception {
         return connect(getServerURI(host, port));
     }
 
@@ -80,7 +80,7 @@ public class RemotingService extends DefaultComponent {
      *
      * @param server
      */
-    public static final void disconnect(Server server) {
+    public static void disconnect(Server server) {
         TransporterClient.destroyTransporterClient(server);
     }
 
@@ -92,8 +92,9 @@ public class RemotingService extends DefaultComponent {
      *
      * @deprecated must be removed since from runtime 1.5.1 the invoker protocol may be configurable
      */
-    public static final String getServerURI(String host, int port) {
-        return "socket://" + host + ":" + port+"/?datatype=nuxeo";
+    @Deprecated
+    public static String getServerURI(String host, int port) {
+        return "socket://" + host + ':' + port+"/?datatype=nuxeo";
     }
 
     /**
@@ -102,6 +103,7 @@ public class RemotingService extends DefaultComponent {
      * @return the product info if successful, null otherwise
      * @deprecated should no more be used - use instead {@link AutoConfigurationService}
      */
+    @Deprecated
     public static String ping(String host, int port) {
         try {
             Server server = connect(host, port);

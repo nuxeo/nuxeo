@@ -21,9 +21,9 @@ package org.nuxeo.runtime.remoting;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URI;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.Hashtable;
 import java.util.Map;
 
