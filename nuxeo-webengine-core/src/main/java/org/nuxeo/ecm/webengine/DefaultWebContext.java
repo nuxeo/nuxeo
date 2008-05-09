@@ -147,7 +147,7 @@ public class DefaultWebContext implements WebContext {
     /**
      * XXX implement this method
      */
-    public String getObjectPath(DocumentModel document) {
+    public String getURIPath(DocumentModel document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Not yet implemented");
         //return null;
@@ -195,9 +195,9 @@ public class DefaultWebContext implements WebContext {
         return lastResolved;
     }
 
-    public String getTargetObjectPath() {
+    public String getTargetObjectURI() {
         WebObject obj = getTargetObject();
-        return obj == null ? obj.getPath() : null;
+        return obj == null ? obj.getWebPath() : null;
     }
 
     public ScriptFile getTargetScript() throws IOException {

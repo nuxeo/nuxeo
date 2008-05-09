@@ -154,13 +154,13 @@ public class WebObject {
         return null;
     }
 
-    public String getObjectPath() {
+    public String getPath() {
         StringBuilder buf = new StringBuilder();
         collectPath(buf);
         return buf.toString();
     }
 
-    public String getPath() {
+    public String getWebPath() {
         StringBuilder buf = new StringBuilder(context.getSitePath());
         collectPath(buf);
         return buf.toString();

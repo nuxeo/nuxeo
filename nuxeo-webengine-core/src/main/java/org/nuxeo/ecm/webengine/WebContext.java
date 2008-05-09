@@ -255,7 +255,7 @@ public interface WebContext {
      * Get the path  path corresponding to the target object of the request.
      * @return the target object path. Will never return null. If the target object is null returns "/".
      */
-    String getTargetObjectPath();
+    String getTargetObjectURI();
 
     /**
      * Get a suitable URI path for the given Nuxeo document, that can be used to invoke this document.
@@ -264,7 +264,7 @@ public interface WebContext {
      * @return the path if any or null if no suitable path can be found
      * XXX can this method return null?
      */
-    String getObjectPath(DocumentModel document); // try to resolve a nuxeo doc to a web object path
+    String getURIPath(DocumentModel document); // try to resolve a nuxeo doc to a web object path
 
     /**
      * Given a relative path to the current script, create an absolute one (relative to the web directory)

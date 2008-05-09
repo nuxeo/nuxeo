@@ -81,7 +81,7 @@ public class DefaultRequestHandler implements RequestHandler, Actions {
             } catch (WebException e) {
                 throw e;
             } catch (Exception e) {
-                throw new WebException("Failed to run action "+action+" on object "+object.getObjectPath(), e);
+                throw new WebException("Failed to run action "+action+" on object "+object.getPath(), e);
             }
         }
     }
