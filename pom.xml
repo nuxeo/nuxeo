@@ -7,7 +7,7 @@
   <name>Nuxeo-platform login parent</name>
   <packaging>pom</packaging>
   <description>Nuxeo Platform login parent</description>
-  <version>5.1.5-SNAPSHOT</version>
+  <version>5.2-SNAPSHOT</version>
 
   <modules>
     <module>nuxeo-platform-login-anonymous</module>
