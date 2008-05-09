@@ -25,8 +25,6 @@ import java.io.Serializable;
 
 import javax.annotation.security.PermitAll;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -47,26 +45,15 @@ public class UserManagerBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = 8469446313008631864L;
 
-    private static final Log log = LogFactory
-            .getLog(UserManagerBusinessDelegate.class);
-
     protected UserManager userManager;
-
-    //@Create
-    public void initialize() {
-        log.info("Seam component initialized...");
-    }
 
     /**
      * Acquires a new {@link UserManager} reference. The related EJB may be
      * deployed on a local or remote AppServer.
-     *
-     * @return
-     * @throws ClientException
      */
     @Unwrap
     public UserManager getUserManager() throws ClientException {
-        if (null == userManager) {
+        if (userManager == null) {
             try {
                 //userManager = ECM.getPlatform().getService(UserManager.class);
                 userManager = Framework.getService(UserManager.class);
@@ -88,10 +75,9 @@ public class UserManagerBusinessDelegate implements Serializable {
     @Destroy
     @PermitAll
     public void destroy() throws ClientException {
-        if (null != userManager) {
+        if (userManager != null) {
             userManager.remove();
             userManager = null;
         }
-        log.info("Destroyed the seam component...");
     }
 }
