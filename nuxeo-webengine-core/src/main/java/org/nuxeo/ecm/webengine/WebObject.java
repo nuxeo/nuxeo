@@ -160,10 +160,14 @@ public class WebObject {
         return buf.toString();
     }
 
-    public String getWebPath() {
+    public String getUrlPath() {
         StringBuilder buf = new StringBuilder(context.getSitePath());
         collectPath(buf);
         return buf.toString();
+    }
+
+    public String getRepositoryPath() {
+        return doc == null ? null : doc.getPathAsString();
     }
 
     protected void collectPath(StringBuilder buf) {

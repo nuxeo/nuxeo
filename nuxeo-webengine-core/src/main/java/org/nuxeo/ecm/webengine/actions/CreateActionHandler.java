@@ -43,7 +43,7 @@ public class CreateActionHandler implements ActionHandler {
             WebObject child = object.next();
             if (child == null) { /// create a child with a generated name
                 DocumentModel doc = createSubPage(parent, null, object.getWebContext());
-                String path = object.getWebPath();
+                String path = object.getUrlPath();
                 if (path.endsWith("/")) {
                     path = path + doc.getName();
                 } else {

@@ -147,7 +147,7 @@ public class DefaultWebContext implements WebContext {
     /**
      * XXX implement this method
      */
-    public String getWebPath(DocumentModel document) {
+    public String getUrlPath(DocumentModel document) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Not yet implemented");
         //return null;
@@ -195,9 +195,9 @@ public class DefaultWebContext implements WebContext {
         return lastResolved;
     }
 
-    public String getTargetObjectWebPath() {
+    public String getTargetObjectUrlPath() {
         WebObject obj = getTargetObject();
-        return obj == null ? obj.getWebPath() : null;
+        return obj == null ? obj.getUrlPath() : null;
     }
 
     public ScriptFile getTargetScript() throws IOException {
@@ -233,7 +233,7 @@ public class DefaultWebContext implements WebContext {
         return request.getRequestURL().toString();
     }
 
-    public String getWebPath() {
+    public String getUrlPath() {
         StringBuilder buf = new StringBuilder(request.getRequestURI().length());
         String path = request.getContextPath();
         if (path == null) path = "/nuxeo/site"; // for testing
