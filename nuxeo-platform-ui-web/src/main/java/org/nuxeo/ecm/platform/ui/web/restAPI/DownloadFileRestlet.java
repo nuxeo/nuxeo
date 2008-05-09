@@ -145,7 +145,6 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements
                     FileUtils.copy(instream, outputStream);
                     instream.close();
                     tempfile.delete();
-                    blob.transferTo(outputStream);
                 }
             });
             HttpServletResponse response = getHttpResponse(res);
