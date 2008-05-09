@@ -1,0 +1,36 @@
+<component name="MyAPP.NTLM">
+   <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+   <require>org.nuxeo.ecm.platform.login.NTLM</require>
+
+   <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="authenticators">
+      <authenticationPlugin
+              name="NTLM_AUTH">
+
+       <!-- remove the LoginModulePlugin Parameter to redo authentication against user directory -->
+       <loginModulePlugin>Trusting_LM</loginModulePlugin>
+
+       <parameters>
+          <!--
+         <parameter name="jcifs.http.domainController">MyControler</parameter>
+          -->
+       </parameters>
+
+      </authenticationPlugin>
+  </extension>
+
+   <!-- Include NTLM Auth into authentication chain -->
+    <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="chain">
+    <authenticationChain>
+      <plugins>
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>NTLM_AUTH</plugin>
+        <plugin>FORM_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+  </extension>
+
+</component>

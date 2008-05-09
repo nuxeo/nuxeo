@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.login.NTLM">
+   <documentation>
+   This Authentication Plugin uses NTLM to get UserName/Password.
+   This Authentication Plugin is configured to be used with
+   the default LoginModule (ie : password check against the user directory.
+   </documentation>
+   <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="authenticators">
+      <authenticationPlugin
+              name="NTLM_AUTH"
+              enabled="true"
+              class="org.nuxeo.ecm.platform.ui.web.auth.ntlm.NTLMAuthenticator">
+       <parameters>
+       </parameters>
+      </authenticationPlugin>
+  </extension>
+</component>
