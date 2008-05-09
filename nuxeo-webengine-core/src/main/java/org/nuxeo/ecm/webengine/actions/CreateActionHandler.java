@@ -43,7 +43,7 @@ public class CreateActionHandler implements ActionHandler {
             WebObject child = object.next();
             if (child == null) { /// create a child with a generated name
                 DocumentModel doc = createSubPage(parent, null, object.getWebContext());
-                String path = object.getAbsolutePath();
+                String path = object.getPath();
                 if (path.endsWith("/")) {
                     path = path + doc.getName();
                 } else {
@@ -62,7 +62,7 @@ public class CreateActionHandler implements ActionHandler {
                 return;
             }
         }
-        throw new WebException("Faield to create document. The document already exists: "+object.getPath());
+        throw new WebException("Faield to create document. The document already exists: "+object.getObjectPath());
     }
 
     private static DocumentModel createSubPage(DocumentModel parent, String name,

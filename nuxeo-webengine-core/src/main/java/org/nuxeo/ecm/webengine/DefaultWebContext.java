@@ -197,7 +197,7 @@ public class DefaultWebContext implements WebContext {
 
     public String getTargetObjectPath() {
         WebObject obj = getTargetObject();
-        return obj == null ? obj.getAbsolutePath() : null;
+        return obj == null ? obj.getPath() : null;
     }
 
     public ScriptFile getTargetScript() throws IOException {
@@ -441,6 +441,7 @@ public class DefaultWebContext implements WebContext {
         bindings.put("this", getTargetObject());
         bindings.put("doc", getTargetDocument());
         bindings.put("engine", engine);
+        bindings.put("env", engine.getEnvironment());
         try {
             bindings.put("session", getCoreSession());
         } catch (Exception e) {
