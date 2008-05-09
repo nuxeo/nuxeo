@@ -46,7 +46,7 @@ public class GuardTest extends NXRuntimeTestCase {
         deployBundle("nuxeo-core-query");
         deployBundle("nuxeo-core-api");
         deployBundle("nuxeo-core");
-        deployBundle("nuxeo-platform-site");
+        deployBundle("nuxeo-webengine-core");
         deployContrib("OSGI-INF/DemoRepository.xml");
         deployContrib("OSGI-INF/site-manager-framework.xml");
         deployContrib("OSGI-INF/site-manager-framework.xml");
