@@ -85,30 +85,11 @@ public class DeploymentPreprocessor {
         root = getContainer(dir);
         if (root != null) {
             // run container commands
-
             init(root);
         }
     }
 
     protected void init(ContainerDescriptor cd) throws Exception {
-        List<File> dirs = new ArrayList<File>();
-        if (cd.directories != null && !cd.directories.isEmpty()) {
-            for (String dirPath : cd.directories) {
-                dirs.add(new File(dir, dirPath));
-            }
-        } else {
-            dirs.add(dir);
-        }
-        for (File dir : dirs) {
-            if (dir.exists()) {
-                log.info("Scanning directory " + dir.getName());
-                init(cd, dir);
-            }
-        }
-    }
-
-    protected void init(ContainerDescriptor cd, File dir) throws Exception {
-
         if (cd.context == null) {
             cd.context = new CommandContextImpl(cd.directory);
         }
@@ -118,10 +99,25 @@ public class DeploymentPreprocessor {
             log.info("Running custom installation for container: " + cd.name);
             cd.install.exec(cd.context);
         }
+        // scan directories
+        if (cd.directories == null || cd.directories.isEmpty()) {
+            init(cd, dir);
+        } else {
+            for (String dirPath : cd.directories) {
+                init(cd, new File(dir, dirPath));
+            }
+        }
+    }
 
-        File[] files = dir.listFiles();
+    protected void init(ContainerDescriptor cd, File dir) throws Exception {
+        log.info("Scanning directory: " + dir.getName());
+        if (!dir.exists()) {
+            log.warn("Directory doesn't exist: " + dir.getPath());
+            return;
+        }
         // sort input files in alphabetic order -> this way we are sure we get
         // the same deploying order on all machines.
+        File[] files = dir.listFiles();
         Arrays.sort(files);
         for (File file : files) {
             String fileName = file.getName();
