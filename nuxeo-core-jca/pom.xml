@@ -86,6 +86,7 @@
           <manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
         </configuration>
       </plugin>
+<!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -120,6 +121,7 @@
 	  </execution>
 	</executions>
       </plugin>
+-->
     </plugins>
     <finalName>${pom.artifactId}-${pom.version}</finalName>
   </build>
