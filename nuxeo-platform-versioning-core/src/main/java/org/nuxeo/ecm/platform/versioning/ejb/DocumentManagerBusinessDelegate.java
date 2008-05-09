@@ -22,8 +22,6 @@ package org.nuxeo.ecm.platform.versioning.ejb;
 import java.io.Serializable;
 import java.util.Map;
 
-import javax.naming.NamingException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -43,8 +41,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
     protected transient CoreSession documentManager;
 
     public CoreSession getDocumentManager(String repositoryUri,
-            Map<String, Serializable> sessionContext) throws NamingException,
-            ClientException {
+            Map<String, Serializable> sessionContext) throws ClientException {
         log.info("<getDocumentManager>");
 
         // first destroy if needed
@@ -61,7 +58,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
         return documentManager;
     }
 
-    public void remove() throws ClientException {
+    public void remove() {
         // TODO: removing the session produces a failure on the next new session
         // open - need to investigate why
         //CoreInstance.getInstance().close(documentManager);
