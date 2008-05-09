@@ -11,6 +11,20 @@
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.tabs.js"></script>
 <base href="${this.docURL}">
 
+<script>
+$.fn.search = function() {
+	return this.focus(function() {
+		if( this.value == this.defaultValue ) {
+			this.value = "";
+		}
+	}).blur(function() {
+		if( !this.value.length ) {
+			this.value = this.defaultValue;
+		}
+	});
+};
+$("#q").search();
+</script>
 </head>
 
 <body>

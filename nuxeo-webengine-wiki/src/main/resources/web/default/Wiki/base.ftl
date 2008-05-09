@@ -15,14 +15,18 @@
 
 <script>
 
-$(document).ready(function(){
-  
-  $("q").focus(function () {
-      alert("coucou");
-      $(this).value = "";
-  });
-
-});
+$.fn.search = function() {
+	return this.focus(function() {
+		if( this.value == this.defaultValue ) {
+			this.value = "";
+		}
+	}).blur(function() {
+		if( !this.value.length ) {
+			this.value = this.defaultValue;
+		}
+	});
+};
+$("#s").search();
 
 </script>
 
