@@ -10,14 +10,15 @@
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="binding">
     <binding type="Document" objectId="WebObject" />
-    <binding type="WikiPage" objectId="WikiPage" />
+    <binding type="WikiPage" objectId="WikiPage" />`
+    <binding type="Wiki" objectId="WikiSite" />
   </extension>
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
   	point="webObject">
   	<object id="WebObject">
   		<actions>
-  			<action id="view" enabled="true">
+  		<action id="view" enabled="true">
           <permission  expression="READ"/>
           <category>VIEW</category>
         </action>
@@ -38,24 +39,39 @@
         <action id="create" enabled="true" script="common/create.groovy" handler="org.nuxeo.ecm.webengine.actions.CreateActionHandler">
           <permission expression="WRITE" />
         </action>
-        <action id="getfile" enabled="true" handler="org.nuxeo.ecm.webengine.actions.GetFileActionHandler">
+        <action id="getfile" enabled="true"  handler="org.nuxeo.ecm.webengine.actions.GetFileActionHandler">
           <permission expression="READ" />
         </action>
-        <action id="addfile" enabled="true" handler="org.nuxeo.ecm.webengine.actions.AddFileActionHandler">
+        <action id="addfile" enabled="true" script="common/addfile.groovy" handler="org.nuxeo.ecm.webengine.actions.AddFileActionHandler">
 
           <permission expression="WRITE" />
         </action>
-        <action id="deletefile" enabled="true" handler="org.nuxeo.ecm.webengine.actions.DeleteFileActionHandler">
+        <action id="deletefile" enabled="true" script="common/addfile.groovy" handler="org.nuxeo.ecm.webengine.actions.DeleteFileActionHandler">
           <permission expression="WRITE" />
         </action>        
+                
       </actions>
   	</object>
+  	
     <object id="WikiPage" extends="WebObject">
       <actions>
-
         <action id="print" enabled="false"/>
       </actions>
     </object>
   </extension>
+  
+  <object id="Wiki">
+    <actions>
+        <action id="view" enabled="true" script="Wiki/redirectToFrontpage.groovy">
+          <permission  expression="READ"/>
+        </action>
+        
+        <action id="home" enabled="true" script="Wiki/redirectToFrontpage.groovy">
+          <permission  expression="READ"/>
+        </action>
+        
+    </actions>
+  </object>
+  
 
 </component>

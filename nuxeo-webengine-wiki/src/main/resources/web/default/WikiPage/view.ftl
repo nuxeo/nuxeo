@@ -20,9 +20,10 @@ $(document).ready(function(){
   </ul>
   <div id="page_content">
       <h1>${this.title}</h1>
-
       <@transform name="wiki">${this.wikiPage.content}</@transform>
   </div>
 </div>
+
+
 </@block>
 </@extends>
