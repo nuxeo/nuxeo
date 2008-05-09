@@ -45,21 +45,26 @@ import org.nuxeo.ecm.core.api.model.DocumentPart;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DocumentContextView {
+public class DefaultDocumentView implements DocumentView {
 
     // Must be returned by get() method when the key is unknown since the caller should be able to
     // treat differently a key hit that returned null from a key that is not known by this view
     public final static Object UNKNOWN = new Object();
 
-    protected final Map<String, DocumentField> fields;
+    public interface Field {
+        String getName();
+        Object getValue(DocumentModel doc) throws Exception;
+    }
 
-    public DocumentContextView() {
-        fields = new HashMap<String, DocumentField>();
+    protected final Map<String, Field> fields;
+
+    public DefaultDocumentView() {
+        fields = new HashMap<String, Field>();
         initialize();
     }
 
-    public DocumentContextView(Map<String, DocumentField> fields) {
-        this.fields = fields == null ? new HashMap<String, DocumentField>() : fields;
+    public DefaultDocumentView(Map<String, Field> fields) {
+        this.fields = fields == null ? new HashMap<String, Field>() : fields;
     }
 
     protected void initialize() {
@@ -96,12 +101,12 @@ public class DocumentContextView {
         addField(SOURCE_ID);
     }
 
-    public final void addField(DocumentField field) {
+    public final void addField(Field field) {
         fields.put(field.getName(), field);
     }
 
-    public final void addFields(Collection<DocumentField> fields) {
-        for (DocumentField field : fields) {
+    public final void addFields(Collection<Field> fields) {
+        for (Field field : fields) {
             this.fields.put(field.getName(), field);
         }
     }
@@ -110,16 +115,20 @@ public class DocumentContextView {
         fields.remove(name);
     }
 
-    public DocumentField getField(String name) {
+    public Field getField(String name) {
         return fields.get(name);
     }
 
     public Object get(DocumentModel doc, String name) throws Exception {
-        DocumentField field = fields.get(name);
+        Field field = fields.get(name);
         if (field != null) {
             return field.getValue(doc);
         }
-        // not custom field binding found -> look into document properties
+        // may be a a property xpath
+        if (name.indexOf(':') > -1) {
+            return doc.getProperty(name);
+        }
+        // may be a schema name
         DocumentPart part = doc.getPart(name);
         if (part != null) {
             return part;
@@ -133,7 +142,7 @@ public class DocumentContextView {
         return keys;
     }
 
-    public Map<String, DocumentField> getFields() {
+    public Map<String, Field> getFields() {
         return fields;
     }
 
@@ -145,7 +154,7 @@ public class DocumentContextView {
         return fields.size() + doc.getDeclaredSchemas().length;
     }
 
-    protected static final DocumentField SESSION = new DocumentField() {
+    protected static final Field SESSION = new Field() {
         public final String getName() {
             return "session";
         }
@@ -155,7 +164,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField ID = new DocumentField() {
+    protected static final Field ID = new Field() {
         public final String getName() {
             return "id";
         }
@@ -165,7 +174,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField NAME = new DocumentField() {
+    protected static final Field NAME = new Field() {
         public final String getName() {
             return "name";
         }
@@ -175,7 +184,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField PATH = new DocumentField() {
+    protected static final Field PATH = new Field() {
         public final String getName() {
             return "path";
         }
@@ -185,7 +194,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField TYPE = new DocumentField() {
+    protected static final Field TYPE = new Field() {
         public final String getName() {
             return "type";
         }
@@ -195,7 +204,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField SCHEMAS = new DocumentField() {
+    protected static final Field SCHEMAS = new Field() {
         public final String getName() {
             return "schemas";
         }
@@ -205,7 +214,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField FACETS = new DocumentField() {
+    protected static final Field FACETS = new Field() {
         public final String getName() {
             return "facets";
         }
@@ -215,7 +224,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField STATE = new DocumentField() {
+    protected static final Field STATE = new Field() {
         public final String getName() {
             return "state";
         }
@@ -225,7 +234,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField LOCKED = new DocumentField() {
+    protected static final Field LOCKED = new Field() {
         public final String getName() {
             return "isLocked";
         }
@@ -235,7 +244,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField LIFE_CYCLE_STATE = new DocumentField() {
+    protected static final Field LIFE_CYCLE_STATE = new Field() {
         public final String getName() {
             return "lifeCycleState";
         }
@@ -245,7 +254,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField LIFE_CYCLE_POLICY = new DocumentField() {
+    protected static final Field LIFE_CYCLE_POLICY = new Field() {
         public final String getName() {
             return "lifeCyclePolicy";
         }
@@ -255,7 +264,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField ALLOWED_STATE_TRANSITIONS = new DocumentField() {
+    protected static final Field ALLOWED_STATE_TRANSITIONS = new Field() {
         public final String getName() {
             return "allowedStateTransitions";
         }
@@ -265,7 +274,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField IS_FOLDER = new DocumentField() {
+    protected static final Field IS_FOLDER = new Field() {
         public final String getName() {
             return "isFolder";
         }
@@ -275,7 +284,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField TITLE = new DocumentField() {
+    protected static final Field TITLE = new Field() {
         public String getName() {
             return "title";
         }
@@ -285,7 +294,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField AUTHOR = new DocumentField() {
+    protected static final Field AUTHOR = new Field() {
         public String getName() {
             return "author";
         }
@@ -295,7 +304,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField CREATED = new DocumentField() {
+    protected static final Field CREATED = new Field() {
         public String getName() {
             return "created";
         }
@@ -306,7 +315,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField MODIFIED = new DocumentField() {
+    protected static final Field MODIFIED = new Field() {
         public String getName() {
             return "modified";
         }
@@ -317,7 +326,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField CONTENT = new DocumentField() {
+    protected static final Field CONTENT = new Field() {
         public String getName() {
             return "content";
         }
@@ -332,7 +341,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField PARTS = new DocumentField() {
+    protected static final Field PARTS = new Field() {
         public String getName() {
             return "parts";
         }
@@ -342,7 +351,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField SID = new DocumentField() {
+    protected static final Field SID = new Field() {
         public String getName() {
             return "sessionId";
         }
@@ -352,7 +361,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField REPOSITORY = new DocumentField() {
+    protected static final Field REPOSITORY = new Field() {
         public String getName() {
             return "repository";
         }
@@ -362,7 +371,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField PARENT = new DocumentField() {
+    protected static final Field PARENT = new Field() {
         public String getName() {
             return "parent";
         }
@@ -373,7 +382,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField CHILDREN = new DocumentField() {
+    protected static final Field CHILDREN = new Field() {
         public String getName() {
             return "children";
         }
@@ -384,7 +393,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField REF = new DocumentField() {
+    protected static final Field REF = new Field() {
         public String getName() {
             return "ref";
         }
@@ -394,7 +403,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField VERSIONS = new DocumentField() {
+    protected static final Field VERSIONS = new Field() {
         public String getName() {
             return "versions";
         }
@@ -404,7 +413,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField PROXIES = new DocumentField() {
+    protected static final Field PROXIES = new Field() {
         public String getName() {
             return "proxies";
         }
@@ -414,7 +423,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField VERSION_LABEL = new DocumentField() {
+    protected static final Field VERSION_LABEL = new Field() {
         public String getName() {
             return "versionLabel";
         }
@@ -424,7 +433,7 @@ public class DocumentContextView {
         }
     };
 
-    protected static final DocumentField SOURCE_ID = new DocumentField() {
+    protected static final Field SOURCE_ID = new Field() {
         public String getName() {
             return "sourceId";
         }
@@ -441,6 +450,6 @@ public class DocumentContextView {
      * since it will try to register these fields (otherwise fields will not be defined yet at the time of
      * the initialization of that static member
      */
-    public static final DocumentContextView DEFAULT = new DocumentContextView();
+    public static final DefaultDocumentView DEFAULT = new DefaultDocumentView();
 
 }

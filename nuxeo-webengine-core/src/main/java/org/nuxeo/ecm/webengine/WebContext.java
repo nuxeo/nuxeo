@@ -423,15 +423,6 @@ public interface WebContext {
     void print(String text) throws IOException;
 
     /**
-     * Check the given permission on the given document for the current user
-     * @param doc the document to check the permission on
-     * @param perm the permission to check
-     * @return true if permission is granted false otherwise
-     * @throws WebException
-     */
-    boolean hasPerm(DocumentModel doc, String perm) throws WebException;
-
-    /**
      * This is a helper method that performs a query against nuxeo repository.
      * <p>
      * This method is provided as a convenience method to perform searches since the search API

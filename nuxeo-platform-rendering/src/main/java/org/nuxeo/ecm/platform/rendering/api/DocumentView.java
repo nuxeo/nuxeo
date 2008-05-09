@@ -19,18 +19,18 @@
 
 package org.nuxeo.ecm.platform.rendering.api;
 
+import java.util.Collection;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface DocumentField {
+public interface DocumentView {
 
-    String getName();
+    public Object get(DocumentModel doc, String name) throws Exception;
 
-    Object getValue(DocumentModel doc) throws Exception;
-
-    int size(DocumentModel doc);
+    public Collection<String> keys(DocumentModel doc);
 
 }

@@ -19,9 +19,12 @@
 
 package org.nuxeo.ecm.platform.rendering.fm.adapters;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
+import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 
 import freemarker.template.DefaultObjectWrapper;
@@ -46,8 +49,22 @@ public class DocumentObjectWrapper extends DefaultObjectWrapper {
         if (obj instanceof DocumentModel) {
             return new DocumentTemplate(this, (DocumentModel)obj);
         } else if (obj instanceof Property) {
-            if (obj instanceof ListProperty) {
+            Property p = (Property)obj;
+            if (p.isScalar()) {
+                return new PropertyWrapper(this).wrap(p);
+            } else if (p.isList()) {
                 return new ListPropertyTemplate(this, (ListProperty)obj);
+            } else if (p.getClass() == BlobProperty.class) {
+                try {
+                    Blob blob = (Blob)p.getValue();
+                    if (blob == null) {
+                        return TemplateModel.NOTHING;
+                    } else {
+                        return new BlobTemplate(this, blob);
+                    }
+                } catch (PropertyException e) {
+                    throw new TemplateModelException(e);
+                }
             } else {
                 return new ComplexPropertyTemplate(this, (Property)obj);
             }

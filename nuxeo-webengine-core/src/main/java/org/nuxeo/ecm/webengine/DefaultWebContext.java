@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
@@ -397,11 +396,6 @@ public class DefaultWebContext implements WebContext {
             p = p.next;
         }
         return objects;
-    }
-
-    public boolean hasPerm(DocumentModel doc, String perm) throws WebException {
-        Access access = doc.getACP().getAccess(getPrincipal().getName(), perm);
-        return access ==  Access.GRANT ? true : false;
     }
 
     public DocumentModelList search(String query) throws WebException {
