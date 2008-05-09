@@ -38,7 +38,7 @@ import javax.script.SimpleScriptContext;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
-import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.WebRoot;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.scripting.ScriptingService;
@@ -73,7 +73,7 @@ public class Scripting {
         return renderingEngine;
     }
 
-    public void exec(WebContext req, ScriptFile script) throws Exception {
+    public void exec(DefaultWebContext req, ScriptFile script) throws Exception {
         String ext = script.getExtension();
         if ("ftl".equals(ext)) {
             req.render(script.getPath());
@@ -82,7 +82,7 @@ public class Scripting {
         }
     }
 
-    public void exec(WebContext req) throws Exception {
+    public void exec(DefaultWebContext req) throws Exception {
         ScriptFile script = req.getTargetScript();
         if (script.getFile().isFile()) {
             exec(req, script);
@@ -111,7 +111,7 @@ public class Scripting {
         }
     }
 
-    public void runScript(WebContext req, ScriptFile script) throws Exception {
+    public void runScript(DefaultWebContext req, ScriptFile script) throws Exception {
         // script is not compilable - run slow eval
         String ext = script.getExtension();
         ScriptEngine engine = scriptService.getScriptEngineManager().getEngineByExtension(ext);

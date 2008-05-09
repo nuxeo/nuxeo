@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.api.EmptyContextView;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContextView;
-import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.DefaultWebContext;
 
 /**
  * A simple context to be able to render templates not linked to document instances
@@ -43,13 +43,13 @@ import org.nuxeo.ecm.webengine.WebContext;
  */
 public class SiteRenderingContext implements ServletRenderingContext {
 
-    private final WebContext request;
+    private final DefaultWebContext request;
 
-    public SiteRenderingContext(WebContext request) {
+    public SiteRenderingContext(DefaultWebContext request) {
         this.request = request;
     }
 
-    public WebContext getSiteRequest() {
+    public DefaultWebContext getSiteRequest() {
         return request;
     }
 

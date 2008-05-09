@@ -24,7 +24,7 @@ import org.nuxeo.ecm.platform.rendering.api.DocumentContextView;
 import org.nuxeo.ecm.platform.rendering.api.DocumentField;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.webengine.WebObject;
-import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.DefaultWebContext;
 
 public class SiteDocumentView extends DocumentContextView {
 
@@ -38,10 +38,10 @@ public class SiteDocumentView extends DocumentContextView {
         addField(DESCRIPTOR);
     }
 
-    protected static WebContext getRequest(RenderingContext ctx, DocumentModel doc) {
+    protected static DefaultWebContext getRequest(RenderingContext ctx, DocumentModel doc) {
         if (ctx instanceof WebObject) {
             WebObject sCtx = (WebObject) ctx;
-            WebContext request = sCtx.getSiteRequest();
+            DefaultWebContext request = sCtx.getSiteRequest();
             return request;
         }
         return null;

@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebObject;
-import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.util.FormData;
 
 /**
@@ -66,7 +66,7 @@ public class CreateActionHandler implements ActionHandler {
     }
 
     private static DocumentModel createSubPage(DocumentModel parent, String name,
-            WebContext request) throws WebException {
+            DefaultWebContext request) throws WebException {
         try {
             CoreSession session = request.getCoreSession();
             FormData form = request.getForm();

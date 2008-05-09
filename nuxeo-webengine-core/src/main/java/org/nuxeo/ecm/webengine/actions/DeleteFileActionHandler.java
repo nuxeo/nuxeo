@@ -23,7 +23,7 @@ package org.nuxeo.ecm.webengine.actions;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebObject;
-import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.util.FormData;
 
 /**
@@ -37,7 +37,7 @@ public class DeleteFileActionHandler implements ActionHandler {
             throw new WebException("Cannot run getFile action on a non resolved object: "+object);
         }
         DocumentModel doc = object.getDocument();
-        WebContext req = object.getSiteRequest();
+        DefaultWebContext req = object.getSiteRequest();
         FormData form = req.getForm();
         String xpath = form.getString(FormData.PROPERTY);
         if (xpath == null) {

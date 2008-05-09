@@ -46,11 +46,11 @@ public class WebObject implements ServletRenderingContext {
 
     protected DocumentModel doc;
     protected final String name;
-    protected final WebContext request;
+    protected final DefaultWebContext request;
     protected ObjectDescriptor desc;
 
 
-    public WebObject(WebContext request, String name, DocumentModel doc) {
+    public WebObject(DefaultWebContext request, String name, DocumentModel doc) {
         this.request = request;
         this.name = name;
         this.doc = doc;
@@ -88,7 +88,7 @@ public class WebObject implements ServletRenderingContext {
     /**
      * @return the request.
      */
-    public WebContext getSiteRequest() {
+    public DefaultWebContext getSiteRequest() {
         return request;
     }
 

@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
-import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.DefaultWebContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -31,7 +31,7 @@ import org.nuxeo.ecm.webengine.WebContext;
  */
 public interface ServletRenderingContext extends RenderingContext {
 
-    WebContext getSiteRequest();
+    DefaultWebContext getSiteRequest();
 
     HttpServletRequest getRequest();
 

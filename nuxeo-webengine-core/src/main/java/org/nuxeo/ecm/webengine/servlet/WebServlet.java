@@ -42,7 +42,7 @@ import org.nuxeo.ecm.webengine.RequestHandler;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebObject;
-import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.WebRoot;
 import org.nuxeo.ecm.webengine.actions.Actions;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
@@ -94,7 +94,7 @@ public class WebServlet extends HttpServlet {
             resp = new NoBodyResponse(resp);
         }
 
-        WebContext siteRequest = null;
+        DefaultWebContext siteRequest = null;
         try {
             siteRequest = createRequest(req, resp);
             service(siteRequest, req, resp);
@@ -118,7 +118,7 @@ public class WebServlet extends HttpServlet {
         System.out.println(">>> SITE REQUEST TOOK:  "+((System.currentTimeMillis()-start)/1000));
     }
 
-    protected void service(WebContext siteRequest, HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    protected void service(DefaultWebContext siteRequest, HttpServletRequest req, HttpServletResponse resp) throws Exception {
         if (siteRequest.getLastResolvedObject() == null) { // a request outside the root
             showIndex(siteRequest);
             return;
@@ -192,7 +192,7 @@ public class WebServlet extends HttpServlet {
         }
     }
 
-    public WebContext createRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    public DefaultWebContext createRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         String pathInfo = req.getPathInfo();
         WebRoot root;
         if (pathInfo == null || "/".equals(pathInfo)) {
@@ -217,7 +217,7 @@ public class WebServlet extends HttpServlet {
                 }
             }
         }
-        WebContext siteReq = new WebContext(root, req, resp);
+        DefaultWebContext siteReq = new DefaultWebContext(root, req, resp);
         // traverse documents if any
         String[] traversal = null;
         Mapping mapping = root.getMapping(pathInfo);
@@ -238,7 +238,7 @@ public class WebServlet extends HttpServlet {
         return siteReq;
     }
 
-    public static void buildTraversalPath(WebContext siteReq, String[] traversal) throws Exception {
+    public static void buildTraversalPath(DefaultWebContext siteReq, String[] traversal) throws Exception {
         if (traversal == null || traversal.length == 0) {
             // nothing to traverse
             return;
@@ -284,7 +284,7 @@ public class WebServlet extends HttpServlet {
         }
     }
 
-    public void showIndex(WebContext request) throws Exception {
+    public void showIndex(DefaultWebContext request) throws Exception {
         try {
             double s = System.currentTimeMillis();
             scripting.exec(request);
