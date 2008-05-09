@@ -5,7 +5,7 @@
 <#assign name = context.getFirstUnresolvedSegment()>
 
 The document ${name} doesn't exist. Click
-<a href="${this.docURL}/${name}@@create_form">here</a>
+<a href="${this.absolutePath}/${name}@@create_form">here</a>
 if you want to create a new document.
 
 <#else>

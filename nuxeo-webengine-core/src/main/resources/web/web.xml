@@ -35,7 +35,7 @@
         <action id="create" enabled="true" handler="org.nuxeo.ecm.webengine.actions.CreateActionHandler">
           <permission expression="WRITE" />
         </action>
-        <!--action id="getfile" enabled="true" handler="org.nuxeo.ecm.webengine.actions.GetFileActionHandler">
+        <action id="getfile" enabled="true" handler="org.nuxeo.ecm.webengine.actions.GetFileActionHandler">
           <permission expression="READ" />
         </action>
         <action id="addfile" enabled="true" handler="org.nuxeo.ecm.webengine.actions.AddFileActionHandler">
@@ -43,7 +43,7 @@
         </action>
         <action id="deletefile" enabled="true" handler="org.nuxeo.ecm.webengine.actions.DeleteFileActionHandler">
           <permission expression="WRITE" />
-        </action-->
+        </action>
       </actions>
   	</object>
   </extension>
