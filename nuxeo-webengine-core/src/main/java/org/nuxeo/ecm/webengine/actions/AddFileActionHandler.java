@@ -75,7 +75,9 @@ public class AddFileActionHandler implements ActionHandler {
                 }
                 p.setValue(blob);
             }
-            object.getSession().saveDocument(doc);
+            object.getWebContext().getCoreSession().saveDocument(doc);
+        } catch (WebException e) {
+            throw e;
         } catch (Exception e) {
             throw new WebException("Failed to attach file", e);
         }

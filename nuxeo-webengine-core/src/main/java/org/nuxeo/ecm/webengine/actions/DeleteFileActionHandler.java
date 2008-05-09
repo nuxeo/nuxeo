@@ -49,7 +49,7 @@ public class DeleteFileActionHandler implements ActionHandler {
         }
         try {
             doc.getProperty(xpath).remove();
-            object.getSession().saveDocument(doc);
+            object.getWebContext().getCoreSession().saveDocument(doc);
         } catch (Exception e) {
             throw new WebException("Failed to delete attached file", e);
         }

@@ -37,17 +37,16 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.webengine.DefaultDocumentResolver;
+import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.DocumentResolver;
 import org.nuxeo.ecm.webengine.RequestHandler;
 import org.nuxeo.ecm.webengine.WebContext;
-import org.nuxeo.ecm.webengine.WebContextImpl;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebObject;
 import org.nuxeo.ecm.webengine.WebRoot;
 import org.nuxeo.ecm.webengine.actions.Actions;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
-import org.nuxeo.ecm.webengine.rendering.ServletRequestView;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.runtime.api.Framework;
@@ -83,7 +82,6 @@ public class WebServlet extends HttpServlet {
         env.put("version", "1.0.0");
         RenderingEngine renderingEngine = scripting.getRenderingEngine();
         renderingEngine.setSharedVariable("env", env);
-        renderingEngine.setSharedDocumentView(new ServletRequestView());
     }
 
     @Override
@@ -240,7 +238,7 @@ public class WebServlet extends HttpServlet {
                 }
             }
         }
-        WebContextImpl context = new WebContextImpl(root, req, resp);
+        DefaultWebContext context = new DefaultWebContext(root, req, resp);
         // traverse documents if any
         String[] traversal = null;
         Mapping mapping = root.getMapping(pathInfo);
@@ -261,7 +259,7 @@ public class WebServlet extends HttpServlet {
         return context;
     }
 
-    public static void buildTraversalPath(WebContextImpl context, String[] traversal) throws Exception {
+    public static void buildTraversalPath(DefaultWebContext context, String[] traversal) throws Exception {
         if (traversal == null || traversal.length == 0) {
             // nothing to traverse
             return;

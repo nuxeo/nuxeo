@@ -23,6 +23,7 @@ import java.util.Iterator;
 
 import org.nuxeo.ecm.core.api.model.Property;
 
+import freemarker.template.AdapterTemplateModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateModelIterator;
@@ -31,7 +32,7 @@ import freemarker.template.TemplateModelIterator;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class PropertyIteratorTemplate extends PropertyWrapper implements TemplateModelIterator {
+public class PropertyIteratorTemplate extends PropertyWrapper implements TemplateModelIterator, AdapterTemplateModel {
 
     protected final Iterator<Property> iterator;
 
@@ -39,6 +40,12 @@ public class PropertyIteratorTemplate extends PropertyWrapper implements Templat
         super(wrapper);
         this.iterator = iterator;
     }
+
+    @SuppressWarnings("unchecked")
+    public Object getAdaptedObject(Class hint) {
+        return iterator;
+    }
+
 
     public boolean hasNext() throws TemplateModelException {
         return iterator.hasNext();

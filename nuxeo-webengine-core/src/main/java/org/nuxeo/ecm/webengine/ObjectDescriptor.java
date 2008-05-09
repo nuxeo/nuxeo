@@ -140,8 +140,8 @@ public class ObjectDescriptor {
         return result;
     }
 
-    public Collection<ActionDescriptor> getEnabledActions(WebObject obj) {
-        CoreSession session = obj.getSession();
+    public Collection<ActionDescriptor> getEnabledActions(WebObject obj) throws WebException {
+        CoreSession session = obj.getWebContext().getCoreSession();
         DocumentModel doc = obj.getDocument();
         List<ActionDescriptor> ads = new ArrayList<ActionDescriptor>();
         for (ActionDescriptor ad : actions.values()) {
@@ -152,8 +152,8 @@ public class ObjectDescriptor {
         return ads;
     }
 
-    public Collection<ActionDescriptor> getEnabledActions(WebObject obj, String category) {
-        CoreSession session = obj.getSession();
+    public Collection<ActionDescriptor> getEnabledActions(WebObject obj, String category) throws WebException {
+        CoreSession session = obj.getWebContext().getCoreSession();
         DocumentModel doc = obj.getDocument();
         List<ActionDescriptor> ads = new ArrayList<ActionDescriptor>();
         for (ActionDescriptor ad : actions.values()) {
@@ -164,8 +164,8 @@ public class ObjectDescriptor {
         return ads;
     }
 
-    public Map<String, Collection<ActionDescriptor>> getEnabledActionsByCategory(WebObject obj) {
-        CoreSession session = obj.getSession();
+    public Map<String, Collection<ActionDescriptor>> getEnabledActionsByCategory(WebObject obj) throws WebException {
+        CoreSession session = obj.getWebContext().getCoreSession();
         DocumentModel doc = obj.getDocument();
         HashMap<String, Collection<ActionDescriptor>> result = new HashMap<String, Collection<ActionDescriptor>>();
         for (ActionDescriptor ad : actions.values()) {

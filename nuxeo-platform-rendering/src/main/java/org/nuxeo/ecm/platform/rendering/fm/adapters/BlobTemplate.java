@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
 
+import freemarker.template.AdapterTemplateModel;
 import freemarker.template.SimpleNumber;
 import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateCollectionModel;
@@ -36,7 +37,7 @@ import freemarker.template.TemplateModelException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class BlobTemplate extends PropertyWrapper implements TemplateHashModelEx {
+public class BlobTemplate extends PropertyWrapper implements TemplateHashModelEx, AdapterTemplateModel {
 
     protected static final String[] keys = new String[] {
             "filename", "data", "length", "mimeType", "encoding", "digest"};
@@ -46,6 +47,11 @@ public class BlobTemplate extends PropertyWrapper implements TemplateHashModelEx
     public BlobTemplate(DocumentObjectWrapper wrapper, Blob blob) {
         super(wrapper);
         this.blob = blob;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Object getAdaptedObject(Class hint) {
+        return blob;
     }
 
     public TemplateCollectionModel keys() throws TemplateModelException {

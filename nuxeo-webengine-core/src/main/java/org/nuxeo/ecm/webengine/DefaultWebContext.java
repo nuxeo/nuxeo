@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.script.Bindings;
+import javax.script.SimpleBindings;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -35,12 +36,18 @@ import javax.servlet.http.HttpSession;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.platform.rendering.api.RenderingException;
+import org.nuxeo.ecm.core.api.security.Access;
+import org.nuxeo.ecm.core.search.api.client.SearchService;
+import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
+import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
+import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
-import org.nuxeo.ecm.webengine.rendering.SiteRenderingContext;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.util.FormData;
@@ -51,9 +58,11 @@ import org.python.core.PyDictionary;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebContextImpl implements WebContext {
+public class DefaultWebContext implements WebContext {
 
     public static final String CORESESSION_KEY = "SiteCoreSession";
+
+    public static boolean USE_CORE_SEARCH = false;
 
     protected WebEngine engine;
     protected CoreSession session;
@@ -76,7 +85,7 @@ public class WebContextImpl implements WebContext {
     protected Map<String,Object> vars; // global vars to share between scripts
 
 
-    public WebContextImpl(WebRoot root, HttpServletRequest req, HttpServletResponse resp) {
+    public DefaultWebContext(WebRoot root, HttpServletRequest req, HttpServletResponse resp) {
         this.request = req;
         this.root = root;
         engine = root.getWebEngine();
@@ -101,17 +110,17 @@ public class WebContextImpl implements WebContext {
         return action;
     }
 
-    public Collection<ActionDescriptor> getActions() {
+    public Collection<ActionDescriptor> getActions() throws WebException {
         WebObject obj = getTargetObject();
         return obj != null ? obj.getActions() : null;
     }
 
-    public Collection<ActionDescriptor> getActions(String category) {
+    public Collection<ActionDescriptor> getActions(String category) throws WebException {
         WebObject obj = getTargetObject();
         return obj != null ? obj.getActions(category) : null;
     }
 
-    public Map<String, Collection<ActionDescriptor>> getActionsByCategory() {
+    public Map<String, Collection<ActionDescriptor>> getActionsByCategory() throws WebException {
         WebObject obj = getTargetObject();
         return obj != null ? obj.getActionsByCategory() : null;
     }
@@ -136,9 +145,13 @@ public class WebContextImpl implements WebContext {
         return mapping;
     }
 
+    /**
+     * XXX implement this method
+     */
     public String getObjectPath(DocumentModel document) {
         // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not yet implemented");
+        //return null;
     }
 
     public String getPathInfo() {
@@ -249,9 +262,13 @@ public class WebContextImpl implements WebContext {
         return engine;
     }
 
+    /**
+     * XXX implement this method
+     */
     public String makeAbsolutePath(String relPath) {
         // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not Yet Implemented");
+        //return null;
     }
 
     public void print(String text) throws IOException {
@@ -262,12 +279,13 @@ public class WebContextImpl implements WebContext {
         response.sendRedirect(url);
     }
 
+
     public void render(String template) throws WebException {
         render(template, null);
     }
 
     @SuppressWarnings("unchecked")
-    public void render(String template, Bindings ctx) throws WebException {
+    public void render(String template, Object ctx) throws WebException {
         Map map = null;
         if (ctx != null) {
             if (ctx instanceof Map) {
@@ -276,15 +294,10 @@ public class WebContextImpl implements WebContext {
                 map = Scripting.convertPythonMap((PyDictionary) ctx);
             }
         }
+        Bindings bindings = createBindings(map);
         try {
-            if (lastResolved != null) {
-                engine.getScripting().getRenderingEngine().render(template, lastResolved,
-                        (Map<String, Object>) map);
-            } else {
-                engine.getScripting().getRenderingEngine().render(template, new SiteRenderingContext(this),
-                        (Map<String, Object>) map);
-            }
-        } catch (RenderingException e) {
+            engine.getScripting().getRenderingEngine().render(template, bindings, response.getWriter());
+        } catch (Exception e) {
             throw new WebException("Failed to render template: "+template, e);
         }
     }
@@ -293,9 +306,9 @@ public class WebContextImpl implements WebContext {
         runScript(script, null);
     }
 
-    public void runScript(String script, Bindings args) throws WebException {
+    public void runScript(String script, Map<String, Object> args) throws WebException {
         try {
-            engine.getScripting().runScript(this, root.getScript(script, null), args);
+            engine.getScripting().runScript(this, root.getScript(script, null), createBindings(args));
         } catch (WebException e) {
             throw e;
         } catch (Exception e) {
@@ -386,7 +399,60 @@ public class WebContextImpl implements WebContext {
         return objects;
     }
 
+    public boolean hasPerm(DocumentModel doc, String perm) throws WebException {
+        Access access = doc.getACP().getAccess(getPrincipal().getName(), perm);
+        return access ==  Access.GRANT ? true : false;
+    }
+
+    public DocumentModelList search(String query) throws WebException {
+        CoreSession session = getCoreSession();
+        try {
+            if (USE_CORE_SEARCH) {
+                return session.query(query);
+            } else {
+                SearchService search = Framework.getService(SearchService.class);
+                if (search == null) {
+                    USE_CORE_SEARCH = true;
+                    return session.query(query);
+                }
+                ResultSet result = search.searchQuery(new ComposedNXQueryImpl(query), 0, Integer.MAX_VALUE);
+                DocumentModelList docs = new DocumentModelListImpl();
+                for (ResultItem item : result) {
+                    String id = (String)item.get("ecm:uuid");
+                    DocumentModel doc = session.getDocument(new IdRef(id));
+                    docs.add(doc);
+                }
+                return docs;
+            }
+        } catch (Exception e) {
+            throw new WebException("Failed to perform search: "+query, e);
+        }
+    }
+
     //--------------------------------------------------------------------------- TODO internal API
+
+    public Bindings createBindings(Map<String, Object> vars) {
+        Bindings bindings = new SimpleBindings();
+        if (vars != null) {
+            bindings.putAll(vars);
+        }
+        initDefaultBindings(bindings);
+        return bindings;
+    }
+
+    protected void initDefaultBindings(Bindings bindings) {
+        bindings.put("context", this);
+        bindings.put("request", request);
+        bindings.put("response", response);
+        bindings.put("this", getTargetObject());
+        bindings.put("doc", getTargetDocument());
+        bindings.put("engine", engine);
+        try {
+            bindings.put("session", getCoreSession());
+        } catch (Exception e) {
+            e.printStackTrace(); // TODO
+        }
+    }
 
     /**
     *

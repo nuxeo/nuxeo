@@ -35,7 +35,7 @@ public class DeleteActionHandler implements ActionHandler {
         DocumentModel doc = object.getDocument();
         if (doc != null) {
             try {
-                object.getSession().removeDocument(doc.getRef());
+                object.getWebContext().getCoreSession().removeDocument(doc.getRef());
             } catch (ClientException e) {
                 throw new WebException("Failed to delete document", e);
             }
