@@ -23,9 +23,9 @@ package org.nuxeo.ecm.webengine.actions;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebObject;
-import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.servlet.WebConst;
 import org.nuxeo.ecm.webengine.util.FormData;
 
@@ -40,8 +40,8 @@ public class GetFileActionHandler implements ActionHandler {
             throw new WebException("Cannot run getFile action on a non resolved object: "+object);
         }
         DocumentModel doc = object.getDocument();
-        DefaultWebContext req = object.getSiteRequest();
-        FormData form = req.getForm();
+        WebContext context = object.getWebContext();
+        FormData form = context.getForm();
         String xpath = form.getString(FormData.PROPERTY);
         if (xpath == null) {
             if (doc.hasSchema("file")) {
@@ -54,11 +54,11 @@ public class GetFileActionHandler implements ActionHandler {
             Property p = doc.getProperty(xpath);
             Blob blob = (Blob)p.getValue();
             if (blob == null) {
-                req.cancel(WebConst.SC_NOT_FOUND);
+                context.cancel(WebConst.SC_NOT_FOUND);
                 return;
             }
-            blob.transferTo(req.getResponse().getOutputStream());
-            req.cancel(); // avoid the rendering to be able to download the file
+            blob.transferTo(context.getResponse().getOutputStream());
+            context.cancel(); // avoid the rendering to be able to download the file
         } catch (Exception e) {
             throw new WebException("Failed to get the attached file", e);
         }

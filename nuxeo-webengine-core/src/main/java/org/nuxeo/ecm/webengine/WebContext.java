@@ -19,12 +19,13 @@
 
 package org.nuxeo.ecm.webengine;
 
-import java.io.OutputStream;
-import java.io.Writer;
+import java.io.IOException;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.script.Bindings;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -66,6 +67,86 @@ public interface WebContext {
     HttpServletResponse getResponse();
 
     /**
+     * Get the first object in the traversal path
+     * @return the first object. May return null in the case of a root request.
+     */
+    WebObject getFirstObject();
+
+    /**
+     * Get the last object on the traversal path
+     * @return the last object. May return null in the case of a root request
+     */
+    WebObject getLastObject();
+
+    /**
+     * Tests whether the current request was made on the web engine root (there is no traversal path)
+     *
+     * @return true if this is a root request or false otherwise
+     */
+    boolean isRootRequest();
+
+    /**
+     * Get the first resolved object. The first resolved object is usually the root.
+     * @return the first resolved object or null if none
+     */
+    WebObject getFirstResolvedObject();
+
+    /**
+     * Get the last resolved object.
+     * A resolved object is an web object that is bound to a nuxeo document.
+     * The last resolved object will be usually used as the target object of the request.
+     *
+     * @return the last resolved object or null if there are no resolved objects
+     */
+    WebObject getLastResolvedObject();
+
+    /**
+     * Get the first unresolved object if any
+     * @return the first unresolved object or null if none
+     */
+    WebObject getFirstUnresolvedObject();
+
+    /**
+     * Tests whether there are unresolved objects on the traversal path
+     * @return true if there are unresolved objects, false otherwise
+     */
+    boolean hasUnresolvedObjects();
+
+    /**
+     * Get the object traversal path
+     * @return the traversal path. Cannot return null
+     */
+    List<WebObject> getTraversalPath();
+
+    /**
+     * Get the list of unresolved objects
+     * @return the unresolved objects. Cannot return null.
+     */
+    List<WebObject> getUnresolvedObjects();
+
+    /**
+     * Get the list of resolved objects
+     * @return the resolved objects. Cannot return null
+     */
+    List<WebObject> getResolvedObjects();
+
+    /**
+     * Attache the web object to the given nuxeo document.
+     * The object is automatically resolved by this operation.
+     * <p>
+     * If the object cannot be attached false is returned otherwise true is returned.
+     * Objects should fail to be resolved if they break the traversal path by inserting unresolved object gaps
+     * between resolved objects.
+     * <p>
+     * This method can be used to dynamically change the traversal path
+     *
+     * @param object the object to bind
+     * @param doc the document to bind the object to
+     * @return true if object successfully resolved, false otherwise
+     */
+    boolean resolveObject(WebObject object, DocumentModel doc);
+
+    /**
      * The target context object. This is the last object that was traversed and that can be seen as the target
      * object for this request.
      * When a request is made, the URL path is mapped on a chain of {@link WebObject} objects.
@@ -97,26 +178,13 @@ public interface WebContext {
      * XXX can this method return null?
      * @return the target script or null if none.
      */
-    ScriptFile getTargetScript();
-
-    /**
-     * Get the first object in the traversal path
-     * @return the root object. May return null in the case of a root request.
-     */
-    WebObject getRootObject();
-
-    /**
-     * Get the object that precedes the current object bin the traversal path.
-     * @return the parent object.
-     *      May return null if the current object is the first object in the traversal path.
-     */
-    WebObject getParentObject();
+    ScriptFile getTargetScript() throws IOException;
 
     /**
      * The Core Session (or Repository Session) corresponding to that request.
      * @return the core session. Cannot return null
      */
-    CoreSession getSession();
+    CoreSession getCoreSession() throws WebException;
 
     /**
      * Get the principal identifying the user that originatd the request
@@ -125,11 +193,11 @@ public interface WebContext {
     Principal getPrincipal();
 
     /**
-     * Get the Nuxeo document corresponding to the current object.
+     * Get the Nuxeo document corresponding to the target object.
      * @return the current context document.
      *      May return null if none of the traversal objects wasn't mapped on a document
      */
-    DocumentModel getCurrentDocument();
+    DocumentModel getTargetDocument();
 
     /**
      * Get the representation of the data form submitted by the user.
@@ -177,6 +245,13 @@ public interface WebContext {
     String getURLPath();
 
     /**
+     * Get the path of the servlet.
+     * Same as servlet context path + servlet path
+     * @return the site path
+     */
+    String getSitePath();
+
+    /**
      * Get the path  path corresponding to the target object of the request.
      * @return the target object path. Will never return null. If the target object is null returns "/".
      */
@@ -218,20 +293,20 @@ public interface WebContext {
      * Get the actions that are available on the target object
      * @return the target object actions or null if no target object exists
      */
-    ActionDescriptor[] getActions();
+    Collection<ActionDescriptor> getActions();
 
     /**
      * Get the actions that are available on the target object and that are part of the given category
      * @param category the category to filter actions
      * @return the target object actions or null if no target object exists
      */
-    ActionDescriptor[] getActions(String category);
+    Collection<ActionDescriptor> getActions(String category);
 
     /**
      * Get the actions that are available on the target object grouped by categories
      * @return a map of category -> actions or null if no target object exists
      */
-    Map<String, List<ActionDescriptor>> getActionsByCategory(); // the available actions grouped by categories ~ same as getCurrentObject().getActionsByCategory()
+    Map<String, Collection<ActionDescriptor>> getActionsByCategory(); // the available actions grouped by categories ~ same as getCurrentObject().getActionsByCategory()
 
 
     /**
@@ -245,11 +320,11 @@ public interface WebContext {
      * <p>
      * The web root is used to resolve paths to scripts. So changing the root will change the scripts used for
      * the current request.
-     * This can be used to dynamically change the way request are resolved to scripts
+     * This can be used to dynamically change the way request are resolved to scripts - for example to implement a skin mechanism
      *
      * @param path the absolute path relative to the web directory that points to the root base directory
      */
-    void setRoot(String path);
+    void setRoot(String path) throws WebException;
 
     /**
      * Get a context variable
@@ -259,21 +334,21 @@ public interface WebContext {
      * @param key the variable key
      * @return the variable value or null if none
      */
-    Object getVar(String key);
+    Object getProperty(String key);
 
     /**
      * Set a context variable
      * @param key the variable key
      * @param value the variable value
-     * @see #getVar(String)
+     * @see #getProperty(String)
      */
-    void setVar(String key, Object value);     // set a context variable (can be shared between scripts)
+    void setProperty(String key, Object value);     // set a context variable (can be shared between scripts)
 
     /**
      * Get a map with environment variables. These variables are global on the web engine level.
      * @return the environment variable map. Cannot return null.
      */
-    Map<String,Object> getEnv();               // get the environment vars (shared at engine level) ~ same as getEngine().getEnv()
+    Map<String,Object> getEnvironment();               // get the environment vars (shared at engine level) ~ same as getEngine().getEnv()
 
     /**
      * Cancel any further processing
@@ -292,43 +367,59 @@ public interface WebContext {
     void cancel(int errorCode);
 
     /**
+     * Test whether the request was previously canceled using one of the {@link #cancel()} methods
+     * @return true if the request was already canceled false otherwise
+     */
+    boolean isCanceled();
+
+    /**
      * Redirect the client to another URL
      * @param url the URL where to redirect
+     * XXX should remove this method?
      */
-    void redirect(String url);
+    void redirect(String url) throws IOException;
 
     /**
      * Render the given template using the rendering engine registered in that web engine.
+     * The given arguments are passed to the rendering process as context variables
+     * @param template the template to render
+     * @param args the arguments to pass
+     * @throws WebException
+     */
+    void render(String template, Bindings args) throws WebException;
+
+    /**
+     * Render the given template using the rendering engine registered in that web engine.
+     * <p>
+     * This is similar to the {@link #render(String, Map)} method with a null value for the  <i>args</i> argument.
      * @param template the template to render. Can be a path absolute to the web directory or relative to the
      *          caller script if any.
+     * @see #render(String, Map)
      */
-    void render(String template);
+    void render(String template) throws WebException;
 
     /**
      * Run the given script.
      * @param script the script path. Can be a path absolute to the web directory or relative to the
      *          caller script if any.
+     * @param args the arguments to pass
      */
-    void runScript(String script);      // run the given script in the current context (path should be either relative to the current script, either abs to web dir)
+    void runScript(String script, Bindings args) throws WebException;
+
+    /**
+     * Run the given script.
+     * <p>
+     * This is similar to {@link #runScript(String, Map)} with a null value for the <i>args</i> argument
+     * @param script the script path. Can be a path absolute to the web directory or relative to the
+     *          caller script if any.
+     * @see #runScript(String, Map)
+     */
+    void runScript(String script) throws WebException;
 
     /**
      * Write some text on the HTTP request output stream
      * @param text
      */
-    void print(String text);
-
-    /**
-     * Get the HTTP response writer.
-     * @return the writer. Cannot return null.
-     * XXX should this method be removed?
-     */
-    Writer getWriter();
-
-    /**
-     * Get the HTTP response output stream.
-     * @return the output stream. Cannot return null.
-     * XXX should this method be removed?
-     */
-    OutputStream getOutputStream();      // shortcut to servlet output stream
+    void print(String text) throws IOException;
 
 }

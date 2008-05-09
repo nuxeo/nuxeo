@@ -21,7 +21,7 @@ package org.nuxeo.ecm.webengine.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -39,10 +39,11 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.webengine.DefaultDocumentResolver;
 import org.nuxeo.ecm.webengine.DocumentResolver;
 import org.nuxeo.ecm.webengine.RequestHandler;
-import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.WebContextImpl;
 import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebObject;
-import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.WebRoot;
 import org.nuxeo.ecm.webengine.actions.Actions;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
@@ -69,20 +70,20 @@ public class WebServlet extends HttpServlet {
     protected static DocumentResolver resolver = new DefaultDocumentResolver();
 
     private Scripting scripting;
-    private WebEngine manager;
+    private WebEngine engine;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        manager = Framework.getLocalService(WebEngine.class);
-        scripting = manager.getScripting();
-        HashMap<String, Object> env = new HashMap<String, Object>();
-        env.put("installDir", manager.getRootDirectory());
+        engine = Framework.getLocalService(WebEngine.class);
+        scripting = engine.getScripting();
+        Map<String,Object> env = engine.getEnvironment();
+        env.put("installDir", engine.getRootDirectory());
         env.put("engine", "Nuxeo Site Engine");
         env.put("version", "1.0.0");
-        RenderingEngine engine = scripting.getRenderingEngine();
-        engine.setSharedVariable("env", env);
-        engine.setSharedDocumentView(new ServletRequestView());
+        RenderingEngine renderingEngine = scripting.getRenderingEngine();
+        renderingEngine.setSharedVariable("env", env);
+        renderingEngine.setSharedDocumentView(new ServletRequestView());
     }
 
     @Override
@@ -94,21 +95,21 @@ public class WebServlet extends HttpServlet {
             resp = new NoBodyResponse(resp);
         }
 
-        DefaultWebContext siteRequest = null;
+        WebContext context = null;
         try {
-            siteRequest = createRequest(req, resp);
-            service(siteRequest, req, resp);
+            context = createRequest(req, resp);
+            service(context, req, resp);
         } catch (Throwable e) {
             log.error("Site Servlet failed to handle request", e);
-            if (siteRequest == null) {
+            if (context == null) {
                 displayError(resp, e, "Failed to create request",
                         WebConst.SC_INTERNAL_SERVER_ERROR);
             } else {
-                WebRoot root = siteRequest.getRoot();
+                WebRoot root = context.getRoot();
                 ScriptFile page = root.getScript(root.getErrorPage(), null);
                 try {
-                    siteRequest.setVar("error", e);
-                    manager.getScripting().exec(siteRequest, page);
+                    context.setProperty("error", e);
+                    engine.getScripting().exec(context, page);
                 } catch (Throwable ee) {
                     displayError(resp, ee, "Failed to show error page",
                             WebConst.SC_INTERNAL_SERVER_ERROR);
@@ -118,21 +119,21 @@ public class WebServlet extends HttpServlet {
         System.out.println(">>> SITE REQUEST TOOK:  "+((System.currentTimeMillis()-start)/1000));
     }
 
-    protected void service(DefaultWebContext siteRequest, HttpServletRequest req, HttpServletResponse resp) throws Exception {
-        if (siteRequest.getLastResolvedObject() == null) { // a request outside the root
-            showIndex(siteRequest);
+    protected void service(WebContext context, HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        if (context.getLastResolvedObject() == null) { // a request outside the root
+            showIndex(context);
             return;
         }
 
         String method = req.getMethod();
         WebObject lastTraversedObject = null;
-            lastTraversedObject = siteRequest.traverse();
+            lastTraversedObject = traverse(context);
             if (lastTraversedObject == null) {
                 displayError(resp, null, "Site Root is not a supported object ");
                 return;
             }
             // avoid running default action handling mechanism when invocation is redirected to scripts
-            if (siteRequest.getMapping() == null) {
+            if (context.getMapping() == null) {
                 RequestHandler handler = lastTraversedObject.getRequestHandler();
                 if (handler != null) {
                     if (method.equals(WebConst.METHOD_POST)) {
@@ -150,14 +151,36 @@ public class WebServlet extends HttpServlet {
             }
 
             // return is handler has done the rendering
-            if (siteRequest.isCanceled()) {
+            if (context.isCanceled()) {
                 return;
             }
 
             double s = System.currentTimeMillis();
-            scripting.exec(siteRequest);
+            scripting.exec(context);
             System.out.println(">>>>>>>>>> RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
     }
+
+    /**
+    *
+    * @return the last traversed object
+    */
+   protected WebObject traverse(WebContext context) throws WebException {
+      WebObject firstObject = context.getFirstObject();
+      WebObject lastResolved = context.getLastResolvedObject() ;
+      if (firstObject == null || lastResolved == null) {
+          return null;
+      }
+      WebObject lastTraversed = firstObject;
+      WebObject p = firstObject;
+      while (p != lastResolved.next()) {
+          if (!p.traverse()) {
+              return lastTraversed;
+          }
+          lastTraversed = p;
+          p = p.next();
+      }
+      return lastTraversed;
+  }
 
     protected static void displayError(HttpServletResponse resp, Throwable t,
             String message, int code) {
@@ -192,32 +215,32 @@ public class WebServlet extends HttpServlet {
         }
     }
 
-    public DefaultWebContext createRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    public WebContext createRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         String pathInfo = req.getPathInfo();
         WebRoot root;
         if (pathInfo == null || "/".equals(pathInfo)) {
-            root = manager.getDefaultSiteRoot();
+            root = engine.getDefaultSiteRoot();
             pathInfo = "/index.ftl"; //TODO use the config to get the name of the index
         } else {
             int p = pathInfo.indexOf('/', 1);
             String siteName = null;
             if (p == -1) {
                 siteName = pathInfo.substring(1);
-                root = manager.getSiteRoot(siteName);
+                root = engine.getSiteRoot(siteName);
                 if (root != null) {
                 } else {
-                    root = manager.getDefaultSiteRoot();
+                    root = engine.getDefaultSiteRoot();
                     siteName = null;
                 }
             } else {
                 siteName = pathInfo.substring(1, p);
-                root = manager.getSiteRoot(siteName);
+                root = engine.getSiteRoot(siteName);
                 if (root == null) {
-                    root = manager.getDefaultSiteRoot();
+                    root = engine.getDefaultSiteRoot();
                 }
             }
         }
-        DefaultWebContext siteReq = new DefaultWebContext(root, req, resp);
+        WebContextImpl context = new WebContextImpl(root, req, resp);
         // traverse documents if any
         String[] traversal = null;
         Mapping mapping = root.getMapping(pathInfo);
@@ -227,37 +250,37 @@ public class WebServlet extends HttpServlet {
         if (traversal == null) { // no traversal defined - compute it from pathInfo
             traversal = new Path(pathInfo).segments();
         }
-        buildTraversalPath(siteReq, traversal);
+        buildTraversalPath(context, traversal);
         if (mapping != null) {
-            WebObject obj = siteReq.getLastResolvedObject();
+            WebObject obj = context.getLastResolvedObject();
             if (obj != null) {
                 mapping.addVar("type", obj.getDocument().getType());
             }
-            siteReq.setMapping(mapping); //TODO how to propagate vars without storing them in req?
+            context.setMapping(mapping); //TODO how to propagate vars without storing them in req?
         }
-        return siteReq;
+        return context;
     }
 
-    public static void buildTraversalPath(DefaultWebContext siteReq, String[] traversal) throws Exception {
+    public static void buildTraversalPath(WebContextImpl context, String[] traversal) throws Exception {
         if (traversal == null || traversal.length == 0) {
             // nothing to traverse
             return;
         }
-        CoreSession session = siteReq.getCoreSession();
+        CoreSession session = context.getCoreSession();
         String name = traversal[0];
-        WebRoot root = siteReq.getRoot();
+        WebRoot root = context.getRoot();
         DocumentResolver resolver = root.getResolver();
         int p = name.lastIndexOf(WebConst.ACTION_SEPARATOR);
         if (p > -1) {
-            siteReq.setAction(name.substring(p+WebConst.ACTION_SEPARATOR.length()));
+            context.setActionName(name.substring(p+WebConst.ACTION_SEPARATOR.length()));
             name = name.substring(0, p);
         }
         DocumentModel doc = resolver.getRootDocument(root, name, session);
-        siteReq.addSiteObject(name, doc);
+        context.addWebObject(name, doc);
         if (doc == null) { // abort traversing
             // add the unresolved objects
             for (int i=1; i<traversal.length; i++) {
-                siteReq.addSiteObject(traversal[i], null);
+                context.addWebObject(traversal[i], null);
             }
             return;
         }
@@ -266,31 +289,31 @@ public class WebServlet extends HttpServlet {
                 name = traversal[i];
                 p = name.lastIndexOf(WebConst.ACTION_SEPARATOR);
                 if (p > -1) {
-                    siteReq.setAction(name.substring(p+WebConst.ACTION_SEPARATOR.length()));
+                    context.setActionName(name.substring(p+WebConst.ACTION_SEPARATOR.length()));
                     name = name.substring(0, p);
                 }
                 doc = resolver.getSiteSegment(root, doc, name, session);
-                siteReq.addSiteObject(name, doc);
+                context.addWebObject(name, doc);
                 if (doc == null) {
                     for (i=i+1; i<traversal.length; i++) {
-                        siteReq.addSiteObject(traversal[i], null);
+                        context.addWebObject(traversal[i], null);
                     }
                     break;
                 }
             }
         }
-        if (!siteReq.hasUnresolvedObjects() && siteReq.getAction() == null) {
-            siteReq.setAction(Actions.DEFAULT_ACTION);
+        if (!context.hasUnresolvedObjects() && context.getActionName() == null) {
+            context.setActionName(Actions.DEFAULT_ACTION);
         }
     }
 
-    public void showIndex(DefaultWebContext request) throws Exception {
+    public void showIndex(WebContext context) throws Exception {
         try {
             double s = System.currentTimeMillis();
-            scripting.exec(request);
+            scripting.exec(context);
             System.out.println(">>>>>>>>>> STATIC RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
         } catch (RenderingException e) {
-            displayError(request.getResponse(), e, "Error during the rendering process");
+            displayError(context.getResponse(), e, "Error during the rendering process");
         }
     }
 

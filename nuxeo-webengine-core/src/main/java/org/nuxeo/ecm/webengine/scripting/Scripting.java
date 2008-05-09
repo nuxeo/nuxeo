@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.script.Bindings;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
@@ -38,7 +39,8 @@ import javax.script.SimpleScriptContext;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
-import org.nuxeo.ecm.webengine.DefaultWebContext;
+import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebRoot;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.scripting.ScriptingService;
@@ -73,23 +75,28 @@ public class Scripting {
         return renderingEngine;
     }
 
-    public void exec(DefaultWebContext req, ScriptFile script) throws Exception {
+    public void exec(WebContext context, ScriptFile script) throws Exception {
+        exec(context, script, null);
+    }
+
+    public void exec(WebContext context, ScriptFile script, Bindings args) throws Exception {
         String ext = script.getExtension();
         if ("ftl".equals(ext)) {
-            req.render(script.getPath());
+            context.render(script.getPath(), args);
         } else {
-            runScript(req, script);
+            runScript(context, script, args);
         }
     }
 
-    public void exec(DefaultWebContext req) throws Exception {
-        ScriptFile script = req.getTargetScript();
+
+    public void exec(WebContext context) throws Exception {
+        ScriptFile script = context.getTargetScript();
         if (script.getFile().isFile()) {
-            exec(req, script);
+            exec(context, script);
         } else {
-            WebRoot root = req.getRoot();
+            WebRoot root = context.getRoot();
             script = root.getScript(root.getDefaultPage(), null);
-            exec(req, script);
+            exec(context, script);
         }
     }
 
@@ -111,15 +118,22 @@ public class Scripting {
         }
     }
 
-    public void runScript(DefaultWebContext req, ScriptFile script) throws Exception {
+    public void runScript(WebContext context, ScriptFile script) throws Exception {
+        runScript(context, script, null);
+    }
+
+    public void runScript(WebContext context, ScriptFile script, Bindings args) throws Exception {
         // script is not compilable - run slow eval
         String ext = script.getExtension();
         ScriptEngine engine = scriptService.getScriptEngineManager().getEngineByExtension(ext);
         if (engine != null) {
             ScriptContext ctx = new SimpleScriptContext();
-            ctx.setAttribute("req", req, ScriptContext.ENGINE_SCOPE);
+            if (args != null) {
+                ctx.setBindings(args, ScriptContext.ENGINE_SCOPE);
+            }
+            ctx.setAttribute("req", context, ScriptContext.ENGINE_SCOPE);
             ctx.setAttribute("scripting", this, ScriptContext.ENGINE_SCOPE);
-            ctx.setAttribute("out", req.getResponse().getWriter(), ScriptContext.ENGINE_SCOPE);
+            ctx.setAttribute("out", context.getResponse().getWriter(), ScriptContext.ENGINE_SCOPE);
             CompiledScript comp = getScript(engine, script.getFile()); // use cache for compiled scripts
             if (comp != null) {
                 comp.eval(ctx);
@@ -139,14 +153,14 @@ public class Scripting {
             if (CHAR_FILE_EXT.contains(ext)) { //TODO use char writer instead of stream
                 FileInputStream in = new FileInputStream(script.getFile());
                 try {
-                    FileUtils.copy(in, req.getResponse().getOutputStream());
+                    FileUtils.copy(in, context.getResponse().getOutputStream());
                 } finally {
                     if (in != null) in.close();
                 }
             } else if (BINARY_FILE_EXT.contains(ext)) {
                 FileInputStream in = new FileInputStream(script.getFile());
                 try {
-                    FileUtils.copy(in, req.getResponse().getOutputStream());
+                    FileUtils.copy(in, context.getResponse().getOutputStream());
                 } finally {
                     if (in != null) in.close();
                 }

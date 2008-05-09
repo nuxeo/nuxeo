@@ -58,7 +58,7 @@ public class ServletRequestView extends SimpleContextView {
                 Principal principal = getRequest(ctx).getUserPrincipal();
                 return principal == null ? "anonymous" : principal.getName();
             } else if ("context".equals(key)) {
-                return ((ServletRenderingContext)ctx).getSiteRequest();
+                return ((ServletRenderingContext)ctx).getWebContext();
             } else if ("request".equals(key)) {
                 return getRequest(ctx);
             } else if ("response".equals(key)) {

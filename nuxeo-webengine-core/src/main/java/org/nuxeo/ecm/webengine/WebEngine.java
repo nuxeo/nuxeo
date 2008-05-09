@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
@@ -34,9 +35,9 @@ public interface WebEngine {
 
     Scripting getScripting();
 
-    WebRoot getDefaultSiteRoot() throws Exception;
+    WebRoot getDefaultSiteRoot() throws WebException;
 
-    WebRoot getSiteRoot(String name) throws Exception;
+    WebRoot getSiteRoot(String name) throws WebException;
 
     File getRootDirectory();
 
@@ -64,4 +65,5 @@ public interface WebEngine {
 
     void reset();
 
+    Map<String, Object> getEnvironment();
 }

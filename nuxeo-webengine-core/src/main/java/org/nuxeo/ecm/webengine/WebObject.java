@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.Collection;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,12 +48,12 @@ public class WebObject implements ServletRenderingContext {
 
     protected DocumentModel doc;
     protected final String name;
-    protected final DefaultWebContext request;
+    protected final WebContext context;
     protected ObjectDescriptor desc;
 
 
-    public WebObject(DefaultWebContext request, String name, DocumentModel doc) {
-        this.request = request;
+    public WebObject(WebContext context, String name, DocumentModel doc) {
+        this.context = context;
         this.name = name;
         this.doc = doc;
     }
@@ -60,6 +62,30 @@ public class WebObject implements ServletRenderingContext {
         ObjectDescriptor desc = getDescriptor();
         if (desc != null) {
             return desc.getAction(action);
+        }
+        return null;
+    }
+
+    public final Collection<ActionDescriptor> getActions() {
+        ObjectDescriptor desc = getDescriptor();
+        if (desc != null) {
+            return desc.getEnabledActions(this);
+        }
+        return null;
+    }
+
+    public final Collection<ActionDescriptor> getActions(String category) {
+        ObjectDescriptor desc = getDescriptor();
+        if (desc != null) {
+            return desc.getEnabledActions(this, category);
+        }
+        return null;
+    }
+
+    public final Map<String, Collection<ActionDescriptor>> getActionsByCategory() {
+        ObjectDescriptor desc = getDescriptor();
+        if (desc != null) {
+            return desc.getEnabledActionsByCategory(this);
         }
         return null;
     }
@@ -73,7 +99,7 @@ public class WebObject implements ServletRenderingContext {
                 return path;
             }
         }
-        WebRoot root = request.getRoot();
+        WebRoot root = context.getRoot();
         if (doc != null) {
             String type = doc.getType();
             path = type + '/' + action + ".ftl";
@@ -88,8 +114,8 @@ public class WebObject implements ServletRenderingContext {
     /**
      * @return the request.
      */
-    public DefaultWebContext getSiteRequest() {
-        return request;
+    public WebContext getWebContext() {
+        return context;
     }
 
     public final String getName() {
@@ -113,20 +139,20 @@ public class WebObject implements ServletRenderingContext {
     }
 
     public boolean isRoot() {
-        return request.head == this;
+        return context.getFirstObject() == this;
     }
 
     public final boolean isLast() {
-        return request.tail == this;
+        return context.getLastObject() == this;
     }
 
     public final boolean isLastResolved() {
-        return request.lastResolved == this;
+        return context.getLastResolvedObject() == this;
     }
 
     public final ObjectDescriptor getDescriptor() {
         if (desc == null && doc != null) {
-            desc = request.engine.getInstanceOf(doc.getDocumentType());
+            desc = context.getWebEngine().getInstanceOf(doc.getDocumentType());
         }
         return desc;
     }
@@ -146,7 +172,7 @@ public class WebObject implements ServletRenderingContext {
     }
 
     public String getAbsolutePath() {
-        StringBuilder buf = new StringBuilder(request.getSiteBaseUrl());
+        StringBuilder buf = new StringBuilder(context.getSitePath());
         collectPath(buf);
         return buf.toString();
     }
@@ -159,12 +185,7 @@ public class WebObject implements ServletRenderingContext {
     }
 
     public boolean resolve(DocumentModel doc) {
-        if (request.getFirstUnresolvedObject() == this) {
-            this.doc = doc;
-            request.lastResolved = this;
-            return true;
-        }
-        return false;
+        return context.resolveObject(this, doc);
     }
 
     public boolean traverse() throws WebException {
@@ -180,11 +201,11 @@ public class WebObject implements ServletRenderingContext {
     /**  --------------- RenderingContext API ----------------  */
 
     public HttpServletRequest getRequest() {
-        return request.getRequest();
+        return context.getRequest();
     }
 
     public HttpServletResponse getResponse() {
-        return request.getResponse();
+        return context.getResponse();
     }
 
     public RenderingContext getParentContext() {
@@ -197,7 +218,7 @@ public class WebObject implements ServletRenderingContext {
 
     public OutputStream getOut() {
         try {
-            return request.getResponse().getOutputStream();
+            return context.getResponse().getOutputStream();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -205,7 +226,7 @@ public class WebObject implements ServletRenderingContext {
 
     public CoreSession getSession() {
         try {
-        return request.getCoreSession();
+        return context.getCoreSession();
         } catch (Exception e) {
             throw new RuntimeException("Failed to open a session", e);
         }
@@ -213,7 +234,7 @@ public class WebObject implements ServletRenderingContext {
 
     public Writer getWriter() {
         try {
-            return request.getResponse().getWriter();
+            return context.getResponse().getWriter();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

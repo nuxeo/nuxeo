@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.api.EmptyContextView;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.api.RenderingContextView;
-import org.nuxeo.ecm.webengine.DefaultWebContext;
+import org.nuxeo.ecm.webengine.WebContext;
 
 /**
  * A simple context to be able to render templates not linked to document instances
@@ -43,14 +43,14 @@ import org.nuxeo.ecm.webengine.DefaultWebContext;
  */
 public class SiteRenderingContext implements ServletRenderingContext {
 
-    private final DefaultWebContext request;
+    private final WebContext context;
 
-    public SiteRenderingContext(DefaultWebContext request) {
-        this.request = request;
+    public SiteRenderingContext(WebContext context) {
+        this.context = context;
     }
 
-    public DefaultWebContext getSiteRequest() {
-        return request;
+    public WebContext getWebContext() {
+        return context;
     }
 
     public RenderingContext getParentContext() {
@@ -63,7 +63,7 @@ public class SiteRenderingContext implements ServletRenderingContext {
 
     public OutputStream getOut() {
         try {
-            return request.getResponse().getOutputStream();
+            return context.getResponse().getOutputStream();
         } catch (IOException e) {
             return null;
         }
@@ -71,7 +71,7 @@ public class SiteRenderingContext implements ServletRenderingContext {
 
     public CoreSession getSession() {
         try {
-            return request.getCoreSession();
+            return context.getCoreSession();
         } catch (Exception e) {
             throw new RuntimeException("Failed to open a session", e);
         }
@@ -79,18 +79,22 @@ public class SiteRenderingContext implements ServletRenderingContext {
 
     public Writer getWriter() {
         try {
-            return request.getResponse().getWriter();
+            return context.getResponse().getWriter();
         } catch (IOException e) {
             return null;
         }
     }
 
+    public WebContext getContext() {
+        return context;
+    }
+
     public HttpServletRequest getRequest() {
-        return request;
+        return context.getRequest();
     }
 
     public HttpServletResponse getResponse() {
-        return request.getResponse();
+        return context.getResponse();
     }
 
     public RenderingContextView getView() {

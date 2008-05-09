@@ -66,10 +66,10 @@ public class DefaultRequestHandler implements RequestHandler, Actions {
     }
 
     public static void doAction(WebObject object, String defaultAction) throws WebException {
-        String action = object.getSiteRequest().getAction();
+        String action = object.getWebContext().getActionName();
         if (action == null) {
             action = defaultAction;
-            object.getSiteRequest().setAction(action);
+            object.getWebContext().setActionName(action);
         }
         if (action == null) {
             return;

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,8 @@ public class DefaultWebEngine implements WebEngine {
     protected final Map<String, ObjectDescriptor> objects; // instances for each document type
     protected final Map<String, String> bindings;
 
+    protected final Map<String,Object> env;
+
     public DefaultWebEngine(File root, RenderingEngine engine) {
         this.root = root;
         roots = new ConcurrentHashMap<String, WebRoot>();
@@ -54,6 +57,7 @@ public class DefaultWebEngine implements WebEngine {
         registry = new ObjectRegistry();
         objects = new HashMap<String, ObjectDescriptor>();
         bindings = new HashMap<String, String>();
+        this.env = new HashMap<String, Object>();
     }
 
     public Scripting getScripting() {
@@ -64,23 +68,31 @@ public class DefaultWebEngine implements WebEngine {
         return root;
     }
 
-    public WebRoot getDefaultSiteRoot() throws Exception {
+    public WebRoot getDefaultSiteRoot() throws WebException {
         if (defaultRoot == null) {
             File dir = new File(root, "default");
             defaultRoot = new WebRoot(this, dir);
-            defaultRoot.loadConfiguration();
+            try {
+                defaultRoot.loadConfiguration();
+            } catch (IOException e) {
+                throw new WebException("Failed to load configuration for web root default");
+            }
         }
         return defaultRoot;
     }
 
-    public WebRoot getSiteRoot(String name) throws Exception {
+    public WebRoot getSiteRoot(String name) throws WebException {
         WebRoot sroot = roots.get(name);
         if (sroot == null) {
             File dir = new File(root, name);
             File metadata = new File(dir, name);
             if (metadata.isFile()) {
                 sroot = new WebRoot(this, dir);
-                sroot.loadConfiguration();
+                try {
+                    sroot.loadConfiguration();
+                } catch (IOException e) {
+                    throw new WebException("Failed to load configuration for web root "+name);
+                }
                 roots.putIfAbsent(name, sroot);
             } else { // try dynamic binding
                 sroot = getDefaultSiteRoot();
@@ -178,6 +190,9 @@ public class DefaultWebEngine implements WebEngine {
         bindings.remove(type);
     }
 
+    public Map<String, Object> getEnvironment() {
+        return env;
+    }
 
     class ObjectRegistry extends DependencyTree<String, ObjectDescriptor> {
 
