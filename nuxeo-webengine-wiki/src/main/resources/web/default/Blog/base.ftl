@@ -2,6 +2,7 @@
 
 <head>
     <title>${root.title} : ${this.title}</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 <link rel="stylesheet" href="/nuxeo/site/files/resources/css/webengine.css" type="text/css" media="screen" charset="utf-8">
 <link rel="stylesheet" href="/nuxeo/site/files/resources/css/blog.css" type="text/css" media="screen" charset="utf-8">
 <script src="/nuxeo/site/files/resources/script/jquery/jquery.js"></script>

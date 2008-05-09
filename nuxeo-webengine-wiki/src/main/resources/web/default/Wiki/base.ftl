@@ -2,6 +2,9 @@
 
 <head>
     <title>${root.title} : ${this.title}</title>
+    
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    
 <link rel="stylesheet" href="/nuxeo/site/files/resources/css/webengine.css" type="text/css" media="screen" charset="utf-8">
 <link rel="stylesheet" href="/nuxeo/site/files/resources/css/wiki.css" type="text/css" media="screen" charset="utf-8">
 <script src="/nuxeo/site/files/resources/script/jquery/jquery.js"></script>
@@ -9,6 +12,19 @@
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.base.js"></script>
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.tabs.js"></script>
 <base href="${this.docURL}">
+
+<script>
+
+$(document).ready(function(){
+  
+  $("q").focus(function () {
+      alert("coucou");
+      $(this).value = "";
+  });
+
+});
+
+</script>
 
 </head>
 
@@ -18,7 +34,7 @@
     <div id="header">
        <div class="searchBox">
       <form action="${root.docURL}@@search" method="get" accept-charset="utf-8">
-        <input class="complete" type="text" name="q" id="q" autosave="com.mysite" results="5" value="Search">
+        <input type="text" name="q" id="q" autosave="com.mysite" results="5" value="Search">
         <input type="hidden" name="p" value="${root.path}">
       </form>
      </div>  

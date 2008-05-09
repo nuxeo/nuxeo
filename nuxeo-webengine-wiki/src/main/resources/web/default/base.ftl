@@ -1,6 +1,7 @@
 <html>
 <head>
     <title>Wiki : ${this.title}</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 <link rel="stylesheet" href="/nuxeo/site/files/resources/css/webengine.css" type="text/css" media="screen" charset="utf-8">
 <script src="/nuxeo/site/files/resources/script/jquery/jquery.js"></script>
   <link rel="stylesheet" href="/nuxeo/site/files/resources/script/jquery/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
