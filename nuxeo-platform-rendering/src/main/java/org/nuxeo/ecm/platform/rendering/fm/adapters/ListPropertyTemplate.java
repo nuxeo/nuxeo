@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.rendering.fm.adapters;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 
+import freemarker.template.AdapterTemplateModel;
 import freemarker.template.TemplateCollectionModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
@@ -33,13 +34,18 @@ import freemarker.template.TemplateSequenceModel;
  *
  */
 public class ListPropertyTemplate extends PropertyWrapper implements TemplateCollectionModel,
-        TemplateSequenceModel {
+        TemplateSequenceModel, AdapterTemplateModel {
 
     protected final ListProperty property;
 
     public ListPropertyTemplate(DocumentObjectWrapper wrapper, ListProperty property) {
         super(wrapper);
         this.property = property;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Object getAdaptedObject(Class hint) {
+        return property;
     }
 
     public TemplateModelIterator iterator() throws TemplateModelException {

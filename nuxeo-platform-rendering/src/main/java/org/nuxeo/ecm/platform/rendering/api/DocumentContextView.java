@@ -20,11 +20,11 @@
 package org.nuxeo.ecm.platform.rendering.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Arrays;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -45,7 +45,11 @@ import org.nuxeo.ecm.core.api.model.DocumentPart;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DocumentContextView implements RenderingContextView {
+public class DocumentContextView {
+
+    // Must be returned by get() method when the key is unknown since the caller should be able to
+    // treat differently a key hit that returned null from a key that is not known by this view
+    public final static Object UNKNOWN = new Object();
 
     protected final Map<String, DocumentField> fields;
 
@@ -110,31 +114,10 @@ public class DocumentContextView implements RenderingContextView {
         return fields.get(name);
     }
 
-    public Object get(String name, RenderingContext ctx) throws Exception {
-        DocumentField field = fields.get(name);
-        if (field != null) {
-            return field.getValue(ctx.getDocument(), ctx);
-        }
-        // not custom field binding found -> look into document properties
-        DocumentPart part = ctx.getDocument().getPart(name);
-        if (part != null) {
-            return part;
-        }
-        return UNKNOWN;
-    }
-
-    /**
-     * Should be used when not inside a document rendering context.
-     *
-     * @param doc
-     * @param name
-     * @return
-     * @throws Exception
-     */
     public Object get(DocumentModel doc, String name) throws Exception {
         DocumentField field = fields.get(name);
         if (field != null) {
-            return field.getValue(doc, null);
+            return field.getValue(doc);
         }
         // not custom field binding found -> look into document properties
         DocumentPart part = doc.getPart(name);
@@ -144,8 +127,7 @@ public class DocumentContextView implements RenderingContextView {
         return UNKNOWN;
     }
 
-    public Collection<String> keys(RenderingContext ctx) {
-        DocumentModel doc = ctx.getDocument();
+    public Collection<String> keys(DocumentModel doc) {
         Collection<String> keys = new ArrayList<String>(fields.keySet());
         keys.addAll(Arrays.asList(doc.getDeclaredSchemas()));
         return keys;
@@ -159,8 +141,8 @@ public class DocumentContextView implements RenderingContextView {
         return fields.isEmpty();
     }
 
-    public int size(RenderingContext context) {
-        return fields.size() + context.getDocument().getDeclaredSchemas().length;
+    public int size(DocumentModel doc) {
+        return fields.size() + doc.getDeclaredSchemas().length;
     }
 
     protected static final DocumentField SESSION = new DocumentField() {
@@ -168,7 +150,7 @@ public class DocumentContextView implements RenderingContextView {
             return "session";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return CoreInstance.getInstance().getSession(doc.getSessionId());
         }
     };
@@ -178,7 +160,7 @@ public class DocumentContextView implements RenderingContextView {
             return "id";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getId();
         }
     };
@@ -188,7 +170,7 @@ public class DocumentContextView implements RenderingContextView {
             return "name";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getName();
         }
     };
@@ -198,7 +180,7 @@ public class DocumentContextView implements RenderingContextView {
             return "path";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getPathAsString();
         }
     };
@@ -208,7 +190,7 @@ public class DocumentContextView implements RenderingContextView {
             return "type";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getType();
         }
     };
@@ -218,7 +200,7 @@ public class DocumentContextView implements RenderingContextView {
             return "schemas";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getDeclaredSchemas();
         }
     };
@@ -228,7 +210,7 @@ public class DocumentContextView implements RenderingContextView {
             return "facets";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getDeclaredFacets();
         }
     };
@@ -238,7 +220,7 @@ public class DocumentContextView implements RenderingContextView {
             return "state";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getCurrentLifeCycleState();
         }
     };
@@ -248,7 +230,7 @@ public class DocumentContextView implements RenderingContextView {
             return "isLocked";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.isLocked();
         }
     };
@@ -258,7 +240,7 @@ public class DocumentContextView implements RenderingContextView {
             return "lifeCycleState";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getCurrentLifeCycleState();
         }
     };
@@ -268,7 +250,7 @@ public class DocumentContextView implements RenderingContextView {
             return "lifeCyclePolicy";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getLifeCyclePolicy();
         }
     };
@@ -278,7 +260,7 @@ public class DocumentContextView implements RenderingContextView {
             return "allowedStateTransitions";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getAllowedStateTransitions();
         }
     };
@@ -288,7 +270,7 @@ public class DocumentContextView implements RenderingContextView {
             return "isFolder";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getDeclaredFacets().contains("Folderish");
         }
     };
@@ -298,7 +280,7 @@ public class DocumentContextView implements RenderingContextView {
             return "title";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getTitle();
         }
     };
@@ -308,7 +290,7 @@ public class DocumentContextView implements RenderingContextView {
             return "author";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getPart("dublincore").get("creator").getValue();
         }
     };
@@ -318,7 +300,7 @@ public class DocumentContextView implements RenderingContextView {
             return "created";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             Calendar cal = (Calendar) doc.getPart("dublincore").get("created").getValue();
             return cal == null ? null : cal.getTime();
         }
@@ -329,7 +311,7 @@ public class DocumentContextView implements RenderingContextView {
             return "modified";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             Calendar cal = (Calendar) doc.getPart("dublincore").get("modified").getValue();
             return cal == null ? null : cal.getTime();
         }
@@ -340,7 +322,7 @@ public class DocumentContextView implements RenderingContextView {
             return "content";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             DocumentPart part = doc.getPart("file");
             Blob blob = null;
             if (part != null) {
@@ -355,7 +337,7 @@ public class DocumentContextView implements RenderingContextView {
             return "parts";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getParts();
         }
     };
@@ -365,7 +347,7 @@ public class DocumentContextView implements RenderingContextView {
             return "sessionId";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getSessionId();
         }
     };
@@ -375,7 +357,7 @@ public class DocumentContextView implements RenderingContextView {
             return "repository";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getRepositoryName();
         }
     };
@@ -385,7 +367,7 @@ public class DocumentContextView implements RenderingContextView {
             return "parent";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             CoreSession session = CoreInstance.getInstance().getSession(doc.getSessionId());
             return session.getParentDocument(doc.getRef());
         }
@@ -396,7 +378,7 @@ public class DocumentContextView implements RenderingContextView {
             return "children";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             CoreSession session = CoreInstance.getInstance().getSession(doc.getSessionId());
             return session.getChildren(doc.getRef());
         }
@@ -407,7 +389,7 @@ public class DocumentContextView implements RenderingContextView {
             return "ref";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getRef();
         }
     };
@@ -417,7 +399,7 @@ public class DocumentContextView implements RenderingContextView {
             return "versions";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return CoreInstance.getInstance().getSession(doc.getSessionId()).getVersions(doc.getRef());
         }
     };
@@ -427,7 +409,7 @@ public class DocumentContextView implements RenderingContextView {
             return "proxies";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return CoreInstance.getInstance().getSession(doc.getSessionId()).getProxies(doc.getRef(), null);
         }
     };
@@ -437,7 +419,7 @@ public class DocumentContextView implements RenderingContextView {
             return "versionLabel";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getVersionLabel();
         }
     };
@@ -447,7 +429,7 @@ public class DocumentContextView implements RenderingContextView {
             return "sourceId";
         }
 
-        public Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception {
+        public Object getValue(DocumentModel doc) throws Exception {
             return doc.getSourceId();
         }
     };

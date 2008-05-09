@@ -26,10 +26,8 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.URL;
 
-import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
-import org.nuxeo.ecm.platform.rendering.wiki.extensions.DocumentExpression;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.FreemarkerMacro;
 
 /**
@@ -47,29 +45,29 @@ public class WikiTransformer implements RenderingTransformer {
     public WikiTransformer(WikiSerializer serializer) {
         this.serializer = serializer;
         this.serializer.registerMacro(new FreemarkerMacro());
-        this.serializer.registerExpression(new DocumentExpression());
+        //TODO implement and register a JEXL extension
     }
 
     public WikiSerializer getSerializer() {
         return serializer;
     }
 
-    public void transform(Reader reader, Writer writer, RenderingContext ctx)
+    public void transform(Reader reader, Writer writer)
             throws RenderingException {
         try {
-            serializer.serialize(reader, writer, ctx);
+            serializer.serialize(reader, writer);
         } catch (Exception e) {
             throw new RenderingException(e);
         }
     }
 
-    public void transform(URL url, Writer writer, RenderingContext ctx)
+    public void transform(URL url, Writer writer)
             throws RenderingException {
         Reader reader = null;
         try {
             InputStream in = url.openStream();
             reader = new BufferedReader(new InputStreamReader(in));
-            transform(reader, writer, ctx);
+            transform(reader, writer);
         } catch (Exception e) {
             throw new RenderingException(e);
         } finally {

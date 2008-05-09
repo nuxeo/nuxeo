@@ -27,7 +27,6 @@ import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.wikimodel.wem.WikiParserException;
 import org.wikimodel.wem.common.CommonWikiParser;
 
@@ -64,16 +63,7 @@ public class WikiSerializer {
     }
 
     public void serialize(Reader reader, Writer writer) throws IOException, WikiParserException {
-        serialize(reader, writer, null);
         WikiSerializerHandler serializer = new WikiSerializerHandler(this);
-        parser.parse(reader, serializer);
-        serializer.getWriter().writeTo(serializer, writer);
-        writer.flush();
-    }
-
-    public void serialize(Reader reader, Writer writer, RenderingContext ctx)
-            throws IOException, WikiParserException {
-        WikiSerializerHandler serializer = new WikiSerializerHandler(this, ctx);
         parser.parse(reader, serializer);
         serializer.getWriter().writeTo(serializer, writer);
         writer.flush();

@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.rendering.wiki;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.WikiBlockWriter;
 import org.wikimodel.wem.PrintListener;
 import org.wikimodel.wem.WikiFormat;
@@ -42,21 +41,17 @@ public class WikiSerializerHandler extends PrintListener {
 
     protected final WikiSerializer engine;
     protected final StringBuilder words = new StringBuilder();
-    protected final RenderingContext ctx;
 
     protected Environment env;
     protected WikiWriter writer;
     protected int mark = -1; // used to mark the current buffer to be able to retrieve printed text that starts at the mark
     protected Toc toc;
 
-    public WikiSerializerHandler(WikiSerializer engine) {
-        this (engine, null);
-    }
 
-    public WikiSerializerHandler(WikiSerializer engine, RenderingContext ctx) {
+
+    public WikiSerializerHandler(WikiSerializer engine) {
         super (null); // cannot base on the wikiprinter - so we don't use it
         this.engine = engine;
-        this.ctx = ctx;
         this.writer = new WikiWriter();
         if (engine.macros.containsKey("toc")) {
             this.toc =new Toc();
@@ -90,10 +85,6 @@ public class WikiSerializerHandler extends PrintListener {
             env = Environment.getCurrentEnvironment();
         }
         return env;
-    }
-
-    public RenderingContext getContext() {
-        return ctx;
     }
 
     protected void beginElement() {

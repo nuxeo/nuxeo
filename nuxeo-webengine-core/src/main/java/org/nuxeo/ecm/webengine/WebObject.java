@@ -20,28 +20,17 @@
 package org.nuxeo.ecm.webengine;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
 import java.util.Collection;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
-import org.nuxeo.ecm.platform.rendering.api.RenderingContextView;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
-import org.nuxeo.ecm.webengine.rendering.ServletRenderingContext;
-import org.nuxeo.ecm.webengine.rendering.SiteDocumentView;
 
 /**
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class WebObject implements ServletRenderingContext {
+public class WebObject {
 
     protected WebObject next;
     protected WebObject prev;
@@ -66,7 +55,7 @@ public class WebObject implements ServletRenderingContext {
         return null;
     }
 
-    public final Collection<ActionDescriptor> getActions() {
+    public final Collection<ActionDescriptor> getActions() throws WebException {
         ObjectDescriptor desc = getDescriptor();
         if (desc != null) {
             return desc.getEnabledActions(this);
@@ -74,7 +63,7 @@ public class WebObject implements ServletRenderingContext {
         return null;
     }
 
-    public final Collection<ActionDescriptor> getActions(String category) {
+    public final Collection<ActionDescriptor> getActions(String category) throws WebException {
         ObjectDescriptor desc = getDescriptor();
         if (desc != null) {
             return desc.getEnabledActions(this, category);
@@ -82,7 +71,7 @@ public class WebObject implements ServletRenderingContext {
         return null;
     }
 
-    public final Map<String, Collection<ActionDescriptor>> getActionsByCategory() {
+    public final Map<String, Collection<ActionDescriptor>> getActionsByCategory() throws WebException {
         ObjectDescriptor desc = getDescriptor();
         if (desc != null) {
             return desc.getEnabledActionsByCategory(this);
@@ -196,48 +185,6 @@ public class WebObject implements ServletRenderingContext {
     @Override
     public String toString() {
         return name + " [ " + (isResolved() ? doc.getPath() : "unresolved") + " ]";
-    }
-
-    /**  --------------- RenderingContext API ----------------  */
-
-    public HttpServletRequest getRequest() {
-        return context.getRequest();
-    }
-
-    public HttpServletResponse getResponse() {
-        return context.getResponse();
-    }
-
-    public RenderingContext getParentContext() {
-        return prev;
-    }
-
-    public RenderingContextView getView() {
-        return SiteDocumentView.INSTANCE;
-    }
-
-    public OutputStream getOut() {
-        try {
-            return context.getResponse().getOutputStream();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public CoreSession getSession() {
-        try {
-        return context.getCoreSession();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to open a session", e);
-        }
-    }
-
-    public Writer getWriter() {
-        try {
-            return context.getResponse().getWriter();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

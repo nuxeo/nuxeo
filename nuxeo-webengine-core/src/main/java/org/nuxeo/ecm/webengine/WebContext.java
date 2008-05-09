@@ -25,12 +25,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javax.script.Bindings;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
@@ -293,20 +293,20 @@ public interface WebContext {
      * Get the actions that are available on the target object
      * @return the target object actions or null if no target object exists
      */
-    Collection<ActionDescriptor> getActions();
+    Collection<ActionDescriptor> getActions() throws WebException;
 
     /**
      * Get the actions that are available on the target object and that are part of the given category
      * @param category the category to filter actions
      * @return the target object actions or null if no target object exists
      */
-    Collection<ActionDescriptor> getActions(String category);
+    Collection<ActionDescriptor> getActions(String category) throws WebException;
 
     /**
      * Get the actions that are available on the target object grouped by categories
      * @return a map of category -> actions or null if no target object exists
      */
-    Map<String, Collection<ActionDescriptor>> getActionsByCategory(); // the available actions grouped by categories ~ same as getCurrentObject().getActionsByCategory()
+    Map<String, Collection<ActionDescriptor>> getActionsByCategory() throws WebException;
 
 
     /**
@@ -386,7 +386,7 @@ public interface WebContext {
      * @param args the arguments to pass
      * @throws WebException
      */
-    void render(String template, Bindings args) throws WebException;
+    void render(String template, Object args) throws WebException;
 
     /**
      * Render the given template using the rendering engine registered in that web engine.
@@ -404,7 +404,7 @@ public interface WebContext {
      *          caller script if any.
      * @param args the arguments to pass
      */
-    void runScript(String script, Bindings args) throws WebException;
+    void runScript(String script, Map<String, Object> args) throws WebException;
 
     /**
      * Run the given script.
@@ -421,5 +421,30 @@ public interface WebContext {
      * @param text
      */
     void print(String text) throws IOException;
+
+    /**
+     * Check the given permission on the given document for the current user
+     * @param doc the document to check the permission on
+     * @param perm the permission to check
+     * @return true if permission is granted false otherwise
+     * @throws WebException
+     */
+    boolean hasPerm(DocumentModel doc, String perm) throws WebException;
+
+    /**
+     * This is a helper method that performs a query against nuxeo repository.
+     * <p>
+     * This method is provided as a convenience method to perform searches since the search API
+     * is for now difficult to use from a scripting environment
+     * <p>
+     * This method will be removed in the future when the search API will be cleaned-up and
+     * then replaced with {@link CoreSession#query(String)}
+     *
+     * @param query the query to perform
+     * @return a list of documents that matched the query
+     * @throws WebException
+     * @deprecated will be replaced by {@link CoreSession#query(String)} in future
+     */
+    DocumentModelList search(String query) throws WebException;
 
 }

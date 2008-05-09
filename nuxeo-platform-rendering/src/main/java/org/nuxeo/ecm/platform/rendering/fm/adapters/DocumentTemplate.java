@@ -98,7 +98,7 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
         try {
             Collection<DocumentField> fields = DocumentContextView.DEFAULT.getFields().values();
             for (DocumentField field : fields) {
-                values.add(field.getValue(doc, null));
+                values.add(field.getValue(doc));
             }
         } catch (Exception e) {
             throw new TemplateModelException("failed to fetch field values", e);

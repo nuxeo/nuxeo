@@ -80,11 +80,11 @@ public class ActionDescriptor {
         return isEnabled;
     }
 
-    public boolean isEnabled(WebObject obj) {
+    public boolean isEnabled(WebObject obj) throws WebException {
         if (!isEnabled) {
             return false;
         }
-        return getGuard().check(obj.getSession(), obj.getDocument());
+        return getGuard().check(obj.getWebContext().getCoreSession(), obj.getDocument());
     }
 
     public String getId() {
@@ -162,7 +162,7 @@ public class ActionDescriptor {
      */
     public void run(WebObject obj) throws WebException {
         // check rights first
-        if (!getGuard().check(obj.getSession(), obj.getDocument())) {
+        if (!getGuard().check(obj.getWebContext().getCoreSession(), obj.getDocument())) {
             throw new WebException("Running action "+id+" is dedined");
         }
         getHandler().run(obj);
