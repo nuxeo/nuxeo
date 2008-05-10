@@ -445,6 +445,7 @@ public class DefaultWebContext implements WebContext {
         bindings.put("Request", request);
         bindings.put("Response", response);
         bindings.put("This", getTargetObject());
+        bindings.put("Root", getFirstResolvedObject());
         bindings.put("Document", getTargetDocument());
         bindings.put("Engine", engine);
         try {
