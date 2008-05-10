@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.actions;
 
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebException;
@@ -49,7 +50,9 @@ public class DeleteFileActionHandler implements ActionHandler {
         }
         try {
             doc.getProperty(xpath).remove();
-            object.getWebContext().getCoreSession().saveDocument(doc);
+            CoreSession session = object.getWebContext().getCoreSession();
+            session.saveDocument(doc);
+            session.save();
         } catch (Exception e) {
             throw new WebException("Failed to delete attached file", e);
         }

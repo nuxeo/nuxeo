@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine.actions;
 
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebObject;
@@ -35,7 +36,9 @@ public class DeleteActionHandler implements ActionHandler {
         DocumentModel doc = object.getDocument();
         if (doc != null) {
             try {
-                object.getWebContext().getCoreSession().removeDocument(doc.getRef());
+                CoreSession session = object.getWebContext().getCoreSession();
+                session.removeDocument(doc.getRef());
+                session.save();
             } catch (ClientException e) {
                 throw new WebException("Failed to delete document", e);
             }

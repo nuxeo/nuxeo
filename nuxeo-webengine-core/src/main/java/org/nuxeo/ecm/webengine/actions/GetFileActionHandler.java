@@ -23,6 +23,7 @@ package org.nuxeo.ecm.webengine.actions;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebObject;
@@ -57,6 +58,18 @@ public class GetFileActionHandler implements ActionHandler {
                 context.cancel(WebConst.SC_NOT_FOUND);
                 return;
             }
+            String fileName = blob.getFilename();
+            if (fileName == null) {
+                p = p.getParent();
+                if (p.isComplex()) { // special handling for file and files schema
+                    try {
+                        fileName = (String)p.getValue("filename");
+                    } catch (PropertyException e) {
+                        fileName = "Unknown";
+                    }
+                }
+            }
+            context.getResponse().setHeader("Content-Disposition","inline; filename="+fileName);
             blob.transferTo(context.getResponse().getOutputStream());
             context.cancel(); // avoid the rendering to be able to download the file
         } catch (Exception e) {

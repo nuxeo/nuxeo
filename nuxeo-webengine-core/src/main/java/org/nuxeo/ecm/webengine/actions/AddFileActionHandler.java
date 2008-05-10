@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.webengine.WebContext;
@@ -75,7 +76,9 @@ public class AddFileActionHandler implements ActionHandler {
                 }
                 p.setValue(blob);
             }
-            object.getWebContext().getCoreSession().saveDocument(doc);
+            CoreSession session = object.getWebContext().getCoreSession();
+            session.saveDocument(doc);
+            session.save();
         } catch (WebException e) {
             throw e;
         } catch (Exception e) {
