@@ -10,6 +10,8 @@
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="binding">
     <binding type="Document" objectId="WebObject" />
+    <binding type="WikiPage" objectId="WikiPage" />
+    <binding type="Wiki" objectId="WikiSite" />
   </extension>
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
@@ -46,6 +48,15 @@
         </action>
       </actions>
   	</object>
+
+    <object id="WikiSite" extends="Document">
+      <actions>        
+          <action id="getfile" script="Wiki/redirectToFrontpage.groovy">
+          <permission  expression="READ"/>
+        </action>        
+      </actions>
+    </object>
+
   </extension>
 
 </component>
