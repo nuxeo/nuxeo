@@ -1,2 +1,2 @@
 
-Response.sendRedirect("${req.getLastResolvedObject().getAbsolutePath()}/FrontPage")
+Response.sendRedirect("${Context.getLastResolvedObject().getAbsolutePath()}/FrontPage")

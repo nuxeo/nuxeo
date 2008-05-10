@@ -1,6 +1,6 @@
 <div id="attached_files">
     <h3>Attached files:</h3>
-    <#list This.files.files as file>
+    <#list Document.files.files as file>
     Current File: <a href="${This.urlPath}@@getfile?property=files:files/item[${file_index}]/file">${file.filename}</a>
     -
     <a href="${This.urlPath}@@deletefile?property=files:files/item[${file_index}]">Remove</a>

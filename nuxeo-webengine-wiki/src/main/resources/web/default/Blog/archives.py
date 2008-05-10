@@ -1,6 +1,6 @@
 request = req
-year = req.getMappingVar('year')
-month = req.getMappingVar('month')
+year = Context.getMappingVar('year')
+month = Context.getMappingVar('month')
 
 def IsLeapYear(year):
     """Returns 1 if year is a leap year, zero otherwise."""
@@ -37,10 +37,10 @@ if month != None:
 else:
     pquery = "SELECT * FROM Document WHERE (dc:created BETWEEN DATE '%s-01-01' AND DATE '%s-12-31') AND (ecm:path STARTSWITH '/')" % (year, year)
 
-r = req.query(pquery)
+r = Context.query(pquery)
 
 toto = "SELECT * FROM Document"
 
 
-req.render('/default/Blog/archives.ftl',
+Context.render('/default/Blog/archives.ftl',
            {'year': year, 'month': month, 'pquery': str(pquery)})

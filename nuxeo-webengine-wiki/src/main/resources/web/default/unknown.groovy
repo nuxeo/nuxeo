@@ -10,4 +10,4 @@ Response.setCharacterEncoding('utf-8')
 Response.setHeader('Error', 'Yes')
 
 
-req.render('/default/unknown.ftl')
+Context.render('/default/unknown.ftl')
