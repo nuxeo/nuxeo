@@ -197,7 +197,7 @@ public class DefaultWebContext implements WebContext {
 
     public String getTargetObjectUrlPath() {
         WebObject obj = getTargetObject();
-        return obj == null ? obj.getUrlPath() : null;
+        return obj != null ? obj.getUrlPath() : null;
     }
 
     public ScriptFile getTargetScript() throws IOException {
@@ -435,15 +435,15 @@ public class DefaultWebContext implements WebContext {
     }
 
     protected void initDefaultBindings(Bindings bindings) {
-        bindings.put("context", this);
-        bindings.put("request", request);
-        bindings.put("response", response);
-        bindings.put("this", getTargetObject());
-        bindings.put("doc", getTargetDocument());
-        bindings.put("engine", engine);
-        bindings.put("env", engine.getEnvironment());
+        bindings.put("Context", this);
+        bindings.put("Request", request);
+        bindings.put("Response", response);
+        bindings.put("This", getTargetObject());
+        bindings.put("Document", getTargetDocument());
+        bindings.put("Engine", engine);
+        bindings.put("Environment", engine.getEnvironment());
         try {
-            bindings.put("session", getCoreSession());
+            bindings.put("Session", getCoreSession());
         } catch (Exception e) {
             e.printStackTrace(); // TODO
         }
