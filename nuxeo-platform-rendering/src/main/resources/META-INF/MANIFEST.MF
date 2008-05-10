@@ -4,4 +4,4 @@ Bundle-Name: Nuxeo ECM Platform Site Add On
 Bundle-SymbolicName: org.nuxeo.ecm.platform.rendering;singleton:=true
 Require-Bundle: org.nuxeo.ecm.core.api
 Nuxeo-Require: org.nuxeo.ecm.platform.search.api, org.nuxeo.runtime.scripting
-Bundle-ClassPath: .,lib/wem-2.0.2.jar
+Bundle-ClassPath: .,lib/wem-2.0.2.jar,lib/json-lib-0.9.jar
