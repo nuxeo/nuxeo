@@ -435,6 +435,11 @@ public class DefaultWebContext implements WebContext {
         }
     }
 
+    public String doc2json(DocumentModel doc) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     //--------------------------------------------------------------------------- TODO internal API
 
     public Bindings createBindings(Map<String, Object> vars) {

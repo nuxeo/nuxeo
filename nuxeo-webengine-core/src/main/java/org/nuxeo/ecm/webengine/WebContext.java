@@ -423,6 +423,8 @@ public interface WebContext {
      */
     void print(String text) throws IOException;
 
+    String doc2json(DocumentModel doc);
+
     /**
      * This is a helper method that performs a query against nuxeo repository.
      * <p>
