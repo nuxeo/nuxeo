@@ -39,8 +39,8 @@ import javax.script.SimpleScriptContext;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
+import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.WebContext;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebRoot;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.scripting.ScriptingService;
@@ -79,7 +79,7 @@ public class Scripting {
         exec(context, script, null);
     }
 
-    public void exec(WebContext context, ScriptFile script, Bindings args) throws Exception {
+    public void exec(WebContext context, ScriptFile script, Map<String, Object> args) throws Exception {
         String ext = script.getExtension();
         if ("ftl".equals(ext)) {
             context.render(script.getPath(), args);
@@ -122,18 +122,14 @@ public class Scripting {
         runScript(context, script, null);
     }
 
-    public void runScript(WebContext context, ScriptFile script, Bindings args) throws Exception {
+    public void runScript(WebContext context, ScriptFile script, Map<String, Object> args) throws Exception {
         // script is not compilable - run slow eval
         String ext = script.getExtension();
         ScriptEngine engine = scriptService.getScriptEngineManager().getEngineByExtension(ext);
         if (engine != null) {
+            Bindings bindings = ((DefaultWebContext)context).createBindings(args); //TODO put method in interface?
             ScriptContext ctx = new SimpleScriptContext();
-            if (args != null) {
-                ctx.setBindings(args, ScriptContext.ENGINE_SCOPE);
-            }
-            ctx.setAttribute("req", context, ScriptContext.ENGINE_SCOPE);
-            ctx.setAttribute("scripting", this, ScriptContext.ENGINE_SCOPE);
-            ctx.setAttribute("out", context.getResponse().getWriter(), ScriptContext.ENGINE_SCOPE);
+            ctx.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
             CompiledScript comp = getScript(engine, script.getFile()); // use cache for compiled scripts
             if (comp != null) {
                 comp.eval(ctx);
