@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Wiki : ${This.title}</title>
+    <title>Wiki : ${Root.document['dc:title']}</title>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 <link rel="stylesheet" href="/nuxeo/site/files/resources/css/webengine.css" type="text/css" media="screen" charset="utf-8">
 <script src="/nuxeo/site/files/resources/script/jquery/jquery.js"></script>
@@ -13,7 +13,7 @@
 
 <div id="wrap">
     <div id="header">
-       <h1><a href="/nuxeo/site/${Root.document.name}">${Root.document.title}</a></h1>
+       <h1><a href="/nuxeo/site/${Root.document.name}">Wiki ${Root.document.title}</a></h1>
     </div>
     <div id="main-wrapper">
       <div id="main">
@@ -32,7 +32,7 @@
     </div>
     <div id="footer">
        <p>engine : ${Env.engine} ${Env.version}</p>
-       <p>Last modified by ${This.author} @ ${This.dublincore.modified?datetime}</p>
+       <p>Last modified by ${This.author} @ ${Document.dublincore.modified?datetime}</p>
        <p>&copy; 2000-2008 <a href="http://www.nuxeo.com/en/">Nuxeo</a>.</p>
     </div>
     

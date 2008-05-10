@@ -4,10 +4,10 @@
 <form method="POST" action="${This.docURL}@@update" accept-charset="utf-8">
 <textarea name="note:note" cols="80" rows="20">${This.note.note}</textarea>
 <p>
-Title: <input type="text" name="dc:title" value="${This.dublincore.title}"/>
+Title: <input type="text" name="dc:title" value="${Document.dublincore.title}"/>
 </p>
 <p>
-Description: <input type="text" name="dc:description" value="${This.dublincore.description}"/>
+Description: <input type="text" name="dc:description" value="${Document.dublincore.description}"/>
 </p>
 <input type="submit"/>
 </form>

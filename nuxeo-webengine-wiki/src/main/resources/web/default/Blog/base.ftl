@@ -37,7 +37,7 @@ $("#q").search();
         <input type="hidden" name="p" value="${Root.path}">
       </form>
      </div>  
-       <h1><a href="/nuxeo/site/${Root.name}">${Root.title}</a></h1>
+       <h1><a href="${Root.urlPath}">${Root.title}</a></h1>
     </div>
     <div id="main-wrapper">
       <div id="main">
@@ -53,7 +53,7 @@ $("#q").search();
       </div>
     </div>
     <div id="footer">
-       <p>Last modified by ${This.author} @ ${This.dublincore.modified?datetime}</p>
+       <p>Last modified by ${This.author} @ ${Document.dublincore.modified?datetime}</p>
        <p>&copy; 2000-2008 <a href="http://www.nuxeo.com/en/">Nuxeo</a>.</p>
     </div>
     

@@ -1,6 +1,6 @@
 <div class="sideblock general">
   <p class="createButton">
-   <a href="/nuxeo/site/${Root.name}@@create_entry"><span>Create NOW!</span></a>
+   <a href="${Root.urlPath}@@create_entry"><span>Create NOW!</span></a>
   </p>
 </div>
 
@@ -21,8 +21,8 @@
 <div class="sideblock general">
     <h3>Last Items</h3>
     <ul>
-        <#list Root.children?reverse as entry>
-            <li><a href="/nuxeo/site/${Root.name}/${entry.name}">${entry.title}</a></li>
+        <#list Root.document.children?reverse as entry>
+            <li><a href="${Root.urlPath}/${entry.name}">${entry.title}</a></li>
             <#if entry_index = 3><#break></#if>
         </#list>
     </ul>

@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>${Root.title} : ${This.title}</title>
+    <title>${Root.document.title} :: ${This.document.title}</title>
     
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     
@@ -37,12 +37,12 @@ $("#s").search();
 <div id="wrap">
     <div id="header">
        <div class="searchBox">
-      <form action="${Root.docURL}@@search" method="get" accept-charset="utf-8">
+      <form action="${Root.urlPath}@@search" method="get" accept-charset="utf-8">
         <input type="text" name="q" id="q" autosave="com.mysite" results="5" value="Search">
-        <input type="hidden" name="p" value="${Root.path}">
+        <input type="hidden" name="p" value="${Root.urlPath}">
       </form>
      </div>  
-       <h1><a href="/nuxeo/site/${Root.name}">${Root.title}</a></h1>
+       <h1><a href="${Root.urlPath}">${Root.document.title}</a></h1>
     </div>
     <div id="main-wrapper">
       <div id="main">
@@ -58,7 +58,7 @@ $("#s").search();
       </div>
     </div>
     <div id="footer">
-       <p>Last modified by ${This.author} @ ${This.dublincore.modified?datetime}</p>
+       <p>Last modified by ${Document.dublincore.creator} @ ${Document.dublincore.modified?datetime}</p>
        <p>&copy; 2000-2008 <a href="http://www.nuxeo.com/en/">Nuxeo</a>.</p>
     </div>
     
