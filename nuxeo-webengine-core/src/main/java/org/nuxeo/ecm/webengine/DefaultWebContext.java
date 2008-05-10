@@ -441,7 +441,6 @@ public class DefaultWebContext implements WebContext {
         bindings.put("This", getTargetObject());
         bindings.put("Document", getTargetDocument());
         bindings.put("Engine", engine);
-        bindings.put("Environment", engine.getEnvironment());
         try {
             bindings.put("Session", getCoreSession());
         } catch (Exception e) {
