@@ -125,7 +125,7 @@ public class ObjectDescriptor {
     }
 
     public Map<String, Collection<ActionDescriptor>> getActionsByCategory() {
-        HashMap<String, Collection<ActionDescriptor>> result = new HashMap<String, Collection<ActionDescriptor>>();
+        Map<String, Collection<ActionDescriptor>> result = new HashMap<String, Collection<ActionDescriptor>>();
         for (ActionDescriptor ad : actions.values()) {
             String[] cats = ad.getCategories();
             for (String cat : cats) {
@@ -167,7 +167,7 @@ public class ObjectDescriptor {
     public Map<String, Collection<ActionDescriptor>> getEnabledActionsByCategory(WebObject obj) throws WebException {
         CoreSession session = obj.getWebContext().getCoreSession();
         DocumentModel doc = obj.getDocument();
-        HashMap<String, Collection<ActionDescriptor>> result = new HashMap<String, Collection<ActionDescriptor>>();
+        Map<String, Collection<ActionDescriptor>> result = new HashMap<String, Collection<ActionDescriptor>>();
         for (ActionDescriptor ad : actions.values()) {
             if (ad.isEnabled() && ad.getGuard().check(session, doc)) {
                 String[] cats = ad.getCategories();

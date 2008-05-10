@@ -117,68 +117,68 @@ public class WebServlet extends HttpServlet {
         System.out.println(">>> SITE REQUEST TOOK:  "+((System.currentTimeMillis()-start)/1000));
     }
 
-    protected void service(WebContext context, HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    protected void service(WebContext context, HttpServletRequest req, HttpServletResponse resp)
+            throws Exception {
         if (context.getLastResolvedObject() == null) { // a request outside the root
             showIndex(context);
             return;
         }
 
         String method = req.getMethod();
-        WebObject lastTraversedObject = null;
-            lastTraversedObject = traverse(context);
-            if (lastTraversedObject == null) {
-                displayError(resp, null, "Site Root is not a supported object ");
-                return;
-            }
-            // avoid running default action handling mechanism when invocation is redirected to scripts
-            if (context.getMapping() == null) {
-                RequestHandler handler = lastTraversedObject.getRequestHandler();
-                if (handler != null) {
-                    if (method.equals(WebConst.METHOD_POST)) {
-                        handler.doPost(lastTraversedObject);
-                    } else if (method.equals(WebConst.METHOD_PUT)) {
-                        handler.doPut(lastTraversedObject);
-                    } else if (method.equals(WebConst.METHOD_GET)) {
-                        handler.doGet(lastTraversedObject);
-                    } else if (method.equals(WebConst.METHOD_DELETE)) {
-                        handler.doDelete(lastTraversedObject);
-                    } else if (method.equals(WebConst.METHOD_HEAD)) {
-                        handler.doHead(lastTraversedObject);
-                    }
+        WebObject lastTraversedObject = traverse(context);
+        if (lastTraversedObject == null) {
+            displayError(resp, null, "Site Root is not a supported object ");
+            return;
+        }
+        // avoid running default action handling mechanism when invocation is redirected to scripts
+        if (context.getMapping() == null) {
+            RequestHandler handler = lastTraversedObject.getRequestHandler();
+            if (handler != null) {
+                if (method.equals(WebConst.METHOD_POST)) {
+                    handler.doPost(lastTraversedObject);
+                } else if (method.equals(WebConst.METHOD_PUT)) {
+                    handler.doPut(lastTraversedObject);
+                } else if (method.equals(WebConst.METHOD_GET)) {
+                    handler.doGet(lastTraversedObject);
+                } else if (method.equals(WebConst.METHOD_DELETE)) {
+                    handler.doDelete(lastTraversedObject);
+                } else if (method.equals(WebConst.METHOD_HEAD)) {
+                    handler.doHead(lastTraversedObject);
                 }
             }
+        }
 
-            // return is handler has done the rendering
-            if (context.isCanceled()) {
-                return;
-            }
+        // return is handler has done the rendering
+        if (context.isCanceled()) {
+            return;
+        }
 
-            double s = System.currentTimeMillis();
-            scripting.exec(context);
-            System.out.println(">>>>>>>>>> RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
+        double s = System.currentTimeMillis();
+        scripting.exec(context);
+        System.out.println(
+                ">>>>>>>>>> RENDERING TOOK: " + ((System.currentTimeMillis() - s) / 1000));
     }
 
     /**
-    *
-    * @return the last traversed object
-    */
-   protected WebObject traverse(WebContext context) throws WebException {
-      WebObject firstObject = context.getFirstObject();
-      WebObject lastResolved = context.getLastResolvedObject() ;
-      if (firstObject == null || lastResolved == null) {
-          return null;
-      }
-      WebObject lastTraversed = firstObject;
-      WebObject p = firstObject;
-      while (p != lastResolved.next()) {
-          if (!p.traverse()) {
-              return lastTraversed;
-          }
-          lastTraversed = p;
-          p = p.next();
-      }
-      return lastTraversed;
-  }
+     * @return the last traversed object
+     */
+    protected WebObject traverse(WebContext context) throws WebException {
+        WebObject firstObject = context.getFirstObject();
+        WebObject lastResolved = context.getLastResolvedObject();
+        if (firstObject == null || lastResolved == null) {
+            return null;
+        }
+        WebObject lastTraversed = firstObject;
+        WebObject p = firstObject;
+        while (p != lastResolved.next()) {
+            if (!p.traverse()) {
+                return lastTraversed;
+            }
+            lastTraversed = p;
+            p = p.next();
+        }
+        return lastTraversed;
+    }
 
     protected static void displayError(HttpServletResponse resp, Throwable t,
             String message, int code) {

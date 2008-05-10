@@ -33,8 +33,9 @@ import org.nuxeo.runtime.Version;
  */
 public class MainSection implements Configurator {
 
-    private final static Log log = LogFactory.getLog(MainSection.class);
-    public final static MainSection INSTANCE = new MainSection();
+    public static final MainSection INSTANCE = new MainSection();
+
+    private static final Log log = LogFactory.getLog(MainSection.class);
 
     @SuppressWarnings("unchecked")
     public void configure(WebRoot root, Map<String, String> properties) {

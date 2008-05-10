@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webengine.actions;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -63,7 +64,7 @@ public class AddFileActionHandler implements ActionHandler {
             Property p = doc.getProperty(xpath);
             if (p.isList()) { // add the file to the list
                 if (p.getSchema().getName().equals("files")) { // treat the files schema separately
-                    HashMap<String, Serializable> map = new HashMap<String, Serializable>();
+                    Map<String, Serializable> map = new HashMap<String, Serializable>();
                     map.put("filename", blob.getFilename());
                     map.put("file", (Serializable)blob);
                     p.add(map);

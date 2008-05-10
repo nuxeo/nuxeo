@@ -47,7 +47,7 @@ import org.nuxeo.runtime.scripting.ScriptingService;
 import org.python.core.PyDictionary;
 import org.python.core.PyList;
 import org.python.core.PyTuple;
-
+import org.python.core.PyObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -151,14 +151,14 @@ public class Scripting {
                 try {
                     FileUtils.copy(in, context.getResponse().getOutputStream());
                 } finally {
-                    if (in != null) in.close();
+                    in.close();
                 }
             } else if (BINARY_FILE_EXT.contains(ext)) {
                 FileInputStream in = new FileInputStream(script.getFile());
                 try {
                     FileUtils.copy(in, context.getResponse().getOutputStream());
                 } finally {
-                    if (in != null) in.close();
+                    in.close();
                 }
             } else {
                 throw new ScriptException(
@@ -170,7 +170,7 @@ public class Scripting {
     @SuppressWarnings("unchecked")
     public static Map convertPythonMap(PyDictionary dict) {
         PyList list = dict.items();
-        Map table = new HashMap();
+        Map<String, PyObject> table = new HashMap();
         for(int i = list.__len__(); i-- >  0; ) {
             PyTuple tup = (PyTuple) list.__getitem__(i);
             String key = tup.__getitem__(0).toString();

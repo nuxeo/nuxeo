@@ -257,7 +257,9 @@ public class WikiSerializerHandler extends PrintListener {
     @Override
     public void endHeader(int level, WikiParameters params) {
         if (toc != null) {
-            if (mark == -1) throw new IllegalStateException("marker was not set");
+            if (mark == -1) {
+                throw new IllegalStateException("marker was not set");
+            }
             toc.tail.title = writer.getBuffer().substring(mark);
             mark = -1;
             print("</a>");

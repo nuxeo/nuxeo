@@ -34,8 +34,8 @@ public class BlockWriter extends Writer {
 
     BlockWriterRegistry reg;
 
-    String page;
-    String name;
+    final String page;
+    final String name;
     StringBuilder buf = new StringBuilder();
     List<String> segments = new ArrayList<String>();
     List<String> blocks = new ArrayList<String>();

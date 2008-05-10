@@ -45,7 +45,9 @@ public class DocumentObjectWrapper extends DefaultObjectWrapper {
 
 
     public final TemplateModel wrap(Object obj) throws TemplateModelException {
-        if (obj == null) return null;
+        if (obj == null) {
+            return null;
+        }
         if (obj instanceof DocumentModel) {
             return new DocumentTemplate(this, (DocumentModel)obj);
         } else if (obj instanceof Property) {
@@ -71,6 +73,5 @@ public class DocumentObjectWrapper extends DefaultObjectWrapper {
         }
         return super.wrap(obj);
     }
-
 
 }

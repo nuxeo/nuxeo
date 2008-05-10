@@ -22,9 +22,9 @@ package org.nuxeo.ecm.webengine.util;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -56,12 +56,12 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
  */
 public class FormData {
 
-    public final static String PROPERTY = "property";
-    public final static String TITLE = "dc:title";
-    public final static String DOCTYPE = "doctype";
-    public final static String VERSIONING = "versioning";
-    public final static String MAJOR = "major";
-    public final static String MINOR = "minor";
+    public static final String PROPERTY = "property";
+    public static final String TITLE = "dc:title";
+    public static final String DOCTYPE = "doctype";
+    public static final String VERSIONING = "versioning";
+    public static final String MAJOR = "major";
+    public static final String MINOR = "minor";
 
     protected static ServletFileUpload fu = new ServletFileUpload(new DiskFileItemFactory());
 
@@ -101,7 +101,7 @@ public class FormData {
     @SuppressWarnings("unchecked")
     public Map<String, List<FileItem>> getMultiPartItems() throws WebException {
         if (items == null) {
-            if (!isMultipartContent()) {
+            if (!isMultipart) {
                 throw new IllegalStateException("Not in a multi part form request");
             }
             try {
@@ -124,13 +124,11 @@ public class FormData {
         return items;
     }
 
-
-
     public Collection<String> getKeys() throws WebException {
         if (isMultipart) {
             return getMultiPartItems().keySet();
         } else {
-            return ((Map<String,String[]>)request.getParameterMap()).keySet();
+            return ((Map<String, String[]>) request.getParameterMap()).keySet();
         }
     }
 
@@ -164,7 +162,7 @@ public class FormData {
     }
 
     protected Blob getBlob(FileItem item) throws WebException {
-        StreamSource src = null;
+        StreamSource src;
         if (item.isInMemory()) {
             src = new ByteArraySource(item.get());
         } else {
@@ -222,7 +220,9 @@ public class FormData {
     public Object[] getMultiPartFormItems(List<FileItem> list) throws WebException {
         Object[] ar = null;
         if (list != null) {
-            if (list.isEmpty()) return null;
+            if (list.isEmpty()) {
+                return null;
+            }
             FileItem item0 = list.get(0);
             if (item0.isFormField()) {
                 ar = new String[list.size()];
@@ -299,11 +299,11 @@ public class FormData {
     }
 
     public void fillDocumentFromForm(DocumentModel doc) throws PropertyException, WebException {
-        Map<String,String[]> map = (Map<String,String[]>)request.getParameterMap();
+        Map<String, String[]> map = (Map<String, String[]>) request.getParameterMap();
         for (Map.Entry<String,String[]> entry : map.entrySet()) {
             String key = entry.getKey();
             if (key.indexOf(':') > -1) { // an XPATH property
-                Property p = null;
+                Property p;
                 try {
                     p = doc.getProperty(key);
                 } catch (PropertyException e) {
@@ -320,7 +320,7 @@ public class FormData {
         for (Map.Entry<String,List<FileItem>> entry : map.entrySet()) {
             String key = entry.getKey();
             if (key.indexOf(':') > -1) { // an XPATH property
-                Property p = null;
+                Property p;
                 try {
                     p = doc.getProperty(key);
                 } catch (PropertyException e) {
@@ -353,12 +353,12 @@ public class FormData {
                     // list of blobs
                     List<Blob> blobs = new ArrayList<Blob>();
                     if (ar.getClass().getComponentType() == String.class) { // transform strings to blobs
-                        for (int i=0; i<ar.length; i++) {
-                            blobs.add(new StringBlob(ar[i].toString()));
+                        for (Object obj : ar) {
+                            blobs.add(new StringBlob(obj.toString()));
                         }
                     } else {
-                        for (int i=0; i<ar.length; i++) {
-                            blobs.add((Blob)ar[i]);
+                        for (Object obj : ar) {
+                            blobs.add((Blob) obj);
                         }
                     }
                     p.setValue(blobs);

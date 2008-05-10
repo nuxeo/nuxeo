@@ -24,6 +24,8 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,9 +42,9 @@ public class WikiSerializer {
 
     protected final CommonWikiParser parser;
 
-    protected final HashMap<String, WikiMacro> macros = new HashMap<String, WikiMacro>();
-    protected final HashMap<String, WikiExpression> expressions = new HashMap<String, WikiExpression>();
-    protected final ArrayList<WikiFilter> filters = new ArrayList<WikiFilter>();
+    protected final Map<String, WikiMacro> macros = new HashMap<String, WikiMacro>();
+    protected final Map<String, WikiExpression> expressions = new HashMap<String, WikiExpression>();
+    protected final List<WikiFilter> filters = new ArrayList<WikiFilter>();
 
 
     public WikiSerializer() {

@@ -49,7 +49,7 @@ public class DefaultDocumentView implements DocumentView {
 
     // Must be returned by get() method when the key is unknown since the caller should be able to
     // treat differently a key hit that returned null from a key that is not known by this view
-    public final static Object UNKNOWN = new Object();
+    public static final Object UNKNOWN = new Object();
 
     public interface Field {
         String getName();

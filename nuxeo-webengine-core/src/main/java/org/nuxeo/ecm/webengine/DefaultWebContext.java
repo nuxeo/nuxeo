@@ -63,7 +63,7 @@ public class DefaultWebContext implements WebContext {
 
     public static boolean USE_CORE_SEARCH = false;
 
-    protected WebEngine engine;
+    protected final WebEngine engine;
     protected CoreSession session;
     protected boolean isCanceled = false;
 
@@ -71,8 +71,8 @@ public class DefaultWebContext implements WebContext {
     protected WebObject tail;
     protected WebObject lastResolved;
 
-    protected HttpServletRequest request;
-    protected HttpServletResponse response;
+    protected final HttpServletRequest request;
+    protected final HttpServletResponse response;
 
     protected String pathInfo;
 
@@ -81,7 +81,7 @@ public class DefaultWebContext implements WebContext {
     protected String action; // the current object view
     protected FormData form;
 
-    protected Map<String,Object> vars; // global vars to share between scripts
+    protected final Map<String,Object> vars; // global vars to share between scripts
 
 
     public DefaultWebContext(WebRoot root, HttpServletRequest req, HttpServletResponse resp) {
@@ -236,7 +236,9 @@ public class DefaultWebContext implements WebContext {
     public String getUrlPath() {
         StringBuilder buf = new StringBuilder(request.getRequestURI().length());
         String path = request.getContextPath();
-        if (path == null) path = "/nuxeo/site"; // for testing
+        if (path == null) {
+            path = "/nuxeo/site"; // for testing
+        }
         buf.append(path).append(request.getServletPath());
         path = request.getPathInfo();
         if (path != null) {
@@ -248,7 +250,9 @@ public class DefaultWebContext implements WebContext {
     public String getSitePath() {
         StringBuilder buf = new StringBuilder(request.getRequestURI().length());
         String path = request.getContextPath();
-        if (path == null) path = "/nuxeo/site"; // for testing
+        if (path == null) {
+            path = "/nuxeo/site"; // for testing
+        }
         buf.append(path).append(request.getServletPath());
         return buf.toString();
     }
@@ -343,7 +347,9 @@ public class DefaultWebContext implements WebContext {
     }
 
     public WebObject getFirstResolvedObject() {
-        if (head == null) return null;
+        if (head == null) {
+            return null;
+        }
         return head.isResolved() ? head : null;
     }
 

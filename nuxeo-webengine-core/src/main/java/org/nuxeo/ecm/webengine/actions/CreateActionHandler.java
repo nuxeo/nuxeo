@@ -45,9 +45,9 @@ public class CreateActionHandler implements ActionHandler {
                 DocumentModel doc = createSubPage(parent, null, object.getWebContext());
                 String path = object.getUrlPath();
                 if (path.endsWith("/")) {
-                    path = path + doc.getName();
+                    path += doc.getName();
                 } else {
-                    path = path + "/" + doc.getName();
+                    path = path + '/' + doc.getName();
                 }
                 try {
                     object.getWebContext().getResponse().sendRedirect(path);
@@ -87,7 +87,9 @@ public class CreateActionHandler implements ActionHandler {
                 int i = 0;
                 while (true) {
                     try {
-                        if (i == 10) throw new WebException("Failed to create document. Giving up.");
+                        if (i == 10) {
+                            throw new WebException("Failed to create document. Giving up.");
+                        }
                         session.getDocument(new PathRef(path, name));
                         name = baseTitle+"_"+Long.toHexString(IdUtils.generateLongId());
                         i++;

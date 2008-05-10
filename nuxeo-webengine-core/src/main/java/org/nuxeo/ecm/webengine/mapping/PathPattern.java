@@ -68,13 +68,19 @@ public class PathPattern  {
                 inKlass--;
                 break;
             case '(':
-                if (i + 1 == len) continue; // parse error
+                if (i + 1 == len) {
+                    continue; // parse error
+                }
                 // i + 1 > len
                 char c1 = pattern.charAt(i+1);
                 if (c1 != '?') { names.add(null); continue; }
-                if (i + 2 == len) continue;  //parse error
+                if (i + 2 == len) {
+                    continue;  //parse error
+                }
                 char c2 = pattern.charAt(i+2);
-                if (c2 == ':' || c2=='>') continue; // not a group
+                if (c2 == ':' || c2 == '>') {
+                    continue; // not a group
+                }
                 // should be a named group
                 int p = pattern.indexOf(':', i+2);
                 if (p == -1) { continue; } // parse error
