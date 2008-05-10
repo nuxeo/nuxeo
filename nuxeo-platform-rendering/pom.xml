@@ -48,7 +48,7 @@
                   <artifactId>freemarker</artifactId>
                 </artifactItem-->
                 <artifactItem>
-		  <groupId>org.wikimodel</groupId>
+                  <groupId>org.wikimodel</groupId>
                   <artifactId>wem</artifactId>
                 </artifactItem>
               </artifactItems>
@@ -99,7 +99,7 @@
       <version>2.0.2</version>
     </dependency>
   </dependencies>
-  
+
   <repositories>
     <repository>
       <id>theoretiker-repo</id>
@@ -115,6 +115,5 @@
       </snapshots>
     </repository>
   </repositories>
-
 
 </project>

@@ -9,11 +9,10 @@
   <version>1.0-SNAPSHOT</version>
 
   <properties>
-
-    <!-- Nuxeo SNAPSHOT 5.2 updated each day -->
-      <jboss.version>4.0.4.GA</jboss.version>
-      <nuxeo-ecm-core.version>1.5-SNAPSHOT</nuxeo-ecm-core.version>
-      <nuxeo-ecm.version>5.2-SNAPSHOT</nuxeo-ecm.version>
+    <!-- Nuxeo SNAPSHOT 5.2 updated every day -->
+    <jboss.version>4.0.4.GA</jboss.version>
+    <nuxeo-ecm-core.version>1.5-SNAPSHOT</nuxeo-ecm-core.version>
+    <nuxeo-ecm.version>5.2-SNAPSHOT</nuxeo-ecm.version>
   </properties>
 
   <build>
@@ -24,15 +23,6 @@
         <configuration>
           <source>1.5</source>
           <target>1.5</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <includes>
-            <include>**/*Test*.java</include>
-          </includes>
         </configuration>
       </plugin>
       <plugin>
