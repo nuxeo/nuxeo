@@ -17,7 +17,7 @@ $(document).ready(function(){
   <div id="page_content">
       <h1>${This.title}</h1>
 
-      <@transform name="wiki">${This.blogPost.content}</@transform>
+      <@transform name="wiki">${Document.blogPost.content}</@transform>
   </div>
 </div>
 </@block>

@@ -1,14 +1,5 @@
 <h1>${This.title}</h1>
 <h2>Versions</h2>
-<script>
-
-$("compare_versions").submit(function() {
-    alert("Are you sure?");
-     return false;
-});
-
-
-</script>
 
 <form id="version_list" action="${This.urlPath}@@compare_versions" method="get" accept-charset="utf-8">
 <table class="version_list">
@@ -20,7 +11,7 @@ $("compare_versions").submit(function() {
         <td>Date</td>
         <td>Comment</td>
     </tr>
-    <#list This.versions as rev>
+    <#list Document.versions as rev>
     <tr>
         <td><input type="radio" name="r1" value="${rev.ref}"/></td>
         <td><input type="radio" name="r2" value="${rev.ref}"/></td>
@@ -34,8 +25,8 @@ $("compare_versions").submit(function() {
         <td><input type="radio" name="r1" value="${This.ref}"/></td>
         <td><input type="radio" name="r2" value="${This.ref}"/></td>
         <td>current</td>
-        <td>${This.author}</td>
-        <td>${This.modified?datetime}</td>
+        <td>${Document.creator}</td>
+        <td>${Document.modified?datetime}</td>
         <td></td>
     </tr>
     

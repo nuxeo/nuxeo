@@ -1,9 +1,9 @@
 <#assign r1 = Request.getParameter('r1') />
 <#assign r2 = Request.getParameter('r2') />
-<#assign l1 = session.getDocument(docRef(r1)).versionLabel />
-<#assign l2 = session.getDocument(docRef(r2)).versionLabel />
-<#assign c1 = session.getDocument(docRef(r1)).wikiPage.content />
-<#assign c2 = session.getDocument(docRef(r2)).wikiPage.content />
+<#assign l1 = Session.getDocument(docRef(r1)).versionLabel />
+<#assign l2 = Session.getDocument(docRef(r2)).versionLabel />
+<#assign c1 = Session.getDocument(docRef(r1)).wikiPage.content />
+<#assign c2 = Session.getDocument(docRef(r2)).wikiPage.content />
 
 <@extends src="/default/WikiPage/view.ftl">
 <@block name="content">
@@ -17,7 +17,7 @@ $(document).ready(function(){
 });
 </script>
 
-<h1>Compare rev${l1} and rev${l2} of ${This.title}</h1>
+<h1>Compare rev${l1} and rev${l2} of ${Document.title}</h1>
 
 
 
