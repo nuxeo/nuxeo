@@ -14,13 +14,13 @@ $(document).ready(function(){
 
 <div id="entry-actions">
   <ul>
-    <li><a href="${This.docURL}@@view_content" title="page_content"><span>View</span></a></li>
-    <li><a href="${This.docURL}@@edit" title="edit"><span>Edit</span></a></li>
-    <li><a href="${This.docURL}@@show_versions" title="history"><span>History</span></a></li>
+    <li><a href="${This.urlPath}@@view_content" title="page_content"><span>View</span></a></li>
+    <li><a href="${This.urlPath}@@edit" title="edit"><span>Edit</span></a></li>
+    <li><a href="${This.urlPath}@@show_versions" title="history"><span>History</span></a></li>
   </ul>
   <div id="page_content">
-      <h1>${This.title}</h1>
-      <@transform name="wiki">${This.wikiPage.content}</@transform>
+      <h1>${Document.title}</h1>
+      <@transform name="wiki">${Document.wikiPage.content}</@transform>
   </div>
 </div>
 

@@ -3,7 +3,7 @@
 <h2>${This.title}</h2>
 
 <hr/>
-<A href="${This.docURL}@@edit">Edit</A><BR/>
+<A href="${This.urlPath}@@edit">Edit</A><BR/>
 <hr/>
 
 <p>

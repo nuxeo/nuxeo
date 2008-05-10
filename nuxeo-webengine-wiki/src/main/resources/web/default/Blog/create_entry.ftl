@@ -2,7 +2,7 @@
 <@block name="content">
 
 <h2>Create Wiki Page : ${This.title} </h2>
-<form method="POST" action="${This.docURL}@@create">
+<form method="POST" action="${This.urlPath}@@create">
 
 <p>
 <label for="dc:title">Title</label>

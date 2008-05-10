@@ -2,7 +2,7 @@
 <@extends src="/default/base.ftl">
 <@block name="content">
 <h2>Create Wiki Page : ${This.title} </h2>
-<form method="POST" action="${This.docURL}/${name}@@create" accept-charset="utf-8">
+<form method="POST" action="${This.urlPath}/${name}@@create" accept-charset="utf-8">
 Document Type:
 <input type="text" name="doctype" value="Note"/>
 <p>

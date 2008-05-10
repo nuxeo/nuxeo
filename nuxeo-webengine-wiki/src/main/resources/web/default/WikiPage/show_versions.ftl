@@ -10,7 +10,7 @@ $("compare_versions").submit(function() {
 
 </script>
 
-<form id="version_list" action="${This.docURL}@@compare_versions" method="get" accept-charset="utf-8">
+<form id="version_list" action="${This.urlPath}@@compare_versions" method="get" accept-charset="utf-8">
 <table class="version_list">
     <tr>
         <td>From</td>

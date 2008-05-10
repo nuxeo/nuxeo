@@ -8,7 +8,7 @@
 <#assign name = context.getFirstUnresolvedSegment()>
 
 The document ${name} doesn't exist. Click
-<a href="${This.docURL}/${name}@@create_entry">here</a>
+<a href="${This.urlPath}/${name}@@create_entry">here</a>
 if you want to create a new document.
 
 <#else>

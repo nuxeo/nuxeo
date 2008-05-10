@@ -3,7 +3,7 @@
 <@block name="content">
 <h2>Create Wiki entry</h2>
 
-<form method="POST" action="${This.docURL}/${name}@@create" accept-charset="utf-8">
+<form method="POST" action="${This.urlPath}/${name}@@create" accept-charset="utf-8">
 <h1><input type="text" name="dc:title" value="${name}" value="Title" /></h1>
 <!--
 Document Type:
