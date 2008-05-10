@@ -8,7 +8,7 @@
     <ul>
     <#list query(q) as doc>
     <li>
-        <a href="${this.docURL}/${doc.name}">${doc.title}</a>
+        <a href="${This.docURL}/${doc.name}">${doc.title}</a>
             <br/>modified by ${doc.author}
         </li>
     </#list>

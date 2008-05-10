@@ -1,4 +1,4 @@
-<h1>${this.title}</h1>
+<h1>${This.title}</h1>
 <h2>Versions</h2>
 <script>
 
@@ -10,7 +10,7 @@ $("compare_versions").submit(function() {
 
 </script>
 
-<form id="version_list" action="${this.docURL}@@compare_versions" method="get" accept-charset="utf-8">
+<form id="version_list" action="${This.docURL}@@compare_versions" method="get" accept-charset="utf-8">
 <table class="version_list">
     <tr>
         <td>From</td>
@@ -20,7 +20,7 @@ $("compare_versions").submit(function() {
         <td>Date</td>
         <td>Comment</td>
     </tr>
-    <#list this.versions as rev>
+    <#list This.versions as rev>
     <tr>
         <td><input type="radio" name="r1" value="${rev.ref}"/></td>
         <td><input type="radio" name="r2" value="${rev.ref}"/></td>
@@ -31,11 +31,11 @@ $("compare_versions").submit(function() {
     </tr>
     </#list>
     <tr>
-        <td><input type="radio" name="r1" value="${this.ref}"/></td>
-        <td><input type="radio" name="r2" value="${this.ref}"/></td>
+        <td><input type="radio" name="r1" value="${This.ref}"/></td>
+        <td><input type="radio" name="r2" value="${This.ref}"/></td>
         <td>current</td>
-        <td>${this.author}</td>
-        <td>${this.modified?datetime}</td>
+        <td>${This.author}</td>
+        <td>${This.modified?datetime}</td>
         <td></td>
     </tr>
     

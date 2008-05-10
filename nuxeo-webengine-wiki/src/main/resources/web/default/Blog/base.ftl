@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>${Root.title} : ${this.title}</title>
+    <title>${Root.title} : ${This.title}</title>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 <link rel="stylesheet" href="/nuxeo/site/files/resources/css/webengine.css" type="text/css" media="screen" charset="utf-8">
 <link rel="stylesheet" href="/nuxeo/site/files/resources/css/blog.css" type="text/css" media="screen" charset="utf-8">
@@ -9,17 +9,17 @@
   <link rel="stylesheet" href="/nuxeo/site/files/resources/script/jquery/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.base.js"></script>
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.tabs.js"></script>
-<base href="${this.docURL}">
+<base href="${This.docURL}">
 
 <script>
 $.fn.search = function() {
-	return this.focus(function() {
-		if( this.value == this.defaultValue ) {
-			this.value = "";
+	return This.focus(function() {
+		if( This.value == This.defaultValue ) {
+			This.value = "";
 		}
 	}).blur(function() {
-		if( !this.value.length ) {
-			this.value = this.defaultValue;
+		if( !This.value.length ) {
+			This.value = This.defaultValue;
 		}
 	});
 };
@@ -53,7 +53,7 @@ $("#q").search();
       </div>
     </div>
     <div id="footer">
-       <p>Last modified by ${this.author} @ ${this.dublincore.modified?datetime}</p>
+       <p>Last modified by ${This.author} @ ${This.dublincore.modified?datetime}</p>
        <p>&copy; 2000-2008 <a href="http://www.nuxeo.com/en/">Nuxeo</a>.</p>
     </div>
     

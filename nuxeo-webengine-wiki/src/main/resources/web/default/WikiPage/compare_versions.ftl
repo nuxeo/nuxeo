@@ -17,7 +17,7 @@ $(document).ready(function(){
 });
 </script>
 
-<h1>Compare rev${l1} and rev${l2} of ${this.title}</h1>
+<h1>Compare rev${l1} and rev${l2} of ${This.title}</h1>
 
 
 

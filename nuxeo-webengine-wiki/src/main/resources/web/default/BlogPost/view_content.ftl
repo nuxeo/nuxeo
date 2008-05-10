@@ -1,3 +1,3 @@
-<h1>${this.title}</h1>
+<h1>${This.title}</h1>
 
-<@transform name="wiki">${this.blogPost.content}</@transform>
+<@transform name="wiki">${This.blogPost.content}</@transform>

@@ -1,8 +1,8 @@
 <@extends src="/default/Blog/base.ftl">
 <@block name="content">
 
-<h2>Create Wiki Page : ${this.title} </h2>
-<form method="POST" action="${this.docURL}@@create">
+<h2>Create Wiki Page : ${This.title} </h2>
+<form method="POST" action="${This.docURL}@@create">
 
 <p>
 <label for="dc:title">Title</label>

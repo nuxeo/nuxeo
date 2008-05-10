@@ -6,7 +6,7 @@ $(document).ready(function(){
 });
 </script>
 
-<!-- TS: JQuery-needed : actions in tabs, this.title under the tabs and content under this.title
+<!-- TS: JQuery-needed : actions in tabs, This.title under the tabs and content under This.title
     EB: DONE
 -->
 
@@ -14,13 +14,13 @@ $(document).ready(function(){
 
 <div id="entry-actions">
   <ul>
-    <li><a href="${this.docURL}@@view_content" title="page_content"><span>View</span></a></li>
-    <li><a href="${this.docURL}@@edit" title="edit"><span>Edit</span></a></li>
-    <li><a href="${this.docURL}@@show_versions" title="history"><span>History</span></a></li>
+    <li><a href="${This.docURL}@@view_content" title="page_content"><span>View</span></a></li>
+    <li><a href="${This.docURL}@@edit" title="edit"><span>Edit</span></a></li>
+    <li><a href="${This.docURL}@@show_versions" title="history"><span>History</span></a></li>
   </ul>
   <div id="page_content">
-      <h1>${this.title}</h1>
-      <@transform name="wiki">${this.wikiPage.content}</@transform>
+      <h1>${This.title}</h1>
+      <@transform name="wiki">${This.wikiPage.content}</@transform>
   </div>
 </div>
 
