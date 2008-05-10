@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -144,13 +145,18 @@ public class DefaultWebContext implements WebContext {
         return mapping;
     }
 
-    /**
-     * XXX implement this method
-     */
+
     public String getUrlPath(DocumentModel document) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Not yet implemented");
-        //return null;
+        if (head == null || !head.isResolved()) return null;
+        Path rootPath = head.getDocument().getPath().makeAbsolute();
+        Path path = document.getPath().makeAbsolute();
+        int cnt = path.matchingFirstSegments(rootPath);
+        if (cnt == rootPath.segmentCount()) {
+            path = path.removeFirstSegments(cnt);
+            return head.getUrlPath()+path.toString();
+        } else {
+            return null;
+        }
     }
 
     public String getPathInfo() {
