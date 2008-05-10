@@ -3,11 +3,11 @@
 
 import javax.servlet.http.HttpServletResponse
 
-response = req.getResponse()
-response.setStatus(HttpServletResponse.SC_NO_CONTENT)
-response.setCharacterEncoding('utf-8')
 
-response.setHeader('Error', 'Yes')
+Response.setStatus(HttpServletResponse.SC_NO_CONTENT)
+Response.setCharacterEncoding('utf-8')
+
+Response.setHeader('Error', 'Yes')
 
 
 req.render('/default/unknown.ftl')
