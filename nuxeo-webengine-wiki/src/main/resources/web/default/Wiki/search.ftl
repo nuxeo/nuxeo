@@ -9,7 +9,7 @@
     <ul>
     <#list Context.search(q) as doc>
     <li>
-        <a href="${This.urlPath}/">${doc.dublincore.title}</a>
+        <a href="${Context.getUrlPath(doc)}">${doc.dublincore.title}</a>
             <br/>modified by ${doc.dublincore.creator}
         </li>
     </#list>
