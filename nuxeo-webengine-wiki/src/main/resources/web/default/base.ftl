@@ -13,7 +13,7 @@
 
 <div id="wrap">
     <div id="header">
-       <h1><a href="/nuxeo/site/${root.name}">${root.title}</a></h1>
+       <h1><a href="/nuxeo/site/${Root.name}">${Root.title}</a></h1>
     </div>
     <div id="main-wrapper">
       <div id="main">

@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>${root.title} : ${this.title}</title>
+    <title>${Root.title} : ${this.title}</title>
     
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     
@@ -37,12 +37,12 @@ $("#s").search();
 <div id="wrap">
     <div id="header">
        <div class="searchBox">
-      <form action="${root.docURL}@@search" method="get" accept-charset="utf-8">
+      <form action="${Root.docURL}@@search" method="get" accept-charset="utf-8">
         <input type="text" name="q" id="q" autosave="com.mysite" results="5" value="Search">
-        <input type="hidden" name="p" value="${root.path}">
+        <input type="hidden" name="p" value="${Root.path}">
       </form>
      </div>  
-       <h1><a href="/nuxeo/site/${root.name}">${root.title}</a></h1>
+       <h1><a href="/nuxeo/site/${Root.name}">${Root.title}</a></h1>
     </div>
     <div id="main-wrapper">
       <div id="main">

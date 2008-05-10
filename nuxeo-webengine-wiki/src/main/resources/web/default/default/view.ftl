@@ -6,7 +6,7 @@
 <A href="${this.docURL}@@edit">Edit</A><BR/>
 <hr/>
 
-The root path: ${root.path}
+The root path: ${Root.path}
 
 </@block>
 </@extends>
