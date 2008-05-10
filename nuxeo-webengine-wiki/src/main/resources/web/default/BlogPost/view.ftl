@@ -6,18 +6,18 @@ $(document).ready(function(){
 });
 </script>
 
-<div id="message">${request.getParameter('msg')}</div>
+<div id="message">${Request.getParameter('msg')}</div>
 
 <div id="entry-actions">
   <ul>
-    <li><a href="${this.docURL}@@view_content" title="page_content"><span>View</span></a></li>
-    <li><a href="${this.docURL}@@edit" title="edit"><span>Edit</span></a></li>
-    <li><a href="${this.docURL}@@show_versions" title="history"><span>History</span></a></li>
+    <li><a href="${This.urlPath}@@view_content" title="page_content"><span>View</span></a></li>
+    <li><a href="${This.urlPath}@@edit" title="edit"><span>Edit</span></a></li>
+    <li><a href="${This.urlPath}@@show_versions" title="history"><span>History</span></a></li>
   </ul>
   <div id="page_content">
-      <h1>${this.title}</h1>
+      <h1>${This.title}</h1>
 
-      <@transform name="wiki">${this.blogPost.content}</@transform>
+      <@transform name="wiki">${Document.blogPost.content}</@transform>
   </div>
 </div>
 </@block>

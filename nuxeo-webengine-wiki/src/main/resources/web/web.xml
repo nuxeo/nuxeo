@@ -62,7 +62,7 @@
     <object id="WikiSite" extends="WebObject">
       <actions>
         
-        <action id="home" enabled="true" script="Wiki/redirectToFrontpage.groovy">
+        <action id="view" enabled="true" script="Wiki/redirectToFrontpage.groovy">
           <permission  expression="READ"/>
         </action>
         

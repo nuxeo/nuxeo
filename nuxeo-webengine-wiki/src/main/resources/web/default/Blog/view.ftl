@@ -2,9 +2,9 @@
 
 <@block name="content">
 <div class="summary-entries">
-<#list this.children?reverse as entry>
+<#list This.children?reverse as entry>
   <div class="summary-entry">  
-    <h2 class="summary-title"><a href="/nuxeo/site/${root.name}/${entry.name}">${entry.title}</a></h2>
+    <h2 class="summary-title"><a href="${Root.urlPath}/${entry.name}">${entry.title}</a></h2>
     <div class="summary-content">
         <@transform name="wiki">${entry.blogPost.content}</@transform>
     </div>

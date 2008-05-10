@@ -2,8 +2,8 @@
 
 def main () {
     def request = req
-    def year = request.getMappingVar('year') as BigInteger
-    def month = request.getMappingVar('month') as BigInteger
+    def year = Request.getMappingVar('year') as BigInteger
+    def month = Request.getMappingVar('month') as BigInteger
     
     nbdays = NumberOfDaysInMonth(year, month)
 
@@ -15,9 +15,9 @@ def main () {
         c = new GregorianCalendar(year, 0, 1) 
     }
     
-    results = request.query(pquery)
+    results = Request.query(pquery)
     
-    request.render('/default/Blog/archives.ftl',
+    Request.render('/default/Blog/archives.ftl',
                   ['year': year, 'month': month, 'pquery': pquery, 'results': results, 'sdate': c.getTime()])
 
 }

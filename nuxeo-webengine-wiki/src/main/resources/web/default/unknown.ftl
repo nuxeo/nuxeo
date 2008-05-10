@@ -3,12 +3,12 @@
 
 <h3>Unknown Page</h3>
 
-<#if context.hasUnresolvedObjects()>
+<#if Context.hasUnresolvedObjects()>
 
-<#assign name = context.getFirstUnresolvedSegment()>
+<#assign name = Context.getFirstUnresolvedSegment()>
 
 The document ${name} doesn't exist. Click
-<a href="${this.docURL}/${name}@@create_entry">here</a>
+<a href="${This.urlPath}/${name}@@create_entry">here</a>
 if you want to create a new document.
 
 <#else>

@@ -1,6 +1,6 @@
-<form method="POST" action="${this.docURL}@@update" accept-charset="utf-8">
-<h1><input type="text" name="dc:title" value="${this.dublincore.title}"/></h1>
-  <textarea name="bp:content" cols="75" rows="30" class="entryEdit">${this.blogPost.content}</textarea>
+<form method="POST" action="${This.urlPath}@@update" accept-charset="utf-8">
+<h1><input type="text" name="dc:title" value="${Document.dublincore.title}"/></h1>
+  <textarea name="bp:content" cols="75" rows="30" class="entryEdit">${Document.blogPost.content}</textarea>
   
   <p class="entryEditOptions">
     Allow Trackbacks:

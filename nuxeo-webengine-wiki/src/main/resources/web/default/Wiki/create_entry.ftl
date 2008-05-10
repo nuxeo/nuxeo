@@ -1,9 +1,9 @@
-<#assign name="${context.getFirstUnresolvedSegment()}">
+<#assign name="${Context.getFirstUnresolvedSegment()}">
 <@extends src="/default/Wiki/base.ftl">
 <@block name="content">
 <h2>Create Wiki entry</h2>
 
-<form method="POST" action="${this.docURL}/${name}@@create" accept-charset="utf-8">
+<form method="POST" action="${This.urlPath}/${name}@@create" accept-charset="utf-8">
 <h1><input type="text" name="dc:title" value="${name}" value="Title" /></h1>
 <!--
 Document Type:

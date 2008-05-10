@@ -1,6 +1,6 @@
 <@extends src="/default/base.ftl">
 <@block name="content">
-<h2>${this.title}</h2>
+<h2>${This.title}</h2>
 
 <h3>I am a folder</h3>
 

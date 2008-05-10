@@ -1,6 +1,6 @@
-<form method="POST" action="${this.docURL}@@update" accept-charset="utf-8">
-<h1><input type="text" name="dc:title" value="${this.dublincore.title}"/></h1>
-  <textarea name="wp:content" cols="75" rows="30" class="entryEdit">${this.wikiPage.content}</textarea>
+<form method="POST" action="${This.urlPath}@@update" accept-charset="utf-8">
+<h1><input type="text" name="dc:title" value="${Document.dublincore.title}"/></h1>
+  <textarea name="wp:content" cols="75" rows="30" class="entryEdit">${Document.wikiPage.content}</textarea>
   <p class="entryEditOptions">
     Version increment:
     <input type="radio" name="versioning" value="major" checked> Major
