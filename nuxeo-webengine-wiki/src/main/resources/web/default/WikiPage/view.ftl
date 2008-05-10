@@ -10,7 +10,7 @@ $(document).ready(function(){
     EB: DONE
 -->
 
-<div id="message">${request.getParameter('msg')}</div>
+<div id="message">${Request.getParameter('msg')}</div>
 
 <div id="entry-actions">
   <ul>

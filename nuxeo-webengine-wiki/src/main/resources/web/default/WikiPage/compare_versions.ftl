@@ -1,5 +1,5 @@
-<#assign r1 = request.getParameter('r1') />
-<#assign r2 = request.getParameter('r2') />
+<#assign r1 = Request.getParameter('r1') />
+<#assign r2 = Request.getParameter('r2') />
 <#assign l1 = session.getDocument(docRef(r1)).versionLabel />
 <#assign l2 = session.getDocument(docRef(r2)).versionLabel />
 <#assign c1 = session.getDocument(docRef(r1)).wikiPage.content />
