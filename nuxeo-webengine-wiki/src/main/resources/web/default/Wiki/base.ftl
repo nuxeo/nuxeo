@@ -39,7 +39,7 @@ $("#s").search();
        <div class="searchBox">
       <form action="${Root.urlPath}@@search" method="get" accept-charset="utf-8">
         <input type="text" name="q" id="q" autosave="com.mysite" results="5" value="Search">
-        <input type="hidden" name="p" value="${Root.urlPath}">
+        <input type="hidden" name="p" value="${Root.repositoryPath}">
       </form>
      </div>  
        <h1><a href="${Root.urlPath}">${Root.document.title}</a></h1>

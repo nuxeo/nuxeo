@@ -1,4 +1,4 @@
-<#assign name="${context.getFirstUnresolvedSegment()}">
+<#assign name="${Context.getFirstUnresolvedSegment()}">
 <@extends src="/default/Wiki/base.ftl">
 <@block name="content">
 <h2>Create Wiki Page : ${This.title} </h2>

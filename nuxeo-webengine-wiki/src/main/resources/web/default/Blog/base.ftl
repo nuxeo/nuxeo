@@ -53,7 +53,7 @@ $("#q").search();
       </div>
     </div>
     <div id="footer">
-       <p>Last modified by ${This.author} @ ${Document.dublincore.modified?datetime}</p>
+       <p>Last modified by ${This.document.creator} @ ${Document.dublincore.modified?datetime}</p>
        <p>&copy; 2000-2008 <a href="http://www.nuxeo.com/en/">Nuxeo</a>.</p>
     </div>
     
