@@ -111,6 +111,10 @@ public class WebObject {
         return name;
     }
 
+    public final String getTitle() {
+        return doc == null ? name : doc.getTitle();
+    }
+
     public final DocumentModel getDocument() {
         return doc;
     }
