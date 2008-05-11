@@ -211,7 +211,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
         }
     }
 
-    public void fileChanged(File file, long since) {
+    public void fileChanged(File file, long since, long now) {
         if (ctx == null) {
             return;
         }

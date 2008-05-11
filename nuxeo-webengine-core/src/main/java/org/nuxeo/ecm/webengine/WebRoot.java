@@ -203,7 +203,7 @@ public class WebRoot implements FileChangeListener {
         loadConfiguration();
     }
 
-    public void fileChanged(File file, long since) {
+    public void fileChanged(File file, long since, long now) {
         if (file.getAbsolutePath().startsWith(root.getAbsolutePath())) {
             if (file.getName().equals(SITE_CONFIG)) {
                 try {

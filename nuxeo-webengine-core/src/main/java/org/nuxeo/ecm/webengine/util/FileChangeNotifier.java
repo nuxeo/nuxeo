@@ -41,6 +41,7 @@ public class FileChangeNotifier {
     private final Timer timer = new Timer("FileChangeNotifier");
     private final Vector<FileEntry> files = new Vector<FileEntry>();
 
+
     public void start() {
         start(10000, 2000);
     }
@@ -71,8 +72,9 @@ public class FileChangeNotifier {
     }
 
     protected void fireNotification(FileEntry entry) {
+        long tm = System.currentTimeMillis();
         for (Object listener : listeners.getListeners()) {
-            ((FileChangeListener)listener).fileChanged(entry.file, entry.lastModified);
+            ((FileChangeListener)listener).fileChanged(entry.file, entry.lastModified, tm);
         }
     }
 

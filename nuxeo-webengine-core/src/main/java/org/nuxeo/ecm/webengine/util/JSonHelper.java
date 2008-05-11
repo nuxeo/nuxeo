@@ -19,18 +19,27 @@
 
 package org.nuxeo.ecm.webengine.util;
 
+
 import net.sf.json.JSONObject;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.webengine.WebException;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class JSonHelper {
+
+    public static String toJSon(DocumentModel doc)  throws WebException {
+        return doc2JSon(doc).toString();
+    }
+
+    public static String toJSon(DocumentModel doc, String ... schemas) throws WebException {
+        return doc2JSon(doc).toString();
+    }
 
     public static JSONObject doc2JSon(DocumentModel doc) throws WebException {
         return doc2JSon(doc, (String[])null);
@@ -66,5 +75,18 @@ public class JSonHelper {
             throw new WebException("Failed to export documnt as json: "+doc.getPath(), e);
         }
     }
+
+//    public static DocumentModel fromJSon(JSONObject obj) {
+//        String id = obj.getString("id");
+//        String type = obj.getString("type");
+//        String name = obj.getString("name");
+//        String path = obj.getString("path");
+//        String parentPath = new Path(path).removeLastSegments(1).toString();
+//        DocumentModelImpl doc = new DocumentModelImpl(String sid, String type, String id, Path path,
+//                String lock, DocumentRef docRef, DocumentRef parentRef,
+//                String[] schemas, Set<String> facets, String sourceId,
+//                String repositoryName);
+//        return doc;
+//    }
 
 }
