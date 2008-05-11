@@ -33,6 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import net.sf.json.JSONObject;
+
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -51,6 +53,7 @@ import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.util.FormData;
+import org.nuxeo.ecm.webengine.util.JSonHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.python.core.PyDictionary;
 
@@ -435,9 +438,13 @@ public class DefaultWebContext implements WebContext {
         }
     }
 
-    public String doc2json(DocumentModel doc) {
-        // TODO Auto-generated method stub
-        return null;
+    public String toJSon(DocumentModel doc) throws WebException {
+        return toJSon(doc, (String[])null);
+    }
+
+    public String toJSon(DocumentModel doc, String ... schemas) throws WebException {
+        JSONObject obj = JSonHelper.doc2JSon(doc, schemas);
+        return obj == null? null : obj.toString();
     }
 
     //--------------------------------------------------------------------------- TODO internal API

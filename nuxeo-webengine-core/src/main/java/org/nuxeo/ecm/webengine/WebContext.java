@@ -423,7 +423,22 @@ public interface WebContext {
      */
     void print(String text) throws IOException;
 
-    String doc2json(DocumentModel doc);
+    /**
+     * Convert the given document to a JSON String
+     * @param doc the doc to convert
+     * @return the JSON string
+     * @throws WebException
+     */
+    String toJSon(DocumentModel doc) throws WebException;
+
+    /**
+     * Convert the given document to a JSON String. Only specified schemas should be included in the JSON representation
+     * @param doc the doc to convert
+     * @param schemas the schemas to include
+     * @return the JSON string
+     * @throws WebException
+     */
+    String toJSon(DocumentModel doc, String ... schemas) throws WebException;
 
     /**
      * This is a helper method that performs a query against nuxeo repository.
