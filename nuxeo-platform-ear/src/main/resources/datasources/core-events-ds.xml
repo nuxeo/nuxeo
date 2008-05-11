@@ -8,16 +8,22 @@
          name="jboss.mq:service=JMSProviderLoader,name=NXCoreEventsProvider,server=ecm_core_server">
     <attribute name="ProviderName">NXCoreEventsProvider</attribute>
     <attribute name="ProviderAdapterClass">org.jboss.jms.jndi.JNDIProviderAdapter</attribute>
-    <!-- The queue connection factory -->
+    <!--
+    Set up for a in JVM connection  factory. This setting is for a 1 machine nuxeo.
+    If Message needs to be shared with other server, comment out the next lines and
+    uncomment the following. 
+     -->
+    <attribute name="QueueFactoryRef">java:/XAConnectionFactory</attribute>
+    <attribute name="TopicFactoryRef">java:/XAConnectionFactory</attribute>
+    <!-- 
     <attribute name="QueueFactoryRef">UIL2XAConnectionFactory</attribute>
-    <!-- The topic factory -->
     <attribute name="TopicFactoryRef">UIL2XAConnectionFactory</attribute>
-    <!-- Connect to JNDI on the host "the-remote-host-name" port 1099-->
     <attribute name="Properties">
       java.naming.factory.initial=org.jnp.interfaces.NamingContextFactory
       java.naming.factory.url.pkgs=org.jnp.interfaces
       java.naming.provider.url=127.0.0.1:1099
     </attribute>
+    -->
   </mbean>
 
   <!-- mbean code="org.jboss.jms.jndi.JMSProviderLoader"
