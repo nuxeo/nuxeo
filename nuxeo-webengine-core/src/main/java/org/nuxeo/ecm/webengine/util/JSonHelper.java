@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webengine.util;
 import net.sf.json.JSONObject;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.webengine.WebException;
 
