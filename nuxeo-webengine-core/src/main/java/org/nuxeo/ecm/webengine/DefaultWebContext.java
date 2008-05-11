@@ -438,13 +438,12 @@ public class DefaultWebContext implements WebContext {
         }
     }
 
-    public String toJSon(DocumentModel doc) throws WebException {
+    public JSONObject toJSon(DocumentModel doc) throws WebException {
         return toJSon(doc, (String[])null);
     }
 
-    public String toJSon(DocumentModel doc, String ... schemas) throws WebException {
-        JSONObject obj = JSonHelper.doc2JSon(doc, schemas);
-        return obj == null? null : obj.toString();
+    public JSONObject toJSon(DocumentModel doc, String ... schemas) throws WebException {
+        return JSonHelper.doc2JSon(doc, schemas);
     }
 
     //--------------------------------------------------------------------------- TODO internal API

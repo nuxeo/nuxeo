@@ -28,6 +28,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -36,6 +38,7 @@ import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.util.FormData;
+import org.nuxeo.ecm.webengine.util.JSonDocumentExporter;
 
 /**
  * Represents the web invocation context.
@@ -429,7 +432,7 @@ public interface WebContext {
      * @return the JSON string
      * @throws WebException
      */
-    String toJSon(DocumentModel doc) throws WebException;
+    JSONObject toJSon(DocumentModel doc) throws WebException;
 
     /**
      * Convert the given document to a JSON String. Only specified schemas should be included in the JSON representation
@@ -438,7 +441,7 @@ public interface WebContext {
      * @return the JSON string
      * @throws WebException
      */
-    String toJSon(DocumentModel doc, String ... schemas) throws WebException;
+    JSONObject toJSon(DocumentModel doc, String ... schemas) throws WebException;
 
     /**
      * This is a helper method that performs a query against nuxeo repository.
