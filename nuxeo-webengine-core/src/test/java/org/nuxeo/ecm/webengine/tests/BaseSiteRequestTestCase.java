@@ -30,10 +30,6 @@ public abstract class BaseSiteRequestTestCase extends RepositoryOSGITestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployBundle("nuxeo-platform-content-template-manager");
-        deployContrib("OSGI-INF/site-adapters-service-framework.xml");
-        deployContrib("OSGI-INF/site-adapters-contrib.xml");
-        deployContrib("OSGI-INF/site-manager-framework.xml");
 
         openRepository();
     }

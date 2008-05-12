@@ -22,9 +22,10 @@ package org.nuxeo.ecm.webengine.tests.security;
 import java.text.ParseException;
 
 import junit.framework.TestCase;
-import org.nuxeo.ecm.webengine.security.PostfixExpression;
+
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.PermissionService;
+import org.nuxeo.ecm.webengine.security.PostfixExpression;
 
 public class TestPermissionService extends TestCase {
 

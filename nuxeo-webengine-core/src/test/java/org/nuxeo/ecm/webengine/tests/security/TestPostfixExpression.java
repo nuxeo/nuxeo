@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webengine.tests.security;
 import java.text.ParseException;
 
 import junit.framework.TestCase;
+
 import org.nuxeo.ecm.webengine.security.PostfixExpression;
 
 public class TestPostfixExpression extends TestCase {

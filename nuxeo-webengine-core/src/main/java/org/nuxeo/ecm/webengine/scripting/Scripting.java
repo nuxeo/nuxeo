@@ -46,8 +46,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.scripting.ScriptingService;
 import org.python.core.PyDictionary;
 import org.python.core.PyList;
-import org.python.core.PyTuple;
 import org.python.core.PyObject;
+import org.python.core.PyTuple;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

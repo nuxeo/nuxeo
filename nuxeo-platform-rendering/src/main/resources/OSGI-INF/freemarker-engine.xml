@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.rendering.fm.FreemarkerComponent">
+  <implementation
+          class="org.nuxeo.ecm.platform.rendering.fm.FreemarkerComponent" />
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Manage templates
+  </documentation>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.rendering.fm.FreemarkerComponent" />
+  </service>
+
+</component>

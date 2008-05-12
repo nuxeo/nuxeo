@@ -33,11 +33,13 @@ import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
+import org.nuxeo.ecm.webengine.rendering.RenderingTemplateDescriptor;
 import org.nuxeo.ecm.webengine.rendering.TransformerDescriptor;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.ecm.webengine.util.FileChangeListener;
 import org.nuxeo.ecm.webengine.util.FileChangeNotifier;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -57,6 +59,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
     public static final String WEB_OBJ_XP = "webObject";
     public static final String BINDING_XP = "binding";
     public static final String GUARD_XP = "guard"; // global guards
+    public final static String RENDERING_TEMPLATE_XP = "rendering-template";
 
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
@@ -171,7 +174,15 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
         } else if (BINDING_XP.equals(extensionPoint)) {
             ObjectBindingDescriptor binding = (ObjectBindingDescriptor)contribution;
             mgr.registerBingding(binding.type, binding.objectId);
+        } else if (extensionPoint.equals(RENDERING_TEMPLATE_XP)) {
+            RenderingTemplateDescriptor fed = (RenderingTemplateDescriptor)contribution;
+            try {
+                engine.setSharedVariable(fed.name, fed.newInstance(contributor));
+            } catch (Exception e) {
+                throw new RuntimeServiceException("Deployment Error. Failed to contribute freemarker template extension: "+fed.name);
+            }
         }
+
     }
 
     @Override
@@ -190,6 +201,9 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
         } else if (BINDING_XP.equals(extensionPoint)) {
             ObjectBindingDescriptor binding = (ObjectBindingDescriptor)contribution;
             mgr.unregisterBingding(binding.type);
+        } else if (extensionPoint.equals(RENDERING_TEMPLATE_XP)) {
+            RenderingTemplateDescriptor fed = (RenderingTemplateDescriptor)contribution;
+            engine.setSharedVariable(fed.name, null);
         }
     }
 

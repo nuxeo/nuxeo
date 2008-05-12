@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webengine.rendering-template.test">
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="rendering-template">
+
+	<template name="ext1" class="org.nuxeo.ecm.webengine.tests.rendering.MyRenderingExtension"/>
+	<template name="ext2" class="org.nuxeo.ecm.webengine.tests.rendering.MyRenderingExtensionFactory"/>
+
+  </extension>
+
+</component>

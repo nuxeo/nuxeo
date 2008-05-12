@@ -35,7 +35,7 @@ public class TestTemplates extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib("OSGI-INF/site-manager-framework.xml");
+        deployContrib("OSGI-INF/webengine-framework.xml");
         deployContrib("OSGI-INF/test-template-contrib.xml");
     }
 
