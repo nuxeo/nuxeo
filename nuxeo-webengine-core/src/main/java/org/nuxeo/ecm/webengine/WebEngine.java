@@ -45,11 +45,11 @@ public interface WebEngine {
 
     void unregisterObject(ObjectDescriptor obj);
 
-    String getBingding(String type);
+    String getTypeBinding(String type);
 
-    void registerBingding(String type, String objectId);
+    void registerBinding(String type, String objectId);
 
-    void unregisterBingding(String type);
+    void unregisterBinding(String type);
 
     List<ObjectDescriptor> getRegisteredObjects();
 
@@ -60,6 +60,8 @@ public interface WebEngine {
     ObjectDescriptor getInstanceOf(Type type);
 
     ObjectDescriptor getObject(String id);
+
+    ObjectDescriptor getDefaultObject();
 
     boolean isObjectResolved(String id);
 

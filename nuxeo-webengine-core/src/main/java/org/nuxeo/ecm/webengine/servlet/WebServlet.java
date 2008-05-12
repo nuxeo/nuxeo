@@ -104,7 +104,7 @@ public class WebServlet extends HttpServlet {
                         WebConst.SC_INTERNAL_SERVER_ERROR);
             } else {
                 WebRoot root = context.getRoot();
-                ScriptFile page = root.getScript(root.getErrorPage(), null);
+                ScriptFile page = root.getScript(root.getErrorPage());
                 try {
                     context.setProperty("error", e);
                     engine.getScripting().exec(context, page);

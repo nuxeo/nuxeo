@@ -178,15 +178,15 @@ public class DefaultWebEngine implements WebEngine {
     }
 
     //TODO bindings are not correctly redeployed when contributed from several web.xml files
-    public String getBingding(String type) {
+    public String getTypeBinding(String type) {
         return bindings.get(type);
     }
 
-    public void registerBingding(String type, String objectId) {
+    public void registerBinding(String type, String objectId) {
         bindings.put(type, objectId);
     }
 
-    public void unregisterBingding(String type) {
+    public void unregisterBinding(String type) {
         bindings.remove(type);
     }
 

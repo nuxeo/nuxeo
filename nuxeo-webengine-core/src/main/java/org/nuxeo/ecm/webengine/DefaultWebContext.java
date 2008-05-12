@@ -210,10 +210,9 @@ public class DefaultWebContext implements WebContext {
     }
 
     public ScriptFile getTargetScript() throws IOException {
-        String type = (lastResolved != null) ? lastResolved.getDocument().getType() : null;
         String path = null;
         if (mapping != null) {
-            return root.getScript(mapping.getScript(), type);
+            return root.getScript(mapping.getScript());
         } else if (action != null) {
             if (lastResolved != null) {
                 path = lastResolved.getActionScript(action);
@@ -231,7 +230,7 @@ public class DefaultWebContext implements WebContext {
                 path = root.getDefaultPage();
             }
         }
-        return root.getScript(path, type);
+        return root.getScript(path);
     }
 
     public String getURI() {
@@ -325,7 +324,7 @@ public class DefaultWebContext implements WebContext {
 
     public void runScript(String script, Map<String, Object> args) throws WebException {
         try {
-            engine.getScripting().runScript(this, root.getScript(script, null), createBindings(args));
+            engine.getScripting().runScript(this, root.getScript(script), createBindings(args));
         } catch (WebException e) {
             throw e;
         } catch (Exception e) {

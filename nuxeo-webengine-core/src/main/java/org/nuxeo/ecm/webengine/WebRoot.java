@@ -184,9 +184,8 @@ public class WebRoot implements FileChangeListener {
         }
     }
 
-    public ScriptFile getScript(String path, String type) throws IOException {
-        path = getWebFilePath(path);
-        return new ScriptFile(manager.getRootDirectory(), path, type);
+    public ScriptFile getScript(String path) throws IOException {
+        return new ScriptFile(new File(manager.getRootDirectory(), getWebFilePath(path)));
     }
 
     public File getFile(String path) {

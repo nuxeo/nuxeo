@@ -91,7 +91,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
             engine = new FreemarkerEngine(); // the default engine
         }
         engine.setResourceLocator(this);
-        engine.addResourceDirectories(root);
+        engine.addResourceDirectories(new File("/"), root); //TODO
         engine.setMessageBundle(messages);
         mgr = new DefaultWebEngine(root, engine);
         notifier = new FileChangeNotifier();
@@ -173,7 +173,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
             PermissionService.getInstance().registerGuard(gd.getId(), gd.getGuard());
         } else if (BINDING_XP.equals(extensionPoint)) {
             ObjectBindingDescriptor binding = (ObjectBindingDescriptor)contribution;
-            mgr.registerBingding(binding.type, binding.objectId);
+            mgr.registerBinding(binding.type, binding.objectId);
         } else if (extensionPoint.equals(RENDERING_TEMPLATE_XP)) {
             RenderingTemplateDescriptor fed = (RenderingTemplateDescriptor)contribution;
             try {
@@ -200,7 +200,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
             PermissionService.getInstance().unregisterGuard(gd.getId());
         } else if (BINDING_XP.equals(extensionPoint)) {
             ObjectBindingDescriptor binding = (ObjectBindingDescriptor)contribution;
-            mgr.unregisterBingding(binding.type);
+            mgr.unregisterBinding(binding.type);
         } else if (extensionPoint.equals(RENDERING_TEMPLATE_XP)) {
             RenderingTemplateDescriptor fed = (RenderingTemplateDescriptor)contribution;
             engine.setSharedVariable(fed.name, null);
@@ -219,6 +219,9 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
 
     public URL getResource(String templateName) {
         try {
+            if (!templateName.contains(":/")) {
+                return new File(templateName).toURI().toURL();
+            }
             return URLFactory.getURL(templateName);
         } catch (Exception e) {
             return null;

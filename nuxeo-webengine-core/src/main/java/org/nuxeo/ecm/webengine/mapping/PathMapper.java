@@ -34,24 +34,34 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class PathMapper {
 
-    final List<MappingDescriptor> entries;
+    List<MappingDescriptor> entries;
 
     final ConcurrentMap<String, Mapping> cache;
 
     public PathMapper() {
-        entries = new ArrayList<MappingDescriptor>();
+        this (null);
+    }
+
+    public PathMapper(List<MappingDescriptor> mappings) {
+        this.entries = mappings;
         cache = new ConcurrentHashMap<String, Mapping>();
     }
 
     public void addMapping(MappingDescriptor mdef) {
+        if (entries == null) {
+            entries = new ArrayList<MappingDescriptor>();
+        }
         entries.add(mdef);
     }
 
     public void clearMappings() {
-        entries.clear();
+        if (entries != null) {
+            entries.clear();
+        }
     }
 
     public final Mapping getMapping(String pathInfo) {
+        if (entries == null) return null;
         for (MappingDescriptor entry: entries) {
             Mapping mapping = entry.match(pathInfo);
             if (mapping != null) {

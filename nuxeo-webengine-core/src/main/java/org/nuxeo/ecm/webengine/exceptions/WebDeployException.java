@@ -17,39 +17,24 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.scripting;
+package org.nuxeo.ecm.webengine.exceptions;
 
-import java.io.File;
-import java.io.IOException;
+import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public final class ScriptFile {
+public class WebDeployException extends WebException {
 
-    protected File file;
-    protected String ext;
+    private static final long serialVersionUID = 1L;
 
-
-    //TODO should remove the typed file name
-    public ScriptFile(File file) throws IOException {
-        String name = file.getName();
-        int p = name.lastIndexOf('.');
-        if (p > -1) {
-            ext = name.substring(p + 1);
-        } else { // by default use ftl
-            ext = "ftl";
-        }
-        this.file = file.getCanonicalFile();
+    public WebDeployException(String message) {
+        super (message);
     }
 
-    public File getFile() {
-        return file;
-    }
-
-    public String getExtension() {
-        return ext;
+    public WebDeployException(String message, Throwable cause) {
+        super (message, cause);
     }
 
 }

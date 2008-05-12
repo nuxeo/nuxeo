@@ -82,7 +82,7 @@ public class Scripting {
     public void exec(WebContext context, ScriptFile script, Map<String, Object> args) throws Exception {
         String ext = script.getExtension();
         if ("ftl".equals(ext)) {
-            context.render(script.getPath(), args);
+            context.render(script.getFile().getAbsolutePath(), args); //TODO
         } else {
             runScript(context, script, args);
         }
@@ -95,7 +95,7 @@ public class Scripting {
             exec(context, script);
         } else {
             WebRoot root = context.getRoot();
-            script = root.getScript(root.getDefaultPage(), null);
+            script = root.getScript(root.getDefaultPage());
             exec(context, script);
         }
     }
@@ -162,7 +162,7 @@ public class Scripting {
                 }
             } else {
                 throw new ScriptException(
-                        "No script engine was found for the file: " + script.getPath());
+                        "No script engine was found for the file: " + script.getFile().getName());
             }
         }
     }
