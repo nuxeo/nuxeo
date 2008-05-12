@@ -339,6 +339,17 @@ public interface WebContext {
     Object getProperty(String key);
 
     /**
+     * Get a context variable
+     * <p>
+     * Context variables can be used to share data between the scripts that are called in that request (and between java code too of course)
+     *
+     * @param key the variable key
+     * @param defaultValue the default value to use if the property doesn't exists
+     * @return the variable value or the given default value if none
+     */
+    Object getProperty(String key, Object defaultValue);
+
+    /**
      * Set a context variable
      * @param key the variable key
      * @param value the variable value

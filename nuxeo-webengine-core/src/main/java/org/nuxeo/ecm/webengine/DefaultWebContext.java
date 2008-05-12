@@ -270,6 +270,11 @@ public class DefaultWebContext implements WebContext {
         return vars.get(key);
     }
 
+    public Object getProperty(String key, Object defaultValue) {
+        Object value = vars.get(key);
+        return value == null ? defaultValue : value;
+    }
+
     public WebEngine getWebEngine() {
         return engine;
     }
