@@ -1,76 +1,73 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.webengine.config">
-
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)
     Default Objects
   </documentation>
-
-
-  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
-             point="binding">
-    <binding type="Document" objectId="WebObject" />
-    <binding type="WikiPage" objectId="WikiPage" />`
-    <binding type="Wiki" objectId="WikiSite" />
-  </extension>
-  
-  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
-             point="webObject">
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent" point="binding"><binding type="Document" objectId="WebObject"/><binding type="WikiPage" objectId="WikiPage"/>`
+    <binding type="Wiki" objectId="WikiSite"/></extension>
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent" point="webObject">
     <object id="WebObject">
       <actions>
         <action id="view" enabled="true">
-          <permission  expression="READ"/>
-          <category>VIEW</category>
+          <permission expression="READ"/>
         </action>
         <action id="print" enabled="true">
-          
-          <permission expression="READ" />
+          <permission expression="READ"/>
         </action>
         <action id="delete" enabled="true" handler="org.nuxeo.ecm.webengine.actions.DeleteActionHandler">
-          <permission expression="WRITE" />
+          <permission expression="WRITE"/>
         </action>
         <action id="update" enabled="true" script="common/update.groovy" handler="org.nuxeo.ecm.webengine.actions.UpateActionHandler">
-          <permission expression="WRITE" />
+          <permission expression="WRITE"/>
         </action>
         <action id="edit" enabled="true">
-          
-          <permission expression="WRITE" />
+          <permission expression="WRITE"/>
+          <category>tabview</category>
         </action>
         <action id="create" enabled="true" script="common/create.groovy" handler="org.nuxeo.ecm.webengine.actions.CreateActionHandler">
-          <permission expression="WRITE" />
+          <permission expression="WRITE"/>
         </action>
-        <action id="getfile" enabled="true"  handler="org.nuxeo.ecm.webengine.actions.GetFileActionHandler">
-          <permission expression="READ" />
+        <action id="getfile" enabled="true" handler="org.nuxeo.ecm.webengine.actions.GetFileActionHandler">
+          <permission expression="READ"/>
         </action>
         <action id="addfile" enabled="true" script="common/addfile.groovy" handler="org.nuxeo.ecm.webengine.actions.AddFileActionHandler">
-          
-          <permission expression="WRITE" />
+          <permission expression="WRITE"/>
         </action>
         <action id="deletefile" enabled="true" script="common/addfile.groovy" handler="org.nuxeo.ecm.webengine.actions.DeleteFileActionHandler">
-          <permission expression="WRITE" />
+          <permission expression="WRITE"/>
         </action>
-        
       </actions>
     </object>
-    
     <object id="WikiPage" extends="WebObject">
       <actions>
-        <action id="print" enabled="false"/>
-      </actions>      
-    </object>
-
-    <object id="WikiSite" extends="WebObject">
-      <actions>
-        
-        <action id="view" enabled="true" script="Wiki/redirectToFrontpage.groovy">
-          <permission  expression="READ"/>
+        <action id="view_content" enabled="true">
+          <permission expression="READ"/>
+          <category>tabview</category>
         </action>
-        <action id="listpages" enabled="true" script="Wiki/listpages.groovy">
-          <permission  expression="READ"/>
+        <action id="edit" enabled="true">
+          <permission expression="WRITE"/>
+          <category>tabview</category>
+        </action>
+        <action id="show_versions" enabled="true">
+          <permission expression="READ"/>
+          <category>tabview</category>
         </action>
       </actions>
     </object>
-  
+    <object id="WikiSite" extends="WebObject">
+      <actions>
+        <action id="view" enabled="true" script="Wiki/redirectToFrontpage.groovy">
+          <permission expression="READ"/>
+        </action>
+        <action id="listPages" enabled="true" script="Wiki/listpages.groovy">
+          <permission expression="READ"/>
+          <category>admin</category>
+        </action>
+        <action id="deletePage" enabled="true" script="Wiki/deletepage.groovy">
+          <permission expression="WRITE"/>
+        </action>
+      </actions>
+    </object>
   </extension>
-  
 </component>

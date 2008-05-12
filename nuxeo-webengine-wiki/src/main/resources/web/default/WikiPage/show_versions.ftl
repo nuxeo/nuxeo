@@ -22,8 +22,8 @@
     </tr>
     </#list>
     <tr>
-        <td><input type="radio" name="r1" value="${This.ref}"/></td>
-        <td><input type="radio" name="r2" value="${This.ref}"/></td>
+        <td><input type="radio" name="r1" value="${Document.ref}"/></td>
+        <td><input type="radio" name="r2" value="${Document.ref}"/></td>
         <td>current</td>
         <td>${Document.creator}</td>
         <td>${Document.modified?datetime}</td>
