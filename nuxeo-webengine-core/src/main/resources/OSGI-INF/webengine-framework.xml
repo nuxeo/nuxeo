@@ -18,6 +18,20 @@
       interface="org.nuxeo.ecm.webengine.util.FileChangeNotifier" />
   </service>
 
+  <extension-point name="rendering-template">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Expose the registration of freemarker templates (directives, methods or global shared variables)
+    This way custom tremplates can be registered into the freemarker engine from outside
+    <code>
+      <template name="wiki" class="org.nuxeo.ecm.platform.wiki.WikiTransformer"/>
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.rendering.RenderingTemplateDescriptor" />
+  </extension-point>
+
   <extension-point name="transformer">
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)

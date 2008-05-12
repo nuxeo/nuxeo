@@ -19,16 +19,10 @@
 
 package org.nuxeo.ecm.webengine.tests;
 
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
-import org.nuxeo.ecm.core.schema.XSDLoader;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.webengine.util.JSonHelper;
-import org.nuxeo.runtime.api.DefaultServiceProvider;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
