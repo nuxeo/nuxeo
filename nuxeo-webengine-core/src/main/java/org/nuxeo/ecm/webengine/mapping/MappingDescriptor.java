@@ -24,10 +24,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
+@XObject("mapping")
 public class MappingDescriptor {
 
     public static final Pattern DOLAR_PATTERN = Pattern.compile("\\$([0-9]+|[A-Za-z_][A-Za-z_0-9]*)");
@@ -36,16 +40,19 @@ public class MappingDescriptor {
     ReplacementSegment[] script;
     ReplacementSegment[] traversal;
 
+    @XNode("@pattern")
     public void setPattern(String pattern) {
         this.pattern = new PathPattern(pattern);
     }
 
+    @XNode("script")
     public void setScript(String script) {
         if (script != null) {
             this.script = parseReplacement(script);
         }
     }
 
+    @XNode("traversalPath")
     public void setTraversal(String traversal) {
         if (traversal != null) {
             this.traversal = parseReplacement(traversal);

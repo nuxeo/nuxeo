@@ -6,6 +6,12 @@
     Default Objects
   </documentation>
 
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="application">
+    <webapp id="nuxeo-web">
+      <roots>default</roots>
+    </webapp>
+  </extension>
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="binding">
@@ -50,10 +56,10 @@
   	</object>
 
     <object id="WikiSite" extends="Document">
-      <actions>        
+      <actions>
           <action id="getfile" script="Wiki/redirectToFrontpage.groovy">
           <permission  expression="READ"/>
-        </action>        
+        </action>
       </actions>
     </object>
 

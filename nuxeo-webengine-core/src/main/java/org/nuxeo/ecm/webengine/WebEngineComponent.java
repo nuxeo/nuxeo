@@ -47,6 +47,8 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.osgi.framework.Bundle;
 
+import freemarker.cache.WebappTemplateLoader;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -60,6 +62,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
     public static final String BINDING_XP = "binding";
     public static final String GUARD_XP = "guard"; // global guards
     public final static String RENDERING_TEMPLATE_XP = "rendering-template";
+    public final static String APPLICATION_XP = "application";
 
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
@@ -181,6 +184,9 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
             } catch (Exception e) {
                 throw new RuntimeServiceException("Deployment Error. Failed to contribute freemarker template extension: "+fed.name);
             }
+        } else if (extensionPoint.equals(APPLICATION_XP)) {
+            WebApplicationDescriptor desc = (WebApplicationDescriptor)contribution;
+            mgr.registerApplication(desc);
         }
 
     }
@@ -204,6 +210,9 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
         } else if (extensionPoint.equals(RENDERING_TEMPLATE_XP)) {
             RenderingTemplateDescriptor fed = (RenderingTemplateDescriptor)contribution;
             engine.setSharedVariable(fed.name, null);
+        } else if (extensionPoint.equals(APPLICATION_XP)) {
+            WebApplicationDescriptor desc = (WebApplicationDescriptor)contribution;
+            mgr.unregisterApplication(desc.id);
         }
     }
 

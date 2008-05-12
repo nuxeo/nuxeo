@@ -48,6 +48,8 @@ public class DefaultWebEngine implements WebEngine {
     protected final Map<String, ObjectDescriptor> objects; // instances for each document type
     protected final Map<String, String> bindings;
 
+    protected Map<String, WebApplication> apps;
+
     protected final Map<String,Object> env;
 
     public DefaultWebEngine(File root, RenderingEngine engine) {
@@ -58,6 +60,7 @@ public class DefaultWebEngine implements WebEngine {
         objects = new HashMap<String, ObjectDescriptor>();
         bindings = new HashMap<String, String>();
         this.env = new HashMap<String, Object>();
+        this.apps = new HashMap<String, WebApplication>();
     }
 
     public Scripting getScripting() {
@@ -192,6 +195,22 @@ public class DefaultWebEngine implements WebEngine {
 
     public Map<String, Object> getEnvironment() {
         return env;
+    }
+
+    public WebApplication getApplication(String name) {
+        return apps.get(name);
+    }
+
+    public void registerApplication(WebApplicationDescriptor desc) throws WebException {
+        apps.put(desc.id, new DefaultWebApplication(this, desc));
+    }
+
+    public void unregisterApplication(String id) {
+        apps.remove(id);
+    }
+
+    public WebApplication[]  getApplications() {
+        return apps.values().toArray(new WebApplication[apps.size()]);
     }
 
     class ObjectRegistry extends DependencyTree<String, ObjectDescriptor> {

@@ -40,6 +40,7 @@ import org.nuxeo.ecm.webengine.DefaultDocumentResolver;
 import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.DocumentResolver;
 import org.nuxeo.ecm.webengine.RequestHandler;
+import org.nuxeo.ecm.webengine.WebApplication;
 import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
@@ -70,6 +71,7 @@ public class WebServlet extends HttpServlet {
 
     private Scripting scripting;
     private WebEngine engine;
+    private WebApplication app;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -82,6 +84,21 @@ public class WebServlet extends HttpServlet {
         env.put("version", "1.0.0");
         RenderingEngine renderingEngine = scripting.getRenderingEngine();
         renderingEngine.setSharedVariable("env", env);
+        String webappId = config.getInitParameter("webapp");
+        if (webappId == null) {
+            webappId = "nuxeo-web"; // the default webapp
+        }
+        app = engine.getApplication(webappId);
+        if (app == null) {
+            throw new ServletException("Cannot initialize the webengine servlet: no web application found with ID "+webappId);
+        }
+    }
+
+    /**
+     * @return the web app bound to this servlet
+     */
+    public WebApplication getApplication() {
+        return app;
     }
 
     @Override

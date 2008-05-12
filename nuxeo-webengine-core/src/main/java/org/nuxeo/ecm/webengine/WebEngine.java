@@ -68,4 +68,13 @@ public interface WebEngine {
     void reset();
 
     Map<String, Object> getEnvironment();
+
+    WebApplication getApplication(String name);
+
+    public void registerApplication(WebApplicationDescriptor desc) throws WebException;
+
+    public void unregisterApplication(String id);
+
+    public WebApplication[]  getApplications();
+
 }
