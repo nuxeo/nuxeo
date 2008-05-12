@@ -58,6 +58,10 @@ public final class JSUtils {
                 // Can happen on very large files (> 500K) with JDK 5
                 log.error("Could not compress javascript source.");
                 return source;
+            } catch (NoSuchMethodError e) {
+                // custom_rhino.jar is not installed.
+                log.info("Could not compress javascript source. custom_rhino.jar is probably not installed.", e);
+                return source;
             }
         }
     }
