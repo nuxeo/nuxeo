@@ -399,7 +399,7 @@
 							var tr = document.createElement('tr');
 							if (i % 2 && p.striped) tr.className = 'erow';
 							
-							if (row.id) tr.id = 'row' + row.id;
+							if (row.id) tr.id = row.id;
 							
 							//add cell
 							$('thead tr:first th',g.hDiv).each
