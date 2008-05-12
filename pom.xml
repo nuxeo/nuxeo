@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.nuxeo</groupId>
+  <artifactId>nuxeo-addons-list</artifactId>
+  <name>Nuxeo Addons list</name>
+  <packaging>pom</packaging>
+  <description>Nuxeo Addons list</description>
+  <version>1.0</version>
+
+  <scm>
+    <connection>scm:hg:https://hg.nuxeo.org/addons</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/addons</developerConnection>
+    <url>https://hg.nuxeo.org/addons</url>
+  </scm>
+
+  <modules>
+    <module>nuxeo-http-client</module>
+    <module>nuxeo-platform-audit-web-access</module>
+    <module>nuxeo-platform-imaging</module>
+    <module>nuxeo-platform-login</module>
+    <!--
+    <module>nuxeo-platform-intuition</module>
+    -->
+    <module>nuxeo-platform-metadataext</module>
+    <module>nuxeo-platform-restPack</module>
+    <module>nuxeo-platform-seam-pdf</module>
+    <module>nuxeo-platform-shell</module>
+    <module>nuxeo-platform-transform-plugins</module>
+    <module>nuxeo-platform-userworkspace</module>
+    <module>nuxeo-platform-virtualNavigation</module>
+    <module>nuxeo-platform-webdav-server</module>
+    <module>nuxeo-portlets</module>
+    <module>nuxeo-samples</module>
+  </modules>
+
+  <profiles>
+    <profile>
+      <id>5.2</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
+        <module>nuxeo-platform-webwidgets-providers</module>
+        <module>nuxeo-webengine</module>
+      </modules>
+    </profile>
+  </profiles>
+
+</project>
