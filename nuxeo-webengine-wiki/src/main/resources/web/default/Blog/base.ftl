@@ -13,7 +13,7 @@
 
 <script>
 $.fn.search = function() {
-	return This.focus(function() {
+	return $(this)focus(function() {
 		if( This.value == This.defaultValue ) {
 			This.value = "";
 		}

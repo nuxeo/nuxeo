@@ -56,7 +56,7 @@
     <object id="WikiPage" extends="WebObject">
       <actions>
         <action id="print" enabled="false"/>
-      </actions>
+      </actions>      
     </object>
 
     <object id="WikiSite" extends="WebObject">
@@ -65,7 +65,9 @@
         <action id="view" enabled="true" script="Wiki/redirectToFrontpage.groovy">
           <permission  expression="READ"/>
         </action>
-        
+        <action id="listpages" enabled="true" script="Wiki/listpages.groovy">
+          <permission  expression="READ"/>
+        </action>
       </actions>
     </object>
   

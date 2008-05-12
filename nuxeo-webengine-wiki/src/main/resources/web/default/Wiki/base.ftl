@@ -16,9 +16,9 @@
 <script>
 
 $.fn.search = function() {
-	return This.focus(function() {
-		if( This.value == This.defaultValue ) {
-			This.value = "";
+	return $(this).focus(function() {
+		if( $(this).value == This.defaultValue ) {
+			$(this).value = "";
 		}
 	}).blur(function() {
 		if( !This.value.length ) {
@@ -26,7 +26,7 @@ $.fn.search = function() {
 		}
 	});
 };
-$("#s").search();
+$("#q").search();
 
 </script>
 
