@@ -18,10 +18,14 @@
   <extension-point name="configuration">
 
     <documentation>
-      Type manager configuration
-      <p>
-      This includes prefetching options and other global configuration regarding type management
-      </p>
+      Type manager configuration.
+      <p/>
+      For now this contains default prefetch options. For example:
+      <pre>
+        <configuration>
+          <prefetch>common.icon, dc:title, dc:modified, dc:contributors, dc:creator</prefetch>
+        </configuration>
+      </pre>
     </documentation>
 
     <object
@@ -38,6 +42,9 @@
       classes and schemas with java interfaces. Document types may
       also contains several facets that define a behavior.
       <p/>
+      The prefetch element defines what fields are synchronously
+      indexed, and are made available in search results listings.
+      <p/>
       A doctype XML extension may contain several 'doctype' elements.
       A doctype element may look like this:
 
@@ -49,6 +56,7 @@
           <schema name="uid" />
           <facet name="Downloadable" />
           <facet name="Versionable" />
+          <prefetch>dc:title, dc:modified, uid.uid</prefetch>
         </doctype>
       </pre>
     </documentation>

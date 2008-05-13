@@ -60,9 +60,6 @@ public class TypeRef<T extends Type> implements Serializable {
         this.name = name;
     }
 
-    /**
-     * @return the name.
-     */
     public String getName() {
         return name;
     }

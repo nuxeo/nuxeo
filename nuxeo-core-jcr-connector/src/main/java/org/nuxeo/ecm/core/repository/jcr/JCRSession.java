@@ -44,7 +44,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.core.XASessionImpl;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.Repository;
@@ -193,10 +192,10 @@ public class JCRSession implements Session {
     public Query createQuery(String query, Query.Type qType, String... params)
             throws QueryException {
         if (Query.Type.NXQL == qType) {
-            return new org.nuxeo.ecm.core.repository.jcr.JCRQuery(this, query);
+            return new JCRQuery(this, query);
         }
         if (Query.Type.XPATH == qType) {
-            return new org.nuxeo.ecm.core.repository.jcr.JCRQueryXPath(this, query, params);
+            return new JCRQueryXPath(this, query, params);
         }
 
         throw new UnsupportedQueryTypeException(qType);
@@ -387,21 +386,14 @@ public class JCRSession implements Session {
 
     protected NodeIterator findProxyNodes(Document doc, Document folder)
             throws DocumentException {
+        JCRName attribute;
+        if (doc.isVersion()) {
+            attribute = NodeConstants.ECM_REF_FROZEN_NODE;
+        } else {
+            attribute = NodeConstants.ECM_REF_UUID;
+        }
+        String uuid = doc.getUUID();
         try {
-            JCRName attribute;
-            String value;
-            if (doc.isVersion()) {
-                attribute = NodeConstants.ECM_REF_FROZEN_NODE;
-                value = doc.getUUID();
-            } else if (doc.isProxy()) {
-                attribute = NodeConstants.ECM_REF_UUID;
-                value = ((JCRDocument) doc).getNode().getProperty(
-                        NodeConstants.ECM_REF_UUID.rawname).getString();
-
-            } else {
-                attribute = NodeConstants.ECM_REF_UUID;
-                value = doc.getUUID();
-            }
             String queryString;
             if (folder == null) {
                 queryString = "/";
@@ -412,14 +404,14 @@ public class JCRSession implements Session {
             }
             queryString += "/element(*, " +
                     NodeConstants.ECM_NT_DOCUMENT_PROXY.rawname + ")[@" +
-                    attribute.rawname + " = '" + value + "']";
+                    attribute.rawname + " = '" + uuid + "']";
             javax.jcr.query.Query query = session.getWorkspace().getQueryManager().createQuery(
                     queryString, javax.jcr.query.Query.XPATH);
             QueryResult result = query.execute();
             return result.getNodes();
         } catch (RepositoryException e) {
             throw new DocumentException("Failed to find proxy nodes for " +
-                    doc.getUUID(), e);
+                    uuid, e);
         }
     }
 

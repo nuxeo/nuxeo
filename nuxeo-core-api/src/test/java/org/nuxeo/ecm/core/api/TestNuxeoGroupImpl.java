@@ -19,12 +19,12 @@
 
 package org.nuxeo.ecm.core.api;
 
+import java.util.Arrays;
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
-
-import java.util.List;
-import java.util.Arrays;
 
 public class TestNuxeoGroupImpl extends TestCase {
 
