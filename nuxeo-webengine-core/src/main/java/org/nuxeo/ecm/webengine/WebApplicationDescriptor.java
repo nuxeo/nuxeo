@@ -20,9 +20,9 @@
 package org.nuxeo.ecm.webengine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -129,12 +129,16 @@ public class WebApplicationDescriptor {
         this.roots = roots;
     }
 
-    @XNode("roots")
-    public void setRootsFromString(String rootsString) {
-        if (rootsString == null || rootsString.length() == 0) {
+    @XNodeList(value="roots/root", type=RootDescriptor[].class, componentType=RootDescriptor.class)
+    public void setRoots(RootDescriptor[] descriptors) {
+        if (descriptors == null || descriptors.length == 0) {
             roots = null;
         } else {
-            roots = StringUtils.split(rootsString, ',', true);
+            Arrays.sort(descriptors);
+            roots = new String[descriptors.length];
+            for (int i=0; i<descriptors.length; i++) {
+                roots[i] = descriptors[i].path;
+            }
         }
     }
 

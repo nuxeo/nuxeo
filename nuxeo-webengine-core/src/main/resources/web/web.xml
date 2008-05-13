@@ -9,7 +9,9 @@
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="application">
     <webapp id="nuxeo-web">
-      <roots>default</roots>
+      <roots>
+        <root priority="0">default</root>
+      </roots>
     </webapp>
   </extension>
 

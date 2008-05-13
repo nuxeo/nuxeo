@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -61,6 +62,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
     public static final String GUARD_XP = "guard"; // global guards
     public final static String RENDERING_TEMPLATE_XP = "rendering-template";
     public final static String APPLICATION_XP = "application";
+    public final static String RESOURCE_XP = "resource";
 
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
@@ -135,25 +137,29 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
         ctx = null;
     }
 
-    private static void deployWebDir(Bundle bundle, File root) throws Exception {
+    private static void deployWebDir(Bundle bundle, File root) throws URISyntaxException, IOException {
+        deployResources(bundle, "web", root);
+    }
+
+    private static void deployResources(Bundle bundle, String path, File root) throws URISyntaxException, IOException {
         root.mkdirs(); // create root dir if not already exists
         // copy web dir located in the bundle jar into this dir
         //TODO: getLocation() may not work with some OSGi impl.
         String location = bundle.getLocation();
         if (location.startsWith("file:")) {
             if (location.endsWith(".jar")) {
-                ZipUtils.unzip("web", new URL(location), root);
+                ZipUtils.unzip(path, new URL(location), root);
             } else {
                 File file = new File(new URL(location).toURI());
-                file = new File(file, "web");
+                file = new File(file, path);
                 FileUtils.copy(file.listFiles(), root);
             }
         } else {
             if (location.endsWith(".jar")) {
-                ZipUtils.unzip("web", new File(location), root);
+                ZipUtils.unzip(path, new File(location), root);
             } else {
                 File file = new File(location);
-                file = new File(file, "web");
+                file = new File(file, path);
                 FileUtils.copy(file.listFiles(), root);
             }
         }
@@ -185,6 +191,15 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
         } else if (extensionPoint.equals(APPLICATION_XP)) {
             WebApplicationDescriptor desc = (WebApplicationDescriptor)contribution;
             mgr.registerApplication(desc);
+        } else if (extensionPoint.equals(RESOURCE_XP)) {
+            ResourceDescriptor rd = (ResourceDescriptor)contribution;
+            if (rd.guard  != null) {
+                if (new File(mgr.getRootDirectory(), rd.guard).exists()) {
+                    return; // avoid redeploying resource
+                }
+            }
+            File target = new File(mgr.getRootDirectory(), rd.target);
+            deployResources(contributor.getRuntimeContext().getBundle(), rd.path, target);
         }
 
     }
@@ -211,6 +226,8 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
         } else if (extensionPoint.equals(APPLICATION_XP)) {
             WebApplicationDescriptor desc = (WebApplicationDescriptor)contribution;
             mgr.unregisterApplication(desc.id);
+        } else if (extensionPoint.equals(RESOURCE_XP)) {
+            // do nothing
         }
     }
 

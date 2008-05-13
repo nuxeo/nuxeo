@@ -310,11 +310,13 @@ public class DefaultWebContext implements WebContext {
                 map = Scripting.convertPythonMap((PyDictionary) ctx);
             }
         }
-        Bindings bindings = createBindings(map);
         try {
+            Bindings bindings = createBindings(map);
             engine.getScripting().getRenderingEngine().render(template, bindings, response.getWriter());
         } catch (Exception e) {
             throw new WebException("Failed to render template: "+template, e);
+        } finally {
+
         }
     }
 

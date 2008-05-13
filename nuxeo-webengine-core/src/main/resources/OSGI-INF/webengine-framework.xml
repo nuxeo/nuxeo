@@ -101,7 +101,10 @@
     Register global guards. Guards are used to define permissions
     <code>
       <webapp id="nuxeo-web">
-        <roots>default, wiki</roots>
+        <roots>
+          <root priority="0">default</root>
+          <root priority="1">wiki</root>
+        </roots>
         <documentResolver>org.MyDocumentResolver</documentResolver>
         <errorPage>error.ftl</errorPage>
         <indexPage>index.ftl</indexPage>
@@ -121,6 +124,20 @@
 
     <object
       class="org.nuxeo.ecm.webengine.WebApplicationDescriptor" />
+  </extension-point>
+
+  <extension-point name="resource">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Deploy external files as web resources. Can be used by client plugins to deploy
+    web files into the web directory.
+    <code>
+      <resource path="/web" target="/"/>
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.ResourceDescriptor" />
   </extension-point>
 
 </component>
