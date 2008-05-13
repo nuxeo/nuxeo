@@ -301,6 +301,11 @@ public class MimetypeRegistryService extends DefaultComponent implements
             throws MimetypeNotFoundException, MimetypeDetectionException {
         File file = null;
         try {
+            // make sure the blob can be read several times without exhausting its
+            // binary source
+            if (!blob.isPersistent()) {
+                blob = blob.persist();
+            }
             file = File.createTempFile("NXMimetypeBean", ".bin");
             FileUtils.copyToFile(blob.getStream(), file);
             return getMimetypeFromFile(file);
