@@ -22,7 +22,6 @@ package org.nuxeo.ecm.webapp.clipboard;
 import java.util.List;
 
 import javax.annotation.security.PermitAll;
-import javax.ejb.Local;
 import javax.ejb.Remove;
 
 import org.jboss.seam.annotations.Destroy;
@@ -39,7 +38,6 @@ import org.nuxeo.ecm.webapp.documentsLists.DocumentsListDescriptor;
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
-@Local
 public interface ClipboardActions {
 
     /**
@@ -90,6 +88,8 @@ public interface ClipboardActions {
      */
     String pasteDocumentList(List<DocumentModel> docPaste) throws ClientException;
 
+    String pasteDocumentListInside(List<DocumentModel> docPaste, String docId) throws ClientException;
+
     /**
      * Pastes the content of the list listName into the current context document.
      *
@@ -98,8 +98,12 @@ public interface ClipboardActions {
      */
     String pasteDocumentList(String listName) throws ClientException;
 
+    String pasteDocumentListInside(String listName, String docId) throws ClientException;
+
 
     String pasteClipboard() throws ClientException;
+
+    String pasteClipboardInside(String docId) throws ClientException;
 
     /**
      * Removes the component.
@@ -140,6 +144,8 @@ public interface ClipboardActions {
      */
     boolean getCanPasteFromClipboard() throws ClientException;
 
+    boolean getCanPasteFromClipboardInside(DocumentModel document) throws ClientException;
+
     /**
      * Checks if the content of a given workList can be pasted.
      * <p>
@@ -151,6 +157,8 @@ public interface ClipboardActions {
      * @throws ClientException
      */
     boolean getCanPaste(String listName) throws ClientException;
+
+    boolean getCanPasteInside(String listName, DocumentModel document) throws ClientException;
 
     /**
      * Checks if there are selected items that can be copied into the current Worklist.
@@ -185,6 +193,8 @@ public interface ClipboardActions {
     void putSelectionInClipboard();
 
     void putSelectionInDefaultWorkList();
+
+    public void putInClipboard(String docId) throws ClientException;
 
     /**
      * Retries contents of current WorkList.

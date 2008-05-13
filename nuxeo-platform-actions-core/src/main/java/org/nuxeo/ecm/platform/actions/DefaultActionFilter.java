@@ -246,7 +246,7 @@ public class DefaultActionFilter implements ActionFilter {
     protected final boolean checkConditions(Action action,
             ActionContext context, String[] conditions) {
         DocumentModel doc = context.getCurrentDocument();
-        NuxeoPrincipal currentPrincipal = context.getCurrentPrincipal();
+        NuxeoPrincipal currentPrincipal = context.getCurrentPrincipal();        
 
         for (String condition : conditions) {
             try {
@@ -254,7 +254,11 @@ public class DefaultActionFilter implements ActionFilter {
                 Context ctx = new Context();
                 ctx.put("document", doc);
                 ctx.put("principal", currentPrincipal);
-
+                // get custom context from ActionContext
+                for (String k : context.keySet())
+                {
+                	ctx.put(k, context.get(k));
+                }                
                 ctx.put("SeamContext", context.get("SeamContext"));
 
                 boolean eval = (Boolean) exp.eval(ctx);

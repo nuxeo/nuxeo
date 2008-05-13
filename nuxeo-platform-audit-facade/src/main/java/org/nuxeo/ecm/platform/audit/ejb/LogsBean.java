@@ -68,6 +68,7 @@ import org.nuxeo.runtime.api.Framework;
  * :XXX: http://jira.nuxeo.org/browse/NXP-514
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  */
 @Stateless
 @Local(LogsLocal.class)
@@ -79,7 +80,7 @@ public class LogsBean implements Logs {
     private static final Log log = LogFactory.getLog(LogsBean.class);
 
     @PersistenceContext(unitName = "NXAudit")
-    private transient EntityManager em;
+    private EntityManager em;
 
     public void addLogEntries(List<LogEntry> entries) throws AuditException {
         try {
@@ -107,6 +108,7 @@ public class LogsBean implements Logs {
                 returned.add(getLogEntryFactory().createLogEntryBase(entry));
             }
             return returned;
+
         } catch (Exception e) {
             throw new AuditException(e);
         }
@@ -172,6 +174,7 @@ public class LogsBean implements Logs {
             }
 
             return returned;
+
         } catch (Exception e) {
             throw new AuditException(e);
         }
@@ -205,16 +208,37 @@ public class LogsBean implements Logs {
         return factory.getLogEntryClass();
     }
 
+    public List<LogEntry> nativeQueryLogs(String whereClause,
+            int pageNb, int pageSize) throws AuditException {
+
+        Class<LogEntry> klass = getLogEntryClass();
+        List<LogEntry> results = new ArrayList<LogEntry>();
+
+        Query query = em.createQuery("from "
+                + klass.getSimpleName()
+                + " log where " + whereClause);
+        if (pageNb > 1) {
+            query.setFirstResult((pageNb - 1) * pageSize + 1);
+        }
+
+        query.setMaxResults(pageSize);
+        results.addAll(query.getResultList());
+
+        List<LogEntry> returned = new ArrayList<LogEntry>();
+        for (LogEntry entry : results) {
+            returned.add(getLogEntryFactory().createLogEntryBase(entry));
+        }
+        return returned;
+    }
+
     @SuppressWarnings("unchecked")
-    public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
+    public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,String category,String path,
             int pageNb, int pageSize) throws AuditException {
 
         // :FIXME: This is not working remotelty since the LogEntryImpl returned
         // is not within the api package.
 
-        if (eventIds == null || eventIds.length == 0) {
-            throw new AuditException("You must give a not null eventId");
-        }
+
         Class<LogEntry> klass = getLogEntryClass();
 
         List<LogEntry> results = new ArrayList<LogEntry>();
@@ -227,23 +251,56 @@ public class LogsBean implements Logs {
                     + dateRange, aqe);
         }
 
-        // :FIXME: Can't append to find the damned right syntax to build a
-        // dynamic list for the IN statement.
-        for (String eventId : eventIds) {
-            Query query = em.createQuery("from "
-                    + klass.getSimpleName()
-                    + " log where log.eventId=:eventId" // :FIXME:
-                    + " AND log.eventDate >= :date"
-                    + " ORDER BY log.eventDate DESC");
-            query.setParameter("eventId", eventId);
-            query.setParameter("date", limit);
+        String inClause=null;
 
-            if (pageNb > 1) {
-                query.setFirstResult((pageNb - 1) * pageSize + 1);
+        StringBuffer queryString=  new StringBuffer();
+
+        queryString.append("from " + klass.getSimpleName() + " log where ");
+
+
+        Query query=null;
+        if (eventIds!=null)
+        {
+            inClause="(";
+            for (String eventId : eventIds)
+            {
+                inClause=inClause + "'" + eventId + "',";
             }
-            query.setMaxResults(pageSize);
-            results.addAll(query.getResultList());
+            inClause=inClause.substring(0,inClause.length()-1);
+            inClause=inClause+")";
+
+            queryString.append(" log.eventId IN " +inClause);
+            queryString.append(" AND ");
         }
+        if (category!=null && !"".equals(category.trim()))
+        {
+            queryString.append(" log.category =:category " );
+            queryString.append(" AND ");
+        }
+
+        if (path!=null && !"".equals(path.trim()))
+        {
+            queryString.append(" log.docPath LIKE '" + path + "%'" );
+            queryString.append(" AND ");
+        }
+
+        queryString.append(" log.eventDate >= :limit");
+        queryString.append(" ORDER BY log.eventDate DESC");
+
+        query= em.createQuery(queryString.toString());
+
+        if (category!=null)
+        {
+            query.setParameter("category", category);
+        }
+        query.setParameter("limit", limit);
+
+
+        if (pageNb > 1) {
+            query.setFirstResult((pageNb - 1) * pageSize + 1);
+        }
+        query.setMaxResults(pageSize);
+        results.addAll(query.getResultList());
 
         List<LogEntry> returned = new ArrayList<LogEntry>();
         for (LogEntry entry : results) {
@@ -263,6 +320,7 @@ public class LogsBean implements Logs {
         if (eventIds == null || eventIds.length == 0) {
             throw new AuditException("You must give a not null eventId");
         }
+        log.debug("queryLogs() whereClause=" + eventIds);
         Class<LogEntry> klass = getLogEntryClass();
 
         List<LogEntry> results = new ArrayList<LogEntry>();
@@ -275,20 +333,21 @@ public class LogsBean implements Logs {
                     + dateRange, aqe);
         }
 
-        // :FIXME: Can't append to find the damned right syntax to build a
-        // dynamic list for the IN statement.
-        for (String eventId : eventIds) {
-            Query query = em.createQuery("from "
-                    + klass.getSimpleName()
-                    + " log where log.eventId=:eventId" // :FIXME:
-                    + " AND log.eventDate >= :date"
-                    + " ORDER BY log.eventDate DESC");
-            query.setParameter("eventId", eventId);
-            query.setParameter("date", limit);
-
-            results.addAll(query.getResultList());
+        String inClause="(";
+        for (String eventId : eventIds)
+        {
+            inClause=inClause + "'" + eventId + "',";
         }
+        inClause=inClause.substring(0,inClause.length()-1);
+        inClause=inClause+")";
+        Query query = em.createQuery("from "
+                + klass.getSimpleName()
+                + " log where log.eventId in " +inClause
+                + " AND log.eventDate >= :limit"
+                + " ORDER BY log.eventDate DESC");
+        query.setParameter("limit", limit);
 
+        results.addAll(query.getResultList());
         List<LogEntry> returned = new ArrayList<LogEntry>();
         for (LogEntry entry : results) {
             returned.add(getLogEntryFactory().createLogEntryBase(entry));
@@ -324,6 +383,7 @@ public class LogsBean implements Logs {
         // XXX : TODO
         removeOldEntriesBeforeSync("documentCreated", path);
         // now fetch from the core
+        CoreSession session;
         RepositoryManager rm;
         try {
             rm = Framework.getService(RepositoryManager.class);
@@ -336,7 +396,6 @@ public class LogsBean implements Logs {
             throw new AuditException("Can not find repository");
         }
 
-        CoreSession session;
         try {
             session = repo.open();
         } catch (Exception e1) {
@@ -351,6 +410,7 @@ public class LogsBean implements Logs {
 
     protected long syncNode(CoreSession session, DocumentModel node,
             boolean recurs) throws ClientException, AuditException {
+        long nbSynchedEntries = 0;
 
         List<LogEntry> entries = new ArrayList<LogEntry>();
         List<DocumentModel> folderishChildren = new ArrayList<DocumentModel>();
@@ -367,7 +427,7 @@ public class LogsBean implements Logs {
 
         // store entries
         addLogEntries(entries);
-        long nbSynchedEntries = entries.size();
+        nbSynchedEntries += entries.size();
         node = null;
         entries = null;
 

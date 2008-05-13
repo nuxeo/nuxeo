@@ -54,6 +54,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.RequestParameter;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.WebRemote;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.core.FacesMessages;
 import org.jboss.seam.core.LocaleSelector;
@@ -140,12 +141,10 @@ public class ClipboardActionsBean extends InputController implements
 
     public void putSelectionInWorkList(Boolean forceAppend) {
         canEditSelectedDocs = null;
-        if (!documentsListsManager.isWorkingListEmpty(
-                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
+        if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
             putSelectionInWorkList(
-                    documentsListsManager.getWorkingList(
-                            DocumentsListsManager.CURRENT_DOCUMENT_SELECTION),
-                            forceAppend);
+                    documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION),
+                    forceAppend);
             autoSelectCurrentList(DocumentsListsManager.DEFAULT_WORKING_LIST);
         } else {
             log.debug("No selectable Documents in context to process copy on...");
@@ -159,10 +158,8 @@ public class ClipboardActionsBean extends InputController implements
 
     public void putSelectionInDefaultWorkList() {
         canEditSelectedDocs = null;
-        if (!documentsListsManager.isWorkingListEmpty(
-                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
-            List<DocumentModel> docsList = documentsListsManager.getWorkingList(
-                    DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
+            List<DocumentModel> docsList = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
             Object[] params = { docsList.size() };
             facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
                     + resourcesAccessor.getMessages().get("n_copied_docs"),
@@ -179,12 +176,24 @@ public class ClipboardActionsBean extends InputController implements
         log.debug("add to worklist processed...");
     }
 
+    @WebRemote
+    public void putInClipboard(String docId) throws ClientException {
+        DocumentModel doc = documentManager.getDocument(new IdRef(docId));
+        documentsListsManager.addToWorkingList(DocumentsListsManager.CLIPBOARD,
+                doc);
+        Object[] params = { 1 };
+        FacesMessage message = FacesMessages.createFacesMessage(
+                FacesMessage.SEVERITY_INFO, "#0 "
+                        + resourcesAccessor.getMessages().get("n_copied_docs"),
+                params);
+        facesMessages.add(message);
+        autoSelectCurrentList(DocumentsListsManager.CLIPBOARD);
+    }
+
     public void putSelectionInClipboard() {
         canEditSelectedDocs = null;
-        if (!documentsListsManager.isWorkingListEmpty(
-                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
-            List<DocumentModel> docsList = documentsListsManager.getWorkingList(
-                    DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        if (!documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION)) {
+            List<DocumentModel> docsList = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
             Object[] params = { docsList.size() };
 
             FacesMessage message = FacesMessages.createFacesMessage(
@@ -277,6 +286,10 @@ public class ClipboardActionsBean extends InputController implements
         return pasteDocumentList(documentsListsManager.getWorkingList(listName));
     }
 
+    public String pasteDocumentListInside(String listName, String docId) throws ClientException {
+        return pasteDocumentListInside(documentsListsManager.getWorkingList(listName), docId);
+    }
+
     public String pasteDocumentList(List<DocumentModel> docPaste)
             throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -292,6 +305,29 @@ public class ClipboardActionsBean extends InputController implements
             eventManager.raiseEventsOnDocumentSelected(currentDocument);
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
                     currentDocument);
+
+            log.debug("Elements pasted and created into the backend...");
+        } else {
+            log.debug("No docPaste to process paste on...");
+        }
+
+        return computeOutcome(PASTE_OUTCOME);
+    }
+
+    public String pasteDocumentListInside(List<DocumentModel> docPaste, String docId) throws ClientException {
+        DocumentModel targetDoc = documentManager.getDocument(new IdRef(docId));
+        if (null != docPaste) {
+            List<DocumentModel> newDocs = recreateDocumentsWithNewParent(
+                    targetDoc, docPaste);
+
+            Object[] params = { newDocs.size() };
+            facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+                    + resourcesAccessor.getMessages().get("n_pasted_docs"),
+                    params);
+
+            eventManager.raiseEventsOnDocumentSelected(targetDoc);
+            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                    targetDoc);
 
             log.debug("Elements pasted and created into the backend...");
         } else {
@@ -370,6 +406,12 @@ public class ClipboardActionsBean extends InputController implements
     public String pasteClipboard() throws ClientException {
         pasteDocumentList(DocumentsListsManager.CLIPBOARD);
         returnToPreviouslySelectedList();
+        return computeOutcome(PASTE_OUTCOME);
+    }
+
+    @WebRemote
+    public String pasteClipboardInside(String docId) throws ClientException {
+        pasteDocumentListInside(DocumentsListsManager.CLIPBOARD, docId);
         return computeOutcome(PASTE_OUTCOME);
     }
 
@@ -458,7 +500,6 @@ public class ClipboardActionsBean extends InputController implements
         }
         return publishSpaces.contains(container.getType());
     }
-
 
     @Destroy
     @Remove
@@ -593,8 +634,7 @@ public class ClipboardActionsBean extends InputController implements
         if (navigationContext.getCurrentDocument() == null) {
             return false;
         }
-        return !documentsListsManager.isWorkingListEmpty(
-                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        return !documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
     }
 
     /**
@@ -629,6 +669,30 @@ public class ClipboardActionsBean extends InputController implements
             // String pasteTypeName = clipboard.getClipboardDocumentType();
             List<String> pasteTypesName = documentsListsManager.getWorkingListTypes(listName);
             Collection<Type> allowed = typeManager.getAllowedSubTypes(pasteTarget.getType());
+            for (Type allowedType : allowed) {
+                if (pasteTypesName.contains(allowedType.getId())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    public boolean getCanPasteInside(String listName, DocumentModel document) throws ClientException {
+        if (documentsListsManager.isWorkingListEmpty(listName)
+                || document == null) {
+            return false;
+        }
+
+        if (!documentManager.hasPermission(document.getRef(),
+                SecurityConstants.ADD_CHILDREN)) {
+            return false;
+        } else {
+            // filter on allowed content types
+            // see if at least one doc can be pasted
+            // String pasteTypeName = clipboard.getClipboardDocumentType();
+            List<String> pasteTypesName = documentsListsManager.getWorkingListTypes(listName);
+            Collection<Type> allowed = typeManager.getAllowedSubTypes(document.getType());
             for (Type allowedType : allowed) {
                 if (pasteTypesName.contains(allowedType.getId())) {
                     return true;
@@ -698,6 +762,10 @@ public class ClipboardActionsBean extends InputController implements
 
     public boolean getCanPasteFromClipboard() throws ClientException {
         return getCanPaste(DocumentsListsManager.CLIPBOARD);
+    }
+
+    public boolean getCanPasteFromClipboardInside(DocumentModel document) throws ClientException {
+        return getCanPasteInside(DocumentsListsManager.CLIPBOARD, document);
     }
 
     // Misc internal function for Ziping Clipboard
@@ -848,7 +916,8 @@ public class ClipboardActionsBean extends InputController implements
                     if (tryCount == 0) {
                         entry = new ZipEntry(path + fileName);
                     } else {
-                        entry = new ZipEntry(path + fileName + '(' + tryCount + ')');
+                        entry = new ZipEntry(path + fileName + '(' + tryCount
+                                + ')');
                     }
                     out.putNextEntry(entry);
                     break;
@@ -944,8 +1013,8 @@ public class ClipboardActionsBean extends InputController implements
     }
 
     public List<Action> getActionsForSelection() {
-        return webActions.getUnfiltredActionsList(
-                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION + "_LIST");
+        return webActions.getUnfiltredActionsList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION
+                + "_LIST");
     }
 
     private void autoSelectCurrentList(String listName) {
@@ -1003,12 +1072,12 @@ public class ClipboardActionsBean extends InputController implements
     }
 
     public String getCacheKey() {
-        return getCurrentSelectedListName() +  "::" + localeSelector.getLocaleString();
+        return getCurrentSelectedListName() + "::"
+                + localeSelector.getLocaleString();
     }
 
     public boolean isCacheEnabledForSelection() {
-        return documentsListsManager.isWorkingListEmpty(
-                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        return documentsListsManager.isWorkingListEmpty(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
     }
 
 }

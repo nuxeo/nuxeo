@@ -28,13 +28,13 @@ import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.jws.WebMethod;
+import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import javax.jws.soap.SOAPBinding.Style;
 
 import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
@@ -46,6 +46,7 @@ import org.nuxeo.ecm.platform.ws.AbstractNuxeoWebService;
  * Audit Web Service bean.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
 @Stateless
@@ -69,8 +70,8 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
     }
 
     @WebMethod
-    public ModifiedDocumentDescriptor[] listModifiedDocuments(String sessionId,
-            String dateRangeQuery) throws AuditException {
+    public ModifiedDocumentDescriptor[] listModifiedDocuments(@WebParam(name = "sessionId") String sessionId,
+            @WebParam(name = "dataRangeQuery")String dateRangeQuery) throws AuditException {
 
         try {
             initSession(sessionId);
@@ -78,19 +79,19 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
             throw new AuditException(ce.getMessage(), ce);
         }
 
-        String[] eventIds = new String[] { DocumentEventTypes.DOCUMENT_UPDATED,
-                DocumentEventTypes.DOCUMENT_CREATED,
-                DocumentEventTypes.DOCUMENT_REMOVED };
-
         BatchInfo batchInfo = BatchHelper.getBatchInfo(sessionId, dateRangeQuery);
 
-        List<LogEntry> logEntries = getLogsBean().queryLogsByPage(eventIds,
-                batchInfo.getPageDateRange(), batchInfo.getNextPage(), batchInfo.getPageSize());
-        if (logEntries.size() < batchInfo.getPageSize()) {
+
+        List<LogEntry> logEntries = getLogsBean().queryLogsByPage(null,
+                batchInfo.getPageDateRange(), "eventDocumentCategory",null,batchInfo.getNextPage(), batchInfo.getPageSize());
+        if (logEntries.size()< batchInfo.getPageSize())
+        {
             // we are at the end of the batch
             // ==> reset the batch
             BatchHelper.resetBatchInfo(sessionId);
-        } else {
+        }
+        else
+        {
             // set the batchInfo ready for next call
             batchInfo.prepareNextCall();
         }
@@ -110,6 +111,117 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
         ldocs.toArray(docs);
 
         return docs;
+    }
+
+    @WebMethod
+    public ModifiedDocumentDescriptorPage listModifiedDocumentsByPage(@WebParam(name = "sessionId") String sessionId,
+            @WebParam(name = "dataRangeQuery") String dateRangeQuery,@WebParam(name = "docPath") String path,@WebParam(name = "pageIndex") int page, @WebParam(name = "pageSize") int pageSize) throws AuditException {
+
+        try {
+            initSession(sessionId);
+        } catch (ClientException ce) {
+            throw new AuditException(ce.getMessage(), ce);
+        }
+
+        List<LogEntry> logEntries = getLogsBean().queryLogsByPage(null,
+                dateRangeQuery, "eventDocumentCategory",path, page, pageSize);
+
+        boolean hasMorePage=false;
+        if (logEntries.size()< pageSize)
+        {
+            hasMorePage=false;
+        }
+        else
+        {
+            hasMorePage=true;
+        }
+
+        List<ModifiedDocumentDescriptor> ldocs = new ArrayList<ModifiedDocumentDescriptor>();
+        Set<String> uuids = new HashSet<String>();
+        for (LogEntry logEntry : logEntries) {
+            if (!uuids.contains(logEntry.getDocUUID())) {
+                uuids.add(logEntry.getDocUUID());
+                ldocs.add(new ModifiedDocumentDescriptor(
+                        logEntry.getEventDate(), logEntry.getDocType(),
+                        logEntry.getDocUUID()));
+            }
+        }
+
+        ModifiedDocumentDescriptor[] docs = new ModifiedDocumentDescriptor[ldocs.size()];
+        ldocs.toArray(docs);
+
+
+        return new ModifiedDocumentDescriptorPage(docs, page, hasMorePage);
+    }
+
+
+    @WebMethod
+    public EventDescriptorPage listEventsByPage(@WebParam(name = "sessionId") String sessionId,
+            @WebParam(name = "dataRangeQuery") String dateRangeQuery, @WebParam(name = "pageIndex")int page, @WebParam(name = "pageSize")int pageSize) throws AuditException {
+
+        try {
+            initSession(sessionId);
+        } catch (ClientException ce) {
+            throw new AuditException(ce.getMessage(), ce);
+        }
+
+        List<LogEntry> logEntries = getLogsBean().queryLogsByPage(null,
+                dateRangeQuery,null,null, page, pageSize);
+        boolean hasMorePage=false;
+        if (logEntries.size()< pageSize)
+        {
+            hasMorePage=false;
+        }
+        else
+        {
+            hasMorePage=true;
+        }
+
+        List<EventDescriptor> events =  new ArrayList<EventDescriptor>();
+
+        for (LogEntry logEntry : logEntries) {
+            events.add(new EventDescriptor(logEntry.getEventId(),logEntry.getEventDate(),logEntry.getDocPath(), logEntry.getDocUUID()));
+        }
+
+        EventDescriptor[] evts = new EventDescriptor[events.size()];
+        events.toArray(evts);
+
+        return new EventDescriptorPage(evts,page, hasMorePage);
+    }
+
+
+
+    @WebMethod
+    public EventDescriptorPage queryEventsByPage(@WebParam(name = "sessionId") String sessionId,
+            @WebParam(name = "whereClause") String whereClause, @WebParam(name = "pageIndex")int page, @WebParam(name = "pageSize")int pageSize) throws AuditException {
+
+        try {
+            initSession(sessionId);
+        } catch (ClientException ce) {
+            throw new AuditException(ce.getMessage(), ce);
+        }
+
+        List<LogEntry> logEntries = getLogsBean().nativeQueryLogs(whereClause, page, pageSize);
+        boolean hasMorePage=false;
+        if (logEntries.size()< pageSize)
+        {
+            hasMorePage=false;
+        }
+        else
+        {
+            hasMorePage=true;
+        }
+
+        List<EventDescriptor> events =  new ArrayList<EventDescriptor>();
+
+        for (LogEntry logEntry : logEntries) {
+            events.add(new EventDescriptor(logEntry.getEventId(),logEntry.getEventDate(),logEntry.getDocPath(), logEntry.getDocUUID()));
+        }
+
+        EventDescriptor[] evts = new EventDescriptor[events.size()];
+        events.toArray(evts);
+
+        return new EventDescriptorPage(evts,page, hasMorePage);
     }
 
 }

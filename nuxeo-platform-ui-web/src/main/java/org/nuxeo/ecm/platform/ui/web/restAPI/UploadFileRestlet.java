@@ -92,26 +92,20 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
         }
 
         try {
-            StreamingBlob blob = StreamingBlob.createFromStream(req.getEntity().getStream());
-
+            // persisting the blob makes it possible to read the binary content
+            // of the request stream several times (mimetype sniffing, digest
+            // computation, core binary storage)
+            Blob blob = StreamingBlob.createFromStream(
+                    req.getEntity().getStream()).persist();
+            blob = getBlobWithGoodMimetype(blob, fileName);
             // save the properties on the document model
             String blobPropertyName = getQueryParamValue(req,
                     BLOB_PROPERTY_NAME, null);
             String filenamePropertyName = getQueryParamValue(req,
                     FILENAME_PROPERTY_NAME, null);
             if (blobPropertyName != null && filenamePropertyName != null) {
-                dm.setPropertyValue(blobPropertyName, blob);
+                dm.setPropertyValue(blobPropertyName, (Serializable) blob);
                 dm.setPropertyValue(filenamePropertyName, fileName);
-
-                dm = documentManager.saveDocument(dm);
-
-                Blob savedBlob = (Blob) dm.getPropertyValue(blobPropertyName);
-
-                savedBlob = getBlobWithGoodMimetype(savedBlob, fileName);
-
-                // re-save the blob with the detected mimetype
-                dm.setPropertyValue(blobPropertyName, (Serializable) savedBlob);
-
             } else {
                 // find the names of the fields from the optional request
                 // parameters with fallback to defaults if none is provided
@@ -121,18 +115,9 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
                         DEFAULT_BLOB_FIELD);
                 String filenameFieldName = getQueryParamValue(req,
                         FILENAME_FIELD, DEFAULT_FILENAME_FIELD);
+
                 dm.setProperty(schemaName, blobFieldName, blob);
                 dm.setProperty(schemaName, filenameFieldName, fileName);
-
-                dm = documentManager.saveDocument(dm);
-
-                Blob savedBlob = (Blob) dm.getProperty(schemaName,
-                        blobFieldName);
-
-                savedBlob = getBlobWithGoodMimetype(savedBlob, fileName);
-
-                // re-save the blob with the detected mimetype
-                dm.setProperty(schemaName, blobFieldName, savedBlob);
             }
 
             documentManager.saveDocument(dm);
@@ -143,25 +128,16 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
         }
     }
 
-    // the stream can be read only once, thus save it first into the
-    // core before attempting to detect the mimetype that might rely
-    // on binary sniffing
-    private Blob getBlobWithGoodMimetype(Blob savedBlob, String fileName)
+    private Blob getBlobWithGoodMimetype(Blob blob, String fileName)
             throws Exception {
         // ask the mimetype service for the blob mimetype first
         // according to filename extension with a fallback to binary
         // sniffing
         MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
         String mimetype = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
-                fileName, savedBlob, "application/octet-stream");
-        savedBlob.setMimeType(mimetype);
-
-        // reset the blob source before saving back since it might have
-        // exhausted by the binary sniffing of the MimetypeRegistry
-        // service
-        // (NB: LazyBlobs fetched from the Core are always resetable)
-        savedBlob.getStream().reset();
-        return savedBlob;
+                fileName, blob, "application/octet-stream");
+        blob.setMimeType(mimetype);
+        return blob;
     }
 
 }

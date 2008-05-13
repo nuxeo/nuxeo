@@ -244,6 +244,15 @@ public class DeleteActionsBean extends InputController implements
         return false;
     }
 
+    public boolean getCanDeleteItem(DocumentModel container) throws ClientException
+    {
+    	if (documentManager.hasPermission(container.getRef(),
+                SecurityConstants.REMOVE_CHILDREN)) {
+            return true;
+        }
+    	else
+    		return false;
+    }
     public boolean getCanDelete() throws ClientException {
         List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
 

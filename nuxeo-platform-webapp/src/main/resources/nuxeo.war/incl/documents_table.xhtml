@@ -36,7 +36,7 @@
       <!-- Icon + Type -->
       <nxu:column styleClass="iconColumn">
         <div id="docRefTarget:#{row.data.ref}">
-        <div id="docRef:#{row.data.ref}" class="cell">
+        <div id="docRef:#{row.data.ref}" class="cell popupTarget" docRef="#{row.data.ref}">
         <h:graphicImage value="/icons/lock.gif"
            rendered="#{not empty row.data.lock}"/>
         <nxu:graphicImage
@@ -75,7 +75,9 @@
           document="#{row.data}" rendered="false"/>
 
       <nxd:restDocumentLink document="#{row.data}">
+      <span id="title_#{row.data.ref}">
        <nxh:outputText value="#{nxd:titleOrId(row.data)}"/>
+       </span>
       </nxd:restDocumentLink>
 
       <nxd:restDocumentLink document="#{row.data}" newConversation="true" target="_tab">
@@ -187,4 +189,11 @@
   </h:form>
 
 </a4j:region>
+<ui:include src="/incl/popupMenu.xhtml"/>
+<script>
+// init menu
+//jQuery("table td div div.popupTarget").contextMenu("popupMenu");
+setupContextMenu("table td div div.popupTarget");
+</script>
+
 </div>

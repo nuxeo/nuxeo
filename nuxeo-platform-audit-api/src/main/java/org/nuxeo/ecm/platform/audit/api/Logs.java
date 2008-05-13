@@ -92,12 +92,14 @@ public interface Logs extends Serializable {
      *
      * @param eventIds : the event ids.
      * @param dateRange : a preset date range.
+     * @param category : add filter on events category
+     * @param path : add filter on document path
      * @param pageNb : page number (ignore if <=1)
      * @param pageSize : number of results per page
      * @return a list of log entries.
      * @throws AuditException
      */
-    List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
+    List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String category,String path,
             int pageNb, int pageSize) throws AuditException;
 
     /**
@@ -113,5 +115,18 @@ public interface Logs extends Serializable {
      */
     long syncLogCreationEntries(String repoId, String path, Boolean recurs)
             throws AuditException, ClientException;
+
+    /**
+     * Returns a batched list of log entries.
+     * WhereClause is a native where clause for the backend : here EJBQL 3.0 can be used
+     *
+     * @param whereClause
+     * @param pageNb
+     * @param pageSize
+     * @return
+     * @throws AuditException
+     */
+    public List<LogEntry> nativeQueryLogs(String whereClause,
+            int pageNb, int pageSize) throws AuditException;
 
 }
