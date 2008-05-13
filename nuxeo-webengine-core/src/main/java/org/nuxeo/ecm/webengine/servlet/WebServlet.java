@@ -99,6 +99,9 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
 
     public void configurationChanged(WebEngine engine) throws WebException {
         String webappId = getServletConfig().getInitParameter("webapp");
+        if (webappId == null) {
+            webappId = "nuxeo-web"; // the default webapp
+        }
         app = engine.getApplication(webappId);
         if (app == null) {
             throw new WebDeployException("Cannot initialize the webengine servlet: no web application found with ID "+webappId);
@@ -133,7 +136,7 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
             } else {
                 ScriptFile page = app.getScript(app.getErrorPage());
                 if (page == null) {
-                    displayError(resp, e, e.getMessage(),
+                    displayError(resp, e, "ErrorPage not found: "+app.getErrorPage(),
                             WebConst.SC_INTERNAL_SERVER_ERROR);
                     return;
                 }
