@@ -13,7 +13,7 @@
 
       <!-- Icon + Type -->
       <nxu:column styleClass="iconColumn">
-        <div id="docRef:#{doc.ref}" class="cell">
+        <div id="docRef:#{doc.ref}" class="cell popupTarget" docRef="#{doc.ref}">
          <h:graphicImage value="/icons/lock.gif"
            rendered="#{not empty doc.lock}"/>
         <nxu:graphicImage
@@ -48,7 +48,9 @@
         </f:facet>
 
         <nxd:restDocumentLink title="#{nxd:titleOrId(doc)}" document="#{doc}">
+          <span id="title_#{row.data.ref}">
           <h:outputText value="#{nxd:titleOrId(doc)}" />
+          </span>
         </nxd:restDocumentLink>
       </nxu:column>
 
@@ -100,7 +102,7 @@
         </f:facet>
         <h:outputText value="#{nxu:userFullName(doc.dublincore.creator)}" />
       </h:column>
-      
+
       <!-- Live edit -->
       <nxu:column styleClass="iconColumn">
         <nxu:methodResult name="editable"
@@ -112,10 +114,19 @@
               title="#{messages['label.document.directEdit']}"/>
           </h:outputLink>
         </nxu:methodResult>
-      </nxu:column>      
+      </nxu:column>
     </nxu:dataTable>
 
     <a4j:commandButton value="#{messages['label.refresh']}" reRender="#{idParam}" styleClass="button" />
   </h:form>
 
-</a4j:region></div>
+</a4j:region>
+
+<ui:include src="/incl/popupMenu.xhtml"/>
+<script>
+// init menu
+//jQuery("table td div div.popupTarget").contextMenu("popupMenu");
+setupContextMenu("table td div div.popupTarget");
+</script>
+
+</div>

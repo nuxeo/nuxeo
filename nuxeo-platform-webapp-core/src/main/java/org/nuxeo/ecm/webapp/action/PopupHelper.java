@@ -19,97 +19,206 @@
 
 package org.nuxeo.ecm.webapp.action;
 
-import static org.jboss.seam.ScopeType.PAGE;
+import static org.jboss.seam.ScopeType.CONVERSATION;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 
 import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Out;
-import org.jboss.seam.contexts.Context;
-import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.actions.ActionContext;
-import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.actions.ActionContext;
+import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 
-//@Name("popupHelper")
-//@Scope(SESSION)
+@Name("popupHelper")
+@Scope(CONVERSATION)
 @SerializedConcurrentAccess
 public class PopupHelper {
 
-    @In(required = false)
-    @Out(required = false, scope = PAGE)
-    protected String popupDocId;
+	public final static String POPUP_CATEGORY="POPUP";
 
-    @In(required = false)
-    protected DocumentModel currentDocument;
-
-    @In(create = true, required = false)
-    protected CoreSession documentManager;
-
-    @In
-    protected transient Context sessionContext;
+    @In(required = true, create = true)
+    private transient ActionContextProvider actionContextProvider;
 
     @In(create = true)
     protected WebActions webActions;
 
+    @In(create = true)
+    protected DeleteActions deleteActions;
 
-    public String getPopupDocId() {
-        if (popupDocId == null) {
-            return "";
-        }
-        return popupDocId;
+    @In(create=true, required=false)
+    CoreSession documentManager;
+
+    protected DocumentModel currentContainer;
+
+    protected DocumentModel currentPopupDocument;
+
+    protected List<Action> unfiltredActions=null;
+
+    protected void computeUnfiltredPopupActions() {
+    	unfiltredActions = webActions.getUnfiltredActionsList(POPUP_CATEGORY);
     }
 
-    public void setPopupDocRef(DocumentRef popupDocId) {
-        this.popupDocId = popupDocId.toString();
-    }
+    /*
+     * returns all popup actions : used to construct HTML menu template
+     */
+    public List<Action> getUnfiltredPopupActions() {
+    	if (unfiltredActions==null)
+    		computeUnfiltredPopupActions();
 
-    public void setPopupDocId(String popupDocId) {
-        this.popupDocId = popupDocId;
-    }
-
-    public List<Action> getPopupActions() {
-        if (popupDocId == null || "".equals(popupDocId)) {
-            return new ArrayList<Action>();
-        }
-        List<Action> actions = webActions.getActionsList("POPUP",
-                createActionContext());
-
-        // post filters links to add docId
-        for (Action act : actions) {
+    	// post filters links to add docId
+        for (Action act : unfiltredActions) {
             String lnk = act.getLink();
-            lnk = lnk.replaceFirst("popupDoc", '\'' + popupDocId + "'");
-            act.setLink(lnk);
+            if (lnk.startsWith("javascript"))
+            {
+            	lnk = lnk.replaceFirst("javascript:", "");
+            	act.setLink(lnk);
+            }
         }
-        return actions;
+    	return unfiltredActions;
     }
 
-    protected ActionContext createActionContext() {
-        ActionContext ctx = new ActionContext();
-        ctx.setCurrentDocument(currentDocument);
-        ctx.setDocumentManager(documentManager);
+    public List<Action> getAvailablePopupActions(String popupDocId) {
+    	return  webActions.getActionsList(POPUP_CATEGORY, createActionContext(popupDocId));
+    }
 
-        ctx.put("SeamContext", sessionContext);
-        ctx.setCurrentPrincipal((NuxeoPrincipal) documentManager.getPrincipal());
+
+    @WebRemote
+    public List<String> getAvailableActionId(String popupDocId)
+    {
+    	List<Action> availableActions = getAvailablePopupActions(popupDocId);
+    	List<String> availableActionsIds = new ArrayList<String>();
+    	for (Action act : availableActions)
+    	{
+    		availableActionsIds.add(act.getId());
+    	}
+    	return availableActionsIds;
+    }
+
+    @WebRemote
+    public List<String> getUnavailableActionId(String popupDocId)
+    {
+    	List<String> result = new ArrayList<String>();
+
+    	List<Action> allActions = getUnfiltredPopupActions();
+    	List<String> allActionsIds = new ArrayList<String>();
+    	for (Action act : allActions)
+    	{
+    		allActionsIds.add(act.getId());
+    	}
+
+    	List<Action> availableActions = getAvailablePopupActions(popupDocId);
+    	List<String> availableActionsIds = new ArrayList<String>();
+    	for (Action act : availableActions)
+    	{
+    		availableActionsIds.add(act.getId());
+    	}
+
+    	for (String act : allActionsIds)
+    	{
+    		if (!availableActionsIds.contains(act))
+    			result.add(act);
+    	}
+
+    	return result;
+    }
+
+
+    protected ActionContext createActionContext(String popupDocId) {
+        ActionContext ctx = actionContextProvider.createActionContext();
+
+        DocumentModel currentDocument = ctx.getCurrentDocument();
 
         DocumentRef popupDocRef = new IdRef(popupDocId);
         try {
             DocumentModel popupDoc = documentManager.getDocument(popupDocRef);
-            ctx.put("popupDoc", popupDoc);
+            ctx.setCurrentDocument(popupDoc);
+            ctx.put("container", currentDocument);
+            currentPopupDocument = popupDoc;
+            currentContainer = currentDocument;
         } catch (ClientException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
         return ctx;
+    }
+
+    @WebRemote
+    public String getNavigationURL(String docId, String tabId) throws ClientException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+
+        if (tabId!=null)
+        	params.put("tabId", tabId);
+
+        DocumentModel doc = documentManager.getDocument(new IdRef(docId));
+
+        return DocumentModelFunctions.documentUrl(null, doc, null, params, false);
+    }
+
+    @WebRemote
+    public String getNavigationURLOnContainer(String tabId) throws ClientException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+
+        if (tabId!=null)
+        	params.put("tabId", tabId);
+
+        return DocumentModelFunctions.documentUrl(null, currentContainer, null, params, false);
+    }
+
+    @WebRemote
+    public String getNavigationURLOnPopupdoc(String tabId) throws ClientException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+
+        if (tabId!=null)
+        	params.put("tabId", tabId);
+
+        return DocumentModelFunctions.documentUrl(null, currentPopupDocument, null, params, false);
+    }
+
+    @WebRemote
+    public String getCurrentURL() throws ClientException
+    {
+        Map<String, String> params = new HashMap<String, String>();
+
+        String tabId = webActions.getCurrentTabId();
+
+        if (tabId!=null)
+        	params.put("tabId", tabId);
+
+        return DocumentModelFunctions.documentUrl(null, currentContainer, null, params, false);
+    }
+
+
+    @WebRemote
+    public String deleteDocument(String docId) throws ClientException {
+        DocumentModel doc = documentManager.getDocument(new IdRef(docId));
+        List<DocumentModel> docsToDelete = new ArrayList<DocumentModel>();
+        docsToDelete.add(doc);
+        return deleteActions.deleteSelection(docsToDelete);
+    }
+
+    @WebRemote
+    public String editTitle(String docId,String newTitle) throws ClientException {
+        DocumentModel doc = documentManager.getDocument(new IdRef(docId));
+        doc.setProperty("dublincore","title", newTitle);
+        documentManager.saveDocument(doc);
+        documentManager.save();
+        return "OK";
     }
 
 }

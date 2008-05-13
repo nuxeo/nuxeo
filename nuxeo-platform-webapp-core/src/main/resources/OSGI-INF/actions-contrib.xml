@@ -417,17 +417,44 @@
       </filter>
     </action>
 
-    <action id="POPUP_COPY" link="#{clipboardActions.putInClipboard(popupDoc)}"
-      enabled="false" label="command.clipboard.copy" icon="">
+    <action id="POPUP_VIEW" link="javascript:doView"
+      enabled="true" label="command.view" icon="/icons/doc.png">
       <category>POPUP</category>
     </action>
 
-    <action id="POPUP_DEL" link="#{deleteActions.deleteItem(popupDoc)}"
-      enabled="false" label="command.deleteDocs" icon="">
+    <action id="POPUP_EDIT" link="javascript:doEdit"
+      enabled="true" label="action.view.edit" icon="/icons/application_form_edit.png">
+      <category>POPUP</category>
+      <filter-id>edit</filter-id>
+    </action>
+
+    <action id="POPUP_COPY" link="javascript:doCopy"
+      enabled="true" label="command.clipboard.copy" icon="/icons/action_clipboard_copy.gif">
+      <category>POPUP</category>
+    </action>
+
+    <action id="POPUP_PASTE" link="javascript:doPaste"
+      enabled="true" label="command.clipboard.paste" icon="/icons/action_paste_all.gif">
+      <category>POPUP</category>
+      <filter id="canPastePopup">
+        <rule grant="true">
+          <condition>#{clipboardActions.getCanPasteFromClipboardInside(document)}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="POPUP_RENAME" link="javascript:doRename"
+      enabled="true" label="command.rename" icon="/icons/txt.png">
+      <category>POPUP</category>
+      <filter-id>edit</filter-id>
+    </action>
+
+    <action id="POPUP_DEL" link="javascript:doDelete"
+      enabled="true" label="command.trashDocs" icon="/icons/action_delete.gif">
       <category>POPUP</category>
       <filter id="canDeletePopup">
         <rule grant="true">
-          <condition>#{deleteActions.canDeleteItem(popupDoc)}</condition>
+          <condition>#{deleteActions.getCanDeleteItem(container)}</condition>
         </rule>
       </filter>
     </action>
@@ -447,27 +474,27 @@
       <filter-id>mutable_document</filter-id>
       <filter-id>can_unlock</filter-id>
     </action>
-    
-    
+
+
     <!-- live edit new document creation links -->
-    
+
     <!-- WARNING: the following declaration are not yet used by incl/liveedit_create_actions.xhtml
          since nxh:outputLink is not able to perform nested JSF-EL for the link/value attribute
-         as this case for the action attribute of nxh:commandLink 
+         as this case for the action attribute of nxh:commandLink
      -->
-    
+
     <action id="le_create_msword" link="#{nxd:liveCreateUrl('application/msword',
      'File', 'file', 'content', 'filename')}" enabled="true"
       order="40" label="action.liveedit.create.msword" icon="/icons/doc.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
     </action>
-    
+
     <action id="le_create_msexcel" link="#{nxd:liveCreateUrl('application/vnd.ms-excel',
      'File', 'file', 'content', 'filename')}" enabled="true"
       order="50" label="action.liveedit.create.msexcel" icon="/icons/xls.png">
       <category>LIVEEDIT_CREATE_ACTIONS</category>
-    </action>    
-    
+    </action>
+
     <action id="le_create_mspowerpoint" link="#{nxd:liveCreateUrl('application/vnd.ms-powerpoint',
      'File', 'file', 'content', 'filename')}" enabled="true"
       order="60" label="action.liveedit.create.mspowerpoint" icon="/icons/ppt.png">
