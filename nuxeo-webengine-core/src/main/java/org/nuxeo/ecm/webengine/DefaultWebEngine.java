@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.util.DependencyTree;
@@ -43,6 +44,8 @@ public class DefaultWebEngine implements WebEngine {
     protected Map<String, WebApplication> apps;
 
     protected final Map<String,Object> env;
+
+    protected ListenerList listeners = new ListenerList();
 
     public DefaultWebEngine(File root, RenderingEngine engine) {
         this.root = root;
@@ -127,6 +130,22 @@ public class DefaultWebEngine implements WebEngine {
 
     public WebApplication[]  getApplications() {
         return apps.values().toArray(new WebApplication[apps.size()]);
+    }
+
+    public void addConfigurationChangedListener(
+            ConfigurationChangedListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeConfigurationChangedListener(
+            ConfigurationChangedListener listener) {
+        listeners.remove(listener);
+    }
+
+    public void fireConfigurationChanged() throws WebException {
+        for (Object obj : listeners.getListenersCopy()) {
+            ((ConfigurationChangedListener)obj).configurationChanged(this);
+        }
     }
 
     class ObjectRegistry extends DependencyTree<String, ObjectDescriptor> {

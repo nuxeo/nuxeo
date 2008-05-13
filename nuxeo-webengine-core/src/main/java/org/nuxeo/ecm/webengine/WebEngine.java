@@ -62,10 +62,16 @@ public interface WebEngine {
 
     WebApplication getApplication(String name);
 
-    public void registerApplication(WebApplicationDescriptor desc) throws WebException;
+    void registerApplication(WebApplicationDescriptor desc) throws WebException;
 
-    public void unregisterApplication(String id);
+    void unregisterApplication(String id);
 
-    public WebApplication[]  getApplications();
+    WebApplication[]  getApplications();
+
+    void addConfigurationChangedListener(ConfigurationChangedListener listener);
+
+    void removeConfigurationChangedListener(ConfigurationChangedListener listener);
+
+    void fireConfigurationChanged() throws WebException;
 
 }

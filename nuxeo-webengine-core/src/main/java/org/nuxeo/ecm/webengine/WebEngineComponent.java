@@ -255,6 +255,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
                 URL url = file.toURI().toURL();
                 ctx.getRuntimeContext().undeploy(url);
                 ctx.getRuntimeContext().deploy(url);
+                mgr.fireConfigurationChanged();
             } catch (Exception e) {
                 log.error("Failed to redeploy web.xml", e);
             }

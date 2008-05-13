@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
+import org.nuxeo.ecm.webengine.ConfigurationChangedListener;
 import org.nuxeo.ecm.webengine.DefaultDocumentResolver;
 import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.DocumentResolver;
@@ -46,6 +47,7 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebObject;
 import org.nuxeo.ecm.webengine.actions.Actions;
+import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
@@ -58,7 +60,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebServlet extends HttpServlet {
+public class WebServlet extends HttpServlet implements ConfigurationChangedListener {
 
     private static final long serialVersionUID = 965764764858L;
 
@@ -71,6 +73,7 @@ public class WebServlet extends HttpServlet {
     private Scripting scripting;
     private WebEngine engine;
     private WebApplication app;
+
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -90,6 +93,15 @@ public class WebServlet extends HttpServlet {
         app = engine.getApplication(webappId);
         if (app == null) {
             throw new ServletException("Cannot initialize the webengine servlet: no web application found with ID "+webappId);
+        }
+        engine.addConfigurationChangedListener(this);
+    }
+
+    public void configurationChanged(WebEngine engine) throws WebException {
+        String webappId = getServletConfig().getInitParameter("webapp");
+        app = engine.getApplication(webappId);
+        if (app == null) {
+            throw new WebDeployException("Cannot initialize the webengine servlet: no web application found with ID "+webappId);
         }
     }
 
