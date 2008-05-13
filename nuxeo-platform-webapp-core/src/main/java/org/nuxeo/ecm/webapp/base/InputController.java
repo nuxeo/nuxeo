@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.platform.ui.web.rest.FancyNavigationHandler;
 import org.nuxeo.ecm.webapp.action.TypesTool;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
@@ -185,11 +186,13 @@ public abstract class InputController {
     }
 
     /**
-     * Utility method to return non 'null' JSF outcome that do not change the
-     * current view. The problem with null outcome is that some seam components
-     * are not refetched and thus the JSF tree might hold references that are no
-     * longer up-to-date, esp. in search results views whose documents lists are
-     * computed by an EVENT scoped seam factory.
+     * Returns null.
+     *
+     * Previous behaviour was: Utility method to return non 'null' JSF outcome
+     * that do not change the current view. The problem with null outcome is
+     * that some seam components are not refetched and thus the JSF tree might
+     * hold references that are no longer up-to-date, esp. in search results
+     * views whose documents lists are computed by an EVENT scoped seam factory.
      *
      * @param actionOutcome a string that might be used in the future to compute
      *            the JSF outcome in a cleaner way
@@ -197,12 +200,16 @@ public abstract class InputController {
      * @return the same view as previously based on the expectation that the
      *         'outcome_name' match the view id '/outcome_name.xhtml'
      *         faces-config.xml
+     * @deprecated returning a non-null outcome is now useless since our
+     *             {@link FancyNavigationHandler} already performs redirection
+     *             to the right outcome when dealing with a null outcome. Plus
+     *             assumptions on the view/outcome names here was a buggy hack.
      */
+    @Deprecated
     public String computeOutcome(String actionOutcome) {
         // actionOutcome is currently ignored on purpose but might be useful in
         // the future
-        String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
-        return viewId.substring(1, viewId.indexOf(".xhtml"));
+        return null;
     }
 
 }
