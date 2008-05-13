@@ -106,24 +106,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-rar-plugin</artifactId>
-        <version>2.2</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>rar</goal>
-            </goals>
-            <configuration>
-              <rarSourceDirectory>${project.build.outputDirectory}</rarSourceDirectory> <!-- little workaround to include class files -->
-              <raXmlFile>${raXml}</raXmlFile>
-              <manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
 <!--
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
