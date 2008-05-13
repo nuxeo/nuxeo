@@ -41,6 +41,8 @@ public class BlockWriter extends Writer {
     List<String> blocks = new ArrayList<String>();
     BlockWriter superBlock;
 
+    String ifBlockDefined;
+
     boolean suppressOutput = false;
 
 
@@ -92,6 +94,10 @@ public class BlockWriter extends Writer {
         reg.addBlock(bw.name, bw); // inform the container about the new block
     }
 
+    public boolean isEmpty() {
+        return buf.length() == 0 && segments.isEmpty() && blocks.isEmpty();
+    }
+
     //TODO - is not working for now
     public void writeSuperBlock() throws IOException {
 //        segments.add(buf.toString()); // add the precedent buffer to the segments list
@@ -101,6 +107,13 @@ public class BlockWriter extends Writer {
     }
 
     public void copyTo(Writer writer) throws TemplateException, IOException {
+        // check first if you need to suppress this block
+        if (ifBlockDefined != null) {
+            BlockWriter bw = reg.getBlock(ifBlockDefined);
+            if (bw == null || bw.isEmpty()) {
+                return;
+            }
+        }
         for (int i=0, len=segments.size(); i<len; i++) {
             writer.write(segments.get(i));
             reg.getBlock(blocks.get(i)).copyTo(writer);

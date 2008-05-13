@@ -44,11 +44,17 @@ public class BlockDirective implements TemplateDirectiveModel {
         if (scalar != null) {
             name = scalar.getAsString();
         }
+        String ifBlockDefined = null;
+        scalar = (SimpleScalar)params.get("ifBlockDefined");
+        if (scalar != null) {
+            ifBlockDefined = scalar.getAsString();
+        }
 
         String page = env.getTemplate().getName();
         BlockWriter writer = (BlockWriter)env.getOut();
         BlockWriterRegistry reg = writer.getRegistry();
         BlockWriter bw = new BlockWriter(page, name, reg);
+        bw.ifBlockDefined = ifBlockDefined;
         writer.writeBlock(bw);
         // render this block
         if (body != null) {
