@@ -253,25 +253,28 @@ public class DocumentActionsBean extends InputController implements
                 String filename = DocumentFileCodec.getFilename(doc, docView);
                 // download
                 FacesContext context = FacesContext.getCurrentInstance();
-                if (blob.getLength()>BIG_FILE_SIZE_LIMIT)
-                {
+                if (blob.getLength() > BIG_FILE_SIZE_LIMIT) {
                     HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
                     HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
 
                     String bigDownloadURL = BaseURL.getBaseURL(request);
-                    bigDownloadURL+="nxbigfile" + "/";
-                    bigDownloadURL+=doc.getRepositoryName() + "/";
-                    bigDownloadURL+=doc.getRef().toString() + "/";
-                    bigDownloadURL+=docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY) + "/";
-                    bigDownloadURL+=docView.getParameter(DocumentFileCodec.FILENAME_KEY);
+                    bigDownloadURL += "nxbigfile" + "/";
+                    bigDownloadURL += doc.getRepositoryName() + "/";
+                    bigDownloadURL += doc.getRef().toString() + "/";
+                    bigDownloadURL += docView.getParameter(
+                            DocumentFileCodec.FILE_PROPERTY_PATH_KEY) + "/";
+                    bigDownloadURL += docView.getParameter(
+                            DocumentFileCodec.FILENAME_KEY);
                     try {
                         response.sendRedirect(bigDownloadURL);
                     } catch (IOException e) {
-                        log.error("Error while redirecting for big file downloader", e);
+                        log.error(
+                                "Error while redirecting for big file downloader",
+                                e);
                     }
-                }
-                else
+                } else {
                     ComponentUtils.download(context, blob, filename);
+                }
             }
         }
     }
@@ -362,7 +365,6 @@ public class DocumentActionsBean extends InputController implements
         } catch (Throwable t) {
             throw EJBExceptionHandler.wrapException(t);
         }
-
     }
 
     private void setDocumentIconPath(DocumentModel docModel) {
@@ -393,7 +395,6 @@ public class DocumentActionsBean extends InputController implements
         } else {
             docModel.setProperty("common", "icon", currentType.getIcon());
         }
-
     }
 
     /**
@@ -570,13 +571,13 @@ public class DocumentActionsBean extends InputController implements
     @WebRemote
     public String processSelectRow(String docRef, String providerName,
             String listName, Boolean selection) {
-        DocumentModel doc = null;
         PagedDocumentsProvider provider;
         try {
             provider = resultsProvidersCache.get(providerName);
         } catch (ClientException e) {
             return handleError(e.getMessage());
         }
+        DocumentModel doc = null;
         for (DocumentModel pagedDoc : provider.getCurrentPage()) {
             if (pagedDoc.getRef().toString().equals(docRef)) {
                 doc = pagedDoc;

@@ -77,7 +77,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions {
     private static final Log log = LogFactory.getLog(BreadcrumbActionsBean.class);
 
     @In(create = true)
-    transient NavigationContext navigationContext;
+    NavigationContext navigationContext;
 
     @In(create = true, required = false)
     private CoreSession documentManager;

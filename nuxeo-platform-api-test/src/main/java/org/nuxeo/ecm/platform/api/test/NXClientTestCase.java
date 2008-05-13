@@ -70,7 +70,7 @@ public abstract class NXClientTestCase extends TestCase {
         deployAll();
     }
 
-    private void shutdownRT() throws Exception {
+    private static void shutdownRT() throws Exception {
         Framework.shutdown();
     }
 
