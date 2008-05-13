@@ -21,12 +21,15 @@ package org.nuxeo.ecm.platform.audit.ws.api;
 
 import org.nuxeo.ecm.platform.api.ws.BaseNuxeoWebService;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
+import org.nuxeo.ecm.platform.audit.ws.EventDescriptorPage;
 import org.nuxeo.ecm.platform.audit.ws.ModifiedDocumentDescriptor;
+import org.nuxeo.ecm.platform.audit.ws.ModifiedDocumentDescriptorPage;
 
 /**
  * Audit Web service interface.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  *
  */
 public interface WSAudit extends BaseNuxeoWebService {
@@ -41,5 +44,16 @@ public interface WSAudit extends BaseNuxeoWebService {
      */
     ModifiedDocumentDescriptor[] listModifiedDocuments(String sessionId,
             String dateRangeQuery) throws AuditException;
+
+    ModifiedDocumentDescriptorPage listModifiedDocumentsByPage(
+            String sessionId, String dateRangeQuery, String path, int page, int pageSize)
+            throws AuditException;
+
+    EventDescriptorPage listEventsByPage(String sessionId,
+            String dateRangeQuery, int page, int pageSize)
+            throws AuditException;
+
+    EventDescriptorPage queryEventsByPage(String sessionId, String whereClause,
+            int page, int pageSize) throws AuditException;
 
 }
