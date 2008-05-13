@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.transform.transformer;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -135,12 +134,7 @@ public abstract class AbstractTransformer implements Transformer {
             Map<String, Map<String, Serializable>> options, Blob... blobs) {
         TransformDocument[] trs = new TransformDocument[blobs.length];
         for (int i = 0; i < blobs.length; i++) {
-            try {
-                trs[i] = new TransformDocumentImpl(blobs[i]);
-            } catch (IOException ie) {
-                log.warn("An error occured while using streaming blob...", ie);
-                break;
-            }
+            trs[i] = new TransformDocumentImpl(blobs[i]);
         }
         return transform(options, trs);
     }

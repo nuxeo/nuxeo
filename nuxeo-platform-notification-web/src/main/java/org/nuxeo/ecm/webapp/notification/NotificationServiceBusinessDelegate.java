@@ -26,8 +26,6 @@ import java.io.Serializable;
 import javax.annotation.security.PermitAll;
 import javax.interceptor.Interceptors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -47,16 +45,12 @@ import org.nuxeo.runtime.api.Framework;
 @Interceptors(ErrorHandlingInterceptor.class)
 public class NotificationServiceBusinessDelegate implements Serializable {
 
-    private static final long serialVersionUID = -6259519917542409836L;
-
-    private static final Log log = LogFactory.getLog(NotificationServiceBusinessDelegate.class);
+    private static final long serialVersionUID = 1L;
 
     // caching NotificationServiceRemote
     private NotificationManager notificationManager;
 
-    //@Create
     public void initialize() {
-        log.info("Seam component initialized...");
     }
 
     /**
@@ -87,11 +81,10 @@ public class NotificationServiceBusinessDelegate implements Serializable {
 
     @Destroy
     @PermitAll
-    public void destroy() throws ClientException {
+    public void destroy() {
         if (null != notificationManager) {
             notificationManager = null;
         }
-        log.info("Destroyed the seam component...");
     }
 
 }

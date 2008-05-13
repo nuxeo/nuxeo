@@ -542,6 +542,16 @@
       <param-value>true</param-value>
     </context-param>
 
+    <!-- MyFaces RedirectTracker default conf -->
+    <context-param>
+      <param-name>org.apache.myfaces.redirectTracker.POLICY</param-name>
+      <param-value>org.apache.myfaces.custom.redirectTracker.policy.NoopRedirectTrackPolicy</param-value>
+    </context-param>
+    <context-param>
+      <param-name>org.apache.myfaces.redirectTracker.MAX_REDIRECTS</param-name>
+      <param-value>20</param-value>
+    </context-param>
+
     <!-- IceFaces configuration -->
     <!--
       <context-param>

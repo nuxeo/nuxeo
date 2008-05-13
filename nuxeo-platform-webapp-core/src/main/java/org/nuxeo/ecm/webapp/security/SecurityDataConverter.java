@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,16 +12,18 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Razvan Caraghin
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.webapp.security;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,20 +37,17 @@ import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
  * Attempts to convert the security data received as a list of user entries into
  * a data structure easily displayable.
  *
- * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
+ * @author Razvan Caraghin
+ * @author Florent Guillaume
  */
 public class SecurityDataConverter implements Serializable {
 
-    private static final long serialVersionUID = -3198252290509915456L;
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(SecurityDataConverter.class);
 
     /**
      * Feeds security data object with user entries.
-     *
-     * @param acp
-     * @param securityData
      */
     public static void convertToSecurityData(ACP acp, SecurityData securityData) {
         if (null == acp || null == securityData) {
@@ -81,46 +80,33 @@ public class SecurityDataConverter implements Serializable {
      * <p>
      * This only converts the modifiable permissions to a list of user entries
      * that is related only to the current document.
-     *
-     * @param securityData
+     * <p>
+     * Does all grants before all denies.
      */
     public static List<UserEntry> convertToUserEntries(SecurityData securityData) {
-        List<UserEntry> entries = new ArrayList<UserEntry>();
-
-        if (null == securityData) {
+        if (securityData == null) {
             log.error("Null params received, returning...");
-            return entries;
+            return Collections.emptyList();
         }
 
-        UserEntryImpl entry;
-        for (String user : securityData.getCurrentDocGrant().keySet()) {
-            entry = new UserEntryImpl(user);
+        Map<String, List<String>> grants = securityData.getCurrentDocGrant();
+        Map<String, List<String>> denies = securityData.getCurrentDocDeny();
+        List<UserEntry> entries = new ArrayList<UserEntry>(grants.size() +
+                denies.size());
 
-            for (String permission : securityData.getCurrentDocGrant()
-                    .get(user)) {
+        for (Entry<String, List<String>> e : grants.entrySet()) {
+            UserEntry entry = new UserEntryImpl(e.getKey());
+            for (String permission : e.getValue()) {
                 entry.addPrivilege(permission, true, false);
             }
-
             entries.add(entry);
         }
 
-        for (String user : securityData.getCurrentDocDeny().keySet()) {
-            entry = null;
-            for (UserEntry indexEntry : entries) {
-                if (indexEntry.getUserName().equals(user)) {
-                    entry = (UserEntryImpl) indexEntry;
-                    break;
-                }
-            }
-
-            if (null == entry) {
-                entry = new UserEntryImpl(user);
-            }
-
-            for (String permission : securityData.getCurrentDocDeny().get(user)) {
+        for (Entry<String, List<String>> e : denies.entrySet()) {
+            UserEntry entry = new UserEntryImpl(e.getKey());
+            for (String permission : e.getValue()) {
                 entry.addPrivilege(permission, false, false);
             }
-
             entries.add(entry);
         }
 

@@ -179,7 +179,6 @@ public class DocumentsListsPersistenceManager {
         }
 
         return doc;
-
     }
 
     public List<DocumentModel> loadPersistentDocumentsLists(

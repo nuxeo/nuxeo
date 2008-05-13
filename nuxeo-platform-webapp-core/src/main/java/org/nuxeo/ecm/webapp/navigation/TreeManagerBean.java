@@ -45,7 +45,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.WrappedException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.cache.AbstractCacheListener;
 import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
@@ -117,7 +116,10 @@ public class TreeManagerBean extends InputController implements TreeManager,
             EventNames.DOMAIN_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED,
             EventNames.DOCUMENT_SECURITY_CHANGED }, create = false)
     public void reset() {
-        cacheUpdateNotifier.removeCacheListener(cacheListener);
+        if (cacheUpdateNotifier != null && cacheListener != null) {
+            cacheUpdateNotifier.removeCacheListener(cacheListener);
+        }
+        cacheListener = null;
         treeModel = null;
         initialized = false;
     }
@@ -377,9 +379,10 @@ public class TreeManagerBean extends InputController implements TreeManager,
     @PrePassivate
     public void saveState() {
         log.debug("PrePassivate");
-        if (cacheUpdateNotifier != null) {
+        if (cacheUpdateNotifier != null && cacheListener != null) {
             cacheUpdateNotifier.removeCacheListener(cacheListener);
         }
+        cacheListener = null;
     }
 
     @PostActivate

@@ -63,7 +63,7 @@ public class DOMUtil {
             if(pos == 0) {
                 subpath = localName;
             } else {
-                subpath = MessageFormat.format("{0}[{1}]", new Object[] { localName, new Integer(pos)});
+                subpath = MessageFormat.format("{0}[{1}]", localName, new Integer(pos));
             }
         } else {
             System.err.println("Unsupported type "+nodeType);
