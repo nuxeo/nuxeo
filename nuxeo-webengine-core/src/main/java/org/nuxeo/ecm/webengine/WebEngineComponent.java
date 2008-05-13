@@ -60,6 +60,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
     public static final String BINDING_XP = "binding";
     public static final String GUARD_XP = "guard"; // global guards
     public final static String RENDERING_TEMPLATE_XP = "rendering-template";
+    public final static String APPLICATION_XP = "application";
 
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
@@ -91,7 +92,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
             engine = new FreemarkerEngine(); // the default engine
         }
         engine.setResourceLocator(this);
-        engine.addResourceDirectories(root);
+        engine.addResourceDirectories(new File("/"), root); //TODO
         engine.setMessageBundle(messages);
         mgr = new DefaultWebEngine(root, engine);
         notifier = new FileChangeNotifier();
@@ -173,7 +174,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
             PermissionService.getInstance().registerGuard(gd.getId(), gd.getGuard());
         } else if (BINDING_XP.equals(extensionPoint)) {
             ObjectBindingDescriptor binding = (ObjectBindingDescriptor)contribution;
-            mgr.registerBingding(binding.type, binding.objectId);
+            mgr.registerBinding(binding.type, binding.objectId);
         } else if (extensionPoint.equals(RENDERING_TEMPLATE_XP)) {
             RenderingTemplateDescriptor fed = (RenderingTemplateDescriptor)contribution;
             try {
@@ -181,6 +182,9 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
             } catch (Exception e) {
                 throw new RuntimeServiceException("Deployment Error. Failed to contribute freemarker template extension: "+fed.name);
             }
+        } else if (extensionPoint.equals(APPLICATION_XP)) {
+            WebApplicationDescriptor desc = (WebApplicationDescriptor)contribution;
+            mgr.registerApplication(desc);
         }
 
     }
@@ -200,10 +204,13 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
             PermissionService.getInstance().unregisterGuard(gd.getId());
         } else if (BINDING_XP.equals(extensionPoint)) {
             ObjectBindingDescriptor binding = (ObjectBindingDescriptor)contribution;
-            mgr.unregisterBingding(binding.type);
+            mgr.unregisterBinding(binding.type);
         } else if (extensionPoint.equals(RENDERING_TEMPLATE_XP)) {
             RenderingTemplateDescriptor fed = (RenderingTemplateDescriptor)contribution;
             engine.setSharedVariable(fed.name, null);
+        } else if (extensionPoint.equals(APPLICATION_XP)) {
+            WebApplicationDescriptor desc = (WebApplicationDescriptor)contribution;
+            mgr.unregisterApplication(desc.id);
         }
     }
 
@@ -219,6 +226,9 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
 
     public URL getResource(String templateName) {
         try {
+            if (!templateName.contains(":/")) {
+                return new File(templateName).toURI().toURL();
+            }
             return URLFactory.getURL(templateName);
         } catch (Exception e) {
             return null;
@@ -245,6 +255,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
                 URL url = file.toURI().toURL();
                 ctx.getRuntimeContext().undeploy(url);
                 ctx.getRuntimeContext().deploy(url);
+                mgr.fireConfigurationChanged();
             } catch (Exception e) {
                 log.error("Failed to redeploy web.xml", e);
             }

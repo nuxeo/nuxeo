@@ -50,7 +50,7 @@ public class DefaultDocumentResolver implements DocumentResolver {
 //        return root;
 //    }
 
-    public DocumentModel getRootDocument(WebRoot siteRoot, String rootName, CoreSession session) throws Exception {
+    public DocumentModel getRootDocument(WebApplication app, String rootName, CoreSession session) throws Exception {
         DocumentModel root = null;
         SearchService searchService = Framework.getService(SearchService.class);
 
@@ -72,7 +72,7 @@ public class DefaultDocumentResolver implements DocumentResolver {
         return root;
     }
 
-    public DocumentModel getSiteSegment(WebRoot root, DocumentModel parent, String segment, CoreSession session) throws Exception {
+    public DocumentModel getSiteSegment(WebApplication app, DocumentModel parent, String segment, CoreSession session) throws Exception {
         try {
             return session.getDocument(new PathRef(parent.getPathAsString() + '/' + segment));
         } catch (ClientException e) {

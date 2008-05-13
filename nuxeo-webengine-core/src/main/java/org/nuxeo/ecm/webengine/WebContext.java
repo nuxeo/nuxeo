@@ -312,21 +312,10 @@ public interface WebContext {
 
 
     /**
-     * Get the current web root.
+     * Get the current web application.
      * @return the web root. Cannot return null.
      */
-    WebRoot getRoot();
-
-    /**
-     * Set the current web root.
-     * <p>
-     * The web root is used to resolve paths to scripts. So changing the root will change the scripts used for
-     * the current request.
-     * This can be used to dynamically change the way request are resolved to scripts - for example to implement a skin mechanism
-     *
-     * @param path the absolute path relative to the web directory that points to the root base directory
-     */
-    void setRoot(String path) throws WebException;
+    WebApplication getApplication();
 
     /**
      * Get a context variable
@@ -337,6 +326,17 @@ public interface WebContext {
      * @return the variable value or null if none
      */
     Object getProperty(String key);
+
+    /**
+     * Get a context variable
+     * <p>
+     * Context variables can be used to share data between the scripts that are called in that request (and between java code too of course)
+     *
+     * @param key the variable key
+     * @param defaultValue the default value to use if the property doesn't exists
+     * @return the variable value or the given default value if none
+     */
+    Object getProperty(String key, Object defaultValue);
 
     /**
      * Set a context variable

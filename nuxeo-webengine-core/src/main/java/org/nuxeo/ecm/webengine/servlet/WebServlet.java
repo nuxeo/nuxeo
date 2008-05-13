@@ -36,16 +36,18 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
+import org.nuxeo.ecm.webengine.ConfigurationChangedListener;
 import org.nuxeo.ecm.webengine.DefaultDocumentResolver;
 import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.DocumentResolver;
 import org.nuxeo.ecm.webengine.RequestHandler;
+import org.nuxeo.ecm.webengine.WebApplication;
 import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebObject;
-import org.nuxeo.ecm.webengine.WebRoot;
 import org.nuxeo.ecm.webengine.actions.Actions;
+import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
@@ -58,7 +60,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebServlet extends HttpServlet {
+public class WebServlet extends HttpServlet implements ConfigurationChangedListener {
 
     private static final long serialVersionUID = 965764764858L;
 
@@ -70,6 +72,8 @@ public class WebServlet extends HttpServlet {
 
     private Scripting scripting;
     private WebEngine engine;
+    private WebApplication app;
+
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -82,6 +86,33 @@ public class WebServlet extends HttpServlet {
         env.put("version", "1.0.0");
         RenderingEngine renderingEngine = scripting.getRenderingEngine();
         renderingEngine.setSharedVariable("env", env);
+        String webappId = config.getInitParameter("webapp");
+        if (webappId == null) {
+            webappId = "nuxeo-web"; // the default webapp
+        }
+        app = engine.getApplication(webappId);
+        if (app == null) {
+            throw new ServletException("Cannot initialize the webengine servlet: no web application found with ID "+webappId);
+        }
+        engine.addConfigurationChangedListener(this);
+    }
+
+    public void configurationChanged(WebEngine engine) throws WebException {
+        String webappId = getServletConfig().getInitParameter("webapp");
+        if (webappId == null) {
+            webappId = "nuxeo-web"; // the default webapp
+        }
+        app = engine.getApplication(webappId);
+        if (app == null) {
+            throw new WebDeployException("Cannot initialize the webengine servlet: no web application found with ID "+webappId);
+        }
+    }
+
+    /**
+     * @return the web app bound to this servlet
+     */
+    public WebApplication getApplication() {
+        return app;
     }
 
     @Override
@@ -103,8 +134,12 @@ public class WebServlet extends HttpServlet {
                 displayError(resp, e, "Failed to create request",
                         WebConst.SC_INTERNAL_SERVER_ERROR);
             } else {
-                WebRoot root = context.getRoot();
-                ScriptFile page = root.getScript(root.getErrorPage(), null);
+                ScriptFile page = app.getScript(app.getErrorPage());
+                if (page == null) {
+                    displayError(resp, e, "ErrorPage not found: "+app.getErrorPage(),
+                            WebConst.SC_INTERNAL_SERVER_ERROR);
+                    return;
+                }
                 try {
                     context.setProperty("error", e);
                     engine.getScripting().exec(context, page);
@@ -215,33 +250,21 @@ public class WebServlet extends HttpServlet {
 
     public WebContext createRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         String pathInfo = req.getPathInfo();
-        WebRoot root;
         if (pathInfo == null || "/".equals(pathInfo)) {
-            root = engine.getDefaultSiteRoot();
             pathInfo = "/index.ftl"; //TODO use the config to get the name of the index
         } else {
             int p = pathInfo.indexOf('/', 1);
             String siteName = null;
             if (p == -1) {
                 siteName = pathInfo.substring(1);
-                root = engine.getSiteRoot(siteName);
-                if (root != null) {
-                } else {
-                    root = engine.getDefaultSiteRoot();
-                    siteName = null;
-                }
             } else {
                 siteName = pathInfo.substring(1, p);
-                root = engine.getSiteRoot(siteName);
-                if (root == null) {
-                    root = engine.getDefaultSiteRoot();
-                }
             }
         }
-        DefaultWebContext context = new DefaultWebContext(root, req, resp);
+        DefaultWebContext context = new DefaultWebContext(app, req, resp);
         // traverse documents if any
         String[] traversal = null;
-        Mapping mapping = root.getMapping(pathInfo);
+        Mapping mapping = app.getMapping(pathInfo);
         if (mapping != null) { // get the traversal defined by the mapping if any
             traversal = mapping.getTraversalPath();
         }
@@ -264,16 +287,16 @@ public class WebServlet extends HttpServlet {
             // nothing to traverse
             return;
         }
+        WebApplication app = context.getApplication();
         CoreSession session = context.getCoreSession();
         String name = traversal[0];
-        WebRoot root = context.getRoot();
-        DocumentResolver resolver = root.getResolver();
+        DocumentResolver resolver = app.getDocumentResolver();
         int p = name.lastIndexOf(WebConst.ACTION_SEPARATOR);
         if (p > -1) {
             context.setActionName(name.substring(p+WebConst.ACTION_SEPARATOR.length()));
             name = name.substring(0, p);
         }
-        DocumentModel doc = resolver.getRootDocument(root, name, session);
+        DocumentModel doc = resolver.getRootDocument(app, name, session);
         context.addWebObject(name, doc);
         if (doc == null) { // abort traversing
             // add the unresolved objects
@@ -290,7 +313,7 @@ public class WebServlet extends HttpServlet {
                     context.setActionName(name.substring(p+WebConst.ACTION_SEPARATOR.length()));
                     name = name.substring(0, p);
                 }
-                doc = resolver.getSiteSegment(root, doc, name, session);
+                doc = resolver.getSiteSegment(app, doc, name, session);
                 context.addWebObject(name, doc);
                 if (doc == null) {
                     for (i=i+1; i<traversal.length; i++) {

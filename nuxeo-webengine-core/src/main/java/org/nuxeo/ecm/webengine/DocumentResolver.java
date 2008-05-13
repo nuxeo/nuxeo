@@ -30,8 +30,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface DocumentResolver {
 
-    DocumentModel getRootDocument(WebRoot root, String rootName, CoreSession session) throws Exception;
+    DocumentModel getRootDocument(WebApplication app, String rootName, CoreSession session) throws Exception;
 
-    DocumentModel getSiteSegment(WebRoot root, DocumentModel parent, String segment, CoreSession session) throws Exception;
+    DocumentModel getSiteSegment(WebApplication app, DocumentModel parent, String segment, CoreSession session) throws Exception;
 
 }

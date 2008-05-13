@@ -24,7 +24,7 @@
     Expose the registration of freemarker templates (directives, methods or global shared variables)
     This way custom tremplates can be registered into the freemarker engine from outside
     <code>
-      <template name="wiki" class="org.nuxeo.ecm.platform.wiki.WikiTransformer"/>
+      <template name="myTemplate" class="org.nuxeo.ecm.platform.my.MyTemplate"/>
     </code>
   </documentation>
 
@@ -93,6 +93,34 @@
 
     <object
       class="org.nuxeo.ecm.webengine.security.GuardDescriptor" />
+  </extension-point>
+
+  <extension-point name="application">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Register global guards. Guards are used to define permissions
+    <code>
+      <webapp id="nuxeo-web">
+        <roots>default, wiki</roots>
+        <documentResolver>org.MyDocumentResolver</documentResolver>
+        <errorPage>error.ftl</errorPage>
+        <indexPage>index.ftl</indexPage>
+        <defaultPage>default.ftl</defaultPage>
+        <bindings>
+          <binding type="Folder" object="MyWebFolder"/>
+        </bindings>
+        <mappings>
+          <mapping pattern="/?">
+            <traversalPath>a/b/c</traversalPath>
+            <script>index.ftl</script>
+          </mapping>
+        </mappings>
+      </webapp>
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.WebApplicationDescriptor" />
   </extension-point>
 
 </component>

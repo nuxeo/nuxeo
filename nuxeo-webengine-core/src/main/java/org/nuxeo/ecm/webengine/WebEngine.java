@@ -23,7 +23,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 
 
@@ -35,29 +34,23 @@ public interface WebEngine {
 
     Scripting getScripting();
 
-    WebRoot getDefaultSiteRoot() throws WebException;
-
-    WebRoot getSiteRoot(String name) throws WebException;
-
     File getRootDirectory();
 
     void registerObject(ObjectDescriptor obj);
 
     void unregisterObject(ObjectDescriptor obj);
 
-    String getBingding(String type);
+    String getTypeBinding(String type);
 
-    void registerBingding(String type, String objectId);
+    void registerBinding(String type, String objectId);
 
-    void unregisterBingding(String type);
+    void unregisterBinding(String type);
 
     List<ObjectDescriptor> getRegisteredObjects();
 
     List<ObjectDescriptor> getPendingObjects();
 
     List<ObjectDescriptor> getResolvedObjects();
-
-    ObjectDescriptor getInstanceOf(Type type);
 
     ObjectDescriptor getObject(String id);
 
@@ -66,4 +59,19 @@ public interface WebEngine {
     void reset();
 
     Map<String, Object> getEnvironment();
+
+    WebApplication getApplication(String name);
+
+    void registerApplication(WebApplicationDescriptor desc) throws WebException;
+
+    void unregisterApplication(String id);
+
+    WebApplication[]  getApplications();
+
+    void addConfigurationChangedListener(ConfigurationChangedListener listener);
+
+    void removeConfigurationChangedListener(ConfigurationChangedListener listener);
+
+    void fireConfigurationChanged() throws WebException;
+
 }

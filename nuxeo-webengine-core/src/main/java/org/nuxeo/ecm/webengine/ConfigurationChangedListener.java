@@ -17,18 +17,14 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.config;
-
-import java.util.Map;
-
-import org.nuxeo.ecm.webengine.WebRoot;
+package org.nuxeo.ecm.webengine;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface Configurator {
+public interface ConfigurationChangedListener {
 
-    void configure(WebRoot root, Map<String, String> properties);
+    public void configurationChanged(WebEngine engine) throws WebException;
 
 }
