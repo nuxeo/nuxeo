@@ -144,7 +144,7 @@ public interface ClipboardActions {
      */
     boolean getCanPasteFromClipboard() throws ClientException;
 
-    boolean getCanPasteFromClipboardInside() throws ClientException;
+    boolean getCanPasteFromClipboardInside(DocumentModel document) throws ClientException;
 
     /**
      * Checks if the content of a given workList can be pasted.
@@ -158,7 +158,7 @@ public interface ClipboardActions {
      */
     boolean getCanPaste(String listName) throws ClientException;
 
-    boolean getCanPasteInside(String listName) throws ClientException;
+    boolean getCanPasteInside(String listName, DocumentModel document) throws ClientException;
 
     /**
      * Checks if there are selected items that can be copied into the current Worklist.

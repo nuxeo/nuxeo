@@ -678,16 +678,13 @@ public class ClipboardActionsBean extends InputController implements
         }
     }
 
-    public boolean getCanPasteInside(String listName) throws ClientException {
-
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
-
+    public boolean getCanPasteInside(String listName, DocumentModel document) throws ClientException {
         if (documentsListsManager.isWorkingListEmpty(listName)
-                || currentDocument == null) {
+                || document == null) {
             return false;
         }
 
-        if (!documentManager.hasPermission(currentDocument.getRef(),
+        if (!documentManager.hasPermission(document.getRef(),
                 SecurityConstants.ADD_CHILDREN)) {
             return false;
         } else {
@@ -695,7 +692,7 @@ public class ClipboardActionsBean extends InputController implements
             // see if at least one doc can be pasted
             // String pasteTypeName = clipboard.getClipboardDocumentType();
             List<String> pasteTypesName = documentsListsManager.getWorkingListTypes(listName);
-            Collection<Type> allowed = typeManager.getAllowedSubTypes(currentDocument.getType());
+            Collection<Type> allowed = typeManager.getAllowedSubTypes(document.getType());
             for (Type allowedType : allowed) {
                 if (pasteTypesName.contains(allowedType.getId())) {
                     return true;
@@ -767,8 +764,8 @@ public class ClipboardActionsBean extends InputController implements
         return getCanPaste(DocumentsListsManager.CLIPBOARD);
     }
 
-    public boolean getCanPasteFromClipboardInside() throws ClientException {
-        return getCanPasteInside(DocumentsListsManager.CLIPBOARD);
+    public boolean getCanPasteFromClipboardInside(DocumentModel document) throws ClientException {
+        return getCanPasteInside(DocumentsListsManager.CLIPBOARD, document);
     }
 
     // Misc internal function for Ziping Clipboard

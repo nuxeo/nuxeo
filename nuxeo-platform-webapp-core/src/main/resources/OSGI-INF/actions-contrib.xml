@@ -438,8 +438,7 @@
       <category>POPUP</category>
       <filter id="canPastePopup">
         <rule grant="true">
-          <facet>Folderish</facet>
-          <!--<condition>#{clipboardActions.canPasteFromClipboardInside}</condition>-->
+          <condition>#{clipboardActions.getCanPasteFromClipboardInside(document)}</condition>
         </rule>
       </filter>
     </action>
