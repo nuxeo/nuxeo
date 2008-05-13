@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -79,7 +80,7 @@ public class WebObject {
         return null;
     }
 
-    public String getActionScript(String action) {
+    public String getActionScript(String action) throws IOException {
         ActionDescriptor desc = getAction(action);
         String path;
         if (desc != null) {
@@ -88,11 +89,11 @@ public class WebObject {
                 return path;
             }
         }
-        WebRoot root = context.getRoot();
+        WebApplication app = context.getApplication();
         if (doc != null) {
             String type = doc.getType();
             path = type + '/' + action + ".ftl";
-            File file = root.getFile(path);
+            File file = app.getFile(path);
             if (file.isFile()) {
                 return path;
             }
@@ -145,7 +146,7 @@ public class WebObject {
 
     public final ObjectDescriptor getDescriptor() {
         if (desc == null && doc != null) {
-            desc = context.getWebEngine().getInstanceOf(doc.getDocumentType());
+            desc = context.getApplication().getObjectDescriptor(doc.getDocumentType());
         }
         return desc;
     }

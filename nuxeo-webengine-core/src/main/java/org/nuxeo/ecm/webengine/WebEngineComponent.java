@@ -47,8 +47,6 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.osgi.framework.Bundle;
 
-import freemarker.cache.WebappTemplateLoader;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *

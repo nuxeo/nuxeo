@@ -40,8 +40,8 @@ import javax.script.SimpleScriptContext;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.webengine.DefaultWebContext;
+import org.nuxeo.ecm.webengine.WebApplication;
 import org.nuxeo.ecm.webengine.WebContext;
-import org.nuxeo.ecm.webengine.WebRoot;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.scripting.ScriptingService;
 import org.python.core.PyDictionary;
@@ -94,8 +94,8 @@ public class Scripting {
         if (script.getFile().isFile()) {
             exec(context, script);
         } else {
-            WebRoot root = context.getRoot();
-            script = root.getScript(root.getDefaultPage());
+            WebApplication app = context.getApplication();
+            script = app.getScript(app.getDefaultPage());
             exec(context, script);
         }
     }

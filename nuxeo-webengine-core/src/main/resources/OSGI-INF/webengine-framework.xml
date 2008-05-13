@@ -102,7 +102,6 @@
     <code>
       <webapp id="nuxeo-web">
         <roots>default, wiki</roots>
-        <requestHandler>org.MyRequestHandler</requestHandler>
         <documentResolver>org.MyDocumentResolver</documentResolver>
         <errorPage>error.ftl</errorPage>
         <indexPage>index.ftl</indexPage>

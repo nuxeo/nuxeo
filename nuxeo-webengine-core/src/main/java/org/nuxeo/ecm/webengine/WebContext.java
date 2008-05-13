@@ -312,21 +312,10 @@ public interface WebContext {
 
 
     /**
-     * Get the current web root.
+     * Get the current web application.
      * @return the web root. Cannot return null.
      */
-    WebRoot getRoot();
-
-    /**
-     * Set the current web root.
-     * <p>
-     * The web root is used to resolve paths to scripts. So changing the root will change the scripts used for
-     * the current request.
-     * This can be used to dynamically change the way request are resolved to scripts - for example to implement a skin mechanism
-     *
-     * @param path the absolute path relative to the web directory that points to the root base directory
-     */
-    void setRoot(String path) throws WebException;
+    WebApplication getApplication();
 
     /**
      * Get a context variable

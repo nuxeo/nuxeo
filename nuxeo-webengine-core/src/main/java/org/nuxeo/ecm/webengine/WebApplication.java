@@ -19,8 +19,12 @@
 
 package org.nuxeo.ecm.webengine;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
+import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -35,5 +39,19 @@ public interface WebApplication {
     public ObjectDescriptor getObjectDescriptor(Type type);
 
     public void flushCache();
+
+    public String getErrorPage();
+
+    public String getIndexPage();
+
+    public String getDefaultPage();
+
+    public ScriptFile getScript(String path)  throws IOException;
+
+    public File getFile(String path)  throws IOException;
+
+    public WebEngine getWebEngine();
+
+    public DocumentResolver getDocumentResolver();
 
 }

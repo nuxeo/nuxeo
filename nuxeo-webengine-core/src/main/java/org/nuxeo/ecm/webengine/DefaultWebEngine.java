@@ -20,14 +20,10 @@
 package org.nuxeo.ecm.webengine;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
-import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.util.DependencyTree;
@@ -41,11 +37,7 @@ public class DefaultWebEngine implements WebEngine {
     protected final Scripting scripting;
     protected final File root;
 
-    protected final ConcurrentMap<String, WebRoot> roots;
-    protected WebRoot defaultRoot;
-
     protected final ObjectRegistry registry;
-    protected final Map<String, ObjectDescriptor> objects; // instances for each document type
     protected final Map<String, String> bindings;
 
     protected Map<String, WebApplication> apps;
@@ -54,10 +46,8 @@ public class DefaultWebEngine implements WebEngine {
 
     public DefaultWebEngine(File root, RenderingEngine engine) {
         this.root = root;
-        roots = new ConcurrentHashMap<String, WebRoot>();
         scripting = new Scripting(engine);
         registry = new ObjectRegistry();
-        objects = new HashMap<String, ObjectDescriptor>();
         bindings = new HashMap<String, String>();
         this.env = new HashMap<String, Object>();
         this.apps = new HashMap<String, WebApplication>();
@@ -71,85 +61,11 @@ public class DefaultWebEngine implements WebEngine {
         return root;
     }
 
-    public WebRoot getDefaultSiteRoot() throws WebException {
-        if (defaultRoot == null) {
-            File dir = new File(root, "default");
-            defaultRoot = new WebRoot(this, dir);
-            try {
-                defaultRoot.loadConfiguration();
-            } catch (IOException e) {
-                throw new WebException("Failed to load configuration for web root default");
-            }
-        }
-        return defaultRoot;
-    }
-
-    public WebRoot getSiteRoot(String name) throws WebException {
-        WebRoot sroot = roots.get(name);
-        if (sroot == null) {
-            File dir = new File(root, name);
-            File metadata = new File(dir, name);
-            if (metadata.isFile()) {
-                sroot = new WebRoot(this, dir);
-                try {
-                    sroot.loadConfiguration();
-                } catch (IOException e) {
-                    throw new WebException("Failed to load configuration for web root "+name);
-                }
-                roots.putIfAbsent(name, sroot);
-            } else { // try dynamic binding
-                sroot = getDefaultSiteRoot();
-            }
-        }
-        return sroot;
-    }
 
     public void reset() {
-        objects.clear(); // clear cache
-    }
-
-    public synchronized ObjectDescriptor getDefaultObject() {
-        ObjectDescriptor obj = objects.get("Document");
-        if (obj == null) {
-            String id = bindings.get("Document");
-            if (id == null) {
-                throw new IllegalStateException("The web object bindings are not correctly configured. You must specify a binding for the Document type.");
-            }
-            obj = registry.get(id);
-            if (obj == null) {
-                throw new IllegalStateException("The web object bindings are not correctly configured. The object "+id+" bound to Document type was not found.");
-            }
-            objects.put("Document", obj);
+        for (WebApplication app : apps.values()) {
+            app.flushCache();
         }
-        return obj;
-    }
-
-    public synchronized ObjectDescriptor getInstanceOf(Type type) {
-        String typeName = type.getName();
-        ObjectDescriptor obj = objects.get(typeName);
-        if (obj == null) {
-            String id = bindings.get(typeName);
-            if (id == null) {
-                Type stype = type.getSuperType();
-                if (stype == null || stype.getName().equals("Document")) {// the default
-                    obj = getDefaultObject();
-                } else {
-                    obj = getInstanceOf(stype);
-                }
-            } else {
-                obj = registry.get(id);
-                if (obj == null) {
-                    Type stype = type.getSuperType();
-                    if (stype == null || stype.getName().equals("Document")) {// the default
-                        obj = getDefaultObject();
-                    } else {
-                        obj = getInstanceOf(stype);
-                    }
-                }
-            }
-            objects.put(typeName, obj);
-        }
-        return obj;
     }
 
     public synchronized ObjectDescriptor getObject(String id) {

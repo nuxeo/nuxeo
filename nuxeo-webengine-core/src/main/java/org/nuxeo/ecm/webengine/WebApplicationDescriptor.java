@@ -50,9 +50,6 @@ public class WebApplicationDescriptor {
     @XNode("defaultPage")
     protected String defaultPage;
 
-    @XNode("requestHandler")
-    protected Class<?> requestHandlerClass;
-
     @XNode("documentResolver")
     protected Class<?> documentResolverClass;
 
@@ -80,7 +77,7 @@ public class WebApplicationDescriptor {
      * @return the indexPage.
      */
     public String getIndexPage() {
-        return indexPage == null ? "indexPage.ftl" : indexPage;
+        return indexPage == null ? "index.ftl" : indexPage;
     }
 
     /**
@@ -108,7 +105,7 @@ public class WebApplicationDescriptor {
      * @return the errorPage.
      */
     public String getErrorPage() {
-        return errorPage == null ? "errorPage.ftl" : errorPage;
+        return errorPage == null ? "error.ftl" : errorPage;
     }
 
     /**
@@ -183,32 +180,6 @@ public class WebApplicationDescriptor {
         this.documentResolverClass = documentResolverClass;
     }
 
-    /**
-     * @return the requestHandlerClass.
-     */
-    public Class<?> getRequestHandlerClass() {
-        return requestHandlerClass == null ? DefaultRequestHandler.class : requestHandlerClass ;
-    }
-
-    /**
-     * @param requestHandlerClass the requestHandlerClass to set.
-     */
-    public void setRequestHandlerClass(Class<?> requestHandlerClass) {
-        this.requestHandlerClass = requestHandlerClass;
-    }
-
-    public RequestHandler getRequestHandler() throws WebDeployException {
-        if (requestHandlerClass == null) {
-            return new DefaultRequestHandler();
-        } else {
-            try {
-                return (RequestHandler)requestHandlerClass.newInstance();
-            } catch (Exception e) {
-                throw new WebDeployException("Failed to instantiate Resquest handler class: "+requestHandlerClass, e);
-            }
-        }
-    }
-
     public DocumentResolver getDocumentResolver() throws WebDeployException {
         if (documentResolverClass == null) {
             return new DefaultDocumentResolver();
@@ -216,7 +187,7 @@ public class WebApplicationDescriptor {
             try {
                 return (DocumentResolver)documentResolverClass.newInstance();
             } catch (Exception e) {
-                throw new WebDeployException("Failed to instantiate Resquest handler class: "+requestHandlerClass, e);
+                throw new WebDeployException("Failed to instantiate Resquest handler class: "+documentResolverClass, e);
             }
         }
     }

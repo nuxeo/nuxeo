@@ -47,7 +47,6 @@ public class DefaultWebApplication implements WebApplication {
     protected String errorPage;
     protected String indexPage;
     protected String defaultPage;
-    protected RequestHandler requestHandler;
     protected DocumentResolver documentResolver;
     protected Map<String, String> typeBindings;
     protected PathMapper mapper;
@@ -62,7 +61,6 @@ public class DefaultWebApplication implements WebApplication {
         this.defaultPage = desc.getDefaultPage();
         this.indexPage = desc.getIndexPage();
         this.errorPage = desc.getErrorPage();
-        this.requestHandler = desc.getRequestHandler();
         this.documentResolver = desc.getDocumentResolver();
         List<ObjectBindingDescriptor> list = desc.getBindings();
         if (list != null && !list.isEmpty()) {
@@ -109,13 +107,6 @@ public class DefaultWebApplication implements WebApplication {
     }
 
     /**
-     * @return the requestHandler.
-     */
-    public RequestHandler getRequestHandler() {
-        return requestHandler;
-    }
-
-    /**
      * @return the documentResolver.
      */
     public DocumentResolver getDocumentResolver() {
@@ -150,11 +141,13 @@ public class DefaultWebApplication implements WebApplication {
 
 
     public String getTypeBinding(String type) {
-        String id = typeBindings.get(type);
-        if (id == null) {
-            id = engine.getTypeBinding(type);
+        if (typeBindings != null) {
+            String id = typeBindings.get(type);
+            if (id != null) {
+                return id;
+            }
         }
-        return id;
+        return engine.getTypeBinding(type);
     }
 
     public ObjectDescriptor getDefaultObject() {
@@ -176,7 +169,7 @@ public class DefaultWebApplication implements WebApplication {
     public synchronized ObjectDescriptor getObjectDescriptor(Type type) {
         String typeName = type.getName();
         ObjectDescriptor obj = objects.get(typeName);
-        if (obj != null) { // not in cache
+        if (obj != null) { // in cache
             return obj;
         }
         String id = getTypeBinding(typeName);
@@ -223,4 +216,7 @@ public class DefaultWebApplication implements WebApplication {
         return vdir.getFile(path);
     }
 
+    public WebEngine getWebEngine() {
+        return engine;
+    }
 }

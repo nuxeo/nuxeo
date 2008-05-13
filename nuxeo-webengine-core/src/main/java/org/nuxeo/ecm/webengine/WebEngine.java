@@ -23,7 +23,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 
 
@@ -34,10 +33,6 @@ import org.nuxeo.ecm.webengine.scripting.Scripting;
 public interface WebEngine {
 
     Scripting getScripting();
-
-    WebRoot getDefaultSiteRoot() throws WebException;
-
-    WebRoot getSiteRoot(String name) throws WebException;
 
     File getRootDirectory();
 
@@ -57,11 +52,7 @@ public interface WebEngine {
 
     List<ObjectDescriptor> getResolvedObjects();
 
-    ObjectDescriptor getInstanceOf(Type type);
-
     ObjectDescriptor getObject(String id);
-
-    ObjectDescriptor getDefaultObject();
 
     boolean isObjectResolved(String id);
 

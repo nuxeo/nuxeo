@@ -80,7 +80,7 @@ public class DefaultWebContext implements WebContext {
 
     protected String pathInfo;
 
-    protected WebRoot root;
+    protected WebApplication app;
     protected Mapping mapping;
     protected String action; // the current object view
     protected FormData form;
@@ -88,10 +88,10 @@ public class DefaultWebContext implements WebContext {
     protected final Map<String,Object> vars; // global vars to share between scripts
 
 
-    public DefaultWebContext(WebRoot root, HttpServletRequest req, HttpServletResponse resp) {
+    public DefaultWebContext(WebApplication app, HttpServletRequest req, HttpServletResponse resp) {
         this.request = req;
-        this.root = root;
-        engine = root.getWebEngine();
+        this.app = app;
+        engine = app.getWebEngine();
         this.response = resp;
         vars = new HashMap<String, Object>();
     }
@@ -179,8 +179,8 @@ public class DefaultWebContext implements WebContext {
         return response;
     }
 
-    public WebRoot getRoot() {
-        return root;
+    public WebApplication getApplication() {
+        return app;
     }
 
     public WebObject getFirstObject() {
@@ -212,7 +212,7 @@ public class DefaultWebContext implements WebContext {
     public ScriptFile getTargetScript() throws IOException {
         String path = null;
         if (mapping != null) {
-            return root.getScript(mapping.getScript());
+            return app.getScript(mapping.getScript());
         } else if (action != null) {
             if (lastResolved != null) {
                 path = lastResolved.getActionScript(action);
@@ -227,10 +227,10 @@ public class DefaultWebContext implements WebContext {
                     path = first.getName();
                 }
             } else {
-                path = root.getDefaultPage();
+                path = app.getDefaultPage();
             }
         }
-        return root.getScript(path);
+        return app.getScript(path);
     }
 
     public String getURI() {
@@ -324,7 +324,7 @@ public class DefaultWebContext implements WebContext {
 
     public void runScript(String script, Map<String, Object> args) throws WebException {
         try {
-            engine.getScripting().runScript(this, root.getScript(script), createBindings(args));
+            engine.getScripting().runScript(this, app.getScript(script), createBindings(args));
         } catch (WebException e) {
             throw e;
         } catch (Exception e) {
@@ -336,15 +336,6 @@ public class DefaultWebContext implements WebContext {
         this.action = name;
     }
 
-    //XXX cleanup the web root implementation
-    public void setRoot(String path) throws WebException {
-        WebRoot root = engine.getSiteRoot(path);
-        if (root != null) {
-            this.root = root;
-        } else {
-            throw new WebException("No such web root: "+path);
-        }
-    }
 
     public void setProperty(String key, Object value) {
         vars.put(key, value);

@@ -45,7 +45,6 @@ import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebObject;
-import org.nuxeo.ecm.webengine.WebRoot;
 import org.nuxeo.ecm.webengine.actions.Actions;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
@@ -120,8 +119,12 @@ public class WebServlet extends HttpServlet {
                 displayError(resp, e, "Failed to create request",
                         WebConst.SC_INTERNAL_SERVER_ERROR);
             } else {
-                WebRoot root = context.getRoot();
-                ScriptFile page = root.getScript(root.getErrorPage());
+                ScriptFile page = app.getScript(app.getErrorPage());
+                if (page == null) {
+                    displayError(resp, e, e.getMessage(),
+                            WebConst.SC_INTERNAL_SERVER_ERROR);
+                    return;
+                }
                 try {
                     context.setProperty("error", e);
                     engine.getScripting().exec(context, page);
@@ -232,33 +235,21 @@ public class WebServlet extends HttpServlet {
 
     public WebContext createRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         String pathInfo = req.getPathInfo();
-        WebRoot root;
         if (pathInfo == null || "/".equals(pathInfo)) {
-            root = engine.getDefaultSiteRoot();
             pathInfo = "/index.ftl"; //TODO use the config to get the name of the index
         } else {
             int p = pathInfo.indexOf('/', 1);
             String siteName = null;
             if (p == -1) {
                 siteName = pathInfo.substring(1);
-                root = engine.getSiteRoot(siteName);
-                if (root != null) {
-                } else {
-                    root = engine.getDefaultSiteRoot();
-                    siteName = null;
-                }
             } else {
                 siteName = pathInfo.substring(1, p);
-                root = engine.getSiteRoot(siteName);
-                if (root == null) {
-                    root = engine.getDefaultSiteRoot();
-                }
             }
         }
-        DefaultWebContext context = new DefaultWebContext(root, req, resp);
+        DefaultWebContext context = new DefaultWebContext(app, req, resp);
         // traverse documents if any
         String[] traversal = null;
-        Mapping mapping = root.getMapping(pathInfo);
+        Mapping mapping = app.getMapping(pathInfo);
         if (mapping != null) { // get the traversal defined by the mapping if any
             traversal = mapping.getTraversalPath();
         }
@@ -281,16 +272,16 @@ public class WebServlet extends HttpServlet {
             // nothing to traverse
             return;
         }
+        WebApplication app = context.getApplication();
         CoreSession session = context.getCoreSession();
         String name = traversal[0];
-        WebRoot root = context.getRoot();
-        DocumentResolver resolver = root.getResolver();
+        DocumentResolver resolver = app.getDocumentResolver();
         int p = name.lastIndexOf(WebConst.ACTION_SEPARATOR);
         if (p > -1) {
             context.setActionName(name.substring(p+WebConst.ACTION_SEPARATOR.length()));
             name = name.substring(0, p);
         }
-        DocumentModel doc = resolver.getRootDocument(root, name, session);
+        DocumentModel doc = resolver.getRootDocument(app, name, session);
         context.addWebObject(name, doc);
         if (doc == null) { // abort traversing
             // add the unresolved objects
@@ -307,7 +298,7 @@ public class WebServlet extends HttpServlet {
                     context.setActionName(name.substring(p+WebConst.ACTION_SEPARATOR.length()));
                     name = name.substring(0, p);
                 }
-                doc = resolver.getSiteSegment(root, doc, name, session);
+                doc = resolver.getSiteSegment(app, doc, name, session);
                 context.addWebObject(name, doc);
                 if (doc == null) {
                     for (i=i+1; i<traversal.length; i++) {
