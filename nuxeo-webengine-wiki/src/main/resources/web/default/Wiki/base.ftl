@@ -26,7 +26,8 @@ $.fn.search = function() {
 		}
 	});
 };
-$("#q").search();
+
+
 
 </script>
 
