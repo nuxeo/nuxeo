@@ -67,8 +67,6 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
 
     private static final long serialVersionUID = -3661302796286246086L;
 
-    Map<String, Serializable> properties;
-
     @Override
     public void setProperties(Map<String, Serializable> properties) {
         if (properties != null) {
