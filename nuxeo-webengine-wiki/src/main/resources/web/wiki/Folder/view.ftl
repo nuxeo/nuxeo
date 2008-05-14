@@ -7,13 +7,13 @@
 <p>${french}</p>
 
 <#--
-<#list query("SELECT * FROM Document") as entry>
+<#list Context.search("SELECT * FROM Document") as entry>
         <li>${entry.title}</li>
         </#list>
 -->
 aaaaaaaaaaaaaa
 <ul>
- <#list query("SELECT * FROM Document") as doc>
+ <#list Context.search("SELECT * FROM Document") as doc>
 <li> ${doc.title} </li>
 </#list>
 </ul>

@@ -94,6 +94,7 @@ public class Scripting {
         ScriptFile script = context.getTargetScript();
         if (script == null) {
             context.cancel(WebConst.SC_NOT_FOUND);
+            return;
         }
         if (script.getFile().isFile()) {
             exec(context, script);
