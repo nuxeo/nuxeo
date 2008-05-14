@@ -8,7 +8,7 @@
   
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
              point="application">
-    <webapp id="nuxeo-web">
+    <webapp id="nuxeo-web" fragment="nuxeo-wiki">
       <roots>
         <root priority="1">wiki</root>
       </roots>

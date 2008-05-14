@@ -36,7 +36,7 @@ public class RootDescriptor implements Comparable<RootDescriptor> {
     public int priority;
 
     public int compareTo(RootDescriptor o) {
-        return priority - o.priority;
+        return o.priority - priority;
     }
 
 }

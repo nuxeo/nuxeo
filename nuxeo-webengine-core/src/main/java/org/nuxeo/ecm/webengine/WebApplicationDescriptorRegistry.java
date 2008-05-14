@@ -36,14 +36,23 @@ public class WebApplicationDescriptorRegistry {
         WebApplicationDescriptor prev = base;
         while (base != null) {
             if (base.fragment == desc.fragment || (base.fragment != null && base.fragment.equals(desc.fragment))) {
-                base.setRemoved(false);
+                if (base.isRemoved()) {
+                    base.setRemoved(false);
+                } else if (prev != null) {
+                    prev.setNext(desc);
+                } else {
+                    registry.put(desc.id, desc);
+                }
                 return get(desc.id);
             }
             prev = base;
             base = base.next();
         }
-        prev.setNext(desc);
-        registry.put(desc.id, desc);
+        if (prev != null) {
+            prev.setNext(desc);
+        } else {
+            registry.put(desc.id, desc);
+        }
         return get(desc.id);
     }
 

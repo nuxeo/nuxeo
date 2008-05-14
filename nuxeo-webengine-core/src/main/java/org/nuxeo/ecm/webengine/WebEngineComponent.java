@@ -148,12 +148,15 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
     }
 
     public void loadConfiguration(RuntimeContext context, File file, boolean trackChanges) throws Exception {
-        context.deploy(file.toURI().toURL());
-        if (trackChanges) {
-            notifier.watch(file);
-        }
-        if (mgr != null) {
-            mgr.fireConfigurationChanged();
+        try {
+            context.deploy(file.toURI().toURL());
+        } finally {
+            if (trackChanges) {
+                notifier.watch(file);
+            }
+            if (mgr != null) {
+                mgr.fireConfigurationChanged();
+            }
         }
     }
 

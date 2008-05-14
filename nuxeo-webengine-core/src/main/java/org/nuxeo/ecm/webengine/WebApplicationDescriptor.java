@@ -227,6 +227,7 @@ public class WebApplicationDescriptor {
     }
 
     public void copyTo(WebApplicationDescriptor desc) {
+        desc.id = id;
         if (defaultPage != null) {
             desc.defaultPage = defaultPage;
         }
