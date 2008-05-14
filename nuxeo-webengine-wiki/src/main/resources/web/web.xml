@@ -4,6 +4,16 @@
     @author Bogdan Stefanescu (bs@nuxeo.com)
     Default Objects
   </documentation>
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+             point="application">
+    <webapp id="nuxeo-web">
+      <roots>
+        <root priority="0">default</root>
+      </roots>
+    </webapp>
+  </extension>
+
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent" point="binding"><binding type="Document" objectId="WebObject"/><binding type="WikiPage" objectId="WikiPage"/>`
     <binding type="Wiki" objectId="WikiSite"/></extension>
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent" point="webObject">
