@@ -112,7 +112,9 @@ public class SchedulerRegistryService extends DefaultComponent implements
             trigger = new CronTrigger(schedule.getId(), "nuxeo",
                     schedule.getCronExpression());
         } catch (ParseException e) {
-            e.printStackTrace();
+            log.error(String.format(
+                    "invalid cron expresion '%s' for schedule '%s'",
+                    schedule.getCronExpression(), schedule.getId()), e);
             return;
         }
         // This is useful when testing to avoid multiple threads:
@@ -121,7 +123,9 @@ public class SchedulerRegistryService extends DefaultComponent implements
         try {
             scheduler.scheduleJob(job, trigger);
         } catch (SchedulerException e) {
-            e.printStackTrace();
+            log.error(String.format(
+                    "failed to schedule job with id '%s': %s",
+                    schedule.getId(), e.getMessage()), e);
         }
     }
 
@@ -130,7 +134,9 @@ public class SchedulerRegistryService extends DefaultComponent implements
         try {
             scheduler.deleteJob(schedule.getId(), "nuxeo");
         } catch (SchedulerException e) {
-            e.printStackTrace();
+            log.error(String.format(
+                    "failed to unschedule job with '%s': %s",
+                    schedule.getId(), e.getMessage()), e);
         }
     }
 
