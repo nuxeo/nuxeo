@@ -63,11 +63,6 @@
       <!--adapter>org.nuxeo.ecm.core.api.CoreSessionAdapter</adapter-->
       <locator>%DocumentManagerBean</locator>
     </service>
-    <!-- temporary deployed here -> this should be moved in events facade -->
-    <service class="org.nuxeo.ecm.platform.events.api.DocumentMessageProducer"
-      group="core">
-      <locator>%JMSDocumentMessageProducerBean</locator>
-    </service>
     <service class="org.nuxeo.ecm.core.search.api.client.SearchService"
       group="search">
       <locator>%SearchServiceBean</locator>
