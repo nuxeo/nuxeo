@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
@@ -55,5 +54,4 @@ public interface WebApplication {
 
     public DocumentResolver getDocumentResolver();
 
-    public void loadConfiguration(WebApplicationDescriptor desc) throws WebDeployException;
 }

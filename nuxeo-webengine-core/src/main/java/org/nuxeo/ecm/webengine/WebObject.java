@@ -92,7 +92,7 @@ public class WebObject {
         WebApplication app = context.getApplication();
         if (doc != null) {
             String type = doc.getType();
-            path = type + '/' + action + ".ftl";
+            path = "/" + type + '/' + action + ".ftl";
             File file = app.getFile(path);
             if (file.isFile()) {
                 return path;

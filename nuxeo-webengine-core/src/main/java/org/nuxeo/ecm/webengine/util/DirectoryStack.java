@@ -133,7 +133,7 @@ public class DirectoryStack implements FileChangeListener {
             this.priority = priority;
         }
         public int compareTo(Entry o) {
-            return priority - o.priority;
+            return o.priority-priority; // put at the begining the bigest priorities (e.g. 10, 9, 8 ...)
         }
     }
 

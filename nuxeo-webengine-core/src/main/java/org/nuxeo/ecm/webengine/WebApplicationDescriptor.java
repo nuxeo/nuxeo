@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webengine;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -36,10 +35,18 @@ import org.nuxeo.ecm.webengine.mapping.MappingDescriptor;
 @XObject("webapp")
 public class WebApplicationDescriptor {
 
+    // the parent fragment if any
+    protected WebApplicationDescriptor next;
+    protected boolean isRemoved = false;
+
     @XNode("@id")
     protected String id;
 
-    protected RootDescriptor[] roots;
+    @XNode("@fragment")
+    protected String fragment;
+
+    @XNodeList(value="roots/root", type=ArrayList.class, componentType=RootDescriptor.class, nullByDefault=true)
+    protected List<RootDescriptor> roots;
 
     @XNode("errorPage")
     protected String errorPage;
@@ -53,11 +60,39 @@ public class WebApplicationDescriptor {
     @XNode("documentResolver")
     protected Class<?> documentResolverClass;
 
-    @XNodeList(value="mappings/mapping", type=ArrayList.class, componentType=MappingDescriptor.class)
+    @XNodeList(value="mappings/mapping", type=ArrayList.class, componentType=MappingDescriptor.class, nullByDefault=true)
     protected List<MappingDescriptor> mappings;
 
-    @XNodeList(value="bindings/binding", type=ArrayList.class, componentType=ObjectBindingDescriptor.class)
+    @XNodeList(value="bindings/binding", type=ArrayList.class, componentType=ObjectBindingDescriptor.class, nullByDefault=true)
     protected List<ObjectBindingDescriptor> bindings;
+
+    /**
+     * @param next the parent to set.
+     */
+    public void setNext(WebApplicationDescriptor next) {
+        this.next = next;
+    }
+
+    /**
+     * @return the parent.
+     */
+    public WebApplicationDescriptor next() {
+        return next;
+    }
+
+    /**
+     * @return the isRemoved.
+     */
+    public boolean isRemoved() {
+        return isRemoved;
+    }
+
+    /**
+     * @param isRemoved the isRemoved to set.
+     */
+    public void setRemoved(boolean isRemoved) {
+        this.isRemoved = isRemoved;
+    }
 
     /**
      * @return the id.
@@ -130,18 +165,12 @@ public class WebApplicationDescriptor {
     /**
      * @return the roots.
      */
-    public RootDescriptor[] getRoots() {
+    public List<RootDescriptor> getRoots() {
         return roots;
     }
 
-    @XNodeList(value="roots/root", type=RootDescriptor[].class, componentType=RootDescriptor.class)
-    public void setRoots(RootDescriptor[] descriptors) {
-        if (descriptors == null || descriptors.length == 0) {
-            roots = null;
-        } else {
-            Arrays.sort(descriptors);
-            roots = descriptors;
-        }
+    public void setRoots(ArrayList<RootDescriptor> descriptors) {
+        roots = descriptors;
     }
 
     /**
@@ -195,6 +224,39 @@ public class WebApplicationDescriptor {
             }
         }
         return null;
+    }
+
+    public void copyTo(WebApplicationDescriptor desc) {
+        if (defaultPage != null) {
+            desc.defaultPage = defaultPage;
+        }
+        if (indexPage != null) {
+            desc.indexPage = indexPage;
+        }
+        if (errorPage != null) {
+            desc.errorPage = errorPage;
+        }
+        if (documentResolverClass != null) {
+            desc.documentResolverClass = documentResolverClass;
+        }
+        if (roots != null && !roots.isEmpty()) {
+            if (desc.roots == null) {
+                desc.roots = new ArrayList<RootDescriptor>();
+            }
+            desc.roots.addAll(roots);
+        }
+        if (bindings != null && !bindings.isEmpty()) {
+            if (desc.bindings == null) {
+                desc.bindings = new ArrayList<ObjectBindingDescriptor>();
+            }
+            desc.bindings.addAll(bindings);
+        }
+        if (mappings != null && !mappings.isEmpty()) {
+            if (desc.mappings == null) {
+                desc.mappings = new ArrayList<MappingDescriptor>();
+            }
+            desc.mappings.addAll(mappings);
+        }
     }
 
 }

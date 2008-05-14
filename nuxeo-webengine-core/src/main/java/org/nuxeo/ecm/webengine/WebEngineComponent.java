@@ -74,9 +74,12 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
 
     private ResourceBundle messages;
 
+    private WebApplicationDescriptorRegistry appReg;
+
     @Override
     public void activate(ComponentContext context) throws Exception {
         ctx = context;
+        appReg = new WebApplicationDescriptorRegistry();
         File root = new File(Framework.getRuntime().getHome(), "web");
         root = root.getCanonicalFile();
         if (!root.exists()) {
@@ -135,6 +138,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
     public void deactivate(ComponentContext context) throws Exception {
         notifier.stop();
         notifier.removeListener(this);
+        appReg = null;
         notifier = null;
         ctx = null;
     }
@@ -148,6 +152,9 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
         if (trackChanges) {
             notifier.watch(file);
         }
+        if (mgr != null) {
+            mgr.fireConfigurationChanged();
+        }
     }
 
     public void unloadConfiguration(RuntimeContext context, File file, boolean trackChanges) throws Exception {
@@ -155,7 +162,29 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
         if (trackChanges) {
             notifier.unwatch(file);
         }
+        if (mgr != null) {
+            mgr.fireConfigurationChanged();
+        }
     }
+
+    public void unregisterApplication(WebApplicationDescriptor desc) throws WebException {
+        desc = appReg.remove(desc);
+        if (desc == null) {
+            mgr.unregisterApplication(desc.id);
+        } else {
+            mgr.registerApplication(desc);
+        }
+        mgr.fireConfigurationChanged();
+    }
+
+    public void registerApplication(WebApplicationDescriptor desc) throws WebException {
+        desc = appReg.add(desc);
+        if (desc != null) {
+            mgr.registerApplication(desc);
+        }
+        mgr.fireConfigurationChanged();
+    }
+
 
     @Override
     public void registerContribution(Object contribution,
@@ -182,12 +211,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
             }
         } else if (extensionPoint.equals(APPLICATION_XP)) {
             WebApplicationDescriptor desc = (WebApplicationDescriptor)contribution;
-            WebApplication app = mgr.getApplication(desc.id);
-            if (app != null) {
-                app.loadConfiguration(desc);
-            } else {
-                mgr.registerApplication(desc);
-            }
+            registerApplication(desc);
         } else if (extensionPoint.equals(INSTALL_XP)) {
             Installer installer = (Installer)contribution;
             installer.install(contributor.getContext(), mgr.getRootDirectory());
@@ -225,7 +249,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
             engine.setSharedVariable(fed.name, null);
         } else if (extensionPoint.equals(APPLICATION_XP)) {
             WebApplicationDescriptor desc = (WebApplicationDescriptor)contribution;
-            mgr.unregisterApplication(desc.id);
+            unregisterApplication(desc);
         } else if (extensionPoint.equals(INSTALL_XP)) {
             Installer installer = (Installer)contribution;
             installer.uninstall(contributor.getContext(), mgr.getRootDirectory());
