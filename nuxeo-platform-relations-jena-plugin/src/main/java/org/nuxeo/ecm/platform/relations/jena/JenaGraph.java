@@ -205,11 +205,10 @@ public class JenaGraph implements Graph {
         if (backend.equals("memory")) {
             if (memoryGraph == null || forceReload) {
                 memoryGraph = ModelFactory.createDefaultModel(ModelFactory.Convenient);
-                memoryGraph.setNsPrefixes(this.namespaces);
+                memoryGraph.setNsPrefixes(namespaces);
             }
             return new GraphConnection((Connection) null, memoryGraph);
         } else if (backend.equals("sql")) {
-            Model graph;
             DBConnection connection;
             Connection baseConnection = null;
             // create a database connection
@@ -252,6 +251,7 @@ public class JenaGraph implements Graph {
                         databasePassword, databaseType);
             }
             // check if named model already exists
+            Model graph;
             if (connection.containsModel(name)) {
                 ModelMaker m = ModelFactory.createModelRDBMaker(connection,
                         ModelFactory.Convenient);
@@ -309,7 +309,7 @@ public class JenaGraph implements Graph {
      * @param nuxNode NXrelations Node instance
      * @return Jena node instance
      */
-    private com.hp.hpl.jena.graph.Node getJenaNode(Node nuxNode) {
+    private static com.hp.hpl.jena.graph.Node getJenaNode(Node nuxNode) {
         if (nuxNode == null) {
             return null;
         }
@@ -414,7 +414,7 @@ public class JenaGraph implements Graph {
      * @param nuxStatement NXRelations statement
      * @return jena statement selector
      */
-    private SimpleSelector getJenaSelector(Model graph, Statement nuxStatement) {
+    private static SimpleSelector getJenaSelector(Model graph, Statement nuxStatement) {
         com.hp.hpl.jena.rdf.model.Resource subjResource = null;
         com.hp.hpl.jena.graph.Node subject = getJenaNode(nuxStatement.getSubject());
         if (subject != null && subject.isURI()) {
@@ -496,28 +496,28 @@ public class JenaGraph implements Graph {
             String value = option.getValue();
             if (key.equals("backend")) {
                 if (value.equals("memory") || value.equals("sql")) {
-                    this.backend = value;
+                    backend = value;
                 } else {
                     throw new IllegalArgumentException(String.format(
                             "Unknown backend %s for Jena graph", value));
                 }
             } else if (key.equals("datasource")) {
-                this.datasource = value;
+                datasource = value;
             } else if (key.equals("databaseType")) {
-                this.databaseType = value;
+                databaseType = value;
             } else if (key.equals("databaseUrl")) {
-                this.databaseUrl = value;
+                databaseUrl = value;
             } else if (key.equals("databaseUser")) {
-                this.databaseUser = value;
+                databaseUser = value;
             } else if (key.equals("databasePassword")) {
-                this.databasePassword = value;
+                databasePassword = value;
             } else if (key.equals("databaseDriverClass")) {
-                this.databaseDriverClass = value;
+                databaseDriverClass = value;
             } else if (key.equals("databaseDoCompressUri")) {
                 if (value.equals("true")) {
-                    this.databaseDoCompressUri = true;
+                    databaseDoCompressUri = true;
                 } else if (value.equals("false")) {
-                    this.databaseDoCompressUri = false;
+                    databaseDoCompressUri = false;
                 } else {
                     String format = "Illegal value %s for databaseDoCompressUri, must be true or false";
                     throw new IllegalArgumentException(String.format(format,
@@ -525,9 +525,9 @@ public class JenaGraph implements Graph {
                 }
             } else if (key.equals("databaseTransactionEnabled")) {
                 if (value.equals("true")) {
-                    this.databaseTransactionEnabled = true;
+                    databaseTransactionEnabled = true;
                 } else if (value.equals("false")) {
-                    this.databaseTransactionEnabled = false;
+                    databaseTransactionEnabled = false;
                 } else {
                     String format = "Illegal value %s for databaseTransactionEnabled, must be true or false";
                     throw new IllegalArgumentException(String.format(format,
@@ -1056,7 +1056,7 @@ class ConnectionFixInvocationHandler implements InvocationHandler {
 
     private final Connection connection;
 
-    public ConnectionFixInvocationHandler(Connection connection) {
+    ConnectionFixInvocationHandler(Connection connection) {
         this.connection = connection;
     }
 

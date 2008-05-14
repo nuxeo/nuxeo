@@ -47,8 +47,7 @@ public class WorkItemsListFactory implements Serializable {
 
     private static final long serialVersionUID = -1001657403902605977L;
 
-    private static final Log log = LogFactory
-            .getLog(WorkItemsListFactory.class);
+    private static final Log log = LogFactory.getLog(WorkItemsListFactory.class);
 
     public WorkItemsListEntry feed(String pid, String participantName, String label)
             throws WorkItemsListException {
@@ -78,10 +77,10 @@ public class WorkItemsListFactory implements Serializable {
 
         res.setProcessName(pi.getProcessDefinition().getName());
 
-        Collection<WMWorkItemInstance> wiis;
         Set<WMWorkItemInstance> filteredWis = new HashSet<WMWorkItemInstance>();
 
-        wiis = wapi.listWorkItems(pid, WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
+        Collection<WMWorkItemInstance> wiis = wapi.listWorkItems(pid,
+                WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
 
         for (WMWorkItemInstance wii : wiis) {
             if (wii.isCancelled()) {
