@@ -276,7 +276,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
             relPath = '/' + relPath;
         }
 //        if (file.getAbsolutePath().startsWith(mgr.getRootDirectory().getAbsolutePath())) {
-        if (relPath.equals("/web.xml")) {
+        if (relPath.endsWith("nuxeo-web.xml")) {
             try {
                 mgr.reset();
                 URL url = file.toURI().toURL();
@@ -284,7 +284,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
                 ctx.getRuntimeContext().deploy(url);
                 mgr.fireConfigurationChanged();
             } catch (Exception e) {
-                log.error("Failed to redeploy web.xml", e);
+                log.error("Failed to redeploy nuxeo-web.xml", e);
             }
         } else if (relPath.startsWith("/i18n/")) { // reload message bundle
             try {

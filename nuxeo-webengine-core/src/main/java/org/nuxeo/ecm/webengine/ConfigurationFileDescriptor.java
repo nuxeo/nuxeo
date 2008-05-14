@@ -29,7 +29,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("configuration")
 public class ConfigurationFileDescriptor {
 
-    @XNode("@file")
+    @XNode("@path")
     public String path;
 
     @XNode("@entry")

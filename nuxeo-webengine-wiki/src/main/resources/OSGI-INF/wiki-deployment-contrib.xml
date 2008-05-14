@@ -15,4 +15,12 @@
 	    
 	</extension>
 
+  <extension
+            target="org.nuxeo.ecm.webengine.WebEngineComponent"
+            point="configuration">
+    
+    <configuration path="/wiki/nuxeo-web.xml" />
+    
+  </extension>
+
 </component>
