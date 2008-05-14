@@ -15,7 +15,7 @@
       <exclude>config/sql.properties</exclude>
       <exclude>config/notification-config.xml</exclude>
       <exclude>config/fileManagerService-config-bundle.xml</exclude>
-		</excludes>
+    </excludes>
   </fileSet>
 
   <fileSet id="nuxeo-template-web-stateless">

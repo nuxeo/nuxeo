@@ -89,7 +89,6 @@
       group="platform">
       <locator>%PublishingServiceBean</locator>
     </service>
-    <!--service class="org.nuxeo.ecm.platform.types.ejb.TypeManager" group="platform"/-->
     <!-- the remote type provider used to import types : see below the provider extension -->
     <service class="org.nuxeo.ecm.core.schema.TypeProvider" group="core">
       <locator>%TypeProviderBean</locator>
