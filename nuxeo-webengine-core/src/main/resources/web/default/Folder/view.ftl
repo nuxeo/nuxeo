@@ -1,4 +1,4 @@
-<@extends src="/default/base.ftl">
+<@extends src="base.ftl">
 <@block name="content">
 <h2>${This.title}</h2>
 
@@ -11,7 +11,7 @@
         <li>${entry.title}</li>
         </#list>
 -->
-aaaaaaaaaaaaaa
+
 <ul>
  <#list Context.search("SELECT * FROM Document") as doc>
 <li> ${doc.title} </li>

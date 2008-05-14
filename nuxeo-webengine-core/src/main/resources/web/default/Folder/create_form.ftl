@@ -1,5 +1,5 @@
 <#assign name="${Context.getFirstUnresolvedSegment()}">
-<@extends src="/default/base.ftl">
+<@extends src="base.ftl">
 <@block name="content">
 <h2>Create Wiki Page : ${This.document.title} </h2>
 <form method="POST" action="${This.urlPath}/${name}@@create">

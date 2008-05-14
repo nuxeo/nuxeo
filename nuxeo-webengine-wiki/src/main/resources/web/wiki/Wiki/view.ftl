@@ -1,4 +1,4 @@
-<@extends src="/default/Wiki/base.ftl">
+<@extends src="Wiki/base.ftl">
 
 <@block name="content">
 <div class="summary-entries">

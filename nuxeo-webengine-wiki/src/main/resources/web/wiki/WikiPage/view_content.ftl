@@ -4,4 +4,4 @@
     <@transform name="wiki">${Document.wikiPage.content}</@transform>
 <div>
     <hr/>
-<#include "/default/includes/attached_files.ftl">
+<#include "includes/attached_files.ftl">

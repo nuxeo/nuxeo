@@ -5,7 +5,7 @@
 <#assign c1 = Session.getDocument(docRef(r1)).wikiPage.content />
 <#assign c2 = Session.getDocument(docRef(r2)).wikiPage.content />
 
-<@extends src="/default/WikiPage/view.ftl">
+<@extends src="WikiPage/view.ftl">
 <@block name="content">
 
 <script language="JavaScript" src="/nuxeo/site/files/resources/script/diff_match_patch.js"></script>

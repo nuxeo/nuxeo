@@ -9,6 +9,8 @@
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
              point="application">
     <webapp id="nuxeo-web" fragment="nuxeo-wiki">
+      <defaultPage>default.groovy</defaultPage>
+      <defaultPage>error.groovy</defaultPage>
       <roots>
         <root priority="1">wiki</root>
       </roots>

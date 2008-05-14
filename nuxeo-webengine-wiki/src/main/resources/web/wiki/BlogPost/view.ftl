@@ -1,4 +1,4 @@
-<@extends src="/default/Blog/base.ftl">
+<@extends src="Blog/base.ftl">
 <@block name="content">
 <script>
 $(document).ready(function(){

@@ -1,4 +1,4 @@
-<@extends src="/default/base.ftl">
+<@extends src="base.ftl">
 <@block name="content">
 <h2>${This.document.title}</h2>
 

@@ -1,7 +1,7 @@
 <#assign q>SELECT * FROM Document WHERE (ecm:fulltext = "${Request.getParameter('q')}") AND (ecm:isCheckedInVersion = 0) AND (ecm:path STARTSWITH "${Request.getParameter("p")}")  ORDER BY dc:modified</#assign>
 
 
-<@extends src="/default/Wiki/base.ftl">
+<@extends src="Wiki/base.ftl">
 
 <@block name="content">
 

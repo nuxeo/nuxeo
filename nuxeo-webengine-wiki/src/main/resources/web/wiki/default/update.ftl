@@ -1,5 +1,5 @@
 
-<@extends src="/default/default/view.ftl">
+<@extends src="default/view.ftl">
 <@block name="message">
 Updated successfully!
 </@block>

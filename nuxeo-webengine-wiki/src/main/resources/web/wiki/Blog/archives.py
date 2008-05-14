@@ -42,5 +42,5 @@ r = Context.query(pquery)
 toto = "SELECT * FROM Document"
 
 
-Context.render('/default/Blog/archives.ftl',
+Context.render('Blog/archives.ftl',
            {'year': year, 'month': month, 'pquery': str(pquery)})

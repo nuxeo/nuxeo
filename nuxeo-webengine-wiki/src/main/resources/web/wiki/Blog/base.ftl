@@ -49,7 +49,7 @@ $("#q").search();
       </div>
 
       <div id="sidebar">
-          <#include "/default/includes/sidebar.ftl"/>
+          <#include "includes/sidebar.ftl"/>
       </div>
     </div>
     <div id="footer">

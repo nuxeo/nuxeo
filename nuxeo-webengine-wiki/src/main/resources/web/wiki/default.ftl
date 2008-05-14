@@ -1,4 +1,4 @@
-<@extends src="/default/base.ftl">
+<@extends src="base.ftl">
 <@block name="content">
 
 <h3>Unknown Page</h3>
