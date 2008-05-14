@@ -312,7 +312,7 @@ public class DefaultWebContext implements WebContext {
         }
         try {
             Bindings bindings = createBindings(map);
-            engine.getScripting().getRenderingEngine().render(template, bindings, response.getWriter());
+            app.getScripting().getRenderingEngine().render(template, bindings, response.getWriter());
         } catch (Exception e) {
             throw new WebException("Failed to render template: "+template, e);
         } finally {
@@ -326,7 +326,7 @@ public class DefaultWebContext implements WebContext {
 
     public void runScript(String script, Map<String, Object> args) throws WebException {
         try {
-            engine.getScripting().runScript(this, app.getScript(script), createBindings(args));
+            app.getScripting().runScript(this, app.getScript(script), createBindings(args));
         } catch (WebException e) {
             throw e;
         } catch (Exception e) {

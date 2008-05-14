@@ -19,11 +19,7 @@
 
 package org.nuxeo.ecm.platform.rendering.fm;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Writer;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -43,11 +39,6 @@ import org.nuxeo.ecm.platform.rendering.fm.extensions.NewMethod;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.SuperBlockDirective;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.TransformDirective;
 
-import freemarker.cache.ClassTemplateLoader;
-import freemarker.cache.FileTemplateLoader;
-import freemarker.cache.MultiTemplateLoader;
-import freemarker.cache.TemplateLoader;
-import freemarker.cache.URLTemplateLoader;
 import freemarker.core.Environment;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -62,8 +53,6 @@ public class FreemarkerEngine implements RenderingEngine {
 
     protected final Configuration cfg;
 
-    protected ResourceLocator locator;
-
     // the wrapper is not a singleton since it contains some info about the engine instance
     // so we will have one wrapper per engine instance
     protected final DocumentObjectWrapper wrapper;
@@ -72,13 +61,14 @@ public class FreemarkerEngine implements RenderingEngine {
 
     protected final MessagesMethod messages = new MessagesMethod(null);
 
+    protected ResourceTemplateLoader loader;
+
     public FreemarkerEngine() {
-        this(null, null, (File[])null);
+        this(null, null);
     }
 
-    public FreemarkerEngine(Configuration cfg, ResourceLocator locator, File ... resourceDirs) {
+    public FreemarkerEngine(Configuration cfg, ResourceLocator locator) {
         this.wrapper = new DocumentObjectWrapper(this);
-        this.locator = locator;
         this.cfg = cfg == null ? new Configuration() : cfg;
         this.cfg.setWhitespaceStripping(true);
         this.cfg.setLocalizedLookup(false);
@@ -95,7 +85,7 @@ public class FreemarkerEngine implements RenderingEngine {
         this.cfg.setSharedVariable("message", messages);
 
         this.cfg.setCustomAttribute(RENDERING_ENGINE_KEY, this);
-        addResourceDirectories(resourceDirs);
+        setResourceLocator(locator);
     }
 
     public void setMessageBundle(ResourceBundle messages) {
@@ -107,35 +97,20 @@ public class FreemarkerEngine implements RenderingEngine {
     }
 
     public void setResourceLocator(ResourceLocator locator) {
-        this.locator = locator;
+        this.loader = new ResourceTemplateLoader(locator);
+        this.cfg.setTemplateLoader(loader);
     }
 
     public ResourceLocator getResourceLocator() {
-        return locator;
+        return this.loader.getLocator();
     }
 
-    public void addResourceDirectories(File ... dirs) {
-        TemplateLoader[] loaders = null;
-        if (dirs != null) {
-            int size = dirs.length + 2;
-            loaders = new TemplateLoader[size];
-            for (int i=0; i<dirs.length; i++) {
-                try {
-                    loaders[i] = new FileTemplateLoader(dirs[i], true);
-                } catch (IOException e) {
-                    e.printStackTrace(); //TODO continue?
-                }
-            }
-            loaders[size-2] = new ResourceTemplateLoader();
-            loaders[size-1] = new ClassTemplateLoader(FreemarkerEngine.class, "");
-        } else {
-            loaders = new TemplateLoader[2];
-            loaders[0] = new ResourceTemplateLoader();
-            loaders[1] = new ClassTemplateLoader(FreemarkerEngine.class, "");
-        }
-        cfg.setTemplateLoader(new MultiTemplateLoader(loaders));
+    /**
+     * @return the loader.
+     */
+    public ResourceTemplateLoader getLoader() {
+        return loader;
     }
-
 
     public void setSharedVariable(String key, Object value) {
         try {
@@ -174,22 +149,6 @@ public class FreemarkerEngine implements RenderingEngine {
         } catch (Exception e) {
             throw new RenderingException(e);
         }
-    }
-
-    class ResourceTemplateLoader extends URLTemplateLoader {
-
-        @Override
-        protected URL getURL(String arg0) {
-            if (locator != null) {
-                return locator.getResource(arg0);
-            }
-            try {
-                return new URL(arg0);
-            } catch (MalformedURLException e) {
-                return null;
-            }
-        }
-
     }
 
 }

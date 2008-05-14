@@ -22,8 +22,9 @@ package org.nuxeo.ecm.webengine;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
-import org.nuxeo.ecm.webengine.scripting.Scripting;
+import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
 
 
 /**
@@ -32,7 +33,9 @@ import org.nuxeo.ecm.webengine.scripting.Scripting;
  */
 public interface WebEngine {
 
-    Scripting getScripting();
+    ResourceBundle getMessages();
+
+    void setMessages(ResourceBundle messages);
 
     File getRootDirectory();
 
@@ -73,5 +76,17 @@ public interface WebEngine {
     void removeConfigurationChangedListener(ConfigurationChangedListener listener);
 
     void fireConfigurationChanged() throws WebException;
+
+    void registerRenderingTemplate(String id, Object obj);
+
+    void unregisterRenderingTemplate(String id);
+
+    Object getRenderingTemplate(String id);
+
+    void registerRenderingTransformer(String id, RenderingTransformer obj);
+
+    void unregisterRenderingTransformer(String id);
+
+    RenderingTransformer getRenderingTransformer(String id);
 
 }

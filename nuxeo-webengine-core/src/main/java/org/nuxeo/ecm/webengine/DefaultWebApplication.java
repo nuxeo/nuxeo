@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,12 +29,18 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.url.URLFactory;
+import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
+import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.mapping.MappingDescriptor;
 import org.nuxeo.ecm.webengine.mapping.PathMapper;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
+import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.util.DirectoryStack;
 
 /**
@@ -42,7 +49,10 @@ import org.nuxeo.ecm.webengine.util.DirectoryStack;
  */
 public class DefaultWebApplication implements WebApplication {
 
+    public final static Log log = LogFactory.getLog(WebApplication.class);
+
     protected WebEngine engine;
+    protected Scripting scripting;
     protected String id;
     protected DirectoryStack vdir;
     protected String errorPage;
@@ -51,6 +61,8 @@ public class DefaultWebApplication implements WebApplication {
     protected DocumentResolver documentResolver;
     protected Map<String, String> typeBindings;
     protected PathMapper mapper;
+
+    protected WebApplicationDescriptor desc;
 
     // object binding cache
     protected ConcurrentMap<String, ObjectDescriptor> objects;
@@ -89,13 +101,45 @@ public class DefaultWebApplication implements WebApplication {
                     this.vdir.addDirectory(file, rd.priority);
                 }
             }
-        } catch (IOException e) {
+
+            FreemarkerEngine rendering = new FreemarkerEngine();
+            rendering.setResourceLocator(this);
+            rendering.setSharedVariable("env", engine.getEnvironment());
+            if (desc.transformers != null) {
+                for (String name : desc.transformers) {
+                    RenderingTransformer tr = engine.getRenderingTransformer(name);
+                    if (tr != null) {
+                        rendering.setTransformer(name, tr);
+                    } else {
+                        log.warn("Unknown rendering extension: "+name);
+                    }
+                }
+            }
+            if (desc.templates != null) {
+                for (String name : desc.templates) {
+                    Object tpl = engine.getRenderingTemplate(name);
+                    if (tpl != null) {
+                        rendering.setSharedVariable(name, tpl);
+                    } else {
+                        log.warn("Unknown rendering extension: "+name);
+                    }
+                }
+            }
+            this.scripting = new Scripting(rendering);
+            objects = new ConcurrentHashMap<String, ObjectDescriptor>();
+            this.desc = desc;
+        } catch (Exception e) {
             throw new WebDeployException("Failed to create virtual directory for webapp: "+id, e);
         }
-
-        objects = new ConcurrentHashMap<String, ObjectDescriptor>();
     }
 
+    public WebApplicationDescriptor getDescriptor(){
+        return desc;
+    }
+
+    public Scripting getScripting() {
+        return scripting;
+    }
 
     /**
      * @return the engine.
@@ -227,6 +271,47 @@ public class DefaultWebApplication implements WebApplication {
 
     public WebEngine getWebEngine() {
         return engine;
+    }
+
+    public void registerTemplate(String id, Object obj) {
+        if (desc.getTemplates() != null && desc.getTemplates().contains(id)) {
+            scripting.getRenderingEngine().setSharedVariable(id, obj);
+        }
+    }
+
+    public void unregisterTemplate(String id) {
+        if (desc.getTemplates() != null && desc.getTemplates().contains(id)) {
+            scripting.getRenderingEngine().setSharedVariable(id, null);
+        }
+    }
+
+    public void registerTransformer(String id, RenderingTransformer obj) {
+        if (desc.getTemplates() != null && desc.getTemplates().contains(id)) {
+            scripting.getRenderingEngine().setTransformer(id, obj);
+        }
+    }
+
+    public void unregisterTransformer(String id) {
+        if (desc.getTemplates() != null && desc.getTemplates().contains(id)) {
+            scripting.getRenderingEngine().setTransformer(id, null);
+        }
+    }
+
+
+    public URL getResourceURL(String key) {
+        try {
+            return URLFactory.getURL(key);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public File getResourceFile(String key) {
+        try {
+            return getFile(key);
+        } catch (IOException e) {
+            return null;
+        }
     }
 
 }

@@ -97,8 +97,12 @@ public class TransformDirective implements TemplateDirectiveModel {
                 String content = writer.getBuffer().toString();
                 tr.transform(new StringReader(content), env.getOut());
             } else {
-                URL url = engine.getResourceLocator().getResource(src);
-                tr.transform(url, env.getOut());
+                URL url = engine.getResourceLocator().getResourceURL(src);
+                if (url != null) {
+                    tr.transform(url, env.getOut());
+                } else {
+                    throw new IllegalArgumentException("Cannot resolve the src attribute: "+src);
+                }
             }
         } catch (RenderingException e) {
             throw new TemplateException("Running "+name+" transformer failed", e, env);

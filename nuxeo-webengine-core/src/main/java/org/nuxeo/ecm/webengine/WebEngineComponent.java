@@ -28,10 +28,6 @@ import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.url.URLFactory;
-import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
-import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
-import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.webengine.install.Installer;
 import org.nuxeo.ecm.webengine.rendering.RenderingTemplateDescriptor;
 import org.nuxeo.ecm.webengine.rendering.TransformerDescriptor;
@@ -52,7 +48,7 @@ import org.osgi.framework.Bundle;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebEngineComponent extends DefaultComponent implements ResourceLocator, FileChangeListener  {
+public class WebEngineComponent extends DefaultComponent implements FileChangeListener {
 
     public static final ComponentName NAME = new ComponentName(WebEngineComponent.class.getName());
 
@@ -67,9 +63,8 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
 
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
-    private WebEngine mgr;
+    private WebEngine engine;
     private FileChangeNotifier notifier;
-    private RenderingEngine engine;
     private ComponentContext ctx;
 
     private ResourceBundle messages;
@@ -87,21 +82,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
             // runtime predeployment is not supporting conditional unziping so we do the predeployment here:
             deployWebDir(context.getRuntimeContext().getBundle(), root);
         }
-        String val = (String)context.getPropertyValue("engine", null);
-        if (val != null) {
-            try {
-            engine = (RenderingEngine)context.getRuntimeContext().loadClass(val).newInstance();
-            } catch (Exception e) {
-                log.error("Failed to load rendering engine from component configuration -> using the default freemarker engine", e);
-            }
-        }
-        if (engine == null) {
-            engine = new FreemarkerEngine(); // the default engine
-        }
-        engine.setResourceLocator(this);
-        engine.addResourceDirectories(new File("/"), root); //TODO
-        engine.setMessageBundle(messages);
-        mgr = new DefaultWebEngine(root, engine);
+        engine = new DefaultWebEngine(root, messages);
         notifier = new FileChangeNotifier();
         notifier.start();
         notifier.addListener(this);
@@ -125,7 +106,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
         WebClassLoader cl = new WebClassLoader();
         cl.addFile(file);
         messages = ResourceBundle.getBundle("messages", Locale.getDefault(), cl);
-        engine.setMessageBundle(messages);
+        engine.setMessages(messages);
         if (!reload) {
             notifier.watch(file);
             for (File f : file.listFiles()) {
@@ -154,8 +135,8 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
             if (trackChanges) {
                 notifier.watch(file);
             }
-            if (mgr != null) {
-                mgr.fireConfigurationChanged();
+            if (engine != null) {
+                engine.fireConfigurationChanged();
             }
         }
     }
@@ -165,27 +146,27 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
         if (trackChanges) {
             notifier.unwatch(file);
         }
-        if (mgr != null) {
-            mgr.fireConfigurationChanged();
+        if (engine != null) {
+            engine.fireConfigurationChanged();
         }
     }
 
     public void unregisterApplication(WebApplicationDescriptor desc) throws WebException {
         desc = appReg.remove(desc);
         if (desc == null) {
-            mgr.unregisterApplication(desc.id);
+            engine.unregisterApplication(desc.id);
         } else {
-            mgr.registerApplication(desc);
+            engine.registerApplication(desc);
         }
-        mgr.fireConfigurationChanged();
+        engine.fireConfigurationChanged();
     }
 
     public void registerApplication(WebApplicationDescriptor desc) throws WebException {
         desc = appReg.add(desc);
         if (desc != null) {
-            mgr.registerApplication(desc);
+            engine.registerApplication(desc);
         }
-        mgr.fireConfigurationChanged();
+        engine.fireConfigurationChanged();
     }
 
 
@@ -195,20 +176,20 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
             throws Exception {
         if (TRANSFORMER_XP.equals(extensionPoint)) {
             TransformerDescriptor td = (TransformerDescriptor)contribution;
-            engine.setTransformer(td.getName(), td.newInstance());
+            engine.registerRenderingTransformer(td.getName(), td.newInstance());
         } else if (WEB_OBJ_XP.equals(extensionPoint)) {
             ObjectDescriptor obj = (ObjectDescriptor)contribution;
-            mgr.registerObject(obj);
+            engine.registerObject(obj);
         } else if (GUARD_XP.equals(extensionPoint)) {
             GuardDescriptor gd = (GuardDescriptor)contribution;
             PermissionService.getInstance().registerGuard(gd.getId(), gd.getGuard());
         } else if (BINDING_XP.equals(extensionPoint)) {
             ObjectBindingDescriptor binding = (ObjectBindingDescriptor)contribution;
-            mgr.registerBinding(binding.type, binding.objectId);
+            engine.registerBinding(binding.type, binding.objectId);
         } else if (extensionPoint.equals(RENDERING_TEMPLATE_XP)) {
             RenderingTemplateDescriptor fed = (RenderingTemplateDescriptor)contribution;
             try {
-                engine.setSharedVariable(fed.name, fed.newInstance(contributor));
+                engine.registerRenderingTemplate(fed.name, fed.newInstance());
             } catch (Exception e) {
                 throw new RuntimeServiceException("Deployment Error. Failed to contribute freemarker template extension: "+fed.name);
             }
@@ -217,11 +198,11 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
             registerApplication(desc);
         } else if (extensionPoint.equals(INSTALL_XP)) {
             Installer installer = (Installer)contribution;
-            installer.install(contributor.getContext(), mgr.getRootDirectory());
+            installer.install(contributor.getContext(), engine.getRootDirectory());
         } else if (extensionPoint.equals(CONFIG_XP)) {
             ConfigurationFileDescriptor cfg = (ConfigurationFileDescriptor)contribution;
             if (cfg.path != null) {
-                loadConfiguration(contributor.getContext(), new File(mgr.getRootDirectory(), cfg.path), cfg.trackChanges);
+                loadConfiguration(contributor.getContext(), new File(engine.getRootDirectory(), cfg.path), cfg.trackChanges);
             } else if (cfg.entry != null) {
                 throw new UnsupportedOperationException("Entry is not supported for now");
             } else {
@@ -236,30 +217,30 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (TRANSFORMER_XP.equals(extensionPoint)) {
-//            TransformerDescriptor td = (TransformerDescriptor)contribution;
-//            engine.setTransformer(td.getName(), td.newInstance());
+            TransformerDescriptor td = (TransformerDescriptor)contribution;
+            engine.unregisterRenderingTransformer(td.getName());
         } else if (WEB_OBJ_XP.equals(extensionPoint)) {
             ObjectDescriptor obj = (ObjectDescriptor)contribution;
-            mgr.unregisterObject(obj);
+            engine.unregisterObject(obj);
         } else if (GUARD_XP.equals(extensionPoint)) {
             GuardDescriptor gd = (GuardDescriptor)contribution;
             PermissionService.getInstance().unregisterGuard(gd.getId());
         } else if (BINDING_XP.equals(extensionPoint)) {
             ObjectBindingDescriptor binding = (ObjectBindingDescriptor)contribution;
-            mgr.unregisterBinding(binding.type);
+            engine.unregisterBinding(binding.type);
         } else if (extensionPoint.equals(RENDERING_TEMPLATE_XP)) {
             RenderingTemplateDescriptor fed = (RenderingTemplateDescriptor)contribution;
-            engine.setSharedVariable(fed.name, null);
+            engine.unregisterRenderingTemplate(fed.name);
         } else if (extensionPoint.equals(APPLICATION_XP)) {
             WebApplicationDescriptor desc = (WebApplicationDescriptor)contribution;
             unregisterApplication(desc);
         } else if (extensionPoint.equals(INSTALL_XP)) {
             Installer installer = (Installer)contribution;
-            installer.uninstall(contributor.getContext(), mgr.getRootDirectory());
+            installer.uninstall(contributor.getContext(), engine.getRootDirectory());
         } else if (extensionPoint.equals(CONFIG_XP)) {
             ConfigurationFileDescriptor cfg = (ConfigurationFileDescriptor)contribution;
             if (cfg.path != null) {
-                unloadConfiguration(contributor.getContext(), new File(mgr.getRootDirectory(), cfg.path), cfg.trackChanges);
+                unloadConfiguration(contributor.getContext(), new File(engine.getRootDirectory(), cfg.path), cfg.trackChanges);
             } else if (cfg.entry != null) {
                 throw new UnsupportedOperationException("Entry is not supported for now");
             } else {
@@ -271,22 +252,11 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter == WebEngine.class) {
-            return adapter.cast(mgr);
+            return adapter.cast(engine);
         } else if (adapter == FileChangeNotifier.class) {
             return adapter.cast(notifier);
         }
         return null;
-    }
-
-    public URL getResource(String templateName) {
-        try {
-            if (!templateName.contains(":/")) {
-                return new File(templateName).toURI().toURL();
-            }
-            return URLFactory.getURL(templateName);
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     public void fileChanged(File file, long since, long now) {
@@ -294,7 +264,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
             return;
         }
         String path = file.getAbsolutePath();
-        String rootPath = mgr.getRootDirectory().getAbsolutePath();
+        String rootPath = engine.getRootDirectory().getAbsolutePath();
         if (!path.startsWith(rootPath)) {
             return;
         }
@@ -305,17 +275,17 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
 //        if (file.getAbsolutePath().startsWith(mgr.getRootDirectory().getAbsolutePath())) {
         if (relPath.endsWith("nuxeo-web.xml")) {
             try {
-                mgr.reset();
+                engine.reset();
                 URL url = file.toURI().toURL();
                 ctx.getRuntimeContext().undeploy(url);
                 ctx.getRuntimeContext().deploy(url);
-                mgr.fireConfigurationChanged();
+                engine.fireConfigurationChanged();
             } catch (Exception e) {
                 log.error("Failed to redeploy nuxeo-web.xml", e);
             }
         } else if (relPath.startsWith("/i18n/")) { // reload message bundle
             try {
-                loadMessageBundle(mgr.getRootDirectory(), true);
+                loadMessageBundle(engine.getRootDirectory(), true);
             } catch (IOException e) {
                 e.printStackTrace();
             }

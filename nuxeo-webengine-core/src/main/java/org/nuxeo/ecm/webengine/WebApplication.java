@@ -23,14 +23,19 @@ import java.io.File;
 import java.io.IOException;
 
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
+import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
+import org.nuxeo.ecm.webengine.scripting.Scripting;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface WebApplication {
+public interface WebApplication extends ResourceLocator {
+
+    public Scripting getScripting();
 
     public Mapping getMapping(String pathInfo);
 
@@ -54,4 +59,11 @@ public interface WebApplication {
 
     public DocumentResolver getDocumentResolver();
 
+    public void registerTemplate(String id, Object obj);
+
+    public void unregisterTemplate(String id);
+
+    public void registerTransformer(String id, RenderingTransformer obj);
+
+    public void unregisterTransformer(String id);
 }

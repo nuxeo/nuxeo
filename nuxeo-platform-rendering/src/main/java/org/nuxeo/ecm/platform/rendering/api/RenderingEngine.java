@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.rendering.api;
 
-import java.io.File;
 import java.io.Writer;
 import java.util.ResourceBundle;
 
@@ -37,8 +36,6 @@ public interface RenderingEngine {
     void setResourceLocator(ResourceLocator locator);
 
     ResourceLocator getResourceLocator();
-
-    void addResourceDirectories(File ... dir);
 
     void setSharedVariable(String key, Object value);
 

@@ -66,6 +66,12 @@ public class WebApplicationDescriptor {
     @XNodeList(value="bindings/binding", type=ArrayList.class, componentType=ObjectBindingDescriptor.class, nullByDefault=true)
     protected List<ObjectBindingDescriptor> bindings;
 
+    @XNodeList(value="transformers/transformer", type=ArrayList.class, componentType=String.class, nullByDefault=true)
+    protected List<String> transformers;
+
+    @XNodeList(value="templates/template", type=ArrayList.class, componentType=String.class, nullByDefault=true)
+    protected List<String> templates;
+
     /**
      * @param next the parent to set.
      */
@@ -202,6 +208,34 @@ public class WebApplicationDescriptor {
     }
 
     /**
+     * @return the templates.
+     */
+    public List<String> getTemplates() {
+        return templates;
+    }
+
+    /**
+     * @param templates the templates to set.
+     */
+    public void setTemplates(List<String> templates) {
+        this.templates = templates;
+    }
+
+    /**
+     * @return the transformers.
+     */
+    public List<String> getTransformers() {
+        return transformers;
+    }
+
+    /**
+     * @param transformers the transformers to set.
+     */
+    public void setTransformers(List<String> transformers) {
+        this.transformers = transformers;
+    }
+
+    /**
      * @return the documentResolverClass.
      */
     public Class<?> getDocumentResolverClass() {
@@ -257,6 +291,18 @@ public class WebApplicationDescriptor {
                 desc.mappings = new ArrayList<MappingDescriptor>();
             }
             desc.mappings.addAll(mappings);
+        }
+        if (transformers != null && !transformers.isEmpty()) {
+            if (desc.transformers == null) {
+                desc.transformers = new ArrayList<String>();
+            }
+            desc.transformers.addAll(transformers);
+        }
+        if (templates != null && !templates.isEmpty()) {
+            if (desc.templates == null) {
+                desc.templates = new ArrayList<String>();
+            }
+            desc.templates.addAll(templates);
         }
     }
 

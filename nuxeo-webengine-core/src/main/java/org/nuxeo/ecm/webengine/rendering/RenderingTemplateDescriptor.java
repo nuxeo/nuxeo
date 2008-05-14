@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webengine.rendering;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.model.ComponentInstance;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -36,10 +35,10 @@ public class RenderingTemplateDescriptor {
     @XNode("@class")
     public Class<?> klass;
 
-    public Object newInstance(ComponentInstance component) throws Exception {
+    public Object newInstance() throws Exception {
         Object obj = klass.newInstance();
         if (obj instanceof RenderingTemplateFactory) {
-            obj = ((RenderingTemplateFactory)obj).createTemplate(component);
+            obj = ((RenderingTemplateFactory)obj).createTemplate();
         }
         return obj;
     }

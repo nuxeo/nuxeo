@@ -21,12 +21,13 @@ package org.nuxeo.ecm.webengine;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.nuxeo.common.collections.ListenerList;
-import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
-import org.nuxeo.ecm.webengine.scripting.Scripting;
+import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
 import org.nuxeo.ecm.webengine.util.DependencyTree;
 
 /**
@@ -35,7 +36,6 @@ import org.nuxeo.ecm.webengine.util.DependencyTree;
  */
 public class DefaultWebEngine implements WebEngine {
 
-    protected final Scripting scripting;
     protected final File root;
 
     protected final ObjectRegistry registry;
@@ -44,20 +44,39 @@ public class DefaultWebEngine implements WebEngine {
     protected Map<String, WebApplication> apps;
 
     protected final Map<String,Object> env;
+    protected ResourceBundle messages;
+
+    protected Map<String, Object> templates;
+    protected Map<String, RenderingTransformer> transformers;
 
     protected ListenerList listeners = new ListenerList();
 
-    public DefaultWebEngine(File root, RenderingEngine engine) {
+    public DefaultWebEngine(File root, ResourceBundle messages) {
         this.root = root;
-        scripting = new Scripting(engine);
+        this.messages = messages;
         registry = new ObjectRegistry();
         bindings = new HashMap<String, String>();
         this.env = new HashMap<String, Object>();
         this.apps = new HashMap<String, WebApplication>();
+        env.put("installDir", root);
+        env.put("engine", "Nuxeo Web Engine");
+        env.put("version", "1.0.0");
+        this.transformers = new Hashtable<String, RenderingTransformer>();
+        this.templates = new Hashtable<String, Object>();
     }
 
-    public Scripting getScripting() {
-        return scripting;
+    /**
+     * @return the messages.
+     */
+    public ResourceBundle getMessages() {
+        return messages;
+    }
+
+    /**
+     * @param messages the messages to set.
+     */
+    public void setMessages(ResourceBundle messages) {
+        this.messages = messages;
     }
 
     public File getRootDirectory() {
@@ -121,7 +140,8 @@ public class DefaultWebEngine implements WebEngine {
     }
 
     public void registerApplication(WebApplicationDescriptor desc) throws WebException {
-        apps.put(desc.id, new DefaultWebApplication(this, desc));
+        WebApplication app =  new DefaultWebApplication(this, desc);
+        apps.put(desc.id, app);
     }
 
     public void unregisterApplication(String id) {
@@ -130,6 +150,58 @@ public class DefaultWebEngine implements WebEngine {
 
     public WebApplication[]  getApplications() {
         return apps.values().toArray(new WebApplication[apps.size()]);
+    }
+
+
+    public void registerRenderingTemplate(String id, Object obj) {
+        templates.put(id, obj);
+        // notify all registered applications about the new template
+        for (WebApplication app : apps.values()) {
+            app.registerTemplate(id, obj);
+        }
+    }
+
+    public void unregisterRenderingTemplate(String id) {
+        templates.remove(id);
+        for (WebApplication app : apps.values()) {
+            app.unregisterTemplate(id);
+        }
+    }
+
+    public void registerRenderingTransformer(String id, RenderingTransformer obj) {
+        transformers.put(id, obj);
+        for (WebApplication app : apps.values()) {
+            app.registerTransformer(id, obj);
+        }
+    }
+
+    public void unregisterRenderingTransformer(String id) {
+        transformers.remove(id);
+        for (WebApplication app : apps.values()) {
+            app.unregisterTransformer(id);
+        }
+    }
+
+    /**
+     * @return the transformers.
+     */
+    public Map<String, RenderingTransformer> getTransformers() {
+        return transformers;
+    }
+
+    /**
+     * @return the templates.
+     */
+    public Map<String, Object> getTemplates() {
+        return templates;
+    }
+
+    public Object getRenderingTemplate(String id) {
+        return templates.get(id);
+    }
+
+    public RenderingTransformer getRenderingTransformer(String id) {
+        return transformers.get(id);
     }
 
     public void addConfigurationChangedListener(

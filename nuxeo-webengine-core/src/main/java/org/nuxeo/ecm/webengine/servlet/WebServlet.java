@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webengine.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -34,7 +33,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.webengine.ConfigurationChangedListener;
 import org.nuxeo.ecm.webengine.DefaultDocumentResolver;
@@ -50,7 +48,6 @@ import org.nuxeo.ecm.webengine.actions.Actions;
 import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
-import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -70,7 +67,6 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
 
     protected static DocumentResolver resolver = new DefaultDocumentResolver();
 
-    private Scripting scripting;
     private WebEngine engine;
     private WebApplication app;
 
@@ -79,13 +75,6 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         engine = Framework.getLocalService(WebEngine.class);
-        scripting = engine.getScripting();
-        Map<String,Object> env = engine.getEnvironment();
-        env.put("installDir", engine.getRootDirectory());
-        env.put("engine", "Nuxeo Site Engine");
-        env.put("version", "1.0.0");
-        RenderingEngine renderingEngine = scripting.getRenderingEngine();
-        renderingEngine.setSharedVariable("env", env);
         String webappId = config.getInitParameter("webapp");
         if (webappId == null) {
             webappId = "nuxeo-web"; // the default webapp
@@ -142,7 +131,7 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
                 }
                 try {
                     context.setProperty("error", e);
-                    engine.getScripting().exec(context, page);
+                    app.getScripting().exec(context, page);
                 } catch (Throwable ee) {
                     displayError(resp, ee, "Failed to show error page",
                             WebConst.SC_INTERNAL_SERVER_ERROR);
@@ -189,7 +178,7 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
         }
 
         double s = System.currentTimeMillis();
-        scripting.exec(context);
+        app.getScripting().exec(context);
         System.out.println(
                 ">>>>>>>>>> RENDERING TOOK: " + ((System.currentTimeMillis() - s) / 1000));
     }
@@ -331,7 +320,7 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
     public void showIndex(WebContext context) throws Exception {
         try {
             double s = System.currentTimeMillis();
-            scripting.exec(context);
+            app.getScripting().exec(context);
             System.out.println(">>>>>>>>>> STATIC RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
         } catch (RenderingException e) {
             displayError(context.getResponse(), e, "Error during the rendering process");

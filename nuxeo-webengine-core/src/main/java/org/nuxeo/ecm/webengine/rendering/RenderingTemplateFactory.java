@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine.rendering;
 
-import org.nuxeo.runtime.model.ComponentInstance;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -27,6 +26,6 @@ import org.nuxeo.runtime.model.ComponentInstance;
  */
 public interface RenderingTemplateFactory {
 
-    public Object createTemplate(ComponentInstance component);
+    public Object createTemplate();
 
 }

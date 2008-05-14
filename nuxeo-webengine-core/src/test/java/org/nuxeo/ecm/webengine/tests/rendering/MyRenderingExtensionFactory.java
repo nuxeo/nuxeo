@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webengine.tests.rendering;
 
 import org.nuxeo.ecm.webengine.rendering.RenderingTemplateFactory;
-import org.nuxeo.runtime.model.ComponentInstance;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -28,7 +27,7 @@ import org.nuxeo.runtime.model.ComponentInstance;
  */
 public class MyRenderingExtensionFactory implements RenderingTemplateFactory {
 
-    public Object createTemplate(ComponentInstance component) {
+    public Object createTemplate() {
         return "My Value 2";
     }
 

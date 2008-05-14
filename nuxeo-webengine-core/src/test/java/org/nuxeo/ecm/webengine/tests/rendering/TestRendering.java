@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine.tests.rendering;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
+import org.nuxeo.ecm.webengine.WebApplication;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -50,7 +51,11 @@ public class TestRendering extends NXRuntimeTestCase {
     public void testTemplateContribution() throws Exception {
 
         WebEngine web = Framework.getService(WebEngine.class);
-        FreemarkerEngine rendering = (FreemarkerEngine)web.getScripting().getRenderingEngine();
+        WebApplication app = web.getApplication("nuxeo-web");
+        if (app == null) {
+            fail("Application nuxeo-web was not defined");
+        }
+        FreemarkerEngine rendering = (FreemarkerEngine)app.getScripting().getRenderingEngine();
         TemplateMethodModelEx tm = (TemplateMethodModelEx)rendering.getConfiguration().getSharedVariable("ext1");
         assertEquals("My Value 1", tm.exec(null));
         SimpleScalar t = (SimpleScalar)rendering.getConfiguration().getSharedVariable("ext2");

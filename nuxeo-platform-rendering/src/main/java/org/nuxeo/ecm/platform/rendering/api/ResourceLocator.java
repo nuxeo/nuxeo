@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.rendering.api;
 
+import java.io.File;
 import java.net.URL;
 
 /**
@@ -30,11 +31,18 @@ import java.net.URL;
 public interface ResourceLocator {
 
     /**
-     * Gets the result URL or null if no such result was found.
+     * Gets an URL resource given a key
      *
      * @param key the resource key
      * @return the resource URL or null if no such result was found
      */
-    URL getResource(String key);
+    URL getResourceURL(String key);
+
+    /**
+     * Get a file resource given a key
+     * @param key
+     * @return
+     */
+    File getResourceFile(String key);
 
 }

@@ -153,4 +153,9 @@
       class="org.nuxeo.ecm.webengine.ConfigurationFileDescriptor" />
   </extension-point>
 
+  <extension-point name="transformer" target="org.nuxeo.ecm.webengine.WebEngineComponent">
+        <object
+      class="org.nuxeo.ecm.webengine.rendering.WikiTransformerDescriptor" />
+  </extension-point>
+
 </component>

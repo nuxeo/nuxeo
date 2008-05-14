@@ -94,7 +94,8 @@ public class WebObject {
             String type = doc.getType();
             path = "/" + type + '/' + action + ".ftl";
             File file = app.getFile(path);
-            if (file.isFile()) {
+            //TODO: implement Type inheritance and change default with Document
+            if (file != null) {
                 return path;
             }
         }
