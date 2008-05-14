@@ -140,4 +140,17 @@
       class="org.nuxeo.ecm.webengine.install.Installer" />
   </extension-point>
 
+  <extension-point name="configuration">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Register a configuration file.
+    <code>
+      <resource path="/nuxeo-web.xml" trackChanges="true" />
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.ConfigurationFileDescriptor" />
+  </extension-point>
+
 </component>

@@ -1,12 +1,12 @@
 <@extends src="/default/base.ftl">
 <@block name="content">
-<h2>${this.document.title}</h2>
+<h2>${This.document.title}</h2>
 
 <hr/>
-<A href="${this.urlPath}@@edit">Edit</A><BR/>
+<A href="${This.urlPath}@@edit">Edit</A><BR/>
 <hr/>
 
-The root path: ${context.firstObject.path}
+The root path: ${Context.firstObject.path}
 
 </@block>
 </@extends>

@@ -42,6 +42,7 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.WebApplication;
 import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.servlet.WebConst;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.scripting.ScriptingService;
 import org.python.core.PyDictionary;
@@ -91,6 +92,9 @@ public class Scripting {
 
     public void exec(WebContext context) throws Exception {
         ScriptFile script = context.getTargetScript();
+        if (script == null) {
+            context.cancel(WebConst.SC_NOT_FOUND);
+        }
         if (script.getFile().isFile()) {
             exec(context, script);
         } else {

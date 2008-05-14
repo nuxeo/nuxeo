@@ -1,5 +1,5 @@
 
-ctx.print("test")
+Context.print("test")
 
 
 

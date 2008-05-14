@@ -45,6 +45,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.RuntimeContext;
 import org.osgi.framework.Bundle;
 
 /**
@@ -62,6 +63,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
     public final static String RENDERING_TEMPLATE_XP = "rendering-template";
     public final static String APPLICATION_XP = "application";
     public final static String INSTALL_XP = "install";
+    public final static String CONFIG_XP = "configuration";
 
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
@@ -99,19 +101,19 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
         mgr = new DefaultWebEngine(root, engine);
         notifier = new FileChangeNotifier();
         notifier.start();
+        notifier.addListener(this);
 
         // load message bundle
         loadMessageBundle(root, false);
 
         // load configuration (it ill be put in pending until this component will exit activation code)
-        File file = new File(root, "web.xml");
+        File file = new File(root, "nuxeo-web.xml");
         if (file.isFile()) {
             //XMap xmap = new XMap();
             //WebConfiguration cfg = xmap.load(new XMapContext(context.getRuntimeContext()), new BufferedInputStream(new FileInputStream(file)));
             //new XMapContext(context.getRuntimeContext());
             context.getRuntimeContext().deploy(file.toURI().toURL());
             notifier.watch(file);
-            notifier.addListener(this);
         }
     }
 
@@ -139,6 +141,20 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
 
     private static void deployWebDir(Bundle bundle, File root) throws URISyntaxException, IOException {
         Installer.copyResources(bundle, "web", root);
+    }
+
+    public void loadConfiguration(RuntimeContext context, File file, boolean trackChanges) throws Exception {
+        context.deploy(file.toURI().toURL());
+        if (trackChanges) {
+            notifier.watch(file);
+        }
+    }
+
+    public void unloadConfiguration(RuntimeContext context, File file, boolean trackChanges) throws Exception {
+        context.undeploy(file.toURI().toURL());
+        if (trackChanges) {
+            notifier.unwatch(file);
+        }
     }
 
     @Override
@@ -175,8 +191,18 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
         } else if (extensionPoint.equals(INSTALL_XP)) {
             Installer installer = (Installer)contribution;
             installer.install(contributor.getContext(), mgr.getRootDirectory());
+        } else if (extensionPoint.equals(CONFIG_XP)) {
+            ConfigurationFileDescriptor cfg = (ConfigurationFileDescriptor)contribution;
+            if (cfg.path != null) {
+                loadConfiguration(contributor.getContext(), new File(mgr.getRootDirectory(), cfg.path), cfg.trackChanges);
+            } else if (cfg.entry != null) {
+                throw new UnsupportedOperationException("Entry is not supported for now");
+            } else {
+                log.error("Neither path neither entry attribute was defined in the configuration extension. Ignoring");
+            }
         }
     }
+
 
     @Override
     public void unregisterContribution(Object contribution,
@@ -203,6 +229,15 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
         } else if (extensionPoint.equals(INSTALL_XP)) {
             Installer installer = (Installer)contribution;
             installer.uninstall(contributor.getContext(), mgr.getRootDirectory());
+        } else if (extensionPoint.equals(CONFIG_XP)) {
+            ConfigurationFileDescriptor cfg = (ConfigurationFileDescriptor)contribution;
+            if (cfg.path != null) {
+                unloadConfiguration(contributor.getContext(), new File(mgr.getRootDirectory(), cfg.path), cfg.trackChanges);
+            } else if (cfg.entry != null) {
+                throw new UnsupportedOperationException("Entry is not supported for now");
+            } else {
+                log.error("Neither path neither entry attribute was defined in the configuration extension. Ignoring");
+            }
         }
     }
 
