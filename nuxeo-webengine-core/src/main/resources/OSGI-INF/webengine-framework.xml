@@ -126,7 +126,7 @@
       class="org.nuxeo.ecm.webengine.WebApplicationDescriptor" />
   </extension-point>
 
-  <extension-point name="resource">
+  <extension-point name="install">
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)
     Deploy external files as web resources. Can be used by client plugins to deploy
@@ -137,7 +137,7 @@
   </documentation>
 
     <object
-      class="org.nuxeo.ecm.webengine.ResourceDescriptor" />
+      class="org.nuxeo.ecm.webengine.install.Installer" />
   </extension-point>
 
 </component>

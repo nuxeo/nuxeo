@@ -39,7 +39,7 @@ public class WebApplicationDescriptor {
     @XNode("@id")
     protected String id;
 
-    protected String[] roots;
+    protected RootDescriptor[] roots;
 
     @XNode("errorPage")
     protected String errorPage;
@@ -77,7 +77,11 @@ public class WebApplicationDescriptor {
      * @return the indexPage.
      */
     public String getIndexPage() {
-        return indexPage == null ? "index.ftl" : indexPage;
+        return indexPage;
+    }
+
+    public String getIndexPage(String defaultValue) {
+        return indexPage == null ? defaultValue : indexPage;
     }
 
     /**
@@ -91,6 +95,10 @@ public class WebApplicationDescriptor {
      * @return the defaultPage.
      */
     public String getDefaultPage() {
+        return defaultPage;
+    }
+
+    public String getDefaultPage(String defaultValue) {
         return defaultPage == null ? "default.ftl" : defaultPage;
     }
 
@@ -105,7 +113,11 @@ public class WebApplicationDescriptor {
      * @return the errorPage.
      */
     public String getErrorPage() {
-        return errorPage == null ? "error.ftl" : errorPage;
+        return errorPage;
+    }
+
+    public String getErrorPage(String defaultValue) {
+        return errorPage == null ? defaultValue : errorPage;
     }
 
     /**
@@ -118,15 +130,8 @@ public class WebApplicationDescriptor {
     /**
      * @return the roots.
      */
-    public String[] getRoots() {
-        return roots == null || roots.length == 0 ? new String[] {"default"} : roots;
-    }
-
-    /**
-     * @param roots the roots to set.
-     */
-    public void setRoots(String[] roots) {
-        this.roots = roots;
+    public RootDescriptor[] getRoots() {
+        return roots;
     }
 
     @XNodeList(value="roots/root", type=RootDescriptor[].class, componentType=RootDescriptor.class)
@@ -135,10 +140,7 @@ public class WebApplicationDescriptor {
             roots = null;
         } else {
             Arrays.sort(descriptors);
-            roots = new String[descriptors.length];
-            for (int i=0; i<descriptors.length; i++) {
-                roots[i] = descriptors[i].path;
-            }
+            roots = descriptors;
         }
     }
 
@@ -185,19 +187,14 @@ public class WebApplicationDescriptor {
     }
 
     public DocumentResolver getDocumentResolver() throws WebDeployException {
-        if (documentResolverClass == null) {
-            return new DefaultDocumentResolver();
-        } else {
+        if (documentResolverClass != null) {
             try {
                 return (DocumentResolver)documentResolverClass.newInstance();
             } catch (Exception e) {
                 throw new WebDeployException("Failed to instantiate Resquest handler class: "+documentResolverClass, e);
             }
         }
-    }
-
-    public void merge(WebApplicationDescriptor parent) {
-        //TODO
+        return null;
     }
 
 }

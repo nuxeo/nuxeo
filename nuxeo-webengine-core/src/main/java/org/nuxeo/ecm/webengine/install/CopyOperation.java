@@ -17,8 +17,13 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine;
+package org.nuxeo.ecm.webengine.install;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -26,16 +31,25 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@XObject("resource")
-public class ResourceDescriptor {
+@XObject("copy")
+public class CopyOperation {
 
     @XNode("@path")
-    public String path;
+    protected String path;
 
     @XNode("@target")
-    public String target;
+    protected String target;
 
-    @XNode("@guard")
-    public String guard;
+    public void run(Installer installer, File bundleDir, File installDir) throws URISyntaxException, IOException {
+        File dest = new File(installDir, target);
+        if (path.endsWith("/*")) {
+            dest.mkdirs();
+            File file = new File(bundleDir, path.substring(0, path.length()-1));
+            FileUtils.copy(file.listFiles(), dest);
+        } else {
+            File file = new File(bundleDir, path);
+            FileUtils.copy(file, dest);
+        }
+    }
 
 }

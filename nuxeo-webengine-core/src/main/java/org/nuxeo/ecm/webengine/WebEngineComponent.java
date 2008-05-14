@@ -28,12 +28,11 @@ import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
+import org.nuxeo.ecm.webengine.install.Installer;
 import org.nuxeo.ecm.webengine.rendering.RenderingTemplateDescriptor;
 import org.nuxeo.ecm.webengine.rendering.TransformerDescriptor;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
@@ -62,7 +61,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
     public static final String GUARD_XP = "guard"; // global guards
     public final static String RENDERING_TEMPLATE_XP = "rendering-template";
     public final static String APPLICATION_XP = "application";
-    public final static String RESOURCE_XP = "resource";
+    public final static String INSTALL_XP = "install";
 
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
@@ -79,6 +78,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
         File root = new File(Framework.getRuntime().getHome(), "web");
         root = root.getCanonicalFile();
         if (!root.exists()) {
+            root.mkdirs();
             // runtime predeployment is not supporting conditional unziping so we do the predeployment here:
             deployWebDir(context.getRuntimeContext().getBundle(), root);
         }
@@ -138,31 +138,7 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
     }
 
     private static void deployWebDir(Bundle bundle, File root) throws URISyntaxException, IOException {
-        deployResources(bundle, "web", root);
-    }
-
-    private static void deployResources(Bundle bundle, String path, File root) throws URISyntaxException, IOException {
-        root.mkdirs(); // create root dir if not already exists
-        // copy web dir located in the bundle jar into this dir
-        //TODO: getLocation() may not work with some OSGi impl.
-        String location = bundle.getLocation();
-        if (location.startsWith("file:")) {
-            if (location.endsWith(".jar")) {
-                ZipUtils.unzip(path, new URL(location), root);
-            } else {
-                File file = new File(new URL(location).toURI());
-                file = new File(file, path);
-                FileUtils.copy(file.listFiles(), root);
-            }
-        } else {
-            if (location.endsWith(".jar")) {
-                ZipUtils.unzip(path, new File(location), root);
-            } else {
-                File file = new File(location);
-                file = new File(file, path);
-                FileUtils.copy(file.listFiles(), root);
-            }
-        }
+        Installer.copyResources(bundle, "web", root);
     }
 
     @Override
@@ -190,18 +166,16 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
             }
         } else if (extensionPoint.equals(APPLICATION_XP)) {
             WebApplicationDescriptor desc = (WebApplicationDescriptor)contribution;
-            mgr.registerApplication(desc);
-        } else if (extensionPoint.equals(RESOURCE_XP)) {
-            ResourceDescriptor rd = (ResourceDescriptor)contribution;
-            if (rd.guard  != null) {
-                if (new File(mgr.getRootDirectory(), rd.guard).exists()) {
-                    return; // avoid redeploying resource
-                }
+            WebApplication app = mgr.getApplication(desc.id);
+            if (app != null) {
+                app.loadConfiguration(desc);
+            } else {
+                mgr.registerApplication(desc);
             }
-            File target = new File(mgr.getRootDirectory(), rd.target);
-            deployResources(contributor.getRuntimeContext().getBundle(), rd.path, target);
+        } else if (extensionPoint.equals(INSTALL_XP)) {
+            Installer installer = (Installer)contribution;
+            installer.install(contributor.getContext(), mgr.getRootDirectory());
         }
-
     }
 
     @Override
@@ -226,8 +200,9 @@ public class WebEngineComponent extends DefaultComponent implements ResourceLoca
         } else if (extensionPoint.equals(APPLICATION_XP)) {
             WebApplicationDescriptor desc = (WebApplicationDescriptor)contribution;
             mgr.unregisterApplication(desc.id);
-        } else if (extensionPoint.equals(RESOURCE_XP)) {
-            // do nothing
+        } else if (extensionPoint.equals(INSTALL_XP)) {
+            Installer installer = (Installer)contribution;
+            installer.uninstall(contributor.getContext(), mgr.getRootDirectory());
         }
     }
 

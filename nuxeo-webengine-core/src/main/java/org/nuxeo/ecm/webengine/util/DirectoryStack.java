@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -31,28 +32,32 @@ import java.util.concurrent.ConcurrentMap;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class VirtualDirectory implements FileChangeListener {
+public class DirectoryStack implements FileChangeListener {
 
-    protected File[] dirs;
+    protected List<Entry> dirs;
     protected ConcurrentMap<String, File> cache;
     protected long lastNotifFlush = 0;
 
-    public VirtualDirectory(File ... dirs) throws IOException {
-        assert dirs != null;
-        this.dirs = new File[dirs.length];
-        for (int i=0; i<dirs.length; i++) {
-            this.dirs[i] = dirs[i].getCanonicalFile();
-        }
+    public DirectoryStack() throws IOException {
+        dirs = new ArrayList<Entry>();
         this.cache = new ConcurrentHashMap<String, File>();
     }
 
-    public File[] getDirectories() {
+    public List<Entry> getEntries() {
         return dirs;
     }
 
+    public boolean isEmpty() {
+        return dirs.isEmpty();
+    }
+
+    public void addDirectory(File dir, int priority) throws IOException {
+        dirs.add(new Entry(dir.getCanonicalFile(), priority));
+    }
+
     public void trackFileChanges(FileChangeNotifier notifier) throws IOException {
-        for (int i=0; i<dirs.length; i++) {
-            notifier.watch(dirs[i]);
+        for (Entry entry : dirs) {
+            notifier.watch(entry.file);
         }
     }
 
@@ -69,8 +74,8 @@ public class VirtualDirectory implements FileChangeListener {
         if (file != null) {
             return file;
         }
-        for (int i=0; i<dirs.length; i++) {
-            file = new File(dirs[i], name);
+        for (Entry entry : dirs) {
+            file = new File(entry.file, name);
             if (file.exists()) {
                 file = file.getCanonicalFile();
                 cache.put(name, file);
@@ -82,8 +87,8 @@ public class VirtualDirectory implements FileChangeListener {
 
     public File[] listFiles() {
         ArrayList<File> result =new ArrayList<File>();
-        for (int i=0; i<dirs.length; i++) {
-            File[] files = dirs[i].listFiles();
+        for (Entry entry : dirs) {
+            File[] files = entry.file.listFiles();
             for (int k=0; k<files.length; k++) {
                 result.add(files[k]);
             }
@@ -93,8 +98,8 @@ public class VirtualDirectory implements FileChangeListener {
 
     public File[] listFiles(FileFilter filter) {
         ArrayList<File> result =new ArrayList<File>();
-        for (int i=0; i<dirs.length; i++) {
-            File[] files = dirs[i].listFiles(filter);
+        for (Entry entry : dirs) {
+            File[] files = entry.file.listFiles(filter);
             for (int k=0; k<files.length; k++) {
                 result.add(files[k]);
             }
@@ -112,18 +117,33 @@ public class VirtualDirectory implements FileChangeListener {
 
     public void fileChanged(File file, long since, long now) {
         if (now == lastNotifFlush) return;
-        for (int i=dirs.length-1; i>=0; i--) {
-            if (dirs[i].getPath().equals(file.getPath())) {
+        for (Entry entry : dirs) {
+            if (entry.file.getPath().equals(file.getPath())) {
                 lastNotifFlush = now;
                 flush(); // TODO optimize this do not flush entire cache
             }
         }
     }
 
+    public static class Entry implements Comparable<Entry> {
+        public File file;
+        public int priority;
+        public Entry(File file, int priority) {
+            this.file = file;
+            this.priority = priority;
+        }
+        public int compareTo(Entry o) {
+            return priority - o.priority;
+        }
+    }
+
     public static void main(String[] args) {
 
         try {
-            VirtualDirectory vd = new VirtualDirectory(new File("/home/bstefanescu/Desktop"), new File("/home/bstefanescu/src"));
+            DirectoryStack vd = new DirectoryStack();
+            vd.addDirectory(new File("/home/bstefanescu/Desktop"), 1);
+            vd.addDirectory(new File("/home/bstefanescu/src"), 1);
+
             for (File file : vd.listFiles()) {
                 System.out.println("> "+file);
             }

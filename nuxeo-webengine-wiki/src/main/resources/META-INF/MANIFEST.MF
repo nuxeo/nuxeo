@@ -10,5 +10,6 @@ Require-Bundle: org.nuxeo.runtime,
  org.nuxeo.ecm.core,
  org.nuxeo.ecm.webapp.core
 Nuxeo-Component: OSGI-INF/core-types-contrib.xml, 
- OSGI-INF/document-types-contrib.xml
-
+ OSGI-INF/document-types-contrib.xml,
+ OSGI-INF/lifecycle-contrib.xml, 
+ OSGI-INF/wiki-deployment-contrib.xml

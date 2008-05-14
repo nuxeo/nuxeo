@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.mapping.MappingDescriptor;
 import org.nuxeo.ecm.webengine.mapping.PathMapper;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
-import org.nuxeo.ecm.webengine.util.VirtualDirectory;
+import org.nuxeo.ecm.webengine.util.DirectoryStack;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -43,7 +44,7 @@ public class DefaultWebApplication implements WebApplication {
 
     protected WebEngine engine;
     protected String id;
-    protected VirtualDirectory vdir;
+    protected DirectoryStack vdir;
     protected String errorPage;
     protected String indexPage;
     protected String defaultPage;
@@ -58,10 +59,13 @@ public class DefaultWebApplication implements WebApplication {
     public DefaultWebApplication(WebEngine engine, WebApplicationDescriptor desc) throws WebException {
         this.engine = engine;
         this.id = desc.getId();
-        this.defaultPage = desc.getDefaultPage();
-        this.indexPage = desc.getIndexPage();
-        this.errorPage = desc.getErrorPage();
+        this.defaultPage = desc.getDefaultPage("default.ftl");
+        this.indexPage = desc.getIndexPage("index.ftl");
+        this.errorPage = desc.getErrorPage("error.ftl");
         this.documentResolver = desc.getDocumentResolver();
+        if (this.documentResolver == null) {
+            this.documentResolver = new DefaultDocumentResolver();
+        }
         List<ObjectBindingDescriptor> list = desc.getBindings();
         if (list != null && !list.isEmpty()) {
             typeBindings = new HashMap<String, String>();
@@ -74,12 +78,16 @@ public class DefaultWebApplication implements WebApplication {
             mapper = new PathMapper(mappings);
         }
         try {
-            String[] rootPaths = desc.getRoots();
-            File[] roots = new File[rootPaths.length];
-            for (int i=0; i<rootPaths.length; i++) {
-                roots[i] = new File(engine.getRootDirectory(), rootPaths[i]);
+            RootDescriptor[] roots = desc.getRoots();
+            this.vdir = new DirectoryStack();
+            if (roots == null) {
+                this.vdir.addDirectory(new File(engine.getRootDirectory(), "default"), 0);
+            } else {
+                for (int i=0; i<roots.length; i++) {
+                    File file =new File(engine.getRootDirectory(), roots[i].path);
+                    this.vdir.addDirectory(file, roots[i].priority);
+                }
             }
-            this.vdir = new VirtualDirectory(roots);
         } catch (IOException e) {
             throw new WebDeployException("Failed to create virtual directory for webapp: "+id, e);
         }
@@ -102,7 +110,7 @@ public class DefaultWebApplication implements WebApplication {
         return id;
     }
 
-    public VirtualDirectory getVirtualDirectory() {
+    public DirectoryStack getVirtualDirectory() {
         return vdir;
     }
 
@@ -219,4 +227,59 @@ public class DefaultWebApplication implements WebApplication {
     public WebEngine getWebEngine() {
         return engine;
     }
+
+    public void loadConfiguration(WebApplicationDescriptor desc) throws WebDeployException {
+        String val = desc.getDefaultPage();
+        if (val != null) {
+            this.defaultPage = val;
+        }
+        val = desc.getIndexPage();
+        if (val != null) {
+            this.indexPage = val;
+        }
+        val = desc.getErrorPage();
+        if (val != null) {
+            this.errorPage = val;
+        }
+        DocumentResolver dr = desc.getDocumentResolver();
+        if (dr != null) {
+            documentResolver = dr;
+        }
+
+        List<ObjectBindingDescriptor> list = desc.getBindings();
+        if (list != null && !list.isEmpty()) {
+            if (typeBindings == null) {
+                typeBindings = new HashMap<String, String>();
+            }
+            for (ObjectBindingDescriptor obd : list) {
+                typeBindings.put(obd.type, obd.objectId);
+            }
+            objects.clear(); // reset cache
+        }
+
+        List<MappingDescriptor> mappings = desc.getMappings();
+        if (mappings != null && !mappings.isEmpty()) {
+            if (mapper == null) {
+                mapper = new PathMapper(mappings);
+            } else {
+                for (MappingDescriptor md : mappings) {
+                    mapper.addMapping(md);
+                }
+            }
+        }
+
+        RootDescriptor[] roots = desc.getRoots();
+        if (roots != null && roots.length > 0) {
+        try {
+            for (int i=0; i<roots.length; i++) {
+                vdir.addDirectory(new File(engine.getRootDirectory(), roots[i].path), roots[i].priority);
+            }
+            Collections.sort(vdir.getEntries());
+        } catch (IOException e) {
+            throw new WebDeployException("Failed to create virtual directory for webapp: "+id, e);
+        }
+        }
+
+    }
+
 }
