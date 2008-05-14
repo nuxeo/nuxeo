@@ -8,4 +8,5 @@ Require-Bundle: org.nuxeo.ecm.core.api,
 Nuxeo-Require: org.nuxeo.ecm.platform.search.api,
  org.nuxeo.runtime.scripting,
  org.nuxeo.ecm.platform.rendering
-Nuxeo-Component: OSGI-INF/webengine-framework.xml
+Nuxeo-Component: OSGI-INF/webengine-framework.xml,
+ OSGI-INF/wiki-transformer-contrib.xml

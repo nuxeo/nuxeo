@@ -72,15 +72,16 @@ public class ResourceTemplateLoader implements TemplateLoader {
     }
 
     public Object findTemplateSource(String name) throws IOException {
-        if (name.contains(":/")) {
-            return urlLoader.findTemplateSource(name);
-        } else {
-            Object obj = fileLoader.findTemplateSource(name);
-            if (obj != null) {
-                return obj;
-            }
+        if (name.startsWith("fs://"))  { // hack for absolute paths - see FreemarkerEngine#render()
+            name = name.substring(5);
+        } else if (name.contains(":/")) {
             return urlLoader.findTemplateSource(name);
         }
+        Object obj = fileLoader.findTemplateSource(name);
+        if (obj != null) {
+            return obj;
+        }
+        return urlLoader.findTemplateSource(name);
     }
 
     public long getLastModified(Object templateSource) {

@@ -140,6 +140,17 @@ public class FreemarkerEngine implements RenderingEngine {
     public void render(String template, Object input, Writer writer)
             throws RenderingException {
         try {
+            /*
+             * A special method to get the absolute path as an URI to be used with freemarker
+             * since freemarker removes the leading / from the absolute path and the file cannot be resolved anymore
+             * In the case of URI like path freemarker is not modifying the path
+             * <p>
+             * @see TemplateCache#normalizeName()
+             * @see ResourceTemplateLoader#findTemplateSource()
+             */
+            if (template.startsWith("/")) {
+                template = "fs://"+template;
+            }
             Template temp = cfg.getTemplate(template);
             BlockWriter bw = new BlockWriter(temp.getName(), "", new BlockWriterRegistry());
             Environment env = temp.createProcessingEnvironment(input,
