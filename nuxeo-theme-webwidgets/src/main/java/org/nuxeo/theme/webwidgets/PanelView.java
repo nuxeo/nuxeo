@@ -18,7 +18,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.theme.jsf.Utils;
+import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.rendering.RenderingInfo;
 import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.views.AbstractView;

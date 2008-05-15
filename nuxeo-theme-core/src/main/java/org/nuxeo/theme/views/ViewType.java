@@ -21,6 +21,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.ElementType;
+import org.nuxeo.theme.engines.EngineType;
 import org.nuxeo.theme.formats.FormatType;
 import org.nuxeo.theme.models.ModelType;
 import org.nuxeo.theme.types.Type;
@@ -66,9 +67,11 @@ public final class ViewType implements Type {
     public ViewType() {
     }
 
-    public ViewType(final String viewName, final String className, final String engineName,
-            final String mode, final String elementTypeName, final String modelTypeName,
-            final String formatTypeName, final String template, final String[] resources) {
+    public ViewType(final String viewName, final String className,
+            final String engineName, final String mode,
+            final String elementTypeName, final String modelTypeName,
+            final String formatTypeName, final String template,
+            final String[] resources) {
         this.viewName = viewName;
         this.elementTypeName = elementTypeName;
         this.modelTypeName = modelTypeName;
@@ -86,8 +89,9 @@ public final class ViewType implements Type {
     }
 
     public static String computeName(final String formatTypeName,
-            final String elementTypeName, final String viewName, final String modelTypeName,
-            final String engineName, final String mode) {
+            final String elementTypeName, final String viewName,
+            final String modelTypeName, final String engineName,
+            final String mode) {
 
         return String.format("%s/%s/%s/%s/%s/%s", formatTypeName,
                 elementTypeName, viewName, modelTypeName, engineName, mode);
@@ -104,6 +108,11 @@ public final class ViewType implements Type {
     public View getView() {
         if (view != null) {
             return view;
+        }
+        if (className == null) {
+            EngineType engine = (EngineType) Manager.getTypeRegistry().lookup(
+                    TypeFamily.ENGINE, engineName);
+            className = engine.getTemplateViewHandler();
         }
         try {
             view = (View) Class.forName(className).newInstance();
