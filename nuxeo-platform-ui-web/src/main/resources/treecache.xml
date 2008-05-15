@@ -132,7 +132,7 @@
           Indicate whether to use marshalling or not. Set this to true if you are running under a scoped
           class loader, e.g., inside an application server. Default is "false".
        -->
-        <attribute name="UseMarshalling">false</attribute>
+        <attribute name="UseRegionBasedMarshalling">false</attribute>
 
     </mbean>
 
