@@ -163,7 +163,7 @@ public class ActionDescriptor {
     public void run(WebObject obj) throws WebException {
         // check rights first
         if (!getGuard().check(obj.getWebContext().getCoreSession(), obj.getDocument())) {
-            throw new WebException("Running action "+id+" is dedined");
+            throw new WebException("Running action "+id+" is denied");
         }
         getHandler().run(obj);
     }

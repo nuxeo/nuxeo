@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.StringTokenizer;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
 
@@ -33,8 +33,6 @@ import edu.emory.mathcs.backport.java.util.Arrays;
  *
  */
 public class PostfixExpression implements Iterable<PostfixExpression.Token> {
-
-    public static final Pattern PATTERN = Pattern.compile("\\(|\\)|NOT|AND|OR");
 
     public static final int ARG = 0;
     public static final int NOT = 1;
@@ -51,129 +49,14 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
         parse(expr);
     }
 
-//    public PostfixExpression(String expr, String ops) throws ParseException {
-//        parse(expr);
-//    }
 
     public Token[] getExpression() {
         return expr;
     }
 
+    @SuppressWarnings("unchecked")
     public Iterator<Token> iterator() {
         return Arrays.asList(expr).iterator();
-    }
-
-    private void and(OpStack stack, List<Token> result, String expr, int s, int i) {
-        if (s > -1 && s < i) {
-            result.add(new Token(ARG, expr.substring(s, i)));
-        }
-        pushOp(new Token(AND, "AND"), stack, result);
-    }
-
-    private void or(OpStack stack, List<Token> result, String expr, int s, int i) {
-        if (s > -1 && s < i) {
-            result.add(new Token(ARG, expr.substring(s, i)));
-        }
-        pushOp(new Token(OR, "OR"), stack, result);
-    }
-
-    private void not(OpStack stack, List<Token> result, String expr, int s, int i) {
-        if (s > -1 && s < i) {
-            result.add(new Token(ARG, expr.substring(s, i)));
-        }
-        pushOp(new Token(NOT, "NOT"), stack, result);
-    }
-
-    protected void parse(String expr) throws ParseException {
-        char[] chars = expr.toCharArray();
-        OpStack stack = new OpStack();
-        List<Token> result = new ArrayList<Token>();
-        int s = -1;
-        boolean space = false;
-        for (int i=0; i<chars.length; i++) {
-            char c = chars[i];
-            switch (c) {
-            case 'A':
-                if (space && i+3<chars.length) {
-                    if (chars[i+1] == 'N' && chars[i+2] == 'D' && Character.isWhitespace(chars[i+3])) {
-                        and(stack, result, expr, s, i);
-                    }
-                    s = -1;
-                    i+=3;
-                }
-                space = false;
-                if (s == -1) {
-                    s = i; // start new argument
-                }
-                break;
-            case 'O':
-                if (space && i+2<chars.length) {
-                    if (chars[i+1] == 'R' && Character.isWhitespace(chars[i+2])) {
-                        or(stack, result, expr, s, i);
-                    }
-                    s = -1;
-                    i+=2;
-                }
-                space = false;
-                if (s == -1) {
-                    s = i; // start new argument
-                }
-                break;
-            case 'N':
-                if (space && i+3<chars.length) {
-                    if (chars[i+1] == 'O' && chars[i+2] == 'T' && Character.isWhitespace(chars[i+3])) {
-                        not(stack, result, expr, s, i);
-                    }
-                    s = -1;
-                    i+=3;
-                }
-                space = false;
-                if (s == -1) {
-                    s = i; // start new argument
-                }
-                break;
-            case '(':
-                space = false;
-                s = -1;
-                stack.push(new Token(LPARA, "("));
-                break;
-            case ')': // pop from stack until first '(' is reached
-                space = false;
-                if (s > -1 && s<i) {
-                    result.add(new Token(ARG, expr.substring(s, i)));
-                }
-                s = -1;
-                while (!stack.isEmpty() && stack.top().type != LPARA) {
-                    result.add(stack.pop());
-                }
-                if (stack.isEmpty()) {
-                    throw new ParseException("Not matching LPARA '(' found ", i);
-                }
-                stack.pop(); // remove LPARA from stack
-                break;
-            case ' ':
-            case '\t':
-                space = true;
-                if (s > -1 && s<i) {
-                    result.add(new Token(ARG, expr.substring(s, i)));
-                }
-                s = -1;
-                break;
-            default:
-                space = false;
-                if (s == -1) {
-                    s = i; // start new argument
-                }
-                break;
-            }
-        }
-        if (s > -1 && s<expr.length()) {
-            result.add(new Token(ARG, expr.substring(s)));
-        }
-        while (!stack.isEmpty()) {
-            result.add(stack.pop());
-        }
-        this.expr = result.toArray(new Token[result.size()]);
     }
 
     private static void pushOp(Token tok, OpStack stack, List<Token> result) {
@@ -243,6 +126,61 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
         public final Token top() {
             return getLast();
         }
+    }
+
+
+    protected void parse(String expr) throws ParseException {
+        OpStack stack = new OpStack();
+        List<Token> result = new ArrayList<Token>();
+        String arg = null;
+        StringTokenizer tok = new StringTokenizer(expr, " \t\n\r\f()", true);
+        while (tok.hasMoreTokens()) {
+            String token = tok.nextToken();
+            char c = token.charAt(0);
+            switch (c) {
+            case ' ':
+            case '\t':
+            case '\r':
+            case '\n':
+            case '\f':
+                arg = null;
+                break;
+            case '(':
+                stack.push(new Token(LPARA, "("));
+                break;
+            case ')':
+                if (arg != null) {
+                    result.add(new Token(ARG, arg));
+                }
+                while (!stack.isEmpty() && stack.top().type != LPARA) {
+                    result.add(stack.pop());
+                }
+                if (stack.isEmpty()) {
+                    throw new ParseException("Not matching LPARA '(' found ", -1);
+                }
+                stack.pop(); // remove LPARA from stack
+                break;
+            default:
+                if (token.equals("OR")) {
+                    pushOp(new Token(OR, "OR"), stack, result);
+                } else if (token.equals("AND") ){
+                    pushOp(new Token(AND, "AND"), stack, result);
+                } else if (token.equals("NOT")) {
+                    pushOp(new Token(NOT, "NOT"), stack, result);
+                } else {
+                    result.add(new Token(ARG, token));
+                }
+            }
+        }
+        while (!stack.isEmpty()) {
+            result.add(stack.pop());
+        }
+        this.expr = result.toArray(new Token[result.size()]);
+    }
+
+
+    public static void main(String[] args) {
+
     }
 
 }
