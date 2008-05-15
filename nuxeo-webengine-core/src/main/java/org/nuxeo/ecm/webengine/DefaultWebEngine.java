@@ -28,12 +28,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import org.jboss.util.deadlock.ApplicationDeadlockException;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
 import org.nuxeo.ecm.webengine.util.DependencyTree;
 import org.nuxeo.ecm.webengine.util.FileChangeListener;
 import org.nuxeo.ecm.webengine.util.FileChangeNotifier;
 import org.nuxeo.ecm.webengine.util.FileChangeNotifier.FileEntry;
+
+import freemarker.cache.WebappTemplateLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -56,6 +59,7 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
 
     protected ListenerList listeners = new ListenerList();
     protected FileChangeNotifier notifier;
+    protected long lastMessagesUpdate = 0;
 
     public DefaultWebEngine(File root, FileChangeNotifier notifier) throws IOException {
         this.root = root;
@@ -80,6 +84,11 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         WebClassLoader cl = new WebClassLoader();
         cl.addFile(file);
         messages = ResourceBundle.getBundle("messages", Locale.getDefault(), cl);
+        // make a copy to avoid concurrent modifs
+        WebApplication[] apps = this.apps.values().toArray(new WebApplication[this.apps.size()]);
+        for (WebApplication app : apps) {
+            app.getScripting().getRenderingEngine().setMessageBundle(messages);
+        }
         if (watch && notifier != null) {
             notifier.watch(file);
             for (File f : file.listFiles()) {
@@ -263,11 +272,13 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
     }
 
     public void fileChanged(FileEntry entry, long now) throws Exception {
+        if (lastMessagesUpdate == now) return;
         String path = entry.file.getAbsolutePath();
         String rootPath = root.getAbsolutePath();
         if (!path.startsWith(rootPath)) {
             return;
         }
+        lastMessagesUpdate = now;
         loadMessageBundle(false);
     }
 }

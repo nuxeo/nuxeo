@@ -2,7 +2,7 @@
 <component name="org.nuxeo.ecm.wiki.config">
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)
-    Default Objects
+    Default Wiki Objects
   </documentation>
 
   
@@ -26,20 +26,13 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent" point="binding">
-    <binding type="Document" objectId="WebObject"/>
     <binding type="WikiPage" objectId="WikiPage"/>`
     <binding type="Wiki" objectId="WikiSite"/>
   </extension>
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent" point="webObject">
-    <object id="WebObject">
+    <object id="WikiObject" extends="WebObject">
       <actions>
-        <action id="view" enabled="true">
-          <permission expression="READ"/>
-        </action>
-        <action id="print" enabled="true">
-          <permission expression="READ"/>
-        </action>
         <action id="delete" enabled="true" handler="org.nuxeo.ecm.webengine.actions.DeleteActionHandler">
           <permission expression="WRITE"/>
         </action>
@@ -53,9 +46,6 @@
         <action id="create" enabled="true" script="common/create.groovy" handler="org.nuxeo.ecm.webengine.actions.CreateActionHandler">
           <permission expression="WRITE"/>
         </action>
-        <action id="getfile" enabled="true" handler="org.nuxeo.ecm.webengine.actions.GetFileActionHandler">
-          <permission expression="READ"/>
-        </action>
         <action id="addfile" enabled="true" script="common/addfile.groovy" handler="org.nuxeo.ecm.webengine.actions.AddFileActionHandler">
           <permission expression="WRITE"/>
         </action>
@@ -64,7 +54,7 @@
         </action>
       </actions>
     </object>
-    <object id="WikiPage" extends="WebObject">
+    <object id="WikiPage" extends="WikiObject">
       <actions>
         <action id="view_content" enabled="true">
           <permission expression="READ"/>
@@ -80,7 +70,7 @@
         </action>
       </actions>
     </object>
-    <object id="WikiSite" extends="WebObject">
+    <object id="WikiSite" extends="WikiObject">
       <actions>
         <action id="view" enabled="true" script="Wiki/redirectToFrontpage.groovy">
           <permission expression="READ"/>
@@ -96,3 +86,4 @@
     </object>
   </extension>
 </component>
+
