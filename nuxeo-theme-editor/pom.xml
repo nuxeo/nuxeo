@@ -21,16 +21,10 @@
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-html</artifactId>
-      <version>5.2-SNAPSHOT</version>
     </dependency>    
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-jsf</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.theme</groupId>
-      <artifactId>nuxeo-theme-webengine</artifactId>
-      <version>5.2-SNAPSHOT</version>
     </dependency>
 
     <dependency>

@@ -25,9 +25,10 @@
   <modules>
     <module>nuxeo-theme-core</module>
     <module>nuxeo-theme-fragments</module>
+    <module>nuxeo-theme-html</module>
     <module>nuxeo-theme-jsf</module>
     <module>nuxeo-theme-editor</module>
-    <module>nuxeo-theme-webengine</module>
+    <!--module>nuxeo-theme-webengine</module-->
     <module>nuxeo-theme-webwidgets</module>
   </modules>
 
@@ -78,6 +79,11 @@
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-fragments</artifactId>
+        <version>${nuxeo.theme.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-html</artifactId>
         <version>${nuxeo.theme.version}</version>
       </dependency>
       <dependency>
