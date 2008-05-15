@@ -31,6 +31,7 @@
     <documentsList name="CURRENT_SELECTION">
       <events>
         <event>folderishDocumentSelectionChanged</event>
+        <event>searchPerformed</event>
       </events>
       <isSession>false</isSession>
     </documentsList>

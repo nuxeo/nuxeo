@@ -139,6 +139,11 @@ public final class EventNames {
      */
     public static final String DOCUMENT_SECURITY_CHANGED = "documentSecurityChanged";
 
+    /**
+     * Event raised when a search is performed
+     */
+    public static final String SEARCH_PERFORMED = "searchPerformed";
+
     // Constant utility class.
     private EventNames() {
     }

@@ -47,16 +47,16 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
 
     // change this flag to use an external LDAP directory instead of the
     // non networked default ApacheDS implementation
-    public boolean USE_EXTERNAL_TEST_LDAP_SERVER = false;
+    public static final boolean USE_EXTERNAL_TEST_LDAP_SERVER = false;
 
     // change this flag if your test server has support for dynamic groups
     // through the groupOfURLs objectclass, eg for OpenLDAP:
     // http://www.ldap.org.br/modules/ldap/files/files///dyngroup.schema
-    public boolean HAS_DYNGROUP_SCHEMA = false;
+    public static final boolean HAS_DYNGROUP_SCHEMA = false;
 
     public String EXTERNAL_SERVER_SETUP = "TestDirectoriesWithExternalOpenLDAP.xml";
 
-    public String INTERNAL_SERVER_SETUP = "TestDirectoriesWithInternalApacheDS.xml";
+    public static final String INTERNAL_SERVER_SETUP = "TestDirectoriesWithInternalApacheDS.xml";
 
     @Override
     protected void setUp() throws Exception {
@@ -127,9 +127,8 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
                 Context.PROVIDER_URL);
         NamingEnumeration<SearchResult> children = ctx.search(dn,
                 "(objectClass=*)", scts);
-        SearchResult child;
         while (children.hasMore()) {
-            child = children.next();
+            SearchResult child = children.next();
             String subDn = child.getName();
             if (!USE_EXTERNAL_TEST_LDAP_SERVER && subDn.endsWith(providerUrl)) {
                 subDn = subDn.substring(0, subDn.length()

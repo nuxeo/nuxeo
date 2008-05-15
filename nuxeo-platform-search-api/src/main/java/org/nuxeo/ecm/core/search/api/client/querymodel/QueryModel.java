@@ -239,7 +239,7 @@ public class QueryModel implements Serializable {
         return getDescriptor().isSortable();
     }
 
-    public void reset() throws ClientException {
+    public void reset() {
         for (String schemaName : defaultValues.keySet()) {
             Map<String, Object> defaultData = new HashMap<String, Object>(
                     defaultValues.get(schemaName));
