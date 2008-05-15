@@ -241,6 +241,11 @@
                   <artifactId>jboss-seam-debug</artifactId>
                   <version>2.0.2.CR1</version>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.jboss.seam</groupId>
+                  <artifactId>jboss-seam-remoting</artifactId>
+                  <version>2.0.2.CR1</version>
+                </artifactItem>
                 <!--  also in parent pom but shouldn't -->
                 <artifactItem>
                   <groupId>javax.servlet</groupId>
