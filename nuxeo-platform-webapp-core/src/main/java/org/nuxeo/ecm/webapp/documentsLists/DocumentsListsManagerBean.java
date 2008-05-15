@@ -54,10 +54,10 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
     private ConversationDocumentsListsManager conversationDocumentsListsManager;
 
     @In(create = true, required = false)
-    transient CoreSession documentManager;
+    private transient CoreSession documentManager;
 
-    @In(create=true)
-    transient Principal currentUser;
+    @In(create = true)
+    private transient Principal currentUser;
 
     @Override
     protected void notifyListUpdated(String listName) {
@@ -70,7 +70,6 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
     @Destroy
     @PermitAll
     public void destroy() {
-
     }
 
     @Create
@@ -83,7 +82,8 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
                         listName);
 
                 if (desc.getIsSession()) {
-                    super.createWorkingList(listName, desc, documentManager, currentUser.getName());
+                    super.createWorkingList(listName, desc, documentManager,
+                            currentUser.getName());
                 } else {
                     // just store the descriptor
                     documentsLists_descriptors.put(listName, desc);
@@ -128,7 +128,7 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
     public void setWorkingList(String listName, List<DocumentModel> docList) {
         if (isSessionOrIsNull(listName)) {
             super.setWorkingList(listName, docList);
-        } else  {
+        } else {
             conversationDocumentsListsManager.setWorkingList(listName, docList);
         }
     }
@@ -172,7 +172,8 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
         if (isSessionOrIsNull(listName)) {
             return super.removeFromWorkingList(listName, doc);
         } else {
-            return conversationDocumentsListsManager.removeFromWorkingList(listName, doc);
+            return conversationDocumentsListsManager.removeFromWorkingList(
+                    listName, doc);
         }
     }
 
@@ -182,7 +183,8 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
         if (isSessionOrIsNull(listName)) {
             return super.removeFromWorkingList(listName, lst);
         } else {
-            return conversationDocumentsListsManager.removeFromWorkingList(listName, lst);
+            return conversationDocumentsListsManager.removeFromWorkingList(
+                    listName, lst);
         }
     }
 
@@ -278,9 +280,8 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
         return isWorkingListEmpty(DEFAULT_WORKING_LIST);
     }
 
-
     // Event listener
-    @Observer(value={ EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED }, create=false)
+    @Observer(value = { EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED }, create = false)
     public void refreshLists(DocumentModel currentDocument)
             throws ClientException {
 
@@ -301,6 +302,23 @@ public class DocumentsListsManagerBean extends BaseDocumentsListsManager
         }
 
         lastDocumentRef = currentDocument.getRef();
+    }
+
+    /**
+     * Refresh lists when a search is performed
+     */
+    @Observer(value = { EventNames.SEARCH_PERFORMED }, create = false)
+    public void refreshListsOnSearch() {
+        if (!documentsLists_events.containsKey(EventNames.SEARCH_PERFORMED)) {
+            return;
+        }
+        for (String listName : documentsLists_events.get(EventNames.SEARCH_PERFORMED)) {
+            List<DocumentModel> docList = documentsLists.get(listName);
+            if (!docList.isEmpty()) {
+                docList.clear();
+                notifyListUpdated(listName);
+            }
+        }
     }
 
     private boolean isSessionOrIsNull(String listName) {

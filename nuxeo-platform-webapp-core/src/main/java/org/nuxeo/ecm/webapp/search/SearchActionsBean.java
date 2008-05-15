@@ -41,6 +41,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.WebRemote;
 import org.jboss.seam.contexts.Context;
+import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -64,10 +65,10 @@ import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelImpl;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
 import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
-import org.nuxeo.ecm.platform.workflow.api.client.events.EventNames;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.clipboard.ClipboardActions;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 
@@ -114,9 +115,9 @@ public class SearchActionsBean extends InputController implements
     private transient SearchBusinessDelegate searchDelegate;
 
     @In(required = false)
-    private Principal currentUser;
+    private transient Principal currentUser;
 
-    @In(required=false, create=false)
+    @In(required = false, create = false)
     SearchResultsBean searchResults;
 
     // need to be required = false since this is accessed also before connecting
@@ -263,16 +264,22 @@ public class SearchActionsBean extends InputController implements
     public String performSearch() throws ClientException,
             ECInvalidParameterException {
 
+        // notify search performed
+        Events evtManager = Events.instance();
+        log.debug("Fire Event: " + EventNames.SEARCH_PERFORMED);
+        evtManager.raiseEvent(EventNames.SEARCH_PERFORMED);
+
         if (log.isDebugEnabled()) {
             log.debug("performing searchType: " + searchTypeId);
         }
         try {
-            String page;
-            PagedDocumentsProvider resultsProvider = null;
             // XXX : hack !!!
-            if (searchResults!=null)
+            if (searchResults != null) {
                 searchResults.reset();
+            }
 
+            String page;
+            PagedDocumentsProvider resultsProvider;
             if (searchTypeId == SearchType.NXQL) {
                 if (nxql == null) {
                     log.warn("Direct NXQL search: no nxql query "
@@ -317,13 +324,13 @@ public class SearchActionsBean extends InputController implements
 
             return page;
         } catch (SortNotSupportedException e) {
-            this.queryErrorMsg = e.getMessage();
+            queryErrorMsg = e.getMessage();
             log.debug("Search error: " + e.getMessage(), e);
             return ACTION_PAGE_SEARCH_QUERY_ERROR;
         } catch (ClientException e) {
             // Present to user: TODO we should make the difference between
             // QueryException and actual errors.
-            this.queryErrorMsg = e.getMessage();
+            queryErrorMsg = e.getMessage();
             log.debug("Search error: " + e.getMessage(), e);
             return ACTION_PAGE_SEARCH_QUERY_ERROR;
         }
@@ -417,7 +424,7 @@ public class SearchActionsBean extends InputController implements
         }
     }
 
-    @Factory(value="searchDocumentModel", scope=ScopeType.EVENT)
+    @Factory(value = "searchDocumentModel", scope = ScopeType.EVENT)
     public DocumentModel getDocumentModel() throws ClientException {
         return queryModelActions.get(QM_ADVANCED).getDocumentModel();
     }
@@ -432,15 +439,15 @@ public class SearchActionsBean extends InputController implements
         // Reindex from path with fulltext
         if (documentManager != null) {
             try {
-                service.reindexAll(documentManager.getRepositoryName(), path, true);
+                service.reindexAll(documentManager.getRepositoryName(), path,
+                        true);
             } catch (IndexingException e) {
-               throw new ClientException(e);
+                throw new ClientException(e);
             }
         } else {
             throw new ClientException(
                     "DocumentManager not found in Seam context...");
         }
-
     }
 
     public String reset() throws ClientException {
