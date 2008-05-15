@@ -32,16 +32,6 @@
     </excludes>
   </fileSet>
 
-
-  <artifactSet extends="nuxeo-core">
-    <includes>
-      <artifact name="nuxeo-core-api" />
-      <artifact name="nuxeo-core-schema" />
-      <artifact name="nuxeo-core-query" />
-    </includes>
-  </artifactSet>
-
-
   <artifactSet extends="nuxeo-platform">
     <includes>
       <artifact name="nuxeo-platform-api" />
@@ -73,12 +63,6 @@
       <artifact name="nuxeo-platform-search-compass-plugin" />
     </includes>
   </artifactSet>
-
-
-  <artifactSet id="nuxeo-web" />
-
-  <artifactSet id="nuxeo-themes" />
-
 
 </assembly>
 
