@@ -115,10 +115,10 @@ public class DirectoryStack implements FileChangeListener {
     }
 
 
-    public void fileChanged(File file, long since, long now) {
+    public void fileChanged(FileChangeNotifier.FileEntry entry, long now) {
         if (now == lastNotifFlush) return;
-        for (Entry entry : dirs) {
-            if (entry.file.getPath().equals(file.getPath())) {
+        for (Entry dir : dirs) {
+            if (dir.file.getPath().equals(entry.file.getPath())) {
                 lastNotifFlush = now;
                 flush(); // TODO optimize this do not flush entire cache
             }

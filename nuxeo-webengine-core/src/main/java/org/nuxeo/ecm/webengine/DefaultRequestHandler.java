@@ -70,9 +70,9 @@ public class DefaultRequestHandler implements RequestHandler, Actions {
         if (action == null) {
             action = defaultAction;
             object.getWebContext().setActionName(action);
-        }
-        if (action == null) {
-            return;
+            if (action == null) {
+                return;
+            }
         }
         ActionDescriptor actionDesc = object.getAction(action);
         if (actionDesc != null) {

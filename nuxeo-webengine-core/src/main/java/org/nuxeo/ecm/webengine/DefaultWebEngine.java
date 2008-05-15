@@ -215,6 +215,7 @@ public class DefaultWebEngine implements WebEngine {
     }
 
     public void fireConfigurationChanged() throws WebException {
+        reset();
         for (Object obj : listeners.getListenersCopy()) {
             ((ConfigurationChangedListener)obj).configurationChanged(this);
         }

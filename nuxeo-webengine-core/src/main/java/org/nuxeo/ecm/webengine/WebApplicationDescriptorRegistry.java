@@ -63,6 +63,7 @@ public class WebApplicationDescriptorRegistry {
                 base.setRemoved(true);
                 break;
             }
+            base = base.next();
         }
         return get(desc.id);
     }

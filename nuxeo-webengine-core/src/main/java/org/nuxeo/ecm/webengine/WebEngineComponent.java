@@ -33,8 +33,11 @@ import org.nuxeo.ecm.webengine.rendering.RenderingTemplateDescriptor;
 import org.nuxeo.ecm.webengine.rendering.TransformerDescriptor;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 import org.nuxeo.ecm.webengine.security.PermissionService;
+import org.nuxeo.ecm.webengine.util.ConfigurationChangedListener;
+import org.nuxeo.ecm.webengine.util.ConfigurationDeployer;
 import org.nuxeo.ecm.webengine.util.FileChangeListener;
 import org.nuxeo.ecm.webengine.util.FileChangeNotifier;
+import org.nuxeo.ecm.webengine.util.ConfigurationDeployer.Entry;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -48,7 +51,7 @@ import org.osgi.framework.Bundle;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebEngineComponent extends DefaultComponent implements FileChangeListener {
+public class WebEngineComponent extends DefaultComponent implements FileChangeListener, ConfigurationChangedListener {
 
     public static final ComponentName NAME = new ComponentName(WebEngineComponent.class.getName());
 
@@ -70,6 +73,7 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
     private ResourceBundle messages;
 
     private WebApplicationDescriptorRegistry appReg;
+    private ConfigurationDeployer deployer;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -86,6 +90,10 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
         notifier = new FileChangeNotifier();
         notifier.start();
         notifier.addListener(this);
+
+        //deployer = new ConfigurationDeployer(notifier);
+        deployer = new ConfigurationDeployer(notifier);
+        deployer.addConfigurationChangedListener(this);
 
         // load message bundle
         loadMessageBundle(root, false);
@@ -119,6 +127,8 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
     public void deactivate(ComponentContext context) throws Exception {
         notifier.stop();
         notifier.removeListener(this);
+        deployer.removeConfigurationChangedListener(this);
+        deployer = null;
         appReg = null;
         notifier = null;
         ctx = null;
@@ -130,23 +140,16 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
 
     public void loadConfiguration(RuntimeContext context, File file, boolean trackChanges) throws Exception {
         try {
-            context.deploy(file.toURI().toURL());
+            deployer.deploy(context, file, trackChanges);
         } finally {
-            if (trackChanges) {
-                notifier.watch(file);
-            }
-            if (engine != null) {
-                engine.fireConfigurationChanged();
-            }
+            engine.fireConfigurationChanged();
         }
     }
 
-    public void unloadConfiguration(RuntimeContext context, File file, boolean trackChanges) throws Exception {
-        context.undeploy(file.toURI().toURL());
-        if (trackChanges) {
-            notifier.unwatch(file);
-        }
-        if (engine != null) {
+    public void unloadConfiguration(File file) throws Exception {
+        try {
+            deployer.undeploy(file);
+        } finally {
             engine.fireConfigurationChanged();
         }
     }
@@ -240,7 +243,7 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
         } else if (extensionPoint.equals(CONFIG_XP)) {
             ConfigurationFileDescriptor cfg = (ConfigurationFileDescriptor)contribution;
             if (cfg.path != null) {
-                unloadConfiguration(contributor.getContext(), new File(engine.getRootDirectory(), cfg.path), cfg.trackChanges);
+                unloadConfiguration(new File(engine.getRootDirectory(), cfg.path));
             } else if (cfg.entry != null) {
                 throw new UnsupportedOperationException("Entry is not supported for now");
             } else {
@@ -259,11 +262,11 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
         return null;
     }
 
-    public void fileChanged(File file, long since, long now) {
+    public void fileChanged(FileChangeNotifier.FileEntry entry, long now) throws Exception {
         if (ctx == null) {
             return;
         }
-        String path = file.getAbsolutePath();
+        String path = entry.file.getAbsolutePath();
         String rootPath = engine.getRootDirectory().getAbsolutePath();
         if (!path.startsWith(rootPath)) {
             return;
@@ -272,24 +275,19 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
         if (!relPath.startsWith("/")) {
             relPath = '/' + relPath;
         }
-//        if (file.getAbsolutePath().startsWith(mgr.getRootDirectory().getAbsolutePath())) {
-        if (relPath.endsWith("nuxeo-web.xml")) {
-            try {
-                engine.reset();
-                URL url = file.toURI().toURL();
-                ctx.getRuntimeContext().undeploy(url);
-                ctx.getRuntimeContext().deploy(url);
-                engine.fireConfigurationChanged();
-            } catch (Exception e) {
-                log.error("Failed to redeploy nuxeo-web.xml", e);
-            }
+//      if (file.getAbsolutePath().startsWith(mgr.getRootDirectory().getAbsolutePath())) {
+        if (relPath.equals("/nuxeo-web.xml")) { // TODO remove this
+            URL url = entry.file.toURI().toURL();
+            ctx.getRuntimeContext().undeploy(url);
+            ctx.getRuntimeContext().deploy(url);
+            engine.fireConfigurationChanged();
         } else if (relPath.startsWith("/i18n/")) { // reload message bundle
-            try {
-                loadMessageBundle(engine.getRootDirectory(), true);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            loadMessageBundle(engine.getRootDirectory(), true);
         }
+    }
+
+    public void configurationChanged(Entry entry) throws Exception {
+        if (engine != null) engine.fireConfigurationChanged();
     }
 
 }
