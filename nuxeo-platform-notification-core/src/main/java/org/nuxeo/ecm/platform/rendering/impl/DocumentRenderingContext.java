@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.rendering.impl;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.rendering.RenderingEngine;
 
 /**
  * Abstract RenderingContext subclass that adds capabilities of storing a
