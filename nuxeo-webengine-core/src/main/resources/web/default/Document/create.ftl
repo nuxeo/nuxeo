@@ -1,5 +1,5 @@
  
-<@extends src="default/view.ftl">
+<@extends src="Document/view.ftl">
 <@block name="message">
 Created successfully!
 </@block>

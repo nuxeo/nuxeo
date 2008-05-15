@@ -17,7 +17,7 @@ def main () {
     
     results = Request.query(pquery)
     
-    Request.render('/default/Blog/archives.ftl',
+    Request.render('Blog/archives.ftl',
                   ['year': year, 'month': month, 'pquery': pquery, 'results': results, 'sdate': c.getTime()])
 
 }

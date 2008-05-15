@@ -253,6 +253,12 @@ public class DefaultWebApplication implements WebApplication {
         vdir.flush();
     }
 
+    public ScriptFile getScriptByDocumentType(String path, Type type) throws IOException {
+        type.getName();
+        File file = getFile(path);
+        return file != null ? new ScriptFile(file) : null;
+    }
+
     public ScriptFile getScript(String path) throws IOException {
         File file = getFile(path);
         return file != null ? new ScriptFile(file) : null;

@@ -52,4 +52,9 @@ public final class ScriptFile {
         return ext;
     }
 
+    @Override
+    public String toString() {
+        return file.toString();
+    }
+
 }

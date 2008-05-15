@@ -53,6 +53,8 @@ public interface WebApplication extends ResourceLocator {
 
     public ScriptFile getScript(String path)  throws IOException;
 
+    public ScriptFile getScriptByDocumentType(String path, Type type) throws IOException;
+
     public File getFile(String path)  throws IOException;
 
     public WebEngine getWebEngine();

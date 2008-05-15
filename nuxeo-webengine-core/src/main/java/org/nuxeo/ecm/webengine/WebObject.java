@@ -99,7 +99,7 @@ public class WebObject {
                 return path;
             }
         }
-        return "default/"+action+".ftl";
+        return "Document/"+action+".ftl";
     }
 
     /**

@@ -92,16 +92,11 @@ public class Scripting {
 
     public void exec(WebContext context) throws Exception {
         ScriptFile script = context.getTargetScript();
-        if (script == null) {
-            context.cancel(WebConst.SC_NOT_FOUND);
-            return;
-        }
-        if (script.getFile().isFile()) {
+        if (script != null && script.getFile().isFile()) {
             exec(context, script);
         } else {
-            WebApplication app = context.getApplication();
-            script = app.getScript(app.getDefaultPage());
-            exec(context, script);
+            context.cancel(WebConst.SC_NOT_FOUND);
+            return;
         }
     }
 

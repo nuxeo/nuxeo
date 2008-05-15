@@ -230,7 +230,11 @@ public class DefaultWebContext implements WebContext {
                 path = app.getDefaultPage();
             }
         }
-        return app.getScript(path);
+        ScriptFile script = app.getScript(path);
+        if (script == null) {
+            script = app.getScript(app.getDefaultPage());
+        }
+        return script;
     }
 
     public String getURI() {
