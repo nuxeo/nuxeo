@@ -787,19 +787,19 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
+        <artifactId>nuxeo-theme-html</artifactId>
+        <version>${nuxeo.theme.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-jsf</artifactId>
         <version>${nuxeo.theme.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-jsf-editor</artifactId>
+        <artifactId>nuxeo-theme-editor</artifactId>
         <version>${nuxeo.theme.version}</version>
         <type>ejb</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-jsf-editor-web</artifactId>
-        <version>${nuxeo.theme.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>

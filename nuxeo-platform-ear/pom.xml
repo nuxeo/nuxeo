@@ -462,16 +462,16 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
+      <artifactId>nuxeo-theme-html</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-jsf</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
-      <artifactId>nuxeo-theme-jsf-editor</artifactId>
+      <artifactId>nuxeo-theme-editor</artifactId>
       <type>ejb</type>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.theme</groupId>
-      <artifactId>nuxeo-theme-jsf-editor-web</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
