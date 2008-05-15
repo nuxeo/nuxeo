@@ -124,6 +124,7 @@ public class Scripting {
 
     public void runScript(WebContext context, ScriptFile script, Map<String, Object> args) throws Exception {
         // script is not compilable - run slow eval
+        System.out.println(">>>>>>> RUNNING SCRIPT "+script.getFile());
         String ext = script.getExtension();
         ScriptEngine engine = scriptService.getScriptEngineManager().getEngineByExtension(ext);
         if (engine != null) {

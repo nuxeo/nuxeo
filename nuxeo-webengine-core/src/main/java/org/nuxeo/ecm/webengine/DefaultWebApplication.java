@@ -104,6 +104,7 @@ public class DefaultWebApplication implements WebApplication {
 
             FreemarkerEngine rendering = new FreemarkerEngine();
             rendering.setResourceLocator(this);
+            rendering.setMessageBundle(engine.getMessageBundle());
             rendering.setSharedVariable("env", engine.getEnvironment());
             if (desc.transformers != null) {
                 for (String name : desc.transformers) {

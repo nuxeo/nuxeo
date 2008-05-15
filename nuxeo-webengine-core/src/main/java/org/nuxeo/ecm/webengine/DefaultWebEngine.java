@@ -20,21 +20,26 @@
 package org.nuxeo.ecm.webengine;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
 import org.nuxeo.ecm.webengine.util.DependencyTree;
+import org.nuxeo.ecm.webengine.util.FileChangeListener;
+import org.nuxeo.ecm.webengine.util.FileChangeNotifier;
+import org.nuxeo.ecm.webengine.util.FileChangeNotifier.FileEntry;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DefaultWebEngine implements WebEngine {
+public class DefaultWebEngine implements WebEngine, FileChangeListener {
 
     protected final File root;
 
@@ -50,10 +55,14 @@ public class DefaultWebEngine implements WebEngine {
     protected Map<String, RenderingTransformer> transformers;
 
     protected ListenerList listeners = new ListenerList();
+    protected FileChangeNotifier notifier;
 
-    public DefaultWebEngine(File root, ResourceBundle messages) {
+    public DefaultWebEngine(File root, FileChangeNotifier notifier) throws IOException {
         this.root = root;
-        this.messages = messages;
+        this.notifier = notifier;
+        if (notifier != null) {
+            notifier.addListener(this);
+        }
         registry = new ObjectRegistry();
         bindings = new HashMap<String, String>();
         this.env = new HashMap<String, Object>();
@@ -63,21 +72,36 @@ public class DefaultWebEngine implements WebEngine {
         env.put("version", "1.0.0");
         this.transformers = new Hashtable<String, RenderingTransformer>();
         this.templates = new Hashtable<String, Object>();
+        loadMessageBundle(true);
+    }
+
+    private void loadMessageBundle(boolean watch) throws IOException {
+        File file = new File(root, "i18n");
+        WebClassLoader cl = new WebClassLoader();
+        cl.addFile(file);
+        messages = ResourceBundle.getBundle("messages", Locale.getDefault(), cl);
+        if (watch && notifier != null) {
+            notifier.watch(file);
+            for (File f : file.listFiles()) {
+                notifier.watch(f);
+            }
+        }
+    }
+
+    public void destroy() {
+        if (notifier != null) {
+            notifier.removeListener(this);
+            notifier = null;
+        }
     }
 
     /**
      * @return the messages.
      */
-    public ResourceBundle getMessages() {
+    public ResourceBundle getMessageBundle() {
         return messages;
     }
 
-    /**
-     * @param messages the messages to set.
-     */
-    public void setMessages(ResourceBundle messages) {
-        this.messages = messages;
-    }
 
     public File getRootDirectory() {
         return root;
@@ -238,5 +262,12 @@ public class DefaultWebEngine implements WebEngine {
 
     }
 
-
+    public void fileChanged(FileEntry entry, long now) throws Exception {
+        String path = entry.file.getAbsolutePath();
+        String rootPath = root.getAbsolutePath();
+        if (!path.startsWith(rootPath)) {
+            return;
+        }
+        loadMessageBundle(false);
+    }
 }

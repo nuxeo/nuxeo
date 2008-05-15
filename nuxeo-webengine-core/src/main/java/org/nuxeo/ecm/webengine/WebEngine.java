@@ -33,9 +33,7 @@ import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
  */
 public interface WebEngine {
 
-    ResourceBundle getMessages();
-
-    void setMessages(ResourceBundle messages);
+    ResourceBundle getMessageBundle();
 
     File getRootDirectory();
 
@@ -88,5 +86,7 @@ public interface WebEngine {
     void unregisterRenderingTransformer(String id);
 
     RenderingTransformer getRenderingTransformer(String id);
+
+    void destroy();
 
 }

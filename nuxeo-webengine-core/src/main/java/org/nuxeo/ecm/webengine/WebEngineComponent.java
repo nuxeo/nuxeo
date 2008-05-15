@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
@@ -86,17 +85,14 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
             // runtime predeployment is not supporting conditional unziping so we do the predeployment here:
             deployWebDir(context.getRuntimeContext().getBundle(), root);
         }
-        engine = new DefaultWebEngine(root, messages);
+        // load message bundle
         notifier = new FileChangeNotifier();
         notifier.start();
         notifier.addListener(this);
 
-        //deployer = new ConfigurationDeployer(notifier);
+        engine = new DefaultWebEngine(root, notifier);
         deployer = new ConfigurationDeployer(notifier);
         deployer.addConfigurationChangedListener(this);
-
-        // load message bundle
-        loadMessageBundle(root, false);
 
         // load configuration (it ill be put in pending until this component will exit activation code)
         File file = new File(root, "nuxeo-web.xml");
@@ -109,25 +105,14 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
         }
     }
 
-    private void loadMessageBundle(File root, boolean reload) throws IOException {
-        File file = new File(root, "i18n");
-        WebClassLoader cl = new WebClassLoader();
-        cl.addFile(file);
-        messages = ResourceBundle.getBundle("messages", Locale.getDefault(), cl);
-        engine.setMessages(messages);
-        if (!reload) {
-            notifier.watch(file);
-            for (File f : file.listFiles()) {
-                notifier.watch(f);
-            }
-        }
-    }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         notifier.stop();
         notifier.removeListener(this);
         deployer.removeConfigurationChangedListener(this);
+        engine.destroy();
+        engine = null;
         deployer = null;
         appReg = null;
         notifier = null;
@@ -281,8 +266,6 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
             ctx.getRuntimeContext().undeploy(url);
             ctx.getRuntimeContext().deploy(url);
             engine.fireConfigurationChanged();
-        } else if (relPath.startsWith("/i18n/")) { // reload message bundle
-            loadMessageBundle(engine.getRootDirectory(), true);
         }
     }
 
