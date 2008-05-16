@@ -169,11 +169,23 @@ public class DefaultWebApplication implements WebApplication {
         return documentResolver;
     }
 
+    public void setDocumentResolver(DocumentResolver resolver) {
+        this.documentResolver = resolver;
+    }
+
     /**
      * @return the defaultPage.
      */
     public String getDefaultPage() {
         return defaultPage;
+    }
+
+    /**
+     * Used by tests
+     * @param defaultPage the defaultPage to set.
+     */
+    public void setDefaultPage(String defaultPage) {
+        this.defaultPage = defaultPage;
     }
 
     /**

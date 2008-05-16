@@ -35,6 +35,8 @@ import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -62,6 +64,8 @@ import org.python.core.PyDictionary;
  *
  */
 public class DefaultWebContext implements WebContext {
+
+    private final static Log log = LogFactory.getLog(WebContext.class);
 
     public static final String CORESESSION_KEY = "SiteCoreSession";
 
@@ -155,7 +159,7 @@ public class DefaultWebContext implements WebContext {
         Path path = document.getPath().makeAbsolute();
         int cnt = path.matchingFirstSegments(rootPath);
         if (cnt == rootPath.segmentCount()) {
-            path = path.removeFirstSegments(cnt);
+            path = path.removeFirstSegments(cnt).makeAbsolute();
             return head.getUrlPath()+path.toString();
         } else {
             return null;
@@ -230,9 +234,18 @@ public class DefaultWebContext implements WebContext {
                 path = app.getDefaultPage();
             }
         }
-        ScriptFile script = app.getScript(path);
-        if (script == null) {
-            script = app.getScript(app.getDefaultPage());
+        if (path == null) { // by using a null default page we should fallback on a 404
+            return null;
+        }
+        ScriptFile script = null;
+        if (path != null) {
+            script = app.getScript(path);
+            if (script == null) {
+                path = app.getDefaultPage();
+                if (path != null) {
+                    script = app.getScript(path);
+                }
+            }
         }
         return script;
     }
@@ -316,7 +329,9 @@ public class DefaultWebContext implements WebContext {
         }
         try {
             Bindings bindings = createBindings(map);
-System.out.println(">>>>>>> RENDERING "+template);
+            if (log.isDebugEnabled()) {
+                log.debug("## Rendering: "+template);
+            }
             app.getScripting().getRenderingEngine().render(template, bindings, response.getWriter());
         } catch (Exception e) {
             e.printStackTrace();

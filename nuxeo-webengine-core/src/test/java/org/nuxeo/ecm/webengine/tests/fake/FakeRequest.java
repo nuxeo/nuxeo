@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ public class FakeRequest implements HttpServletRequest {
 
     protected final Map<String, Object> attributes = new HashMap<String, Object>();
 
-    protected final Map<String, String> parameters = new HashMap<String, String>();
+    protected final Map<String, String[]> parameters = new HashMap<String, String[]>();
 
     protected final Map<String, String> headers = new HashMap<String, String>();
 
@@ -90,7 +91,16 @@ public class FakeRequest implements HttpServletRequest {
         String[] params = queryString.split("&");
         for (String element : params) {
             String[] tuple = element.split("=");
-            parameters.put(tuple[0], tuple[1]);
+            String[] val = parameters.get(tuple[0]);
+            String[] ar = null;
+            if (val == null) {
+                ar = new String[] {tuple[1]};
+            } else {
+                String[] tmp = new String[ar.length+1];
+                System.arraycopy(ar, 0, tmp, 0, ar.length);
+                tmp[ar.length] = tuple[1];
+            }
+            parameters.put(tuple[0], ar);
         }
     }
 
@@ -257,10 +267,12 @@ public class FakeRequest implements HttpServletRequest {
     }
 
     public String getParameter(String name) {
-        return parameters.get(name);
+        String[] vals = parameters.get(name);
+        if (vals != null && vals.length > 0) return vals[0];
+        return null;
     }
 
-    public Map<String, String> getParameterMap() {
+    public Map<String, String[]> getParameterMap() {
         return parameters;
     }
 
@@ -269,8 +281,14 @@ public class FakeRequest implements HttpServletRequest {
     }
 
     public String[] getParameterValues(String name) {
-        Collection<String> values = parameters.values();
-        return values.toArray(new String[values.size()]);
+        Collection<String[]> values = parameters.values();
+        ArrayList<String> result = new ArrayList<String>();
+        for (String[] ar : values) {
+            for (String val : ar) {
+                result.add(val);
+            }
+        }
+        return result.toArray(new String[result.size()]);
     }
 
     public String getProtocol() {

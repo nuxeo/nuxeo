@@ -37,27 +37,29 @@ public class TestPermissionService extends TestCase {
     }
 
     public void test1() throws ParseException {
-        String expr = "a|b&c";
+        String expr = "a AND b OR c";
         PostfixExpression postfix = new PostfixExpression(expr);
+        System.out.println(postfix.toString().trim());
         Guard root = (Guard) postfix.visit(ptb);
-        assertEquals("a|b&c", postfix.toString().trim());
-        assertEquals("PERM[a|b&c]", root.toString());
+        assertEquals("a b AND c OR", postfix.toString().trim());
+        System.out.println(root.toString());
+        assertEquals("((PERM[a] AND PERM[b]) OR PERM[c])", root.toString());
     }
 
     public void test2() throws ParseException {
-        String expr = "a&b|c";
+        String expr = "a AND (b OR c)";
         PostfixExpression postfix = new PostfixExpression(expr);
         Guard root = (Guard) postfix.visit(ptb);
-        assertEquals("a&b|c", postfix.toString().trim());
-        assertEquals("PERM[a&b|c]", root.toString());
+        assertEquals("a b c OR AND", postfix.toString().trim());
+        assertEquals("(PERM[a] AND (PERM[b] OR PERM[c]))", root.toString());
     }
 
     public void test3() throws ParseException {
-        String expr = "(a|b)&(c|d)";
+        String expr = "(a OR b) AND (c OR d)";
         PostfixExpression postfix = new PostfixExpression(expr);
         Guard root = (Guard) postfix.visit(ptb);
-        assertEquals("a|b c|d", postfix.toString().trim());
-        assertEquals("PERM[c|d]", root.toString());
+        assertEquals("a b OR c d OR AND", postfix.toString().trim());
+        assertEquals("((PERM[a] OR PERM[b]) AND (PERM[c] OR PERM[d]))", root.toString());
     }
 
 }

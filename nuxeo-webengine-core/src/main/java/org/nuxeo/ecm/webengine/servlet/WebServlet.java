@@ -107,7 +107,7 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        double start = System.currentTimeMillis();
+        //double start = System.currentTimeMillis();
 
         if (req.getMethod().equals(WebConst.METHOD_HEAD)) {
             resp = new NoBodyResponse(resp);
@@ -136,7 +136,7 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
                         WebConst.SC_INTERNAL_SERVER_ERROR);
             }
         }
-        System.out.println(">>> SITE REQUEST TOOK:  "+((System.currentTimeMillis()-start)/1000));
+        //System.out.println(">>> SITE REQUEST TOOK:  "+((System.currentTimeMillis()-start)/1000));
     }
 
     protected void service(WebContext context, HttpServletRequest req, HttpServletResponse resp)
@@ -175,10 +175,9 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
             return;
         }
 
-        double s = System.currentTimeMillis();
+        //double s = System.currentTimeMillis();
         app.getScripting().exec(context);
-        System.out.println(
-                ">>>>>>>>>> RENDERING TOOK: " + ((System.currentTimeMillis() - s) / 1000));
+        //System.out.println(">>>>>>>>>> RENDERING TOOK: " + ((System.currentTimeMillis() - s) / 1000));
     }
 
     /**
@@ -317,9 +316,9 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
 
     public void showIndex(WebContext context) throws Exception {
         try {
-            double s = System.currentTimeMillis();
+            //double s = System.currentTimeMillis();
             app.getScripting().exec(context);
-            System.out.println(">>>>>>>>>> STATIC RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
+            //System.out.println(">>>>>>>>>> STATIC RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
         } catch (RenderingException e) {
             displayError(context.getResponse(), e, "Error during the rendering process");
         }
