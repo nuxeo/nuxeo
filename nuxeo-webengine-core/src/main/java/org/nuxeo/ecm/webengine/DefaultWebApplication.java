@@ -295,7 +295,7 @@ public class DefaultWebApplication implements WebApplication {
     }
 
     public void registerTransformer(String id, RenderingTransformer obj) {
-        if (desc.getTemplates() != null && desc.getTemplates().contains(id)) {
+        if (desc.getTransformers() != null && desc.getTransformers().contains(id)) {
             scripting.getRenderingEngine().setTransformer(id, obj);
         }
     }

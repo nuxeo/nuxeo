@@ -34,22 +34,27 @@ public class WebApplicationDescriptorRegistry {
     public WebApplicationDescriptor add(WebApplicationDescriptor desc) {
         WebApplicationDescriptor base = registry.get(desc.id);
         WebApplicationDescriptor prev = null;
-        while (base != null) {
-            if (base.fragment == desc.fragment || (base.fragment != null && base.fragment.equals(desc.fragment))) {
-                break;
-            }
-            prev = base;
-            base = base.next();
-        }
         desc.setRemoved(false);// make sure the desc is marked as active
-        if (prev != null) {
-            WebApplicationDescriptor next = prev.next();
-            if (next != null) {
-                desc.setNext(next);
-            }
-            prev.setNext(desc);
-        } else {
+        if (base == null) { // first fragment from this descriptor
             registry.put(desc.id, desc);
+        } else {
+            do {
+                if (base.fragment == desc.fragment || (base.fragment != null && base.fragment.equals(desc.fragment))) {
+                    break;
+                }
+                prev = base;
+                base = base.next();
+            } while (base != null);
+            if (base == null) { // a new fragment - prev cannot be null
+                desc.setNext(null);
+                prev.setNext(desc);
+            } else if (prev == null) { // this is a the head fragment
+                desc.setNext(base.next());
+                registry.put(desc.id, desc);
+            } else { // replace this fragment - prev is not null
+                desc.setNext(base.next());
+                prev.setNext(desc);
+            }
         }
         return get(desc.id);
     }
