@@ -60,7 +60,7 @@ public final class DecorationServlet extends HttpServlet implements Serializable
             log.error("Decoration not found: " + decorationName);
         }
 
-        responseWriter.write(org.nuxeo.theme.jsf.Utils.toJson(data));
+        responseWriter.write(org.nuxeo.theme.html.Utils.toJson(data));
         responseWriter.flush();
     }
 

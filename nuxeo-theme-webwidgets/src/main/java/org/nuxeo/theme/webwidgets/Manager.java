@@ -300,7 +300,7 @@ public class Manager implements ManagerLocal {
             final Map<String, String> fileInfo = new HashMap<String, String>();
             fileInfo.put("content-type", data.getContentType());
             fileInfo.put("filename", data.getFilename());
-            return org.nuxeo.theme.jsf.Utils.toJson(fileInfo);
+            return org.nuxeo.theme.html.Utils.toJson(fileInfo);
         } else {
             return null;
         }
@@ -354,7 +354,7 @@ public class Manager implements ManagerLocal {
         data.put("mode", mode);
         data.put("widget_types", types);
         data.put("widget_items", items);
-        return org.nuxeo.theme.jsf.Utils.toJson(data);
+        return org.nuxeo.theme.html.Utils.toJson(data);
     }
 
     @Remove

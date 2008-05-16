@@ -18,6 +18,8 @@ import javax.faces.FacesException;
 import javax.faces.application.ViewHandler;
 import javax.faces.context.FacesContext;
 
+import org.nuxeo.runtime.api.Framework;
+
 import com.sun.facelets.FaceletFactory;
 import com.sun.facelets.FaceletViewHandler;
 import com.sun.facelets.compiler.Compiler;
@@ -56,12 +58,16 @@ public class NXThemesFaceletViewHandler extends FaceletViewHandler {
     protected FaceletFactory createFaceletFactory(Compiler c) {
         long refreshPeriod = DEFAULT_REFRESH_PERIOD;
         FacesContext ctx = FacesContext.getCurrentInstance();
-        String userPeriod = ctx.getExternalContext().getInitParameter(
-                PARAM_REFRESH_PERIOD);
-        if (userPeriod != null && userPeriod.length() > 0) {
-            refreshPeriod = Long.parseLong(userPeriod);
+        String nuxRefreshPeriod = Framework.getProperty(PARAM_REFRESH_PERIOD);
+        if (nuxRefreshPeriod != null && nuxRefreshPeriod.length() > 0) {
+            refreshPeriod = Long.parseLong(nuxRefreshPeriod);
+        } else {
+            String userPeriod = ctx.getExternalContext().getInitParameter(
+                    PARAM_REFRESH_PERIOD);
+            if (userPeriod != null && userPeriod.length() > 0) {
+                refreshPeriod = Long.parseLong(userPeriod);
+            }
         }
-
         // resource resolver
         ResourceResolver resolver = new DefaultResourceResolver();
         String resolverName = ctx.getExternalContext().getInitParameter(
@@ -78,5 +84,4 @@ public class NXThemesFaceletViewHandler extends FaceletViewHandler {
 
         return new NXThemesFaceletFactory(c, resolver, refreshPeriod);
     }
-
 }

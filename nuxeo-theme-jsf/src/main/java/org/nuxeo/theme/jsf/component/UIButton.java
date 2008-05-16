@@ -22,7 +22,7 @@ import javax.faces.component.UIOutput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-import org.nuxeo.theme.jsf.Utils;
+import org.nuxeo.theme.html.Utils;
 
 public class UIButton extends UIOutput {
 

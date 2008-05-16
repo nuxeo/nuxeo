@@ -44,6 +44,7 @@ public class TestElementRenderer extends NXRuntimeTestCase {
         Manager.initializeProtocols();
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.html", "OSGI-INF/nxthemes-html-contrib.xml");
         deployContrib("org.nuxeo.theme.jsf", "OSGI-INF/nxthemes-jsf-contrib.xml");
         deployContrib("org.nuxeo.theme.jsf.tests", "fragment-config.xml");
     }
