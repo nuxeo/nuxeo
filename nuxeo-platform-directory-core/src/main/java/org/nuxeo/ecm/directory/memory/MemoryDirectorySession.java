@@ -51,7 +51,7 @@ public class MemoryDirectorySession implements Session {
 
     public MemoryDirectorySession(MemoryDirectory directory) {
         this.directory = directory;
-        data = new LinkedHashMap<String, Map<String, Object>>();
+        data = Collections.synchronizedMap(new LinkedHashMap<String, Map<String, Object>>());
     }
 
     public boolean authenticate(String username, String password)
