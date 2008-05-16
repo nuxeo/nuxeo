@@ -18,9 +18,11 @@
     </listener>
 
     <!--  Configure SUN JSF RI -->
+    <!--
     <listener>
       <listener-class>com.sun.faces.config.ConfigureListener</listener-class>
     </listener>
+    -->
 
   </extension>
 
@@ -275,11 +277,6 @@
 
     <filter-mapping>
       <filter-name>simpleCacheFilter</filter-name>
-      <url-pattern>/seam/remoting/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-      <filter-name>simpleCacheFilter</filter-name>
       <url-pattern>/waitdialog/*</url-pattern>
     </filter-mapping>
 
@@ -406,13 +403,13 @@
     </servlet-mapping>
 
     <servlet>
-      <servlet-name>Seam Remoting</servlet-name>
-      <servlet-class>org.jboss.seam.remoting.SeamRemotingServlet</servlet-class>
+      <servlet-name>Seam Ressource Servlet</servlet-name>
+      <servlet-class>org.jboss.seam.servlet.SeamResourceServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
-      <servlet-name>Seam Remoting</servlet-name>
-      <url-pattern>/seam/remoting/*</url-pattern>
+      <servlet-name>Seam Ressource Servlet</servlet-name>
+      <url-pattern>/seam/resource/*</url-pattern>
     </servlet-mapping>
 
     <!-- Trinidad servlet -->
@@ -445,25 +442,6 @@
 
   </extension>
 
-
-  <!-- IceFaces servlet -->
-  <!--
-    <servlet>
-    <servlet-name>Persistent Faces Servlet</servlet-name>
-    <servlet-class>com.icesoft.faces.webapp.xmlhttp.PersistentFacesServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet-mapping>
-    <servlet-name>Persistent Faces Servlet</servlet-name>
-    <url-pattern>*.faces</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-    <servlet-name>Persistent Faces Servlet</servlet-name>
-    <url-pattern>*.seam</url-pattern>
-    </servlet-mapping>
-  -->
 
   <extension target="web#CONTEXT-PARAM">
 
@@ -603,7 +581,7 @@
 
     <!-- This line should not strictly speaking be necessary, but it works
       around a minor bug in the RI.) -->
-    <el-resolver>org.jboss.seam.jsf.SeamELResolver</el-resolver>
+    <el-resolver>org.jboss.seam.el.SeamELResolver</el-resolver>
 
     <!-- disabled, problem for trinidad integration -->
     <!--
@@ -622,20 +600,12 @@
 
   <extension target="faces-config#PHASE-LISTENER">
 
+<!-- This is registered after SeamPhaseListener because
+      JSF-RI reads /WEB-INF/faces-config.xml after
+      lib jar's META-INF/faces-config.xml -->
     <phase-listener>
       org.nuxeo.ecm.platform.ui.web.rest.RestfulPhaseListener
     </phase-listener>
-
-    <!-- Transactional Seam Phase Listener -->
-    <!--
-      <phase-listener>
-      org.jboss.seam.jsf.TransactionalSeamPhaseListener
-      </phase-listener>
-    -->
-    <!-- Standard Seam Phase Listener -->
-    <!--
-      <phase-listener>org.jboss.seam.jsf.SeamPhaseListener</phase-listener>
-    -->
 
   </extension>
 
