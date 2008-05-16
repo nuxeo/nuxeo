@@ -80,6 +80,12 @@ public class QueryModelActionsBean extends InputController implements
         }
         QueryModel model = queryModels.get(queryModelName);
         if (model == null) {
+            // because documentManager is not required for injection we check it
+            // before usage to avoid later NPE
+            if (documentManager == null) {
+                throw new ClientException("Cannot create QueryModel for '"
+                        + queryModelName + "'. DocumentManager is null.");
+            }
             if (log.isDebugEnabled()) {
                 log.debug("(Re)building query model " + queryModelName);
             }
