@@ -319,6 +319,7 @@ public class DefaultWebContext implements WebContext {
 System.out.println(">>>>>>> RENDERING "+template);
             app.getScripting().getRenderingEngine().render(template, bindings, response.getWriter());
         } catch (Exception e) {
+            e.printStackTrace();
             throw new WebException("Failed to render template: "+template, e);
         } finally {
 

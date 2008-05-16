@@ -38,32 +38,32 @@
   	<object id="WebObject">
   		<actions>
   			<action id="view" enabled="true">
-          <permission  expression="READ"/>
+          <permission  expression="Read"/>
           <category>VIEW</category>
         </action>
         <action id="print" enabled="true">
-          <permission expression="READ" />
+          <permission expression="Read" />
         </action>
         <action id="delete" enabled="true" handler="org.nuxeo.ecm.webengine.actions.DeleteActionHandler">
-          <permission expression="WRITE" />
+          <permission expression="Write" />
         </action>
         <action id="update" enabled="true" handler="org.nuxeo.ecm.webengine.actions.UpateActionHandler">
-          <permission expression="WRITE" />
+          <permission expression="Write" />
         </action>
         <action id="edit" enabled="true">
-          <permission expression="WRITE" />
+          <permission expression="Write" />
         </action>
         <action id="create" enabled="true" handler="org.nuxeo.ecm.webengine.actions.CreateActionHandler">
-          <permission expression="WRITE" />
+          <permission expression="Write" />
         </action>
         <action id="getfile" enabled="true" handler="org.nuxeo.ecm.webengine.actions.GetFileActionHandler">
-          <permission expression="READ" />
+          <permission expression="Read" />
         </action>
         <action id="addfile" enabled="true" handler="org.nuxeo.ecm.webengine.actions.AddFileActionHandler">
-          <permission expression="WRITE" />
+          <permission expression="Write" />
         </action>
         <action id="deletefile" enabled="true" handler="org.nuxeo.ecm.webengine.actions.DeleteFileActionHandler">
-          <permission expression="WRITE" />
+          <permission expression="Write" />
         </action>
       </actions>
   	</object>
