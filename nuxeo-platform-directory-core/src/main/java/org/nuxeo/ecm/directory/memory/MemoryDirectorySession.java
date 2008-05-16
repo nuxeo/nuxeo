@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -51,7 +51,7 @@ public class MemoryDirectorySession implements Session {
 
     public MemoryDirectorySession(MemoryDirectory directory) {
         this.directory = directory;
-        data = new LinkedHashMap<String, Map<String, Object>>();
+        data = Collections.synchronizedMap(new LinkedHashMap<String, Map<String, Object>>());
     }
 
     public boolean authenticate(String username, String password)

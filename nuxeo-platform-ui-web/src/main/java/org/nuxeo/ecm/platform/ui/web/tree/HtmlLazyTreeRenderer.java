@@ -38,6 +38,7 @@ public class HtmlLazyTreeRenderer extends HtmlTreeRenderer {
 
     private static final Log log = LogFactory.getLog(HtmlLazyTreeRenderer.class);
 
+    @Override
     public void encodeChildren(FacesContext context, UIComponent component)
             throws IOException {
         HtmlTree tree = (HtmlTree) component;
@@ -102,6 +103,7 @@ public class HtmlLazyTreeRenderer extends HtmlTreeRenderer {
         }
     }
 
+    @Override
     protected void encodeTree(FacesContext context, ResponseWriter out,
             HtmlTree tree, TreeWalker walker) throws IOException {
         int childCount = ((LazyTreeWalker) walker).nextCount();
@@ -116,7 +118,7 @@ public class HtmlLazyTreeRenderer extends HtmlTreeRenderer {
 
         // if client side toggling is on, add a span to be used for displaying/hiding children
         if (clientSideToggle) {
-            String spanId = TOGGLE_SPAN + ":" + tree.getClientId(context) + ":"
+            String spanId = TOGGLE_SPAN + ':' + tree.getClientId(context) + ':'
                     + tree.getNodeId();
 
             out.startElement(HTML.SPAN_ELEM, tree);

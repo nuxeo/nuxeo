@@ -19,24 +19,24 @@
 
 package org.nuxeo.ecm.webapp.documentsLists;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+
 import java.io.Serializable;
 import java.util.List;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 @Name("conversationDocumentsListsManager")
 @Scope(CONVERSATION)
-public class ConversationDocumentsListsManager extends BaseDocumentsListsManager
-        implements Serializable {
+public class ConversationDocumentsListsManager extends
+        BaseDocumentsListsManager implements Serializable {
 
     private static final long serialVersionUID = 9876098763432L;
 
@@ -65,22 +65,18 @@ public class ConversationDocumentsListsManager extends BaseDocumentsListsManager
     }
 
     // Event listener
-    @Observer(value = {EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED},
-            create = false)
-    public void refreshLists(DocumentModel selectedDocument)
-            throws ClientException {
+    @Observer(value = { EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED }, create = false)
+    public void refreshLists(DocumentModel selectedDocument) {
 
         if (lastDocumentRef != null
                 && lastDocumentRef.equals(selectedDocument.getRef())) {
             return;
         }
 
-        if (!documentsLists_events.containsKey(
-                EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED)) {
+        if (!documentsLists_events.containsKey(EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED)) {
             return;
         }
-        for (String listName : documentsLists_events
-                .get(EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED)) {
+        for (String listName : documentsLists_events.get(EventNames.FOLDERISHDOCUMENT_SELECTION_CHANGED)) {
 
             List<DocumentModel> docList = documentsLists.get(listName);
             if (!docList.isEmpty()) {
@@ -90,6 +86,23 @@ public class ConversationDocumentsListsManager extends BaseDocumentsListsManager
         }
 
         lastDocumentRef = selectedDocument.getRef();
+    }
+
+    /**
+     * Refresh lists when a search is performed
+     */
+    @Observer(value = { EventNames.SEARCH_PERFORMED }, create = false)
+    public void refreshListsOnSearch() {
+        if (!documentsLists_events.containsKey(EventNames.SEARCH_PERFORMED)) {
+            return;
+        }
+        for (String listName : documentsLists_events.get(EventNames.SEARCH_PERFORMED)) {
+            List<DocumentModel> docList = documentsLists.get(listName);
+            if (!docList.isEmpty()) {
+                docList.clear();
+                notifyListUpdated(listName);
+            }
+        }
     }
 
 }

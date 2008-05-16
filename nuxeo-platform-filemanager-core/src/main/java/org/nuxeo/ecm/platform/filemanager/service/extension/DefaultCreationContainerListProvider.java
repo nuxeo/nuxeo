@@ -47,7 +47,7 @@ public class DefaultCreationContainerListProvider extends
 
     protected QueryModelService qmService;
 
-    protected QueryModelService getQueryModelService() throws Exception {
+    protected QueryModelService getQueryModelService() {
         if (qmService == null) {
             // TODO: update this to a service lookup NXP-2132
             qmService = (QueryModelService) Framework.getRuntime().getComponent(

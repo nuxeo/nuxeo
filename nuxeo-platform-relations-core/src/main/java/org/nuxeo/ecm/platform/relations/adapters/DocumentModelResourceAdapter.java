@@ -75,10 +75,7 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter
             } catch (Exception e) {
             } finally {
                 if (session != null) {
-                    try {
-                        core.close(session);
-                    } catch (ClientException e) {
-                    }
+                    core.close(session);
                 }
             }
         }
