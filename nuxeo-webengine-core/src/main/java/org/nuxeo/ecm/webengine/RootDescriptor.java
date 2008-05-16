@@ -39,4 +39,8 @@ public class RootDescriptor implements Comparable<RootDescriptor> {
         return o.priority - priority;
     }
 
+    @Override
+    public String toString() {
+        return path;
+    }
 }

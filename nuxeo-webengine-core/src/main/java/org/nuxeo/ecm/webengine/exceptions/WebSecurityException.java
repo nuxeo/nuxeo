@@ -25,23 +25,35 @@ import org.nuxeo.ecm.webengine.WebException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebDeployException extends WebException {
-
-    public final static String ID="deploy";
+public class WebSecurityException extends WebException {
 
     private static final long serialVersionUID = 1L;
 
+    public final static String ID = "security";
 
-    public WebDeployException(String message) {
-        super (message);
+    protected String action;
+
+
+    public WebSecurityException(String action) {
+        super ("Permission on "+action+" is denied");
+        this.action = action;
     }
 
-    public WebDeployException(String message, Throwable cause) {
-        super (message, cause);
+    public WebSecurityException(String action, Throwable cause) {
+        super ("Permission on "+action+" is denied", cause);
+        this.action =action;
     }
 
+
+    /**
+     * @return the action.
+     */
+    public String getAction() {
+        return action;
+    }
+
+    @Override
     public String getId() {
         return ID;
     }
-
 }

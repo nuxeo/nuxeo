@@ -135,6 +135,10 @@ public class DirectoryStack implements FileChangeListener {
         public int compareTo(Entry o) {
             return o.priority-priority; // put at the begining the bigest priorities (e.g. 10, 9, 8 ...)
         }
+        @Override
+        public String toString() {
+            return file.toString();
+        }
     }
 
     public static void main(String[] args) {

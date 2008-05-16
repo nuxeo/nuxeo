@@ -206,4 +206,9 @@ public class ObjectDescriptor {
         }
     }
 
+    @Override
+    public String toString() {
+        return id;
+    }
+
 }

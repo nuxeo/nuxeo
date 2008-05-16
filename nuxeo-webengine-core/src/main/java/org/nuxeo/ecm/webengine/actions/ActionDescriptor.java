@@ -26,6 +26,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebObject;
+import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 
@@ -163,7 +164,7 @@ public class ActionDescriptor {
     public void run(WebObject obj) throws WebException {
         // check rights first
         if (!getGuard().check(obj.getWebContext().getCoreSession(), obj.getDocument())) {
-            throw new WebException("Running action "+id+" is denied");
+            throw new WebSecurityException(id);
         }
         getHandler().run(obj);
     }
@@ -197,6 +198,11 @@ public class ActionDescriptor {
                 e.printStackTrace(); // TODO
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return id;
     }
 
 }

@@ -170,5 +170,12 @@ public class ConfigurationDeployer implements FileChangeListener {
         public URL getUrl() {
             return url;
         }
+
+
+        @Override
+        public String toString() {
+            return url.toExternalForm();
+        }
     }
+
 }

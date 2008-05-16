@@ -136,6 +136,11 @@ public class FileChangeNotifier {
             }
             return false;
         }
+
+        @Override
+        public String toString() {
+            return id;
+        }
     }
 
 }

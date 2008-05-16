@@ -33,22 +33,20 @@ public class WebApplicationDescriptorRegistry {
 
     public WebApplicationDescriptor add(WebApplicationDescriptor desc) {
         WebApplicationDescriptor base = registry.get(desc.id);
-        WebApplicationDescriptor prev = base;
+        WebApplicationDescriptor prev = null;
         while (base != null) {
             if (base.fragment == desc.fragment || (base.fragment != null && base.fragment.equals(desc.fragment))) {
-                if (base.isRemoved()) {
-                    base.setRemoved(false);
-                } else if (prev != null) {
-                    prev.setNext(desc);
-                } else {
-                    registry.put(desc.id, desc);
-                }
-                return get(desc.id);
+                break;
             }
             prev = base;
             base = base.next();
         }
+        desc.setRemoved(false);// make sure the desc is marked as active
         if (prev != null) {
+            WebApplicationDescriptor next = prev.next();
+            if (next != null) {
+                desc.setNext(next);
+            }
             prev.setNext(desc);
         } else {
             registry.put(desc.id, desc);

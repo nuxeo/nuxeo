@@ -35,4 +35,8 @@ public class ObjectBindingDescriptor {
     @XNode("@objectId")
     public String objectId;
 
+    @Override
+    public String toString() {
+        return type+" : "+objectId;
+    }
 }

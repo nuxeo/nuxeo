@@ -26,7 +26,10 @@ public class WebException extends ClientException {
 
     private static final long serialVersionUID = 176876876786L;
 
+    public final static String ID = "generic";
+
     private int returnCode = WebConst.SC_INTERNAL_SERVER_ERROR;
+
 
     public WebException(String message) {
         super(message);
@@ -48,6 +51,10 @@ public class WebException extends ClientException {
 
     public int getReturnCode() {
         return returnCode;
+    }
+
+    public String getId() {
+        return ID;
     }
 
 }
