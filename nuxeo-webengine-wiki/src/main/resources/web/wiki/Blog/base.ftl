@@ -1,8 +1,10 @@
 <html>
 
 <head>
-    <title>${Root.title} : ${This.title}</title>
+    <title>${Root.document.title} :: ${This.document.title}</title>
+    
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    
 <link rel="stylesheet" href="/nuxeo/site/files/resources/css/webengine.css" type="text/css" media="screen" charset="utf-8">
 <link rel="stylesheet" href="/nuxeo/site/files/resources/css/blog.css" type="text/css" media="screen" charset="utf-8">
 <script src="/nuxeo/site/files/resources/script/jquery/jquery.js"></script>
@@ -12,10 +14,11 @@
 <base href="${This.urlPath}">
 
 <script>
+
 $.fn.search = function() {
-	return $(this)focus(function() {
-		if( This.value == This.defaultValue ) {
-			This.value = "";
+	return $(this).focus(function() {
+		if( $(this).value == This.defaultValue ) {
+			$(this).value = "";
 		}
 	}).blur(function() {
 		if( !This.value.length ) {
@@ -23,8 +26,11 @@ $.fn.search = function() {
 		}
 	});
 };
-$("#q").search();
+
+
+
 </script>
+
 </head>
 
 <body>
