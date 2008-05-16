@@ -26,6 +26,6 @@ package org.nuxeo.ecm.webengine.rendering;
  */
 public interface RenderingTemplateFactory {
 
-    public Object createTemplate();
+    Object createTemplate();
 
 }

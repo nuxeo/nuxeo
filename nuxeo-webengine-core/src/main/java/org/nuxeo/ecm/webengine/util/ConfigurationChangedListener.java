@@ -25,6 +25,6 @@ package org.nuxeo.ecm.webengine.util;
  */
 public interface ConfigurationChangedListener {
 
-    public void configurationChanged(ConfigurationDeployer.Entry entry) throws Exception;
+    void configurationChanged(ConfigurationDeployer.Entry entry) throws Exception;
 
 }

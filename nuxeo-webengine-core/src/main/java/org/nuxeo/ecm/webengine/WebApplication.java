@@ -36,41 +36,41 @@ import org.nuxeo.ecm.webengine.scripting.Scripting;
  */
 public interface WebApplication extends ResourceLocator {
 
-    public Scripting getScripting();
+    Scripting getScripting();
 
-    public Mapping getMapping(String pathInfo);
+    Mapping getMapping(String pathInfo);
 
-    public String getTypeBinding(String type);
+    String getTypeBinding(String type);
 
-    public ObjectDescriptor getObjectDescriptor(Type type);
+    ObjectDescriptor getObjectDescriptor(Type type);
 
-    public void flushCache();
+    void flushCache();
 
-    public String getErrorPage();
+    String getErrorPage();
 
-    public String getIndexPage();
+    String getIndexPage();
 
-    public String getDefaultPage();
+    String getDefaultPage();
 
-    public void setDefaultPage(String page);
+    void setDefaultPage(String page);
 
-    public ScriptFile getScript(String path)  throws IOException;
+    ScriptFile getScript(String path)  throws IOException;
 
-    public ScriptFile getScriptByDocumentType(String path, Type type) throws IOException;
+    ScriptFile getScriptByDocumentType(String path, Type type) throws IOException;
 
-    public File getFile(String path)  throws IOException;
+    File getFile(String path)  throws IOException;
 
-    public WebEngine getWebEngine();
+    WebEngine getWebEngine();
 
-    public DocumentResolver getDocumentResolver();
+    DocumentResolver getDocumentResolver();
 
-    public void setDocumentResolver(DocumentResolver resolver);
+    void setDocumentResolver(DocumentResolver resolver);
 
-    public void registerTemplate(String id, Object obj);
+    void registerTemplate(String id, Object obj);
 
-    public void unregisterTemplate(String id);
+    void unregisterTemplate(String id);
 
-    public void registerTransformer(String id, RenderingTransformer obj);
+    void registerTransformer(String id, RenderingTransformer obj);
 
-    public void unregisterTransformer(String id);
+    void unregisterTransformer(String id);
 }
