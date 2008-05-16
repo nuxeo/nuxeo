@@ -47,12 +47,9 @@
 
           <h:outputText value=" "/>
           <span class="commentCreationDate">
-            <h:outputText value="#{logEntry.eventDate}" >
-             <f:convertDateTime pattern="#{nxu:basicDateFormater()}" />
+            <h:outputText value="#{threadEntry.comment.comment.creationDate}" >
+              <f:convertDateTime pattern="#{nxu:basicDateAndTimeFormater()}" />
             </h:outputText>
-            <h:outputText value=" "/>
-            <h:outputText value="#{threadEntry.comment.comment.creationDate}"
-              converter="TimeConverter"/>
           </span>
         </div>
         <div class="commentQuote">
