@@ -35,6 +35,8 @@ import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -62,6 +64,8 @@ import org.python.core.PyDictionary;
  *
  */
 public class DefaultWebContext implements WebContext {
+
+    private final static Log log = LogFactory.getLog(WebContext.class);
 
     public static final String CORESESSION_KEY = "SiteCoreSession";
 
@@ -325,7 +329,9 @@ public class DefaultWebContext implements WebContext {
         }
         try {
             Bindings bindings = createBindings(map);
-System.out.println(">>>>>>> RENDERING "+template);
+            if (log.isDebugEnabled()) {
+                log.debug("## Rendering: "+template);
+            }
             app.getScripting().getRenderingEngine().render(template, bindings, response.getWriter());
         } catch (Exception e) {
             e.printStackTrace();

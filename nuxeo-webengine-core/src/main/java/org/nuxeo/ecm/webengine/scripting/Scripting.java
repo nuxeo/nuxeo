@@ -37,10 +37,11 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.webengine.DefaultWebContext;
-import org.nuxeo.ecm.webengine.WebApplication;
 import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.servlet.WebConst;
 import org.nuxeo.runtime.api.Framework;
@@ -55,6 +56,8 @@ import org.python.core.PyTuple;
  *
  */
 public class Scripting {
+
+    private final static Log log = LogFactory.getLog(Scripting.class);
 
     private static final String CHAR_FILE_EXT = "html htm xml css txt java c cpp h";
     private static final String BINARY_FILE_EXT = "gif jpg jpeg png pdf doc xsl";
@@ -123,8 +126,9 @@ public class Scripting {
     }
 
     public void runScript(WebContext context, ScriptFile script, Map<String, Object> args) throws Exception {
-        // script is not compilable - run slow eval
-        System.out.println(">>>>>>> RUNNING SCRIPT "+script.getFile());
+        if (log.isDebugEnabled()) {
+            log.debug("## Running Script: "+script.getFile());
+        }
         String ext = script.getExtension();
         ScriptEngine engine = scriptService.getScriptEngineManager().getEngineByExtension(ext);
         if (engine != null) {
