@@ -155,7 +155,7 @@ public class DefaultWebContext implements WebContext {
         Path path = document.getPath().makeAbsolute();
         int cnt = path.matchingFirstSegments(rootPath);
         if (cnt == rootPath.segmentCount()) {
-            path = path.removeFirstSegments(cnt);
+            path = path.removeFirstSegments(cnt).makeAbsolute();
             return head.getUrlPath()+path.toString();
         } else {
             return null;
