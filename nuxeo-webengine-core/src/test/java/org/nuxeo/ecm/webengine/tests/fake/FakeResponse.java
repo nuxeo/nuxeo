@@ -60,7 +60,7 @@ public class FakeResponse implements HttpServletResponse {
     protected String output;
 
     public int getStatus() {
-        return status;
+        return status == 0 ? 200 : status;
     }
 
     public String getOutput() throws UnsupportedEncodingException {

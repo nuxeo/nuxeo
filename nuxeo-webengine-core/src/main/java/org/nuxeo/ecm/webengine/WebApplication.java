@@ -52,6 +52,8 @@ public interface WebApplication extends ResourceLocator {
 
     public String getDefaultPage();
 
+    public void setDefaultPage(String page);
+
     public ScriptFile getScript(String path)  throws IOException;
 
     public ScriptFile getScriptByDocumentType(String path, Type type) throws IOException;
@@ -61,6 +63,8 @@ public interface WebApplication extends ResourceLocator {
     public WebEngine getWebEngine();
 
     public DocumentResolver getDocumentResolver();
+
+    public void setDocumentResolver(DocumentResolver resolver);
 
     public void registerTemplate(String id, Object obj);
 

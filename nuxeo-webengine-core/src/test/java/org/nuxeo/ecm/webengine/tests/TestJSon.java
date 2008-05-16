@@ -41,8 +41,12 @@ public class TestJSon extends NXRuntimeTestCase {
         deployBundle("nuxeo-core");
     }
 
+    public void testEmpty() {
+
+    }
+
     /**
-     * Test is not working because of life cycle that is missing ..
+     * TODO: Test is not working because of life cycle that is missing ..
      * @throws Exception
      */
     public void xxx_testJSon() throws Exception {
