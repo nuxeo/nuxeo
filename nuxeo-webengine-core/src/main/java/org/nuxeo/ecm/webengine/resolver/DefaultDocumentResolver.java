@@ -179,10 +179,8 @@ public class DefaultDocumentResolver implements DocumentResolver {
     public DocumentModel getSiteSegment(WebApplication app, DocumentModel parent, String segment, CoreSession session) throws WebException {
         try {
             return session.getChild(parent.getRef(), segment);
-        } catch (DocumentSecurityException e) {
-            throw new WebSecurityException("You don't have permission to view "+segment, e);
-        } catch (ClientException e) {
-            throw WebException.wrap("Failed to get the document bound to "+segment, e);
+        } catch (Exception e) {
+            return null;
         }
     }
 
