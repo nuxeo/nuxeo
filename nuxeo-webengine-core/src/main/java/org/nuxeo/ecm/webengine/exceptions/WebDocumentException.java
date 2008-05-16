@@ -19,55 +19,30 @@
 
 package org.nuxeo.ecm.webengine.exceptions;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebSecurityException extends WebException {
+public class WebDocumentException extends WebException {
+
+    public final static String ID="document";
 
     private static final long serialVersionUID = 1L;
 
-    public final static String ID = "security";
 
-    protected String action;
-
-    public WebSecurityException(String message) {
-        super (message);
+    public WebDocumentException(ClientException cause) {
+        super (null, cause);
     }
 
-    public WebSecurityException(String message, String action) {
-        super (message);
-        this.action = action;
-    }
-
-    public WebSecurityException(String message, String action, Throwable cause) {
-        super (message, cause);
-        this.action =action;
-    }
-
-    public WebSecurityException(String message, Throwable cause) {
+    public WebDocumentException(String message, ClientException cause) {
         super (message, cause);
     }
 
-    /**
-     * @param action the action to set.
-     */
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-
-    /**
-     * @return the action.
-     */
-    public String getAction() {
-        return action;
-    }
-
-    @Override
     public String getId() {
         return ID;
     }
+
 }

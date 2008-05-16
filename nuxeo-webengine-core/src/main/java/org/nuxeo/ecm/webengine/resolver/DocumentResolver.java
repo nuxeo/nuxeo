@@ -17,10 +17,11 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine;
+package org.nuxeo.ecm.webengine.resolver;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.webengine.WebApplication;
 
 /**
  * Interface for resolving SiteObjects resources from a URL Path

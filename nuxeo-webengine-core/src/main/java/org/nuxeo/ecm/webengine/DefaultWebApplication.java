@@ -39,6 +39,8 @@ import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.mapping.MappingDescriptor;
 import org.nuxeo.ecm.webengine.mapping.PathMapper;
+import org.nuxeo.ecm.webengine.resolver.DefaultDocumentResolver;
+import org.nuxeo.ecm.webengine.resolver.DocumentResolver;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.util.DirectoryStack;

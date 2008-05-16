@@ -35,9 +35,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.webengine.ConfigurationChangedListener;
-import org.nuxeo.ecm.webengine.DefaultDocumentResolver;
 import org.nuxeo.ecm.webengine.DefaultWebContext;
-import org.nuxeo.ecm.webengine.DocumentResolver;
 import org.nuxeo.ecm.webengine.RequestHandler;
 import org.nuxeo.ecm.webengine.WebApplication;
 import org.nuxeo.ecm.webengine.WebContext;
@@ -47,6 +45,8 @@ import org.nuxeo.ecm.webengine.WebObject;
 import org.nuxeo.ecm.webengine.actions.Actions;
 import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
+import org.nuxeo.ecm.webengine.resolver.DefaultDocumentResolver;
+import org.nuxeo.ecm.webengine.resolver.DocumentResolver;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.runtime.api.Framework;
 
@@ -119,23 +119,21 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
             service(context, req, resp);
         } catch (Throwable e) {
             log.error("Site Servlet failed to handle request", e);
-            if (context == null) {
-                displayError(resp, e, "Failed to create request",
+            ScriptFile page = app.getScript(app.getErrorPage());
+            if (page == null) {
+                displayError(resp, e, "ErrorPage not found: "+app.getErrorPage(),
                         WebConst.SC_INTERNAL_SERVER_ERROR);
-            } else {
-                ScriptFile page = app.getScript(app.getErrorPage());
-                if (page == null) {
-                    displayError(resp, e, "ErrorPage not found: "+app.getErrorPage(),
-                            WebConst.SC_INTERNAL_SERVER_ERROR);
-                    return;
+                return;
+            }
+            try {
+                if (context == null) { // create an empty context
+                    context = new DefaultWebContext(app, req, resp);
                 }
-                try {
-                    context.setProperty("error", e);
-                    app.getScripting().exec(context, page);
-                } catch (Throwable ee) {
-                    displayError(resp, ee, "Failed to show error page",
-                            WebConst.SC_INTERNAL_SERVER_ERROR);
-                }
+                context.setProperty("error", e);
+                app.getScripting().exec(context, page);
+            } catch (Throwable ee) {
+                displayError(resp, ee, "Failed to show error page",
+                        WebConst.SC_INTERNAL_SERVER_ERROR);
             }
         }
         System.out.println(">>> SITE REQUEST TOOK:  "+((System.currentTimeMillis()-start)/1000));

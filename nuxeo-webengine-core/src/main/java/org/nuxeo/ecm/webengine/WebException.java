@@ -20,6 +20,9 @@
 package org.nuxeo.ecm.webengine;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.webengine.exceptions.WebDocumentException;
+import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.servlet.WebConst;
 
 public class WebException extends ClientException {
@@ -55,6 +58,21 @@ public class WebException extends ClientException {
 
     public String getId() {
         return ID;
+    }
+
+
+    public static WebException wrap(Exception e) {
+        return wrap(null, e);
+    }
+
+    public static WebException wrap(String message, Exception e) {
+        if (e instanceof DocumentSecurityException) {
+            return new WebSecurityException(message, e);
+        } else if (e instanceof ClientException) {
+            return new WebDocumentException(message, (ClientException)e);
+        } else {
+            return new WebException(message, e);
+        }
     }
 
 }

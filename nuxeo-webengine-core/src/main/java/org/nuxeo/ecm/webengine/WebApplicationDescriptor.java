@@ -27,6 +27,8 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.MappingDescriptor;
+import org.nuxeo.ecm.webengine.resolver.DefaultDocumentResolver;
+import org.nuxeo.ecm.webengine.resolver.DocumentResolver;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -57,9 +59,6 @@ public class WebApplicationDescriptor {
     @XNode("defaultPage")
     protected String defaultPage;
 
-    @XNode("documentResolver")
-    protected Class<?> documentResolverClass;
-
     @XNodeList(value="mappings/mapping", type=ArrayList.class, componentType=MappingDescriptor.class, nullByDefault=true)
     protected List<MappingDescriptor> mappings;
 
@@ -71,6 +70,10 @@ public class WebApplicationDescriptor {
 
     @XNodeList(value="templates/template", type=ArrayList.class, componentType=String.class, nullByDefault=true)
     protected List<String> templates;
+
+    @XNode("resolver")
+    protected DefaultDocumentResolver resolver;
+
 
     /**
      * @param next the parent to set.
@@ -235,29 +238,12 @@ public class WebApplicationDescriptor {
         this.transformers = transformers;
     }
 
-    /**
-     * @return the documentResolverClass.
-     */
-    public Class<?> getDocumentResolverClass() {
-        return documentResolverClass == null ? DefaultDocumentResolver.class : documentResolverClass;
-    }
-
-    /**
-     * @param documentResolverClass the documentResolverClass to set.
-     */
-    public void setDocumentResolverClass(Class<?> documentResolverClass) {
-        this.documentResolverClass = documentResolverClass;
-    }
 
     public DocumentResolver getDocumentResolver() throws WebDeployException {
-        if (documentResolverClass != null) {
-            try {
-                return (DocumentResolver)documentResolverClass.newInstance();
-            } catch (Exception e) {
-                throw new WebDeployException("Failed to instantiate Resquest handler class: "+documentResolverClass, e);
-            }
+        if (resolver == null) {
+            resolver = DefaultDocumentResolver.DEFAULT;
         }
-        return null;
+        return resolver;
     }
 
     public void copyTo(WebApplicationDescriptor desc) {
@@ -271,8 +257,8 @@ public class WebApplicationDescriptor {
         if (errorPage != null) {
             desc.errorPage = errorPage;
         }
-        if (documentResolverClass != null) {
-            desc.documentResolverClass = documentResolverClass;
+        if (resolver != null && resolver != DefaultDocumentResolver.DEFAULT) {
+            desc.resolver = resolver;
         }
         if (roots != null && !roots.isEmpty()) {
             if (desc.roots == null) {

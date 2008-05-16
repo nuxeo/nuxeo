@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -63,13 +62,13 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
     public final static String INSTALL_XP = "install";
     public final static String CONFIG_XP = "configuration";
 
+
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
     private WebEngine engine;
     private FileChangeNotifier notifier;
     private ComponentContext ctx;
 
-    private ResourceBundle messages;
 
     private WebApplicationDescriptorRegistry appReg;
     private ConfigurationDeployer deployer;
