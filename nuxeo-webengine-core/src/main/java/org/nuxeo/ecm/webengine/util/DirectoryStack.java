@@ -24,6 +24,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -62,8 +63,10 @@ public class DirectoryStack implements FileChangeListener {
     }
 
     /**
-     * Get the file given its name in this virtual directory.
+     * Gets the file given its name in this virtual directory.
+     * <p>
      * The canonical file is returned if any file is found
+     *
      * @param name the file name to lookup
      * @return the file in the canonical form
      *
@@ -89,9 +92,7 @@ public class DirectoryStack implements FileChangeListener {
         ArrayList<File> result =new ArrayList<File>();
         for (Entry entry : dirs) {
             File[] files = entry.file.listFiles();
-            for (int k=0; k<files.length; k++) {
-                result.add(files[k]);
-            }
+            result.addAll(Arrays.asList(files));
         }
         return result.toArray(new File[result.size()]);
     }
@@ -100,9 +101,7 @@ public class DirectoryStack implements FileChangeListener {
         ArrayList<File> result =new ArrayList<File>();
         for (Entry entry : dirs) {
             File[] files = entry.file.listFiles(filter);
-            for (int k=0; k<files.length; k++) {
-                result.add(files[k]);
-            }
+            result.addAll(Arrays.asList(files));
         }
         return result.toArray(new File[result.size()]);
     }
@@ -113,7 +112,6 @@ public class DirectoryStack implements FileChangeListener {
     public void flush() {
         cache.clear();
     }
-
 
     public void fileChanged(FileChangeNotifier.FileEntry entry, long now) {
         if (now == lastNotifFlush) return;
