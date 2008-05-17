@@ -1,3 +1,2 @@
-
-msg="The document has been updated successfully."
-Response.sendRedirect("${Context.getLastResolvedObject().getUrlPath()}?msg=${msg}")
+msg = "The document has been updated successfully."
+Response.sendRedirect("${Context.lastResolvedObject.urlPath}?msg=${msg}")

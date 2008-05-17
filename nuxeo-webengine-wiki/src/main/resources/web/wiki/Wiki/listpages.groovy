@@ -1,8 +1,8 @@
 import net.sf.json.JSONObject
 import net.sf.json.JSONArray
-import org.apache.commons.lang.StringUtils    
+import org.apache.commons.lang.StringUtils
 
-writer = Response.getWriter()
+writer = Response.writer
 
 qfield = 'ecm:fulltext'
 qtext = ''
@@ -23,9 +23,9 @@ if (Request.getParameter('sortorder')) {
 }
 
 if (qfield && qtext) {
-    query = "SELECT * FROM Document WHERE  (${qfield} = '${qtext}') AND (ecm:path STARTSWITH '${Root.getRepositoryPath()}') AND (ecm:isCheckedInVersion = 0) ORDER BY ${qsort}"
+    query = "SELECT * FROM Document WHERE  (${qfield} = '${qtext}') AND (ecm:path STARTSWITH '${Root.repositoryPath}') AND (ecm:isCheckedInVersion = 0) ORDER BY ${qsort}"
 } else {
-    query = "SELECT * FROM Document WHERE (ecm:isCheckedInVersion = 0)  AND (ecm:path STARTSWITH '${Root.getRepositoryPath()}') ORDER BY ${qsort} ${qorder}"
+    query = "SELECT * FROM Document WHERE (ecm:isCheckedInVersion = 0)  AND (ecm:path STARTSWITH '${Root.repositoryPath}') ORDER BY ${qsort} ${qorder}"
 }
 //writer.write(query)
 rdoc = Context.search(query)
@@ -37,10 +37,10 @@ for (d in rdoc) {
     c['cell'] = []
     //c['yop'] = Context.getUrlPath(d)
     c['cell'].add(d.getPropertyValue('dc:title').toString())
-    c['cell'].add(d.getPropertyValue('dc:modified').getTime().toString())
+    c['cell'].add(d.getPropertyValue('dc:modified').time.toString())
     c['cell'].add(d.getPropertyValue('dc:creator').toString())
     //c['cell'].add(Context.getUrlPath(d))
-    c['cell'].add(d.getCurrentLifeCycleState().toString())
+    c['cell'].add(d.currentLifeCycleState.toString())
     rows.add(c)
 }
 

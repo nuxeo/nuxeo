@@ -11,19 +11,16 @@ if (uuid) {
     Response.sendError(403, 'You need to provide a valid docId')
 }
 
-
 if (ref && Session.canRemoveDocument(ref)) {
     try {
         Session.removeDocument(ref)
         Session.save()
-        Response.getWriter().write("${uuid} removed")
-        Response.setStatus(200)
+        Response.writer.write("${uuid} removed")
+        Response.status = 200
     }
     catch(Exception e) {
         Response.sendError(403, 'Cannot remove document')
     }
-
-    
 } else {
     Response.sendError(403, 'Cannot remove document')
 }

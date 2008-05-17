@@ -7,4 +7,4 @@ if (error instanceof WebSecurityException) {
   Context.print("<h3>You don't have privileges to access this page</h3><hr/>");
 }
 
-error.printStackTrace(Response.getWriter())
+error.printStackTrace(Response.writer)
