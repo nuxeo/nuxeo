@@ -69,6 +69,12 @@
           <permission expression="Read"/>
           <category>tabview</category>
         </action>
+        <action id="comments_py" enabled="true" script="WikiPage/getComments.py">
+          <permission expression="Read"/>
+        </action>
+        <action id="comments" enabled="true" script="WikiPage/getComments.groovy">
+          <permission expression="Read"/>
+        </action>
       </actions>
     </object>
     <object id="WikiSite" extends="WikiObject">
