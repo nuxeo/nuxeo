@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.util;
+package org.nuxeo.ecm.webengine.config;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.util;
+package org.nuxeo.ecm.webengine.config;
 
 import java.io.File;
 import java.io.IOException;

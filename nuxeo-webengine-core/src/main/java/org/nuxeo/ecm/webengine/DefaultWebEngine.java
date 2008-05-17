@@ -31,10 +31,10 @@ import java.util.ResourceBundle;
 import org.jboss.util.deadlock.ApplicationDeadlockException;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
-import org.nuxeo.ecm.webengine.util.DependencyTree;
-import org.nuxeo.ecm.webengine.util.FileChangeListener;
-import org.nuxeo.ecm.webengine.util.FileChangeNotifier;
-import org.nuxeo.ecm.webengine.util.FileChangeNotifier.FileEntry;
+import org.nuxeo.ecm.webengine.config.DependencyTree;
+import org.nuxeo.ecm.webengine.config.FileChangeListener;
+import org.nuxeo.ecm.webengine.config.FileChangeNotifier;
+import org.nuxeo.ecm.webengine.config.FileChangeNotifier.FileEntry;
 
 import freemarker.cache.WebappTemplateLoader;
 

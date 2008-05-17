@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.nuxeo.ecm.webengine.config.FileChangeListener;
+import org.nuxeo.ecm.webengine.config.FileChangeNotifier;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
