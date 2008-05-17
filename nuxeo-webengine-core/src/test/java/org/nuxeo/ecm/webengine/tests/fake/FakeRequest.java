@@ -30,6 +30,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Arrays;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletInputStream;
@@ -284,9 +285,7 @@ public class FakeRequest implements HttpServletRequest {
         Collection<String[]> values = parameters.values();
         ArrayList<String> result = new ArrayList<String>();
         for (String[] ar : values) {
-            for (String val : ar) {
-                result.add(val);
-            }
+            result.addAll(Arrays.asList(ar));
         }
         return result.toArray(new String[result.size()]);
     }

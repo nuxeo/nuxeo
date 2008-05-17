@@ -25,6 +25,6 @@ package org.nuxeo.ecm.webengine;
  */
 public interface ConfigurationChangedListener {
 
-    public void configurationChanged(WebEngine engine) throws WebException;
+    void configurationChanged(WebEngine engine) throws WebException;
 
 }

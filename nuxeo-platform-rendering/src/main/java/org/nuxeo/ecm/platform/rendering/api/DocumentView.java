@@ -29,8 +29,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface DocumentView {
 
-    public Object get(DocumentModel doc, String name) throws Exception;
+    Object get(DocumentModel doc, String name) throws Exception;
 
-    public Collection<String> keys(DocumentModel doc);
+    Collection<String> keys(DocumentModel doc);
 
 }

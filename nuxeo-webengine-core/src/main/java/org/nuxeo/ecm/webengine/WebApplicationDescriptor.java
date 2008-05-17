@@ -75,51 +75,30 @@ public class WebApplicationDescriptor {
     protected DefaultDocumentResolver resolver;
 
 
-    /**
-     * @param next the parent to set.
-     */
     public void setNext(WebApplicationDescriptor next) {
         this.next = next;
     }
 
-    /**
-     * @return the parent.
-     */
     public WebApplicationDescriptor next() {
         return next;
     }
 
-    /**
-     * @return the isRemoved.
-     */
     public boolean isRemoved() {
         return isRemoved;
     }
 
-    /**
-     * @param isRemoved the isRemoved to set.
-     */
     public void setRemoved(boolean isRemoved) {
         this.isRemoved = isRemoved;
     }
 
-    /**
-     * @return the id.
-     */
     public String getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set.
-     */
     public void setId(String id) {
         this.id = id;
     }
 
-    /**
-     * @return the indexPage.
-     */
     public String getIndexPage() {
         return indexPage;
     }
@@ -128,16 +107,10 @@ public class WebApplicationDescriptor {
         return indexPage == null ? defaultValue : indexPage;
     }
 
-    /**
-     * @param indexPage the indexPage to set.
-     */
     public void setIndexPage(String indexPage) {
         this.indexPage = indexPage;
     }
 
-    /**
-     * @return the defaultPage.
-     */
     public String getDefaultPage() {
         return defaultPage;
     }
@@ -146,16 +119,10 @@ public class WebApplicationDescriptor {
         return defaultPage == null ? "default.ftl" : defaultPage;
     }
 
-    /**
-     * @param defaultPage the defaultPage to set.
-     */
     public void setDefaultPage(String defaultPage) {
         this.defaultPage = defaultPage;
     }
 
-    /**
-     * @return the errorPage.
-     */
     public String getErrorPage() {
         return errorPage;
     }
@@ -164,16 +131,10 @@ public class WebApplicationDescriptor {
         return errorPage == null ? defaultValue : errorPage;
     }
 
-    /**
-     * @param errorPage the errorPage to set.
-     */
     public void setErrorPage(String errorPage) {
         this.errorPage = errorPage;
     }
 
-    /**
-     * @return the roots.
-     */
     public List<RootDescriptor> getRoots() {
         return roots;
     }
@@ -182,62 +143,37 @@ public class WebApplicationDescriptor {
         roots = descriptors;
     }
 
-    /**
-     * @return the mappings.
-     */
     public List<MappingDescriptor> getMappings() {
         return mappings;
     }
 
-    /**
-     * @param mappings the mappings to set.
-     */
     public void setMappings(List<MappingDescriptor> mappings) {
         this.mappings = mappings;
     }
 
-    /**
-     * @return the bindings.
-     */
     public List<ObjectBindingDescriptor> getBindings() {
         return bindings;
     }
 
-    /**
-     * @param bindings the bindings to set.
-     */
     public void setBindings(List<ObjectBindingDescriptor> bindings) {
         this.bindings = bindings;
     }
 
-    /**
-     * @return the templates.
-     */
     public List<String> getTemplates() {
         return templates;
     }
 
-    /**
-     * @param templates the templates to set.
-     */
     public void setTemplates(List<String> templates) {
         this.templates = templates;
     }
 
-    /**
-     * @return the transformers.
-     */
     public List<String> getTransformers() {
         return transformers;
     }
 
-    /**
-     * @param transformers the transformers to set.
-     */
     public void setTransformers(List<String> transformers) {
         this.transformers = transformers;
     }
-
 
     public DocumentResolver getDocumentResolver() throws WebDeployException {
         if (resolver == null) {
@@ -292,9 +228,9 @@ public class WebApplicationDescriptor {
         }
     }
 
-
     @Override
     public String toString() {
-        return id+"@"+fragment;
+        return id + "@" + fragment;
     }
+
 }
