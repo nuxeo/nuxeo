@@ -27,6 +27,8 @@
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent" point="binding">
     <binding type="WikiPage" objectId="WikiPage"/>`
     <binding type="Wiki" objectId="WikiSite"/>
+    <binding type="Blog" objectId="BlogSite"/>
+    <binding type="BlogPost" objectId="BlogPost"/>
   </extension>
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent" point="webObject">
@@ -67,6 +69,12 @@
           <permission expression="Read"/>
           <category>tabview</category>
         </action>
+        <action id="comments_py" enabled="true" script="WikiPage/getComments.py">
+          <permission expression="Read"/>
+        </action>
+        <action id="comments" enabled="true" script="WikiPage/getComments.groovy">
+          <permission expression="Read"/>
+        </action>
       </actions>
     </object>
     <object id="WikiSite" extends="WikiObject">
@@ -83,6 +91,23 @@
         </action>
       </actions>
     </object>
+    
+    <object id="BlogPost" extends="WikiObject">
+      <actions>
+        <action id="view_content" enabled="true">
+          <permission expression="Read"/>
+          <category>tabview</category>
+        </action>
+        <action id="edit" enabled="true">
+          <permission expression="Write"/>
+          <category>tabview</category>
+        </action>
+      </actions>
+    </object>
+    
+    <object id="Blog" extends="WebObject">
+    </object>
+    
   </extension>
 </component>
 
