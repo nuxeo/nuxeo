@@ -338,13 +338,13 @@ public class DefaultWebContext implements WebContext {
         }
     }
 
-    public void runScript(String script) throws WebException {
-        runScript(script, null);
+    public Object runScript(String script) throws WebException {
+        return runScript(script, null);
     }
 
-    public void runScript(String script, Map<String, Object> args) throws WebException {
+    public Object runScript(String script, Map<String, Object> args) throws WebException {
         try {
-            app.getScripting().runScript(this, app.getScript(script), createBindings(args));
+            return app.getScripting().runScript(this, app.getScript(script), createBindings(args));
         } catch (WebException e) {
             throw e;
         } catch (Exception e) {

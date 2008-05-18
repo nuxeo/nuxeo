@@ -119,11 +119,11 @@ public class Scripting {
         }
     }
 
-    public void runScript(WebContext context, ScriptFile script) throws Exception {
-        runScript(context, script, null);
+    public Object runScript(WebContext context, ScriptFile script) throws Exception {
+        return runScript(context, script, null);
     }
 
-    public void runScript(WebContext context, ScriptFile script, Map<String, Object> args) throws Exception {
+    public Object runScript(WebContext context, ScriptFile script, Map<String, Object> args) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("## Running Script: "+script.getFile());
         }
@@ -135,13 +135,12 @@ public class Scripting {
             ctx.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
             CompiledScript comp = getScript(engine, script.getFile()); // use cache for compiled scripts
             if (comp != null) {
-                comp.eval(ctx);
-                return;
+                return comp.eval(ctx);
             } // compilation not supported - eval it on the fly
             try {
                 Reader reader = new FileReader(script.getFile());
-                try {
-                    engine.eval(reader, ctx);
+                try { // TODO use __result__ to pass return value for engine that doesn't returns like jython
+                    return engine.eval(reader, ctx);
                 } finally {
                     reader.close();
                 }
@@ -168,6 +167,7 @@ public class Scripting {
                         "No script engine was found for the file: " + script.getFile().getName());
             }
         }
+        return null;
     }
 
     @SuppressWarnings("unchecked")

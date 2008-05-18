@@ -406,7 +406,7 @@ public interface WebContext {
      *          caller script if any.
      * @param args the arguments to pass
      */
-    void runScript(String script, Map<String, Object> args) throws WebException;
+    Object runScript(String script, Map<String, Object> args) throws WebException;
 
     /**
      * Run the given script.
@@ -416,7 +416,7 @@ public interface WebContext {
      *          caller script if any.
      * @see #runScript(String, Map)
      */
-    void runScript(String script) throws WebException;
+    Object runScript(String script) throws WebException;
 
     /**
      * Write some text on the HTTP request output stream
