@@ -1,3 +1,4 @@
+<#import "common/util.ftl" as base/>
 <h1>${Document.title}</h1>
 
 <div id="wiki-content">

@@ -1,3 +1,5 @@
+<#import "common/util.ftl" as base/>
+
 <#assign r1 = Request.getParameter('r1') />
 <#assign r2 = Request.getParameter('r2') />
 <#assign l1 = Session.getDocument(docRef(r1)).versionLabel />
