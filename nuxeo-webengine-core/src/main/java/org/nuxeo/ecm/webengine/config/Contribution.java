@@ -30,34 +30,44 @@ import org.nuxeo.runtime.model.Extension;
  */
 public abstract class Contribution implements Cloneable {
 
-    protected String id;
     protected Extension extension;
+    protected String contributionId;
+
+    public abstract void install(ManagedComponent comp, Contribution contrib) throws Exception;
+
+    public abstract void uninstall(ManagedComponent comp, Contribution contrib) throws Exception;
 
 
-    public abstract void install(Object obj, Contribution contrib) throws Exception;
-
-    public abstract void uninstall(Object obj, Contribution contrib) throws Exception;
-
-    public void install(Object obj) throws Exception {
-        install(obj, this);
+    /**
+     * @return the contributionId.
+     */
+    public String getContributionId() {
+        return contributionId;
     }
 
-    public void uninstall(Object obj) throws Exception {
-        uninstall(obj, this);
+    /**
+     * @param contributionId the contributionId to set.
+     */
+    public void setContributionId(String contributionId) {
+        this.contributionId = contributionId;
     }
 
+    public void install(ManagedComponent comp) throws Exception {
+        install(comp, this);
+    }
+
+    public void uninstall(ManagedComponent comp) throws Exception {
+        uninstall(comp, this);
+    }
 
     public void resolve(ContributionManager mgr) {
-        // extend this
+        // do noting
     }
 
     public void unresolve(ContributionManager mgr) {
-        // extend this
+        // do nothing
     }
 
-    public String getId() {
-        return id;
-    }
 
     /**
      * @return the extension.
@@ -90,7 +100,7 @@ public abstract class Contribution implements Cloneable {
 
     @Override
     public String toString() {
-        return id;
+        return contributionId;
     }
 
     @Override
@@ -99,7 +109,7 @@ public abstract class Contribution implements Cloneable {
             return false;
         }
         if (obj instanceof Contribution) {
-            return this.getClass() == obj.getClass() && id.equals(((Contribution)obj).id);
+            return this.getClass() == obj.getClass() && contributionId.equals(((Contribution)obj).contributionId);
         }
         return false;
     }

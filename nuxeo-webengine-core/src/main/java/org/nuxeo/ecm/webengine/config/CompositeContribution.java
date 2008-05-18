@@ -31,22 +31,22 @@ import java.util.List;
  */
 public abstract class CompositeContribution extends ExtensibleContribution {
 
-    protected List<CompositeContribution> fragments = new ArrayList<CompositeContribution>();
+    protected List<CompositeContribution> contributionFragments = new ArrayList<CompositeContribution>();
 
-    private boolean isEnabled;
+    private boolean isContributionEnabled;
 
     @Override
     public void resolve(ContributionManager mgr) {
         super.resolve(mgr);
-        if (base instanceof CompositeContribution) {
-            ((CompositeContribution)base).addFragment(this);
+        if (baseContribution instanceof CompositeContribution) {
+            ((CompositeContribution)baseContribution).addContributionFragment(this);
         }
     }
 
     @Override
     public void unresolve(ContributionManager mgr) {
-        if (base instanceof CompositeContribution) {
-            ((CompositeContribution)base).removeFragment(this);
+        if (baseContribution instanceof CompositeContribution) {
+            ((CompositeContribution)baseContribution).removeContributionFragment(this);
         }
         super.unresolve(mgr);
     }
@@ -54,48 +54,76 @@ public abstract class CompositeContribution extends ExtensibleContribution {
     /**
      * @return the isEnabled.
      */
-    public boolean isEnabled() {
-        return isEnabled;
+    public boolean isContributionEnabled() {
+        return isContributionEnabled;
     }
 
     /**
      * @param isEnabled the isEnabled to set.
      */
-    public void setEnabled(boolean isEnabled) {
-        this.isEnabled = isEnabled;
+    public void setContributionEnabled(boolean isEnabled) {
+        this.isContributionEnabled = isEnabled;
     }
 
-    public void addFragment(CompositeContribution fragment) {
-        fragment.setEnabled(true);
-        int index = fragments.indexOf(fragment);
+    public void addContributionFragment(CompositeContribution fragment) {
+        fragment.setContributionEnabled(true);
+        int index = contributionFragments.indexOf(fragment);
         if (index > -1) {
-            fragments.set(index, fragment);
+            contributionFragments.set(index, fragment);
         } else {
-            fragments.add(fragment);
+            contributionFragments.add(fragment);
         }
     }
 
 
-    public void removeFragment(CompositeContribution fragment) {
-        int index = fragments.indexOf(fragment);
+    public void removeContributionFragment(CompositeContribution fragment) {
+        int index = contributionFragments.indexOf(fragment);
         if (index > -1) { // do not physically remove fragments since they can be reloaded
-            fragments.get(index).setEnabled(false);
+            contributionFragments.get(index).setContributionEnabled(false);
         }
     }
 
-    public List<CompositeContribution> getFragments() {
-        return fragments;
+    public List<CompositeContribution> getContributionFragments() {
+        return contributionFragments;
     }
+
+    public CompositeContribution getRootComposite() {
+        if (baseContribution instanceof CompositeContribution) {
+            return ((CompositeContribution)baseContribution).getRootComposite();
+        }
+        return this;
+    }
+
 
     @Override
     protected ExtensibleContribution getMergedContribution() throws Exception {
-        ExtensibleContribution mc = super.getMergedContribution();
-        for (CompositeContribution fragment : fragments) {
-            if (fragment.isEnabled()) {
-                fragment.copyOver(mc);
+        CompositeContribution root = getRootComposite();
+        ExtensibleContribution mc = root.baseContribution != null
+                ? root.baseContribution.getMergedContribution()
+                : root.clone();
+        for (CompositeContribution fragment : root.contributionFragments) {
+            if (fragment.isContributionEnabled()) {
+                copyFragmentsOver(mc);
             }
         }
+        mc.contributionId = root.contributionId;
+        mc.baseContributionId = root.baseContributionId;
         return mc;
+    }
+
+    private void copyFragmentsOver(ExtensibleContribution mc) {
+        copyOver(mc);
+        for (CompositeContribution fragment : contributionFragments) {
+            if (fragment.isContributionEnabled()) {
+                fragment.copyFragmentsOver(mc);
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        if (baseContributionId == null) return contributionId;
+        return contributionId + "@" + baseContributionId;
     }
 
 }

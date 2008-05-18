@@ -233,18 +233,15 @@ public class DefaultWebContext implements WebContext {
             } else {
                 path = app.getDefaultPage();
             }
+            if (path == null) { // by using a null default page we should fallback on a 404
+                return null;
+            }
         }
-        if (path == null) { // by using a null default page we should fallback on a 404
-            return null;
-        }
-        ScriptFile script = null;
-        if (path != null) {
-            script = app.getScript(path);
-            if (script == null) {
-                path = app.getDefaultPage();
-                if (path != null) {
-                    script = app.getScript(path);
-                }
+        ScriptFile script = app.getScript(path);
+        if (script == null) {
+            path = app.getDefaultPage();
+            if (path != null) {
+                script = app.getScript(path);
             }
         }
         return script;

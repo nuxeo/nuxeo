@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine.config;
 
-import java.io.File;
 
 /**
  * An example of listener implementation:

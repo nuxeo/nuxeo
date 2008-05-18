@@ -93,11 +93,11 @@ public class DefaultWebApplication implements WebApplication {
         }
         try {
             List<RootDescriptor> roots = desc.getRoots();
-            Collections.sort(roots);
             this.vdir = new DirectoryStack();
             if (roots == null) {
                 this.vdir.addDirectory(new File(engine.getRootDirectory(), "default"), 0);
             } else {
+                Collections.sort(roots);
                 for (RootDescriptor rd : roots) {
                     File file =new File(engine.getRootDirectory(), rd.path);
                     this.vdir.addDirectory(file, rd.priority);
@@ -223,11 +223,11 @@ public class DefaultWebApplication implements WebApplication {
         if (obj == null) {
             String id = getTypeBinding("Document");
             if (id == null) {
-                throw new WebRuntimeException("Invalid configuration: The default object (the onbe mapped to Document type) was not declared");
+                throw new WebRuntimeException("Invalid configuration: The default object (the one mapped to Document type) was not declared");
             }
             obj = engine.getObject(id);
             if (obj == null) {
-                throw new WebRuntimeException("Invalid configuration: The default object (the onbe mapped to Document type) was not declared");
+                throw new WebRuntimeException("Invalid configuration: The default object (the one mapped to Document type) was not declared");
             }
             objects.put("Document", obj);
         }

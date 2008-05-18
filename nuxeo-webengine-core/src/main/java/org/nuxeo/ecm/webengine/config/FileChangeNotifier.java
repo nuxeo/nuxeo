@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

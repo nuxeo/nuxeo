@@ -25,6 +25,10 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.webengine.config.CompositeContribution;
+import org.nuxeo.ecm.webengine.config.Contribution;
+import org.nuxeo.ecm.webengine.config.ExtensibleContribution;
+import org.nuxeo.ecm.webengine.config.ManagedComponent;
 import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.MappingDescriptor;
 import org.nuxeo.ecm.webengine.resolver.DefaultDocumentResolver;
@@ -35,17 +39,15 @@ import org.nuxeo.ecm.webengine.resolver.DocumentResolver;
  *
  */
 @XObject("webapp")
-public class WebApplicationDescriptor {
-
-    // the parent fragment if any
-    protected WebApplicationDescriptor next;
-    protected boolean isRemoved = false;
+public class WebApplicationDescriptor extends CompositeContribution {
 
     @XNode("@id")
-    protected String id;
+    @Override
+    public void setContributionId(String id) { this.contributionId = id; }
 
-    @XNode("@fragment")
-    protected String fragment;
+    @XNode("@extends")
+    @Override
+    public void setBaseContributionId(String id) { this.baseContributionId = id; }
 
     @XNodeList(value="roots/root", type=ArrayList.class, componentType=RootDescriptor.class, nullByDefault=true)
     protected List<RootDescriptor> roots;
@@ -75,28 +77,8 @@ public class WebApplicationDescriptor {
     protected DefaultDocumentResolver resolver;
 
 
-    public void setNext(WebApplicationDescriptor next) {
-        this.next = next;
-    }
-
-    public WebApplicationDescriptor next() {
-        return next;
-    }
-
-    public boolean isRemoved() {
-        return isRemoved;
-    }
-
-    public void setRemoved(boolean isRemoved) {
-        this.isRemoved = isRemoved;
-    }
-
     public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+        return contributionId;
     }
 
     public String getIndexPage() {
@@ -182,8 +164,8 @@ public class WebApplicationDescriptor {
         return resolver;
     }
 
-    public void copyTo(WebApplicationDescriptor desc) {
-        desc.id = id;
+    public void copyOver(ExtensibleContribution contrib) {
+        WebApplicationDescriptor desc = (WebApplicationDescriptor)contrib;
         if (defaultPage != null) {
             desc.defaultPage = defaultPage;
         }
@@ -229,8 +211,15 @@ public class WebApplicationDescriptor {
     }
 
     @Override
-    public String toString() {
-        return id + "@" + fragment;
+    public void install(ManagedComponent comp, Contribution contrib) throws Exception {
+        WebEngine engine = ((WebEngineComponent)comp).getEngine();
+        engine.registerApplication((WebApplicationDescriptor)contrib);
+    }
+
+    @Override
+    public void uninstall(ManagedComponent comp, Contribution contrib) throws Exception {
+        WebEngine engine = ((WebEngineComponent)comp).getEngine();
+        engine.unregisterApplication(contrib.getContributionId());
     }
 
 }

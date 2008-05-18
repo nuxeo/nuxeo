@@ -20,7 +20,7 @@
 package org.nuxeo.ecm.webengine;
 
 import java.io.File;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -47,15 +47,9 @@ public interface WebEngine {
 
     void unregisterBinding(String type);
 
-    List<ObjectDescriptor> getRegisteredObjects();
-
-    List<ObjectDescriptor> getPendingObjects();
-
-    List<ObjectDescriptor> getResolvedObjects();
+    Collection<ObjectDescriptor> getObjects();
 
     ObjectDescriptor getObject(String id);
-
-    boolean isObjectResolved(String id);
 
     void reset();
 

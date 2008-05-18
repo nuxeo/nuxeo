@@ -49,7 +49,7 @@ public class ActionDescriptor {
     protected Class<ActionHandler> handlerClass;
 
     @XNode("@enabled")
-    protected boolean isEnabled;
+    protected boolean isEnabled = true;
 
     @XNode("permission")
     private GuardDescriptor pd;
@@ -173,7 +173,19 @@ public class ActionDescriptor {
         this.handler = handler;
     }
 
-    public void merge(ActionDescriptor ad) {
+    public void copyFrom(ActionDescriptor ad) {
+        id = ad.id;
+        isEnabled = ad.isEnabled;
+        if (ad.categories != null && ad.categories.length > 0) {
+            if (categories == null) {
+                categories = ad.categories;
+            } else {
+                String[] tmp = new String[categories.length+ad.categories.length];
+                System.arraycopy(categories, 0, tmp, 0, categories.length);
+                System.arraycopy(ad.categories, 0, tmp, categories.length, ad.categories.length);
+                categories = tmp;
+            }
+        }
         if (script == null) {
             script = ad.script;
         }
@@ -181,10 +193,10 @@ public class ActionDescriptor {
             handlerClass = ad.handlerClass;
         }
         if (pd == null) {
-            guard = ad.guard;
+            guard = ad.getGuard();
         } else {
             pd.getGuards().put(".", ad.getGuard());
-            buildGuard();
+            guard = null;
         }
     }
 

@@ -47,7 +47,7 @@ public class ContributionManager extends DependencyTree<String, Contribution> {
         String baseId = null;
         if (contrib instanceof ExtensibleContribution) {
             ExtensibleContribution c = (ExtensibleContribution)contrib;
-            baseId = c.getBaseId();
+            baseId = c.getBaseContributionId();
         }
         Collection<String> deps = new ArrayList<String>();
         if (baseId != null) {
@@ -57,11 +57,11 @@ public class ContributionManager extends DependencyTree<String, Contribution> {
         if (cdeps != null) {
             deps.addAll(cdeps);
         }
-        add(contrib.getId(), contrib, deps);
+        add(contrib.getContributionId(), contrib, deps);
     }
 
     public void unregisterContribution(Contribution contrib) {
-        remove(contrib.getId());
+        remove(contrib.getContributionId());
     }
 
     @Override
@@ -69,9 +69,8 @@ public class ContributionManager extends DependencyTree<String, Contribution> {
         Contribution contrib = entry.get();
         contrib.resolve(this);
         try {
-            component.registerContribution(contrib);
+            contrib.install(component);
         } catch (Exception e) {
-            //TODO how to handle errors?
             e.printStackTrace();
         }
     }
@@ -79,12 +78,12 @@ public class ContributionManager extends DependencyTree<String, Contribution> {
     @Override
     protected void unresolved(Entry<String, Contribution> entry) {
         Contribution contrib = entry.get();
-        contrib.unresolve(this);
         try {
-            component.unregisterContribution(contrib);
+            contrib.uninstall(component);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        contrib.unresolve(this);
     }
 
 }

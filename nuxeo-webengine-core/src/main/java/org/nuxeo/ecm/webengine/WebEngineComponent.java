@@ -28,8 +28,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.config.ConfigurationChangedListener;
 import org.nuxeo.ecm.webengine.config.ConfigurationDeployer;
+import org.nuxeo.ecm.webengine.config.ContributionManager;
 import org.nuxeo.ecm.webengine.config.FileChangeListener;
 import org.nuxeo.ecm.webengine.config.FileChangeNotifier;
+import org.nuxeo.ecm.webengine.config.ManagedComponent;
 import org.nuxeo.ecm.webengine.config.ConfigurationDeployer.Entry;
 import org.nuxeo.ecm.webengine.install.Installer;
 import org.nuxeo.ecm.webengine.rendering.RenderingTemplateDescriptor;
@@ -41,7 +43,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
-import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.osgi.framework.Bundle;
 
@@ -49,7 +50,7 @@ import org.osgi.framework.Bundle;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebEngineComponent extends DefaultComponent implements FileChangeListener, ConfigurationChangedListener {
+public class WebEngineComponent extends ManagedComponent implements FileChangeListener, ConfigurationChangedListener {
 
     public static final ComponentName NAME = new ComponentName(WebEngineComponent.class.getName());
 
@@ -69,14 +70,12 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
     private FileChangeNotifier notifier;
     private ComponentContext ctx;
 
-
-    private WebApplicationDescriptorRegistry appReg;
     private ConfigurationDeployer deployer;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
+        super.activate(context);
         ctx = context;
-        appReg = new WebApplicationDescriptorRegistry();
         File root = new File(Framework.getRuntime().getHome(), "web");
         root = root.getCanonicalFile();
         if (!root.exists()) {
@@ -84,6 +83,10 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
             // runtime predeployment is not supporting conditional unziping so we do the predeployment here:
             deployWebDir(context.getRuntimeContext().getBundle(), root);
         }
+        // register contrib managers
+        registerContributionManager(APPLICATION_XP, new ContributionManager(this));
+        registerContributionManager(WEB_OBJ_XP, new ContributionManager(this));
+
         // load message bundle
         notifier = new FileChangeNotifier();
         notifier.start();
@@ -99,9 +102,11 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
             //XMap xmap = new XMap();
             //WebConfiguration cfg = xmap.load(new XMapContext(context.getRuntimeContext()), new BufferedInputStream(new FileInputStream(file)));
             //new XMapContext(context.getRuntimeContext());
-            context.getRuntimeContext().deploy(file.toURI().toURL());
-            notifier.watch(file);
+            deployer.deploy(context.getRuntimeContext(), file, true);
+            //context.getRuntimeContext().deploy(file.toURI().toURL());
+            //notifier.watch(file);
         }
+
     }
 
 
@@ -113,13 +118,20 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
         engine.destroy();
         engine = null;
         deployer = null;
-        appReg = null;
         notifier = null;
         ctx = null;
+        super.deactivate(context);
     }
 
     private static void deployWebDir(Bundle bundle, File root) throws URISyntaxException, IOException {
         Installer.copyResources(bundle, "web", root);
+    }
+
+    /**
+     * @return the engine.
+     */
+    public WebEngine getEngine() {
+        return engine;
     }
 
     public void loadConfiguration(RuntimeContext context, File file, boolean trackChanges) throws Exception {
@@ -138,23 +150,6 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
         }
     }
 
-    public void unregisterApplication(WebApplicationDescriptor desc) throws WebException {
-        desc = appReg.remove(desc);
-        if (desc == null) {
-            engine.unregisterApplication(desc.id);
-        } else {
-            engine.registerApplication(desc);
-        }
-        engine.fireConfigurationChanged();
-    }
-
-    public void registerApplication(WebApplicationDescriptor desc) throws WebException {
-        desc = appReg.add(desc);
-        if (desc != null) {
-            engine.registerApplication(desc);
-        }
-        engine.fireConfigurationChanged();
-    }
 
 
     @Override
@@ -164,9 +159,6 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
         if (TRANSFORMER_XP.equals(extensionPoint)) {
             TransformerDescriptor td = (TransformerDescriptor)contribution;
             engine.registerRenderingTransformer(td.getName(), td.newInstance());
-        } else if (WEB_OBJ_XP.equals(extensionPoint)) {
-            ObjectDescriptor obj = (ObjectDescriptor)contribution;
-            engine.registerObject(obj);
         } else if (GUARD_XP.equals(extensionPoint)) {
             GuardDescriptor gd = (GuardDescriptor)contribution;
             PermissionService.getInstance().registerGuard(gd.getId(), gd.getGuard());
@@ -180,9 +172,6 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
             } catch (Exception e) {
                 throw new RuntimeServiceException("Deployment Error. Failed to contribute freemarker template extension: "+fed.name);
             }
-        } else if (extensionPoint.equals(APPLICATION_XP)) {
-            WebApplicationDescriptor desc = (WebApplicationDescriptor)contribution;
-            registerApplication(desc);
         } else if (extensionPoint.equals(INSTALL_XP)) {
             Installer installer = (Installer)contribution;
             installer.install(contributor.getContext(), engine.getRootDirectory());
@@ -206,9 +195,6 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
         if (TRANSFORMER_XP.equals(extensionPoint)) {
             TransformerDescriptor td = (TransformerDescriptor)contribution;
             engine.unregisterRenderingTransformer(td.getName());
-        } else if (WEB_OBJ_XP.equals(extensionPoint)) {
-            ObjectDescriptor obj = (ObjectDescriptor)contribution;
-            engine.unregisterObject(obj);
         } else if (GUARD_XP.equals(extensionPoint)) {
             GuardDescriptor gd = (GuardDescriptor)contribution;
             PermissionService.getInstance().unregisterGuard(gd.getId());
@@ -218,9 +204,6 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
         } else if (extensionPoint.equals(RENDERING_TEMPLATE_XP)) {
             RenderingTemplateDescriptor fed = (RenderingTemplateDescriptor)contribution;
             engine.unregisterRenderingTemplate(fed.name);
-        } else if (extensionPoint.equals(APPLICATION_XP)) {
-            WebApplicationDescriptor desc = (WebApplicationDescriptor)contribution;
-            unregisterApplication(desc);
         } else if (extensionPoint.equals(INSTALL_XP)) {
             Installer installer = (Installer)contribution;
             installer.uninstall(contributor.getContext(), engine.getRootDirectory());
@@ -260,12 +243,12 @@ public class WebEngineComponent extends DefaultComponent implements FileChangeLi
             relPath = '/' + relPath;
         }
 //      if (file.getAbsolutePath().startsWith(mgr.getRootDirectory().getAbsolutePath())) {
-        if (relPath.equals("/nuxeo-web.xml")) { // TODO remove this
-            URL url = entry.file.toURI().toURL();
-            ctx.getRuntimeContext().undeploy(url);
-            ctx.getRuntimeContext().deploy(url);
-            engine.fireConfigurationChanged();
-        }
+//        if (relPath.equals("/nuxeo-web.xml")) { // TODO remove this
+//            URL url = entry.file.toURI().toURL();
+//            ctx.getRuntimeContext().undeploy(url);
+//            ctx.getRuntimeContext().deploy(url);
+//            engine.fireConfigurationChanged();
+//        }
     }
 
     public void configurationChanged(Entry entry) throws Exception {

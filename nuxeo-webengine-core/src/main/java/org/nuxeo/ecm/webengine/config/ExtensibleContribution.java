@@ -27,64 +27,108 @@ package org.nuxeo.ecm.webengine.config;
  */
 public abstract class ExtensibleContribution extends Contribution {
 
-    protected String baseId;
-    protected ExtensibleContribution base;
+    protected ExtensibleContribution baseContribution;
+    protected String baseContributionId;
 
 
     /**
-     * Copy this contribution over the given one
+     * Copy this contribution data over the given one.
+     * <p>
+     * Warn that the copy must be done deeply - you should clone every element in any collection you have
+     * This is to avoid merging data you copy into the base contribution and breaking subsequent merging operations
+     * <p>
+     * The baseContributionId and contributionId fields should not be copied since their are copied
+     * by the base classes implementation
+     *
      */
     protected abstract void copyOver(ExtensibleContribution contrib);
 
 
+    /**
+     * @return the baseContributionId.
+     */
+    public String getBaseContributionId() {
+        return baseContributionId;
+    }
+
+    /**
+     * @param baseContribution the baseContribution to set.
+     */
+    public void setBaseContribution(ExtensibleContribution baseContribution) {
+        this.baseContribution = baseContribution;
+    }
+
+    /**
+     * @param baseContributionId the baseContributionId to set.
+     */
+    public void setBaseContributionId(String baseContributionId) {
+        this.baseContributionId = baseContributionId;
+    }
+
     @Override
     public void resolve(ContributionManager mgr) {
-        if (baseId != null) {
-            base = (ExtensibleContribution)mgr.getResolved(baseId);
+        if (baseContributionId != null) {
+            baseContribution = (ExtensibleContribution)mgr.getResolved(baseContributionId);
         }
     }
 
     @Override
     public void unresolve(ContributionManager mgr) {
-        base = null;
-    }
-
-    public String getBaseId() {
-        return baseId;
+        baseContribution = null;
     }
 
     /**
      * @return the base.
      */
-    public ExtensibleContribution getBase() {
-        return base;
+    public ExtensibleContribution getBaseContribution() {
+        return baseContribution;
     }
 
-    public ExtensibleContribution getRoot() {
-        return base == null ? this : base.getRoot();
+    public ExtensibleContribution getRootContribution() {
+        return baseContribution == null ? this : baseContribution.getRootContribution();
     }
 
-    public boolean isRoot() {
-        return base == null;
+    public boolean isRootContribution() {
+        return baseContribution == null;
     }
 
     protected ExtensibleContribution getMergedContribution() throws Exception {
-        if (base == null) {
-            return (ExtensibleContribution)this.clone();
+        if (baseContribution == null) {
+            return this.clone();
         }
-        ExtensibleContribution mc = base.getMergedContribution();
+        ExtensibleContribution mc = baseContribution.getMergedContribution();
         copyOver(mc);
+        mc.contributionId = contributionId;
+        mc.baseContributionId = baseContributionId;
         return mc;
     }
 
     @Override
-    public void install(Object obj) throws Exception {
-        install(obj, getMergedContribution());
+    public void install(ManagedComponent comp) throws Exception {
+        install(comp, getMergedContribution());
     }
 
     @Override
-    public void uninstall(Object obj) throws Exception {
-        uninstall(obj, getMergedContribution());
+    public void uninstall(ManagedComponent comp) throws Exception {
+        uninstall(comp, getMergedContribution());
+    }
+
+
+    /**
+     * perform a deep clone to void sharing collection elements between clones
+     */
+    @Override
+    public ExtensibleContribution clone() throws CloneNotSupportedException {
+        try {
+            ExtensibleContribution clone = this.getClass().newInstance();
+            copyOver(clone);
+            clone.contributionId = contributionId;
+            clone.baseContributionId = baseContributionId;
+            return clone;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new CloneNotSupportedException("Failed to instantiate the contribution class. Contribution classes must have a trivial constructor");
+        }
     }
 
 }

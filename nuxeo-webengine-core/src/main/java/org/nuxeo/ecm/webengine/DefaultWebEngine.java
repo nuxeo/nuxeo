@@ -21,22 +21,18 @@ package org.nuxeo.ecm.webengine;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import org.jboss.util.deadlock.ApplicationDeadlockException;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
-import org.nuxeo.ecm.webengine.config.DependencyTree;
 import org.nuxeo.ecm.webengine.config.FileChangeListener;
 import org.nuxeo.ecm.webengine.config.FileChangeNotifier;
 import org.nuxeo.ecm.webengine.config.FileChangeNotifier.FileEntry;
-
-import freemarker.cache.WebappTemplateLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -46,7 +42,7 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
 
     protected final File root;
 
-    protected final ObjectRegistry registry;
+    protected final Map<String,ObjectDescriptor> registry;
     protected final Map<String, String> bindings;
 
     protected Map<String, WebApplication> apps;
@@ -67,7 +63,7 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         if (notifier != null) {
             notifier.addListener(this);
         }
-        registry = new ObjectRegistry();
+        registry = new Hashtable<String, ObjectDescriptor>();
         bindings = new HashMap<String, String>();
         this.env = new HashMap<String, Object>();
         this.apps = new HashMap<String, WebApplication>();
@@ -123,31 +119,19 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         }
     }
 
-    public synchronized ObjectDescriptor getObject(String id) {
+    public ObjectDescriptor getObject(String id) {
         return registry.get(id);
     }
 
-    public synchronized boolean isObjectResolved(String id) {
-        return registry.isResolved(id);
+    public Collection<ObjectDescriptor> getObjects() {
+        return registry.values();
     }
 
-    public synchronized List<ObjectDescriptor> getPendingObjects() {
-        return registry.getPendingObjects();
+    public void registerObject(ObjectDescriptor obj) {
+        registry.put(obj.getId(), obj);
     }
 
-    public synchronized List<ObjectDescriptor> getRegisteredObjects() {
-        return registry.getRegisteredObjects();
-    }
-
-    public synchronized List<ObjectDescriptor> getResolvedObjects() {
-        return registry.getResolvedObjects();
-    }
-
-    public synchronized void registerObject(ObjectDescriptor obj) {
-        registry.add(obj.getId(), obj);
-    }
-
-    public synchronized void unregisterObject(ObjectDescriptor obj) {
+    public void unregisterObject(ObjectDescriptor obj) {
         registry.remove(obj.getId());
     }
 
@@ -174,7 +158,8 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
 
     public void registerApplication(WebApplicationDescriptor desc) throws WebException {
         WebApplication app =  new DefaultWebApplication(this, desc);
-        apps.put(desc.id, app);
+        apps.put(desc.getId(), app);
+        fireConfigurationChanged();
     }
 
     public void unregisterApplication(String id) {
@@ -254,22 +239,6 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         }
     }
 
-    class ObjectRegistry extends DependencyTree<String, ObjectDescriptor> {
-
-        public void resolved(DependencyTree.Entry<String, ObjectDescriptor> entry) {
-            ObjectDescriptor obj = entry.get();
-            String base = obj.getBase();
-            ObjectDescriptor baseObj = registry.getResolved(base);
-            if (baseObj != null) { // compute inheritance data
-                obj.merge(baseObj);
-            }
-        }
-
-        public void unresolved(DependencyTree.Entry<String, ObjectDescriptor> entry) {
-            // do nothing
-        }
-
-    }
 
     public void fileChanged(FileEntry entry, long now) throws Exception {
         if (lastMessagesUpdate == now) return;

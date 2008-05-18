@@ -19,6 +19,11 @@
 
 package org.nuxeo.ecm.webengine.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
@@ -29,16 +34,18 @@ import org.nuxeo.runtime.model.Extension;
  */
 public class ManagedComponent extends DefaultComponent {
 
-    protected ContributionManager contributionManager;
+    protected static Log log = LogFactory.getLog(ManagedComponent.class);
+
+    protected Map<String, ContributionManager> contributionManagers;
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-        contributionManager = new ContributionManager(this);
+        contributionManagers = new HashMap<String, ContributionManager>();
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-        contributionManager = null;
+        contributionManagers = null;
     }
 
     @Override
@@ -51,7 +58,12 @@ public class ManagedComponent extends DefaultComponent {
             if (contrib instanceof Contribution) {
                 Contribution c = (Contribution)contrib;
                 c.setExtension(extension);
-                contributionManager.registerContribution(c);
+                ContributionManager mgr = contributionManagers.get(c.getExtensionPoint());
+                if (mgr != null) {
+                    mgr.registerContribution(c);
+                } else {
+                    log.warn("Unable to register contribution: "+c.getContributionId()+" for extension point "+c.getExtensionPoint()+". No manager registered.");
+                }
             } else {
                 registerContribution(contrib, extension.getExtensionPoint(), extension.getComponent());
             }
@@ -68,30 +80,20 @@ public class ManagedComponent extends DefaultComponent {
             if (contrib instanceof Contribution) {
                 Contribution c = (Contribution)contrib;
                 c.setExtension(extension);
-                contributionManager.unregisterContribution(c);
+                ContributionManager mgr = contributionManagers.get(c.getExtensionPoint());
+                if (mgr != null) {unregisterContribution(contrib, extension.getExtensionPoint(), extension.getComponent());
+                    mgr.unregisterContribution(c);
+                } else {
+                    log.warn("Unable to unregister contribution: "+c.getContributionId()+" for extension point "+c.getExtensionPoint()+". No manager registered.");
+                }
             } else {
                 unregisterContribution(contrib, extension.getExtensionPoint(), extension.getComponent());
             }
         }
     }
 
-    /**
-     *
-     * @param contrib
-     * @throws Exception
-     */
-    protected void registerContribution(Contribution contrib) throws Exception {
-        // extend this
+    public void registerContributionManager(String extensionPoint, ContributionManager mgr) {
+        contributionManagers.put(extensionPoint, mgr);
     }
-
-    /**
-     *
-     * @param contrib
-     * @throws Exception
-     */
-    protected void unregisterContribution(Contribution contrib) throws Exception {
-        // extend this
-    }
-
 
 }

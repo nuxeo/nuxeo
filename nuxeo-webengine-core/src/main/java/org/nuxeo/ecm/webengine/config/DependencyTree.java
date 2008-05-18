@@ -22,12 +22,13 @@ package org.nuxeo.ecm.webengine.config;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 /**
  *
@@ -35,7 +36,6 @@ import java.util.Set;
  * TODO this was copied from nuxeo.commons and fixed - should put it back with all modifs
  */
 // TODO handle dependencies cycles.
-@SuppressWarnings({"ClassWithoutToString"})
 public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>> {
 
     private final Map<K, Entry<K, T>> registry;
@@ -46,9 +46,10 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
     private final List<Entry<K, T>> resolved;
 
 
+
     public DependencyTree() {
-        registry = new HashMap<K, Entry<K, T>>();
-        resolved = new ArrayList<Entry<K, T>>();
+        registry = new Hashtable<K, Entry<K, T>>();
+        resolved = new Vector<Entry<K, T>>();
     }
 
     public Iterator<Entry<K, T>> iterator() {
@@ -83,9 +84,11 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
     }
 
     public void remove(K key) {
-        Entry<K, T> entry = registry.remove(key);
+        Entry<K, T> entry = registry.get(key); // do not remove entry
         if (entry != null) {
             unregister(entry);
+            entry.object = null;
+            entry.waitsFor = null;
         }
     }
 
@@ -246,7 +249,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
                         continue;
                     }
                 } else {
-                    reqEntry = new Entry<K, T>(req, null);
+                    reqEntry = new Entry<K, T>(req, null); // placeholder entry
                     registry.put(req, reqEntry);
                 }
                 // dependencies not satisfied
@@ -340,13 +343,16 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
 
         @Override
         public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
             if (obj == this) {
                 return true;
             }
             if (!(obj instanceof Entry)) {
                 return false;
             }
-            return key.equals(((Entry) obj).key);
+            return key.equals(((Entry<?,?>) obj).key);
         }
 
         @Override
