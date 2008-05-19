@@ -1,0 +1,160 @@
+
+= Nuxeo WebEngine
+
+The WebEngine is a framework to build web applications on top of the Nuxeo ECM product.
+
+== Overview
+
+The main goal for the WebEngine framework is to let users to build web applications quickly and easly and in a traditional way 
+without having knowledge on advanced Java topics such as JSF or Seam.\
+The second goal is to be able to develop web pages while the server is running, without the need of restarting
+the server each time the configuration or the code is modified.
+
+The web pages are build using Freemarker templates for the presentation part and optionally scripts 
+(like groovy, jython etc) or custom Java request handlers for the logical part.\
+Thus a web application is made from:
++ *Configuration* - based on the nuxeo extension points mechanism
++ *Templates* - freemarker is used as the template engine
++ *Scripts* - any script supported by java scripting engine.
++ *Custom Java Code* - plugged-in through extension points
+
+Here is an example of a simple template page that is outputing Q:My name is CURRENT_USER_NAME:
+
+{{{
+My name is ${Context.principal.name}!
+}}}
+
+The same can be done from a script: (in this example a groovy script)
+
+{{{
+Context.print("My name is ${Context.principal.name}")!
+}}}
+
+
+== Bridging with Nuxeo ECM
+
+The WebEngine was created to work over a Nuxeo ECM server. Using it outside Nuxeo ECM is possible
+but is very limiting and you will loose many of the cool features of the WebEngine.
+If you don't plan to use a Nuxeo ECM as the content backend for your web site then I suggest you to look on 
+other products that may fit better your needs:
+* Django
+* etc
+
+In this section I will suppose you have some knoweledge about Nuxeo ECM.\
+Nuxeo ECM a is name sugest is an Enterprise Content Management Application that provides a powerfull way to manage and store your documents. In a more simpler approach (TODO: To simplify) you can see Nuxeo ECM as a repository of documents. To be able to use this repository to query, update or store new documents you need first to connect to it and create an autheticated session based on your login information. Using that repository session you can start querying, updating and sotring documents.
+So, for a client point of view, the main concepts of a Nuxeo Repository are the Session and the Document.\
+
+The idea behind the WebEngine is to map the HTTP requests on real documents from the repository when possible, to be able that way to query, update, store or create new documents by using a traditional Web approach.
+
+To correctly understand how this bridging over Nuxeo ECM is done and what you can do by using the WebEngine you should first understand how the HTTP request is dispatched, processed and mapped to documents.
+
+=== Request Dispatch
+I will start using a simple example. Let say the web browser is requesting the following URL: 
+`http://www.nuxeo.org/nuxeo/site/blogs/bstefanescu/MyBlog@@view`
+
+First the URL will be splited as following:
+* `http://www.nuxeo.org` - the server host information
+* `/nuxeo/site` - the application path. This corresponds to the Java context path + servlet path. As we will see later any web application is bound to a java servlet, thus the web context path + servlet path becomes the application path.
+* `/blogs/bstefanescu/MyBlog` - the request path.
+* `@@view` - the optional action to take on the target object.
+
+The first 2 URL components are not in the scope of this document. They are used to locate the servlet bound to a the WebEngine application. (Note that if you define several WebEngine applications you need to use different servlets for each of them)
+
+We will concentrate on the last two URL parts:
+
+
+==== Request Path
+
+The request path of the path info represent the actual path that should be processed and dispacthed by the selected web application.
+
+
+==== Actions
+
+The action string represent an action to be taken on the last resolved document (or the target document).\
+An action can be bound to a Java class (an action handler) or to a script in order to perform the wanted operation on the document.
+
+Note that if no action is specified in the request URL then a default action of @@view is implied.
+
+There are several pre-defined actions in the default webengine configuration. Here is a list of that actions:
+
++ view
++ print
++ edit
++ delete
++ create
++ update
++ getfile
++ addfile
++ deletefile
+
+An action should be identified using a meaningfull verbe like 'doSomething' and can specify:
+* a class to be used as the action handler
+* a script to be invoked on the target document
+* an enablement flag to be used to disbale / enable the action
+* a category that can be used to group actions
+* a set of guards to restrict the action execution
+
+Any of these action properties are optional - but the action will be useless if you do not specify one of them.
+
+The first 2 properties the *action handler* and the *script* should be used to specify how the action will be executed.
+As you seen you have two options: either using java code (if you want faster or adavnced processing) either using a script (possibly a template) that will carry on the action execution.
+You can either use both properties to install a Java action execution handler and a template to be used to show the result of the execution. Or, more, you can install a handler and a groovy script then in the grrovy script you may do some post processing and then call a template to show the result.
+
+The action category can be used to filter or to group actions. For example you may want to show only a set of actions that are enabled on a document filtered by a category.
+
+Finally, the guards can be installed to restrict actions to be available only for some users. Guards are very flexible. To define a guard you can use complex logical expressions on other guards. We will name any guard that it is not a logical expression an atomic guard.
+This is a list of all supported atomic guards:
+
++ Permission Guard - restrict access by testing native Nuxeo ECM document permissions.
++ User Guard - restrict access by testing the current user name
++ Group Guard - restrict access by testing the current group name
++ Type Guard - restrict access by testing the current document type
++ Schema Guard - restrict access by testing the presence of a schema in the current document type
++ Facet Guard - restrict access by testing the presence of a facet in the current document type
++ Script Guard - restrcit access using random scripts. Any java scripting engine is supported
+
+Example of a logical expression guard: `Write OR (user = titi OR group = toto )`. This means give permission on all users that have the `Write` permission on the document OR to user named `titi` or all user from group `toto`.  
+
+You can define actions as you want: you can map them to scripts or to Java code - it is up to you how you will use that action.
+
+For how to retrieve available actions on the target document from a script reffer to the Script Context chapter.
+
+
+
+== Web Applications
+
+An web application is the 
+
+=== Directory Stacking
+
+=== Configuration
+
+=== Customizing the Application
+
+=== Example
+
+
+
+== Scripting Interface
+
+=== The Context
+
+=== The Current Document
+
+=== The HTTP Request
+
+=== Example
+
+
+
+
+== Templates
+
+=== Blocks
+
+=== Extensions
+
+=== Example
+
+
+
