@@ -11,18 +11,17 @@ $(document).ready(function(){
 <div id="message">${Request.getParameter('msg')}</div>
 
 <div id="entry-actions">
-  <ul>
+<ul>
   <#list Context.getActions("tabview")?sort as action>
     <li><a href="${This.urlPath}@@${action.id}"  title="${action.id}"><span>${message('action.' + action.id)}</span></a></li>
   </#list>
-  </ul>
-  
-  <div id="view_content">
-      <h1>${Document.title}</h1>
-      <@transform name="wiki">${Document.wikiPage.content}</@transform>
-  </div>
+</ul>
+
+<div id="view_content">
+  <#include "WikiPage/view_content.ftl"/>
 </div>
 
+</div>
 
 </@block>
 </@extends>

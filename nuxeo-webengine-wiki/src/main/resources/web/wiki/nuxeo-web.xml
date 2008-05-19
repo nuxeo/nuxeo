@@ -2,6 +2,7 @@
 <component name="org.nuxeo.ecm.wiki.config">
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)
+    @author Eric Barroce (eb@nuxeo.com)
     Default Wiki Objects
   </documentation>
 
@@ -17,7 +18,7 @@
         <mapping pattern="^(.+)/archives/(?year:[0-9]{4})/?(?month:[0-9]{2})?">
           <script>/Blog/archives.groovy</script>
         </mapping>
-        <mapping pattern="^/login">
+        <mapping pattern="/login">
           <script>/common/login.groovy</script>
         </mapping>
       </mappings>
@@ -74,7 +75,7 @@
         <action id="show_comments_py" enabled="true" script="comments/getComments.py">
           <permission expression="Read"/>
         </action>
-        <action id="show_comments" enabled="true" script="comments/getComments.groovy">
+        <action id="comments" enabled="true" script="comments/getComments.groovy">
           <permission expression="Read"/>
         </action>
         <action id="add_comment" enabled="true" script="comments/addComments.groovy">
@@ -88,6 +89,7 @@
         </action>
       </actions>
     </object>
+    
     <object id="WikiSite" extends="WikiObject">
       <actions>
         <action id="view" enabled="true" script="Wiki/redirectToFrontpage.groovy">

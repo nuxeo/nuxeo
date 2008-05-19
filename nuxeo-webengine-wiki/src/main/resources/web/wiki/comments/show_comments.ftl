@@ -1,14 +1,20 @@
-Comments for ${Document.title}
+<#assign runcomment = Context.runScript("comments/getComments.groovy") />
 
-
-Comments: ${comments?size}
-
+<h2>Comments</h2>
+  
+<ol id="comments">
 <#list comments as com>
-  Comment Title: ${com.title}
-  Comment Type -- class: ${com.type} -- ${com.class}
-</#list>
 
-<#--
-Text: ${com.getPropertyValue('text')} (works with Jython)
-Text: ${com["comment:text"]} (work with Groovy)
--->
+<#if com_index % 2 = 0>
+    <#assign row = "even"/>
+  <#else>
+    <#assign row = "odd"/>
+</#if>
+
+<li class="comment ${row}" id="${com.ref}">
+  <quote>${com['comment:text']}</quote>
+  <div class="byline">By ${com['comment:author']} @ ${com['comment:creationDate']}</div>
+</li>
+</#list>
+</ol>
+

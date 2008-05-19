@@ -3,7 +3,7 @@
 
 <div id="entry-content">
     <@transform name="wiki">${Document.wikiPage.content}</@transform>
-<div>
+</div>
 
 <div id="entry-attachments">
   <#include "includes/attached_files.ftl">

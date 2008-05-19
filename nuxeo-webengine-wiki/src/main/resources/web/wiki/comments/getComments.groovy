@@ -1,6 +1,6 @@
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument
 cDoc = Document.getAdapter(org.nuxeo.ecm.platform.comment.api.CommentableDocument);
 
-comments = cDoc.getComments()
+Context.setProperty('comments', cDoc.comments)
 
-Context.render("WikiPage/show_comments.ftl", ['comments': comments])
+Context.render("comments/show_comments.ftl")
