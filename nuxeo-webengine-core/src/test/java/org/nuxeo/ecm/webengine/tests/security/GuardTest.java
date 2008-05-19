@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.local.LocalSession;
 import org.nuxeo.ecm.webengine.ObjectDescriptor;
-import org.nuxeo.ecm.webengine.SiteManager;
+import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.runtime.api.Framework;
@@ -46,16 +46,15 @@ public class GuardTest extends NXRuntimeTestCase {
         deployBundle("nuxeo-core-query");
         deployBundle("nuxeo-core-api");
         deployBundle("nuxeo-core");
-        deployBundle("nuxeo-platform-site");
+        deployBundle("nuxeo-webengine-core");
         deployContrib("OSGI-INF/DemoRepository.xml");
-        deployContrib("OSGI-INF/site-manager-framework.xml");
-        deployContrib("OSGI-INF/site-manager-framework.xml");
+        deployContrib("OSGI-INF/webengine-framework.xml");
         deployContrib("OSGI-INF/test-security-guards.xml");
     }
 
     public void testGuardRegistration() throws Exception {
 
-        SiteManager mgr = Framework.getLocalService(SiteManager.class);
+        WebEngine mgr = Framework.getLocalService(WebEngine.class);
         assertNotNull(mgr);
 
         ObjectDescriptor od = mgr.getObject("siteFolder2");

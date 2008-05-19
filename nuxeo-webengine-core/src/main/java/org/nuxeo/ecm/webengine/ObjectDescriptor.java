@@ -31,19 +31,24 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
+import org.nuxeo.ecm.webengine.config.Contribution;
+import org.nuxeo.ecm.webengine.config.ExtensibleContribution;
+import org.nuxeo.ecm.webengine.config.ManagedComponent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 @XObject("object")
-public class ObjectDescriptor {
+public class ObjectDescriptor extends ExtensibleContribution {
 
     @XNode("@id") // internal id needed to uniquely identify the object
-    protected String id;
+    @Override
+    public void setContributionId(String id) { contributionId = id; }
 
     @XNode("@extends")
-    protected String base;
+    @Override
+    public void setBaseContributionId(String id) { baseContributionId = id; }
 
     @XNode("requestHandler")
     protected Class<RequestHandler> requestHandlerClass;
@@ -57,8 +62,8 @@ public class ObjectDescriptor {
     public ObjectDescriptor() {}
 
     public ObjectDescriptor(String id, String base, ActionDescriptor ... actions) {
-        this.id = id;
-        this.base = base;
+        this.contributionId = id;
+        this.baseContributionId = base;
         this.actions = new HashMap<String, ActionDescriptor>();
         if (actions != null) {
             for (ActionDescriptor action : actions) {
@@ -68,8 +73,8 @@ public class ObjectDescriptor {
     }
 
     public ObjectDescriptor(String id, String base, Collection<ActionDescriptor> actions) {
-        this.id = id;
-        this.base = base;
+        this.contributionId = id;
+        this.baseContributionId = base;
         this.actions = new HashMap<String, ActionDescriptor>();
         if (actions != null) {
             for (ActionDescriptor action : actions) {
@@ -79,19 +84,14 @@ public class ObjectDescriptor {
     }
 
     public String getId() {
-        return id;
+        return contributionId;
     }
-
-    public String getBase() {
-        return base;
-    }
-
 
     public Class<RequestHandler> getRequestHandlerClass() {
         return requestHandlerClass;
     }
 
-    public RequestHandler getRequestHandler() throws SiteException {
+    public RequestHandler getRequestHandler() throws WebException {
         if (requestHandler == null) {
             if (requestHandlerClass == null) {
                 requestHandler = RequestHandler.DEFAULT;
@@ -99,7 +99,7 @@ public class ObjectDescriptor {
                 try {
                     requestHandler = requestHandlerClass.newInstance();
                 } catch (Exception e) {
-                    throw new SiteException("Failed to instantiate request handler for object id: "+id, e);
+                    throw new WebException("Failed to instantiate request handler for object id: "+getId(), e);
                 }
             }
         }
@@ -125,7 +125,7 @@ public class ObjectDescriptor {
     }
 
     public Map<String, Collection<ActionDescriptor>> getActionsByCategory() {
-        HashMap<String, Collection<ActionDescriptor>> result = new HashMap<String, Collection<ActionDescriptor>>();
+        Map<String, Collection<ActionDescriptor>> result = new HashMap<String, Collection<ActionDescriptor>>();
         for (ActionDescriptor ad : actions.values()) {
             String[] cats = ad.getCategories();
             for (String cat : cats) {
@@ -140,8 +140,8 @@ public class ObjectDescriptor {
         return result;
     }
 
-    public Collection<ActionDescriptor> getEnabledActions(SiteObject obj) {
-        CoreSession session = obj.getSession();
+    public Collection<ActionDescriptor> getEnabledActions(WebObject obj) throws WebException {
+        CoreSession session = obj.getWebContext().getCoreSession();
         DocumentModel doc = obj.getDocument();
         List<ActionDescriptor> ads = new ArrayList<ActionDescriptor>();
         for (ActionDescriptor ad : actions.values()) {
@@ -152,8 +152,8 @@ public class ObjectDescriptor {
         return ads;
     }
 
-    public Collection<ActionDescriptor> getEnabledActions(SiteObject obj, String category) {
-        CoreSession session = obj.getSession();
+    public Collection<ActionDescriptor> getEnabledActions(WebObject obj, String category) throws WebException {
+        CoreSession session = obj.getWebContext().getCoreSession();
         DocumentModel doc = obj.getDocument();
         List<ActionDescriptor> ads = new ArrayList<ActionDescriptor>();
         for (ActionDescriptor ad : actions.values()) {
@@ -164,10 +164,10 @@ public class ObjectDescriptor {
         return ads;
     }
 
-    public Map<String, Collection<ActionDescriptor>> getEnabledActionsByCategory(SiteObject obj) {
-        CoreSession session = obj.getSession();
+    public Map<String, Collection<ActionDescriptor>> getEnabledActionsByCategory(WebObject obj) throws WebException {
+        CoreSession session = obj.getWebContext().getCoreSession();
         DocumentModel doc = obj.getDocument();
-        HashMap<String, Collection<ActionDescriptor>> result = new HashMap<String, Collection<ActionDescriptor>>();
+        Map<String, Collection<ActionDescriptor>> result = new HashMap<String, Collection<ActionDescriptor>>();
         for (ActionDescriptor ad : actions.values()) {
             if (ad.isEnabled() && ad.getGuard().check(session, doc)) {
                 String[] cats = ad.getCategories();
@@ -188,22 +188,43 @@ public class ObjectDescriptor {
         return actions.get(name);
     }
 
-    public void merge(ObjectDescriptor baseObj) {
-        if (requestHandlerClass == null) {
-            requestHandlerClass = baseObj.requestHandlerClass;
+    @Override
+    protected void copyOver(ExtensibleContribution contrib) {
+        ObjectDescriptor objDesc = (ObjectDescriptor)contrib;
+        if (requestHandlerClass != null) {
+            objDesc.requestHandlerClass = requestHandlerClass;
         }
-        if (baseObj.actions == null) {
+        if (actions == null) {
             return;
         }
+        if (objDesc.actions == null) {
+            objDesc.actions = new HashMap<String, ActionDescriptor>();
+        }
         // merge actions
-        for (ActionDescriptor desc : baseObj.actions.values()) {
-            ActionDescriptor action = actions.get(desc.getId());
+        for (ActionDescriptor desc : actions.values()) {
+            ActionDescriptor action = objDesc.actions.get(desc.getId());
             if (action == null) { // import base action
-                actions.put(desc.getId(), desc);
+                ActionDescriptor clone = new ActionDescriptor();
+                clone.copyFrom(desc); // be sure we deep copy the object
+                objDesc.actions.put(desc.getId(), clone);
             } else { // merge the 2 actions
-                action.merge(desc);
+                action.copyFrom(desc);
             }
         }
     }
+
+
+    @Override
+    public void install(ManagedComponent comp, Contribution contrib) throws Exception {
+        WebEngine engine = ((WebEngineComponent)comp).getEngine();
+        engine.registerObject((ObjectDescriptor)contrib);
+    }
+
+    @Override
+    public void uninstall(ManagedComponent comp, Contribution contrib) throws Exception {
+        WebEngine engine = ((WebEngineComponent)comp).getEngine();
+        engine.unregisterObject((ObjectDescriptor)contrib);
+    }
+
 
 }

@@ -7,16 +7,9 @@
     wiki transformer configuration
   </documentation>
 
-  <extension-point name="transformer" target="org.nuxeo.ecm.webengine.SiteManagerComponent">
+  <extension-point name="transformer" target="org.nuxeo.ecm.webengine.WebEngineComponent">
         <object
       class="org.nuxeo.ecm.webengine.rendering.WikiTransformerDescriptor" />
   </extension-point>
-
-  <extension target="org.nuxeo.ecm.webengine.rendering.wiki" point="transformer">
-    <transformer name="wiki" serializer="org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer">
-      <filter pattern="[A-Z]+[a-z]+[A-Z][A-Za-z]*" replacement="&lt;a href='./$0'&gt;$0&lt;/a&gt;"/>
-      <filter pattern="NXP-[0-9]+" replacement="&lt;a href='http://jira.nuxeo.org/browse/$0'&gt;$0&lt;/a&gt;"/>
-    </transformer>
-  </extension>
 
 </component>

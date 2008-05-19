@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.script.Bindings;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
@@ -36,22 +37,27 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
-import org.nuxeo.ecm.webengine.SiteRequest;
-import org.nuxeo.ecm.webengine.SiteRoot;
+import org.nuxeo.ecm.webengine.DefaultWebContext;
+import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.servlet.WebConst;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.scripting.ScriptingService;
 import org.python.core.PyDictionary;
 import org.python.core.PyList;
+import org.python.core.PyObject;
 import org.python.core.PyTuple;
-
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class Scripting {
+
+    private final static Log log = LogFactory.getLog(Scripting.class);
 
     private static final String CHAR_FILE_EXT = "html htm xml css txt java c cpp h";
     private static final String BINARY_FILE_EXT = "gif jpg jpeg png pdf doc xsl";
@@ -73,23 +79,25 @@ public class Scripting {
         return renderingEngine;
     }
 
-    public void exec(SiteRequest req, ScriptFile script) throws Exception {
+    public void exec(WebContext context, ScriptFile script) throws Exception {
+        exec(context, script, null);
+    }
+
+    public void exec(WebContext context, ScriptFile script, Map<String, Object> args) throws Exception {
         String ext = script.getExtension();
         if ("ftl".equals(ext)) {
-            req.render(script.getPath());
+            context.render(script.getFile().getAbsolutePath(), args); //TODO
         } else {
-            runScript(req, script);
+            runScript(context, script, args);
         }
     }
 
-    public void exec(SiteRequest req) throws Exception {
-        ScriptFile script = req.getTargetScript();
-        if (script.getFile().isFile()) {
-            exec(req, script);
+    public void exec(WebContext context) throws Exception {
+        ScriptFile script = context.getTargetScript();
+        if (script != null && script.getFile().isFile()) {
+            exec(context, script);
         } else {
-            SiteRoot root = req.getRoot();
-            script = root.getScript(root.getDefaultPage(), null);
-            exec(req, script);
+            context.cancel(WebConst.SC_NOT_FOUND);
         }
     }
 
@@ -111,24 +119,28 @@ public class Scripting {
         }
     }
 
-    public void runScript(SiteRequest req, ScriptFile script) throws Exception {
-        // script is not compilable - run slow eval
+    public Object runScript(WebContext context, ScriptFile script) throws Exception {
+        return runScript(context, script, null);
+    }
+
+    public Object runScript(WebContext context, ScriptFile script, Map<String, Object> args) throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug("## Running Script: "+script.getFile());
+        }
         String ext = script.getExtension();
         ScriptEngine engine = scriptService.getScriptEngineManager().getEngineByExtension(ext);
         if (engine != null) {
+            Bindings bindings = ((DefaultWebContext)context).createBindings(args); //TODO put method in interface?
             ScriptContext ctx = new SimpleScriptContext();
-            ctx.setAttribute("req", req, ScriptContext.ENGINE_SCOPE);
-            ctx.setAttribute("scripting", this, ScriptContext.ENGINE_SCOPE);
-            ctx.setAttribute("out", req.getResponse().getWriter(), ScriptContext.ENGINE_SCOPE);
+            ctx.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
             CompiledScript comp = getScript(engine, script.getFile()); // use cache for compiled scripts
             if (comp != null) {
-                comp.eval(ctx);
-                return;
+                return comp.eval(ctx);
             } // compilation not supported - eval it on the fly
             try {
                 Reader reader = new FileReader(script.getFile());
-                try {
-                    engine.eval(reader, ctx);
+                try { // TODO use __result__ to pass return value for engine that doesn't returns like jython
+                    return engine.eval(reader, ctx);
                 } finally {
                     reader.close();
                 }
@@ -139,28 +151,29 @@ public class Scripting {
             if (CHAR_FILE_EXT.contains(ext)) { //TODO use char writer instead of stream
                 FileInputStream in = new FileInputStream(script.getFile());
                 try {
-                    FileUtils.copy(in, req.getResponse().getOutputStream());
+                    FileUtils.copy(in, context.getResponse().getOutputStream());
                 } finally {
-                    if (in != null) in.close();
+                    in.close();
                 }
             } else if (BINARY_FILE_EXT.contains(ext)) {
                 FileInputStream in = new FileInputStream(script.getFile());
                 try {
-                    FileUtils.copy(in, req.getResponse().getOutputStream());
+                    FileUtils.copy(in, context.getResponse().getOutputStream());
                 } finally {
-                    if (in != null) in.close();
+                    in.close();
                 }
             } else {
                 throw new ScriptException(
-                        "No script engine was found for the file: " + script.getPath());
+                        "No script engine was found for the file: " + script.getFile().getName());
             }
         }
+        return null;
     }
 
     @SuppressWarnings("unchecked")
     public static Map convertPythonMap(PyDictionary dict) {
         PyList list = dict.items();
-        Map table = new HashMap();
+        Map<String, PyObject> table = new HashMap();
         for(int i = list.__len__(); i-- >  0; ) {
             PyTuple tup = (PyTuple) list.__getitem__(i);
             String key = tup.__getitem__(0).toString();

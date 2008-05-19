@@ -19,8 +19,7 @@
 
 package org.nuxeo.ecm.platform.rendering.api;
 
-import java.io.File;
-import java.util.Map;
+import java.io.Writer;
 import java.util.ResourceBundle;
 
 
@@ -38,12 +37,6 @@ public interface RenderingEngine {
 
     ResourceLocator getResourceLocator();
 
-    void addResourceDirectories(File ... dir);
-
-    void setSharedDocumentView(RenderingContextView env);
-
-    RenderingContextView getSharedDocumentView();
-
     void setSharedVariable(String key, Object value);
 
     /**
@@ -52,9 +45,7 @@ public interface RenderingEngine {
      * @param ctx
      * @throws RenderingException
      */
-    void render(String template, RenderingContext ctx) throws RenderingException;
-
-    void render(String template, RenderingContext ctx, Map<String,Object> globals)  throws RenderingException;
+    void render(String template, Object input, Writer writer) throws RenderingException;
 
     void setTransformer(String name, RenderingTransformer transformer);
 

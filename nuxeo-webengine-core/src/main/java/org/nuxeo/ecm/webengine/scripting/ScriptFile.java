@@ -30,41 +30,18 @@ public final class ScriptFile {
 
     protected File file;
     protected String ext;
-    protected String path;
 
 
     //TODO should remove the typed file name
-    public ScriptFile(File root, String path, String type) throws IOException {
-        int p = path.lastIndexOf('.');
-        String typedPath = null;
+    public ScriptFile(File file) throws IOException {
+        String name = file.getName();
+        int p = name.lastIndexOf('.');
         if (p > -1) {
-            ext = path.substring(p + 1);
-            if (type != null) {
-                typedPath = path.substring(0, p) + '_' + type + '.' + ext;
-            }
+            ext = name.substring(p + 1);
         } else { // by default use ftl
             ext = "ftl";
-            path+=".ftl";
-            if (type != null) {
-                typedPath = path + '_' + type;
-            }
         }
-        if (typedPath != null) {
-            file = new File(root, typedPath);
-            this.path = typedPath;
-            if (!file.isFile()) {
-                file = new File(root, path);
-                this.path = path;
-            }
-        } else {
-            file = new File(root, path);
-            this.path = path;
-        }
-        file = file.getCanonicalFile(); // resolve sym links
-    }
-
-    public String getPath() {
-        return path;
+        this.file = file.getCanonicalFile();
     }
 
     public File getFile() {
@@ -73,6 +50,11 @@ public final class ScriptFile {
 
     public String getExtension() {
         return ext;
+    }
+
+    @Override
+    public String toString() {
+        return file.toString();
     }
 
 }

@@ -25,6 +25,7 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 
+import freemarker.template.AdapterTemplateModel;
 import freemarker.template.TemplateCollectionModel;
 import freemarker.template.TemplateHashModelEx;
 import freemarker.template.TemplateModel;
@@ -34,13 +35,18 @@ import freemarker.template.TemplateModelException;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ComplexPropertyTemplate extends PropertyWrapper implements TemplateHashModelEx {
+public class ComplexPropertyTemplate extends PropertyWrapper implements TemplateHashModelEx, AdapterTemplateModel {
 
     protected final Property property;
 
     public ComplexPropertyTemplate(DocumentObjectWrapper wrapper, Property property) {
         super(wrapper);
         this.property = property;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Object getAdaptedObject(Class hint) {
+        return property;
     }
 
     public TemplateCollectionModel keys() throws TemplateModelException {

@@ -26,8 +26,7 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.rendering.api.DocumentContextView;
-import org.nuxeo.ecm.platform.rendering.api.DocumentField;
+import org.nuxeo.ecm.platform.rendering.api.DefaultDocumentView;
 
 import freemarker.template.AdapterTemplateModel;
 import freemarker.template.ObjectWrapper;
@@ -64,8 +63,8 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
 
     public TemplateModel get(String key) throws TemplateModelException {
         try {
-            Object value = DocumentContextView.DEFAULT.get(doc, key);
-            if (value != DocumentContextView.UNKNOWN) {
+            Object value = DefaultDocumentView.DEFAULT.get(doc, key);
+            if (value != DefaultDocumentView.UNKNOWN) {
                 return wrapper.wrap(value);
             }
         } catch(Exception e) {
@@ -86,7 +85,7 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
     }
 
     public Collection<String> getRawKeys() {
-        return DocumentContextView.DEFAULT.getFields().keySet();
+        return DefaultDocumentView.DEFAULT.getFields().keySet();
     }
 
     public TemplateCollectionModel keys() throws TemplateModelException {
@@ -96,9 +95,9 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
     public Collection<Object> getRawValues() throws TemplateModelException {
         List<Object> values = new ArrayList<Object>();
         try {
-            Collection<DocumentField> fields = DocumentContextView.DEFAULT.getFields().values();
-            for (DocumentField field : fields) {
-                values.add(field.getValue(doc, null));
+            Collection<DefaultDocumentView.Field> fields = DefaultDocumentView.DEFAULT.getFields().values();
+            for (DefaultDocumentView.Field field : fields) {
+                values.add(field.getValue(doc));
             }
         } catch (Exception e) {
             throw new TemplateModelException("failed to fetch field values", e);
@@ -112,7 +111,7 @@ public class DocumentTemplate implements TemplateHashModelEx, AdapterTemplateMod
     }
 
     public int size() throws TemplateModelException {
-        return DocumentContextView.DEFAULT.size(null);
+        return DefaultDocumentView.DEFAULT.size(null);
     }
 
 

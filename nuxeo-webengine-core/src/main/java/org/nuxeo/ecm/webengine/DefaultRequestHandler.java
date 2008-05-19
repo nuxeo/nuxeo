@@ -31,11 +31,11 @@ public class DefaultRequestHandler implements RequestHandler, Actions {
     protected DefaultRequestHandler() {
     }
 
-    public void doDelete(SiteObject object) throws SiteException {
+    public void doDelete(WebObject object) throws WebException {
         doAction(object, DELETE);
     }
 
-    public void doGet(SiteObject object) throws SiteException {
+    public void doGet(WebObject object) throws WebException {
         if (object.next() == null) {
             doAction(object, VIEW);
         } else {
@@ -43,11 +43,11 @@ public class DefaultRequestHandler implements RequestHandler, Actions {
         }
     }
 
-    public void doHead(SiteObject object) throws SiteException {
+    public void doHead(WebObject object) throws WebException {
         doGet(object);
     }
 
-    public void doPost(SiteObject object) throws SiteException {
+    public void doPost(WebObject object) throws WebException {
         if (object.next() == null) { // this is the last object -> the default action is update
             doAction(object, UPDATE);
         } else if (object.getDocument().isFolder()) {
@@ -57,31 +57,31 @@ public class DefaultRequestHandler implements RequestHandler, Actions {
         }
     }
 
-    public void doPut(SiteObject object) throws SiteException {
+    public void doPut(WebObject object) throws WebException {
         doPost(object);
     }
 
-    public boolean traverse(SiteObject object) throws SiteException {
+    public boolean traverse(WebObject object) throws WebException {
         return true;
     }
 
-    public static void doAction(SiteObject object, String defaultAction) throws SiteException {
-        String action = object.getSiteRequest().getAction();
+    public static void doAction(WebObject object, String defaultAction) throws WebException {
+        String action = object.getWebContext().getActionName();
         if (action == null) {
             action = defaultAction;
-            object.getSiteRequest().setAction(action);
-        }
-        if (action == null) {
-            return;
+            object.getWebContext().setActionName(action);
+            if (action == null) {
+                return;
+            }
         }
         ActionDescriptor actionDesc = object.getAction(action);
         if (actionDesc != null) {
             try {
                 actionDesc.run(object);
-            } catch (SiteException e) {
+            } catch (WebException e) {
                 throw e;
             } catch (Exception e) {
-                throw new SiteException("Failed to run action "+action+" on object "+object.getPath(), e);
+                throw new WebException("Failed to run action "+action+" on object "+object.getPath(), e);
             }
         }
     }

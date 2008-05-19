@@ -7,7 +7,7 @@ See NXP-1256
 This is an inline macro {freemarker}doc title: ${dublincore.title}{/freemarker}
 
 = Heading 2
-This is a doc expression example $doc(dc:title) or $doc(key=dc:title)
+TODO: make a JEXL wiki extension
 
 %block:dynamic (((
 *Dynamic Block*

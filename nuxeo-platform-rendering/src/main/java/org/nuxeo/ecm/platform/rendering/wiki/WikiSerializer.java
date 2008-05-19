@@ -24,10 +24,11 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.rendering.api.RenderingContext;
 import org.wikimodel.wem.WikiParserException;
 import org.wikimodel.wem.common.CommonWikiParser;
 
@@ -41,9 +42,9 @@ public class WikiSerializer {
 
     protected final CommonWikiParser parser;
 
-    protected final HashMap<String, WikiMacro> macros = new HashMap<String, WikiMacro>();
-    protected final HashMap<String, WikiExpression> expressions = new HashMap<String, WikiExpression>();
-    protected final ArrayList<WikiFilter> filters = new ArrayList<WikiFilter>();
+    protected final Map<String, WikiMacro> macros = new HashMap<String, WikiMacro>();
+    protected final Map<String, WikiExpression> expressions = new HashMap<String, WikiExpression>();
+    protected final List<WikiFilter> filters = new ArrayList<WikiFilter>();
 
 
     public WikiSerializer() {
@@ -64,16 +65,7 @@ public class WikiSerializer {
     }
 
     public void serialize(Reader reader, Writer writer) throws IOException, WikiParserException {
-        serialize(reader, writer, null);
         WikiSerializerHandler serializer = new WikiSerializerHandler(this);
-        parser.parse(reader, serializer);
-        serializer.getWriter().writeTo(serializer, writer);
-        writer.flush();
-    }
-
-    public void serialize(Reader reader, Writer writer, RenderingContext ctx)
-            throws IOException, WikiParserException {
-        WikiSerializerHandler serializer = new WikiSerializerHandler(this, ctx);
         parser.parse(reader, serializer);
         serializer.getWriter().writeTo(serializer, writer);
         writer.flush();

@@ -19,19 +19,17 @@
 
 package org.nuxeo.ecm.platform.rendering.test;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.IOException;
-import java.io.Writer;
 import java.io.StringWriter;
-import java.io.StringReader;
+
+import junit.framework.TestCase;
 
 import org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.PatternFilter;
 import org.wikimodel.wem.WikiParserException;
-import junit.framework.TestCase;
 
 /** @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> */
 public class TestWiki extends TestCase {

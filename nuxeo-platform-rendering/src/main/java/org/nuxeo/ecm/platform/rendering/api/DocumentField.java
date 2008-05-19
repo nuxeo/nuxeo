@@ -29,6 +29,8 @@ public interface DocumentField {
 
     String getName();
 
-    Object getValue(DocumentModel doc, RenderingContext ctx) throws Exception;
+    Object getValue(DocumentModel doc) throws Exception;
+
+    int size(DocumentModel doc);
 
 }

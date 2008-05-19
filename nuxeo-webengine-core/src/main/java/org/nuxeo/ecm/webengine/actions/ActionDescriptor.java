@@ -24,8 +24,9 @@ import java.text.ParseException;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.webengine.SiteException;
-import org.nuxeo.ecm.webengine.SiteObject;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.WebObject;
+import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 
@@ -48,7 +49,7 @@ public class ActionDescriptor {
     protected Class<ActionHandler> handlerClass;
 
     @XNode("@enabled")
-    protected boolean isEnabled;
+    protected boolean isEnabled = true;
 
     @XNode("permission")
     private GuardDescriptor pd;
@@ -80,11 +81,11 @@ public class ActionDescriptor {
         return isEnabled;
     }
 
-    public boolean isEnabled(SiteObject obj) {
+    public boolean isEnabled(WebObject obj) throws WebException {
         if (!isEnabled) {
             return false;
         }
-        return getGuard().check(obj.getSession(), obj.getDocument());
+        return getGuard().check(obj.getWebContext().getCoreSession(), obj.getDocument());
     }
 
     public String getId() {
@@ -141,7 +142,7 @@ public class ActionDescriptor {
         return false;
     }
 
-    public ActionHandler getHandler() throws SiteException {
+    public ActionHandler getHandler() throws WebException {
         if (handler == null) {
             if (handlerClass == null) {
                 handler = ActionHandler.NULL;
@@ -149,7 +150,7 @@ public class ActionDescriptor {
                 try {
                     handler = handlerClass.newInstance();
                 } catch (Exception e) {
-                    throw new SiteException("Failed to instantiate action handler for action: "+id, e);
+                    throw new WebException("Failed to instantiate action handler for action: "+id, e);
                 }
             }
         }
@@ -160,10 +161,10 @@ public class ActionDescriptor {
      * This method should be used to run actions.
      * Avoid using getHandler().run() since it is not checking permissions
      */
-    public void run(SiteObject obj) throws SiteException {
+    public void run(WebObject obj) throws WebException {
         // check rights first
-        if (!getGuard().check(obj.getSession(), obj.getDocument())) {
-            throw new SiteException("Running action "+id+" is dedined");
+        if (!getGuard().check(obj.getWebContext().getCoreSession(), obj.getDocument())) {
+            throw new WebSecurityException(id);
         }
         getHandler().run(obj);
     }
@@ -172,7 +173,19 @@ public class ActionDescriptor {
         this.handler = handler;
     }
 
-    public void merge(ActionDescriptor ad) {
+    public void copyFrom(ActionDescriptor ad) {
+        id = ad.id;
+        isEnabled = ad.isEnabled;
+        if (ad.categories != null && ad.categories.length > 0) {
+            if (categories == null) {
+                categories = ad.categories;
+            } else {
+                String[] tmp = new String[categories.length+ad.categories.length];
+                System.arraycopy(categories, 0, tmp, 0, categories.length);
+                System.arraycopy(ad.categories, 0, tmp, categories.length, ad.categories.length);
+                categories = tmp;
+            }
+        }
         if (script == null) {
             script = ad.script;
         }
@@ -180,10 +193,10 @@ public class ActionDescriptor {
             handlerClass = ad.handlerClass;
         }
         if (pd == null) {
-            guard = ad.guard;
+            guard = ad.getGuard();
         } else {
             pd.getGuards().put(".", ad.getGuard());
-            buildGuard();
+            guard = null;
         }
     }
 
@@ -197,6 +210,11 @@ public class ActionDescriptor {
                 e.printStackTrace(); // TODO
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return id;
     }
 
 }

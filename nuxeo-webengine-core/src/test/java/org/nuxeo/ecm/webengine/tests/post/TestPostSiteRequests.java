@@ -33,52 +33,34 @@ public class TestPostSiteRequests extends BaseSiteRequestTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        deployContrib("OSGI-INF/site-template-framework.xml");
-        deployContrib("OSGI-INF/test-ftl-templates-contrib.xml");
-        deployContrib("OSGI-INF/test-site-adapters-service-contrib.xml");
-
-        CoreSession session = getCoreSession();
-
-        DocumentModel workspaces = session.getDocument(new PathRef("/default-domain/workspaces"));
-
-        DocumentModel site = session.createDocumentModel(workspaces.getPathAsString(), "testSite",
-                "Folder");
-        site.setProperty("dublincore", "title", "TestSite");
-        site = session.createDocument(site);
-
-        page = session.createDocumentModel(site.getPathAsString(), "testPage", "Note");
-        page.setProperty("dublincore", "title", "TestPage");
-        page.setProperty("note", "note", "${title}");
-        page = session.createDocument(page);
-
-        DocumentModel file = session.createDocumentModel(site.getPathAsString(), "testFile",
-                "File");
-        file.setProperty("dublincore", "title", "TestPage");
-        file = session.createDocument(file);
-
-        session.save();
     }
 
     public void testUpdateTemplate() throws Exception {
-        FakeResponse response = execSiteRequest("GET", "/testPage");
+        FakeResponse response = execSiteRequest("GET", "/site/page");
         assertEquals(200, response.getStatus());
         String output = response.getOutput();
-        assertEquals("TestPage", output);
+        //TODO here we may register special test pages to be able to compare output
+        //assertEquals("Page", output);
+        assertTrue(output.length() > 0);
 
-        response = execSiteRequest("POST", "/testPage");
+        response = execSiteRequest("POST", "/site/page@@update");
         String postOutput = response.getOutput();
-        System.out.println(postOutput);
-        assertEquals(420, response.getStatus());
-        assertTrue(postOutput.startsWith("Unable to update"));
+        //System.out.println(postOutput);
+        assertEquals(200, response.getStatus());
+        CoreSession coreSession = getNewSession();
+        DocumentModel doc = getCoreSession().getDocument(new PathRef("/site/page"));
+        assertEquals("Content", doc.getProperty("note", "note"));
+        coreSession.destroy();
 
-        response = execSiteRequest("POST", "/testPage?note=new${title}");
+        response = execSiteRequest("POST", "/site/page@@update?note:note=new${This.title}");
         postOutput = response.getOutput();
         System.out.println(postOutput);
         assertEquals(200, response.getStatus());
-        DocumentModel note = getCoreSession().getDocument(page.getRef());
-        String noteContent = (String) note.getProperty("note", "note");
-        assertEquals("new${title}", noteContent);
-        assertEquals("newTestPage", postOutput);
+        coreSession = getNewSession();
+        doc = getCoreSession().getDocument(new PathRef("/site/page"));
+        assertEquals("new${This.title}", doc.getProperty("note", "note"));
+        coreSession.destroy();
+
     }
 
 }

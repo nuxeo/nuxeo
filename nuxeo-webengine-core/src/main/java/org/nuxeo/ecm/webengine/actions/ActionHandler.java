@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.webengine.actions;
 
-import org.nuxeo.ecm.webengine.SiteException;
-import org.nuxeo.ecm.webengine.SiteObject;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.WebObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -29,9 +29,9 @@ import org.nuxeo.ecm.webengine.SiteObject;
 public interface ActionHandler {
 
     ActionHandler NULL = new ActionHandler() {
-        public void run(SiteObject object) {}
+        public void run(WebObject object) {}
     };
 
-    void run(SiteObject object) throws SiteException;
+    void run(WebObject object) throws WebException;
 
 }

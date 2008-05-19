@@ -20,8 +20,9 @@
 package org.nuxeo.ecm.webengine.tests.mapping;
 
 import junit.framework.TestCase;
-import org.nuxeo.ecm.webengine.mapping.PathPattern;
+
 import org.nuxeo.ecm.webengine.mapping.Mapping;
+import org.nuxeo.ecm.webengine.mapping.PathPattern;
 
 public class TestPathPattern extends TestCase {
 

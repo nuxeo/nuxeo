@@ -1,6 +1,6 @@
 <html>
 <body>
-<h1>Wiki: ${this.title}</h1>
+<h1>Wiki: ${This.document.title}</h1>
 
 <p>
 <@block name="message"/>

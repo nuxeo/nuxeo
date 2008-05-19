@@ -19,13 +19,13 @@
   <!-- Site Servlet mapping -->
   <extension target="web#SERVLET">
     <servlet>
-      <servlet-name>Nuxeo Site Servlet</servlet-name>
+      <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
       <servlet-class>
-        org.nuxeo.ecm.webengine.servlet.SiteServlet
+        org.nuxeo.ecm.webengine.servlet.WebServlet
       </servlet-class>
     </servlet>
     <servlet-mapping>
-      <servlet-name>Nuxeo Site Servlet</servlet-name>
+      <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
       <url-pattern>/site/*</url-pattern>
     </servlet-mapping>
 

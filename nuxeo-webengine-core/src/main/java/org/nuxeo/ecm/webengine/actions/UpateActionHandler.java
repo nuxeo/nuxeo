@@ -25,9 +25,9 @@ import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
-import org.nuxeo.ecm.webengine.SiteException;
-import org.nuxeo.ecm.webengine.SiteObject;
-import org.nuxeo.ecm.webengine.SiteRequest;
+import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.WebObject;
 import org.nuxeo.ecm.webengine.util.FormData;
 
 /**
@@ -36,11 +36,11 @@ import org.nuxeo.ecm.webengine.util.FormData;
  */
 public class UpateActionHandler implements ActionHandler {
 
-    public void run(SiteObject object) throws SiteException {
-        SiteRequest request = object.getSiteRequest();
+    public void run(WebObject object) throws WebException {
+        WebContext context = object.getWebContext();
         DocumentModel doc = object.getDocument();
         try {
-            FormData form = request.getForm();
+            FormData form = context.getForm();
             form.fillDocument(doc);
             VersioningActions va = form.getVersioningOption();
             if (va != null) {
@@ -53,10 +53,10 @@ public class UpateActionHandler implements ActionHandler {
                 ctxData.putScopedValue(ScopeType.REQUEST,
                         VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, false);
             }
-            doc = request.getCoreSession().saveDocument(doc);
-            request.getCoreSession().save();
+            doc = context.getCoreSession().saveDocument(doc);
+            context.getCoreSession().save();
         } catch (Exception e) {
-            throw new SiteException("Failed to update document", e);
+            throw new WebException("Failed to update document", e);
         }
     }
 

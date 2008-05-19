@@ -66,17 +66,19 @@ public class TocText implements WikiText {
     protected void printTocHeader(WikiSerializerHandler serializer, Writer writer, String title) throws IOException {
         writer.write("<div class=\"toc\">");
         writer.write(WikiWriter.LINE_SEP);
-        writer.write("<div class=\"tocTitle\">"+title+"</div>");
+        writer.write("<h2 class=\"tocTitle\">"+title+"</h2>");
+        writer.write("<ul>");
         writer.write(WikiWriter.LINE_SEP);
     }
 
     protected void printTocFooter(WikiSerializerHandler serializer, Writer writer) throws IOException {
+        writer.write("</ul>");
         writer.write("</div>");
         writer.write(WikiWriter.LINE_SEP);
     }
 
     protected void printHeading(WikiSerializerHandler serializer, Writer writer, Toc.Entry entry) throws IOException {
-        writer.write("<div class=\"toc_"+entry.level+"\"><a href=\"#heading_"+entry.id+"\">"+entry.title+"</a></div>"+WikiWriter.LINE_SEP);
+        writer.write("<li class=\"toc h"+entry.level+"\"><a href=\"#heading_"+entry.id+"\">"+entry.title+"</a></li>"+WikiWriter.LINE_SEP);
     }
 
 }

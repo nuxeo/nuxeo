@@ -20,12 +20,17 @@
 package org.nuxeo.ecm.webengine.actions;
 
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.webengine.SiteException;
-import org.nuxeo.ecm.webengine.SiteObject;
-import org.nuxeo.ecm.webengine.SiteRequest;
+import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.WebObject;
 import org.nuxeo.ecm.webengine.util.FormData;
 
 /**
@@ -34,19 +39,19 @@ import org.nuxeo.ecm.webengine.util.FormData;
  */
 public class AddFileActionHandler implements ActionHandler {
 
-    public void run(SiteObject object) throws SiteException {
+    public void run(WebObject object) throws WebException {
         if (!object.isResolved()) {
-            throw new SiteException("Cannot run getFile action on a non resolved object: "+object);
+            throw new WebException("Cannot run getFile action on a non resolved object: "+object);
         }
         DocumentModel doc = object.getDocument();
-        SiteRequest req = object.getSiteRequest();
-        FormData form = req.getForm();
+        WebContext context = object.getWebContext();
+        FormData form = context.getForm();
         String xpath = form.getString(FormData.PROPERTY);
         if (xpath == null) {
             if (doc.hasSchema("file")) {
                 xpath = "file:content";
             } else if (doc.hasSchema("files")) {
-                xpath = "files:file";
+                xpath = "files:files";
             } else {
                 throw new IllegalArgumentException("Missing request parameter named 'property' that specify the blob property xpath to fetch");
             }
@@ -58,13 +63,27 @@ public class AddFileActionHandler implements ActionHandler {
         try {
             Property p = doc.getProperty(xpath);
             if (p.isList()) { // add the file to the list
-                p.add(blob);
+                if (p.getSchema().getName().equals("files")) { // treat the files schema separately
+                    Map<String, Serializable> map = new HashMap<String, Serializable>();
+                    map.put("filename", blob.getFilename());
+                    map.put("file", (Serializable)blob);
+                    p.add(map);
+                } else {
+                    p.add(blob);
+                }
             } else {
+                if (p.getSchema().getName().equals("file")) { // for compatibility with deprecated filename
+                    p.getParent().get("filename").setValue(blob.getFilename());
+                }
                 p.setValue(blob);
             }
-            object.getSession().saveDocument(doc);
+            CoreSession session = object.getWebContext().getCoreSession();
+            session.saveDocument(doc);
+            session.save();
+        } catch (WebException e) {
+            throw e;
         } catch (Exception e) {
-            throw new SiteException("Failed to attach file", e);
+            throw new WebException("Failed to attach file", e);
         }
     }
 

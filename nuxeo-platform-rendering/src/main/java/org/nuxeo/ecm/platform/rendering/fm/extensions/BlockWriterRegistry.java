@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.platform.rendering.fm.extensions;
 
-import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -28,7 +28,7 @@ import java.util.HashMap;
  */
 public class BlockWriterRegistry {
 
-    protected final HashMap<String, BlockWriter> blockMap = new HashMap<String, BlockWriter>();
+    protected final Map<String, BlockWriter> blockMap = new HashMap<String, BlockWriter>();
 
     public void addBlock(String name, BlockWriter bw) {
         BlockWriter existingBw = blockMap.get(name);

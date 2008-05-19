@@ -28,16 +28,16 @@ public interface RequestHandler {
 
     RequestHandler DEFAULT = new DefaultRequestHandler();
 
-    void doGet(SiteObject object) throws SiteException;
+    void doGet(WebObject object) throws WebException;
 
-    void doHead(SiteObject object) throws SiteException;
+    void doHead(WebObject object) throws WebException;
 
-    void doPost(SiteObject object) throws SiteException;
+    void doPost(WebObject object) throws WebException;
 
-    void doPut(SiteObject object) throws SiteException;
+    void doPut(WebObject object) throws WebException;
 
-    void doDelete(SiteObject object) throws SiteException;
+    void doDelete(WebObject object) throws WebException;
 
-    boolean traverse(SiteObject object)  throws SiteException;
+    boolean traverse(WebObject object)  throws WebException;
 
 }

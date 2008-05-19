@@ -6,7 +6,7 @@ Require-Bundle: org.nuxeo.ecm.core.api,
  org.nuxeo.ecm.platform.ui,
  org.nuxeo.ecm.platform.rendering
 Nuxeo-Require: org.nuxeo.ecm.platform.search.api,
- org.nuxeo.runtime.scripting, 
+ org.nuxeo.runtime.scripting,
  org.nuxeo.ecm.platform.rendering
-Nuxeo-Component: OSGI-INF/wiki-transformer-contrib.xml,
- OSGI-INF/site-manager-framework.xml
+Nuxeo-Component: OSGI-INF/webengine-framework.xml,
+ OSGI-INF/wiki-transformer-contrib.xml

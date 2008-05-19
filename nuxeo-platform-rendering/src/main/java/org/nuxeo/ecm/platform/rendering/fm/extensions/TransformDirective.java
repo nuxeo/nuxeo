@@ -25,11 +25,11 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.url.nxdoc.PropertyURL;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
-import org.nuxeo.ecm.platform.rendering.fm.adapters.RenderingContextModel;
+import org.nuxeo.ecm.platform.rendering.fm.adapters.ComplexPropertyTemplate;
 
 import freemarker.core.Environment;
 import freemarker.template.SimpleScalar;
@@ -65,26 +65,28 @@ public class TransformDirective implements TemplateDirectiveModel {
             src = scalar.getAsString();
         }
 
-        scalar = (SimpleScalar) params.get("property");
-        String property = null;
-        if (scalar != null) {
-            property = scalar.getAsString();
+        ComplexPropertyTemplate complex = (ComplexPropertyTemplate) params.get("property");
+        Property property = null;
+        if (complex != null) {
+            property = (Property)complex.getAdaptedObject(null);
         }
 
-        RenderingContextModel ctxModel = (RenderingContextModel)env.getCustomAttribute(FreemarkerEngine.ROOT_CTX_KEY);
-        if (ctxModel == null) {
+        FreemarkerEngine engine = (FreemarkerEngine)env.getCustomAttribute(FreemarkerEngine.RENDERING_ENGINE_KEY);
+        if (engine == null) {
             throw new TemplateModelException("Not in a nuxeo rendering context");
         }
 
-        RenderingTransformer tr = ctxModel.getEngine().getTransformer(name);
+        RenderingTransformer tr = engine.getTransformer(name);
         if (tr == null) {
             throw new TemplateModelException("Unknown Transformer: "+name);
         }
 
         try {
             if (property != null) {
-                URL url = PropertyURL.getURL(ctxModel.getDocument(), property);
-                tr.transform(url, env.getOut(), ctxModel.getContext());
+                //TODO XXX implement property support (with caching)
+                throw new UnsupportedOperationException("Not Yet Implemented");
+//                URL url = PropertyURL.getURL(ctxModel.getDocument(), property.getPath());
+//                tr.transform(url, env.getOut(), ctxModel.getContext());
             } else if (src == null) {
                 if (body == null) {
                     throw new TemplateModelException("Transform directive must have either a content either a valid 'src' attribute");
@@ -93,10 +95,14 @@ public class TransformDirective implements TemplateDirectiveModel {
                 StringWriter writer = new StringWriter();
                 body.render(writer);
                 String content = writer.getBuffer().toString();
-                tr.transform(new StringReader(content), env.getOut(), ctxModel.getContext());
+                tr.transform(new StringReader(content), env.getOut());
             } else {
-                URL url = ctxModel.getEngine().getResourceLocator().getResource(src);
-                tr.transform(url, env.getOut(), ctxModel.getContext());
+                URL url = engine.getResourceLocator().getResourceURL(src);
+                if (url != null) {
+                    tr.transform(url, env.getOut());
+                } else {
+                    throw new IllegalArgumentException("Cannot resolve the src attribute: "+src);
+                }
             }
         } catch (RenderingException e) {
             throw new TemplateException("Running "+name+" transformer failed", e, env);

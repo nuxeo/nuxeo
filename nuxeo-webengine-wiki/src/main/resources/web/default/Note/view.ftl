@@ -1,13 +1,13 @@
-<@extends src="/default/base.ftl">
+<@extends src="base.ftl">
 <@block name="content">
-<h2>${this.title}</h2>
+<h2>${This.document.title}</h2>
 
 <hr/>
-<A href="${this.docURL}@@edit">Edit</A><BR/>
+<A href="${This.urlPath}@@edit">Edit</A><BR/>
 <hr/>
 
 <p>
-<@transform name="wiki">${this.note.note}</@transform>
+<@transform name="wiki">${This.document.note.note}</@transform>
 </p>
 
 </@block>

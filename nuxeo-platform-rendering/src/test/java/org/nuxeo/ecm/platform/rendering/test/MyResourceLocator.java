@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.rendering.test;
 
+import java.io.File;
 import java.net.URL;
 
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
@@ -29,8 +30,12 @@ import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
  */
 public class MyResourceLocator implements ResourceLocator {
 
-    public URL getResource(String key) {
-        return SimpleContext.class.getClassLoader().getResource(key);
+    public URL getResourceURL(String key) {
+        return TestFreemarkerRendering.class.getClassLoader().getResource(key);
+    }
+
+    public File getResourceFile(String key) {
+        return null;
     }
 
 }

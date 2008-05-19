@@ -7,3 +7,4 @@ bin
 target
 *~
 *.orig
+*.DS_Store

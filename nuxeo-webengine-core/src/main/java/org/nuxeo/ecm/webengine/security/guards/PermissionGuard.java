@@ -47,12 +47,11 @@ public class PermissionGuard implements Guard {
     }
 
     public boolean check(CoreSession session, DocumentModel doc) {
-        ACP acp = doc.getACP();
-        Access access = acp.getAccess(session.getPrincipal().getName(), perm);
-        if (access == Access.UNKNOWN) {
-            return true; // What is the default policy ?
+        try {
+            return session.hasPermission(doc.getRef(), perm);
+        }catch (Exception e) {
+            return false;
         }
-        return access == Access.GRANT;
     }
 
     @Override

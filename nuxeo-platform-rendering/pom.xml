@@ -43,12 +43,8 @@
             </goals>
             <configuration>
               <artifactItems>
-                <!--artifactItem> avoid puting it in the jar - we must put it in the lib dir since it is shared between several projects
-		  <groupId>org.freemarker</groupId>
-                  <artifactId>freemarker</artifactId>
-                </artifactItem-->
                 <artifactItem>
-		  <groupId>org.wikimodel</groupId>
+                  <groupId>org.wikimodel</groupId>
                   <artifactId>wem</artifactId>
                 </artifactItem>
               </artifactItems>
@@ -99,7 +95,7 @@
       <version>2.0.2</version>
     </dependency>
   </dependencies>
-  
+
   <repositories>
     <repository>
       <id>theoretiker-repo</id>
@@ -115,6 +111,5 @@
       </snapshots>
     </repository>
   </repositories>
-
 
 </project>
