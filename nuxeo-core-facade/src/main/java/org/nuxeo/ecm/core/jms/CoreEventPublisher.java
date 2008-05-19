@@ -25,6 +25,7 @@ import java.util.Properties;
 import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.Session;
 import javax.jms.Topic;
 import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
@@ -76,7 +77,7 @@ public class CoreEventPublisher {
         coreEventsTopic = null;
     }
 
-    private final TopicConnectionFactory getTopicConnectionFactory()
+    private TopicConnectionFactory getTopicConnectionFactory()
             throws NamingException {
         if (topicConnectionFactory == null) {
             Context jndi = new InitialContext();
@@ -88,7 +89,7 @@ public class CoreEventPublisher {
         return topicConnectionFactory;
     }
 
-    private final Topic getDefaultTopic() throws NamingException {
+    private Topic getDefaultTopic() throws NamingException {
         if (coreEventsTopic == null) {
             Context jndi = new InitialContext();
             coreEventsTopic = (Topic) jndi.lookup(CORE_EVENTS_TOPIC);
@@ -165,7 +166,7 @@ public class CoreEventPublisher {
         }
     }
 
-    public MessagePublisher createPublisher() throws NamingException, JMSException {
+    public MessagePublisher createPublisher() throws NamingException {
         return new MessagePublisher(getDefaultTopic(), getTopicConnectionFactory());
     }
 

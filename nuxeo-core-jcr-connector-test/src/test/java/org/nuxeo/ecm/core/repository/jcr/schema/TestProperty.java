@@ -107,7 +107,7 @@ public class TestProperty extends RepositoryTestCase {
         assertFalse(found);
     }
 
-    public void testComplexProperty() throws DocumentException, OperationNotSupportedException {
+    public void testComplexProperty() throws DocumentException {
         // isNull() for the property returns true until a value is assigned to its descendants
         assertTrue(name.isNull());
         assertTrue(name.getProperty("FirstName").isNull());

@@ -87,8 +87,8 @@ public abstract class AbstractBlob implements Blob {
     public void transferTo(File file) throws IOException {
         FileOutputStream out = null;
         try {
-        out = new FileOutputStream(file);
-        transferTo(out);
+            out = new FileOutputStream(file);
+            transferTo(out);
         } finally {
             if (out != null) {
                 out.close();
