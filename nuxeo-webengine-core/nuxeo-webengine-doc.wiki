@@ -62,19 +62,115 @@ The first 2 URL components are not in the scope of this document. They are used 
 
 We will concentrate on the last two URL parts:
 
++ Request path
++ Action
 
 ==== Request Path
 
 The request path of the path info represent the actual path that should be processed and dispacthed by the selected web application.
+The WebEngine will transform the request path into a sequence of objects named the *traversal path* by doing a mapping between path segments and documents in repository tree.
+The mapping is done by a *DocumentResolver* a Java class that can be customized when the default mapping mechanism is not enough.\
+See the Web Application Configuration for more details on how to register a custom resolver.
+
+The default resolver will map the first segment in the path to a document called the *traversal path root* and then any subsequent path segment will be mapped to corresponding child document. This mapping ends when the path is consumed or when the first segment that doesn't match any document is found. The trailing path segments that was not matched is named the *trailing path* or *script path* and can be used by the request handler in various ways. 
+
+The last mapped document in the traversal path will be the target document of the request. This is the document on which the request action will be executed. You can also see it as the current document from the script point of view.
+
+Let's get an example:
+
+Given the request path: `/blogs/bstefanescu/MyBlog/common.ftl@view`\
+Let's say the `blogs` segment is mapped to a document which path is `/default-domain/blogs`\
+and MyBlog to a Blog document `/default-domain/blogs/MyBlog`. The common.ftl will not match any child document of the MyBlog document so it will be put in the trailing path and the MyBlog document will be the target document of the request.\
+So finally we will have:
++ a traversal path: `/blogs/bstefanescu/MyBlog` which is mapped to `/default-domain/workspaces/blogs/bstefanescu/MyBlog`.
++ a trailing path: `commons.ftl`
++ an action: `@@view`
+
+This trailing path can be used by the request handler as some additional information on how to process the request.
+For example this can be a path on disk to a template to change the default view template of the blog.
+Or may be this can be used to point to an action script that overides the one configured by the default for the @@view action.
+
+The way in which the trailing path is used can be specified by the programmer by codding a script or an action handler that know what to do with that path.
+
+The action handler that comes by default with WebEngine may alredy use these trailing paths to do some custom processing.\
+When this is the case each action handler should document how it is using the trailing path.
+
+Here is an interesting usage of the trailing path: Let say you write an action handler that is displaying the value of a document property. In order to do this you need to pass the name (or path) of the property you want to view. You can do this simply by setting a query string attribute that points to the property path. This way your request URL will look something like this: `http://www.nuxeo.org/nuxeo/site/blogs/MyBlog@@get?xpath=dc:title` where the xpath attribute is specifying the xpath of the property value to view. But why not encoding this information directly in the request path? This way we will have a more natural URL:\
+
+`http://www.nuxeo.org/nuxeo/site/blogs/MyBlog/dc:title@@get`
+
+This way the request path will be split in two:
++ the traversal path: `/blogs/MyBlog` - that set the target document to `MyBlog`.
++ the trailing path: `/dc:title`
+
+And the request action will be `@@get`. Now we can implement an action handler that will use the trailing path as the property xpath to display.
 
 
 ==== Actions
 
 The action string represent an action to be taken on the last resolved document (or the target document).\
 An action can be bound to a Java class (an action handler) or to a script in order to perform the wanted operation on the document.
+If no action is specified in the request URL then a default action of @@view will be used.
 
-Note that if no action is specified in the request URL then a default action of @@view is implied.
 
+=== Mappings
+
+We already seen how the request path is transformed into three components:
++ the traversal path
++ the trailing path
++ the action
+
+In the examples above we've seen how a request path was splited into a traversal path and a trailing path. But what if we need more control on the mapping mechanism? One solution (but harder) is to write a custom resolver that is doing the job. Another solution is to use path mappings. 
+
+Mappings can be used to declaratively describe how request paths should be processed to obtain a traversal path, a trailing path and additional properties computed from the path segments configuration. Mappings are described using regular expression patterns. The regular expression syntax is the Java one plus one additional feature to be able to define named groups. (In Java only indexed groups are supported).
+
+In order to understand how you can use patterns to describe the path mapping we will start with another example.\
+Let say we want to use the following request path:
+
+`/blogs/archive/2004/05/bstefanescu`
+
+to display a list of the blogs of user `bstefanescu` created in May 2004. Let's say in the reposiotry the blogs of `bstefanescu` are stored in the folder: `/default-domain/blogs/bstefanescu`. \
+So, first we need to map the request to a traversal path of the form: `/blogs/bstefanescu` to set up the target document on `bstefanescu`. Then we need a custom script that is using the date info (e.g. year=2004 and month=05) from the request path and that it is performing a search into the target document for all blos created in that month.
+
+To do this we will define a mapping pattern like:
+
+`/blogs/archive/(?year:[0-9]{4}?)/(?month:[0-9]{2}?)/(?username:[^/]+)`
+
+Then we specify that if this pattern is matching on a request path then the following should be done:
++ the traversal path should be set to `/blogs/${username}`
++ the target script should be set to `/myscripts/search_blogs.py`
+Also this mapping will automatically inject in the request context the variables: `year`, `month` and `username` so your mapping configuration or your scritps can access them.
+
+
+You can see the usage of the variable `${username}` which is the value matched by the group flaged as `username`.
+The syntac (?label: ... ) for regular expression groups is an extension to the Java regular expressions that are supporting only indexed groups. You can still use the indexed groups if you preffer:
+
+`/blogs/archive/([0-9]{4}?)/([0-9]{2}?)/([^/]+)`
+
+In this case the generated mapping variables will be $1 for the year, $2 for the month and $3 for the username.
+
+There are also 2 special mapping variables that will be allways generated: `url` (or $0) the request path that matched and `type` the document type of the target document (that is available only after the traversal path is build).
+
+
+=== Handling Script Selection Based on Document Types
+
+When writing scripts or templates to handle request actions we usually want to treat the target documents of same types in the same manner. For example a `Folder` document will be always displayed as a folder, a `File` document as a file and so on.\
+So we need a mechanism to be able to select the template or the script used to create the response depending on the target document type.
+
+
+
+== Web Applications
+
+Now that we seen the main concepts used to build an web application we can learn how to configure and assemble them to obtain an working application.
+ 
+An Web Application is a The  entry point that is 
+
+
+=== Web Objects
+
+
+
+=== Actions
 There are several pre-defined actions in the default webengine configuration. Here is a list of that actions:
 
 + view
@@ -120,12 +216,9 @@ You can define actions as you want: you can map them to scripts or to Java code 
 For how to retrieve available actions on the target document from a script reffer to the Script Context chapter.
 
 
-
-== Web Applications
-
-An web application is the 
-
 === Directory Stacking
+
+
 
 === Configuration
 
