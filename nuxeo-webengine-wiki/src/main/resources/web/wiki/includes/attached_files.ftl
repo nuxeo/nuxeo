@@ -1,10 +1,7 @@
-<hr/>
-
 <#assign files = Document.files.files />
-
+<h2>Attached files:</h2>
 <div id="attached_files">
 <#if (files?size != 0)>
-    <h4>Attached files:</h4>
     <#list files as file>
       <#if (file_index == 0)><ul></#if>
       <@compress single_line=true>
