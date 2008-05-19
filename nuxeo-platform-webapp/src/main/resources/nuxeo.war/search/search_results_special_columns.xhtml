@@ -12,25 +12,13 @@
 
   <!-- Title -->
   <nxu:column rendered="#{field.prefixedName == 'dc:title'}" >
-    <f:facet name="header">
-      <h:panelGroup>
-      <h:commandLink immediate="true" action="#{searchResults.repeatSearch}"
-          rendered="#{provider.sortable}" >
-        <h:outputText value="#{messages[field.label]}" />
-        <f:param name="providerName" value="#{providerName}" />
-        <f:param name="sortColumn" value="#{field.prefixedName}" />
-        <h:panelGroup rendered="#{provider.sortInfo.sortColumn == field.prefixedName}" >
-          <h:graphicImage value="/icons/arrow_down.gif"
-            rendered="#{provider.sortInfo.sortAscending}" />
-          <h:graphicImage value="/icons/arrow_up.gif"
-            rendered="#{!provider.sortInfo.sortAscending}" />
-        </h:panelGroup>
-      </h:commandLink>
-      <h:outputText value="#{messages[field.label]}"
-        rendered="#{!provider.sortable}" />
-    </h:panelGroup>
-    </f:facet>
-
+    <ui:decorate template="/search/column_header.xhtml">
+      <ui:param name="sortColumn" value="#{field.prefixedName}"/>
+      <ui:param name="provider" value="#{provider}" />
+      <ui:param name="providerName" value="#{providerName}" />
+      <ui:param name="label" value="#{messages[field.label]}" />
+    </ui:decorate>
+    
     <nxd:restDocumentLink document="#{doc}">
      <nxh:outputText value="#{nxd:titleOrId(doc)}"/>
     </nxd:restDocumentLink>
@@ -38,50 +26,25 @@
 
   <!-- lifecycle state -->
   <nxu:column rendered="#{field.prefixedName == 'ecm:currentLifeCycleState'}" >
-    <f:facet name="header">
-      <h:panelGroup>
-      <h:commandLink immediate="true" action="#{searchResults.repeatSearch}"
-          rendered="#{provider.sortable}" >
-        <h:outputText value="#{messages[field.label]}" />
-        <f:param name="providerName" value="#{providerName}" />
-        <f:param name="sortColumn" value="#{field.prefixedName}" />
-        <h:panelGroup rendered="#{provider.sortInfo.sortColumn == field.prefixedName}" >
-          <h:graphicImage value="/icons/arrow_down.gif"
-            rendered="#{provider.sortInfo.sortAscending}" />
-          <h:graphicImage value="/icons/arrow_up.gif"
-            rendered="#{!provider.sortInfo.sortAscending}" />
-        </h:panelGroup>
-      </h:commandLink>
-      <h:outputText value="#{messages[field.label]}"
-        rendered="#{!provider.sortable}" />
-    </h:panelGroup>
-    </f:facet>
-
+    <ui:decorate template="/search/column_header.xhtml">
+      <ui:param name="sortColumn" value="#{field.prefixedName}"/>
+      <ui:param name="provider" value="#{provider}" />
+      <ui:param name="providerName" value="#{providerName}" />
+      <ui:param name="label" value="#{messages[field.label]}" />
+    </ui:decorate>
+    
     <h:outputText value="#{messages[doc.currentLifeCycleState]}" />
 
   </nxu:column>
 
   <!-- primary type -->
   <nxu:column rendered="#{field.prefixedName == 'ecm:primaryType'}" >
-    <f:facet name="header">
-      <h:panelGroup>
-      <h:commandLink immediate="true" action="#{searchResults.repeatSearch}"
-          rendered="#{provider.sortable}" >
-        <h:outputText value="#{messages[field.label]}" />
-        <f:param name="providerName" value="#{providerName}" />
-        <f:param name="sortColumn" value="#{field.prefixedName}" />
-        <h:panelGroup rendered="#{provider.sortInfo.sortColumn == field.prefixedName}" >
-          <h:graphicImage value="/icons/arrow_down.gif"
-            rendered="#{provider.sortInfo.sortAscending}" />
-          <h:graphicImage value="/icons/arrow_up.gif"
-            rendered="#{!provider.sortInfo.sortAscending}" />
-        </h:panelGroup>
-      </h:commandLink>
-      <h:outputText value="#{messages[field.label]}"
-        rendered="#{!provider.sortable}" />
-    </h:panelGroup>
-    </f:facet>
-
+    <ui:decorate template="/search/column_header.xhtml">
+      <ui:param name="sortColumn" value="#{field.prefixedName}"/>
+      <ui:param name="provider" value="#{provider}" />
+      <ui:param name="providerName" value="#{providerName}" />
+      <ui:param name="label" value="#{messages[field.label]}" />
+    </ui:decorate>
     <h:outputText value="#{messages[nxd:typeInfo(row.data).label]}" />
 
   </nxu:column>

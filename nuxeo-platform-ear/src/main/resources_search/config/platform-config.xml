@@ -94,11 +94,6 @@
       group="platform">
       <locator>%UserManagerBean</locator>
     </service>
-    <!--service class="org.nuxeo.ecm.platform.types.ejb.TypeManager" group="platform"/-->
-    <service class="org.nuxeo.ecm.core.search.api.client.SearchService"
-      group="search">
-      <locator>%SearchServiceBean</locator>
-    </service>
     <service class="org.nuxeo.ecm.platform.relations.api.RelationManager"
       group="platform/relations">
       <locator>%RelationManagerBean</locator>
