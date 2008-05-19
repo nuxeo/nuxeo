@@ -1,3 +1,5 @@
+<hr/>
+
 <#assign files = Document.files.files />
 
 <div id="attached_files">

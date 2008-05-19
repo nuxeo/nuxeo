@@ -18,6 +18,9 @@
         <mapping pattern="^(.+)/archives/(?year:[0-9]{4})/?(?month:[0-9]{2})?">
           <script>/Blog/archives.groovy</script>
         </mapping>
+        <mapping pattern="/login">
+          <script>/common/login.groovy</script>
+        </mapping>
       </mappings>
     </webapp>
   </extension>
