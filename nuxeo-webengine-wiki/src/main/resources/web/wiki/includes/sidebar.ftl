@@ -69,13 +69,14 @@
   
   <div id="logstate">Hi Guest! You are not logged in.</div>
   
+  <div id="login">
   <form id="login_form" method="post" action="/nuxeo/site/login">
-    <label for="user_name">Username</label><input type="text" name="user_name" id="username">
-    <label for="user_password">Password</label><input type="password" name="user_password" id="password">
-    <input type="submit" name="login" value="Log In" id="login">
+    <input type="text" name="user_name" id="username" value="Username" class="username"> <input type="password" name="user_password" id="password" value="password" class="password">
+    <input type="submit" name="login" value="Log In" id="login" class="button">
   </form>
+  </div>
 <#else>
-  You are logged in as ${base.user}
+  <div id="logstate">You are logged in as ${base.user}</div>
   <a href="" id="logout">Logout</a>
   
 </#if> 
