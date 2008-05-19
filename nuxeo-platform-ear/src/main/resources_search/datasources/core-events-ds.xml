@@ -8,6 +8,7 @@
          name="jboss.mq:service=JMSProviderLoader,name=NXCoreEventsProvider,server=ecm_core_server">
     <attribute name="ProviderName">NXCoreEventsProvider</attribute>
     <attribute name="ProviderAdapterClass">org.jboss.jms.jndi.JNDIProviderAdapter</attribute>
+    <attribute name="QueueFactoryRef">UIL2XAConnectionFactory</attribute>
     <!-- The queue connection factory -->
     <attribute name="QueueFactoryRef">UIL2XAConnectionFactory</attribute>
     <!-- The topic factory -->
