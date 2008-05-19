@@ -33,6 +33,8 @@
   </xsl:template>
   <xsl:template match="category[@name='org.jbpm']">
   </xsl:template>
+  <xsl:template match="category[@name='org.jbpm.jpdl.xml.JpdlXmlReader']">
+  </xsl:template>
   <xsl:template match="category[@name='org.compass.core.transaction']">
   </xsl:template>
   <xsl:template match="category[@name='org.compass.core.lucene.engine.optimizer.ScheduledLuceneSearchEngineOptimizer']">
@@ -91,6 +93,11 @@
    </xsl:text>
     <category name="org.jbpm">
       <priority value="INFO"/>
+    </category>
+    <xsl:text>
+   </xsl:text>
+    <category name="org.jbpm.jpdl.xml.JpdlXmlReader">
+      <priority value="ERROR"/>
     </category>
     <xsl:text>
    </xsl:text>
