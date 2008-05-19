@@ -13,6 +13,7 @@
     If Message needs to be shared with other server, comment out the next lines and
     uncomment the following. 
      -->
+    <attribute name="FactoryRef">java:/XAConnectionFactory</attribute>
     <attribute name="QueueFactoryRef">java:/XAConnectionFactory</attribute>
     <attribute name="TopicFactoryRef">java:/XAConnectionFactory</attribute>
     <!-- 
