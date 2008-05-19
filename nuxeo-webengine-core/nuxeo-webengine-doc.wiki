@@ -31,7 +31,7 @@ Context.print("My name is ${Context.principal.name}")!
 }}}
 
 
-== Bridging with Nuxeo ECM
+=== Bridging with Nuxeo ECM
 
 The WebEngine was created to work over a Nuxeo ECM server. Using it outside Nuxeo ECM is possible
 but is very limiting and you will loose many of the cool features of the WebEngine.
@@ -48,7 +48,9 @@ The idea behind the WebEngine is to map the HTTP requests on real documents from
 
 To correctly understand how this bridging over Nuxeo ECM is done and what you can do by using the WebEngine you should first understand how the HTTP request is dispatched, processed and mapped to documents.
 
+
 === Request Dispatch
+
 I will start using a simple example. Let say the web browser is requesting the following URL: 
 `http://www.nuxeo.org/nuxeo/site/blogs/bstefanescu/MyBlog@@view`
 
@@ -112,8 +114,9 @@ The action string represent an action to be taken on the last resolved document 
 An action can be bound to a Java class (an action handler) or to a script in order to perform the wanted operation on the document.
 If no action is specified in the request URL then a default action of @@view will be used.
 
+You can find more details on actions in Web Applicaiton : Actions section
 
-=== Mappings
+==== Mappings
 
 We already seen how the request path is transformed into three components:
 + the traversal path
@@ -151,12 +154,49 @@ In this case the generated mapping variables will be $1 for the year, $2 for the
 
 There are also 2 special mapping variables that will be allways generated: `url` (or $0) the request path that matched and `type` the document type of the target document (that is available only after the traversal path is build).
 
+You may note that using mappings or using a resolver that avoid mapping path segments on documents you may create web application that doesn't use any Nuxeo repository.
 
-=== Handling Script Selection Based on Document Types
 
-When writing scripts or templates to handle request actions we usually want to treat the target documents of same types in the same manner. For example a `Folder` document will be always displayed as a folder, a `File` document as a file and so on.\
-So we need a mechanism to be able to select the template or the script used to create the response depending on the target document type.
+=== Directory Layout - Resolving Scripts and Templates 
 
+All Web Application files are residing under a common root folder named the web folder. On JBoss this is root folder is located in `/opt/jboss/server/default/data/NXRuntime/web` where `/opt/jboss` is the JBoss installation folder.
+
+A Web Application may have multiple roots folders where scripts and other files are residing. When resolving scripts from paths each of these folders are consulted in turn until a matching file is found. 
+
+Example: Let say you have an web application that contains two roots: `wiki` and `default` (in that order). So inside the `web` directory we will have `web/wiki` and `web/default`.\
+When resolving a path let say `/commons/myscript.py` the web application will look first in `wiki` folder for a file path `commons/myscript.py` and then if none was found it looks for the same path in the `default` folder. 
+
+This mechanism is completely described in the Directory Stacking section.
+
+Note that the paths `/commons/myscript.py` and `commons/myscript.py` are equivalent. Both of them will be resolved relative to the Web Application root folders.\
+If you need to use relative paths (relative to the current executed script or template) you must prepend a '.' or a '..' on the path to force the path resolver to use the current script as the file base. \
+Example of relative paths:
+* ../../myscript.py
+* ./myscript.groovy
+
+Note that using relative paths is less efficient since the path lookup cannot be cached because of the directory base which is dictated by the current script context, context that may change durring the request.
+
+
+==== Resolving Action Scripts
+
+When writing scripts or templates to handle request actions we usually want to treat the target documents of same type in the same manner. For example a `Folder` document will be always displayed as a folder, a `File` document as a file and so on.\
+So we need a mechanism to select the template or the script associated to an action depending on the target document type.\
+Note that this selection mechanism make sense only for document action scripts. It doesn't make sense for plain scripts (that are not bound to documents) since in this case you may not ahave a target document.
+
+This aspect was solved by using a very simple and intuitive mechanism based on folder names:\
+Each application root folder may contain a sub-folder for each document type. This sub folder should use the same name as the document type. \
+This way each time an action script is resolved the resolver will look in the folder having the same name as the target document type. If it deson't find any matching file it is looking in the folder corresponding to the super type of the current document type and so on. This lookup stops when a matching file is found or when no more super types exists.\
+As the `Document` type is the base types of all Nuxeo document types you may put in that folder the default files for every document action.\
+If no file matches then a default file (a fallback file) will be used to display a custom message. This default file is configurable via Web Application properties. If the ddefault file cannot be find or was not defined then a 404 is send to the client.
+
+Example: In the `default` application root you may have three folders:
+* Document
+* Folder
+* Wiki
+
+Let say you want to call the script bound to the `@@view` action of a `Wiki` document. Then the script resolver will first look into `Wiki` folder then if nothing is found and beacuse `Wiki` is extending `Folder` it will look into `Folder` folder and then if nothing is found as `Folder` is extending `Document` it will look into Document folder. Finally if nothing is found the registred default script if any is used.
+
+Note that when you have multiple web application roots this mechanism will searching the script in each root in turn until something is found.
 
 
 == Web Applications
