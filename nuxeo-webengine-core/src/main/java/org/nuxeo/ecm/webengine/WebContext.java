@@ -251,7 +251,7 @@ public interface WebContext {
      * Same as servlet context path + servlet path
      * @return the site path
      */
-    String getSitePath();
+    String getApplicationPath();
 
     /**
      * Get the path  path corresponding to the target object of the request.

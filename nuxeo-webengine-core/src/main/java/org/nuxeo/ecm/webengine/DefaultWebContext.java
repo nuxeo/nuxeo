@@ -269,7 +269,7 @@ public class DefaultWebContext implements WebContext {
         return buf.toString();
     }
 
-    public String getSitePath() {
+    public String getApplicationPath() {
         StringBuilder buf = new StringBuilder(request.getRequestURI().length());
         String path = request.getContextPath();
         if (path == null) {

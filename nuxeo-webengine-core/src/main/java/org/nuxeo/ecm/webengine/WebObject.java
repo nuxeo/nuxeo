@@ -167,7 +167,7 @@ public class WebObject {
     }
 
     public String getUrlPath() {
-        StringBuilder buf = new StringBuilder(context.getSitePath());
+        StringBuilder buf = new StringBuilder(context.getApplicationPath());
         collectPath(buf);
         return buf.toString();
     }
