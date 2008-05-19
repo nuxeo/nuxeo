@@ -24,7 +24,7 @@ package org.nuxeo.ecm.webengine.rendering;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface RenderingTemplateFactory {
+public interface RenderingExtensionFactory {
 
     Object createTemplate();
 

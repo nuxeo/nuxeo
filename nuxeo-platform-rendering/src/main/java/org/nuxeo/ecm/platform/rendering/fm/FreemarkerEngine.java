@@ -20,13 +20,10 @@
 package org.nuxeo.ecm.platform.rendering.fm;
 
 import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
-import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.DocumentObjectWrapper;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockDirective;
@@ -37,7 +34,6 @@ import org.nuxeo.ecm.platform.rendering.fm.extensions.ExtendsDirective;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.MessagesMethod;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.NewMethod;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.SuperBlockDirective;
-import org.nuxeo.ecm.platform.rendering.fm.extensions.TransformDirective;
 
 import freemarker.core.Environment;
 import freemarker.template.Configuration;
@@ -56,8 +52,6 @@ public class FreemarkerEngine implements RenderingEngine {
     // the wrapper is not a singleton since it contains some info about the engine instance
     // so we will have one wrapper per engine instance
     protected final DocumentObjectWrapper wrapper;
-
-    protected final Map<String, RenderingTransformer> transformers = new HashMap<String, RenderingTransformer>();
 
     protected final MessagesMethod messages = new MessagesMethod(null);
 
@@ -79,7 +73,6 @@ public class FreemarkerEngine implements RenderingEngine {
         this.cfg.setSharedVariable("block", new BlockDirective());
         this.cfg.setSharedVariable("superBlock", new SuperBlockDirective());
         this.cfg.setSharedVariable("extends", new ExtendsDirective());
-        this.cfg.setSharedVariable("transform", new TransformDirective());
         this.cfg.setSharedVariable("docRef", new DocRefMethod());
         this.cfg.setSharedVariable("new", new NewMethod());
         this.cfg.setSharedVariable("message", messages);
@@ -127,15 +120,6 @@ public class FreemarkerEngine implements RenderingEngine {
     public Configuration getConfiguration() {
         return cfg;
     }
-
-    public void setTransformer(String name, RenderingTransformer transformer) {
-        transformers.put(name, transformer);
-    }
-
-    public RenderingTransformer getTransformer(String name) {
-        return transformers.get(name);
-    }
-
 
     public void render(String template, Object input, Writer writer)
             throws RenderingException {

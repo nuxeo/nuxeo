@@ -67,11 +67,8 @@ public class WebApplicationDescriptor extends CompositeContribution {
     @XNodeList(value="bindings/binding", type=ArrayList.class, componentType=ObjectBindingDescriptor.class, nullByDefault=true)
     protected List<ObjectBindingDescriptor> bindings;
 
-    @XNodeList(value="transformers/transformer", type=ArrayList.class, componentType=String.class, nullByDefault=true)
-    protected List<String> transformers;
-
-    @XNodeList(value="templates/template", type=ArrayList.class, componentType=String.class, nullByDefault=true)
-    protected List<String> templates;
+    @XNodeList(value="rendering-extensions/rendering-extension", type=ArrayList.class, componentType=String.class, nullByDefault=true)
+    protected List<String> renderingExtensions;
 
     @XNode("resolver")
     protected DefaultDocumentResolver resolver;
@@ -141,20 +138,12 @@ public class WebApplicationDescriptor extends CompositeContribution {
         this.bindings = bindings;
     }
 
-    public List<String> getTemplates() {
-        return templates;
+    public List<String> getRenderingExtensions() {
+        return renderingExtensions;
     }
 
-    public void setTemplates(List<String> templates) {
-        this.templates = templates;
-    }
-
-    public List<String> getTransformers() {
-        return transformers;
-    }
-
-    public void setTransformers(List<String> transformers) {
-        this.transformers = transformers;
+    public void setRenderingExtensions(List<String> templates) {
+        this.renderingExtensions = templates;
     }
 
     public DocumentResolver getDocumentResolver() throws WebDeployException {
@@ -196,17 +185,11 @@ public class WebApplicationDescriptor extends CompositeContribution {
             }
             desc.mappings.addAll(mappings);
         }
-        if (transformers != null && !transformers.isEmpty()) {
-            if (desc.transformers == null) {
-                desc.transformers = new ArrayList<String>();
+        if (renderingExtensions != null && !renderingExtensions.isEmpty()) {
+            if (desc.renderingExtensions == null) {
+                desc.renderingExtensions = new ArrayList<String>();
             }
-            desc.transformers.addAll(transformers);
-        }
-        if (templates != null && !templates.isEmpty()) {
-            if (desc.templates == null) {
-                desc.templates = new ArrayList<String>();
-            }
-            desc.templates.addAll(templates);
+            desc.renderingExtensions.addAll(renderingExtensions);
         }
     }
 

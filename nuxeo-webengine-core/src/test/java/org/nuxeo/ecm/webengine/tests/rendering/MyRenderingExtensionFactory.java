@@ -19,13 +19,13 @@
 
 package org.nuxeo.ecm.webengine.tests.rendering;
 
-import org.nuxeo.ecm.webengine.rendering.RenderingTemplateFactory;
+import org.nuxeo.ecm.webengine.rendering.RenderingExtensionFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class MyRenderingExtensionFactory implements RenderingTemplateFactory {
+public class MyRenderingExtensionFactory implements RenderingExtensionFactory {
 
     public Object createTemplate() {
         return "My Value 2";

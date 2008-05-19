@@ -22,7 +22,6 @@ package org.nuxeo.ecm.webengine;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,8 +33,7 @@ import org.nuxeo.ecm.webengine.config.FileChangeNotifier;
 import org.nuxeo.ecm.webengine.config.ManagedComponent;
 import org.nuxeo.ecm.webengine.config.ConfigurationDeployer.Entry;
 import org.nuxeo.ecm.webengine.install.Installer;
-import org.nuxeo.ecm.webengine.rendering.RenderingTemplateDescriptor;
-import org.nuxeo.ecm.webengine.rendering.TransformerDescriptor;
+import org.nuxeo.ecm.webengine.rendering.RenderingExtensionDescriptor;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.RuntimeServiceException;
@@ -54,11 +52,10 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
 
     public static final ComponentName NAME = new ComponentName(WebEngineComponent.class.getName());
 
-    public static final String TRANSFORMER_XP = "transformer";
+    public static final String RENDERING_EXTENSION_XP = "rendering-extension";
     public static final String WEB_OBJ_XP = "webObject";
     public static final String BINDING_XP = "binding";
     public static final String GUARD_XP = "guard"; // global guards
-    public final static String RENDERING_TEMPLATE_XP = "rendering-template";
     public final static String APPLICATION_XP = "application";
     public final static String INSTALL_XP = "install";
     public final static String CONFIG_XP = "configuration";
@@ -156,19 +153,16 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
     public void registerContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (TRANSFORMER_XP.equals(extensionPoint)) {
-            TransformerDescriptor td = (TransformerDescriptor)contribution;
-            engine.registerRenderingTransformer(td.getName(), td.newInstance());
-        } else if (GUARD_XP.equals(extensionPoint)) {
+        if (GUARD_XP.equals(extensionPoint)) {
             GuardDescriptor gd = (GuardDescriptor)contribution;
             PermissionService.getInstance().registerGuard(gd.getId(), gd.getGuard());
         } else if (BINDING_XP.equals(extensionPoint)) {
             ObjectBindingDescriptor binding = (ObjectBindingDescriptor)contribution;
             engine.registerBinding(binding.type, binding.objectId);
-        } else if (extensionPoint.equals(RENDERING_TEMPLATE_XP)) {
-            RenderingTemplateDescriptor fed = (RenderingTemplateDescriptor)contribution;
+        } else if (extensionPoint.equals(RENDERING_EXTENSION_XP)) {
+            RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor)contribution;
             try {
-                engine.registerRenderingTemplate(fed.name, fed.newInstance());
+                engine.registerRenderingExtension(fed.name, fed.newInstance());
             } catch (Exception e) {
                 throw new RuntimeServiceException("Deployment Error. Failed to contribute freemarker template extension: "+fed.name);
             }
@@ -192,18 +186,15 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
     public void unregisterContribution(Object contribution,
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
-        if (TRANSFORMER_XP.equals(extensionPoint)) {
-            TransformerDescriptor td = (TransformerDescriptor)contribution;
-            engine.unregisterRenderingTransformer(td.getName());
-        } else if (GUARD_XP.equals(extensionPoint)) {
+        if (GUARD_XP.equals(extensionPoint)) {
             GuardDescriptor gd = (GuardDescriptor)contribution;
             PermissionService.getInstance().unregisterGuard(gd.getId());
         } else if (BINDING_XP.equals(extensionPoint)) {
             ObjectBindingDescriptor binding = (ObjectBindingDescriptor)contribution;
             engine.unregisterBinding(binding.type);
-        } else if (extensionPoint.equals(RENDERING_TEMPLATE_XP)) {
-            RenderingTemplateDescriptor fed = (RenderingTemplateDescriptor)contribution;
-            engine.unregisterRenderingTemplate(fed.name);
+        } else if (extensionPoint.equals(RENDERING_EXTENSION_XP)) {
+            RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor)contribution;
+            engine.unregisterRenderingExtension(fed.name);
         } else if (extensionPoint.equals(INSTALL_XP)) {
             Installer installer = (Installer)contribution;
             installer.uninstall(contributor.getContext(), engine.getRootDirectory());

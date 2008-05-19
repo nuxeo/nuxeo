@@ -47,8 +47,4 @@ public interface RenderingEngine {
      */
     void render(String template, Object input, Writer writer) throws RenderingException;
 
-    void setTransformer(String name, RenderingTransformer transformer);
-
-    RenderingTransformer getTransformer(String name);
-
 }

@@ -26,8 +26,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@XObject("template")
-public class RenderingTemplateDescriptor {
+@XObject("rendering-extension")
+public class RenderingExtensionDescriptor {
 
     @XNode("@name")
     public String name;
@@ -37,8 +37,8 @@ public class RenderingTemplateDescriptor {
 
     public Object newInstance() throws Exception {
         Object obj = klass.newInstance();
-        if (obj instanceof RenderingTemplateFactory) {
-            obj = ((RenderingTemplateFactory)obj).createTemplate();
+        if (obj instanceof RenderingExtensionFactory) {
+            obj = ((RenderingExtensionFactory)obj).createTemplate();
         }
         return obj;
     }

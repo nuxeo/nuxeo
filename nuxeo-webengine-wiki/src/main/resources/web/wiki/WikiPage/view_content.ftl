@@ -2,7 +2,7 @@
 <h1>${Document.title}</h1>
 
 <div id="entry-content">
-    <@transform name="wiki">${Document.wikiPage.content}</@transform>
+    <@wiki>${Document.wikiPage.content}</@wiki>
 </div>
 
 <div id="entry-attachments">

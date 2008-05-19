@@ -24,8 +24,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
-
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -69,17 +67,11 @@ public interface WebEngine {
 
     void fireConfigurationChanged() throws WebException;
 
-    void registerRenderingTemplate(String id, Object obj);
+    void registerRenderingExtension(String id, Object obj);
 
-    void unregisterRenderingTemplate(String id);
+    void unregisterRenderingExtension(String id);
 
-    Object getRenderingTemplate(String id);
-
-    void registerRenderingTransformer(String id, RenderingTransformer obj);
-
-    void unregisterRenderingTransformer(String id);
-
-    RenderingTransformer getRenderingTransformer(String id);
+    Object getRenderingExtension(String id);
 
     void destroy();
 

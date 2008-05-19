@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer;
 import org.nuxeo.ecm.platform.rendering.wiki.WikiTransformer;
 import org.nuxeo.ecm.platform.rendering.wiki.extensions.PatternFilter;
@@ -33,12 +32,17 @@ import org.nuxeo.ecm.platform.rendering.wiki.extensions.PatternFilter;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@XObject("transformer")
-public class WikiTransformerDescriptor extends TransformerDescriptor {
+@XObject("rendering-extension")
+public class WikiTransformerDescriptor extends RenderingExtensionDescriptor {
 
     @XNode("@name")
-    public void setName(String name) {
+    protected void setName(String name) {
         this.name = name;
+    }
+
+    @XNode("@class")
+    protected void setClassName(Class<?> klass) {
+        this.klass = klass;
     }
 
     @XNode("@serializer")
@@ -49,7 +53,7 @@ public class WikiTransformerDescriptor extends TransformerDescriptor {
 
 
     @Override
-    public RenderingTransformer newInstance() throws Exception {
+    public WikiTransformer newInstance() throws Exception {
         WikiTransformer tr = null;
         if (serializerClass == null) {
             tr = new WikiTransformer();

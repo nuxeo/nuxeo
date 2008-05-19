@@ -33,7 +33,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.url.URLFactory;
-import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
@@ -108,19 +107,9 @@ public class DefaultWebApplication implements WebApplication {
             rendering.setResourceLocator(this);
             rendering.setMessageBundle(engine.getMessageBundle());
             rendering.setSharedVariable("env", engine.getEnvironment());
-            if (desc.transformers != null) {
-                for (String name : desc.transformers) {
-                    RenderingTransformer tr = engine.getRenderingTransformer(name);
-                    if (tr != null) {
-                        rendering.setTransformer(name, tr);
-                    } else {
-                        log.warn("Unknown rendering extension: "+name);
-                    }
-                }
-            }
-            if (desc.templates != null) {
-                for (String name : desc.templates) {
-                    Object tpl = engine.getRenderingTemplate(name);
+            if (desc.renderingExtensions != null) {
+                for (String name : desc.renderingExtensions) {
+                    Object tpl = engine.getRenderingExtension(name);
                     if (tpl != null) {
                         rendering.setSharedVariable(name, tpl);
                     } else {
@@ -294,30 +283,17 @@ public class DefaultWebApplication implements WebApplication {
         return engine;
     }
 
-    public void registerTemplate(String id, Object obj) {
-        if (desc.getTemplates() != null && desc.getTemplates().contains(id)) {
+    public void registerRenderingExtension(String id, Object obj) {
+        if (desc.getRenderingExtensions() != null && desc.getRenderingExtensions().contains(id)) {
             scripting.getRenderingEngine().setSharedVariable(id, obj);
         }
     }
 
-    public void unregisterTemplate(String id) {
-        if (desc.getTemplates() != null && desc.getTemplates().contains(id)) {
+    public void unregisterRenderingExtension(String id) {
+        if (desc.getRenderingExtensions() != null && desc.getRenderingExtensions().contains(id)) {
             scripting.getRenderingEngine().setSharedVariable(id, null);
         }
     }
-
-    public void registerTransformer(String id, RenderingTransformer obj) {
-        if (desc.getTransformers() != null && desc.getTransformers().contains(id)) {
-            scripting.getRenderingEngine().setTransformer(id, obj);
-        }
-    }
-
-    public void unregisterTransformer(String id) {
-        if (desc.getTemplates() != null && desc.getTemplates().contains(id)) {
-            scripting.getRenderingEngine().setTransformer(id, null);
-        }
-    }
-
 
     public URL getResourceURL(String key) {
         try {

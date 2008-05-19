@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.nuxeo.common.collections.ListenerList;
-import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
 import org.nuxeo.ecm.webengine.config.FileChangeListener;
 import org.nuxeo.ecm.webengine.config.FileChangeNotifier;
 import org.nuxeo.ecm.webengine.config.FileChangeNotifier.FileEntry;
@@ -50,8 +49,7 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
     protected final Map<String,Object> env;
     protected ResourceBundle messages;
 
-    protected Map<String, Object> templates;
-    protected Map<String, RenderingTransformer> transformers;
+    protected Map<String, Object> renderingExtensions;
 
     protected ListenerList listeners = new ListenerList();
     protected FileChangeNotifier notifier;
@@ -70,8 +68,7 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         env.put("installDir", root);
         env.put("engine", "Nuxeo Web Engine");
         env.put("version", "1.0.0");
-        this.transformers = new Hashtable<String, RenderingTransformer>();
-        this.templates = new Hashtable<String, Object>();
+        this.renderingExtensions = new Hashtable<String, Object>();
         loadMessageBundle(true);
     }
 
@@ -171,55 +168,27 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
     }
 
 
-    public void registerRenderingTemplate(String id, Object obj) {
-        templates.put(id, obj);
+    public void registerRenderingExtension(String id, Object obj) {
+        renderingExtensions.put(id, obj);
         // notify all registered applications about the new template
         for (WebApplication app : apps.values()) {
-            app.registerTemplate(id, obj);
+            app.registerRenderingExtension(id, obj);
         }
     }
 
-    public void unregisterRenderingTemplate(String id) {
-        templates.remove(id);
+    public void unregisterRenderingExtension(String id) {
+        renderingExtensions.remove(id);
         for (WebApplication app : apps.values()) {
-            app.unregisterTemplate(id);
+            app.unregisterRenderingExtension(id);
         }
     }
 
-    public void registerRenderingTransformer(String id, RenderingTransformer obj) {
-        transformers.put(id, obj);
-        for (WebApplication app : apps.values()) {
-            app.registerTransformer(id, obj);
-        }
+    public Map<String, Object> getRenderingExtensions() {
+        return renderingExtensions;
     }
 
-    public void unregisterRenderingTransformer(String id) {
-        transformers.remove(id);
-        for (WebApplication app : apps.values()) {
-            app.unregisterTransformer(id);
-        }
-    }
-
-    /**
-     * @return the transformers.
-     */
-    public Map<String, RenderingTransformer> getTransformers() {
-        return transformers;
-    }
-
-    /**
-     * @return the templates.
-     */
-    public Map<String, Object> getTemplates() {
-        return templates;
-    }
-
-    public Object getRenderingTemplate(String id) {
-        return templates.get(id);
-    }
-
-    public RenderingTransformer getRenderingTransformer(String id) {
-        return transformers.get(id);
+    public Object getRenderingExtension(String id) {
+        return renderingExtensions.get(id);
     }
 
     public void addConfigurationChangedListener(

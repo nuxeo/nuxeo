@@ -68,7 +68,7 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         tr.getSerializer().addFilter(new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
         tr.getSerializer().addFilter(new PatternFilter("NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
         tr.getSerializer().registerMacro(new FreemarkerMacro());
-        engine.setTransformer("wiki", tr);
+        engine.setSharedVariable("wiki", tr);
     }
 
     public void testRendering() throws Exception {

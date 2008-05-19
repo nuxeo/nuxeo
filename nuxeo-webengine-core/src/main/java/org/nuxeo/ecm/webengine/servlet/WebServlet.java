@@ -65,11 +65,15 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
 
     protected static final int BUFFER_SIZE = 4096 * 16;
 
-    protected static DocumentResolver resolver = new DefaultDocumentResolver();
+    private final static ThreadLocal<WebContext> CONTEXT = new ThreadLocal<WebContext>();
 
     private WebEngine engine;
     private WebApplication app;
 
+
+    public final static WebContext getContext() {
+        return CONTEXT.get();
+    }
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -116,6 +120,7 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
         WebContext context = null;
         try {
             context = createRequest(req, resp);
+            CONTEXT.set(context);
             service(context, req, resp);
         } catch (Throwable e) {
             log.error("Site Servlet failed to handle request", e);
@@ -135,6 +140,8 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
                 displayError(resp, ee, "Failed to show error page",
                         WebConst.SC_INTERNAL_SERVER_ERROR);
             }
+        } finally {
+            CONTEXT.set(null);
         }
         //System.out.println(">>> SITE REQUEST TOOK:  "+((System.currentTimeMillis()-start)/1000));
     }

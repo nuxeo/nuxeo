@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.platform.rendering.api.RenderingTransformer;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.resolver.DocumentResolver;
@@ -66,11 +65,8 @@ public interface WebApplication extends ResourceLocator {
 
     void setDocumentResolver(DocumentResolver resolver);
 
-    void registerTemplate(String id, Object obj);
+    void registerRenderingExtension(String id, Object obj);
 
-    void unregisterTemplate(String id);
+    void unregisterRenderingExtension(String id);
 
-    void registerTransformer(String id, RenderingTransformer obj);
-
-    void unregisterTransformer(String id);
 }

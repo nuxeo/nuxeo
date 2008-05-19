@@ -7,7 +7,7 @@
 <hr/>
 
 <p>
-<@transform name="wiki">${This.document.note.note}</@transform>
+<@wiki>${This.document.note.note}</@wiki>
 </p>
 
 </@block>
