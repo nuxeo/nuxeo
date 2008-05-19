@@ -19,17 +19,22 @@
 
 package org.nuxeo.ecm.webengine.rendering;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.servlet.WebServlet;
 
-import sun.java2d.pipe.SpanShapeRenderer.Simple;
-
+import freemarker.template.AdapterTemplateModel;
 import freemarker.template.SimpleScalar;
+import freemarker.template.TemplateCollectionModel;
+import freemarker.template.TemplateHashModelEx;
 import freemarker.template.TemplateMethodModelEx;
+import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
+import freemarker.template.TemplateModelIterator;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -37,6 +42,7 @@ import freemarker.template.TemplateModelException;
  */
 public class ScriptMethod implements TemplateMethodModelEx {
 
+    @SuppressWarnings("unchecked")
     public Object exec(List arguments) throws TemplateModelException {
         int size = arguments.size();
         if (size < 1) {
@@ -50,10 +56,34 @@ public class ScriptMethod implements TemplateMethodModelEx {
         }
         src = val.getAsString();
 
+        Map<String,Object> args = null;
+        if (arguments.size() > 1) {
+            Object o = arguments.get(1);
+            if (!(o instanceof TemplateHashModelEx)) {
+                throw new TemplateModelException("second argument should be a map");
+            }
+            TemplateHashModelEx t = (TemplateHashModelEx)o;
+            TemplateCollectionModel keys = t.keys();
+            TemplateModelIterator it = keys.iterator();
+            args = new HashMap<String, Object>();
+            while (it.hasNext()) {
+                TemplateModel k = it.next();
+                String kk = k.toString();
+                TemplateModel v = t.get(kk);
+                Object vv = null;
+                if (v instanceof AdapterTemplateModel) {
+                    vv = ((AdapterTemplateModel)v).getAdaptedObject(null);
+                } else {
+                    vv = v.toString();
+                }
+                args.put(kk, vv);
+            }
+        }
+
         WebContext ctx = WebServlet.getContext();
         if (ctx != null) {
             try {
-                return ctx.runScript(src);
+                return args == null ? ctx.runScript(src) : ctx.runScript(src, args);
             } catch (WebException e) {
                 throw new TemplateModelException("Failed to run script: "+src, e);
             }
