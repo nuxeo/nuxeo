@@ -45,14 +45,13 @@ public class ScriptMethod implements TemplateMethodModelEx {
         WebContext ctx = WebServlet.getContext();
         if (ctx != null) {
             try {
-            ctx.runScript(src);
+                return ctx.runScript(src);
             } catch (WebException e) {
                 throw new TemplateModelException("Failed to run script: "+src, e);
             }
         } else {
             throw new IllegalStateException("Not In a Web Context");
         }
-        return null;
     }
 
 }
