@@ -1,6 +1,8 @@
-<h2>Attached files</h2>
-  <div id="attached_files">
-    <#list Document.files.files as file>
+<#assign files = Document.files.files />
+<h2>Attached files:</h2>
+<div id="attached_files">
+<#if (files?size != 0)>
+    <#list files as file>
       <#if (file_index == 0)><ul></#if>
       <@compress single_line=true>
       <li><a href="${This.urlPath}@@getfile?property=files:files/item[${file_index}]/file">${file.filename}</a>
@@ -11,6 +13,7 @@
       </@compress>
       <#if (!file_has_next)></ul></#if>
     </#list>
+</#if>
 
 <#if base.canWrite>
     <form id="add_file" action="${This.urlPath}@@addfile" accept-charset="utf-8" method="POST" enctype="multipart/form-data">
@@ -20,5 +23,4 @@
         </li></ul>
     </form>
 </#if>
-  
-  </div>
+</div>
