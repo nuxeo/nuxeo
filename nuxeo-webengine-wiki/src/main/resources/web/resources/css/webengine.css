@@ -106,6 +106,7 @@ body {
  font: bold 21px "Century Gothic","Trebuchet MS", Verdana, sans-serif;
  margin-top:10px;
  padding-left: 8px;
+ background-color:transparent;
  }
  
  #sidebar .createButton a {
@@ -151,7 +152,7 @@ body {
     padding: 6px;
     margin: 0px;
     margin: 0px 0px 10px 0px;
-    font-size: 0.8em;
+    font-size: 10px;
 }
 
 #sidebar .general {
@@ -167,6 +168,10 @@ body {
   color:#333;
 }
 
+#sidebar .contextual a, #sidebar .contextual a:link, #sidebar .contextual a:visited, #sidebar .contextual a:hover {
+  color:#0066ff;
+}  
+
 #sidebar .contextual h3 {
   background:url(/nuxeo/site/files/resources/image/background_box_title.gif) top left no-repeat;
   height:25px;
@@ -177,6 +182,11 @@ body {
   border-bottom:none;
 }
 
+#sidebar .contextual ul {
+  list-style-image: url(/nuxeo/site/files/resources/image/bullet.gif);
+  margin-top:0;
+  }
+
 #sidebar .sideblock-content {
   background:url(/nuxeo/site/files/resources/image/background_box_content.gif) top left no-repeat;
  padding:10px 25px;
@@ -185,6 +195,12 @@ body {
 #sidebar .sideblock-content-bottom {
   background:url(/nuxeo/site/files/resources/image/background_box_bottom.gif) top left no-repeat;
   height:5px;
+}
+
+#sidebar ul {
+  list-style-image: url(/nuxeo/site/files/resources/image/bullet_light.gif);
+  padding:0;
+  margin:5px 0 0 25px;
 }
 
 /* Structure */
@@ -222,12 +238,21 @@ body {
 
 /* Main content styles */
 
-#main h2, #main h3, #main h4, #main p,  #main div.toc {
+#main h2, #main h3, #main h4, #main p {
     padding:0 10px;
 }
 
 .main-content {
   padding:10px 20px;
+}
+
+.main-content p {
+  margin:5px 0 2px 0;
+}
+
+.main-content ul {
+  list-style-image: url(/nuxeo/site/files/resources/image/bullet.gif);
+  margin-top:1px;
 }
 
 .diff {
@@ -279,7 +304,7 @@ h2 {
     font: normal normal bold 150% "Century Gothic","Trebuchet MS", Verdana, sans-serif;
     color: #111;
     margin: 0px;
-    margin: 5px 0px 10px 0px; 
+    margin: 15px 0px 10px 0px; 
 
 }
 
@@ -287,11 +312,11 @@ h3 {
     /* H3 */
     background-color:#fff;
     font: normal normal bold 133% "Century Gothic","Trebuchet MS", Verdana, sans-serif;
-    margin: 2px 0 5px 0;    
+    margin: 10px 0 5px 0;    
 }
 
 h4 {
-  margin:1px 0 2px 0;
+  margin:5px 0 2px 0;
   background-color:#fff;
 }
 
@@ -307,6 +332,38 @@ pre {
 .hidden {
     /* Use this to hide elements */
     display: none;
+}
+
+#entry-content {
+
+}
+
+#main div.toc {
+  border:1px solid #e4e4e4;
+  margin-bottom:15px;
+}
+
+#main div.toc h2 {
+  margin-top:0;
+  background-color: #f1f2f3;
+  font-size:14px;
+  color:#666;
+  }
+
+#main #entry-attachments {
+  margin-top:10px;
+  border:1px solid #e4e4e4;
+}
+
+#main #entry-attachments h2 {
+  margin-top:0;
+  font-size:14px;
+  background-color:#f1f2f3;
+  color:#666;
+}
+
+#main #entry-attachments #attached_files {
+  padding:0 10px;
 }
 
 /* for safari (wtf?) */
@@ -399,17 +456,32 @@ pre {
   border-color:#000;
   }
   
-/* History */
-
 #main .ui-tabs-nav, #main .ui-tabs-panel {
  font-family: Verdana, sans-serif;
+ list-style-image: none;
 }  
+
+/* History */
 
 #main .version_list {
   padding:5px;
   font-size:10px;
+  width:100%;
+  border-collapse: collapse;
+  border:1px solid #666;
+  
+}
+
+
+#main .version_list th {
+  padding:3px;
+  background-color: #666;
+  color:#fff;
 }
 
 #main .version_list td {
-  padding:2px 0;
+  padding:3px;
+  border:1px solid #666;
+  border-width: 1px 0;
+  text-align: center;
 }
