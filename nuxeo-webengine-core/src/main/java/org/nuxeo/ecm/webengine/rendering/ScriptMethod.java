@@ -25,6 +25,9 @@ import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.servlet.WebServlet;
 
+import sun.java2d.pipe.SpanShapeRenderer.Simple;
+
+import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
 
@@ -40,7 +43,12 @@ public class ScriptMethod implements TemplateMethodModelEx {
             throw new TemplateModelException("Invalid number of arguments for new(class, ...) method");
         }
 
-        String src = (String)arguments.get(0);
+        String src = null;
+        SimpleScalar val = (SimpleScalar)arguments.get(0);
+        if (val == null) {
+            throw new TemplateModelException("src attribute is required");
+        }
+        src = val.getAsString();
 
         WebContext ctx = WebServlet.getContext();
         if (ctx != null) {

@@ -23,6 +23,7 @@
         <root priority="0">default</root>
       </roots>
       <rendering-extensions>
+        <rendering-extension>script</rendering-extension>
         <rendering-extension>wiki</rendering-extension>
       </rendering-extensions>
     </webapp>
@@ -68,6 +69,10 @@
       </actions>
   	</object>
 
+  </extension>
+
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent" point="rendering-extension">
+    <rendering-extension name="script" class="org.nuxeo.ecm.webengine.rendering.ScriptMethod"/>
   </extension>
 
   <extension target="org.nuxeo.ecm.webengine.rendering.wiki" point="rendering-extension">
