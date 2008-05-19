@@ -20,7 +20,9 @@
 package org.nuxeo.ecm.core.jms;
 
 import java.io.Serializable;
+import java.util.Properties;
 
+import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Topic;
@@ -34,6 +36,7 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
 
 
 /**
@@ -45,14 +48,25 @@ public class CoreEventPublisher {
     private static final Log log = LogFactory.getLog(CoreEventPublisher.class);
 
     public final static String XA_TOPIC_CONNECTION_FACTORY = "JmsNX";
-    public final static String TOPIC_CONNECTION_FACTORY = "JmsNX";
     public final static String CORE_EVENTS_TOPIC = "topic/NXCoreEvents";
-
-    private boolean isXa = false; //TODO
+    private boolean transacted;
+    private boolean isDeliveryPersistent;
+    private boolean isDisableMessageID;
+    private boolean isDisableMessageTimestamp;
     private TopicConnectionFactory topicConnectionFactory;
     private Topic coreEventsTopic;
 
     private static CoreEventPublisher instance = new CoreEventPublisher();
+    private CoreEventPublisher() {
+        configureJMS();
+    }
+    private void configureJMS() {
+        Properties runtime = Framework.getRuntime().getProperties();
+        transacted = new Boolean(runtime.getProperty("jms.useTransactedConnection"));
+        isDeliveryPersistent = new Boolean(runtime.getProperty("jms.isDeliveryPersistent"));
+        isDisableMessageID = new Boolean(runtime.getProperty("jms.isDisableMessageID"));
+        isDisableMessageTimestamp = new Boolean(runtime.getProperty("jms.isDisableMessageTimestamp"));
+    }
     public static CoreEventPublisher getInstance() {
         return instance;
     }
@@ -66,8 +80,7 @@ public class CoreEventPublisher {
             throws NamingException {
         if (topicConnectionFactory == null) {
             Context jndi = new InitialContext();
-            topicConnectionFactory = (TopicConnectionFactory) jndi.lookup(isXa
-                    ? XA_TOPIC_CONNECTION_FACTORY : TOPIC_CONNECTION_FACTORY);
+            topicConnectionFactory = (TopicConnectionFactory) jndi.lookup(XA_TOPIC_CONNECTION_FACTORY);
             if (coreEventsTopic == null) { // initialize the default topic too
                 coreEventsTopic = (Topic) jndi.lookup(CORE_EVENTS_TOPIC);
             }
@@ -80,8 +93,7 @@ public class CoreEventPublisher {
             Context jndi = new InitialContext();
             coreEventsTopic = (Topic) jndi.lookup(CORE_EVENTS_TOPIC);
             if (topicConnectionFactory == null) { // initialize the connection factory too
-                topicConnectionFactory = (TopicConnectionFactory) jndi.lookup(isXa
-                        ? XA_TOPIC_CONNECTION_FACTORY : TOPIC_CONNECTION_FACTORY);
+                topicConnectionFactory = (TopicConnectionFactory) jndi.lookup(XA_TOPIC_CONNECTION_FACTORY);
             }
         }
         return coreEventsTopic;
@@ -103,20 +115,20 @@ public class CoreEventPublisher {
         }
     }
 
-    public void publish(Serializable content) throws JMSException {
+    public void publish(Serializable content, String eventId) throws JMSException {
         try {
-            publish(content, getDefaultTopic(), MessageFactory.DEFAULT);
+            publish(content, getDefaultTopic(), MessageFactory.DEFAULT, eventId);
         } catch (NamingException e) {
             log.error("Failed to lookup default topic", e);
             throw new JMSException("Failed to lookup default topic");
         }
     }
 
-    public void publish(Topic topic, Serializable content) throws JMSException {
-        publish(content, topic, MessageFactory.DEFAULT);
+    public void publish(Topic topic, Serializable content, String eventId) throws JMSException {
+        publish(content, topic, MessageFactory.DEFAULT, eventId);
     }
 
-    public void publish(Object content, Topic topic, MessageFactory factory)
+    public void publish(Object content, Topic topic, MessageFactory factory, String eventId)
     throws JMSException {
         TopicConnection connection = null;
         TopicSession session = null;
@@ -124,12 +136,20 @@ public class CoreEventPublisher {
         try {
             // get a connection from topic connection pool
             connection = getTopicConnection();
+
             // create a not transacted session
-            session = connection.createTopicSession(false, TopicSession.AUTO_ACKNOWLEDGE);
+            session = connection.createTopicSession(transacted, TopicSession.AUTO_ACKNOWLEDGE);
+
             // create the publisher
             publisher = session.createPublisher(topic);
+            publisher.setDeliveryMode(isDeliveryPersistent ? DeliveryMode.PERSISTENT : DeliveryMode.NON_PERSISTENT);
+            publisher.setDisableMessageID(isDisableMessageID);
+            publisher.setDisableMessageTimestamp(isDisableMessageTimestamp);
             // create the message using the given factory
             Message msg = factory.createMessage(session, content);
+            if(eventId != null) {
+                msg.setStringProperty("nuxeo.eventId", eventId);
+            }
             // publish the message
             publisher.publish(topic, msg);
         } finally {

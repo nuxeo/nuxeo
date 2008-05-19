@@ -70,7 +70,7 @@ public class JMSEventListener extends AbstractEventListener implements
     public void operationTerminated(Operation<?> cmd) throws Exception {
         OperationEvent event = OperationEventFactory.createEvent(cmd);
         if (event != null) {
-            CoreEventPublisher.getInstance().publish(event);
+            CoreEventPublisher.getInstance().publish(event, event.id);
         }
     }
 
@@ -198,19 +198,17 @@ public class JMSEventListener extends AbstractEventListener implements
                 checkedDocs.add(doc.getRef());
             }
             OperationEvent event = OperationEventFactory.createEvent(coreEvent);
-            if (event != null) {
-                cmdEvents.add(event);
-            }
+            CoreEventPublisher.getInstance().publish(event, event.id);
         }
 
-        CoreEventPublisher.getInstance().publish(cmdEvents);
+
     }
 
     private void sendEventToJMS(CoreEvent coreEvent) {
         OperationEvent event = OperationEventFactory.createEvent(coreEvent);
         if (event != null) {
             try {
-                CoreEventPublisher.getInstance().publish(event);
+                CoreEventPublisher.getInstance().publish(event, event.id);
             } catch (JMSException e) {
                 e.printStackTrace();
             }
