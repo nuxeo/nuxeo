@@ -84,18 +84,17 @@ public class RestfulPhaseListener extends TransactionalSeamPhaseListener {
             } catch (Exception e) {
                 Lifecycle.setPhaseId(INVOKE_APPLICATION); // XXX Hack !
                 Throwable unwrappedException = NuxeoExceptionFilter.unwrapException(e);
-                String userMessage = NuxeoExceptionFilter.getMessageForException(unwrappedException);
+                String userMessage = NuxeoExceptionFilter.getMessageForException(
+                        unwrappedException);
                 String exceptionMessage = unwrappedException.getLocalizedMessage();
                 HttpServletResponse httpResponse = (HttpServletResponse) context.getExternalContext().getResponse();
                 httpRequest.setAttribute("applicationException", null);
                 // Do the rollback
                 try {
-                    if ( Transactions.isTransactionMarkedRollback() )
-                    {
-                       Transactions.getUserTransaction().rollback();
+                    if (Transactions.isTransactionMarkedRollback()) {
+                        Transactions.getUserTransaction().rollback();
                     }
-                }  catch (Exception te)
-                {
+                } catch (Exception te) {
                     throw new IllegalStateException("Could not rollback transaction", te);
                 }
 
