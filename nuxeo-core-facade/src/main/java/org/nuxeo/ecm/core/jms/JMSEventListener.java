@@ -20,7 +20,6 @@
 
 package org.nuxeo.ecm.core.jms;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -73,7 +72,7 @@ public class JMSEventListener extends AbstractEventListener implements
     public void operationTerminated(Operation<?> cmd) throws Exception {
         OperationEvent event = OperationEventFactory.createEvent(cmd);
         if (event != null) {
-            CoreEventPublisher.getInstance().publish(event, event.id);
+            CoreEventPublisher.getInstance().publish(event, event.getId());
         }
     }
 
@@ -202,7 +201,7 @@ public class JMSEventListener extends AbstractEventListener implements
                 checkedDocs.add(doc.getRef());
             }
             OperationEvent event = OperationEventFactory.createEvent(coreEvent);
-            CoreEventPublisher.getInstance().publish(event, event.id);
+            CoreEventPublisher.getInstance().publish(event, event.getId());
         }
 
     }
@@ -211,15 +210,10 @@ public class JMSEventListener extends AbstractEventListener implements
         OperationEvent event = OperationEventFactory.createEvent(coreEvent);
         if (event != null) {
             try {
-                CoreEventPublisher.getInstance().publish(event, event.id);
+                CoreEventPublisher.getInstance().publish(event, event.getId());
             } catch (JMSException e) {
                 e.printStackTrace();
             }
         }
     }
-
-    private static void publish(Serializable content) throws JMSException {
-        CoreEventPublisher.getInstance().publish(content);
-    }
-
 }
