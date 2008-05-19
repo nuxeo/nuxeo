@@ -75,7 +75,7 @@
     <input type="submit" name="login" value="Log In" id="login">
   </form>
 <#else>
-  You are logged in as ${base.user.firstName} ${base.user.firstName}.
+  You are logged in as ${base.user}
   <a href="" id="logout">Logout</a>
   
 </#if> 
