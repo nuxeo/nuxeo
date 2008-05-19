@@ -15,17 +15,15 @@
   <implementation
     class="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService" />
 
-  <extension target="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService"
-    point="sequencerFactory">
-
+  <extension-point name="sequencerFactory">
     <documentation>
-      UID generator is using a Sequencer Factory that provides an implementation
-      of a sequencer having the scope of generating consecutive numbers for a
-      given key.
+      The class implementing UIDSequencerFactory to use as a sequencer factory.
+      <code>
+        <className>org.nuxeo.ecm.platform.uidgen.ejb.EjbSequencerFactory</className>
+      </code>
     </documentation>
-
-    <className>org.nuxeo.ecm.platform.uidgen.ejb.EjbSequencerFactory</className>
-  </extension>
+    <!-- no XObject, className is parsed using DOM calls -->
+  </extension-point>
 
   <extension-point name="generators">
     <documentation>
