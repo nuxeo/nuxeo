@@ -12,25 +12,14 @@
 
     <c:forEach var="field" items="#{columns}">
 
-    <t:column rendered="#{field.type != 'special'}">
-      <f:facet name="header">
-        <h:panelGroup>
-          <h:commandLink immediate="true" action="#{sortActions.repeatSearch}"
-              rendered="#{provider.sortable}" >
-            <f:param name="sortColumn" value="#{field.prefixedName}" />
-            <f:param name="providerName" value="#{providerName}" />
-            <h:outputText value="#{messages[field.label]}" />
-            <h:panelGroup rendered="#{provider.sortInfo.sortColumn == field.prefixedName}" >
-              <h:graphicImage value="/icons/arrow_down.gif"
-                rendered="#{provider.sortInfo.sortAscending}" />
-              <h:graphicImage value="/icons/arrow_up.gif"
-                rendered="#{!provider.sortInfo.sortAscending}" />
-            </h:panelGroup>
-          </h:commandLink>
-          <h:outputText value="#{messages[field.label]}"
-              rendered="#{!provider.sortable}" />
-        </h:panelGroup>
-      </f:facet>
+      <t:column rendered="#{field.type != 'special'}">
+
+      <ui:decorate template="/search/column_header.xhtml">
+        <ui:param name="sortColumn" value="#{field.prefixedName}"/>
+        <ui:param name="provider" value="#{provider}" />
+        <ui:param name="providerName" value="#{providerName}" />
+        <ui:param name="label" value="#{messages[field.label]}" />
+      </ui:decorate>      
 
       <t:outputText
         value="#{doc[field.schemaName][field.fieldName]}"

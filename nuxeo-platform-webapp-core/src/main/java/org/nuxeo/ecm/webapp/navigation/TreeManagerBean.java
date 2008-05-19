@@ -117,7 +117,10 @@ public class TreeManagerBean extends InputController implements TreeManager,
             EventNames.DOMAIN_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED,
             EventNames.DOCUMENT_SECURITY_CHANGED }, create = false)
     public void reset() {
-        cacheUpdateNotifier.removeCacheListener(cacheListener);
+        if (cacheUpdateNotifier != null && cacheListener != null) {
+            cacheUpdateNotifier.removeCacheListener(cacheListener);
+        }
+        cacheListener = null;
         treeModel = null;
         initialized = false;
     }
@@ -377,9 +380,10 @@ public class TreeManagerBean extends InputController implements TreeManager,
     @PrePassivate
     public void saveState() {
         log.debug("PrePassivate");
-        if (cacheUpdateNotifier != null) {
+        if (cacheUpdateNotifier != null && cacheListener != null) {
             cacheUpdateNotifier.removeCacheListener(cacheListener);
         }
+        cacheListener = null;
     }
 
     @PostActivate
