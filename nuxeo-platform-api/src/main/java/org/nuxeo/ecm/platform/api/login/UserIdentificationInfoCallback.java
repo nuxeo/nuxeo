@@ -19,9 +19,9 @@
 
 package org.nuxeo.ecm.platform.api.login;
 
-import javax.security.auth.callback.Callback;
 import java.io.Serializable;
 
+import javax.security.auth.callback.Callback;
 
 public class UserIdentificationInfoCallback implements Callback, Serializable {
 
@@ -36,4 +36,5 @@ public class UserIdentificationInfoCallback implements Callback, Serializable {
     public void setUserInfo(UserIdentificationInfo userInfo) {
         this.userInfo = userInfo;
     }
+
 }

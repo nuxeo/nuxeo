@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.ws.session;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,7 +47,7 @@ public class WSRemotingSessionManagerImpl extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(WSRemotingSessionManagerImpl.class);
 
-    private static final Hashtable<String, WSRemotingSession> sessions
+    private static final Map<String, WSRemotingSession> sessions
             = new Hashtable<String, WSRemotingSession>();
 
 

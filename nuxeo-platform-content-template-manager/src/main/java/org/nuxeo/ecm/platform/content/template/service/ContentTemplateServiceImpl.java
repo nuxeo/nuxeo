@@ -57,7 +57,6 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
 
         // register our Repo init listener
         RepositoryInitializationHandler.setInstance(new RepositoryInitializationListener());
-
     }
 
     @Override
@@ -91,7 +90,6 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
                     // store initialied instance
                     factoryInstancesByType.put(descriptor.getTargetType(),
                             factory);
-
                 } catch (InstantiationException e) {
                     log.error("Error while creating instance of factory "
                             + factoryDescriptor.getName() + " :"

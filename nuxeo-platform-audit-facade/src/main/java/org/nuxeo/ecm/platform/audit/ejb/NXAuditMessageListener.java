@@ -88,7 +88,6 @@ public class NXAuditMessageListener implements MessageListener {
             } else {
                 log.debug("Not interested about event with id=" + eventId);
             }
-
         } catch (Exception e) {
             throw new EJBException(e);
         }
@@ -104,7 +103,7 @@ public class NXAuditMessageListener implements MessageListener {
      * @return the new generated log entry id
      */
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    private long createLogEntry(DocumentMessage doc) throws AuditException {
+    private static long createLogEntry(DocumentMessage doc) throws AuditException {
         NXAuditEvents service = NXAudit.getNXAuditEventsService();
         LogEntry logEntry = service.computeLogEntry(doc);
         Logs logService;
@@ -113,7 +112,7 @@ public class NXAuditMessageListener implements MessageListener {
         } catch (Exception e) {
             throw new AuditException(e);
         }
-        logService.addLogEntries(Arrays.asList(new LogEntry[]{ logEntry }));
+        logService.addLogEntries(Arrays.asList(logEntry));
         return logEntry.getId();
     }
 
