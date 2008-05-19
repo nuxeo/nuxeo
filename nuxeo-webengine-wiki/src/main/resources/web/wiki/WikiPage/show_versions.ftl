@@ -4,14 +4,17 @@
 
 <form id="version_list" action="${This.urlPath}@@compare_versions" method="get" accept-charset="utf-8">
 <table class="version_list">
+  <thead>
     <tr>
-        <td>From</td>
-        <td>To</td>
-        <td>Version</td>
-        <td>Editor</td>
-        <td>Date</td>
-        <td>Comment</td>
+        <th>From</th>
+        <th>To</th>
+        <th>Version</th>
+        <th>Editor</th>
+        <th>Date</th>
+        <th>Comment</th>
     </tr>
+  </thead>
+  <tbody>  
     <#list Document.versions as rev>
     <tr>
         <td><input type="radio" name="r1" value="${rev.ref}"/></td>
@@ -30,7 +33,7 @@
         <td>${Document.modified?datetime}</td>
         <td></td>
     </tr>
-    
+  </tbody>  
 </table>
 <p class="buttonsGadget">
   <input type="submit" name="Compare" value="Compare" id="compare_versions" class="button">

@@ -6,7 +6,9 @@
 </div>  
 </#if>
 
-<strong>Logged in: ${base.user.isAdministrator()}</strong>
+<div class="sideblock general">
+  <strong>Logged in: ${base.user.isAdministrator()}</strong>
+</div>
 
 <!-- let other templates add more things to the sidebar -->
 
