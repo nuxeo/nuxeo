@@ -1871,8 +1871,8 @@ public abstract class TestAPI extends TestConnection {
         versions = remote.getVersionsRefs(note.getRef());
         assertEquals(1, versions.size());
 
-        // copy folder
-        DocumentModel copy = remote.copy(folder.getRef(), root.getRef(), null);
+        // copy folder, use an all-digit name to test for xpath escaping
+        DocumentModel copy = remote.copy(folder.getRef(), root.getRef(), "123");
 
         // check no versions on copied note
         DocumentModel note2 = remote.getChild(copy.getRef(), "note");
