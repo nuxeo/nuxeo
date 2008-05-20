@@ -36,13 +36,11 @@ import javax.security.auth.login.LoginContext;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
-import org.nuxeo.ecm.platform.ec.notification.email.templates.NuxeoTemplatesLoader;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.rendering.RenderingResult;
 import org.nuxeo.ecm.platform.rendering.RenderingService;
 import org.nuxeo.ecm.platform.rendering.impl.DocumentRenderingContext;
-import org.nuxeo.ecm.platform.rendering.template.DocumentObjectWrapper;
 import org.nuxeo.runtime.api.Framework;
 
 import freemarker.template.Configuration;
@@ -60,7 +58,7 @@ import freemarker.template.Template;
  * mail.put(&quot;to&quot;, &quot;dion@almaer.com&quot;);
  * mail.put(&quot;subject&quot;, &quot;a subject&quot;);
  * mail.put(&quot;body&quot;, &quot;the body&quot;);
- *
+ * <p>
  * EmailHelper.sendmail(mail);
  * </pre>
  *
@@ -71,7 +69,7 @@ import freemarker.template.Template;
  */
 public final class EmailHelper {
 
-    //used for loading templates from strings
+    // used for loading templates from strings
     private static final Configuration stringCfg = new Configuration();
 
     /* Only static methods here chaps */
@@ -93,43 +91,46 @@ public final class EmailHelper {
                 (String) mail.get("mail.to"), false));
 
         RenderingService rs = Framework.getService(RenderingService.class);
-        
+
         DocumentRenderingContext context = new DocumentRenderingContext();
         context.remove("doc");
         context.putAll(mail);
         context.setDocument((DocumentModel) mail.get("document"));
-        
+
         String customSubjectTemplate = (String) mail.get(NotificationConstants.SUBJECT_TEMPLATE_KEY);
         if (customSubjectTemplate == null) {
             String subjTemplate = (String) mail.get(NotificationConstants.SUBJECT_KEY);
-            Template templ = new Template("name", new StringReader(subjTemplate), stringCfg);
+            Template templ = new Template("name",
+                    new StringReader(subjTemplate), stringCfg);
 
             Writer out = new StringWriter();
             templ.process(mail, out);
             out.flush();
 
-            msg.setSubject(out.toString(), "UTF8");        	
+            msg.setSubject(out.toString(), "UTF8");
         } else {
-        	rs.registerEngine(new NotificationsRenderingEngine((String) customSubjectTemplate));
-        	
+            rs.registerEngine(new NotificationsRenderingEngine(
+                    (String) customSubjectTemplate));
+
             LoginContext lc = Framework.login();
-            
+
             Collection<RenderingResult> results = rs.process(context);
             String subjectMail = "<HTML><P>No parsing Succeded !!!</P></HTML>";
 
             for (RenderingResult result : results) {
-            	subjectMail = (String) result.getOutcome();
+                subjectMail = (String) result.getOutcome();
             }
-            subjectMail = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix() 
-            			+ subjectMail;
+            subjectMail = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix() +
+                    subjectMail;
             msg.setSubject(subjectMail, "UTF8");
 
             lc.logout();
         }
-        
+
         msg.setSentDate(new Date());
 
-        rs.registerEngine(new NotificationsRenderingEngine((String) mail.get(NotificationConstants.TEMPLATE_KEY)));
+        rs.registerEngine(new NotificationsRenderingEngine(
+                (String) mail.get(NotificationConstants.TEMPLATE_KEY)));
 
         LoginContext lc = Framework.login();
 
@@ -144,7 +145,7 @@ public final class EmailHelper {
 
         rs.unregisterEngine("ftl");
 
-//        String bodyMail = out.toString();
+        // String bodyMail = out.toString();
 
         msg.setContent(bodyMail, "text/html");
 
@@ -163,8 +164,8 @@ public final class EmailHelper {
          * First, try to get the session from JNDI, as would be done under J2EE.
          */
         try {
-          NotificationService service = (NotificationService) Framework
-                  .getRuntime().getComponent(NotificationService.NAME);
+            NotificationService service = (NotificationService) Framework.getRuntime().getComponent(
+                    NotificationService.NAME);
 
             InitialContext ic = new InitialContext();
             session = (Session) ic.lookup(service.getMailSessionJndiName());
