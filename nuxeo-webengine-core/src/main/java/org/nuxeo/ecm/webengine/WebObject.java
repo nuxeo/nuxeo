@@ -24,7 +24,10 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 
 /**
@@ -32,6 +35,8 @@ import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class WebObject {
+
+    protected final static Log log = LogFactory.getLog(WebObject.class);
 
     protected WebObject next;
     protected WebObject prev;
@@ -80,27 +85,43 @@ public class WebObject {
         return null;
     }
 
-    public String getActionScript(String action) throws IOException {
+    public File getActionScript(String action) throws IOException {
         ActionDescriptor desc = getAction(action);
         String path;
         if (desc != null) {
             path = desc.getScript();
             if (path != null) {
-                return path;
+                File file = context.getApplication().getFile(path);
+                if (file != null) {
+                    return file;
+                } else {
+                    log.warn("Action script not found: "+path);
+                }
             }
         }
-        WebApplication app = context.getApplication();
         if (doc != null) {
-            String type = doc.getType();
-            path = "/" + type + '/' + action + ".ftl";
-            File file = app.getFile(path);
-            //TODO: implement Type inheritance and change default with Document
+            File file = findActionScript(action, doc.getDocumentType());
             if (file != null) {
-                return path;
+                return file;
             }
         }
-        return "Document/"+action+".ftl";
+        return null;
     }
+
+    protected File findActionScript(String action, DocumentType docType) throws IOException {
+        WebApplication app = context.getApplication();
+        String type = docType.getName();
+        String path = "/" + type + '/' + action + ".ftl";
+        File file = app.getFile(path);
+        if (file == null) {
+            docType = (DocumentType)docType.getSuperType();
+            if (docType != null) {
+                return findActionScript(action, docType);
+            }
+        }
+        return file;
+    }
+
 
     /**
      * @return the request.

@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
@@ -257,11 +258,6 @@ public class DefaultWebApplication implements WebApplication {
         vdir.flush();
     }
 
-    public ScriptFile getScriptByDocumentType(String path, Type type) throws IOException {
-        type.getName();
-        File file = getFile(path);
-        return file != null ? new ScriptFile(file) : null;
-    }
 
     public ScriptFile getScript(String path) throws IOException {
         File file = getFile(path);
@@ -269,15 +265,17 @@ public class DefaultWebApplication implements WebApplication {
     }
 
     public File getFile(String path) throws IOException {
-        if (!path.startsWith("/")) {
-            File file = new File(path); // TODO track current executed script to be able to resolve files
-            if (file.exists()) {
-                return file;
-            }
-            path ="/"+path; // avoid doing duplicate entries in vdir cache
+        int len = path.length();
+        if (path == null || len == 0) return null;
+        char c = path.charAt(0);
+        if (c == '.') { // avoid getting files outside the web root
+            path = new Path(path).makeAbsolute().toString();
+        } else if (c != '/') {// avoid doing duplicate entries in document stack cache
+            path = new StringBuilder(len+1).append("/").append(path).toString();
         }
         return vdir.getFile(path);
     }
+
 
     public WebEngine getWebEngine() {
         return engine;

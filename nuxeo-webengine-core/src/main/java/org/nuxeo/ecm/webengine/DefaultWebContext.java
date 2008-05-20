@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webengine;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -91,6 +92,8 @@ public class DefaultWebContext implements WebContext {
 
     protected final Map<String,Object> vars; // global vars to share between scripts
 
+    protected List<File> scriptExecutionStack;
+
 
     public DefaultWebContext(WebApplication app, HttpServletRequest req, HttpServletResponse resp) {
         this.request = req;
@@ -98,6 +101,7 @@ public class DefaultWebContext implements WebContext {
         engine = app.getWebEngine();
         this.response = resp;
         vars = new HashMap<String, Object>();
+        this.scriptExecutionStack = new ArrayList<File>();
     }
 
     public boolean isCanceled() {
@@ -214,38 +218,109 @@ public class DefaultWebContext implements WebContext {
     }
 
     public ScriptFile getTargetScript() throws IOException {
-        String path = null;
+        File file = null;
         if (mapping != null) {
             return app.getScript(mapping.getScript());
         } else if (action != null) {
             if (lastResolved != null) {
-                path = lastResolved.getActionScript(action);
+                file = lastResolved.getActionScript(action);
             }
         }
-        if (path == null) {
-            WebObject first = getFirstUnresolvedObject();
-            if (first != null) {
-                if (first != tail) {
-                    path = getPath(first, null);
-                } else {
-                    path = first.getName();
-                }
+        if (file != null) {
+            return new ScriptFile(file);
+        }
+        String path = null;
+        WebObject first = getFirstUnresolvedObject();
+        if (first != null) {
+            if (first != tail) {
+                path = getPath(first, null);
             } else {
-                path = app.getDefaultPage();
+                path = first.getName();
             }
-            if (path == null) { // by using a null default page we should fallback on a 404
-                return null;
-            }
-        }
-        ScriptFile script = app.getScript(path);
-        if (script == null) {
-            path = app.getDefaultPage();
             if (path != null) {
-                script = app.getScript(path);
+                ScriptFile script = getScriptFile(path);
+                if (script != null) {
+                    return script;
+                }
             }
         }
-        return script;
+        path = app.getDefaultPage();
+        if (path == null) {
+            return null; // by using a null default page we should fallback on a 404
+        }
+        return getScriptFile(path);
     }
+
+    public ScriptFile getScriptFile(String path) throws IOException {
+        File file = getFile(path);
+        return file != null ? new ScriptFile(file) : null;
+    }
+
+    public File getFile(String path) throws IOException {
+        if (path == null || path.length() == 0) return null;
+        char c = path.charAt(0);
+        if (c == '.') { // local path - use the path stack to resolve it
+            File file = getCurrentScriptDirectory();
+            if (file != null) {
+                // get the file local path - TODO this should be done in ScriptFile?
+                file = new File(file, path).getCanonicalFile();
+                if (file.isFile()) {
+                    return file;
+                }
+                // try using stacked roots
+                String rootPath = engine.getRootDirectory().getAbsolutePath();
+                String filePath = file.getAbsolutePath();
+                path = filePath.substring(rootPath.length());
+            } else {
+                log.warn("Relative path used but there is any running script");
+                path = new Path(path).makeAbsolute().toString();
+            }
+        }
+        return app.getFile(path);
+    }
+
+    public static void main(String[] args) {
+        try {
+        System.out.println(new File("abc/../d").getCanonicalFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void pushScriptFile(File file) {
+        if (scriptExecutionStack.size() > 64) { // stack limit
+            throw new IllegalStateException("Script execution stack overflowed. More than 64 calls between scripts");
+        }
+        if (file == null) {
+            throw new IllegalArgumentException("Cannot push a null file");
+        }
+        scriptExecutionStack.add(file);
+    }
+
+    public File popScriptFile() {
+        int size = scriptExecutionStack.size();
+        if (size == 0) {
+            throw new IllegalStateException("Script execution stack underflowed. No script path to pop");
+        }
+        return scriptExecutionStack.remove(size-1);
+    }
+
+    public File getCurrentScriptFile() {
+        int size = scriptExecutionStack.size();
+        if (size == 0) {
+            return null;
+        }
+        return scriptExecutionStack.get(size-1);
+    }
+
+    public File getCurrentScriptDirectory() {
+        int size = scriptExecutionStack.size();
+        if (size == 0) {
+            return null;
+        }
+        return scriptExecutionStack.get(size-1).getParentFile();
+    }
+
 
     public String getURI() {
         return request.getRequestURI();
@@ -344,13 +419,24 @@ public class DefaultWebContext implements WebContext {
 
     public Object runScript(String script, Map<String, Object> args) throws WebException {
         try {
-            return app.getScripting().runScript(this, app.getScript(script), createBindings(args));
+            return app.getScripting().runScript(this, getScriptFile(script), createBindings(args));
         } catch (WebException e) {
             throw e;
         } catch (Exception e) {
             throw new WebException("Failed to run script "+script, e);
         }
     }
+
+// TODO Work in progress
+//    public Object runScript(ScriptFile script, Map<String,Object> args) throws WebException {
+//        String ext = script.getExtension();
+//        if ("ftl".equals(ext)) {
+//            render(script.getFile().getAbsolutePath(), args); //TODO
+//        } else {
+//            app.getScripting().runScript(this, script, args);
+//        }
+//    }
+
 
     public void setActionName(String name) {
         this.action = name;

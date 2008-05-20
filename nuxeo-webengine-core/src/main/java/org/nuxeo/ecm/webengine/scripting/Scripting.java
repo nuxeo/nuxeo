@@ -133,7 +133,7 @@ public class Scripting {
             Bindings bindings = ((DefaultWebContext)context).createBindings(args); //TODO put method in interface?
             ScriptContext ctx = new SimpleScriptContext();
             ctx.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
-            CompiledScript comp = getScript(engine, script.getFile()); // use cache for compiled scripts
+            CompiledScript comp = getCompiledScript(engine, script.getFile()); // use cache for compiled scripts
             if (comp != null) {
                 return comp.eval(ctx);
             } // compilation not supported - eval it on the fly
@@ -182,7 +182,7 @@ public class Scripting {
         return table;
     }
 
-    public CompiledScript getScript(ScriptEngine engine, File file) throws ScriptException {
+    public CompiledScript getCompiledScript(ScriptEngine engine, File file) throws ScriptException {
         Entry entry = cache.get(file);
         long tm = file.lastModified();
         if (entry != null) {
