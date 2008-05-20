@@ -87,7 +87,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
             loginContext.logout();
             sid = _connect(username, password, repository);
         } catch (Exception e) {
-            throw new ClientException(e.getMessage());
+            throw new ClientException(e.getMessage(), e);
         }
         return sid;
     }
