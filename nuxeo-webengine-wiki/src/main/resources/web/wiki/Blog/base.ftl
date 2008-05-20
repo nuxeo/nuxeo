@@ -1,5 +1,5 @@
 <html>
-
+<#import "common/util.ftl" as base/>
 <head>
     <title>${Root.document.title} :: ${This.document.title}</title>
     

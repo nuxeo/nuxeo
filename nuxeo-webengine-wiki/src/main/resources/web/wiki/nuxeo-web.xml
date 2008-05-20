@@ -75,10 +75,10 @@
         <action id="show_comments_py" enabled="true" script="comments/getComments.py">
           <permission expression="Read"/>
         </action>
-        <action id="comments" enabled="true" script="comments/getComments.groovy">
+        <action id="comments" enabled="true" script="comments/show_comments.ftl">
           <permission expression="Read"/>
         </action>
-        <action id="add_comment" enabled="true" script="comments/addComments.groovy">
+        <action id="add_comment" enabled="true" script="comments/addComment.groovy">
           <permission expression="Write"/>
         </action>
         <action id="delete_comment" enabled="true" script="comments/deleteComment.groovy">
@@ -118,7 +118,7 @@
       </actions>
     </object>
     
-    <object id="Blog" extends="WebObject">
+    <object id="Blog" extends="WikiObjet">
     </object>
     
   </extension>

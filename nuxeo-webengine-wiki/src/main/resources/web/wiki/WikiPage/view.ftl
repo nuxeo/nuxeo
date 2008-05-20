@@ -21,6 +21,10 @@ $(document).ready(function(){
   <#include "WikiPage/view_content.ftl"/>
 </div>
 
+<div id="comments">
+  <#include "comments/show_comments.ftl"/>
+</div>
+
 </div>
 
 </@block>
