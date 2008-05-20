@@ -147,7 +147,7 @@ public final class EmailHelper {
 
         // String bodyMail = out.toString();
 
-        msg.setContent(bodyMail, "text/html");
+        msg.setContent(bodyMail, "text/html; charset=utf-8");
 
         // Send the message.
         Transport.send(msg);
