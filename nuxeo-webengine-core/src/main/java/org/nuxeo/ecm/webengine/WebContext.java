@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webengine;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Collection;
@@ -417,6 +418,33 @@ public interface WebContext {
      * @see #runScript(String, Map)
      */
     Object runScript(String script) throws WebException;
+
+    /**
+     * Resolve the given path into a file.
+     * <p>
+     * The path is resolved as following:
+     * <ol>
+     * <li> if the path begin with a dot '.' then a local path is assumed and the path
+     * will be resolved relative to the current executed script if any.
+     * Note that the directory stack will be consulted as well.
+     * If there is no current executed script then the path will be transformed
+     * into an absolute path and next step is entered.
+     * <li> the resolving is delegated to the current {@link WebApplication#getFile(String)}
+     * that will try to resolve the path relative to each directory in the directory stack
+     * </ol>
+     * @param path the path to resolve into a file
+     * @return the file or null if the path couldn't be resolved
+     * @throws IOException
+     */
+    File getFile(String path) throws IOException;
+
+    /**
+     * Same as {@link #getFile(String)} but return a {@link ScriptFile} object
+     * @param path the path to resolve into a file
+     * @return the script file or null if the path couldn't be resolved
+     * @throws IOException
+     */
+    ScriptFile getScriptFile(String path) throws IOException;
 
     /**
      * Write some text on the HTTP request output stream
