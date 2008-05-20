@@ -174,7 +174,7 @@ Example of relative paths:
 * ../../myscript.py
 * ./myscript.groovy
 
-Note that using relative paths is less efficient since the path lookup cannot be cached because of the directory base which is dictated by the current script context, context that may change durring the request.
+Note that using relative paths is less efficient since the path lookup cannot be cached because of the directory base which is dictated by the current script context, context that may change durring the request. Also when a relative path points outside the web root directory then it will be truncated (i.e. trailing ../ removed) and resolved as an absolute path.
 
 
 ==== Resolving Action Scripts
