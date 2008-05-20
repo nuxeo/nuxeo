@@ -13,7 +13,7 @@
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.tabs.js"></script>
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/base64.js"></script>
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/cookie.js"></script>
-  
+  <link rel="shortcut icon" href="/nuxeo/site/files/resources/image/favicon.gif" />
   
 <base href="${This.urlPath}">
 

@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="/nuxeo/site/files/resources/script/jquery/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.base.js"></script>
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.tabs.js"></script>
+   <link rel="shortcut icon" href="/nuxeo/site/files/resources/image/favicon.gif" />
 <base href="${This.urlPath}">
 
 <script>
