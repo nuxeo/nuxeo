@@ -23,15 +23,12 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import org.nuxeo.ecm.platform.ec.notification.email.templates.NuxeoTemplatesLoader;
 import org.nuxeo.ecm.platform.rendering.RenderingContext;
 import org.nuxeo.ecm.platform.rendering.RenderingException;
 import org.nuxeo.ecm.platform.rendering.RenderingResult;
 import org.nuxeo.ecm.platform.rendering.impl.DefaultRenderingResult;
-import org.nuxeo.ecm.platform.rendering.template.DocumentObjectWrapper;
 import org.nuxeo.ecm.platform.rendering.template.DocumentRenderingEngine;
 import org.nuxeo.ecm.platform.rendering.template.FreemarkerRenderingJob;
-
 import freemarker.template.Configuration;
 
 /**
@@ -52,8 +49,8 @@ public class NotificationsRenderingEngine extends DocumentRenderingEngine {
         cfg.setSharedVariable("htmlEscape", new HtmlEscapeMethod() );
         return cfg;
     }
-    
-    
+
+
     @Override
     protected FreemarkerRenderingJob createJob(RenderingContext ctx)
             throws RenderingException {
@@ -91,7 +88,6 @@ public class NotificationsRenderingEngine extends DocumentRenderingEngine {
         public Writer getWriter() throws IOException {
             return strWriter;
         }
-
     }
 
 }

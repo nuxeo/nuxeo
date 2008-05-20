@@ -86,7 +86,6 @@ public class RelationSearchMessageListener implements MessageListener {
     public void onMessage(Message message) {
 
         try {
-
             SearchService service = getSearchService();
             initIndexer();
 
@@ -107,9 +106,8 @@ public class RelationSearchMessageListener implements MessageListener {
                         RelationEvents.STATEMENTS_EVENT_KEY);
 
             if (RelationEvents.AFTER_RELATION_CREATION.equals(eventId)
-                || RelationEvents.AFTER_RELATION_MODIFICATION.equals(eventId))
-            {
-                if (eventInfo ==  null) { // not likely
+                    || RelationEvents.AFTER_RELATION_MODIFICATION.equals(eventId)) {
+                if (eventInfo == null) { // not likely
                     indexer.index(doc); // brutal indexing
                     return;
                 }

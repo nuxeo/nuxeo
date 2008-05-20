@@ -45,7 +45,6 @@ public class DisplayPluginExtension implements DisplayPlugin {
 
 
     public DisplayPluginExtension() {
-
     }
 
     public DisplayPluginExtension(String name, String valid) {

@@ -68,7 +68,7 @@ public class RelationService extends DefaultComponent implements
 
     private final Map<String, GraphDescription> graphDescriptionRegistry;
 
-    private transient final Map<String, Graph> graphRegistry;
+    private final transient Map<String, Graph> graphRegistry;
 
     private final Map<String, String> resourceAdapterRegistry;
 
@@ -293,7 +293,7 @@ public class RelationService extends DefaultComponent implements
         }
     }
 
-    protected Graph createGraph(String name) throws ClientException {
+    protected Graph createGraph(String name) {
         GraphDescription graphDescription = graphDescriptionRegistry.get(name);
         if (graphDescription == null) {
             throw new RuntimeException(String.format(
