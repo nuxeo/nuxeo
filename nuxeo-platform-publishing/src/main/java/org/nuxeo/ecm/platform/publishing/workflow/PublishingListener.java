@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
+import org.nuxeo.ecm.platform.events.api.JMSConstant;
 import org.nuxeo.ecm.platform.publishing.PublishingServiceImpl;
 import org.nuxeo.ecm.platform.publishing.api.PublishingService;
 import org.nuxeo.ecm.platform.workflow.api.client.delegate.WAPIBusinessDelegate;
@@ -72,10 +73,12 @@ import org.nuxeo.runtime.api.Framework;
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "topic/NXPMessages"),
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
-        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
+        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
+        @ActivationConfigProperty(propertyName = "messageSelector",
+                propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " = '" + JMSConstant.DOCUMENT_MESSAGE +
+                "' AND " + JMSConstant.NUXEO_EVENT_ID + " = '" + EventNames.PROXY_PUSLISHING_PENDING + "'") })
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class PublishingListener implements MessageListener {
-
     private static final Log log = LogFactory.getLog(PublishingListener.class);
 
     private WAPI wapi;
@@ -178,19 +181,8 @@ public class PublishingListener implements MessageListener {
 
         try {
 
-            final Serializable obj = ((ObjectMessage) message).getObject();
-            if (!(obj instanceof DocumentMessage)) {
-                log.debug("Not a DocumentMessage instance embedded ignoring.");
-                return;
-            }
-
-            final DocumentMessage msg = (DocumentMessage) obj;
-            if (msg.getEventId().equals(EventNames.PROXY_PUSLISHING_PENDING)) {
-                moderate(msg);
-            } else if (msg.getEventId().equals("")) {
-
-            }
-
+            DocumentMessage msg = (DocumentMessage) ((ObjectMessage) message).getObject();
+            moderate(msg);
         } catch (Exception e) {
             throw new EJBException(e);
         }

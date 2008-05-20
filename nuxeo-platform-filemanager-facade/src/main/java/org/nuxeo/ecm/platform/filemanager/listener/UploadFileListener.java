@@ -9,8 +9,6 @@ import java.util.Map;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
@@ -33,6 +31,7 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
 import org.nuxeo.ecm.platform.events.api.EventMessage;
+import org.nuxeo.ecm.platform.events.api.JMSConstant;
 import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
 import org.nuxeo.ecm.platform.events.api.impl.DocumentMessageImpl;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
@@ -42,8 +41,10 @@ import org.nuxeo.runtime.api.Framework;
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "topic/NXPMessages"),
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
-        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
-@TransactionManagement(TransactionManagementType.CONTAINER)
+        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
+        @ActivationConfigProperty(propertyName = "messageSelector",
+                propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " IN ('" + JMSConstant.DOCUMENT_MESSAGE + "','" + JMSConstant.EVENT_MESSAGE + "') AND " + JMSConstant.NUXEO_EVENT_ID + " IN ('" 
+                    + DocumentEventTypes.DOCUMENT_CREATED +"','" + DocumentEventTypes.DOCUMENT_UPDATED + "')") })
 public class UploadFileListener implements MessageListener {
 
     private static final Log log = LogFactory.getLog(UploadFileListener.class);
@@ -117,62 +118,48 @@ public class UploadFileListener implements MessageListener {
             if (!fileManager.isUnicityEnabled()) {
                 return;
             }
-
-            Serializable obj = ((ObjectMessage) message).getObject();
-            if (!(obj instanceof DocumentMessage)) {
-                return;
-            }
-            DocumentMessage doc = (DocumentMessage) obj;
-
-            String eventId = doc.getEventId();
+            DocumentMessage doc = (DocumentMessage) ((ObjectMessage) message).getObject();
 
             Boolean duplicatedMessage = (Boolean) doc.getEventInfo().get(
                     EventMessage.DUPLICATED);
             if (duplicatedMessage != null && duplicatedMessage == true) {
-                log.debug("Message " + eventId
-                        + " is marked as duplicated, ignoring");
                 return;
             }
 
-            if (DocumentEventTypes.DOCUMENT_CREATED.equals(eventId)
-                    || DocumentEventTypes.DOCUMENT_UPDATED.equals(eventId)) {
+            currentRepositoryName = doc.getRepositoryName();
+            session = getRepositorySession(currentRepositoryName);
 
-                currentRepositoryName = doc.getRepositoryName();
-                session = getRepositorySession(currentRepositoryName);
+            DocumentModel newDoc = session.getDocument(doc.getRef());
 
-                DocumentModel newDoc = session.getDocument(doc.getRef());
+            if (newDoc.isProxy()) {
+                return;
+            }
+            List<String> xpathFields = fileManager.getFields();
+            for (String field : xpathFields) {
 
-                if (newDoc.isProxy()) {
-                    return;
+                Blob blob = (Blob) newDoc.getPropertyValue(field);
+                if (blob == null) {
+                    continue;
                 }
-                List<String> xpathFields = fileManager.getFields();
-                for (String field : xpathFields) {
+                String digest = blob.getDigest();
 
-                    Blob blob = (Blob) newDoc.getPropertyValue(field);
-                    if (blob == null) {
-                        continue;
-                    }
-                    String digest = blob.getDigest();
+                List<DocumentLocation> existingDocuments = fileManager.findExistingDocumentWithFile(
+                        newDoc.getPathAsString(), digest,
+                        session.getPrincipal());
 
-                    List<DocumentLocation> existingDocuments = fileManager.findExistingDocumentWithFile(
-                            newDoc.getPathAsString(), digest,
-                            session.getPrincipal());
-
-                    if (!existingDocuments.isEmpty()) {
-                        Iterator<DocumentLocation> existingDocumentsIterator = existingDocuments.iterator();
-                        while (existingDocumentsIterator.hasNext()) {
-                            if (existingDocumentsIterator.next().getDocRef() == newDoc.getRef()) {
-                                existingDocumentsIterator.remove();
-                            }
+                if (!existingDocuments.isEmpty()) {
+                    Iterator<DocumentLocation> existingDocumentsIterator = existingDocuments.iterator();
+                    while (existingDocumentsIterator.hasNext()) {
+                        if (existingDocumentsIterator.next().getDocRef() == newDoc.getRef()) {
+                            existingDocumentsIterator.remove();
                         }
-                        log.debug("Existing Documents["
-                                + existingDocuments.size() + "]");
-                        raiseDuplicatedFileEvent(session.getPrincipal(), doc,
-                                existingDocuments.toArray());
                     }
+                    log.debug("Existing Documents[" + existingDocuments.size()
+                            + "]");
+                    raiseDuplicatedFileEvent(session.getPrincipal(), doc,
+                            existingDocuments.toArray());
                 }
             }
-
         } catch (PropertyException pe) {
             log.debug("Requested Field isn't on the Document.");
             log.debug(pe.getClass().toString(), pe);

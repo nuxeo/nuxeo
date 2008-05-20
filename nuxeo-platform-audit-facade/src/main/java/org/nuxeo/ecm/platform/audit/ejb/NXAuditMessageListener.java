@@ -42,6 +42,7 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
+import org.nuxeo.ecm.platform.events.api.JMSConstant;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -61,24 +62,16 @@ import org.nuxeo.runtime.api.Framework;
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "topic/NXPMessages"),
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
-        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
-@TransactionManagement(TransactionManagementType.CONTAINER)
+        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " IN ('" + JMSConstant.DOCUMENT_MESSAGE + "','"
+        		+ JMSConstant.EVENT_MESSAGE + "')")})
 public class NXAuditMessageListener implements MessageListener {
 
     private static final Log log = LogFactory.getLog(NXAuditMessageListener.class);
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void onMessage(Message message) {
-        log.debug("onMessage");
         try {
-
-            final Serializable obj = ((ObjectMessage) message).getObject();
-            if (!(obj instanceof DocumentMessage)) {
-                log.debug("Not a DocumentMessage instance embedded ignoring.");
-                return;
-            }
-
-            DocumentMessage doc = (DocumentMessage) obj;
+            DocumentMessage doc = (DocumentMessage) ((ObjectMessage) message).getObject();
 
             String eventId = doc.getEventId();
             log.debug("Received a message with eventId : " + eventId);

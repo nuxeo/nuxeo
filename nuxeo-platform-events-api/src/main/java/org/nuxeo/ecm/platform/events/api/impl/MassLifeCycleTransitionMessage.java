@@ -64,7 +64,7 @@ public class MassLifeCycleTransitionMessage implements EventMessage {
     }
 
     public String getEventId() {
-        return null;
+        return "massLifeCycleTransition";
     }
 
     public Map<String, Serializable> getEventInfo() {

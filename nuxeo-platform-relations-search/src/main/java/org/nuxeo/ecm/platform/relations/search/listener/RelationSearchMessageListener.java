@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
+import org.nuxeo.ecm.platform.events.api.JMSConstant;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.event.RelationEvents;
 import org.nuxeo.ecm.platform.relations.search.indexer.RelationIndexer;
@@ -53,7 +54,11 @@ import org.nuxeo.ecm.platform.relations.search.indexer.RelationIndexer;
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "topic/NXPMessages"),
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
-        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
+        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
+        @ActivationConfigProperty(propertyName = "messageSelector",
+                propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " IN ('" + JMSConstant.DOCUMENT_MESSAGE + "','" + JMSConstant.EVENT_MESSAGE + "') AND " + JMSConstant.NUXEO_EVENT_ID + " IN ('" 
+                    +RelationEvents.AFTER_RELATION_CREATION + "','" + RelationEvents.AFTER_RELATION_MODIFICATION + "','"
+                    + RelationEvents.AFTER_RELATION_REMOVAL + "')") })
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class RelationSearchMessageListener implements MessageListener {
 
@@ -90,11 +95,7 @@ public class RelationSearchMessageListener implements MessageListener {
                 return;
             }
 
-            Serializable obj = ((ObjectMessage) message).getObject();
-            if (!(obj instanceof DocumentMessage )) {
-                return;
-            }
-            DocumentMessage doc = (DocumentMessage) obj;
+            DocumentMessage doc = (DocumentMessage) ((ObjectMessage) message).getObject();
             if (!RelationEvents.CATEGORY.equals(doc.getCategory())) {
                 return; // caller is trustworthy
             }

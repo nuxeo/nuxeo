@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webapp.lifecycle;
 
-import java.io.Serializable;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.ejb.TransactionManagement;
@@ -38,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.platform.events.api.JMSConstant;
 import org.nuxeo.ecm.platform.events.api.impl.MassLifeCycleTransitionMessage;
 import org.nuxeo.runtime.api.Framework;
 
@@ -45,7 +45,9 @@ import org.nuxeo.runtime.api.Framework;
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "topic/NXPMessages"),
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
-        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
+        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " = '" + JMSConstant.EVENT_MESSAGE +
+                "' AND " + JMSConstant.NUXEO_EVENT_ID + " = 'massLifeCycleTransition'") })
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class MassLifeCycleTransitionListener implements MessageListener {
 
@@ -57,30 +59,26 @@ public class MassLifeCycleTransitionListener implements MessageListener {
     public void onMessage(Message message) {
 
         try {
-            Serializable obj = ((ObjectMessage) message).getObject();
-            if (obj instanceof MassLifeCycleTransitionMessage) {
+            MassLifeCycleTransitionMessage msg = (MassLifeCycleTransitionMessage) ((ObjectMessage) message).getObject();
 
-                MassLifeCycleTransitionMessage msg = (MassLifeCycleTransitionMessage) obj;
+            String transition = msg.getTransition();
+            DocumentRef ref = msg.getParentRef();
+            String uri = msg.getRepository();
+            String user = msg.getUser();
 
-                String transition = msg.getTransition();
-                DocumentRef ref = msg.getParentRef();
-                String uri = msg.getRepository();
-                String user = msg.getUser();
+            LoginContext ctx = Framework.login();
+            Framework.loginAs(user);
 
-                LoginContext ctx = Framework.login();
-                Framework.loginAs(user);
+            RepositoryManager mgr = Framework.getService(RepositoryManager.class);
+            documentManager = mgr.getRepository(uri).open();
 
-                RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-                documentManager = mgr.getRepository(uri).open();
+            DocumentModelList docModelList = documentManager.getChildren(ref);
 
-                DocumentModelList docModelList = documentManager.getChildren(ref);
+            // call the method to change documents state recursively
+            changeDocumentsState(docModelList, transition);
 
-                // call the method to change documents state recursively
-                changeDocumentsState(docModelList, transition);
-
-                documentManager.save();
-                ctx.logout();
-            }
+            documentManager.save();
+            ctx.logout();
         } catch (LoginException e) {
             log.warn("Error on login phase ", e);
         } catch (ClientException e) {

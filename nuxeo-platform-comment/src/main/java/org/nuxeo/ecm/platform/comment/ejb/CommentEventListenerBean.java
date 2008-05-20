@@ -19,17 +19,12 @@
 
 package org.nuxeo.ecm.platform.comment.ejb;
 
-import java.io.Serializable;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJBException;
 import javax.ejb.MessageDriven;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
@@ -47,6 +42,7 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceHelper;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
+import org.nuxeo.ecm.platform.events.api.JMSConstant;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
@@ -68,8 +64,10 @@ import org.nuxeo.runtime.api.Framework;
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "topic/NXPMessages"),
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
-        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
-@TransactionManagement(TransactionManagementType.CONTAINER)
+        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
+        @ActivationConfigProperty(propertyName = "messageSelector",
+            propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " = '" + JMSConstant.DOCUMENT_MESSAGE +
+            "' AND " + JMSConstant.NUXEO_EVENT_ID + " = '" + DocumentEventTypes.ABOUT_TO_REMOVE + "'") })
 public class CommentEventListenerBean implements MessageListener {
 
     private static final Log log = LogFactory.getLog(CommentEventListenerBean.class);
@@ -113,28 +111,13 @@ public class CommentEventListenerBean implements MessageListener {
         }
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void onMessage(Message message) {
         try {
-
-            final Serializable obj = ((ObjectMessage) message).getObject();
-            if (!(obj instanceof DocumentMessage)) {
-                log.debug("Not a DocumentMessage instance embedded ignoring.");
-                return;
-            }
-
-            DocumentMessage doc = (DocumentMessage) obj;
-
-            String eventId = doc.getEventId();
-            log.debug("Received a message with eventId : " + eventId);
-
-            if (eventId.equals(DocumentEventTypes.ABOUT_TO_REMOVE)) {
-                onDocumentRemoved(doc);
-                onCommentRemoved(doc);
-            }
+            DocumentMessage doc = (DocumentMessage) ((ObjectMessage)message).getObject();
+            onDocumentRemoved(doc);
+            onCommentRemoved(doc);
 
         } catch (Exception e) {
-            log.error("failed to process message", e);
             throw new EJBException(e);
         }
     }

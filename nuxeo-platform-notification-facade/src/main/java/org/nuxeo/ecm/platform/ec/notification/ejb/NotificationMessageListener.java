@@ -53,6 +53,7 @@ import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
+import org.nuxeo.ecm.platform.events.api.JMSConstant;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.url.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
@@ -83,26 +84,19 @@ import org.nuxeo.runtime.api.Framework;
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "topic/NXPMessages"),
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
-        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
-@TransactionManagement(TransactionManagementType.CONTAINER)
+        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") ,
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " = '" + JMSConstant.DOCUMENT_MESSAGE + "'") })
 public class NotificationMessageListener implements MessageListener {
 
     private static final Log log = LogFactory.getLog(NotificationMessageListener.class);
 
     private DocumentViewCodecManager docLocator;
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void onMessage(Message message) {
         log.debug("onMessage");
         try {
 
-            final Serializable obj = ((ObjectMessage) message).getObject();
-            if (!(obj instanceof DocumentMessage)) {
-                log.debug("Not a DocumentMessage instance embedded ignoring.");
-                return;
-            }
-
-            DocumentMessage doc = (DocumentMessage) obj;
+            DocumentMessage doc = (DocumentMessage) ((ObjectMessage) message).getObject();
 
             String eventId = doc.getEventId();
             log.debug("Recieved a message for notification with eventId : "

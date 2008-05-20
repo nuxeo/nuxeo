@@ -22,8 +22,10 @@ package org.nuxeo.ecm.platform.events.jms;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Properties;
 
 import javax.jms.Connection;
+import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
@@ -36,7 +38,12 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducerException;
+import org.nuxeo.ecm.platform.events.api.EventMessage;
+import org.nuxeo.ecm.platform.events.api.JMSConstant;
+import org.nuxeo.ecm.platform.events.api.NXCoreEvent;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * JMS Document Message Producer.
@@ -47,8 +54,19 @@ import org.nuxeo.ecm.platform.events.api.DocumentMessageProducerException;
  *
  */
 public final class JMSDocumentMessageProducer {
-
+//XXX: in the process of being refactored
+    private static boolean transacted;
+    private static boolean isDeliveryPersistent;
+    private static boolean isDisableMessageID;
+    private static boolean isDisableMessageTimestamp;
     private static final Log log = LogFactory.getLog(JMSDocumentMessageProducer.class);
+    static {
+        Properties runtime = Framework.getRuntime().getProperties();
+        transacted = new Boolean(runtime.getProperty("jms.useTransactedConnection"));
+        isDeliveryPersistent = new Boolean(runtime.getProperty("jms.isDeliveryPersistent"));
+        isDisableMessageID = new Boolean(runtime.getProperty("jms.isDisableMessageID"));
+        isDisableMessageTimestamp = new Boolean(runtime.getProperty("jms.isDisableMessageTimestamp"));
+    }
 
     // Utility class.
     private JMSDocumentMessageProducer() {
@@ -58,8 +76,7 @@ public final class JMSDocumentMessageProducer {
             String jmsConnectionFactoryJndiName, Context ctx)
             throws DocumentMessageProducerException {
 
-        TopicConnectionFactory jmsConnectionFactory;
-
+        TopicConnectionFactory jmsConnectionFactory; 
         try {
             jmsConnectionFactory = (TopicConnectionFactory) ctx.lookup(jmsConnectionFactoryJndiName);
 
@@ -88,7 +105,49 @@ public final class JMSDocumentMessageProducer {
 
         return jmsDestination;
     }
+    public static void sendNXCoreEventMessages(List<NXCoreEvent> messages,
+            String connection, String destination)
+            throws DocumentMessageProducerException {
+        DocumentMessageProducerException exception = null;
+        try {
+            sendNXCoreEventMessages(messages, connection, destination,
+                    new InitialContext());
+        } catch (NamingException ne) {
+            exception = new DocumentMessageProducerException(ne);
+        }
 
+        if (exception != null) {
+            throw exception;
+        }
+    }
+    public static void sendEventMessages(List<EventMessage> messages, String connection, String destination) 
+            throws DocumentMessageProducerException {
+        DocumentMessageProducerException exception = null;
+        try {
+            sendEventMessages(messages, connection, destination, new InitialContext());
+        } catch (NamingException ne) {
+            exception = new DocumentMessageProducerException(ne);
+        }
+
+        if (exception != null) {
+            throw exception;
+        }
+    }
+    public static void sendDocumentMessages(List<DocumentMessage> messages,
+            String connectionFactoryJndiName, String destinationJndiName)
+            throws DocumentMessageProducerException {
+        DocumentMessageProducerException exception = null;
+        try {
+            sendDocumentMessages(messages, connectionFactoryJndiName,
+                    destinationJndiName, new InitialContext());
+        } catch (NamingException ne) {
+            exception = new DocumentMessageProducerException(ne);
+        }
+
+        if (exception != null) {
+            throw exception;
+        }
+    }
     public static void sendMessages(List<Serializable> messages,
             String connectionFactoryJndiName, String destinationJndiName)
             throws DocumentMessageProducerException {
@@ -105,13 +164,11 @@ public final class JMSDocumentMessageProducer {
         }
     }
 
-    public static void sendMessage(Serializable message,
-            String connectionFactoryJndiName, String destinationJndiName)
+    public static void sendMessage(DocumentMessage message, String connectionFactory, String destination)
             throws DocumentMessageProducerException {
         DocumentMessageProducerException exception = null;
         try {
-            sendMessage(message, connectionFactoryJndiName,
-                    destinationJndiName, new InitialContext());
+            sendMessage(message, connectionFactory, destination, new InitialContext(), message.getEventId(), JMSConstant.DOCUMENT_MESSAGE);
         } catch (NamingException ne) {
             exception = new DocumentMessageProducerException(ne);
         }
@@ -120,7 +177,155 @@ public final class JMSDocumentMessageProducer {
             throw exception;
         }
     }
+    public static void sendMessage(Serializable message,
+            String connectionFactoryJndiName, String destinationJndiName)
+            throws DocumentMessageProducerException {
+        DocumentMessageProducerException exception = null;
+        try {
+            sendMessage(message, connectionFactoryJndiName,
+                    destinationJndiName, new InitialContext(), null, null);
+        } catch (NamingException ne) {
+            exception = new DocumentMessageProducerException(ne);
+        }
 
+        if (exception != null) {
+            throw exception;
+        }
+    }    
+    private static void sendNXCoreEventMessages(List<NXCoreEvent> messages,
+            String connectionFactoryJndiName, String destinationJndiName,
+            Context ctx) throws DocumentMessageProducerException {
+
+        MessageProducer messageProducer = null;
+        Connection connection = null;
+        Session session = null;
+
+        try {
+            TopicConnectionFactory connectionFactory = getJmsConnectionFactory(
+                    connectionFactoryJndiName, ctx);
+            connection = connectionFactory.createTopicConnection();
+            session = connection.createSession(transacted, Session.AUTO_ACKNOWLEDGE);
+            Destination destination = getJmsDestination(destinationJndiName, ctx);
+            messageProducer = session.createProducer(destination);
+            messageProducer.setDeliveryMode(isDeliveryPersistent ? DeliveryMode.PERSISTENT : DeliveryMode.NON_PERSISTENT);
+            messageProducer.setDisableMessageID(isDisableMessageID);
+            messageProducer.setDisableMessageTimestamp(isDisableMessageTimestamp);
+            for (NXCoreEvent message : messages) {
+                ObjectMessage objectMessage = session.createObjectMessage(message);
+                objectMessage.setStringProperty(JMSConstant.NUXEO_MESSAGE_TYPE, JMSConstant.NXCORE_EVENT);
+                messageProducer.send(objectMessage);
+            }
+
+        } catch (JMSException je) {
+            log.error(
+                    "An error occured while trying to produce a JMS object message",
+                    je);
+        } finally {
+            try {
+                if (messageProducer != null) {
+                    messageProducer.close();
+                }
+                if (session != null) {
+                    session.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (JMSException je) {
+                log.error("An error during JMS cleanup", je);
+            }
+        }
+    }
+    private static void sendEventMessages(List<EventMessage> messages,
+            String connectionFactoryJndiName, String destinationJndiName,
+            Context ctx) throws DocumentMessageProducerException {
+
+        MessageProducer messageProducer = null;
+        Connection connection = null;
+        Session session = null;
+
+        try {
+            TopicConnectionFactory connectionFactory = getJmsConnectionFactory(
+                    connectionFactoryJndiName, ctx);
+            connection = connectionFactory.createTopicConnection();
+            session = connection.createSession(transacted, Session.AUTO_ACKNOWLEDGE);
+            Destination destination = getJmsDestination(destinationJndiName, ctx);
+            messageProducer = session.createProducer(destination);
+            messageProducer.setDeliveryMode(isDeliveryPersistent ? DeliveryMode.PERSISTENT : DeliveryMode.NON_PERSISTENT);
+            messageProducer.setDisableMessageID(isDisableMessageID);
+            messageProducer.setDisableMessageTimestamp(isDisableMessageTimestamp);
+            for (EventMessage message : messages) {
+                ObjectMessage objectMessage = session.createObjectMessage(message);
+                objectMessage.setStringProperty(JMSConstant.NUXEO_EVENT_ID, message.getEventId());
+                objectMessage.setStringProperty(JMSConstant.NUXEO_MESSAGE_TYPE, JMSConstant.EVENT_MESSAGE);
+                messageProducer.send(objectMessage);
+            }
+
+        } catch (JMSException je) {
+            log.error(
+                    "An error occured while trying to produce a JMS object message",
+                    je);
+        } finally {
+            try {
+                if (messageProducer != null) {
+                    messageProducer.close();
+                }
+                if (session != null) {
+                    session.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (JMSException je) {
+                log.error("An error during JMS cleanup", je);
+            }
+        }
+    }
+    private static void sendDocumentMessages(List<DocumentMessage> messages,
+            String connectionFactoryJndiName, String destinationJndiName,
+            Context ctx) throws DocumentMessageProducerException {
+
+        MessageProducer messageProducer = null;
+        Connection connection = null;
+        Session session = null;
+
+        try {
+            TopicConnectionFactory connectionFactory = getJmsConnectionFactory(
+                    connectionFactoryJndiName, ctx);
+            connection = connectionFactory.createTopicConnection();
+            session = connection.createSession(transacted, Session.AUTO_ACKNOWLEDGE);
+            Destination destination = getJmsDestination(destinationJndiName, ctx);
+            messageProducer = session.createProducer(destination);
+            messageProducer.setDeliveryMode(isDeliveryPersistent ? DeliveryMode.PERSISTENT : DeliveryMode.NON_PERSISTENT);
+            messageProducer.setDisableMessageID(isDisableMessageID);
+            messageProducer.setDisableMessageTimestamp(isDisableMessageTimestamp);
+            for (DocumentMessage message : messages) {
+                ObjectMessage objectMessage = session.createObjectMessage(message);
+                objectMessage.setStringProperty(JMSConstant.NUXEO_EVENT_ID, message.getEventId());
+                objectMessage.setStringProperty(JMSConstant.NUXEO_MESSAGE_TYPE, JMSConstant.DOCUMENT_MESSAGE);
+                messageProducer.send(objectMessage);
+            }
+
+        } catch (JMSException je) {
+            log.error(
+                    "An error occured while trying to produce a JMS object message",
+                    je);
+        } finally {
+            try {
+                if (messageProducer != null) {
+                    messageProducer.close();
+                }
+                if (session != null) {
+                    session.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (JMSException je) {
+                log.error("An error during JMS cleanup", je);
+            }
+        }
+    }
     private static void sendMessages(List<Serializable> messages,
             String connectionFactoryJndiName, String destinationJndiName,
             Context ctx) throws DocumentMessageProducerException {
@@ -130,39 +335,19 @@ public final class JMSDocumentMessageProducer {
         Session session = null;
 
         try {
-
-            // :XXX: this should be initialized only once service side at
-            // startup time. See JMSDocumentMessageProducerSercice.
-
             TopicConnectionFactory connectionFactory = getJmsConnectionFactory(
                     connectionFactoryJndiName, ctx);
-            log.trace("Found connection factory :"
-                    + connectionFactory.toString());
-
             connection = connectionFactory.createTopicConnection();
-
-            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
-            log.trace("Connection and session are initialized !");
-
-            Destination destination = getJmsDestination(destinationJndiName,
-                    ctx);
-
-            log.trace("Found destination : " + destination.toString());
-
+            session = connection.createSession(transacted, Session.AUTO_ACKNOWLEDGE);
+            Destination destination = getJmsDestination(destinationJndiName, ctx);
             messageProducer = session.createProducer(destination);
-
+            messageProducer.setDeliveryMode(isDeliveryPersistent ? DeliveryMode.PERSISTENT : DeliveryMode.NON_PERSISTENT);
+            messageProducer.setDisableMessageID(isDisableMessageID);
+            messageProducer.setDisableMessageTimestamp(isDisableMessageTimestamp);
             for (Serializable message : messages) {
                 ObjectMessage objectMessage = session.createObjectMessage(message);
-
-                log.trace("Object Message generated");
-
                 messageProducer.send(objectMessage);
             }
-
-            log.trace("Message in the pipe !");
-
-            log.trace("House keeping");
 
         } catch (JMSException je) {
             log.error(
@@ -185,46 +370,30 @@ public final class JMSDocumentMessageProducer {
 
     private static void sendMessage(Serializable message,
             String connectionFactoryJndiName, String destinationJndiName,
-            Context ctx) throws DocumentMessageProducerException {
+            Context ctx, String eventId, String messageType) throws DocumentMessageProducerException {
+
 
         try {
-
-            // :XXX: this should be initialized only once service side at
-            // startup time. See JMSDocumentMessageProducerSercice.
-
             TopicConnectionFactory connectionFactory = getJmsConnectionFactory(
                     connectionFactoryJndiName, ctx);
-            log.trace("Found connection factory :"
-                    + connectionFactory.toString());
-
-            Connection connection = connectionFactory.createTopicConnection();
-
-            Session session = connection.createSession(false,
-                    Session.AUTO_ACKNOWLEDGE);
-
-            log.trace("Connection and session are initialized !");
-
-            Destination destination = getJmsDestination(destinationJndiName,
-                    ctx);
-
-            log.trace("Found destination : " + destination.toString());
-
+            Connection connection = connectionFactory.createConnection();
+            Session session = connection.createSession(transacted, Session.AUTO_ACKNOWLEDGE);
+            Destination destination = getJmsDestination(destinationJndiName, ctx);
             MessageProducer messageProducer = session.createProducer(destination);
-
+            messageProducer.setDeliveryMode(isDeliveryPersistent ? DeliveryMode.PERSISTENT : DeliveryMode.NON_PERSISTENT);
+            messageProducer.setDisableMessageID(isDisableMessageID);
+            messageProducer.setDisableMessageTimestamp(isDisableMessageTimestamp);
             ObjectMessage objectMessage = session.createObjectMessage(message);
-
-            log.trace("Object Message generated");
-
+            if(eventId != null) {
+                objectMessage.setStringProperty(JMSConstant.NUXEO_EVENT_ID, eventId);
+            }
+            if(messageType != null) {
+                objectMessage.setStringProperty(JMSConstant.NUXEO_MESSAGE_TYPE, messageType);
+            }
             messageProducer.send(objectMessage);
-
-            log.trace("Message in the pipe !");
-
             messageProducer.close();
             session.close();
             connection.close();
-
-            log.trace("House keeping");
-
         } catch (JMSException je) {
             log.error(
                     "An error occured while trying to produce a JMS object message",

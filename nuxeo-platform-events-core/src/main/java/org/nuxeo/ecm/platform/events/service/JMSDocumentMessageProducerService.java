@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.events.service;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,20 +62,14 @@ public class JMSDocumentMessageProducerService extends DefaultComponent
      */
     @Deprecated
     public void produce(DocumentMessage message) {
-        if (message == null) {
-            log.debug("Incoming message is null. Cancelling...");
-        }
-        log.debug("Producing message..............................");
         try {
             JMSDocumentMessageProducer.sendMessage(message,
                     XA_TOPIC_CONNECTION_FACTORY, DESTINATION_JNDI_NAME);
             JMSDocumentMessageProducer.sendMessage(message.getId(),
                     XA_TOPIC_CONNECTION_FACTORY, CORE_EVENTS_DESTINATION);
-            log.debug("produce() done ! for eventId=" + message.getEventId());
         } catch (DocumentMessageProducerException e) {
             log.error("En error occured while trying to send a JMS message on"
-                    + "on the " + DESTINATION_JNDI_NAME + " topic destination");
-            e.printStackTrace();
+                    + "on the " + DESTINATION_JNDI_NAME + " topic destination", e);
         }
     }
 
@@ -85,18 +78,13 @@ public class JMSDocumentMessageProducerService extends DefaultComponent
             log.debug("Incoming messages list is null. Cancelling...");
         }
 
-        List<Serializable> sMessages = new ArrayList<Serializable>();
-        sMessages.addAll(messages);
-
-        log.debug("Producing message..............................");
         try {
-            JMSDocumentMessageProducer.sendMessages(sMessages,
+            JMSDocumentMessageProducer.sendEventMessages(messages,
                     XA_TOPIC_CONNECTION_FACTORY, DESTINATION_JNDI_NAME);
 
         } catch (DocumentMessageProducerException e) {
             log.error("En error occured while trying to send a JMS message on"
-                    + "on the " + DESTINATION_JNDI_NAME + " topic destination");
-            e.printStackTrace();
+                    + "on the " + DESTINATION_JNDI_NAME + " topic destination", e);
         }
     }
 
@@ -114,13 +102,8 @@ public class JMSDocumentMessageProducerService extends DefaultComponent
         if (events == null) {
             log.debug("Incoming message List is null. Cancelling...");
         }
-
-        List<Serializable> sMessages = new ArrayList<Serializable>();
-        sMessages.addAll(events);
-
-        log.debug("Producing NXCoreEvent message..............................");
         try {
-            JMSDocumentMessageProducer.sendMessages(sMessages,
+            JMSDocumentMessageProducer.sendNXCoreEventMessages(events,
                     XA_TOPIC_CONNECTION_FACTORY, CORE_EVENTS_DESTINATION);
             log.debug("produce() done !");
         } catch (DocumentMessageProducerException e) {

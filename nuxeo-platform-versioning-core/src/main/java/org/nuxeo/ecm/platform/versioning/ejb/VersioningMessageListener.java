@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
+import org.nuxeo.ecm.platform.events.api.JMSConstant;
 import org.nuxeo.ecm.platform.versioning.api.WFDocVersioning;
 import org.nuxeo.ecm.platform.versioning.wfintf.WFVersioningPolicyProvider;
 import org.nuxeo.ecm.platform.workflow.api.common.WorkflowEventTypes;
@@ -64,7 +65,12 @@ import org.nuxeo.runtime.api.Framework;
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "topic/NXPMessages"),
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
-        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
+        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " = '" + JMSConstant.DOCUMENT_MESSAGE +
+                "' AND " + JMSConstant.NUXEO_EVENT_ID + " IN ('" +
+                WorkflowEventTypes.WORKFLOW_STARTED + "','" +
+                WorkflowEventTypes.WORKFLOW_ABANDONED + "','" +
+                WorkflowEventTypes.WORKFLOW_ENDED + "')") })
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class VersioningMessageListener implements MessageListener {
 
@@ -74,25 +80,12 @@ public class VersioningMessageListener implements MessageListener {
     public void onMessage(Message message) {
         try {
 
-            final Serializable obj = ((ObjectMessage) message).getObject();
-            if (!(obj instanceof DocumentMessage)) {
-                log.debug("Not a DocumentMessage instance embedded ignoring.");
-                return;
-            }
-
-            DocumentMessage doc = (DocumentMessage) obj;
-
+            DocumentMessage doc = (DocumentMessage) ((ObjectMessage) message).getObject();
             String eventId = doc.getEventId();
             log.debug("Received a message with event id: " + eventId);
 
-            if (isInterestedInEvent(eventId)) {
-                boolean wfInProgress = isWfInProgress(eventId);
-
-                setWFVersioningPolicy(doc, wfInProgress);
-            } else {
-                log.debug("Not interested about event with id: " + eventId);
-            }
-
+            boolean wfInProgress = isWfInProgress(eventId);
+            setWFVersioningPolicy(doc, wfInProgress);
         } catch (Exception e) {
             throw new EJBException(e);
         }
@@ -108,7 +101,6 @@ public class VersioningMessageListener implements MessageListener {
      * @param doc the DocumentMessage instance
      * @throws LoginException
      */
-    // @TransactionAttribute(TransactionAttributeType.REQUIRED)
     private void setWFVersioningPolicy(DocumentMessage doc, boolean wfInProgress)
             throws Exception {
 
@@ -166,17 +158,5 @@ public class VersioningMessageListener implements MessageListener {
 
     private boolean isWfInProgress(String eventId) {
         return eventId.equals(WorkflowEventTypes.WORKFLOW_STARTED);
-    }
-
-    /**
-     * Checks if we are interested in this event.
-     *
-     * @param eventId the actual event identifier
-     * @return true / false whether or not we are interested in this event
-     */
-    private boolean isInterestedInEvent(String eventId) {
-        return eventId.equals(WorkflowEventTypes.WORKFLOW_STARTED)
-                || eventId.equals(WorkflowEventTypes.WORKFLOW_ABANDONED)
-                || eventId.equals(WorkflowEventTypes.WORKFLOW_ENDED);
     }
 }

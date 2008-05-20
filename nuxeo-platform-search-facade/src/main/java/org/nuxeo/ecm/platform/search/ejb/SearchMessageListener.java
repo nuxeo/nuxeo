@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.search.api.events.IndexingEventConf;
 import org.nuxeo.ecm.core.search.threading.IndexingThreadPool;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.ecm.platform.events.api.EventMessage;
+import org.nuxeo.ecm.platform.events.api.JMSConstant;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -60,7 +61,9 @@ import org.nuxeo.runtime.api.Framework;
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "topic/NXPMessages"),
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
-        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
+        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " IN ('"
+                + JMSConstant.DOCUMENT_MESSAGE + "','" + JMSConstant.EVENT_MESSAGE + "')") })
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class SearchMessageListener implements MessageListener {
 
@@ -109,18 +112,12 @@ public class SearchMessageListener implements MessageListener {
                 return;
             }
 
-            Serializable obj = ((ObjectMessage) message).getObject();
-            if (!(obj instanceof DocumentMessage)) {
-                return;
-            }
-            DocumentMessage doc = (DocumentMessage) obj;
+            DocumentMessage doc = (DocumentMessage) ((ObjectMessage) message).getObject();
             String eventId = doc.getEventId();
 
             Boolean duplicatedMessage = (Boolean) doc.getEventInfo().get(
                     EventMessage.DUPLICATED);
             if (duplicatedMessage != null && duplicatedMessage == true) {
-                log.debug("Message " + eventId
-                        + " is marked as duplicated, ignoring");
                 return;
             }
 
