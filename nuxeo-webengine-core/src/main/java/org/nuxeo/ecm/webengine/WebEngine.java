@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import org.nuxeo.ecm.webengine.scripting.Scripting;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -32,6 +34,8 @@ import java.util.ResourceBundle;
 public interface WebEngine {
 
     ResourceBundle getMessageBundle();
+
+    Scripting getScripting();
 
     File getRootDirectory();
 

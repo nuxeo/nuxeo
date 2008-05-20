@@ -4,23 +4,23 @@
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="application">
-    <webapp id="nuxeo-web">
+    <webapp id="test" extends="nuxeo-web">
       <roots>
         <root priority="0">default</root>
       </roots>
-      <templates>
-        <template>ext1</template>
-        <template>ext2</template>
-      </templates>
+      <rendering-extensions>
+        <rendering-extension>ext1</rendering-extension>
+        <rendering-extension>ext2</rendering-extension>
+      </rendering-extensions>
     </webapp>
   </extension>
 
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
-    point="rendering-template">
+    point="rendering-extension">
 
-	<template name="ext1" class="org.nuxeo.ecm.webengine.tests.rendering.MyRenderingExtension"/>
-	<template name="ext2" class="org.nuxeo.ecm.webengine.tests.rendering.MyRenderingExtensionFactory"/>
+	<rendering-extension name="ext1" class="org.nuxeo.ecm.webengine.tests.rendering.MyRenderingExtension"/>
+	<rendering-extension name="ext2" class="org.nuxeo.ecm.webengine.tests.rendering.MyRenderingExtensionFactory"/>
 
   </extension>
 

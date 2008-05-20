@@ -10,7 +10,7 @@
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="webObject">
-    <object id="siteFolder2" extends="default">
+    <object id="siteFolder2">
       <actions>
         <action id="view" enabled="true">
           <permission expression="type=Folder"/>

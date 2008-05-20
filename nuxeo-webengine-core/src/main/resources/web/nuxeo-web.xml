@@ -25,6 +25,7 @@
       <rendering-extensions>
         <rendering-extension>script</rendering-extension>
         <rendering-extension>wiki</rendering-extension>
+        <rendering-extension>render</rendering-extension>
       </rendering-extensions>
     </webapp>
   </extension>
@@ -73,6 +74,7 @@
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent" point="rendering-extension">
     <rendering-extension name="script" class="org.nuxeo.ecm.webengine.rendering.ScriptMethod"/>
+    <rendering-extension name="render" class="org.nuxeo.ecm.webengine.rendering.RenderDirective"/>
   </extension>
 
   <extension target="org.nuxeo.ecm.webengine.rendering.wiki" point="rendering-extension">

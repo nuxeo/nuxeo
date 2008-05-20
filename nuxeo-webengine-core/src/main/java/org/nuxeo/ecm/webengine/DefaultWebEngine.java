@@ -32,6 +32,8 @@ import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.ecm.webengine.config.FileChangeListener;
 import org.nuxeo.ecm.webengine.config.FileChangeNotifier;
 import org.nuxeo.ecm.webengine.config.FileChangeNotifier.FileEntry;
+import org.nuxeo.ecm.webengine.scripting.ScriptFile;
+import org.nuxeo.ecm.webengine.scripting.Scripting;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -55,6 +57,8 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
     protected FileChangeNotifier notifier;
     protected long lastMessagesUpdate = 0;
 
+    protected Scripting scripting;
+
     public DefaultWebEngine(File root, FileChangeNotifier notifier) throws IOException {
         this.root = root;
         this.notifier = notifier;
@@ -70,6 +74,11 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         env.put("version", "1.0.0");
         this.renderingExtensions = new Hashtable<String, Object>();
         loadMessageBundle(true);
+        scripting = new Scripting();
+    }
+
+    public Scripting getScripting() {
+        return scripting;
     }
 
     private void loadMessageBundle(boolean watch) throws IOException {
@@ -80,7 +89,7 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         // make a copy to avoid concurrent modifs
         WebApplication[] apps = this.apps.values().toArray(new WebApplication[this.apps.size()]);
         for (WebApplication app : apps) {
-            app.getScripting().getRenderingEngine().setMessageBundle(messages);
+            app.getRendering().setMessageBundle(messages);
         }
         if (watch && notifier != null) {
             notifier.watch(file);

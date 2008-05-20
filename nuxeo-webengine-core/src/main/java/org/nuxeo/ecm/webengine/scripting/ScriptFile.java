@@ -21,12 +21,21 @@ package org.nuxeo.ecm.webengine.scripting;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+
+import org.nuxeo.ecm.webengine.WebEngine;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public final class ScriptFile {
+
+    public static final String ROOT_PATH = Framework.getLocalService(WebEngine.class)
+        .getRootDirectory().getAbsolutePath();
 
     protected File file;
     protected String ext;
@@ -50,6 +59,30 @@ public final class ScriptFile {
 
     public String getExtension() {
         return ext;
+    }
+
+    public String getAbsolutePath() {
+        return file.getAbsolutePath();
+    }
+
+    public String getRelativePath() {
+        return file.getAbsolutePath().substring(ROOT_PATH.length());
+    }
+
+    public String getFileName() {
+        return file.getName();
+    }
+
+    public String getURL() throws MalformedURLException {
+        return file.toURI().toURL().toExternalForm();
+    }
+
+    public URL toURL() throws MalformedURLException {
+        return file.toURI().toURL();
+    }
+
+    public URI toURI() {
+        return file.toURI();
     }
 
     @Override

@@ -91,7 +91,7 @@ public class WebObject {
         if (desc != null) {
             path = desc.getScript();
             if (path != null) {
-                File file = context.getApplication().getFile(path);
+                File file = context.getFile(path);
                 if (file != null) {
                     return file;
                 } else {
@@ -109,10 +109,9 @@ public class WebObject {
     }
 
     protected File findActionScript(String action, DocumentType docType) throws IOException {
-        WebApplication app = context.getApplication();
         String type = docType.getName();
         String path = "/" + type + '/' + action + ".ftl";
-        File file = app.getFile(path);
+        File file = context.getFile(path);
         if (file == null) {
             docType = (DocumentType)docType.getSuperType();
             if (docType != null) {

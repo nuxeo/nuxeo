@@ -52,6 +52,7 @@ import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
+import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
@@ -220,7 +221,7 @@ public class DefaultWebContext implements WebContext {
     public ScriptFile getTargetScript() throws IOException {
         File file = null;
         if (mapping != null) {
-            return app.getScript(mapping.getScript());
+            return getScriptFile(mapping.getScript());
         } else if (action != null) {
             if (lastResolved != null) {
                 file = lastResolved.getActionScript(action);
@@ -277,14 +278,6 @@ public class DefaultWebContext implements WebContext {
             }
         }
         return app.getFile(path);
-    }
-
-    public static void main(String[] args) {
-        try {
-        System.out.println(new File("abc/../d").getCanonicalFile());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public void pushScriptFile(File file) {
@@ -382,6 +375,7 @@ public class DefaultWebContext implements WebContext {
 
     public void redirect(String url) throws IOException {
         response.sendRedirect(url);
+        isCanceled = true;
     }
 
 
@@ -391,6 +385,20 @@ public class DefaultWebContext implements WebContext {
 
     @SuppressWarnings("unchecked")
     public void render(String template, Object ctx) throws WebException {
+        try {
+            ScriptFile script = getScriptFile(template);
+            if (script != null) {
+                render(script, ctx);
+            } else {
+                throw new WebResourceNotFoundException("Template not found: "+template);
+            }
+        } catch (IOException e) {
+            throw new WebException("Failed to get script file for: "+template);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void render(ScriptFile script, Object ctx) throws WebException {
         Map map = null;
         if (ctx != null) {
             if (ctx instanceof Map) {
@@ -400,16 +408,18 @@ public class DefaultWebContext implements WebContext {
             }
         }
         try {
+            String template = script.getURL();
             Bindings bindings = createBindings(map);
             if (log.isDebugEnabled()) {
                 log.debug("## Rendering: "+template);
             }
-            app.getScripting().getRenderingEngine().render(template, bindings, response.getWriter());
+            pushScriptFile(script.getFile());
+            app.getRendering().render(template, bindings, response.getWriter());
         } catch (Exception e) {
             e.printStackTrace();
-            throw new WebException("Failed to render template: "+template, e);
+            throw new WebException("Failed to render template: "+script.getAbsolutePath(), e);
         } finally {
-
+            popScriptFile();
         }
     }
 
@@ -419,11 +429,37 @@ public class DefaultWebContext implements WebContext {
 
     public Object runScript(String script, Map<String, Object> args) throws WebException {
         try {
-            return app.getScripting().runScript(this, getScriptFile(script), createBindings(args));
+            ScriptFile sf = getScriptFile(script);
+            if (sf != null) {
+                return runScript(sf, args);
+            } else {
+                throw new WebResourceNotFoundException("Script not found: "+script);
+            }
+        } catch (IOException e) {
+            throw new WebException("Failed to get script file: "+script, e);
+        }
+    }
+
+    public Object runScript(ScriptFile script, Map<String, Object> args) throws WebException {
+        try {
+            pushScriptFile(script.getFile());
+            return engine.getScripting().runScript(this, script, createBindings(args));
         } catch (WebException e) {
             throw e;
         } catch (Exception e) {
             throw new WebException("Failed to run script "+script, e);
+        } finally {
+            popScriptFile();
+        }
+    }
+
+    public Object exec(ScriptFile script, Map<String, Object> args) throws WebException {
+        String ext = script.getExtension();
+        if ("ftl".equals(ext)) {
+            render(script, args);
+            return null;
+        } else {
+            return runScript(script, args);
         }
     }
 

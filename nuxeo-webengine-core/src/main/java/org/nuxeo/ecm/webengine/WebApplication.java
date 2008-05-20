@@ -23,11 +23,11 @@ import java.io.File;
 import java.io.IOException;
 
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.resolver.DocumentResolver;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
-import org.nuxeo.ecm.webengine.scripting.Scripting;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -35,7 +35,7 @@ import org.nuxeo.ecm.webengine.scripting.Scripting;
  */
 public interface WebApplication extends ResourceLocator {
 
-    Scripting getScripting();
+    RenderingEngine getRendering();
 
     Mapping getMapping(String pathInfo);
 
@@ -53,7 +53,7 @@ public interface WebApplication extends ResourceLocator {
 
     void setDefaultPage(String page);
 
-    ScriptFile getScript(String path)  throws IOException;
+    ScriptFile getScriptFile(String path)  throws IOException;
 
     File getFile(String path)  throws IOException;
 

@@ -419,6 +419,20 @@ public interface WebContext {
      */
     Object runScript(String script) throws WebException;
 
+
+    /**
+     * Execute the given file. The file can be a script, a template or a resource file
+     * <p>
+     * In the case of a resource file this will be copied to the output stream
+     *
+     * @param script the file to execute
+     * @param args the arguments. can be null if none
+     * @return the execution result if any or null otherwise
+     * @throws WebException
+     */
+    Object exec(ScriptFile script, Map<String, Object> args) throws WebException;
+
+
     /**
      * Resolve the given path into a file.
      * <p>

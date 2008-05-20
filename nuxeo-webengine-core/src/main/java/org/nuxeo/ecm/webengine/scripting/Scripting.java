@@ -35,15 +35,13 @@ import javax.script.CompiledScript;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
+import javax.script.SimpleBindings;
 import javax.script.SimpleScriptContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
-import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.WebContext;
-import org.nuxeo.ecm.webengine.servlet.WebConst;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.scripting.ScriptingService;
 import org.python.core.PyDictionary;
@@ -59,47 +57,17 @@ public class Scripting {
 
     private final static Log log = LogFactory.getLog(Scripting.class);
 
-    private static final String CHAR_FILE_EXT = "html htm xml css txt java c cpp h";
-    private static final String BINARY_FILE_EXT = "gif jpg jpeg png pdf doc xsl";
-
     private final ConcurrentMap<File, Entry> cache = new ConcurrentHashMap<File, Entry>();
 
-    final RenderingEngine renderingEngine;
     final ScriptingService  scriptService;
 
-    public Scripting(RenderingEngine engine) {
-        renderingEngine = engine;
+    public Scripting() {
         scriptService = Framework.getLocalService(ScriptingService.class);
         if (scriptService == null) {
             throw new RuntimeException("Scripting is not enabled: Put nuxeo-runtime-scripting in the classpath");
         }
     }
 
-    public RenderingEngine getRenderingEngine() {
-        return renderingEngine;
-    }
-
-    public void exec(WebContext context, ScriptFile script) throws Exception {
-        exec(context, script, null);
-    }
-
-    public void exec(WebContext context, ScriptFile script, Map<String, Object> args) throws Exception {
-        String ext = script.getExtension();
-        if ("ftl".equals(ext)) {
-            context.render(script.getFile().getAbsolutePath(), args); //TODO
-        } else {
-            runScript(context, script, args);
-        }
-    }
-
-    public void exec(WebContext context) throws Exception {
-        ScriptFile script = context.getTargetScript();
-        if (script != null && script.getFile().isFile()) {
-            exec(context, script);
-        } else {
-            context.cancel(WebConst.SC_NOT_FOUND);
-        }
-    }
 
     public static CompiledScript compileScript(ScriptEngine engine, File file) throws ScriptException {
         if (engine instanceof Compilable) {
@@ -123,16 +91,19 @@ public class Scripting {
         return runScript(context, script, null);
     }
 
-    public Object runScript(WebContext context, ScriptFile script, Map<String, Object> args) throws Exception {
+    public Object runScript(WebContext context, ScriptFile script, Bindings args) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("## Running Script: "+script.getFile());
         }
+        if (args == null) {
+            args = new SimpleBindings();
+        }
         String ext = script.getExtension();
+        // check for a script engine
         ScriptEngine engine = scriptService.getScriptEngineManager().getEngineByExtension(ext);
         if (engine != null) {
-            Bindings bindings = ((DefaultWebContext)context).createBindings(args); //TODO put method in interface?
             ScriptContext ctx = new SimpleScriptContext();
-            ctx.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
+            ctx.setBindings(args, ScriptContext.ENGINE_SCOPE);
             CompiledScript comp = getCompiledScript(engine, script.getFile()); // use cache for compiled scripts
             if (comp != null) {
                 return comp.eval(ctx);
@@ -140,31 +111,23 @@ public class Scripting {
             try {
                 Reader reader = new FileReader(script.getFile());
                 try { // TODO use __result__ to pass return value for engine that doesn't returns like jython
-                    return engine.eval(reader, ctx);
+                    Object result = engine.eval(reader, ctx);
+                    if (result == null) {
+                        result = args.get("__result__");
+                    }
+                    return result;
                 } finally {
                     reader.close();
                 }
             } catch (IOException e) {
                 throw new ScriptException(e);
             }
-        } else {
-            if (CHAR_FILE_EXT.contains(ext)) { //TODO use char writer instead of stream
-                FileInputStream in = new FileInputStream(script.getFile());
-                try {
-                    FileUtils.copy(in, context.getResponse().getOutputStream());
-                } finally {
-                    in.close();
-                }
-            } else if (BINARY_FILE_EXT.contains(ext)) {
-                FileInputStream in = new FileInputStream(script.getFile());
-                try {
-                    FileUtils.copy(in, context.getResponse().getOutputStream());
-                } finally {
-                    in.close();
-                }
-            } else {
-                throw new ScriptException(
-                        "No script engine was found for the file: " + script.getFile().getName());
+        } else { // no script engine - may be a resource file - copy the file to the output stream
+            FileInputStream in = new FileInputStream(script.getFile());
+            try {
+                FileUtils.copy(in, context.getResponse().getOutputStream());
+            } finally {
+                in.close();
             }
         }
         return null;

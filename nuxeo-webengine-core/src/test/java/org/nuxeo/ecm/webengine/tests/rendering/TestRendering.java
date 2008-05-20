@@ -55,7 +55,7 @@ public class TestRendering extends NXRuntimeTestCase {
         if (app == null) {
             fail("Application nuxeo-web was not defined");
         }
-        FreemarkerEngine rendering = (FreemarkerEngine)app.getScripting().getRenderingEngine();
+        FreemarkerEngine rendering = (FreemarkerEngine)app.getRendering();
         TemplateMethodModelEx tm = (TemplateMethodModelEx)rendering.getConfiguration().getSharedVariable("ext1");
         assertEquals("My Value 1", tm.exec(null));
         SimpleScalar t = (SimpleScalar)rendering.getConfiguration().getSharedVariable("ext2");

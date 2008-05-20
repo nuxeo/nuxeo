@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.url.URLFactory;
+import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
@@ -42,7 +43,6 @@ import org.nuxeo.ecm.webengine.mapping.PathMapper;
 import org.nuxeo.ecm.webengine.resolver.DefaultDocumentResolver;
 import org.nuxeo.ecm.webengine.resolver.DocumentResolver;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
-import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.util.DirectoryStack;
 
 /**
@@ -54,7 +54,7 @@ public class DefaultWebApplication implements WebApplication {
     public final static Log log = LogFactory.getLog(WebApplication.class);
 
     protected WebEngine engine;
-    protected Scripting scripting;
+    protected FreemarkerEngine rendering;
     protected String id;
     protected DirectoryStack vdir;
     protected String errorPage;
@@ -104,7 +104,7 @@ public class DefaultWebApplication implements WebApplication {
                 }
             }
 
-            FreemarkerEngine rendering = new FreemarkerEngine();
+            this.rendering = new FreemarkerEngine();
             rendering.setResourceLocator(this);
             rendering.setMessageBundle(engine.getMessageBundle());
             rendering.setSharedVariable("env", engine.getEnvironment());
@@ -118,7 +118,6 @@ public class DefaultWebApplication implements WebApplication {
                     }
                 }
             }
-            this.scripting = new Scripting(rendering);
             objects = new ConcurrentHashMap<String, ObjectDescriptor>();
             this.desc = desc;
         } catch (Exception e) {
@@ -126,12 +125,12 @@ public class DefaultWebApplication implements WebApplication {
         }
     }
 
-    public WebApplicationDescriptor getDescriptor(){
-        return desc;
+    public RenderingEngine getRendering() {
+        return rendering;
     }
 
-    public Scripting getScripting() {
-        return scripting;
+    public WebApplicationDescriptor getDescriptor(){
+        return desc;
     }
 
     /**
@@ -259,7 +258,7 @@ public class DefaultWebApplication implements WebApplication {
     }
 
 
-    public ScriptFile getScript(String path) throws IOException {
+    public ScriptFile getScriptFile(String path) throws IOException {
         File file = getFile(path);
         return file != null ? new ScriptFile(file) : null;
     }
@@ -283,13 +282,13 @@ public class DefaultWebApplication implements WebApplication {
 
     public void registerRenderingExtension(String id, Object obj) {
         if (desc.getRenderingExtensions() != null && desc.getRenderingExtensions().contains(id)) {
-            scripting.getRenderingEngine().setSharedVariable(id, obj);
+            rendering.setSharedVariable(id, obj);
         }
     }
 
     public void unregisterRenderingExtension(String id) {
         if (desc.getRenderingExtensions() != null && desc.getRenderingExtensions().contains(id)) {
-            scripting.getRenderingEngine().setSharedVariable(id, null);
+            rendering.setSharedVariable(id, null);
         }
     }
 

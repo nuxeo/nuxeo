@@ -33,7 +33,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.webengine.ConfigurationChangedListener;
 import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.RequestHandler;
@@ -45,7 +44,6 @@ import org.nuxeo.ecm.webengine.WebObject;
 import org.nuxeo.ecm.webengine.actions.Actions;
 import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
-import org.nuxeo.ecm.webengine.resolver.DefaultDocumentResolver;
 import org.nuxeo.ecm.webengine.resolver.DocumentResolver;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.runtime.api.Framework;
@@ -124,18 +122,18 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
             service(context, req, resp);
         } catch (Throwable e) {
             log.error("Site Servlet failed to handle request", e);
-            ScriptFile page = app.getScript(app.getErrorPage());
+            if (context == null) { // create an empty context
+                context = new DefaultWebContext(app, req, resp);
+            }
+            ScriptFile page = context.getScriptFile(app.getErrorPage());
             if (page == null) {
                 displayError(resp, e, "ErrorPage not found: "+app.getErrorPage(),
                         WebConst.SC_INTERNAL_SERVER_ERROR);
                 return;
             }
             try {
-                if (context == null) { // create an empty context
-                    context = new DefaultWebContext(app, req, resp);
-                }
                 context.setProperty("error", e);
-                app.getScripting().exec(context, page);
+                context.exec(page, null);
             } catch (Throwable ee) {
                 displayError(resp, ee, "Failed to show error page",
                         WebConst.SC_INTERNAL_SERVER_ERROR);
@@ -183,7 +181,12 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
         }
 
         //double s = System.currentTimeMillis();
-        app.getScripting().exec(context);
+        ScriptFile script = context.getTargetScript();
+        if (script != null) {
+            context.exec(script, null);
+        } else {
+            context.getResponse().setStatus(WebConst.SC_NOT_FOUND);
+        }
         //System.out.println(">>>>>>>>>> RENDERING TOOK: " + ((System.currentTimeMillis() - s) / 1000));
     }
 
@@ -324,9 +327,14 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
     public void showIndex(WebContext context) throws Exception {
         try {
             //double s = System.currentTimeMillis();
-            app.getScripting().exec(context);
+            ScriptFile script = context.getTargetScript();
+            if (script != null) {
+                context.exec(script, null);
+            } else {
+                context.getResponse().setStatus(WebConst.SC_NOT_FOUND);
+            }
             //System.out.println(">>>>>>>>>> STATIC RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
-        } catch (RenderingException e) {
+        } catch (WebException e) {
             displayError(context.getResponse(), e, "Error during the rendering process");
         }
     }
