@@ -97,6 +97,7 @@ public class SearchMessageListener implements MessageListener {
     public void onMessage(Message message) {
 
         try {
+            login();
             SearchService service = getSearchService();
 
             // Check if the search service is active
