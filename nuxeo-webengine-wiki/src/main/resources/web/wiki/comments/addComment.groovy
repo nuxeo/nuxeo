@@ -9,8 +9,8 @@ cText = Request.getParameter('text')
 if (cText != null) {
     cDoc.addComment(cText)
     msg="Comment submitted."
-    Response.sendRedirect("${Context.lastResolvedObject.urlPath}?msg=${msg}")
+    Response.sendRedirect("${Context.targetObject.urlPath}?msg=${msg}")
 } else {
     msg="No comment posted."
-    Response.sendRedirect("${Context.lastResolvedObject.urlPath}?msg=${msg}")    
+    Response.sendRedirect("${Context.targetObject.urlPath}?msg=${msg}")
 }

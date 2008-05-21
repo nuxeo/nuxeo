@@ -1,1 +1,1 @@
-Response.sendRedirect("${Context.lastResolvedObject.urlPath}/FrontPage")
+Response.sendRedirect("${Context.targetObject.urlPath}/FrontPage")

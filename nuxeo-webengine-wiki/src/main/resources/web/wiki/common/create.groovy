@@ -1,2 +1,2 @@
 msg = "Your document has been created successfully."
-Response.sendRedirect("${Context.lastResolvedObject.urlPath}?msg=${msg}")
+Response.sendRedirect("${Context.targetObject.urlPath}?msg=${msg}")
