@@ -527,3 +527,48 @@ pre {
   border-width: 1px 0;
   text-align: center;
 }
+
+/* Comment box */
+
+#entryComments {
+ border:1px solid #000;
+ margin-top:15px;
+ padding:10px;
+}
+
+#entryComments h1 {
+ font-size: 190%;
+ }
+ 
+.commentsList #comments {
+  font: normal normal bold 133% "Century Gothic","Trebuchet MS", Verdana, sans-serif;
+  color:#666;
+  
+}  
+ 
+.commentsList #comments li {
+  margin-bottom:15px;
+} 
+ 
+.commentsList .comment .byline, #main #entryComments .addComment input.commentAuthor {
+  margin-bottom:3px;
+  font: normal normal bold 10px Verdana, sans-serif;
+  color:#333;
+}
+
+#main .commentsList .comment p, #main #entryComments .addComment textarea.commentText {
+  font: normal normal normal 12px Verdana, sans-serif;
+  color:#000;
+  border-left:3px solid #ccc;
+  padding-left:5px;
+  margin-left:0;
+}
+
+#main #entryComments .addComment input, #main #entryComments .addComment textarea {
+  border-width: 1px;
+  margin-bottom:8px;
+}
+
+#main #entryComments .addComment input.commentAuthor, #main #entryComments .addComment textarea.commentText {
+ padding:3px;
+}
