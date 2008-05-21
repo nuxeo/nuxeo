@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.workflow;
 
 import java.io.InputStream;
-import java.net.URL;
 
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMActivityDefinition;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.impl.WMProcessDefinitionImpl;

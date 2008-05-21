@@ -34,8 +34,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -70,7 +70,6 @@ import org.nuxeo.ecm.directory.sql.repository.Update;
  * @author glefter@nuxeo.com
  *
  */
-
 public class SQLSession implements Session, EntrySource {
 
     @SuppressWarnings("unused")
@@ -185,16 +184,15 @@ public class SQLSession implements Session, EntrySource {
             }
             ps.execute();
             entry = fieldMapToDocumentModel(fieldMap);
-
         } catch (SQLException e) {
             throw new DirectoryException("createEntry failed", e);
         }
 
         // second step: add references fields
         String sourceId = entry.getId();
-        List<String> targetIds;
         for (Reference reference : getDirectory().getReferences()) {
-            targetIds = (List<String>) fieldMap.get(reference.getFieldName());
+            List<String> targetIds = (List<String>) fieldMap.get(
+                    reference.getFieldName());
             if (reference instanceof TableReference) {
                 // optim: reuse the current session
                 // but still initialize the reference if not yet done
@@ -240,9 +238,9 @@ public class SQLSession implements Session, EntrySource {
 
             // fetch the reference fields
             DocumentModel entry = fieldMapToDocumentModel(fieldMap);
-            List<String> targetIds;
             for (Reference reference : directory.getReferences()) {
-                targetIds = reference.getTargetIdsForSource(entry.getId());
+                List<String> targetIds = reference.getTargetIdsForSource(
+                        entry.getId());
                 entry.setProperty(schemaName, reference.getFieldName(),
                         targetIds);
             }
@@ -416,7 +414,6 @@ public class SQLSession implements Session, EntrySource {
             // build count query statement
             StringBuilder whereClause = new StringBuilder();
             String separator = "";
-            String operator;
             List<String> orderedFields = new LinkedList<String>();
             for (String columnName : filterMap.keySet()) {
 
@@ -433,6 +430,7 @@ public class SQLSession implements Session, EntrySource {
                     throw new ClientException("cannot find column '" + columnName + "' for table: " + table);
                 }
                 String leftSide = column.getQuotedName(dialect);
+                String operator;
                 if (value != null) {
                     if (fulltext != null && fulltext.contains(columnName)) {
                         // NB : remove double % in like query NXGED-833
@@ -545,7 +543,6 @@ public class SQLSession implements Session, EntrySource {
                 list.add(docModel);
             }
             return list;
-
         } catch (SQLException e) {
             try {
                 sqlConnection.close();
@@ -586,7 +583,6 @@ public class SQLSession implements Session, EntrySource {
         } catch (SQLException e) {
             throw new DirectoryException("getFieldValue failed", e);
         }
-
     }
 
     private void setFieldValue(PreparedStatement ps, int index,
@@ -634,7 +630,6 @@ public class SQLSession implements Session, EntrySource {
         } catch (SQLException e) {
             throw new DirectoryException("setFieldValue failed", e);
         }
-
     }
 
     public void commit() throws DirectoryException {
