@@ -472,12 +472,21 @@ pre {
 }
 
 #main textarea.entryEdit {
-  width:695px;
+  width:678px;
 }
 
 #main  p.entryEditOptions {
   padding:15px 5px;
   background-color:#ffebac;
+}
+
+#main .markItUp {
+ width:690px;
+}
+
+#main .markItUp textarea.markItUpEditor {
+background-position: top right;
+padding-left: 5px;
 }
 
 /* Tabs (overrides jquerys flora) */
