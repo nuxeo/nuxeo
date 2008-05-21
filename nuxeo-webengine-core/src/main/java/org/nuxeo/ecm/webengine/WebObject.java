@@ -43,17 +43,21 @@ public class WebObject {
     protected DocumentModel doc;
     protected final String name;
     protected final WebContext context;
-    protected ObjectDescriptor desc;
+    protected WebObjectDescriptor desc;
 
 
     public WebObject(WebContext context, String name, DocumentModel doc) {
+        if (context == null  || doc == null || name == null) {
+            throw new IllegalArgumentException("Failed to create WebObject. " +
+            		"All three constructor arguments must be non null: "+context +","+ name+","+doc);
+        }
         this.context = context;
         this.name = name;
         this.doc = doc;
     }
 
     public final ActionDescriptor getAction(String action) {
-        ObjectDescriptor desc = getDescriptor();
+        WebObjectDescriptor desc = getDescriptor();
         if (desc != null) {
             return desc.getAction(action);
         }
@@ -61,7 +65,7 @@ public class WebObject {
     }
 
     public final Collection<ActionDescriptor> getActions() throws WebException {
-        ObjectDescriptor desc = getDescriptor();
+        WebObjectDescriptor desc = getDescriptor();
         if (desc != null) {
             return desc.getEnabledActions(this);
         }
@@ -69,7 +73,7 @@ public class WebObject {
     }
 
     public final Collection<ActionDescriptor> getActions(String category) throws WebException {
-        ObjectDescriptor desc = getDescriptor();
+        WebObjectDescriptor desc = getDescriptor();
         if (desc != null) {
             return desc.getEnabledActions(this, category);
         }
@@ -77,7 +81,7 @@ public class WebObject {
     }
 
     public final Map<String, Collection<ActionDescriptor>> getActionsByCategory() throws WebException {
-        ObjectDescriptor desc = getDescriptor();
+        WebObjectDescriptor desc = getDescriptor();
         if (desc != null) {
             return desc.getEnabledActionsByCategory(this);
         }
@@ -127,10 +131,6 @@ public class WebObject {
         return doc;
     }
 
-    public boolean isResolved() {
-        return doc != null;
-    }
-
     public final WebObject next() {
         return next;
     }
@@ -147,11 +147,7 @@ public class WebObject {
         return context.getLastObject() == this;
     }
 
-    public final boolean isLastResolved() {
-        return context.getLastResolvedObject() == this;
-    }
-
-    public final ObjectDescriptor getDescriptor() {
+    public final WebObjectDescriptor getDescriptor() {
         if (desc == null && doc != null) {
             desc = context.getApplication().getObjectDescriptor(doc.getDocumentType());
         }
@@ -159,7 +155,7 @@ public class WebObject {
     }
 
     public final RequestHandler getRequestHandler() throws WebException {
-        ObjectDescriptor desc = getDescriptor();
+        WebObjectDescriptor desc = getDescriptor();
         if (desc != null) {
             return desc.getRequestHandler();
         }
@@ -189,18 +185,17 @@ public class WebObject {
         buf.append('/').append(name);
     }
 
-    public boolean resolve(DocumentModel doc) {
-        return context.resolveObject(this, doc);
-    }
-
-    public boolean traverse() throws WebException {
-        ObjectDescriptor desc = getDescriptor();
-        return desc != null ? desc.getRequestHandler().traverse(this) : false;
+    public DocumentModel traverse(String nextSegment) throws WebException {
+        WebObjectDescriptor desc = getDescriptor();
+        if (desc != null) {
+            return desc.getRequestHandler().traverse(this, nextSegment);
+        }
+        return null;
     }
 
     @Override
     public String toString() {
-        return name + " [ " + (isResolved() ? doc.getPath() : "unresolved") + " ]";
+        return name;
     }
 
 }

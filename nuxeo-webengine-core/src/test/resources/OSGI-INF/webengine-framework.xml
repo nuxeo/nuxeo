@@ -63,7 +63,7 @@
   </documentation>
 
     <object
-      class="org.nuxeo.ecm.webengine.ObjectDescriptor" />
+      class="org.nuxeo.ecm.webengine.WebObjectDescriptor" />
   </extension-point>
 
   <extension-point name="binding">
@@ -77,7 +77,7 @@
   </documentation>
 
     <object
-      class="org.nuxeo.ecm.webengine.ObjectBindingDescriptor" />
+      class="org.nuxeo.ecm.webengine.WebObjectBindingDescriptor" />
   </extension-point>
 
   <extension-point name="guard">

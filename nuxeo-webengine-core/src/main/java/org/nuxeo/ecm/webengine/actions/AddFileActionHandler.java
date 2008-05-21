@@ -40,9 +40,6 @@ import org.nuxeo.ecm.webengine.util.FormData;
 public class AddFileActionHandler implements ActionHandler {
 
     public void run(WebObject object) throws WebException {
-        if (!object.isResolved()) {
-            throw new WebException("Cannot run getFile action on a non resolved object: "+object);
-        }
         DocumentModel doc = object.getDocument();
         WebContext context = object.getWebContext();
         FormData form = context.getForm();

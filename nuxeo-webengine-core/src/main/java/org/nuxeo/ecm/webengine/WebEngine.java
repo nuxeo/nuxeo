@@ -40,9 +40,9 @@ public interface WebEngine {
 
     File getRootDirectory();
 
-    void registerObject(ObjectDescriptor obj);
+    void registerObject(WebObjectDescriptor obj);
 
-    void unregisterObject(ObjectDescriptor obj);
+    void unregisterObject(WebObjectDescriptor obj);
 
     String getTypeBinding(String type);
 
@@ -50,9 +50,9 @@ public interface WebEngine {
 
     void unregisterBinding(String type);
 
-    Collection<ObjectDescriptor> getObjects();
+    Collection<WebObjectDescriptor> getObjects();
 
-    ObjectDescriptor getObject(String id);
+    WebObjectDescriptor getObject(String id);
 
     void reset();
 

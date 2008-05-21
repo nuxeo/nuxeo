@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -85,28 +86,7 @@ public interface WebContext {
      *
      * @return true if this is a root request or false otherwise
      */
-    boolean isRootRequest();
-
-    /**
-     * Get the first resolved object. The first resolved object is usually the root.
-     * @return the first resolved object or null if none
-     */
-    WebObject getFirstResolvedObject();
-
-    /**
-     * Get the last resolved object.
-     * A resolved object is an web object that is bound to a nuxeo document.
-     * The last resolved object will be usually used as the target object of the request.
-     *
-     * @return the last resolved object or null if there are no resolved objects
-     */
-    WebObject getLastResolvedObject();
-
-    /**
-     * Get the first unresolved object if any
-     * @return the first unresolved object or null if none
-     */
-    WebObject getFirstUnresolvedObject();
+    boolean hasTraversalObjects();
 
     /**
      * Tests whether there are unresolved objects on the traversal path
@@ -118,35 +98,20 @@ public interface WebContext {
      * Get the object traversal path
      * @return the traversal path. Cannot return null
      */
-    List<WebObject> getTraversalPath();
+    Path getTraversalPath();
 
     /**
-     * Get the list of unresolved objects
-     * @return the unresolved objects. Cannot return null.
+     * Get the trailing path. This path represents the trailing unresolved portion of the request path.
+     * @return the trailing path if any otherwise null
      */
-    List<WebObject> getUnresolvedObjects();
+    Path getTrailingPath();
 
     /**
-     * Get the list of resolved objects
+     * Get the list of resolved objects (the traversal obejcts)
      * @return the resolved objects. Cannot return null
      */
-    List<WebObject> getResolvedObjects();
+    List<WebObject> getTraversalObjects();
 
-    /**
-     * Attache the web object to the given nuxeo document.
-     * The object is automatically resolved by this operation.
-     * <p>
-     * If the object cannot be attached false is returned otherwise true is returned.
-     * Objects should fail to be resolved if they break the traversal path by inserting unresolved object gaps
-     * between resolved objects.
-     * <p>
-     * This method can be used to dynamically change the traversal path
-     *
-     * @param object the object to bind
-     * @param doc the document to bind the object to
-     * @return true if object successfully resolved, false otherwise
-     */
-    boolean resolveObject(WebObject object, DocumentModel doc);
 
     /**
      * The target context object. This is the last object that was traversed and that can be seen as the target
@@ -168,7 +133,8 @@ public interface WebContext {
      * Get the target script for this request if any.
      * The target script is computed as following:
      * <ul>
-     * <li>If a mapping was matched for this request the mapping is consulted for the script path to be invoked
+     * <li> if the any targetScriptpath was specified using {@link #setTargetScriptPath(String)} this will be used
+     * <li> If a mapping was matched for this request the mapping is consulted for the script path to be invoked
      * <li> If the previous step returns nothing the request action (the @@XXX string that may be appended to the request URI)
      * is used to find a suitable script.
      * If no action was specified in the request URI the default @@view action is assumed.
@@ -181,6 +147,24 @@ public interface WebContext {
      * @return the target script or null if none.
      */
     ScriptFile getTargetScript() throws IOException;
+
+    /**
+     * Set a script path to be used to respond to client.
+     * <p>
+     * If no script was explicitly set then the context will try to guess one
+     * from the current info such as current action, mapping etc.
+     * <p>
+     * This method can be used to programatically change the target script
+     * @param path the target script to use or null if you want the context choose one
+     */
+    void setTargetScriptPath(String path);
+
+    /**
+     * Get the target script path to be used to respond to clients.
+     *
+     * @return the target script if one was explicitly set using {@link #setTargetScriptPath(String)} otherwise return null
+     */
+    String getTargetScriptPath();
 
     /**
      * The Core Session (or Repository Session) corresponding to that request.
@@ -267,14 +251,6 @@ public interface WebContext {
      * XXX can this method return null?
      */
     String getUrlPath(DocumentModel document); // try to resolve a nuxeo doc to a web object path
-
-    /**
-     * Given a relative path to the current script, create an absolute one (relative to the web directory)
-     * If this method is not called from a script context - the base path that will be used will be the current web root.
-     * @param relPath the relative path to transform
-     * @return the absolute path
-     */
-    String makeAbsolutePath(String relPath);
 
     /**
      * Set the action name for this request. The action name is the string following "@@" at the end of the request URI.
@@ -489,5 +465,21 @@ public interface WebContext {
      * @deprecated will be replaced by {@link CoreSession#query(String)} in future
      */
     DocumentModelList search(String query) throws WebException;
+
+    /**
+     * Resolve first segment from the trailing path if one exists.
+     * A new {@link WebObject} will be create from that segment and attached to the given document
+     * then the object will be added to the traversal path and first segment will be removed from the trailing path.
+     * <p>
+     * This operation is modifying the target object.
+     * @param doc
+     */
+    void resolveFirstUnresolvedSegment(DocumentModel doc);
+
+    /**
+     * Get the first segment from the trailing path if any
+     * @return the first unresolved segment or null if none
+     */
+    public String getFirstUnresolvedSegment();
 
 }

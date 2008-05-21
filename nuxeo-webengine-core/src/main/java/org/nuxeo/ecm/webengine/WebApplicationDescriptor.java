@@ -64,8 +64,8 @@ public class WebApplicationDescriptor extends CompositeContribution {
     @XNodeList(value="mappings/mapping", type=ArrayList.class, componentType=MappingDescriptor.class, nullByDefault=true)
     protected List<MappingDescriptor> mappings;
 
-    @XNodeList(value="bindings/binding", type=ArrayList.class, componentType=ObjectBindingDescriptor.class, nullByDefault=true)
-    protected List<ObjectBindingDescriptor> bindings;
+    @XNodeList(value="bindings/binding", type=ArrayList.class, componentType=WebObjectBindingDescriptor.class, nullByDefault=true)
+    protected List<WebObjectBindingDescriptor> bindings;
 
     @XNodeList(value="rendering-extensions/rendering-extension", type=ArrayList.class, componentType=String.class, nullByDefault=true)
     protected List<String> renderingExtensions;
@@ -130,11 +130,11 @@ public class WebApplicationDescriptor extends CompositeContribution {
         this.mappings = mappings;
     }
 
-    public List<ObjectBindingDescriptor> getBindings() {
+    public List<WebObjectBindingDescriptor> getBindings() {
         return bindings;
     }
 
-    public void setBindings(List<ObjectBindingDescriptor> bindings) {
+    public void setBindings(List<WebObjectBindingDescriptor> bindings) {
         this.bindings = bindings;
     }
 
@@ -175,7 +175,7 @@ public class WebApplicationDescriptor extends CompositeContribution {
         }
         if (bindings != null && !bindings.isEmpty()) {
             if (desc.bindings == null) {
-                desc.bindings = new ArrayList<ObjectBindingDescriptor>();
+                desc.bindings = new ArrayList<WebObjectBindingDescriptor>();
             }
             desc.bindings.addAll(bindings);
         }

@@ -69,6 +69,7 @@ public class DefaultWebContext implements WebContext {
 
     private final static Log log = LogFactory.getLog(WebContext.class);
 
+    public final static String MAPPING_KEY = "mapping";
     public static final String CORESESSION_KEY = "SiteCoreSession";
 
     public static boolean USE_CORE_SEARCH = false;
@@ -79,15 +80,14 @@ public class DefaultWebContext implements WebContext {
 
     protected WebObject head; // the site root
     protected WebObject tail;
-    protected WebObject lastResolved;
 
     protected final HttpServletRequest request;
     protected final HttpServletResponse response;
 
     protected String pathInfo;
+    protected Path trailingPath;
 
     protected WebApplication app;
-    protected Mapping mapping;
     protected String action; // the current object view
     protected FormData form;
 
@@ -95,6 +95,7 @@ public class DefaultWebContext implements WebContext {
 
     protected List<File> scriptExecutionStack;
 
+    protected String targetScriptPath;
 
     public DefaultWebContext(WebApplication app, HttpServletRequest req, HttpServletResponse resp) {
         this.request = req;
@@ -118,8 +119,13 @@ public class DefaultWebContext implements WebContext {
         response.setStatus(errorCode);
     }
 
+
     public String getActionName() {
         return action;
+    }
+
+    public Mapping getMapping() {
+        return (Mapping)vars.get("mapping");
     }
 
     public Collection<ActionDescriptor> getActions() throws WebException {
@@ -153,13 +159,8 @@ public class DefaultWebContext implements WebContext {
         return form;
     }
 
-    public Mapping getMapping() {
-        return mapping;
-    }
-
-
     public String getUrlPath(DocumentModel document) {
-        if (head == null || !head.isResolved()) return null;
+        if (head == null) return null;
         Path rootPath = head.getDocument().getPath().makeAbsolute();
         Path path = document.getPath().makeAbsolute();
         int cnt = path.matchingFirstSegments(rootPath);
@@ -210,46 +211,62 @@ public class DefaultWebContext implements WebContext {
     }
 
     public WebObject getTargetObject() {
-        return lastResolved;
+        return tail;
     }
 
     public String getTargetObjectUrlPath() {
         WebObject obj = getTargetObject();
         return obj != null ? obj.getUrlPath() : null;
     }
+    public void setTargetScriptPath(String targetScript) {
+        this.targetScriptPath = targetScript;
+    }
+
+    public String getTargetScriptPath() {
+        return this.targetScriptPath;
+    }
 
     public ScriptFile getTargetScript() throws IOException {
-        ScriptFile file = null;
-        if (mapping != null) {
-            return getFile(mapping.getScript());
-        } else if (action != null) {
-            if (lastResolved != null) {
-                file = lastResolved.getActionScript(action);
-            }
+        ScriptFile script = null;
+        if (targetScriptPath != null) {
+            script = getFile(targetScriptPath);
+        } else {
+            script = computeTargetScript();
         }
-        if (file != null) {
-            return file;
+        if (script == null && tail != null) { // show default page only when the target document exists
+            targetScriptPath = app.getDefaultPage();
+            script = getFile(targetScriptPath);
         }
-        String path = null;
-        WebObject first = getFirstUnresolvedObject();
-        if (first != null) {
-            if (first != tail) {
-                path = getPath(first, null);
+        return script;
+    }
+
+    protected ScriptFile computeTargetScript() throws IOException {
+        if (targetScriptPath != null) {
+            return getFile(targetScriptPath);
+        } else if (tail == null) { // there is no traversal path
+            if (trailingPath != null) {
+                String path = trailingPath.toString();
+                ScriptFile script = getFile(path);
+                if (script != null) {
+                    return script;
+                }
             } else {
-                path = first.getName();
-            }
-            if (path != null) {
+                String path = app.getIndexPage();
                 ScriptFile script = getFile(path);
                 if (script != null) {
                     return script;
                 }
             }
+        } else if (action != null) {
+            return tail.getActionScript(action);
+        } else { // there is no action
+            String path = trailingPath.toString();
+            ScriptFile script = getFile(path);
+            if (script != null) {
+                return script;
+            }
         }
-        path = app.getDefaultPage();
-        if (path == null) {
-            return null; // by using a null default page we should fallback on a 404
-        }
-        return getFile(path);
+        return null;
     }
 
     public ScriptFile getFile(String path) throws IOException {
@@ -355,15 +372,6 @@ public class DefaultWebContext implements WebContext {
         return engine;
     }
 
-    /**
-     * XXX implement this method
-     */
-    public String makeAbsolutePath(String relPath) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Not Yet Implemented");
-        //return null;
-    }
-
     public void print(String text) throws IOException {
         response.getWriter().write(text);
     }
@@ -458,17 +466,6 @@ public class DefaultWebContext implements WebContext {
         }
     }
 
-// TODO Work in progress
-//    public Object runScript(ScriptFile script, Map<String,Object> args) throws WebException {
-//        String ext = script.getExtension();
-//        if ("ftl".equals(ext)) {
-//            render(script.getFile().getAbsolutePath(), args); //TODO
-//        } else {
-//            app.getScripting().runScript(this, script, args);
-//        }
-//    }
-
-
     public void setActionName(String name) {
         this.action = name;
     }
@@ -483,59 +480,25 @@ public class DefaultWebContext implements WebContext {
         return tail;
     }
 
-    public boolean isRootRequest() {
-        return head != null && head.next == null;
-    }
-
-    public WebObject getFirstResolvedObject() {
-        if (head == null) {
-            return null;
-        }
-        return head.isResolved() ? head : null;
-    }
-
-    public WebObject getLastResolvedObject() {
-        return lastResolved;
-    }
-
-    public WebObject getFirstUnresolvedObject() {
-        return lastResolved == null ? head : lastResolved.next;
+    public boolean hasTraversalObjects() {
+        return head == null;
     }
 
     public boolean hasUnresolvedObjects() {
-        return lastResolved != tail;
+        return trailingPath != null;
     }
 
-    public boolean resolveObject(WebObject object, DocumentModel doc) {
-        if (getFirstUnresolvedObject() == object) {
-            object.doc = doc;
-            lastResolved = object;
-            return true;
-        }
-        return false;
-    }
-
-    public List<WebObject> getTraversalPath() {
-        ArrayList<WebObject> objects = new ArrayList<WebObject>();
+    public Path getTraversalPath() {
+        ArrayList<String> list = new ArrayList<String>();
         WebObject p = head;
         while (p != null) {
-            objects.add(p);
+            list.add(p.getName());
             p = p.next;
         }
-        return objects;
+        return Path.createFromSegments(list.toArray(new String[list.size()]));
     }
 
-    public List<WebObject> getUnresolvedObjects() {
-        ArrayList<WebObject> objects = new ArrayList<WebObject>();
-        WebObject p = head;
-        while (p != null) {
-            objects.add(p);
-            p = p.next;
-        }
-        return objects;
-    }
-
-    public List<WebObject> getResolvedObjects() {
+    public List<WebObject> getTraversalObjects() {
         ArrayList<WebObject> objects = new ArrayList<WebObject>();
         WebObject p = head;
         while (p != null) {
@@ -578,6 +541,28 @@ public class DefaultWebContext implements WebContext {
         return JSonHelper.doc2JSon(doc, schemas);
     }
 
+    public void resolveFirstUnresolvedSegment(DocumentModel doc) {
+        if (trailingPath != null) {
+            String name = trailingPath.lastSegment();
+            trailingPath = trailingPath.removeLastSegments(1);
+            if (trailingPath.segmentCount() == 0) {
+                trailingPath = null;
+            }
+            addWebObject(name, doc);
+        }
+    }
+
+    /**
+     * XXX this is a shortcut metod we need to remove
+     * @return
+     */
+    public String getFirstUnresolvedSegment() {
+        if (trailingPath != null && trailingPath.segmentCount() > 0) {
+            return trailingPath.segment(0);
+        }
+        return null;
+    }
+
     //--------------------------------------------------------------------------- TODO internal API
 
     public Bindings createBindings(Map<String, Object> vars) {
@@ -594,7 +579,7 @@ public class DefaultWebContext implements WebContext {
         bindings.put("Request", request);
         bindings.put("Response", response);
         bindings.put("This", getTargetObject());
-        bindings.put("Root", getFirstResolvedObject());
+        bindings.put("Root", getFirstObject());
         bindings.put("Document", getTargetDocument());
         bindings.put("Engine", engine);
         try {
@@ -604,38 +589,18 @@ public class DefaultWebContext implements WebContext {
         }
     }
 
-    /**
-    *
-    * @param start inclusive
-    * @param end exclusive
-    * @return
+   public void setTrailingPath(Path path) {
+       this.trailingPath = path;
+   }
+
+   /**
+    * @return the trailingPath.
     */
-   public static String getPath(WebObject start, WebObject end) {
-       if (start == null || start == end) {
-           return "";
-       }
-       StringBuilder buf = new StringBuilder(256);
-       WebObject p = start;
-       while (p != end) {
-           buf.append('/').append(p.name);
-           p = p.next;
-       }
-       return buf.toString();
+   public Path getTrailingPath() {
+       return trailingPath;
    }
 
-   public String getUnresolvedPath() {
-       if (lastResolved == null) {
-           return getPath(head, null);
-       }
-       return getPath(lastResolved.next, null);
-   }
 
-   public String getResolvedPath() {
-       if (lastResolved == null) {
-           return "";
-       }
-       return getPath(head, lastResolved.next);
-   }
 
    /**
     * XXX should be this made part of the API? or may be createa WebContexFactory ..
@@ -654,33 +619,14 @@ public class DefaultWebContext implements WebContext {
        }
        object.next = null;
        tail = object;
-       if (doc != null) {
-           lastResolved = object;
-       }
        return object;
-   }
-   /**
-    * XXX remove this method and pass mapping through ctor?
-    * @param mapping
-    */
-   public void setMapping(Mapping mapping) {
-       this.mapping = mapping;
-   }
-
-   /**
-    * XXX this is a shortcut metod we need to remove
-    * @return
-    */
-   public String getFirstUnresolvedSegment() {
-       WebObject obj = getFirstUnresolvedObject();
-       return obj != null ? obj .getName() : null;
    }
 
 
    @Override
    public String toString() {
-       return "Resolved Path: " + getResolvedPath() + "; Unresolved Path:" + getUnresolvedPath()
-               + "; Action: " + action + "; Mapping: " + (mapping == null ? "none" : mapping.getScript());
+       return "Resolved Path: " + getTraversalPath() + "; Unresolved Path:" + getTrailingPath()
+               + "; Action: " + action + "; script: " + targetScriptPath;
    }
 
 

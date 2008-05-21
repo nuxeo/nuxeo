@@ -176,13 +176,6 @@ public class DefaultDocumentResolver implements DocumentResolver {
        return null;
     }
 
-    public DocumentModel getSiteSegment(WebApplication app, DocumentModel parent, String segment, CoreSession session) throws WebException {
-        try {
-            return session.getChild(parent.getRef(), segment);
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
     public DocumentModel search(CoreSession session, String query) throws Exception {
         DocumentModel root = null;

@@ -33,6 +33,4 @@ public interface DocumentResolver {
 
     DocumentModel getRootDocument(WebApplication app, String rootName, CoreSession session) throws Exception;
 
-    DocumentModel getSiteSegment(WebApplication app, DocumentModel parent, String segment, CoreSession session) throws Exception;
-
 }

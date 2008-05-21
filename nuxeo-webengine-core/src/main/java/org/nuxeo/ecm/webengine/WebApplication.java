@@ -41,7 +41,7 @@ public interface WebApplication extends ResourceLocator {
 
     String getTypeBinding(String type);
 
-    ObjectDescriptor getObjectDescriptor(Type type);
+    WebObjectDescriptor getObjectDescriptor(Type type);
 
     void flushCache();
 

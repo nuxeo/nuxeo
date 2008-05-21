@@ -70,7 +70,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
     protected WebApplicationDescriptor desc;
 
     // object binding cache
-    protected ConcurrentMap<String, ObjectDescriptor> objects;
+    protected ConcurrentMap<String, WebObjectDescriptor> objects;
     protected ConcurrentMap<String, ScriptFile> fileCache;
 
     public DefaultWebApplication(WebEngine engine, WebApplicationDescriptor desc) throws WebException {
@@ -83,10 +83,10 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         if (this.documentResolver == null) {
             this.documentResolver = new DefaultDocumentResolver();
         }
-        List<ObjectBindingDescriptor> list = desc.getBindings();
+        List<WebObjectBindingDescriptor> list = desc.getBindings();
         if (list != null && !list.isEmpty()) {
             typeBindings = new HashMap<String, String>();
-            for (ObjectBindingDescriptor obd : list) {
+            for (WebObjectBindingDescriptor obd : list) {
                 typeBindings.put(obd.type, obd.objectId);
             }
         }
@@ -121,7 +121,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
                     }
                 }
             }
-            objects = new ConcurrentHashMap<String, ObjectDescriptor>();
+            objects = new ConcurrentHashMap<String, WebObjectDescriptor>();
             fileCache = new ConcurrentHashMap<String, ScriptFile>();
             this.desc = desc;
 
@@ -224,8 +224,8 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         return engine.getTypeBinding(type);
     }
 
-    public ObjectDescriptor getDefaultObject() {
-        ObjectDescriptor obj = objects.get("Document");
+    public WebObjectDescriptor getDefaultObject() {
+        WebObjectDescriptor obj = objects.get("Document");
         if (obj == null) {
             String id = getTypeBinding("Document");
             if (id == null) {
@@ -240,9 +240,9 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         return obj;
     }
 
-    public synchronized ObjectDescriptor getObjectDescriptor(Type type) {
+    public synchronized WebObjectDescriptor getObjectDescriptor(Type type) {
         String typeName = type.getName();
-        ObjectDescriptor obj = objects.get(typeName);
+        WebObjectDescriptor obj = objects.get(typeName);
         if (obj != null) { // in cache
             return obj;
         }

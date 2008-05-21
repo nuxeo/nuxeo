@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webengine;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.actions.Actions;
 
@@ -36,10 +37,10 @@ public class DefaultRequestHandler implements RequestHandler, Actions {
     }
 
     public void doGet(WebObject object) throws WebException {
-        if (object.next() == null) {
-            doAction(object, VIEW);
-        } else {
+        if (object.getWebContext().hasUnresolvedObjects()) {
             doAction(object, null); // avoid doing an action since we have unresolved segments
+        } else {
+            doAction(object, VIEW);
         }
     }
 
@@ -48,7 +49,7 @@ public class DefaultRequestHandler implements RequestHandler, Actions {
     }
 
     public void doPost(WebObject object) throws WebException {
-        if (object.next() == null) { // this is the last object -> the default action is update
+        if (!object.getWebContext().hasUnresolvedObjects()) { // there is not any trailing path -> the default action is update
             doAction(object, UPDATE);
         } else if (object.getDocument().isFolder()) {
             doAction(object, CREATE);
@@ -61,8 +62,12 @@ public class DefaultRequestHandler implements RequestHandler, Actions {
         doPost(object);
     }
 
-    public boolean traverse(WebObject object) throws WebException {
-        return true;
+    public DocumentModel traverse(WebObject object, String nextSegment) throws WebException {
+        try {
+            return object.getWebContext().getCoreSession().getChild(object.getDocument().getRef(), nextSegment);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public static void doAction(WebObject object, String defaultAction) throws WebException {

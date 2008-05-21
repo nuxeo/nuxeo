@@ -157,7 +157,7 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
             GuardDescriptor gd = (GuardDescriptor)contribution;
             PermissionService.getInstance().registerGuard(gd.getId(), gd.getGuard());
         } else if (BINDING_XP.equals(extensionPoint)) {
-            ObjectBindingDescriptor binding = (ObjectBindingDescriptor)contribution;
+            WebObjectBindingDescriptor binding = (WebObjectBindingDescriptor)contribution;
             engine.registerBinding(binding.type, binding.objectId);
         } else if (extensionPoint.equals(RENDERING_EXTENSION_XP)) {
             RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor)contribution;
@@ -190,7 +190,7 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
             GuardDescriptor gd = (GuardDescriptor)contribution;
             PermissionService.getInstance().unregisterGuard(gd.getId());
         } else if (BINDING_XP.equals(extensionPoint)) {
-            ObjectBindingDescriptor binding = (ObjectBindingDescriptor)contribution;
+            WebObjectBindingDescriptor binding = (WebObjectBindingDescriptor)contribution;
             engine.unregisterBinding(binding.type);
         } else if (extensionPoint.equals(RENDERING_EXTENSION_XP)) {
             RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor)contribution;

@@ -38,31 +38,28 @@ import org.nuxeo.ecm.webengine.util.FormData;
 public class CreateActionHandler implements ActionHandler {
 
     public void run(WebObject object) throws WebException {
-        if (object.isResolved()) {
-            DocumentModel parent = object.getDocument();
-            WebObject child = object.next();
-            if (child == null) { /// create a child with a generated name
-                DocumentModel doc = createSubPage(parent, null, object.getWebContext());
-                String path = object.getUrlPath();
-                if (path.endsWith("/")) {
-                    path += doc.getName();
-                } else {
-                    path = path + '/' + doc.getName();
-                }
-                try {
-                    object.getWebContext().getResponse().sendRedirect(path);
-                } catch (IOException e) {
-                    throw new WebException("Failed to redirect to the newly created page: "+path, e);
-                }
-                return;
-            } else if (!child.isResolved()) {
-                String name = child.getName();
-                DocumentModel doc = createSubPage(parent, name, object.getWebContext());
-                child.resolve(doc);
-                return;
+        DocumentModel parent = object.getDocument();
+        WebObject child = object.next();
+        String name = object.getWebContext().getFirstUnresolvedSegment();
+        if (name == null) { /// create a child with a generated name
+            DocumentModel doc = createSubPage(parent, null, object.getWebContext());
+            String path = object.getUrlPath();
+            if (path.endsWith("/")) {
+                path += doc.getName();
+            } else {
+                path = path + '/' + doc.getName();
             }
+            try {
+                object.getWebContext().getResponse().sendRedirect(path);
+            } catch (IOException e) {
+                throw new WebException("Failed to redirect to the newly created page: "+path, e);
+            }
+            return;
+        } else {
+            DocumentModel doc = createSubPage(parent, name, object.getWebContext());
+            object.getWebContext().resolveFirstUnresolvedSegment(doc);
+            return;
         }
-        throw new WebException("Faield to create document. The document already exists: "+object.getPath());
     }
 
     private static DocumentModel createSubPage(DocumentModel parent, String name,

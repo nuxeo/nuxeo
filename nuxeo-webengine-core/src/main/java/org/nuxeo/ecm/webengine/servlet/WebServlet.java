@@ -41,7 +41,6 @@ import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebObject;
-import org.nuxeo.ecm.webengine.actions.Actions;
 import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.resolver.DocumentResolver;
@@ -146,31 +145,31 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
 
     protected void service(WebContext context, HttpServletRequest req, HttpServletResponse resp)
             throws Exception {
-        if (context.getLastResolvedObject() == null) { // a request outside the root
-            showIndex(context);
+        if (context.getLastObject() == null) { // a request outside the root
+            showStaticPage(context);
             return;
         }
 
         String method = req.getMethod();
-        WebObject lastTraversedObject = traverse(context);
-        if (lastTraversedObject == null) {
-            displayError(resp, null, "Site Root is not a supported object ");
+        WebObject targetObject = context.getTargetObject();
+        if (targetObject == null) {
+            showStaticPage(context);
             return;
         }
         // avoid running default action handling mechanism when invocation is redirected to scripts
         if (context.getMapping() == null) {
-            RequestHandler handler = lastTraversedObject.getRequestHandler();
+            RequestHandler handler = targetObject.getRequestHandler();
             if (handler != null) {
                 if (method.equals(WebConst.METHOD_POST)) {
-                    handler.doPost(lastTraversedObject);
+                    handler.doPost(targetObject);
                 } else if (method.equals(WebConst.METHOD_PUT)) {
-                    handler.doPut(lastTraversedObject);
+                    handler.doPut(targetObject);
                 } else if (method.equals(WebConst.METHOD_GET)) {
-                    handler.doGet(lastTraversedObject);
+                    handler.doGet(targetObject);
                 } else if (method.equals(WebConst.METHOD_DELETE)) {
-                    handler.doDelete(lastTraversedObject);
+                    handler.doDelete(targetObject);
                 } else if (method.equals(WebConst.METHOD_HEAD)) {
-                    handler.doHead(lastTraversedObject);
+                    handler.doHead(targetObject);
                 }
             }
         }
@@ -190,26 +189,6 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
         //System.out.println(">>>>>>>>>> RENDERING TOOK: " + ((System.currentTimeMillis() - s) / 1000));
     }
 
-    /**
-     * @return the last traversed object
-     */
-    protected WebObject traverse(WebContext context) throws WebException {
-        WebObject firstObject = context.getFirstObject();
-        WebObject lastResolved = context.getLastResolvedObject();
-        if (firstObject == null || lastResolved == null) {
-            return null;
-        }
-        WebObject lastTraversed = firstObject;
-        WebObject p = firstObject;
-        while (p != lastResolved.next()) {
-            if (!p.traverse()) {
-                return lastTraversed;
-            }
-            lastTraversed = p;
-            p = p.next();
-        }
-        return lastTraversed;
-    }
 
     protected static void displayError(HttpServletResponse resp, Throwable t,
             String message, int code) {
@@ -269,11 +248,12 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
         }
         buildTraversalPath(context, traversal);
         if (mapping != null) {
-            WebObject obj = context.getLastResolvedObject();
+            WebObject obj = context.getLastObject();
             if (obj != null) {
                 mapping.addVar("type", obj.getDocument().getType());
             }
-            context.setMapping(mapping); //TODO how to propagate vars without storing them in req?
+            context.setTargetScriptPath(mapping.getScript()); // should use mapping script if one was defined
+            context.setProperty(DefaultWebContext.MAPPING_KEY, mapping);
         }
         return context;
     }
@@ -283,48 +263,42 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
             // nothing to traverse
             return;
         }
+        String lastSegment = traversal[traversal.length-1];
+        int p = lastSegment.lastIndexOf(WebConst.ACTION_SEPARATOR);
+        if (p > -1) {
+            context.setActionName(lastSegment.substring(p+WebConst.ACTION_SEPARATOR.length()));
+            traversal[traversal.length-1] = lastSegment.substring(0, p);
+        }
+
         WebApplication app = context.getApplication();
         CoreSession session = context.getCoreSession();
         String name = traversal[0];
         DocumentResolver resolver = app.getDocumentResolver();
-        int p = name.lastIndexOf(WebConst.ACTION_SEPARATOR);
-        if (p > -1) {
-            context.setActionName(name.substring(p+WebConst.ACTION_SEPARATOR.length()));
-            name = name.substring(0, p);
-        }
         DocumentModel doc = resolver.getRootDocument(app, name, session);
-        context.addWebObject(name, doc);
-        if (doc == null) { // abort traversing
-            // add the unresolved objects
-            for (int i=1; i<traversal.length; i++) {
-                context.addWebObject(traversal[i], null);
-            }
+        if (doc == null) { // abort traversing - and create the trailing path
+            Path trailingPath = Path.createFromSegments(traversal);
+            context.setTrailingPath(trailingPath);
             return;
         }
+        context.addWebObject(name, doc);
         if (traversal.length > 1) {
             for (int i=1; i<traversal.length; i++) {
                 name = traversal[i];
-                p = name.lastIndexOf(WebConst.ACTION_SEPARATOR);
-                if (p > -1) {
-                    context.setActionName(name.substring(p+WebConst.ACTION_SEPARATOR.length()));
-                    name = name.substring(0, p);
-                }
-                doc = resolver.getSiteSegment(app, doc, name, session);
-                context.addWebObject(name, doc);
-                if (doc == null) {
-                    for (i=i+1; i<traversal.length; i++) {
-                        context.addWebObject(traversal[i], null);
-                    }
+                doc = context.getLastObject().traverse(name); // get next object if any
+                if (doc != null) {
+                    context.addWebObject(name, doc);
+                } else {
+                    String[] tmp = new String[traversal.length - i];
+                    System.arraycopy(traversal, i, tmp, 0, tmp.length);
+                    Path trailingPath = Path.createFromSegments(tmp);
+                    context.setTrailingPath(trailingPath);
                     break;
                 }
             }
         }
-        if (!context.hasUnresolvedObjects() && context.getActionName() == null) {
-            context.setActionName(Actions.DEFAULT_ACTION);
-        }
     }
 
-    public void showIndex(WebContext context) throws Exception {
+    public void showStaticPage(WebContext context) throws Exception {
         try {
             //double s = System.currentTimeMillis();
             ScriptFile script = context.getTargetScript();

@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webengine;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -38,6 +40,6 @@ public interface RequestHandler {
 
     void doDelete(WebObject object) throws WebException;
 
-    boolean traverse(WebObject object)  throws WebException;
+    DocumentModel traverse(WebObject object, String nextSegment)  throws WebException;
 
 }

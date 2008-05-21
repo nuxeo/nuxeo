@@ -27,7 +27,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  *
  */
 @XObject("binding")
-public class ObjectBindingDescriptor {
+public class WebObjectBindingDescriptor {
 
     @XNode("@type")
     public String type;

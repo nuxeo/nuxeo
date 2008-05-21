@@ -42,7 +42,7 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
 
     protected final File root;
 
-    protected final Map<String,ObjectDescriptor> registry;
+    protected final Map<String,WebObjectDescriptor> registry;
     protected final Map<String, String> bindings;
 
     protected Map<String, WebApplication> apps;
@@ -64,7 +64,7 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         if (notifier != null) {
             notifier.addListener(this);
         }
-        registry = new Hashtable<String, ObjectDescriptor>();
+        registry = new Hashtable<String, WebObjectDescriptor>();
         bindings = new HashMap<String, String>();
         this.env = new HashMap<String, Object>();
         this.apps = new HashMap<String, WebApplication>();
@@ -124,19 +124,19 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         }
     }
 
-    public ObjectDescriptor getObject(String id) {
+    public WebObjectDescriptor getObject(String id) {
         return registry.get(id);
     }
 
-    public Collection<ObjectDescriptor> getObjects() {
+    public Collection<WebObjectDescriptor> getObjects() {
         return registry.values();
     }
 
-    public void registerObject(ObjectDescriptor obj) {
+    public void registerObject(WebObjectDescriptor obj) {
         registry.put(obj.getId(), obj);
     }
 
-    public void unregisterObject(ObjectDescriptor obj) {
+    public void unregisterObject(WebObjectDescriptor obj) {
         registry.remove(obj.getId());
     }
 

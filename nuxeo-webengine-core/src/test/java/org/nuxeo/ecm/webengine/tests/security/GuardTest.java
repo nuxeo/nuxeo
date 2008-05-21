@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.local.LocalSession;
-import org.nuxeo.ecm.webengine.ObjectDescriptor;
+import org.nuxeo.ecm.webengine.WebObjectDescriptor;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.security.Guard;
@@ -56,7 +56,7 @@ public class GuardTest extends NXRuntimeTestCase {
         WebEngine mgr = Framework.getLocalService(WebEngine.class);
         assertNotNull(mgr);
 
-        ObjectDescriptor od = mgr.getObject("siteFolder2");
+        WebObjectDescriptor od = mgr.getObject("siteFolder2");
         assertNotNull(od);
 
         ActionDescriptor ad = od.getAction("view");

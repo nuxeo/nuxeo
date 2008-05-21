@@ -40,7 +40,7 @@ import org.nuxeo.ecm.webengine.config.ManagedComponent;
  *
  */
 @XObject("object")
-public class ObjectDescriptor extends ExtensibleContribution {
+public class WebObjectDescriptor extends ExtensibleContribution {
 
     @XNode("@id") // internal id needed to uniquely identify the object
     @Override
@@ -59,9 +59,9 @@ public class ObjectDescriptor extends ExtensibleContribution {
     protected RequestHandler requestHandler;
 
 
-    public ObjectDescriptor() {}
+    public WebObjectDescriptor() {}
 
-    public ObjectDescriptor(String id, String base, ActionDescriptor ... actions) {
+    public WebObjectDescriptor(String id, String base, ActionDescriptor ... actions) {
         this.contributionId = id;
         this.baseContributionId = base;
         this.actions = new HashMap<String, ActionDescriptor>();
@@ -72,7 +72,7 @@ public class ObjectDescriptor extends ExtensibleContribution {
         }
     }
 
-    public ObjectDescriptor(String id, String base, Collection<ActionDescriptor> actions) {
+    public WebObjectDescriptor(String id, String base, Collection<ActionDescriptor> actions) {
         this.contributionId = id;
         this.baseContributionId = base;
         this.actions = new HashMap<String, ActionDescriptor>();
@@ -190,7 +190,7 @@ public class ObjectDescriptor extends ExtensibleContribution {
 
     @Override
     protected void copyOver(ExtensibleContribution contrib) {
-        ObjectDescriptor objDesc = (ObjectDescriptor)contrib;
+        WebObjectDescriptor objDesc = (WebObjectDescriptor)contrib;
         if (requestHandlerClass != null) {
             objDesc.requestHandlerClass = requestHandlerClass;
         }
@@ -217,13 +217,13 @@ public class ObjectDescriptor extends ExtensibleContribution {
     @Override
     public void install(ManagedComponent comp, Contribution contrib) throws Exception {
         WebEngine engine = ((WebEngineComponent)comp).getEngine();
-        engine.registerObject((ObjectDescriptor)contrib);
+        engine.registerObject((WebObjectDescriptor)contrib);
     }
 
     @Override
     public void uninstall(ManagedComponent comp, Contribution contrib) throws Exception {
         WebEngine engine = ((WebEngineComponent)comp).getEngine();
-        engine.unregisterObject((ObjectDescriptor)contrib);
+        engine.unregisterObject((WebObjectDescriptor)contrib);
     }
 
 
