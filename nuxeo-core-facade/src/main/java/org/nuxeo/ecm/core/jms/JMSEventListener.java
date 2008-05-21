@@ -201,7 +201,9 @@ public class JMSEventListener extends AbstractEventListener implements
                 checkedDocs.add(doc.getRef());
             }
             OperationEvent event = OperationEventFactory.createEvent(coreEvent);
-            CoreEventPublisher.getInstance().publish(event, event.getId());
+            if(event != null) {
+                CoreEventPublisher.getInstance().publish(event, event.getId());
+            }
         }
 
     }
