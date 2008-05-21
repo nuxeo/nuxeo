@@ -21,6 +21,9 @@
         <mapping pattern="/login">
           <script>/common/login.groovy</script>
         </mapping>
+        <mapping pattern="/markitup_preview">
+          <script>/markitup/preview.ftl</script>
+        </mapping>
       </mappings>
     </webapp>
   </extension>

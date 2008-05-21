@@ -3,8 +3,8 @@
 
 <script>
 $(document).ready(function(){
-  $("#entry-actions > ul").tabs();
-  $("#entry-actions > ul").tabs("select", '#view_content');
+  $("#entry-actions > ul").tabs({ selected: 2 });
+  //$("#entry-actions > ul").tabs("select", '#view_content');
 });
 </script>
 
