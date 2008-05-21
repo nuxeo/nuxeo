@@ -83,8 +83,8 @@ public class PluginExtension implements Serializable {
         this.filters = filters;
     }
 
-    public boolean isEnabled()
-    {
+    public boolean isEnabled() {
         return enabled;
     }
+
 }

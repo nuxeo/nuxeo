@@ -23,23 +23,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResources;
-import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResources;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.factory.IndexableResourcesFactory;
 
 /**
- * Absract Indexing Task.
+ * Abstract Indexing Task.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public abstract class AbstractIndexingTask implements Runnable {
 
-    private static final Log log = LogFactory.getLog(AbstractIndexingTask.class);
+    protected static final String PREFIXED_NAME = "NuxeoCoreIndexing_";
 
-    protected final static String PREFIXED_NAME = "NuxeoCoreIndexing_";
+    private static final Log log = LogFactory.getLog(AbstractIndexingTask.class);
 
     protected final DocumentModel dm;
 
@@ -92,15 +90,14 @@ public abstract class AbstractIndexingTask implements Runnable {
         return searchService;
     }
 
-    protected static IndexableResources computeResourcesFor(DocumentModel dm)
-            throws IndexingException {
+    protected static IndexableResources computeResourcesFor(DocumentModel dm) {
         return IndexableResourcesFactory.computeResourcesFor(dm);
     }
 
     @Override
     protected void finalize() throws Throwable {
-        super.finalize();
         log.debug("Finalize...........................");
+        super.finalize();
     }
 
 }
