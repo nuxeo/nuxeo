@@ -13,11 +13,21 @@
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.tabs.js"></script>
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/base64.js"></script>
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/cookie.js"></script>
+
+  <!-- markit up -->
+  <script type="text/javascript" src="/nuxeo/site/files/resources/script/markitup/jquery.markitup.pack.js"></script>
+  <script type="text/javascript" src="/nuxeo/site/files/resources/script/markitup/sets/default/set.js"></script>
+  <link rel="stylesheet" type="text/css" href="/nuxeo/site/files/resources/script/markitup/skins/markitup/style.css" />
+  <link rel="stylesheet" type="text/css" href="/nuxeo/site/files/resources/script/markitup/default/style.css" />
+  
+  <!-- end markitup -->
+  
+  
   <link rel="shortcut icon" href="/nuxeo/site/files/resources/image/favicon.gif" />
   
 <base href="${This.urlPath}">
 
-<script>
+<script>  
 
 $.fn.search = function() {
 	return $(this).focus(function() {
