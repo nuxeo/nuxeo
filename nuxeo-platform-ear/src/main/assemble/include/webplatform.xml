@@ -22,7 +22,6 @@
   <artifactSet extends="nuxeo-platform">
     <excludes>
       <artifact name="nuxeo-platform-filemanager-core-listener" />
-      <artifact name="nuxeo-platform-filemanager-core" />
     </excludes>
   </artifactSet>
 

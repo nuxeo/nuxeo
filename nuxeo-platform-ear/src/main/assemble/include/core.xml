@@ -60,7 +60,6 @@
       <artifact name="nuxeo-platform-events-*" />
       <artifact name="nuxeo-platform-filemanager-api" />
       <artifact name="nuxeo-platform-filemanager-core-listener" />
-      <artifact name="nuxeo-platform-filemanager-core" />
       <artifact name="nuxeo-platform-mimetype-*" />
       <artifact name="nuxeo-platform-uidgen-core" />
       <artifact name="nuxeo-platform-modifier" />
