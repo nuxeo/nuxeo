@@ -19,9 +19,9 @@
 
     <!--  Configure SUN JSF RI -->
     <!--
-    <listener>
+      <listener>
       <listener-class>com.sun.faces.config.ConfigureListener</listener-class>
-    </listener>
+      </listener>
     -->
 
   </extension>
@@ -33,16 +33,6 @@
 
   <!-- comment that to disable exception filter -->
   <extension target="web#EXCEPTION-FILTER">
-
-    <filter>
-      <filter-name>Seam Exception Filter</filter-name>
-      <filter-class>org.jboss.seam.servlet.SeamExceptionFilter</filter-class>
-    </filter>
-
-    <filter-mapping>
-      <filter-name>Seam Exception Filter</filter-name>
-      <url-pattern>/*</url-pattern>
-    </filter-mapping>
 
     <filter>
       <display-name>Nuxeo Exception Filter</display-name>
@@ -165,30 +155,6 @@
       <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <filter>
-      <display-name>Ajax4jsf Filter</display-name>
-      <filter-name>ajax4jsf</filter-name>
-      <filter-class>org.ajax4jsf.FastFilter</filter-class>
-      <init-param>
-        <param-name>forceparser</param-name>
-        <param-value>false</param-value>
-      </init-param>
-    </filter>
-
-    <filter-mapping>
-      <filter-name>ajax4jsf</filter-name>
-      <url-pattern>*.seam</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
-
-    <filter-mapping>
-      <filter-name>ajax4jsf</filter-name>
-      <url-pattern>*.faces</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
-
   </extension>
 
   <extension target="web#FILTER">
@@ -215,27 +181,13 @@
     </filter-mapping>
 
     <filter>
-      <filter-name>Seam Redirect Filter</filter-name>
-      <filter-class>org.jboss.seam.servlet.SeamRedirectFilter</filter-class>
+      <filter-name>Seam Filter</filter-name>
+      <filter-class>org.jboss.seam.web.SeamFilter</filter-class>
     </filter>
 
     <filter-mapping>
-      <filter-name>Seam Redirect Filter</filter-name>
-      <url-pattern>*.faces</url-pattern>
-      <!-- FancyURLFilter sometimes triggers forward
-        => make it keep conversation info -->
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
-
-    <filter-mapping>
-      <filter-name>Seam Redirect Filter</filter-name>
-      <url-pattern>*.seam</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-      <filter-name>Seam Redirect Filter</filter-name>
-      <url-pattern>*.jsf</url-pattern>
+      <filter-name>Seam Filter</filter-name>
+      <url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <filter>
@@ -293,10 +245,12 @@
     <!-- My Faces Extensions Filter -->
     <filter>
       <filter-name>extensionsFilter</filter-name>
-      <filter-class>
+      <!--filter-class>
         org.apache.myfaces.component.html.util.ExtensionsFilter
+        </filter-class-->
+      <filter-class>
+        org.apache.myfaces.webapp.filter.ExtensionsFilter
       </filter-class>
-      <!--  filter-class>org.apache.myfaces.webapp.filter.ExtensionsFilter</filter-class-->
       <init-param>
         <param-name>uploadMaxFileSize</param-name>
         <param-value>100m</param-value>
@@ -316,7 +270,7 @@
           <description>Set the threshold size - files
           below this limit are stored in memory, files above
           this limit are stored on disk.
-
+          
           Format: 10 - 10 bytes
           10k - 10 KB
           10m - 10 MB
@@ -394,7 +348,9 @@
 
     <servlet>
       <servlet-name>Nuxeo Downloader</servlet-name>
-      <servlet-class>org.nuxeo.ecm.platform.ui.web.download.DownloadServlet</servlet-class>
+      <servlet-class>
+        org.nuxeo.ecm.platform.ui.web.download.DownloadServlet
+      </servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -476,10 +432,10 @@
     <!-- When a page is requested, what interval in seconds should the compiler
       check for changes. If you don't want the compiler to check for changes
       once the page is compiled, then use a value of -1.
-
+      
       Setting a low refresh period helps during development to be able to edit
       pages in a running application but slows down page rendering.
-
+      
       Default: 2 seconds.
     -->
     <context-param>
@@ -523,7 +479,9 @@
     <!-- MyFaces RedirectTracker default conf -->
     <context-param>
       <param-name>org.apache.myfaces.redirectTracker.POLICY</param-name>
-      <param-value>org.apache.myfaces.custom.redirectTracker.policy.NoopRedirectTrackPolicy</param-value>
+      <param-value>
+        org.apache.myfaces.custom.redirectTracker.policy.NoopRedirectTrackPolicy
+      </param-value>
     </context-param>
     <context-param>
       <param-name>org.apache.myfaces.redirectTracker.MAX_REDIRECTS</param-name>
@@ -536,12 +494,12 @@
       <param-name>org.ajax4jsf.VIEW_HANDLERS</param-name>
       <param-value>com.icesoft.faces.facelets.D2DSeamFaceletViewHandler</param-value>
       </context-param>
-
+      
       <context-param>
       <param-name>com.icesoft.faces.doJSFStateManagement</param-name>
       <param-value>true</param-value>
       </context-param>
-
+      
       <context-param>
       <param-name>com.icesoft.faces.actionURLSuffix</param-name>
       <param-value>.faces</param-value>
@@ -600,7 +558,7 @@
 
   <extension target="faces-config#PHASE-LISTENER">
 
-<!-- This is registered after SeamPhaseListener because
+    <!-- This is registered after SeamPhaseListener because
       JSF-RI reads /WEB-INF/faces-config.xml after
       lib jar's META-INF/faces-config.xml -->
     <phase-listener>
