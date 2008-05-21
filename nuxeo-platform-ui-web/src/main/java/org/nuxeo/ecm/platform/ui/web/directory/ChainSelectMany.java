@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.component.UICommand;
-import javax.faces.component.UIComponent;
 import javax.faces.component.UIGraphic;
 import javax.faces.component.html.HtmlInputHidden;
 import javax.faces.context.FacesContext;
@@ -224,7 +223,6 @@ public class ChainSelectMany extends ChainSelectBase {
 
     @Override
     public void encodeChildren(FacesContext context) throws IOException {
-
     }
 
     private void encodeValue(FacesContext context) throws IOException {

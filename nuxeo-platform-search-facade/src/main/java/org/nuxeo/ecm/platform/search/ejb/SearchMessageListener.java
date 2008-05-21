@@ -26,6 +26,7 @@ import javax.ejb.EJBException;
 import javax.ejb.MessageDriven;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
@@ -97,14 +98,6 @@ public class SearchMessageListener implements MessageListener {
 
         try {
             login();
-        } catch (Exception e) {
-            throw new EJBException(e);
-        }
-
-        // :XXX: deal with other events such as audit, relations, etc...
-
-        try {
-
             SearchService service = getSearchService();
 
             // Check if the search service is active
@@ -138,7 +131,6 @@ public class SearchMessageListener implements MessageListener {
                         + " is desactivated for indexing");
                 return;
             }
-
             boolean recursive = eventConf.isRecursive();
             String action = eventConf.getAction();
 

@@ -70,11 +70,11 @@ public class MethodResultTagHandler extends MetaTagHandler {
         Class[] paramTypesClasses = resolveParamTypes(ctx);
         MethodExpression meth = value.getMethodExpression(ctx, Object.class,
                 paramTypesClasses);
-        ValueExpression ve = null;
         Boolean invokeNow = false;
         if (immediate != null) {
             invokeNow = immediate.getBoolean(ctx);
         }
+        ValueExpression ve;
         if (invokeNow) {
             Object res = meth.invoke(ctx, paramTypesClasses);
             ve = ctx.getExpressionFactory().createValueExpression(res,
@@ -83,7 +83,7 @@ public class MethodResultTagHandler extends MetaTagHandler {
             ve = new MethodValueExpression(ctx, meth, paramTypesClasses);
         }
         ctx.getVariableMapper().setVariable(nameStr, ve);
-        this.nextHandler.apply(ctx, parent);
+        nextHandler.apply(ctx, parent);
     }
 
 }
