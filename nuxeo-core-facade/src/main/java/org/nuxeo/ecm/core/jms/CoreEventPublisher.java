@@ -148,7 +148,7 @@ public class CoreEventPublisher {
             // create the message using the given factory
             Message msg = factory.createMessage(session, content);
             if(eventId != null) {
-                msg.setStringProperty("nuxeo.eventId", eventId);
+                msg.setStringProperty("NuxeoEventId", eventId);
             }
             // publish the message
             publisher.publish(topic, msg);
