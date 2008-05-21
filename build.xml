@@ -150,18 +150,6 @@
      <delete dir="${jboss.server}/data"/>
   </target>
 
-  <target name="patch405" description="Patch a JBoss 4.0.5 for use by Nuxeo-EP">
-    <antcall target="patch">
-      <param name="pom.file" value="jboss-patch/pom-4.0.5.xml"/>
-    </antcall>
-  </target>
-
-  <target name="patch404" description="Patch a JBoss 4.0.4 for use by Nuxeo-EP (deprecated : no more 4.0.4 compatibility)">
-    <antcall target="patch">
-      <param name="pom.file" value="jboss-patch/pom.xml"/>
-    </antcall>
-  </target>
-
   <target name="patch" depends="setproperties,patch-unix,patch-windows" />
   <target name="patch-unix" if="osfamily-unix">
     <echo message="Running maven script ${pom.file}"/>
