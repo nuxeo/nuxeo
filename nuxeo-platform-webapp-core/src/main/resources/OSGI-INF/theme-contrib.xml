@@ -73,7 +73,7 @@
       <resource>AJS.js</resource>
       <resource>waitdlg.js</resource>
       <resource>utils.js</resource>
-      <resource>tableSelections.js.</resource>
+      <resource>tableSelections.js</resource>
       <!-- include JS for contextual menu -->
       <resource>jquery.js</resource>
       <resource>contextmenu.js</resource>
