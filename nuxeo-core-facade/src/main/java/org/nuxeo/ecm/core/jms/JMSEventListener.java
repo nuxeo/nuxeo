@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.jms.JMSException;
 
@@ -58,6 +59,7 @@ public class JMSEventListener extends AbstractEventListener implements
     /**
      * @deprecated this is only used for compatibility
      */
+    @Deprecated
     static final String BLOCK_JMS_PRODUCING = "BLOCK_JMS_PRODUCING";
 
 
@@ -70,7 +72,7 @@ public class JMSEventListener extends AbstractEventListener implements
     public void operationTerminated(Operation<?> cmd) throws Exception {
         OperationEvent event = OperationEventFactory.createEvent(cmd);
         if (event != null) {
-            CoreEventPublisher.getInstance().publish(event, event.id);
+            CoreEventPublisher.getInstance().publish(event, event.getId());
         }
     }
 
@@ -83,6 +85,7 @@ public class JMSEventListener extends AbstractEventListener implements
      *
      * @param coreEvent instance fired at core layer
      */
+    @Override
     public void handleEvent(CoreEvent coreEvent) {
         //TODO: this should be refactored after operation are integrated into core
         Operation<?> cmd = Operation.getCurrent();
@@ -92,10 +95,10 @@ public class JMSEventListener extends AbstractEventListener implements
 
         Map<String,?> info  =coreEvent.getInfo();
         // avoid to send blocked events
-        if (info != null && coreEvent.getInfo().get(BLOCK_JMS_PRODUCING)!=null
-                && (Boolean) coreEvent.getInfo().get(BLOCK_JMS_PRODUCING)== true)
-        {
-            log.debug("JMS forwarding disabled for event " + coreEvent.getEventId());
+        if (info != null && coreEvent.getInfo().get(BLOCK_JMS_PRODUCING) != null
+                && (Boolean) coreEvent.getInfo().get(BLOCK_JMS_PRODUCING)) {
+            log.debug(
+                    "JMS forwarding disabled for event " + coreEvent.getEventId());
             return;
         }
 
@@ -108,7 +111,7 @@ public class JMSEventListener extends AbstractEventListener implements
         } else {
             DocumentModel source = (DocumentModel) coreEvent.getSource();
             if (source!=null && source.getContextData(BLOCK_JMS_PRODUCING) != null
-                    && (Boolean) source.getContextData(BLOCK_JMS_PRODUCING) == true) {
+                    && (Boolean) source.getContextData(BLOCK_JMS_PRODUCING)) {
                 log.debug("JMS forwarding disabled for events on doc "
                         + source.getRef().toString() + "... skipping.");
                 return;
@@ -165,7 +168,7 @@ public class JMSEventListener extends AbstractEventListener implements
     }
 
     //TODO this code should be refactored and synchronized -> Stack is not a copy and need to be synchronized...
-    private void stackEvent(CoreEvent coreEvent) {
+    private static void stackEvent(CoreEvent coreEvent) {
         String sid = (String) coreEvent.getInfo().get(
                 CoreEventConstants.SESSION_ID);
 
@@ -179,40 +182,38 @@ public class JMSEventListener extends AbstractEventListener implements
         }
     }
 
-
-    protected void sendEventToJMS(List<CoreEvent> coreEvents) throws JMSException {
-
+    protected static void sendEventToJMS(List<CoreEvent> coreEvents) throws JMSException {
+        // Must be declared as Serializable
         ArrayList<OperationEvent> cmdEvents = new ArrayList<OperationEvent>();
-        HashSet<DocumentRef> checkedDocs = new HashSet<DocumentRef>();
+        Set<DocumentRef> checkedDocs = new HashSet<DocumentRef>();
 
         for (CoreEvent coreEvent : coreEvents) {
             // remove duplicates TODO improve this
             String id = coreEvent.getEventId();
-            if ((DocumentEventTypes.DOCUMENT_CREATED.equals(id))
+            if (DocumentEventTypes.DOCUMENT_CREATED.equals(id)
+                    || DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(id)
                     || DocumentEventTypes.DOCUMENT_UPDATED.equals(id)) {
                 // stacked events are doc centric events
-                DocumentModel doc = (DocumentModel)coreEvent.getSource();
+                DocumentModel doc = (DocumentModel) coreEvent.getSource();
                 if (checkedDocs.contains(doc.getRef())) {
                     continue;
                 }
                 checkedDocs.add(doc.getRef());
             }
             OperationEvent event = OperationEventFactory.createEvent(coreEvent);
-            CoreEventPublisher.getInstance().publish(event, event.id);
+            CoreEventPublisher.getInstance().publish(event, event.getId());
         }
-
 
     }
 
-    private void sendEventToJMS(CoreEvent coreEvent) {
+    private static void sendEventToJMS(CoreEvent coreEvent) {
         OperationEvent event = OperationEventFactory.createEvent(coreEvent);
         if (event != null) {
             try {
-                CoreEventPublisher.getInstance().publish(event, event.id);
+                CoreEventPublisher.getInstance().publish(event, event.getId());
             } catch (JMSException e) {
                 e.printStackTrace();
             }
         }
     }
-
 }

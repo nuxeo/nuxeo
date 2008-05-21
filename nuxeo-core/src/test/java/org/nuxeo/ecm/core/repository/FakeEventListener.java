@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.listener.AsynchronousEventListener;
 public class FakeEventListener extends AbstractEventListener implements
         AsynchronousEventListener {
 
+    @Override
     @SuppressWarnings("unchecked")
     public void handleEvent(CoreEvent coreEvent) {
         // add an info in the core event map when processing the event

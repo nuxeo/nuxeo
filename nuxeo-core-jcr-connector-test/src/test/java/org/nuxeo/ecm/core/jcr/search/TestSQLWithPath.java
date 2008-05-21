@@ -97,8 +97,6 @@ public class TestSQLWithPath extends RepositoryTestCase {
      *            -- testfile4
      * </pre>
      *
-     * @throws DocumentException
-     * @throws IOException
      */
     private void createDocs() throws Exception {
         // put some data in workspace
@@ -136,13 +134,7 @@ public class TestSQLWithPath extends RepositoryTestCase {
         session.save();
     }
 
-    /**
-     * @param doc
-     * @throws URISyntaxException
-     * @throws IOException
-     * @throws DocumentException
-     */
-    private void attacheFileTo(Document doc) throws URISyntaxException,
+    private static void attacheFileTo(Document doc) throws URISyntaxException,
             IOException, DocumentException {
         URL url = Thread.currentThread().getContextClassLoader().getResource(
                 DOC_PATH);
