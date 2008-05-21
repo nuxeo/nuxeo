@@ -18,8 +18,7 @@
         (localhost)
       </li>
     </ul>
-    @author
-    <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+    @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
   </documentation>
 
   <extension target="org.nuxeo.ecm.platform.api.PlatformService"
@@ -85,6 +84,13 @@
 
   <extension target="org.nuxeo.runtime.api.ServiceManagement"
     point="services">
+    <service class="org.nuxeo.ecm.core.api.repository.RepositoryManager" group="core">
+      <locator>%RepositoryManagerBean</locator>
+    </service>
+
+    <service class="org.nuxeo.ecm.core.api.security.PermissionProvider" group="core">
+      <locator>%PermissionProviderBean</locator>
+    </service>
     <service class="org.nuxeo.ecm.core.api.CoreSession" name="default"
       group="core">
       <!--adapter>org.nuxeo.ecm.core.api.CoreSessionAdapter</adapter-->
@@ -109,6 +115,13 @@
       group="platform">
       <locator>%NotificationServiceBean</locator>
     </service>
+    <!-- addon nuxeo-platform-userworkspace
+    <service
+      class="org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceManager"
+      group="platform">
+      <locator>%UserWorkspaceManagerBean</locator>
+    </service>
+	-->
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="provider">

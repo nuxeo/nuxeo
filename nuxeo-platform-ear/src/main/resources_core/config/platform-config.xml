@@ -119,7 +119,13 @@
       group="platform">
       <locator>%NotificationServiceBean</locator>
     </service>
-
+    <!-- addon nuxeo-platform-userworkspace
+    <service
+      class="org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceManager"
+      group="platform">
+      <locator>%UserWorkspaceManagerBean</locator>
+    </service>
+	-->
     <!--service class="org.nuxeo.ecm.platform.types.ejb.TypeManager" group="platform"/-->
   </extension>
 </component>

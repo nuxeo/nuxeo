@@ -31,7 +31,9 @@
       <artifact name="nuxeo-platform-modifier" />
       <artifact name="nuxeo-platform-search-core-listener" />
       <artifact name="nuxeo-platform-versioning-core" />
+      <!-- required by nuxeo-platform-comment
       <artifact name="nuxeo-platform-comment-core" />
+       -->
       <artifact name="nuxeo-platform-forum-core" />
       <artifact name="nuxeo-platform-modifier" />
       <artifact name="nuxeo-platform-userdata-core*" />

@@ -8,5 +8,5 @@ Require-Bundle: org.nuxeo.ecm.platform.mimetype.api,
  org.nuxeo.ecm.platform.types.api,
  org.nuxeo.ecm.platform.events.api,
  org.nuxeo.ecm.platform.filemanager.api,
- org.nuxeo.ecm.platform.filemanager.core
+ org.nuxeo.ecm.platform.search.api
 Nuxeo-Component: OSGI-INF/nxfilemanager-platform-contrib.xml

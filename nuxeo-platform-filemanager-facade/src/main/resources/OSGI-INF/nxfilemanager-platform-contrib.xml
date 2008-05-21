@@ -6,7 +6,7 @@
         point="services">
 
       <documentation> Define the filemanager bean as a platform service. </documentation>
-      <service class="org.nuxeo.ecm.platform.filemanager.api.FileManager" group="platform">
+      <service class="org.nuxeo.ecm.platform.filemanager.api.FileManager" group="core">
         <locator>%FileManagerBean</locator>
       </service>
 
