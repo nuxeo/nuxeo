@@ -19,6 +19,7 @@
       <exclude>lib-fragments.xml</exclude>
       <exclude>config/default-versioning-config.xml</exclude>
       <!-- <exclude>config/fileManagerService-config-bundle.xml</exclude> -->
+      <exclude>nxdocument.cpm.xml</exclude>
     </excludes>
   </fileSet>
 
@@ -39,6 +40,7 @@
       <artifact name="nuxeo-platform-transform-*" />
       <artifact name="nuxeo-platform-events-api" />
       <artifact name="nuxeo-platform-mimetype-*" />
+      <artifact name="nuxeo-platform-notification-api" />
       <artifact name="nuxeo-platform-usermanager-api" />
       <artifact name="nuxeo-platform-versioning-api" />
       <artifact name="nuxeo-platform-login" />
