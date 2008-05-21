@@ -19,9 +19,9 @@
 
 package org.nuxeo.ecm.webengine;
 
-import java.io.File;
 import java.io.IOException;
 
+import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
@@ -53,9 +53,9 @@ public interface WebApplication extends ResourceLocator {
 
     void setDefaultPage(String page);
 
-    ScriptFile getScriptFile(String path)  throws IOException;
+    ScriptFile getFile(String path)  throws IOException;
 
-    File getFile(String path)  throws IOException;
+    ScriptFile getActionScript(String action, DocumentType docType) throws IOException;
 
     WebEngine getWebEngine();
 

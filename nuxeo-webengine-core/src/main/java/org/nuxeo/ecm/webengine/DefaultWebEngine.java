@@ -32,7 +32,6 @@ import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.ecm.webengine.config.FileChangeListener;
 import org.nuxeo.ecm.webengine.config.FileChangeNotifier;
 import org.nuxeo.ecm.webengine.config.FileChangeNotifier.FileEntry;
-import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 
 /**
@@ -217,6 +216,9 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         }
     }
 
+    public FileChangeNotifier getFileChangeNotifier() {
+        return notifier;
+    }
 
     public void fileChanged(FileEntry entry, long now) throws Exception {
         if (lastMessagesUpdate == now) return;

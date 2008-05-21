@@ -219,16 +219,16 @@ public class DefaultWebContext implements WebContext {
     }
 
     public ScriptFile getTargetScript() throws IOException {
-        File file = null;
+        ScriptFile file = null;
         if (mapping != null) {
-            return getScriptFile(mapping.getScript());
+            return getFile(mapping.getScript());
         } else if (action != null) {
             if (lastResolved != null) {
                 file = lastResolved.getActionScript(action);
             }
         }
         if (file != null) {
-            return new ScriptFile(file);
+            return file;
         }
         String path = null;
         WebObject first = getFirstUnresolvedObject();
@@ -239,7 +239,7 @@ public class DefaultWebContext implements WebContext {
                 path = first.getName();
             }
             if (path != null) {
-                ScriptFile script = getScriptFile(path);
+                ScriptFile script = getFile(path);
                 if (script != null) {
                     return script;
                 }
@@ -249,15 +249,10 @@ public class DefaultWebContext implements WebContext {
         if (path == null) {
             return null; // by using a null default page we should fallback on a 404
         }
-        return getScriptFile(path);
+        return getFile(path);
     }
 
-    public ScriptFile getScriptFile(String path) throws IOException {
-        File file = getFile(path);
-        return file != null ? new ScriptFile(file) : null;
-    }
-
-    public File getFile(String path) throws IOException {
+    public ScriptFile getFile(String path) throws IOException {
         if (path == null || path.length() == 0) return null;
         char c = path.charAt(0);
         if (c == '.') { // local path - use the path stack to resolve it
@@ -266,7 +261,7 @@ public class DefaultWebContext implements WebContext {
                 // get the file local path - TODO this should be done in ScriptFile?
                 file = new File(file, path).getCanonicalFile();
                 if (file.isFile()) {
-                    return file;
+                    return new ScriptFile(file);
                 }
                 // try using stacked roots
                 String rootPath = engine.getRootDirectory().getAbsolutePath();
@@ -386,7 +381,7 @@ public class DefaultWebContext implements WebContext {
     @SuppressWarnings("unchecked")
     public void render(String template, Object ctx) throws WebException {
         try {
-            ScriptFile script = getScriptFile(template);
+            ScriptFile script = getFile(template);
             if (script != null) {
                 render(script, ctx);
             } else {
@@ -429,7 +424,7 @@ public class DefaultWebContext implements WebContext {
 
     public Object runScript(String script, Map<String, Object> args) throws WebException {
         try {
-            ScriptFile sf = getScriptFile(script);
+            ScriptFile sf = getFile(script);
             if (sf != null) {
                 return runScript(sf, args);
             } else {

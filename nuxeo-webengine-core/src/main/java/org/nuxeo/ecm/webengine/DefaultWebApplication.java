@@ -32,10 +32,13 @@ import java.util.concurrent.ConcurrentMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
+import org.nuxeo.ecm.webengine.config.FileChangeListener;
+import org.nuxeo.ecm.webengine.config.FileChangeNotifier;
 import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.mapping.MappingDescriptor;
@@ -49,14 +52,14 @@ import org.nuxeo.ecm.webengine.util.DirectoryStack;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DefaultWebApplication implements WebApplication {
+public class DefaultWebApplication implements WebApplication, FileChangeListener {
 
     public final static Log log = LogFactory.getLog(WebApplication.class);
 
     protected WebEngine engine;
     protected FreemarkerEngine rendering;
     protected String id;
-    protected DirectoryStack vdir;
+    protected DirectoryStack dirStack;
     protected String errorPage;
     protected String indexPage;
     protected String defaultPage;
@@ -68,7 +71,7 @@ public class DefaultWebApplication implements WebApplication {
 
     // object binding cache
     protected ConcurrentMap<String, ObjectDescriptor> objects;
-
+    protected ConcurrentMap<String, ScriptFile> fileCache;
 
     public DefaultWebApplication(WebEngine engine, WebApplicationDescriptor desc) throws WebException {
         this.engine = engine;
@@ -93,14 +96,14 @@ public class DefaultWebApplication implements WebApplication {
         }
         try {
             List<RootDescriptor> roots = desc.getRoots();
-            this.vdir = new DirectoryStack();
+            this.dirStack = new DirectoryStack();
             if (roots == null) {
-                this.vdir.addDirectory(new File(engine.getRootDirectory(), "default"), 0);
+                this.dirStack.addDirectory(new File(engine.getRootDirectory(), "default"), 0);
             } else {
                 Collections.sort(roots);
                 for (RootDescriptor rd : roots) {
                     File file =new File(engine.getRootDirectory(), rd.path);
-                    this.vdir.addDirectory(file, rd.priority);
+                    this.dirStack.addDirectory(file, rd.priority);
                 }
             }
 
@@ -119,11 +122,25 @@ public class DefaultWebApplication implements WebApplication {
                 }
             }
             objects = new ConcurrentHashMap<String, ObjectDescriptor>();
+            fileCache = new ConcurrentHashMap<String, ScriptFile>();
             this.desc = desc;
+
+            FileChangeNotifier notifier = engine.getFileChangeNotifier();
+            if (notifier != null) {
+                if (!dirStack.isEmpty()) {
+                    notifier.addListener(this);
+                    for (DirectoryStack.Entry entry : dirStack.getEntries()) {
+                        notifier.watch(entry.file);
+                    }
+                }
+            }
+
         } catch (Exception e) {
             throw new WebDeployException("Failed to create virtual directory for webapp: "+id, e);
         }
     }
+
+
 
     public RenderingEngine getRendering() {
         return rendering;
@@ -147,8 +164,8 @@ public class DefaultWebApplication implements WebApplication {
         return id;
     }
 
-    public DirectoryStack getVirtualDirectory() {
-        return vdir;
+    public DirectoryStack getDirectoryStack() {
+        return dirStack;
     }
 
     /**
@@ -254,16 +271,11 @@ public class DefaultWebApplication implements WebApplication {
 
     public void flushCache() {
         objects.clear();
-        vdir.flush();
+        fileCache.clear();
     }
 
 
-    public ScriptFile getScriptFile(String path) throws IOException {
-        File file = getFile(path);
-        return file != null ? new ScriptFile(file) : null;
-    }
-
-    public File getFile(String path) throws IOException {
+    public ScriptFile getFile(String path) throws IOException {
         int len = path.length();
         if (path == null || len == 0) return null;
         char c = path.charAt(0);
@@ -272,9 +284,43 @@ public class DefaultWebApplication implements WebApplication {
         } else if (c != '/') {// avoid doing duplicate entries in document stack cache
             path = new StringBuilder(len+1).append("/").append(path).toString();
         }
-        return vdir.getFile(path);
+        return findFile(path);
     }
 
+    /**
+     *
+     * @param path a normalized path (absollute path)
+     * @return
+     */
+    private final ScriptFile findFile(String path) throws IOException {
+        ScriptFile file = fileCache.get(path);
+        if (file == null) {
+            File f = dirStack.getFile(path);
+            if (f != null) {
+                file = new ScriptFile(f);
+                fileCache.put(path, file);
+            }
+        }
+        return file;
+    }
+
+
+    public ScriptFile getActionScript(String action, DocumentType docType) throws IOException {
+        String type = docType.getName();
+        String path = "/" + type + '/' + action + ".ftl";
+        // we avoid passing through WebContext#getFile() since this is always an absolute path
+        ScriptFile file = findFile(path);
+        if (file == null) {
+            docType = (DocumentType)docType.getSuperType();
+            if (docType != null) {
+                file = getActionScript(action, docType);
+                if (file != null) {
+                    fileCache.put(path, file);
+                }
+            }
+        }
+        return file;
+    }
 
     public WebEngine getWebEngine() {
         return engine;
@@ -302,9 +348,20 @@ public class DefaultWebApplication implements WebApplication {
 
     public File getResourceFile(String key) {
         try {
-            return getFile(key);
+            ScriptFile file = getFile(key);
+            if (file != null) {
+                return file.getFile();
+            }
         } catch (IOException e) {
-            return null;
+        }
+        return null;
+    }
+
+    public void fileChanged(FileChangeNotifier.FileEntry entry, long now) {
+        for (DirectoryStack.Entry dir : dirStack.getEntries()) {
+            if (dir.file.getPath().equals(entry.file.getPath())) {
+                fileCache.clear(); // TODO optimize this do not flush entire cache
+            }
         }
     }
 

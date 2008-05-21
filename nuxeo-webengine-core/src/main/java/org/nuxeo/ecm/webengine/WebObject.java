@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
@@ -27,8 +26,8 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
+import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 /**
  *
@@ -85,13 +84,13 @@ public class WebObject {
         return null;
     }
 
-    public File getActionScript(String action) throws IOException {
+    public ScriptFile getActionScript(String action) throws IOException {
         ActionDescriptor desc = getAction(action);
         String path;
         if (desc != null) {
             path = desc.getScript();
             if (path != null) {
-                File file = context.getFile(path);
+                ScriptFile file = context.getFile(path);
                 if (file != null) {
                     return file;
                 } else {
@@ -100,25 +99,12 @@ public class WebObject {
             }
         }
         if (doc != null) {
-            File file = findActionScript(action, doc.getDocumentType());
+            ScriptFile file = context.getApplication().getActionScript(action, doc.getDocumentType());
             if (file != null) {
                 return file;
             }
         }
         return null;
-    }
-
-    protected File findActionScript(String action, DocumentType docType) throws IOException {
-        String type = docType.getName();
-        String path = "/" + type + '/' + action + ".ftl";
-        File file = context.getFile(path);
-        if (file == null) {
-            docType = (DocumentType)docType.getSuperType();
-            if (docType != null) {
-                return findActionScript(action, docType);
-            }
-        }
-        return file;
     }
 
 

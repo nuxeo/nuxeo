@@ -125,7 +125,7 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
             if (context == null) { // create an empty context
                 context = new DefaultWebContext(app, req, resp);
             }
-            ScriptFile page = context.getScriptFile(app.getErrorPage());
+            ScriptFile page = context.getFile(app.getErrorPage());
             if (page == null) {
                 displayError(resp, e, "ErrorPage not found: "+app.getErrorPage(),
                         WebConst.SC_INTERNAL_SERVER_ERROR);

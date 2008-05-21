@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import org.nuxeo.ecm.webengine.config.FileChangeNotifier;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 
 
@@ -76,6 +77,8 @@ public interface WebEngine {
     void unregisterRenderingExtension(String id);
 
     Object getRenderingExtension(String id);
+
+    FileChangeNotifier getFileChangeNotifier();
 
     void destroy();
 

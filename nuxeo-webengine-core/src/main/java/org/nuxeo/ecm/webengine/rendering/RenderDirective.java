@@ -22,11 +22,8 @@ package org.nuxeo.ecm.webengine.rendering;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.jcr.util.TraversingItemVisitor.Default;
-
 import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.WebContext;
-import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.servlet.WebServlet;
 
@@ -62,7 +59,7 @@ public class RenderDirective implements TemplateDirectiveModel {
 
         WebContext ctx = WebServlet.getContext();
         if (ctx != null) {
-            ScriptFile script = ctx.getScriptFile(src);
+            ScriptFile script = ctx.getFile(src);
             Template tpl = env.getConfiguration().getTemplate(script.getURL());
             try {
                 ((DefaultWebContext)ctx).pushScriptFile(script.getFile());

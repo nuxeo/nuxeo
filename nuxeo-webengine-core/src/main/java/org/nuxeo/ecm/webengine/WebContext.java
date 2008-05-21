@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine;
 
-import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Collection;
@@ -450,15 +449,7 @@ public interface WebContext {
      * @return the file or null if the path couldn't be resolved
      * @throws IOException
      */
-    File getFile(String path) throws IOException;
-
-    /**
-     * Same as {@link #getFile(String)} but return a {@link ScriptFile} object
-     * @param path the path to resolve into a file
-     * @return the script file or null if the path couldn't be resolved
-     * @throws IOException
-     */
-    ScriptFile getScriptFile(String path) throws IOException;
+    ScriptFile getFile(String path) throws IOException;
 
     /**
      * Write some text on the HTTP request output stream

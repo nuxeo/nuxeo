@@ -23,28 +23,20 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Arrays;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import org.nuxeo.ecm.webengine.config.FileChangeListener;
-import org.nuxeo.ecm.webengine.config.FileChangeNotifier;
+import java.util.List;
 
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DirectoryStack implements FileChangeListener {
+public class DirectoryStack {
 
     protected List<Entry> dirs;
-    protected ConcurrentMap<String, File> cache;
-    protected long lastNotifFlush = 0;
 
     public DirectoryStack() throws IOException {
         dirs = new ArrayList<Entry>();
-        this.cache = new ConcurrentHashMap<String, File>();
     }
 
     public List<Entry> getEntries() {
@@ -59,11 +51,6 @@ public class DirectoryStack implements FileChangeListener {
         dirs.add(new Entry(dir.getCanonicalFile(), priority));
     }
 
-    public void trackFileChanges(FileChangeNotifier notifier) throws IOException {
-        for (Entry entry : dirs) {
-            notifier.watch(entry.file);
-        }
-    }
 
     /**
      * Gets the file given its name in this virtual directory.
@@ -76,16 +63,10 @@ public class DirectoryStack implements FileChangeListener {
      * @throws IOException
      */
     public File getFile(String name) throws IOException {
-        File file = cache.get(name);
-        if (file != null) {
-            return file;
-        }
         for (Entry entry : dirs) {
-            file = new File(entry.file, name);
+            File file = new File(entry.file, name);
             if (file.exists()) {
-                file = file.getCanonicalFile();
-                cache.put(name, file);
-                return file;
+                return file.getCanonicalFile();
             }
         }
         return null;
@@ -109,22 +90,6 @@ public class DirectoryStack implements FileChangeListener {
         return result.toArray(new File[result.size()]);
     }
 
-    /**
-     * Flush cache
-     */
-    public void flush() {
-        cache.clear();
-    }
-
-    public void fileChanged(FileChangeNotifier.FileEntry entry, long now) {
-        if (now == lastNotifFlush) return;
-        for (Entry dir : dirs) {
-            if (dir.file.getPath().equals(entry.file.getPath())) {
-                lastNotifFlush = now;
-                flush(); // TODO optimize this do not flush entire cache
-            }
-        }
-    }
 
     public static class Entry implements Comparable<Entry> {
         public File file;
@@ -154,9 +119,6 @@ public class DirectoryStack implements FileChangeListener {
             }
             System.out.println("dummy: "+vd.getFile("dummy"));
             System.out.println("dev: "+vd.getFile("dev"));
-            System.out.println("dummy: "+vd.getFile("dummy"));
-            System.out.println("dev: "+vd.getFile("dev"));
-            vd.flush();
             System.out.println("dummy: "+vd.getFile("dummy"));
             System.out.println("dev: "+vd.getFile("dev"));
         } catch (IOException e) {
