@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.uidgen.ejb;
 
 import java.util.List;
 
+import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -39,6 +41,8 @@ import org.apache.commons.logging.LogFactory;
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
 @Stateless
+@Local(UIDSequencerManager.class)
+@Remote(UIDSequencerManager.class)
 public class UIDSequencerManagerBean implements UIDSequencerManager {
 
     public static final String RemoteJNDIName = "nuxeo/"
@@ -58,11 +62,9 @@ public class UIDSequencerManagerBean implements UIDSequencerManager {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public int getNext(String key) {
         synchronized (SEMAPHORE) {
-            EntityManagerFactory emf;
-            EntityManager em;
 
-            emf = Persistence.createEntityManagerFactory("NXUIDSequencer");
-            em = emf.createEntityManager();
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory("NXUIDSequencer");
+            EntityManager em = emf.createEntityManager();
             EntityTransaction et = em.getTransaction();
             if (!et.isActive()) {
                 em.getTransaction().begin();
