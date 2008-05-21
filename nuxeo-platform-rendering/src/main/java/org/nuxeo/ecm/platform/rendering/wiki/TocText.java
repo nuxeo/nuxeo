@@ -56,7 +56,9 @@ public class TocText implements WikiText {
     private void prinEntry(WikiSerializerHandler serializer, Writer writer, Toc.Entry entry) throws IOException {
         printHeading(serializer, writer, entry);
         if (entry.firstChild != null) {
+            writer.write("<ol>"+WikiWriter.LINE_SEP);
             prinEntry(serializer, writer, entry.firstChild);
+            writer.write("</ol>"+WikiWriter.LINE_SEP);
         }
         if (entry.next != null) {
             prinEntry(serializer, writer, entry.next);
@@ -67,18 +69,19 @@ public class TocText implements WikiText {
         writer.write("<div class=\"toc\">");
         writer.write(WikiWriter.LINE_SEP);
         writer.write("<h2 class=\"tocTitle\">"+title+"</h2>");
-        writer.write("<ul>");
+        writer.write(WikiWriter.LINE_SEP);
+        writer.write("<ol class=\"contentToc\">");
         writer.write(WikiWriter.LINE_SEP);
     }
 
     protected void printTocFooter(WikiSerializerHandler serializer, Writer writer) throws IOException {
-        writer.write("</ul>");
+        writer.write("</ol>");
         writer.write("</div>");
         writer.write(WikiWriter.LINE_SEP);
     }
 
     protected void printHeading(WikiSerializerHandler serializer, Writer writer, Toc.Entry entry) throws IOException {
-        writer.write("<li class=\"toc h"+entry.level+"\"><a href=\"#heading_"+entry.id+"\">"+entry.title+"</a></li>"+WikiWriter.LINE_SEP);
+        writer.write("<li><a href=\"#heading_"+entry.id+"\">"+entry.title+"</a></li>"+WikiWriter.LINE_SEP);
     }
 
 }
