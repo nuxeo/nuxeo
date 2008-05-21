@@ -1,0 +1,23 @@
+<assembly>
+
+<!--
+To be used over a nuxeo assembly to excludes the search engine.
+Only the API is preserved
+
+Need nuxeo-platform-transform-core because of nuxeo-platform-modifier,
+  so cannot use exclude-indexing
+-->
+
+<artifactSet extends="**">
+  <excludes>
+    <artifact name="nuxeo-platform-search-*" file="!*search-api*"/>
+    <artifact name="nuxeo-platform-transform-facade"/>
+    <artifact name="nuxeo-platform-transform-plugins"/>
+    <artifact name="nuxeo-platform-mimetype-facade"/>
+    <artifact name="nuxeo-platform-relations-search"/>
+    <artifact name="nuxeo-platform-audit-search"/>
+  </excludes>
+</artifactSet>
+
+</assembly>
+

@@ -5,6 +5,7 @@
     <excludes>
       <exclude>**/.svn</exclude>
       <exclude>config/default-versioning-config.xml</exclude>
+      <exclude>nxdocument.cpm.xml</exclude>
     </excludes>
   </fileSet>
 
@@ -21,6 +22,7 @@
   <artifactSet extends="nuxeo-platform">
     <excludes>
       <artifact name="nuxeo-platform-filemanager-core-listener" />
+      <artifact name="nuxeo-platform-filemanager-core" />
     </excludes>
   </artifactSet>
 

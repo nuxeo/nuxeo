@@ -17,10 +17,11 @@
       <include>META-INF/**</include>
       <include>OSGI-INF/**</include>
     </includes>
-    <!--
     <excludes>
       <exclude>**/.svn</exclude>
       <exclude>lib-fragments.xml</exclude>
+      <exclude>nxdocument.cpm.xml</exclude>
+      <!--
       <exclude>config/addWorkspace.jpdl.xml</exclude>
       <exclude>config/commentService-config-bundle.xml</exclude>
       <exclude>config/default-sql-directories-bundle.xml</exclude>
@@ -36,8 +37,8 @@
       <exclude>datasources/nxworkflow*.xml</exclude>
       <exclude>OSGI-INF/templates/WAR_MANIFEST.MF</exclude>
       <exclude>config/fileManagerService-config-bundle.xml</exclude>
+      -->
     </excludes>
-     -->
   </fileSet>
 
   <fileSet id="nuxeo-template-core">
@@ -59,6 +60,7 @@
       <artifact name="nuxeo-platform-events-*" />
       <artifact name="nuxeo-platform-filemanager-api" />
       <artifact name="nuxeo-platform-filemanager-core-listener" />
+      <artifact name="nuxeo-platform-filemanager-core" />
       <artifact name="nuxeo-platform-mimetype-*" />
       <artifact name="nuxeo-platform-uidgen-core" />
       <artifact name="nuxeo-platform-modifier" />
@@ -101,6 +103,7 @@
 
 
   <artifactSet id="nuxeo-platform-unpacked" />
+
 
 </assembly>
 
