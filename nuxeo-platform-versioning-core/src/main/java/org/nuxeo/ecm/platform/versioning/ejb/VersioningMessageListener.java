@@ -79,8 +79,11 @@ public class VersioningMessageListener implements MessageListener {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void onMessage(Message message) {
         try {
+            Object obj = ((ObjectMessage)message).getObject();
+            if(!(obj instanceof DocumentMessage))
+                return;
+            DocumentMessage doc = (DocumentMessage) obj;
 
-            DocumentMessage doc = (DocumentMessage) ((ObjectMessage) message).getObject();
             String eventId = doc.getEventId();
             log.debug("Received a message with event id: " + eventId);
 

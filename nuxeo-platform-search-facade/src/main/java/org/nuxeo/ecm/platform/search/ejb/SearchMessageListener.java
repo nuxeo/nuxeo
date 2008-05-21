@@ -112,7 +112,10 @@ public class SearchMessageListener implements MessageListener {
                 return;
             }
 
-            DocumentMessage doc = (DocumentMessage) ((ObjectMessage) message).getObject();
+            Object obj = ((ObjectMessage)message).getObject();
+            if(!(obj instanceof DocumentMessage))
+                return;
+            DocumentMessage doc = (DocumentMessage) obj;
             String eventId = doc.getEventId();
 
             Boolean duplicatedMessage = (Boolean) doc.getEventInfo().get(

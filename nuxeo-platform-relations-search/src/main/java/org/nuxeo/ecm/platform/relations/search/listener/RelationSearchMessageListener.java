@@ -56,7 +56,7 @@ import org.nuxeo.ecm.platform.relations.search.indexer.RelationIndexer;
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
         @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
         @ActivationConfigProperty(propertyName = "messageSelector",
-                propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " IN ('" + JMSConstant.DOCUMENT_MESSAGE + "','" + JMSConstant.EVENT_MESSAGE + "') AND " + JMSConstant.NUXEO_EVENT_ID + " IN ('" 
+                propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " IN ('" + JMSConstant.DOCUMENT_MESSAGE + "','" + JMSConstant.EVENT_MESSAGE + "') AND " + JMSConstant.NUXEO_EVENT_ID + " IN ('"
                     +RelationEvents.AFTER_RELATION_CREATION + "','" + RelationEvents.AFTER_RELATION_MODIFICATION + "','"
                     + RelationEvents.AFTER_RELATION_REMOVAL + "')") })
 @TransactionManagement(TransactionManagementType.CONTAINER)
@@ -95,7 +95,10 @@ public class RelationSearchMessageListener implements MessageListener {
                 return;
             }
 
-            DocumentMessage doc = (DocumentMessage) ((ObjectMessage) message).getObject();
+            Object obj = ((ObjectMessage)message).getObject();
+            if(!(obj instanceof DocumentMessage))
+                return;
+            DocumentMessage doc = (DocumentMessage) obj;
             if (!RelationEvents.CATEGORY.equals(doc.getCategory())) {
                 return; // caller is trustworthy
             }

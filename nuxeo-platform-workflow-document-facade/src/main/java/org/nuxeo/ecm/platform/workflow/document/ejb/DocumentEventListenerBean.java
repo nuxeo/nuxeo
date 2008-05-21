@@ -76,7 +76,10 @@ public class DocumentEventListenerBean implements MessageListener {
     public void onMessage(Message message) {
 
         try {
-            DocumentMessage doc = (DocumentMessage) ((ObjectMessage) message).getObject();
+            Object obj = ((ObjectMessage)message).getObject();
+            if(!(obj instanceof DocumentMessage))
+                return;
+            DocumentMessage doc = (DocumentMessage) obj;
             DocumentRef docRef = doc.getRef();
 
             String eventId = doc.getEventId();
