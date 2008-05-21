@@ -95,8 +95,10 @@ public class NotificationMessageListener implements MessageListener {
     public void onMessage(Message message) {
         log.debug("onMessage");
         try {
-
-            DocumentMessage doc = (DocumentMessage) ((ObjectMessage) message).getObject();
+            Object obj = ((ObjectMessage)message).getObject();
+            if(!(obj instanceof DocumentMessage))
+                return;
+            DocumentMessage doc = (DocumentMessage) obj;
 
             String eventId = doc.getEventId();
             log.debug("Recieved a message for notification with eventId : "

@@ -71,7 +71,10 @@ public class NXAuditMessageListener implements MessageListener {
 
     public void onMessage(Message message) {
         try {
-            DocumentMessage doc = (DocumentMessage) ((ObjectMessage) message).getObject();
+            Object obj = ((ObjectMessage)message).getObject();
+            if(!(obj instanceof DocumentMessage))
+                return;
+            DocumentMessage doc = (DocumentMessage) obj;
 
             String eventId = doc.getEventId();
             log.debug("Received a message with eventId : " + eventId);
