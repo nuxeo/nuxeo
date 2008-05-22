@@ -66,7 +66,7 @@ public class TocText implements WikiText {
     }
 
     protected void printTocHeader(WikiSerializerHandler serializer, Writer writer, String title) throws IOException {
-        writer.write("<table class=\"toc\">");
+        writer.write("<table class=\"toc\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">");
         writer.write(WikiWriter.LINE_SEP);
         writer.write("<tr><td>");
         writer.write("<div class=\"tocTitle\">"+title+"</div>");
