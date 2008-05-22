@@ -32,6 +32,7 @@ JBOSS_HOME=`cd $HERE/..; pwd -P`
 # Read an optional running configuration file
 if [ -r "$JBOSS_HOME/bin/jbossctl.conf" ]; then
     export RUN_CONF=$JBOSS_HOME/bin/jbossctl.conf
+    . $RUN_CONF
 fi
 if [ -z "$JAVA_HOME" ]; then
     echo 'Missing $JAVA_HOME' >&2; exit 2
