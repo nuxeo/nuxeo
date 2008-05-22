@@ -111,8 +111,8 @@
 <div class="sideblock general">
     <h3>Special Pages</h3>
     <ul>
-      <li><a href="${Root.urlPath}/About">About</a></li>
-      <li><a href="${Root.urlPath}/LatestChanges">Latest changes on Wiki</a></li>
+      <li><a href="${Root.urlPath}/About">About this site</a></li>
+      <li><a href="${Root.urlPath}/LatestChanges">Latest changes on site</a></li>
       <li><a href="${Root.urlPath}/Categories">Categories</a></li>
     </ul>
 </div>  
