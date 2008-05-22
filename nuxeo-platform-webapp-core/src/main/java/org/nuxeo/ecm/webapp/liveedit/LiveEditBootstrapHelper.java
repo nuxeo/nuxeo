@@ -516,19 +516,27 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     public boolean isDocumentLiveEditable(DocumentModel documentModel,
             String propertyName) throws ClientException {
         if (documentModel == null) {
+            log.warn("cannot check live editable state of null DocumentModel");
             return false;
-            // throw new ClientException(
-            // "cannot check live editable state of null DocumentModel");
         }
 
         if (documentModel.hasFacet(IMMUTABLE_FACET)) {
             return false;
         }
 
-        if (!documentManager.hasPermission(documentModel.getRef(),
-                SecurityConstants.WRITE_PROPERTIES)) {
-            // the lock state is check as a extension to the
-            // SecurityPolicyManager
+        try {
+            if (!documentManager.hasPermission(documentModel.getRef(),
+                    SecurityConstants.WRITE_PROPERTIES)) {
+                // the lock state is check as a extension to the
+                // SecurityPolicyManager
+                return false;
+            }
+        } catch (ClientException e) {
+            // the document no longer exist in the core
+            log.warn(String.format(
+                    "document '%s' with reference '%s' no longer exists in the database, "
+                            + "please ensure the indexes are up to date",
+                    documentModel.getTitle(), documentModel.getRef()));
             return false;
         }
 
