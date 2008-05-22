@@ -38,9 +38,7 @@ public abstract class AbstractWorkflowDocumentRightsPolicyServiceTestCase
                 "WorkflowDocumentSecurityPolicyService.xml");
         deployContrib("org.nuxeo.ecm.platform.workflow.document.tests",
                 "WorkflowDocumentSecurityPolicyServiceTestExtensions.xml");
-        service = NXWorkflowDocument
-                .getWorkflowDocumentRightsPolicyService();
-
+        service = NXWorkflowDocument.getWorkflowDocumentRightsPolicyService();
     }
 
     public void testService() {
