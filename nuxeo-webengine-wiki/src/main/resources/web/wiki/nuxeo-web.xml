@@ -75,6 +75,7 @@
           <permission expression="Read"/>
           <category>tabview</category>
         </action>
+        <action id="youpi" enabled="true" script="WikiPage/youpi.groovy"/>
         <action id="show_comments_py" enabled="true" script="comments/getComments.py">
           <permission expression="Read"/>
         </action>

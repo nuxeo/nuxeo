@@ -40,6 +40,7 @@
       jQuery.ajax({
         url: this.action,
         type: "POST",
+        async: false,
         timeout: 2000,
         beforeSend : function(req) {
           req.setRequestHeader("Authorization", auth);

@@ -3,7 +3,7 @@
 
 <script>
 $(document).ready(function(){
-  $("#entry-actions > ul").tabs({ selected: 2 });
+  $("#entry-actions > ul").tabs();
   //$("#entry-actions > ul").tabs("select", '#view_content');
 });
 </script>
@@ -12,7 +12,7 @@ $(document).ready(function(){
 
 <div id="entry-actions">
 <ul>
-  <#list Context.getActions("tabview")?sort as action>
+  <#list Context.getActions("tabview")?sort?reverse as action>
     <li><a href="${This.urlPath}@@${action.id}"  title="${action.id}"><span>${message('action.' + action.id)}</span></a></li>
   </#list>
 </ul>
