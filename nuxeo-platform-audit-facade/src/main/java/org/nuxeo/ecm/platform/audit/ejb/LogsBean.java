@@ -232,24 +232,17 @@ public class LogsBean implements Logs {
     }
 
     @SuppressWarnings("unchecked")
-    public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,String category,String path,
-            int pageNb, int pageSize) throws AuditException {
+    public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit,
+            String category, String path, int pageNb, int pageSize)
+            throws AuditException {
 
         // :FIXME: This is not working remotelty since the LogEntryImpl returned
         // is not within the api package.
-
 
         Class<LogEntry> klass = getLogEntryClass();
 
         List<LogEntry> results = new ArrayList<LogEntry>();
 
-        Date limit = null;
-        try {
-            limit = DateRangeParser.parseDateRangeQuery(new Date(), dateRange);
-        } catch (AuditQueryException aqe) {
-            throw new AuditException("Wrong date range query. Query was "
-                    + dateRange, aqe);
-        }
 
         String inClause=null;
 
@@ -308,6 +301,22 @@ public class LogsBean implements Logs {
         }
 
         return returned;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
+            String category, String path, int pageNb, int pageSize)
+            throws AuditException {
+
+        Date limit = null;
+        try {
+            limit = DateRangeParser.parseDateRangeQuery(new Date(), dateRange);
+        } catch (AuditQueryException aqe) {
+            throw new AuditException("Wrong date range query. Query was "
+                    + dateRange, aqe);
+        }
+        return queryLogsByPage(eventIds, limit, category, path, pageNb,
+                pageSize);
     }
 
     @SuppressWarnings("unchecked")
