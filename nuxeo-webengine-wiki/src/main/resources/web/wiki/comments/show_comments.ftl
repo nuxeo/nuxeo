@@ -1,6 +1,5 @@
 <#assign comments = script("comments/getComments.groovy") />
 
-<div id="entryComments">
   <h1>Comments</h1>
   
   <div class="commentsList">
@@ -38,5 +37,3 @@
 
 <form action="${This.urlPath}@@add_comment" >
 </form>
-
-</div>

@@ -97,15 +97,25 @@
   <div class="sideblock-content-bottom"></div>
   </@block>
   
-  <@block name="specialpages-container" ifBlockDefined="specialpages">
   <div class="sideblock contextual">
-    <h3>Special pages</h3>
+    <h3>Toolbox</h3>
     <div class="sideblock-content">
-      <@block name="specialpages"/>
+      <ul>
+        <li><a href="${This.urlPath}@@print">Print view</a></li>
+        <li><a href="${This.urlPath}@@links_here">Pages that links here</a></li>
+      </ul>
     </div>  
   </div>
   <div class="sideblock-content-bottom"></div>
-  </@block>
+  
+<div class="sideblock general">
+    <h3>Special Pages</h3>
+    <ul>
+      <li><a href="${Root.urlPath}/About">About</a></li>
+      <li><a href="${Root.urlPath}/LatestChanges">Latest changes on Wiki</a></li>
+      <li><a href="${Root.urlPath}/Categories">Categories</a></li>
+    </ul>
+</div>  
 
 <div class="sideblock general">
     <h3>Last Items</h3>

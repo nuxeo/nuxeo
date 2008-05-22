@@ -410,11 +410,16 @@ pre {
     font-size: 0.9em;
 }
 
+blockquote {
+  line-height: 200%;
+  font-style: italic;
+  color:#666;
+}
+
 .hidden {
     /* Use this to hide elements */
     display: none;
 }
-
 
 /* Table of contents */
 
@@ -444,7 +449,7 @@ pre {
 /* Attachments */
 
 #main #entry-attachments {
-  margin-top:10px;
+  margin-top:20px;
   border:1px solid #e4e4e4;
 }
 
@@ -461,7 +466,7 @@ pre {
   padding:0 10px;
 }
 
-/* for safari (wtf?) */
+/* for safari otherwise titles don't have right color. Theses lines are to be overrided by wiki.css and blog.css for font color */
 
 #main .main-content h2 {
   background-color:#f1f2f3;
@@ -477,16 +482,16 @@ body {
   counter-reset: chapter;
   }
 
-.main-content h2:before { 
+.main-content .doc h2:before { 
   content: counter(chapter) " ";
   counter-increment: chapter;
 }
 
-.main-content h2 {
+.main-content .doc h2 {
   counter-reset: section;
   }
 
-.main-content h3:before { 
+.main-content .doc h3:before { 
   content: counter(chapter) "." counter(section) " ";
   counter-increment: section;
 }
@@ -596,7 +601,6 @@ padding-left: 5px;
   
 }
 
-
 #main .version_list th {
   padding:3px;
   background-color: #666;
@@ -612,13 +616,13 @@ padding-left: 5px;
 
 /* Comment box */
 
-#entryComments {
+#entry-comments {
  border:1px solid #000;
  margin-top:15px;
  padding:10px;
 }
 
-#entryComments h1 {
+#entry-comments h1 {
  font-size: 190%;
  }
  

@@ -8,13 +8,20 @@
     </head>
   <body>
     <div id="main">
+     <div class="closeWindow">
+<form>
+    <input type="button" value=" Close this window " onclick="self.close()" />
+  </form>
+</div>
       <div class="main-content">
         <h1>Titre du document</h1>
         <@wiki>${Request.getParameter('content')}</@wiki> 
       </div>
       <div class="closeWindow">
-        <a href="javascript:self.close()">Close this window</a>
-      </div>
+<form>
+    <input type="button" value=" Close this window " onclick="self.close()" />
+  </form>
+</div>
     </div>
   </body>
 </html>

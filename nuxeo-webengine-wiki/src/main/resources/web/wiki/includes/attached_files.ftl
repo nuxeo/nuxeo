@@ -1,5 +1,5 @@
 <#assign files = Document.files.files />
-<div class="attachedTitle">Attached files:</div>
+<div class="attachedTitle">Attached files</div>
 <div id="attached_files">
 <#if (files?size != 0)>
     <#list files as file>
