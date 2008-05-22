@@ -56,11 +56,11 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         return registry.values().iterator();
     }
 
-    public void add(K key, T object, K ... requires) {
-        add(key, object, Arrays.asList(requires));
+    public Entry<K,T> add(K key, T object, K ... requires) {
+        return add(key, object, Arrays.asList(requires));
     }
 
-    public void add(K key, T object, Collection<K> requires) {
+    public Entry<K,T> add(K key, T object, Collection<K> requires) {
         Entry<K, T> entry = registry.get(key);
         if (entry == null) {
             entry = new Entry<K, T>(key, object);
@@ -69,7 +69,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
             entry.object = object;
         } else {
             //TODO object already exists
-            return;
+            return entry;
         }
         updateDependencies(entry, requires);
         registered(entry);
@@ -77,6 +77,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         if (entry.isResolved()) {
             resolve(entry);
         }
+        return entry;
     }
 
     public void add(K key, T object) {
