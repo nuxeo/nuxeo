@@ -74,7 +74,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         updateDependencies(entry, requires);
         registered(entry);
         // resolve it if no pending requirements
-        if (entry.isResolved()) {
+        if (entry.canEnterResolvedState()) {
             resolve(entry);
         }
         return entry;
@@ -114,10 +114,25 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         return entry != null && entry.isResolved() ? entry.object : null;
     }
 
-    public void resolve(Entry<K, T> entry) {
+    private final void resolveEntry(Entry<K, T> entry) {
+        //synchronize () {
         resolved.add(entry);
+        entry.isResolved = true;
+        //}
         // notify listener
         resolved(entry);
+    }
+
+    private final void unresolveEntry(Entry<K, T> entry) {
+        //synchronize () {
+        resolved.remove(entry);
+        entry.isResolved = false;
+        //}
+        unresolved(entry);
+    }
+
+    public void resolve(Entry<K, T> entry) {
+        resolveEntry(entry);
         // resolve any dependent entry if they are waiting only for me
         Set<Entry<K, T>> deps = entry.getDependsOnMe();
         if (deps != null) {
@@ -141,20 +156,23 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
                 }
             }
         }
-        resolved.remove(entry);
-        unresolved(entry);
+        unresolveEntry(entry);
+    }
+
+    public boolean isPhantom(K key) {
+        Entry<K, T> entry = registry.get(key);
+        return entry != null && entry.isPhantom();
     }
 
     public boolean isRegistered(K key) {
         Entry<K, T> entry = registry.get(key);
-        return entry != null && entry.object != null;
+        return entry != null && entry.isRegistered();
     }
 
     public boolean isResolved(K key) {
         Entry<K, T> entry = registry.get(key);
         return entry != null && entry.isResolved();
     }
-
 
     public Collection<Entry<K, T>> getEntries() {
         return registry.values();
@@ -223,6 +241,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         for (Entry<K, T> entry : resolved) {
             entry = registry.remove(entry.key);
             if (entry != null) {
+                entry.isResolved = false;
                 unresolved(entry);
                 unregistered(entry);
             }
@@ -237,7 +256,6 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
             }
         }
     }
-
 
     protected void updateDependencies(Entry<K, T> entry, Collection<K> requires) {
         if (requires != null) {
@@ -273,23 +291,35 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
     protected void unresolved(Entry<K, T> entry) {
     }
 
+    public final static int PHANTOM = 0;
+    public final static int REGISTERED = 1;
+    public final static int RESOLVED = 3;
     public static class Entry<K, T> {
         private final K key;
         private T object;
         private Set<Entry<K, T>> waitsFor;
         private Set<Entry<K, T>> dependsOnMe;
+        private boolean isResolved = false;
 
         public Entry(K key, T object) {
             this.key = key;
             this.object = object;
         }
 
-        public final boolean isRegistered() {
+        public boolean isPhantom() {
+            return object == null;
+        }
+
+        public boolean isRegistered() {
             return object != null;
         }
 
-        public final boolean isResolved() {
-            return object != null && waitsFor == null;
+        public boolean isResolved() {
+            return isResolved;
+        }
+
+        public final boolean canEnterResolvedState() {
+            return !isResolved && object != null && waitsFor == null;
         }
 
         public final void addWaitingFor(Entry<K, T> entry) {
