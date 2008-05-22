@@ -139,6 +139,7 @@ body {
 #sidebar .general {
   margin-left:20px;
   margin-right:5px;
+  padding-top:3px;
 }
 
 #sidebar .contextual {
@@ -179,9 +180,15 @@ body {
  padding:10px 25px;
 }
 
+#sidebar .contextual .sideblock-content {
+ padding-top:5px;
+}
+
+
 #sidebar .sideblock-content-bottom {
   background:url(/nuxeo/site/files/resources/image/background_box_bottom.gif) top left no-repeat;
   height:5px;
+  margin-bottom:10px;
 }
 
 
