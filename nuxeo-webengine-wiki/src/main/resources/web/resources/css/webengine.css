@@ -77,6 +77,7 @@ body {
     margin:0;
     font-family: "Century Gothic","Trebuchet MS", Verdana;
     border-bottom: none;
+    text-transform: capitalize;
 }
 
 #header h1 a {

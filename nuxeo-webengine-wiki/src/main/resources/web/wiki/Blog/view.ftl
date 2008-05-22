@@ -9,6 +9,7 @@
         ${entry['bp:content']}
   </div>
   <div class="summary-byline">${entry["dc:modified"]?datetime} by ${entry['dc:creator']}</div>
+ </div>
 </#list>
 </div>
 

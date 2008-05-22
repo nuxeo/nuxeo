@@ -19,13 +19,12 @@
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/markitup/sets/default/set.js"></script>
   <link rel="stylesheet" type="text/css" href="/nuxeo/site/files/resources/script/markitup/skins/markitup/style.css" />
   <link rel="stylesheet" type="text/css" href="/nuxeo/site/files/resources/script/markitup/default/style.css" />
-  
   <!-- end markitup -->
   
   
   <link rel="shortcut icon" href="/nuxeo/site/files/resources/image/favicon.gif" />
   
-<base href="${This.urlPath}">
+  <base href="${This.urlPath}">
 
 <script>  
 
