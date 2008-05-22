@@ -96,6 +96,16 @@
   </div>
   <div class="sideblock-content-bottom"></div>
   </@block>
+  
+  <@block name="specialpages-container" ifBlockDefined="specialpages">
+  <div class="sideblock contextual">
+    <h3>Special pages</h3>
+    <div class="sideblock-content">
+      <@block name="specialpages"/>
+    </div>  
+  </div>
+  <div class="sideblock-content-bottom"></div>
+  </@block>
 
 <div class="sideblock general">
     <h3>Last Items</h3>
