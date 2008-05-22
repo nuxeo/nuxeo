@@ -64,6 +64,8 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
 
     private final static ThreadLocal<WebContext> CONTEXT = new ThreadLocal<WebContext>();
 
+    private static CoreSession anonymousSession;
+
     private WebEngine engine;
     private WebApplication app;
 
@@ -311,6 +313,21 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
         } catch (WebException e) {
             displayError(context.getResponse(), e, "Error during the rendering process");
         }
+    }
+
+    public static CoreSession getAnonymousSession(HttpServletRequest request) throws Exception {
+        if (anonymousSession == null) {
+            anonymousSession = DefaultWebContext.openSession(request);
+        }
+        return anonymousSession;
+    }
+
+    @Override
+    public void destroy() {
+        if (anonymousSession != null) {
+            anonymousSession.destroy();
+        }
+        anonymousSession = null;
     }
 
 }

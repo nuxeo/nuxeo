@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
+import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.WebApplication;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.resolver.DefaultDocumentResolver;
@@ -109,7 +110,7 @@ public abstract class BaseSiteRequestTestCase extends RepositoryOSGITestCase {
     protected FakeResponse execSiteRequest(FakeRequest fReq)
             throws Exception {
         FakeResponse fRes = new FakeResponse();
-        fReq.setAttribute("TestCoreSession", getCoreSession());
+        fReq.setAttribute(DefaultWebContext.CORESESSION_KEY, getCoreSession());
         siteServlet.service(fReq, fRes);
         return fRes;
     }

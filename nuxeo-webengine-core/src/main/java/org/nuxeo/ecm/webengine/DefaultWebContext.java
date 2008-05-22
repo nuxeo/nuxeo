@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -56,6 +57,7 @@ import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
+import org.nuxeo.ecm.webengine.servlet.WebServlet;
 import org.nuxeo.ecm.webengine.util.FormData;
 import org.nuxeo.ecm.webengine.util.JSonHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -73,6 +75,8 @@ public class DefaultWebContext implements WebContext {
     public static final String CORESESSION_KEY = "SiteCoreSession";
 
     public static boolean USE_CORE_SEARCH = false;
+
+    private static CoreSession anonymousSession;
 
     protected final WebEngine engine;
     protected CoreSession session;
@@ -633,23 +637,22 @@ public class DefaultWebContext implements WebContext {
 
     public static CoreSession getCoreSession(HttpServletRequest request)
     throws Exception {
-
-//      for testing
-        CoreSession session = (CoreSession) request.getAttribute("TestCoreSession");
+        CoreSession session = null;
 
         HttpSession httpSession = request.getSession(true);
         if (session == null) {
             session = (CoreSession) httpSession.getAttribute(CORESESSION_KEY);
-        }
-        if (session == null) {
-            String repoName = getTargetRepositoryName(request);
-            RepositoryManager rm = Framework.getService(RepositoryManager.class);
-            Repository repo = rm.getRepository(repoName);
-            if (repo == null) {
-                throw new ClientException("Unable to get " + repoName
-                        + " repository");
+            if (session != null) {
+                return session;
             }
-            session = repo.open();
+        }
+        Principal principal = request.getUserPrincipal();
+        if (principal instanceof NuxeoPrincipal) {
+            if (((NuxeoPrincipal)principal).isAnonymous()) { // use the anonymous session
+                session = WebServlet.getAnonymousSession(request);
+            } else {
+                session = openSession(request);
+            }
         }
         if (httpSession != null) {
             httpSession.setAttribute(CORESESSION_KEY, session);
@@ -657,11 +660,19 @@ public class DefaultWebContext implements WebContext {
         return session;
     }
 
+    public  static CoreSession openSession(HttpServletRequest request) throws Exception {
+        String repoName = getTargetRepositoryName(request);
+        RepositoryManager rm = Framework.getService(RepositoryManager.class);
+        Repository repo = rm.getRepository(repoName);
+        if (repo == null) {
+            throw new ClientException("Unable to get " + repoName
+                    + " repository");
+        }
+        return repo.open();
+    }
     public static String getTargetRepositoryName(HttpServletRequest req) {
         return "default";
     }
-
-
 
 
 }
