@@ -59,10 +59,15 @@
       <version>1.5</version>
     </dependency>
     <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+    </dependency>
+
+    <dependency>
     	<groupId>javax.ejb</groupId>
     	<artifactId>ejb-api</artifactId>
     	<scope>test</scope>
-    </dependency>
+    </dependency>    
   </dependencies>
 
   <build>
