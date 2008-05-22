@@ -96,13 +96,13 @@ import org.nuxeo.runtime.api.Framework;
 @Name("liveEditHelper")
 public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants {
 
-    public static final String IMMUTABLE_FACET = "Immutable";
+    protected static final String IMMUTABLE_FACET = "Immutable";
 
-    private static final long serialVersionUID = 876879071L;
+    protected static final long serialVersionUID = 876879071L;
 
-    private static final String MODIFIED_FIELD = "modified";
+    protected static final String MODIFIED_FIELD = "modified";
 
-    private static final String DUBLINCORE_SCHEMA = "dublincore";
+    protected static final String DUBLINCORE_SCHEMA = "dublincore";
 
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(LiveEditBootstrapHelper.class);
@@ -114,42 +114,42 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     protected CoreSession documentManager;
 
     @RequestParameter
-    private String action;
+    protected String action;
 
     @RequestParameter
-    private String repoID;
+    protected String repoID;
 
     @RequestParameter
-    private String templateRepoID;
+    protected String templateRepoID;
 
     @RequestParameter
-    private String docRef;
+    protected String docRef;
 
     @RequestParameter
-    private String templateDocRef;
+    protected String templateDocRef;
 
     /**
      * @deprecated use blobPropertyField and filenamePropertyField instead
      */
     @Deprecated
     @RequestParameter
-    private String schema;
+    protected String schema;
 
     @RequestParameter
-    private String templateSchema;
+    protected String templateSchema;
 
     /**
      * @deprecated use blobPropertyField instead
      */
     @Deprecated
     @RequestParameter
-    private String blobField;
+    protected String blobField;
 
     @RequestParameter
-    private String blobPropertyName;
+    protected String blobPropertyName;
 
     @RequestParameter
-    private String templateBlobField;
+    protected String templateBlobField;
 
     // TODO: to be deprecated once all filenames are stored in the blob itself
     /**
@@ -157,24 +157,27 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
      */
     @Deprecated
     @RequestParameter
-    private String filenameField;
+    protected String filenameField;
 
     // TODO: to be deprecated once all filenames are stored in the blob itself
     @RequestParameter
-    private String filenamePropertyName;
+    protected String filenamePropertyName;
 
     @RequestParameter
-    private String mimetype;
+    protected String mimetype;
 
     @RequestParameter
-    private String docType;
+    protected String docType;
 
-    private MimetypeRegistry mimetypeRegistry;
+    protected MimetypeRegistry mimetypeRegistry;
 
     // Event-long cache for mimetype lookups - no invalidation required
-    private final Map<String, Boolean> cachedEditableStates = new HashMap<String, Boolean>();
+    protected final Map<String, Boolean> cachedEditableStates = new HashMap<String, Boolean>();
 
-    private CoreSession getSession(String repositoryName)
+    // Event-long cache for document field lookups - no invalidation required
+    protected final Map<String, Boolean> cachedEditableBlobs = new HashMap<String, Boolean>();
+
+    protected CoreSession getSession(String repositoryName)
             throws ClientException {
         RepositoryManager rm;
         try {
@@ -414,7 +417,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         }
     }
 
-    private String getFileExtension(String mimetype) throws Exception {
+    protected String getFileExtension(String mimetype) throws Exception {
         if (mimetype == null) {
             return null;
         }
@@ -427,8 +430,8 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         }
     }
 
-    private static Element addTextElement(Element parent, QName newElementName,
-            String value) {
+    protected static Element addTextElement(Element parent,
+            QName newElementName, String value) {
         Element element = parent.addElement(newElementName);
         if (value != null) {
             element.setText(value);
@@ -437,7 +440,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     }
 
     // TODO: please explain what is the use of the "editId" tag here
-    private static String getEditId(DocumentModel doc, CoreSession session,
+    protected static String getEditId(DocumentModel doc, CoreSession session,
             String userName) throws ClientException {
         StringBuilder sb = new StringBuilder();
 
@@ -520,38 +523,51 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             return false;
         }
 
-        if (documentModel.hasFacet(IMMUTABLE_FACET)) {
-            return false;
-        }
+        String cacheKey = documentModel.getRef() + "__" + propertyName;
+        Boolean cachedEditableBlob = cachedEditableBlobs.get(cacheKey);
+        if (cachedEditableBlob == null) {
 
-        try {
-            if (!documentManager.hasPermission(documentModel.getRef(),
-                    SecurityConstants.WRITE_PROPERTIES)) {
-                // the lock state is check as a extension to the
-                // SecurityPolicyManager
-                return false;
+            if (documentModel.hasFacet(IMMUTABLE_FACET)) {
+                return cacheBlobToFalse(cacheKey);
             }
-        } catch (ClientException e) {
-            // the document no longer exist in the core
-            log.warn(String.format(
-                    "document '%s' with reference '%s' no longer exists in the database, "
-                            + "please ensure the indexes are up to date",
-                    documentModel.getTitle(), documentModel.getRef()));
-            return false;
-        }
 
-        Blob blob = null;
-        try {
-            blob = documentModel.getProperty(propertyName).getValue(Blob.class);
-        } catch (Exception e) {
-            // this document cannot host a live editable blob is the requested
-            // property, ignore
-            return false;
+            try {
+                if (!documentManager.hasPermission(documentModel.getRef(),
+                        SecurityConstants.WRITE_PROPERTIES)) {
+                    // the lock state is check as a extension to the
+                    // SecurityPolicyManager
+                    return cacheBlobToFalse(cacheKey);
+                }
+            } catch (ClientException e) {
+                // the document no longer exist in the core
+                log.warn(String.format(
+                        "document '%s' with reference '%s' no longer exists in the database, "
+                                + "please ensure the indexes are up to date",
+                        documentModel.getTitle(), documentModel.getRef()));
+                return cacheBlobToFalse(cacheKey);
+            }
+
+            Blob blob = null;
+            try {
+                blob = documentModel.getProperty(propertyName).getValue(
+                        Blob.class);
+            } catch (Exception e) {
+                // this document cannot host a live editable blob is the
+                // requested property, ignore
+                return cacheBlobToFalse(cacheKey);
+            }
+            cachedEditableBlob = isLiveEditable(blob);
+            cachedEditableBlobs.put(cacheKey, cachedEditableBlob);
         }
-        return isLiveEditable(blob);
+        return cachedEditableBlob.booleanValue();
     }
 
-    private MimetypeRegistry getMimetypeRegistry() throws Exception {
+    protected boolean cacheBlobToFalse(String cacheKey) {
+        cachedEditableBlobs.put(cacheKey, Boolean.FALSE);
+        return false;
+    }
+
+    protected MimetypeRegistry getMimetypeRegistry() throws Exception {
         if (mimetypeRegistry == null) {
             mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
         }
