@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.relations.services;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -340,6 +341,17 @@ public class RelationService extends DefaultComponent implements
         }
     }
 
+    public Resource getResource(String namespace, Serializable object,
+            Map<String, Serializable> context) throws ClientException {
+        ResourceAdapter adapter = getResourceAdapterForNamespace(namespace);
+        if (adapter == null) {
+            log.error("Could not find adapter for namespace " + namespace);
+            return null;
+        } else {
+            return adapter.getResource(object, context);
+        }
+    }
+
     public Set<Resource> getAllResources(Object object) throws ClientException {
         // TODO OPTIM implement reverse map in registerContribution
         Set<Resource> res = new HashSet<Resource>();
@@ -359,6 +371,26 @@ public class RelationService extends DefaultComponent implements
         return res;
     }
 
+    public Set<Resource> getAllResources(Serializable object,
+            Map<String, Serializable> context) throws ClientException {
+        // TODO OPTIM implement reverse map in registerContribution
+        Set<Resource> res = new HashSet<Resource>();
+        for (String ns : resourceAdapterRegistry.keySet()) {
+            ResourceAdapter adapter = getResourceAdapterForNamespace(ns);
+            if (adapter == null) {
+                continue;
+            }
+            Class<?> klass = adapter.getKlass();
+            if (klass == null) {
+                continue;
+            }
+            if (klass.isAssignableFrom(object.getClass())) {
+                res.add(adapter.getResource(object, context));
+            }
+        }
+        return res;
+    }
+
     public Object getResourceRepresentation(String namespace, Resource resource)
             throws ClientException {
         ResourceAdapter adapter = getResourceAdapterForNamespace(namespace);
@@ -367,6 +399,18 @@ public class RelationService extends DefaultComponent implements
             return null;
         } else {
             return adapter.getResourceRepresentation(resource);
+        }
+    }
+
+    public Serializable getResourceRepresentation(String namespace,
+            Resource resource, Map<String, Serializable> context)
+            throws ClientException {
+        ResourceAdapter adapter = getResourceAdapterForNamespace(namespace);
+        if (adapter == null) {
+            log.error("Could not find adapter for namespace " + namespace);
+            return null;
+        } else {
+            return adapter.getResourceRepresentation(resource, context);
         }
     }
 
