@@ -138,7 +138,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         if (deps != null) {
             for (Entry<K, T> dep : deps) {
                 dep.removeWaitingFor(entry);
-                if (dep.isResolved()) {
+                if (dep.canEnterResolvedState()) {
                     resolve(dep); // resolve the dependent entry
                 }
             }
@@ -151,7 +151,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         if (deps != null) {
             for (Entry<K, T> dep : deps) {
                 dep.addWaitingFor(entry);
-                if (!dep.isResolved()) {
+                if (dep.isResolved()) {
                     unresolve(dep); // unresolve the dependent entry
                 }
             }
