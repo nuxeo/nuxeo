@@ -16,6 +16,9 @@ JAVA_OPTS="$JAVA_OPTS -XX:MaxPermSize=128m"
 # Enable jconsole
 #JAVA_OPTS="$JAVA_OPTS -Dcom.sun.management.jmxremote=true"
 
+# log GC info into a file
+#JAVA_OPTS="$JAVA_OPTS -Xloggc:$JBOSS_HOME/log/gc.log  -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps"
+
 # BEA JROCKIT --------------------------------------------
 # JAVA_HOME="/usr/local/jrockit-R27.4.0-jdk1.5.0_12"
 # JAVA_OPTS="-server -Xms$HEAP_SIZE -Xmx$HEAP_SIZE -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000"
