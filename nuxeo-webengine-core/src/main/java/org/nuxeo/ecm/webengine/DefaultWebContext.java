@@ -263,7 +263,7 @@ public class DefaultWebContext implements WebContext {
             }
         } else if (action != null) {
             return tail.getActionScript(action);
-        } else { // there is no action
+        } else if (trailingPath != null) { // there is no action
             String path = trailingPath.toString();
             ScriptFile script = getFile(path);
             if (script != null) {
