@@ -10,7 +10,7 @@
       Deals with mimetypes registration and mimetype detection (BETA).
     </p>
 
-    @version 2.0 
+    @version 2.0
     @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
     @author <a href="mailto:lgodard@nuxeo.com">Laurent Godard</a>
     @author <a href="mailto:og@nuxeo.com">Olivier Grisel</a>
@@ -203,6 +203,7 @@
       </mimetypes>
       <extensions>
         <extension>doc</extension>
+        <extension>dot</extension>
       </extensions>
     </mimetype>
 
@@ -213,6 +214,7 @@
       </mimetypes>
       <extensions>
         <extension>xls</extension>
+        <extension>xlt</extension>
       </extensions>
     </mimetype>
 
@@ -223,6 +225,7 @@
       </mimetypes>
       <extensions>
         <extension>ppt</extension>
+        <extension>pot</extension>
       </extensions>
     </mimetype>
 
