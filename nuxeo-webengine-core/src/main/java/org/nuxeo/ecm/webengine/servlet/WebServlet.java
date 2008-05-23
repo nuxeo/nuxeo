@@ -269,7 +269,16 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
         int p = lastSegment.lastIndexOf(WebConst.ACTION_SEPARATOR);
         if (p > -1) {
             context.setActionName(lastSegment.substring(p+WebConst.ACTION_SEPARATOR.length()));
-            traversal[traversal.length-1] = lastSegment.substring(0, p);
+            lastSegment = lastSegment.substring(0, p);
+            if (lastSegment.length() == 0) {
+                // remove empty segments - this may happen for paths like /wiki/@@create
+                // we allow these path because they ease writing creation forms
+                String[] tmp = new String[traversal.length-1];
+                System.arraycopy(traversal, 0, tmp, 0, tmp.length);
+                traversal = tmp;
+            } else {
+                traversal[traversal.length-1] = lastSegment;
+            }
         }
 
         WebApplication app = context.getApplication();

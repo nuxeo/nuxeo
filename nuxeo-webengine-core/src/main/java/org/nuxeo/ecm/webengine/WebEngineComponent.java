@@ -94,7 +94,7 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
         deployer.addConfigurationChangedListener(this);
 
         // load configuration (it ill be put in pending until this component will exit activation code)
-        File file = new File(root, "nuxeo-web.xml");
+        File file = new File(root, "default/nuxeo-web.xml");
         if (file.isFile()) {
             //XMap xmap = new XMap();
             //WebConfiguration cfg = xmap.load(new XMapContext(context.getRuntimeContext()), new BufferedInputStream(new FileInputStream(file)));
