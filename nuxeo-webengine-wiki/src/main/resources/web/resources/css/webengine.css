@@ -446,13 +446,28 @@ blockquote {
   }
 
 #main .toc .contentToc {
-  padding-right:10px;
+  padding:10px;
 }
 
 #main .toc ol ol {
  margin-left:20px;
  padding-left:0px; 
 }
+
+/* CSS 2 Toc : 1, 1.1, etc. */
+
+.toc OL {
+  counter-reset: item;
+}
+.toc LI {
+  display: block;
+  padding:2px 0;
+}
+.toc LI:before {
+content: counters(item, ".") " ";
+counter-increment: item;
+}
+
 
 /* Attachments */
 
