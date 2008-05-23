@@ -1,1 +1,0 @@
-<h3>The Index</h3>

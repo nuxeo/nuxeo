@@ -1,0 +1,357 @@
+
+= Nuxeo WebEngine
+
+The WebEngine is a framework to build web applications on top of the Nuxeo ECM product.
+
+== Overview
+
+The main goal for the WebEngine framework is to let users to build web applications quickly and easly and in a traditional way 
+without having knowledge on advanced Java topics such as JSF or Seam.\
+The second goal is to be able to develop web pages while the server is running, without the need of restarting
+the server each time the configuration or the code is modified.
+
+The web pages are build using Freemarker templates for the presentation part and optionally scripts 
+(like groovy, jython etc) or custom Java request handlers for the logical part.\
+Thus a web application is made from:
++ *Configuration* - based on the nuxeo extension points mechanism
++ *Templates* - freemarker is used as the template engine
++ *Scripts* - any script supported by java scripting engine.
++ *Custom Java Code* - plugged-in through extension points
+
+Here is an example of a simple template page that is outputing Q:My name is CURRENT_USER_NAME:
+
+{{{
+My name is ${Context.principal.name}!
+}}}
+
+The same can be done from a script: (in this example a groovy script)
+
+{{{
+Context.print("My name is ${Context.principal.name}")!
+}}}
+
+
+=== Bridging with Nuxeo ECM
+
+The WebEngine was created to work over a Nuxeo ECM server. Using it outside Nuxeo ECM is possible
+but is very limiting and you will loose many of the cool features of the WebEngine.
+If you don't plan to use a Nuxeo ECM as the content backend for your web site then I suggest you to look on 
+other products that may fit better your needs:
+* Django
+* etc
+
+In this section I will suppose you have some knoweledge about Nuxeo ECM.\
+Nuxeo ECM a is name sugest is an Enterprise Content Management Application that provides a powerfull way to manage and store your documents. In a more simpler approach (TODO: To simplify) you can see Nuxeo ECM as a repository of documents. To be able to use this repository to query, update or store new documents you need first to connect to it and create an autheticated session based on your login information. Using that repository session you can start querying, updating and sotring documents.
+So, for a client point of view, the main concepts of a Nuxeo Repository are the Session and the Document.\
+
+The idea behind the WebEngine is to map the HTTP requests on real documents from the repository when possible, to be able that way to query, update, store or create new documents by using a traditional Web approach.
+
+To correctly understand how this bridging over Nuxeo ECM is done and what you can do by using the WebEngine you should first understand how the HTTP request is dispatched, processed and mapped to documents.
+
+
+=== Request Dispatch
+
+I will start using a simple example. Let say the web browser is requesting the following URL: 
+`http://www.nuxeo.org/nuxeo/site/blogs/bstefanescu/MyBlog@@view`
+
+First the URL will be splited as following:
+* `http://www.nuxeo.org` - the server host information
+* `/nuxeo/site` - the application path. This corresponds to the Java context path + servlet path. As we will see later any web application is bound to a java servlet, thus the web context path + servlet path becomes the application path.
+* `/blogs/bstefanescu/MyBlog` - the request path.
+* `@@view` - the optional action to take on the target object.
+
+The first 2 URL components are not in the scope of this document. They are used to locate the servlet bound to a the WebEngine application. (Note that if you define several WebEngine applications you need to use different servlets for each of them)
+
+We will concentrate on the last two URL parts:
+
++ Request path
++ Action
+
+==== Request Path
+
+The request path of the path info represent the actual path that should be processed and dispacthed by the selected web application.
+The WebEngine will transform the request path into a sequence of objects named the *traversal path* by doing a mapping between path segments and documents in repository tree.
+The mapping is done by a *DocumentResolver* a Java class that can be customized when the default mapping mechanism is not enough.\
+See the Web Application Configuration for more details on how to register a custom resolver.
+
+The default resolver will map the first segment in the path to a document called the *traversal path root* and then any subsequent path segment will be mapped to corresponding child document. This mapping ends when the path is consumed or when the first segment that doesn't match any document is found. The trailing path segments that was not matched is named the *trailing path* or *script path* and can be used by the request handler in various ways. 
+
+The last mapped document in the traversal path will be the target document of the request. This is the document on which the request action will be executed. You can also see it as the current document from the script point of view.
+
+Let's get an example:
+
+Given the request path: `/blogs/bstefanescu/MyBlog/common.ftl@view`\
+Let's say the `blogs` segment is mapped to a document which path is `/default-domain/blogs`\
+and MyBlog to a Blog document `/default-domain/blogs/MyBlog`. The common.ftl will not match any child document of the MyBlog document so it will be put in the trailing path and the MyBlog document will be the target document of the request.\
+So finally we will have:
++ a traversal path: `/blogs/bstefanescu/MyBlog` which is mapped to `/default-domain/workspaces/blogs/bstefanescu/MyBlog`.
++ a trailing path: `commons.ftl`
++ an action: `@@view`
+
+This trailing path can be used by the request handler as some additional information on how to process the request.
+For example this can be a path on disk to a template to change the default view template of the blog.
+Or may be this can be used to point to an action script that overides the one configured by the default for the @@view action.
+
+The way in which the trailing path is used can be specified by the programmer by codding a script or an action handler that know what to do with that path.
+
+The action handler that comes by default with WebEngine may alredy use these trailing paths to do some custom processing.\
+When this is the case each action handler should document how it is using the trailing path.
+
+Here is an interesting usage of the trailing path: Let say you write an action handler that is displaying the value of a document property. In order to do this you need to pass the name (or path) of the property you want to view. You can do this simply by setting a query string attribute that points to the property path. This way your request URL will look something like this: `http://www.nuxeo.org/nuxeo/site/blogs/MyBlog@@get?xpath=dc:title` where the xpath attribute is specifying the xpath of the property value to view. But why not encoding this information directly in the request path? This way we will have a more natural URL:\
+
+`http://www.nuxeo.org/nuxeo/site/blogs/MyBlog/dc:title@@get`
+
+This way the request path will be split in two:
++ the traversal path: `/blogs/MyBlog` - that set the target document to `MyBlog`.
++ the trailing path: `/dc:title`
+
+And the request action will be `@@get`. Now we can implement an action handler that will use the trailing path as the property xpath to display.
+
+
+==== Actions
+
+The action string represent an action to be taken on the last resolved document (or the target document).\
+An action can be bound to a Java class (an action handler) or to a script in order to perform the wanted operation on the document.
+If no action is specified in the request URL then a default action of @@view will be used.
+
+You can find more details on actions in Web Applicaiton : Actions section
+
+==== Mappings
+
+We already seen how the request path is transformed into three components:
++ the traversal path
++ the trailing path
++ the action
+
+In the examples above we've seen how a request path was splited into a traversal path and a trailing path. But what if we need more control on the mapping mechanism? One solution (but harder) is to write a custom resolver that is doing the job. Another solution is to use path mappings. 
+
+Mappings can be used to declaratively describe how request paths should be processed to obtain a traversal path, a trailing path and additional properties computed from the path segments configuration. Mappings are described using regular expression patterns. The regular expression syntax is the Java one plus one additional feature to be able to define named groups. (In Java only indexed groups are supported).
+
+In order to understand how you can use patterns to describe the path mapping we will start with another example.\
+Let say we want to use the following request path:
+
+`/blogs/archive/2004/05/bstefanescu`
+
+to display a list of the blogs of user `bstefanescu` created in May 2004. Let's say in the reposiotry the blogs of `bstefanescu` are stored in the folder: `/default-domain/blogs/bstefanescu`. \
+So, first we need to map the request to a traversal path of the form: `/blogs/bstefanescu` to set up the target document on `bstefanescu`. Then we need a custom script that is using the date info (e.g. year=2004 and month=05) from the request path and that it is performing a search into the target document for all blos created in that month.
+
+To do this we will define a mapping pattern like:
+
+`/blogs/archive/(?year:[0-9]{4}?)/(?month:[0-9]{2}?)/(?username:[^/]+)`
+
+Then we specify that if this pattern is matching on a request path then the following should be done:
++ the traversal path should be set to `/blogs/${username}`
++ the target script should be set to `/myscripts/search_blogs.py`
+Also this mapping will automatically inject in the request context the variables: `year`, `month` and `username` so your mapping configuration or your scritps can access them.
+
+
+You can see the usage of the variable `${username}` which is the value matched by the group flaged as `username`.
+The syntac (?label: ... ) for regular expression groups is an extension to the Java regular expressions that are supporting only indexed groups. You can still use the indexed groups if you preffer:
+
+`/blogs/archive/([0-9]{4}?)/([0-9]{2}?)/([^/]+)`
+
+In this case the generated mapping variables will be $1 for the year, $2 for the month and $3 for the username.
+
+There are also 2 special mapping variables that will be allways generated: `url` (or $0) the request path that matched and `type` the document type of the target document (that is available only after the traversal path is build).
+
+You may note that using mappings or using a resolver that avoid mapping path segments on documents you may create web application that doesn't use any Nuxeo repository.
+
+
+=== Directory Layout - Resolving Scripts and Templates 
+
+All Web Application files are residing under a common root folder named the web folder. On JBoss this is root folder is located in `${jboss_install_dir}/server/default/data/NXRuntime/web`.
+
+A Web Application may have multiple roots folders where scripts and other files are residing. When resolving scripts from paths each of these folders are consulted in turn until a matching file is found. 
+
+Example: Let say you have an web application that contains two roots: `wiki` and `default` (in that order). So inside the `web` directory we will have `web/wiki` and `web/default`.\
+When resolving a path let say `/commons/myscript.py` the web application will look first in `wiki` folder for a file path `commons/myscript.py` and then if none was found it looks for the same path in the `default` folder. 
+
+This mechanism is completely described in the Directory Stacking section.
+
+Note that the paths `/commons/myscript.py` and `commons/myscript.py` are equivalent. Both of them will be resolved relative to the Web Application root folders.\
+If you need to use relative paths (relative to the current executed script or template) you must prepend a '.' or a '..' on the path to force the path resolver to use the current script as the file base. \
+Example of relative paths:
+* ../../myscript.py
+* ./myscript.groovy
+
+Note that using relative paths is less efficient since the path lookup cannot be cached because of the directory base which is dictated by the current script context, context that may change durring the request. Also when a relative path points outside the web root directory then it will be truncated (i.e. trailing ../ removed) and resolved as an absolute path.
+
+
+==== Resolving Action Scripts
+
+When writing scripts or templates to handle request actions we usually want to treat the target documents of same type in the same manner. For example a `Folder` document will be always displayed as a folder, a `File` document as a file and so on.\
+So we need a mechanism to select the template or the script associated to an action depending on the target document type.\
+Note that this selection mechanism make sense only for document action scripts. It doesn't make sense for plain scripts (that are not bound to documents) since in this case you may not ahave a target document.
+
+This aspect was solved by using a very simple and intuitive mechanism based on folder names:\
+Each application root folder may contain a sub-folder for each document type. This sub folder should use the same name as the document type. \
+This way each time an action script is resolved the resolver will look in the folder having the same name as the target document type. If it deson't find any matching file it is looking in the folder corresponding to the super type of the current document type and so on. This lookup stops when a matching file is found or when no more super types exists.\
+As the `Document` type is the base types of all Nuxeo document types you may put in that folder the default files for every document action.\
+If no file matches then a default file (a fallback file) will be used to display a custom message. This default file is configurable via Web Application properties. If the ddefault file cannot be find or was not defined then a 404 is send to the client.
+
+Example: In the `default` application root you may have three folders:
+* Document
+* Folder
+* Wiki
+
+Let say you want to call the script bound to the `@@view` action of a `Wiki` document. Then the script resolver will first look into `Wiki` folder then if nothing is found and beacuse `Wiki` is extending `Folder` it will look into `Folder` folder and then if nothing is found as `Folder` is extending `Document` it will look into Document folder. Finally if nothing is found the registred default script if any is used.
+
+Note that when you have multiple web application roots this mechanism will searching the script in each root in turn until something is found.
+
+
+== Web Applications
+
+Now that we've seen the main concepts used to build a web application we can learn how to configure and assemble them to obtain a working application.
+ 
+A Web  Application is a collection of configuration, scripts and template and other resources that is accessible from remote through a servlet. The WebEngine is allowing the definition of multiple applications. All these application data is residing inside the root `web` directory. As we've seen earlier, on JBoss this root directory is located at:
+
+`${jboss_install_dir}/server/default/data/NXRuntime/web`
+
+An application may access any resources whithin the root `web` directory, but none outside it. This means that several applications may share data and reuse scripts. \
+Anyway in the term of configuration these application must be isolated to avoid probagating some custom configurations that was done for a given web application to all other existing applications.
+
+Also, to be able to easily select the target application when a request is made, each application will be bound to a different servlet. This way the servlet invokation will automatically select the correct application.\
+This binding is done at server configuration level in the `web.xml` configuration file by sepcifying an init-parameter with the name "webapp" and that points to the name of the application to bind to. If no such parameter is defined the following is implied:
+
+{{{
+  <init-param>
+    <param-name>webapp</param-name>
+    <param-value>nuxeo-web</param-value>
+  </init-param>
+}}}
+
+So, we've seen that a web application should be isolated at configuration level from other applications. This is to avoid probagate customization to other applications. But this doesn't means that application cannot shared some basic and immutable configuration. This can be very useful to avoid redefining some generic configuration for each application.
+
+These requirements, impose a configuration mechanism splited in two layers:
++ A generic configuration layer shared between all applications. The configuration from this layer cannot be modified by applications. We will name this layer the *Global Configuration*.
++ An application specific configuration layer that can be used to define specific customizations over the global configuration. This configuration layer will be named *Application Configuration* and should be used to customize applications.
+
+For more details about what can be configured in both confiugration layers see the Configuration chapter.
+
+A web application is responsible to:
++ Resolve script or templates path
++ Manage the custom configuration
++ Resolve path segments to documents
++ Manage the scripting and template engine
+
+Web application data may be contributed by separate OSGi modules (JARs). Usually when a module wants to contribute it's own scripts and templates it is installing these files from the JAR inside the `web` root directory (this is done automatically by using an extension point - we will see this later in Configuration chapter).
+
+It is recommended that modules should contribute files by creating a new directory into the `web` root and not by replacing existing files. The directory stacking mechanism can be used to override existing files if this is wanted. 
+
+=== Directory Stacking
+
+As we've seen earlier in the Overview chapter an application may define several roots inside the web root directory.\
+These roots are known as the application directory stack and are used to resolve scripts and templates.\
+Root directories are stacked given a priority so that the resolver will try each root in a the right priority order until a resource is found.
+
+Directory Roots are mainly used to override resources deployed by other modules or to define additional skins for an application. By using the right priority for the root directories in the stack you may obtain the desired effect - override some existing resources but avoid overrinding some other ones.
+
+The stack defined at the global level is containing only the `default` directory. This directory comes with scripts and templates that deals with common types in Nuxeo like `File`, `Folder`, `Note`, `Workspace` etc. 
+
+Applications may add new directories to the stack but these will be visible only for the application that defined them. So stacking is not shared between applications.
+
+==== Example
+
+Let's say module nuxeo-webengine-core contributed the `default` directory, nuxeo-webengine-wiki contributed the `wiki` directory and nuxeo-webengine-blogs the `blogs` directory.\
+The `wiki` folder contains scritps and templates that deals with `Wiki` and `WikiPage` document types, while the `blogs` folder declare the 
+Then an application APP1 may use a stack: `wiki`, `default` and another application APP2 may use: `blogs`, `default`.
+Both APP1 and APP2  will see the scripts that deal with common Nuxeo types (the ones from `default`) but APP1 will not see blog related scripts and APP2 will not see wiki related scripts.
+
+
+Using the same mechanism you may change or hide only .css or .gif files creating thus skins.
+
+
+=== Web Objects
+
+Before talking about Web Objects we will recapitulate some things about traversal paths. We've seen that *request paths* are transformed into a *traversal path* and an *trailing path* (and possibly some matching attributes in the case of a path pattern match).\
+The generated `traversal path` is a sequence of documents that should be traversed before executing the request. The last document that is traversed (the last in the traversal path) will be set as the target document of the request and the request will be executed in the context of that document.\
+We've also seen that you may have requests that doesn't generate any traversal path. In this case pure web scripting will be done (outside any document context). Alos you should note that the documents in the traversla path are not necesarly the children of each other like in a repository path. The mechanism used to create the traversal path is up to the registered document resolver.
+
+The documents in the traversal path will not be exposed as is in the request context but they will be wrapped inside a high level object web oriented that is called WebOject. THis is needed because the Nuxeo documents are reposiotry oriented, they doesn't have any knoweldge about the web context in which they are used. They doesn't know for example what is the URL  used to access them, or what are the web actions that are enabled in the current web context.\
+For this reason before being exposed in the web context they are wrapped in a web sensitive object.
+
+This means we need to map documents to a high level object that can hold web specific configuration like enabled web actions. 
+This mapping can be done either at the global level 
+
+
+
+
+=== Actions
+There are several pre-defined actions in the default webengine configuration. Here is a list of that actions:
+
++ view
++ print
++ edit
++ delete
++ create
++ update
++ getfile
++ addfile
++ deletefile
+
+An action should be identified using a meaningfull verbe like 'doSomething' and can specify:
+* a class to be used as the action handler
+* a script to be invoked on the target document
+* an enablement flag to be used to disbale / enable the action
+* a category that can be used to group actions
+* a set of guards to restrict the action execution
+
+Any of these action properties are optional - but the action will be useless if you do not specify one of them.
+
+The first 2 properties the *action handler* and the *script* should be used to specify how the action will be executed.
+As you seen you have two options: either using java code (if you want faster or adavnced processing) either using a script (possibly a template) that will carry on the action execution.
+You can either use both properties to install a Java action execution handler and a template to be used to show the result of the execution. Or, more, you can install a handler and a groovy script then in the grrovy script you may do some post processing and then call a template to show the result.
+
+The action category can be used to filter or to group actions. For example you may want to show only a set of actions that are enabled on a document filtered by a category.
+
+Finally, the guards can be installed to restrict actions to be available only for some users. Guards are very flexible. To define a guard you can use complex logical expressions on other guards. We will name any guard that it is not a logical expression an atomic guard.
+This is a list of all supported atomic guards:
+
++ Permission Guard - restrict access by testing native Nuxeo ECM document permissions.
++ User Guard - restrict access by testing the current user name
++ Group Guard - restrict access by testing the current group name
++ Type Guard - restrict access by testing the current document type
++ Schema Guard - restrict access by testing the presence of a schema in the current document type
++ Facet Guard - restrict access by testing the presence of a facet in the current document type
++ Script Guard - restrcit access using random scripts. Any java scripting engine is supported
+
+Example of a logical expression guard: `Write OR (user = titi OR group = toto )`. This means give permission on all users that have the `Write` permission on the document OR to user named `titi` or all user from group `toto`.  
+
+You can define actions as you want: you can map them to scripts or to Java code - it is up to you how you will use that action.
+
+For how to retrieve available actions on the target document from a script reffer to the Script Context chapter.
+
+
+=== Configuration
+
+
+=== Hot Deployment
+
+
+=== Example
+
+
+
+== Scripting Interface
+
+=== The Context
+
+=== The Current Document
+
+=== The HTTP Request
+
+=== Example
+
+
+
+
+== Templates
+
+=== Blocks
+
+=== Extensions
+
+=== Example
+
+
+
