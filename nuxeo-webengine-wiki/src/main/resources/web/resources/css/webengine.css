@@ -505,10 +505,11 @@ body {
 }
 
 
-/* Summary */
+/* Summary (list of blog entries on blog view) */
 
 .summary-entry{
   border:1px solid #000;
+  margin-bottom:15px;
 
 }
 
@@ -529,7 +530,7 @@ body {
     color:#666;
     padding:2px 0 0 0;
     text-align: right;
-    margin-bottom:15px;
+    margin-bottom:5px;
 }
 
 .summary-content h2 {
