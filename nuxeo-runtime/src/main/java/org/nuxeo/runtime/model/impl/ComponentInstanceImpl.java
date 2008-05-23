@@ -33,6 +33,8 @@ import org.nuxeo.runtime.model.Property;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 
+import sun.print.resources.serviceui;
+
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -224,4 +226,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         }
     }
 
+    public String[] getProvidedServiceNames() {
+        return ri.getProvidedServiceNames();
+    }
 }

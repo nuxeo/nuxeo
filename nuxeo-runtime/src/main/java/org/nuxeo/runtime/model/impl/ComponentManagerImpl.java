@@ -427,7 +427,7 @@ public class ComponentManagerImpl implements ComponentManager {
         return services.keySet().toArray(new String[services.size()]);
     }
 
-    public <T> T getService(Class<T> serviceClass) {
+    public ComponentInstance getComponentProvidingService(Class<?> serviceClass) {
         try {
             RegistrationInfoImpl ri = services.get(serviceClass.getName());
             if (ri != null) {
@@ -443,12 +443,17 @@ public class ComponentManagerImpl implements ComponentManager {
                         return null;
                     }
                 }
-                return ri.getComponent().getAdapter(serviceClass);
+                return ri.getComponent();
             }
         } catch (Exception e) {
             log.error("Failed to get service: " + serviceClass);
         }
         return null;
+    }
+
+    public <T> T getService(Class<T> serviceClass) {
+        ComponentInstance comp = getComponentProvidingService(serviceClass);
+        return comp != null ? comp.getAdapter(serviceClass) : null;
     }
 
 }

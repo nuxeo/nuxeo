@@ -149,4 +149,11 @@ public interface ComponentManager {
      */
     <T> T getService(Class<T> serviceClass);
 
+    /**
+     * Get the component that provides the given service
+     * @param serviceClass the service class
+     * @return the component or null if none
+     */
+    ComponentInstance getComponentProvidingService(Class<?> serviceClass);
+
 }

@@ -318,4 +318,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return state == RESOLVED;
     }
 
+    public String[] getProvidedServiceNames() {
+        if (serviceDescriptor != null) {
+            return serviceDescriptor.services;
+        }
+        return null;
+    }
 }
