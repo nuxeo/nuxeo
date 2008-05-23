@@ -208,14 +208,13 @@ public class LogsBean implements Logs {
         return factory.getLogEntryClass();
     }
 
-    public List<LogEntry> nativeQueryLogs(String whereClause,
-            int pageNb, int pageSize) throws AuditException {
+    public List<LogEntry> nativeQueryLogs(String whereClause, int pageNb,
+            int pageSize) throws AuditException {
 
         Class<LogEntry> klass = getLogEntryClass();
         List<LogEntry> results = new ArrayList<LogEntry>();
 
-        Query query = em.createQuery("from "
-                + klass.getSimpleName()
+        Query query = em.createQuery("from " + klass.getSimpleName()
                 + " log where " + whereClause);
         if (pageNb > 1) {
             query.setFirstResult((pageNb - 1) * pageSize + 1);
@@ -243,51 +242,43 @@ public class LogsBean implements Logs {
 
         List<LogEntry> results = new ArrayList<LogEntry>();
 
+        String inClause = null;
 
-        String inClause=null;
-
-        StringBuffer queryString=  new StringBuffer();
+        StringBuffer queryString = new StringBuffer();
 
         queryString.append("from " + klass.getSimpleName() + " log where ");
 
-
-        Query query=null;
-        if (eventIds!=null)
-        {
-            inClause="(";
-            for (String eventId : eventIds)
-            {
-                inClause=inClause + "'" + eventId + "',";
+        Query query = null;
+        if (eventIds != null) {
+            inClause = "(";
+            for (String eventId : eventIds) {
+                inClause = inClause + "'" + eventId + "',";
             }
-            inClause=inClause.substring(0,inClause.length()-1);
-            inClause=inClause+")";
+            inClause = inClause.substring(0, inClause.length() - 1);
+            inClause = inClause + ")";
 
-            queryString.append(" log.eventId IN " +inClause);
+            queryString.append(" log.eventId IN " + inClause);
             queryString.append(" AND ");
         }
-        if (category!=null && !"".equals(category.trim()))
-        {
-            queryString.append(" log.category =:category " );
+        if (category != null && !"".equals(category.trim())) {
+            queryString.append(" log.category =:category ");
             queryString.append(" AND ");
         }
 
-        if (path!=null && !"".equals(path.trim()))
-        {
-            queryString.append(" log.docPath LIKE '" + path + "%'" );
+        if (path != null && !"".equals(path.trim())) {
+            queryString.append(" log.docPath LIKE '" + path + "%'");
             queryString.append(" AND ");
         }
 
         queryString.append(" log.eventDate >= :limit");
         queryString.append(" ORDER BY log.eventDate DESC");
 
-        query= em.createQuery(queryString.toString());
+        query = em.createQuery(queryString.toString());
 
-        if (category!=null)
-        {
+        if (category != null) {
             query.setParameter("category", category);
         }
         query.setParameter("limit", limit);
-
 
         if (pageNb > 1) {
             query.setFirstResult((pageNb - 1) * pageSize + 1);
@@ -302,7 +293,7 @@ public class LogsBean implements Logs {
 
         return returned;
     }
-    
+
     @SuppressWarnings("unchecked")
     public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
             String category, String path, int pageNb, int pageSize)
@@ -342,16 +333,14 @@ public class LogsBean implements Logs {
                     + dateRange, aqe);
         }
 
-        String inClause="(";
-        for (String eventId : eventIds)
-        {
-            inClause=inClause + "'" + eventId + "',";
+        String inClause = "(";
+        for (String eventId : eventIds) {
+            inClause = inClause + "'" + eventId + "',";
         }
-        inClause=inClause.substring(0,inClause.length()-1);
-        inClause=inClause+")";
-        Query query = em.createQuery("from "
-                + klass.getSimpleName()
-                + " log where log.eventId in " +inClause
+        inClause = inClause.substring(0, inClause.length() - 1);
+        inClause = inClause + ")";
+        Query query = em.createQuery("from " + klass.getSimpleName()
+                + " log where log.eventId in " + inClause
                 + " AND log.eventDate >= :limit"
                 + " ORDER BY log.eventDate DESC");
         query.setParameter("limit", limit);
@@ -458,7 +447,8 @@ public class LogsBean implements Logs {
         entry.setCategory("eventDocumentCategory");
         entry.setEventId("documentCreated");
         entry.setDocLifeCycle("project");
-        Calendar creationDate = (Calendar) doc.getProperty("dublincore","created");
+        Calendar creationDate = (Calendar) doc.getProperty("dublincore",
+                "created");
         if (creationDate != null) {
             entry.setEventDate(creationDate.getTime());
         }

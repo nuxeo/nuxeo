@@ -104,11 +104,10 @@ public interface Logs extends Serializable {
      * @return a list of log entries.
      * @throws AuditException
      */
-    List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String category,String path,
-            int pageNb, int pageSize) throws AuditException;
+    List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
+            String category, String path, int pageNb, int pageSize)
+            throws AuditException;
 
-    
-    
     /**
      * Returns the batched list of log entries.
      *
@@ -128,10 +127,10 @@ public interface Logs extends Serializable {
      * @return a list of log entries.
      * @throws AuditException
      */
-    List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String category,String path,
-            int pageNb, int pageSize) throws AuditException;
+    List<LogEntry> queryLogsByPage(String[] eventIds, Date limit,
+            String category, String path, int pageNb, int pageSize)
+            throws AuditException;
 
-    
     /**
      *
      * Force Log Synchronisation for a branch of the repository. This can be
@@ -148,8 +147,8 @@ public interface Logs extends Serializable {
             throws AuditException, ClientException;
 
     /**
-     * Returns a batched list of log entries.
-     * WhereClause is a native where clause for the backend : here EJBQL 3.0 can be used
+     * Returns a batched list of log entries. WhereClause is a native where
+     * clause for the backend : here EJBQL 3.0 can be used
      *
      * @param whereClause
      * @param pageNb
@@ -157,7 +156,7 @@ public interface Logs extends Serializable {
      * @return
      * @throws AuditException
      */
-    public List<LogEntry> nativeQueryLogs(String whereClause,
-            int pageNb, int pageSize) throws AuditException;
+    public List<LogEntry> nativeQueryLogs(String whereClause, int pageNb,
+            int pageSize) throws AuditException;
 
 }

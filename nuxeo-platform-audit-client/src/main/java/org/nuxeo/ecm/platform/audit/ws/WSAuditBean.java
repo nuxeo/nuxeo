@@ -48,10 +48,10 @@ import org.nuxeo.ecm.platform.ws.AbstractNuxeoWebService;
 
 /**
  * Audit Web Service bean.
- * 
+ *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- * 
+ *
  */
 @Stateless
 @SerializedConcurrentAccess
@@ -215,7 +215,7 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
             logEntries = getLogsBean().queryLogsByPage(null, dateRangeQuery,
                     EVENT_DOCUMENT_CATEGORY, path, page, pageSize);
         } else {
-            Date limit = DateParser.parseW3CDateTime(startDate);            
+            Date limit = DateParser.parseW3CDateTime(startDate);
             logEntries = getLogsBean().queryLogsByPage(null, limit,
                     EVENT_DOCUMENT_CATEGORY, path, page, pageSize);
         }
