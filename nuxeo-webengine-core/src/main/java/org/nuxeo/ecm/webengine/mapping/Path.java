@@ -29,9 +29,9 @@ import java.util.List;
  */
 public class Path implements Serializable {
 
-    public static final char SEP = '/';
     private static final long serialVersionUID = 5008948361159403627L;
 
+    public static final char SEP = '/';
     protected static final int HAS_LEADING = 1;
     protected static final int HAS_TRAILING = 2;
     protected static final int HASH_MASK = ~HAS_TRAILING;
