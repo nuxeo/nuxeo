@@ -653,6 +653,8 @@ public class DefaultWebContext implements WebContext {
             } else {
                 session = openSession(request);
             }
+        } else {
+            session = openSession(request);
         }
         if (httpSession != null) {
             httpSession.setAttribute(CORESESSION_KEY, session);
