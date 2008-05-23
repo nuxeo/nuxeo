@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.rendering.wiki;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -135,11 +136,20 @@ public class WikiTransformer implements TemplateDirectiveModel {
                 String content = writer.getBuffer().toString();
                 transform(new StringReader(content), env.getOut());
             } else {
-                URL url = engine.getResourceLocator().getResourceURL(src);
-                if (url != null) {
-                    transform(url, env.getOut());
+                if (src.contains(":/")) {
+                    URL url = engine.getResourceLocator().getResourceURL(src);
+                    if (url != null) {
+                        transform(url, env.getOut());
+                    } else {
+                        throw new IllegalArgumentException("Cannot resolve the src attribute: "+src);
+                    }
                 } else {
-                    throw new IllegalArgumentException("Cannot resolve the src attribute: "+src);
+                    File file = engine.getResourceLocator().getResourceFile(src);
+                    if (file != null) {
+                        transform(file.toURI().toURL(), env.getOut());
+                    } else {
+                        throw new IllegalArgumentException("Cannot resolve the src attribute: "+src);
+                    }
                 }
             }
         } catch (RenderingException e) {
