@@ -25,14 +25,14 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.webengine.config.CompositeContribution;
-import org.nuxeo.ecm.webengine.config.Contribution;
-import org.nuxeo.ecm.webengine.config.ExtensibleContribution;
-import org.nuxeo.ecm.webengine.config.ManagedComponent;
 import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.MappingDescriptor;
 import org.nuxeo.ecm.webengine.resolver.DefaultDocumentResolver;
 import org.nuxeo.ecm.webengine.resolver.DocumentResolver;
+import org.nuxeo.runtime.deploy.CompositeContribution;
+import org.nuxeo.runtime.deploy.Contribution;
+import org.nuxeo.runtime.deploy.ExtensibleContribution;
+import org.nuxeo.runtime.deploy.ManagedComponent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

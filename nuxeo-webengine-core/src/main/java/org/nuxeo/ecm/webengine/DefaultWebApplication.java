@@ -37,8 +37,6 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
-import org.nuxeo.ecm.webengine.config.FileChangeListener;
-import org.nuxeo.ecm.webengine.config.FileChangeNotifier;
 import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.mapping.MappingDescriptor;
@@ -47,6 +45,8 @@ import org.nuxeo.ecm.webengine.resolver.DefaultDocumentResolver;
 import org.nuxeo.ecm.webengine.resolver.DocumentResolver;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.util.DirectoryStack;
+import org.nuxeo.runtime.deploy.FileChangeListener;
+import org.nuxeo.runtime.deploy.FileChangeNotifier;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

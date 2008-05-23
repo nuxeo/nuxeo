@@ -29,10 +29,10 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.nuxeo.common.collections.ListenerList;
-import org.nuxeo.ecm.webengine.config.FileChangeListener;
-import org.nuxeo.ecm.webengine.config.FileChangeNotifier;
-import org.nuxeo.ecm.webengine.config.FileChangeNotifier.FileEntry;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
+import org.nuxeo.runtime.deploy.FileChangeListener;
+import org.nuxeo.runtime.deploy.FileChangeNotifier;
+import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

@@ -24,8 +24,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import org.nuxeo.ecm.webengine.config.FileChangeNotifier;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
+import org.nuxeo.runtime.deploy.FileChangeNotifier;
 
 
 /**

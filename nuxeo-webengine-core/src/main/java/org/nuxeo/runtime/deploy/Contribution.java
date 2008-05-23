@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.config;
+package org.nuxeo.runtime.deploy;
 
 import java.util.Collection;
 

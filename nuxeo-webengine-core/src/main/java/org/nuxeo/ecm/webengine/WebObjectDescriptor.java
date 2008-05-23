@@ -31,9 +31,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
-import org.nuxeo.ecm.webengine.config.Contribution;
-import org.nuxeo.ecm.webengine.config.ExtensibleContribution;
-import org.nuxeo.ecm.webengine.config.ManagedComponent;
+import org.nuxeo.runtime.deploy.Contribution;
+import org.nuxeo.runtime.deploy.ExtensibleContribution;
+import org.nuxeo.runtime.deploy.ManagedComponent;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
