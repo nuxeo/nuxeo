@@ -29,6 +29,7 @@ import org.jboss.remoting.InvokerLocator;
 import org.jboss.remoting.marshal.MarshalFactory;
 import org.jboss.remoting.marshal.serializable.SerializableMarshaller;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.binding.ServiceBindings;
 import org.nuxeo.runtime.config.AutoConfigurationService;
 import org.nuxeo.runtime.config.ConfigurationFactory;
 import org.nuxeo.runtime.config.v1.ConfigurationFactory1;
@@ -59,6 +60,9 @@ public class RemotingService extends DefaultComponent {
     private boolean isServer;
 
     private InvokerLocator serverLocator;
+
+    private ServiceBindings serviceBindings;
+
 
     public static Server connect(String locatorURI) throws Exception {
         return (Server) TransporterClient.createTransporterClient(new InvokerLocator(locatorURI), Server.class);
@@ -143,6 +147,8 @@ public class RemotingService extends DefaultComponent {
                         new ObjectName(INVOKER_NAME));
             }
         }
+
+        serviceBindings = new ServiceBindings(context.getRuntimeContext().getBundle().getBundleContext());
     }
 
     public InvokerLocator getServerLocator() {
@@ -158,6 +164,10 @@ public class RemotingService extends DefaultComponent {
         if (transporterServer != null) {
             transporterServer.stop();
             transporterServer = null;
+        }
+        if (serviceBindings != null) {
+            serviceBindings.destroy();
+            serviceBindings = null;
         }
         serverLocator = null;
         isServer = false;
