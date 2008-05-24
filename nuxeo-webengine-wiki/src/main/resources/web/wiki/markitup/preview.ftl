@@ -1,11 +1,15 @@
 <html>
   <head>
-    <title>Preview of TITRE DU DOCUMENT</title>
+    <title>Preview of ${This.title}</title>
     <link rel="stylesheet" href="/nuxeo/site/files/resources/css/webengine.css" type="text/css" media="screen" charset="utf-8">
     <link rel="stylesheet" href="/nuxeo/site/files/resources/css/preview.css" type="text/css" media="screen" charset="utf-8">
-    <!-- DETECT if in wiki : call wiki.css
-    or if in blog, blog.css -->
-    </head>
+    <#assign type = This.document.type/>
+    <#if type = "WikiPage" >
+      <link rel="stylesheet" href="/nuxeo/site/files/resources/css/wiki.css" type="text/css" media="screen" charset="utf-8">
+    <#elseif type = "Blog">
+      <link rel="stylesheet" href="/nuxeo/site/files/resources/css/blog.css" type="text/css" media="screen" charset="utf-8">
+    </#if>
+  </head>
   <body>
     <div id="main">
      <div class="closeWindow">
@@ -14,7 +18,7 @@
   </form>
 </div>
       <div class="main-content">
-        <h1>Titre du document</h1>
+        <h1>${This.title}</h1>
         <@wiki>${Request.getParameter('content')}</@wiki> 
       </div>
       <div class="closeWindow">
