@@ -76,8 +76,6 @@ public class DefaultWebContext implements WebContext {
 
     public static boolean USE_CORE_SEARCH = false;
 
-    private static CoreSession anonymousSession;
-
     protected final WebEngine engine;
     protected CoreSession session;
     protected boolean isCanceled = false;
