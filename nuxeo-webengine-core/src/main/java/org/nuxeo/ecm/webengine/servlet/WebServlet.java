@@ -229,14 +229,6 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
         String pathInfo = req.getPathInfo();
         if (pathInfo == null || "/".equals(pathInfo)) {
             pathInfo = "/index.ftl"; //TODO use the config to get the name of the index
-        } else {
-            int p = pathInfo.indexOf('/', 1);
-            String siteName = null;
-            if (p == -1) {
-                siteName = pathInfo.substring(1);
-            } else {
-                siteName = pathInfo.substring(1, p);
-            }
         }
         DefaultWebContext context = new DefaultWebContext(app, req, resp);
         // traverse documents if any
