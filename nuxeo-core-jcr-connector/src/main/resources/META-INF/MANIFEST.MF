@@ -6,7 +6,10 @@ Bundle-Vendor: Nuxeo
 Fragment-Host: org.nuxeo.ecm.core;bundle-version="1.0.0"
 Bundle-Localization: bundle
 Bundle-ClassPath: .
-Export-Package: org.nuxeo.ecm.core.jcr,
+Export-Package: org.apache.jackrabbit.core.persistence.bundle,
+ org.apache.jackrabbit.core.persistence.bundle.util,
+ org.nuxeo.ecm.core,
+ org.nuxeo.ecm.core.jcr,
  org.nuxeo.ecm.core.jcr.api,
  org.nuxeo.ecm.core.jcr.lifecycle,
  org.nuxeo.ecm.core.jcr.model,
@@ -16,6 +19,9 @@ Export-Package: org.nuxeo.ecm.core.jcr,
  org.nuxeo.ecm.core.jcr.testing,
  org.nuxeo.ecm.core.jcr.versioning,
  org.nuxeo.ecm.core.permissions,
- org.apache.jackrabbit.core.persistence.bundle
+ org.nuxeo.ecm.core.repository.jcr,
+ org.nuxeo.ecm.core.repository.jcr.properties,
+ org.nuxeo.ecm.core.repository.jcr.versioning,
+ org.nuxeo.ecm.core.versioning.custom
 Nuxeo-Component: OSGI-INF/JCRLifeCycleManager.xml
 Require-Bundle: org.nuxeo.ecm.core
