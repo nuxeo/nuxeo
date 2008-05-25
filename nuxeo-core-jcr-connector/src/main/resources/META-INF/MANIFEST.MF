@@ -5,7 +5,11 @@ Bundle-SymbolicName: org.nuxeo.ecm.core.jcr
 Bundle-Vendor: Nuxeo
 Fragment-Host: org.nuxeo.ecm.core;bundle-version="1.0.0"
 Bundle-Localization: bundle
-Bundle-ClassPath: .
+Bundle-ClassPath: ., jackrabbit-api-1.3.3.jar,
+ jackrabbit-core-1.3.3.jar,
+ jackrabbit-jcr-commons-1.3.3.jar,
+ jackrabbit-text-extractors-1.3.3.jar,
+ jcr-1.0.jar
 Export-Package: org.apache.jackrabbit.core.persistence.bundle,
  org.apache.jackrabbit.core.persistence.bundle.util,
  org.nuxeo.ecm.core,
