@@ -28,4 +28,6 @@ Export-Package: org.apache.jackrabbit.core.persistence.bundle,
  org.nuxeo.ecm.core.repository.jcr.versioning,
  org.nuxeo.ecm.core.versioning.custom
 Nuxeo-Component: OSGI-INF/JCRLifeCycleManager.xml
-Require-Bundle: org.nuxeo.ecm.core
+Require-Bundle: org.apache.commons.collections,
+ org.nuxeo.ecm.core
+Nuxeo-Require: org.nuxeo.ecm.core
