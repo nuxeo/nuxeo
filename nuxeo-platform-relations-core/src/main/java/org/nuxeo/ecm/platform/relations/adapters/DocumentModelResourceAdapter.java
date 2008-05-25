@@ -75,13 +75,15 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter
                 }
                 DocumentRef ref = new IdRef(uid);
 
-                Serializable givenSessionId = context.get(CORE_SESSION_ID_CONTEXT_KEY);
-                if (givenSessionId instanceof String) {
-                    session = CoreInstance.getInstance().getSession(
-                            (String) givenSessionId);
-                    if (!session.getRepositoryName().equals(repoName)) {
-                        // let's open one
-                        session = null;
+                if (context != null) {
+                    Serializable givenSessionId = context.get(CORE_SESSION_ID_CONTEXT_KEY);
+                    if (givenSessionId instanceof String) {
+                        session = CoreInstance.getInstance().getSession(
+                                (String) givenSessionId);
+                        if (!session.getRepositoryName().equals(repoName)) {
+                            // let's open one
+                            session = null;
+                        }
                     }
                 }
                 if (session == null) {
