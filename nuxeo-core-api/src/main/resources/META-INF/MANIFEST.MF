@@ -23,6 +23,9 @@ Export-Package: org.nuxeo.ecm.core,
  org.nuxeo.ecm.core.api.repository.impl,
  org.nuxeo.ecm.core.api.security,
  org.nuxeo.ecm.core.api.security.impl,
+ org.nuxeo.ecm.core.url,
+ org.nuxeo.ecm.core.url.nxdoc,
+ org.nuxeo.ecm.core.url.nxobj,
  org.nuxeo.ecm.core.utils
 Bundle-ClassPath: .
 Require-Bundle: org.nuxeo.runtime;visibility:=reexport,
