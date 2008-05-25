@@ -9,7 +9,7 @@
       <#if (file_index == 0)><ul></#if>
       <@compress single_line=true>
       <li><a href="${This.urlPath}@@getfile?property=files:files/item[${file_index}]/file">${file.filename}</a>
-        <#if (base.webcanWrite)>
+        <#if (base.canWrite)>
         - <a href="${This.urlPath}@@deletefile?property=files:files/item[${file_index}]">Remove</a>
         </#if>
       </li>

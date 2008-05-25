@@ -21,6 +21,9 @@
         <mapping pattern="/login">
           <script>/common/login.groovy</script>
         </mapping>
+        <mapping pattern="/user/(?username:[a-zA-Z0-9]+)$">
+          <script>/users/user_detail.groovy</script>
+        </mapping>
         <mapping pattern="/markitup_preview">
           <script>/markitup/preview.ftl</script>
           <!--traversal>${path}</traversal-->
