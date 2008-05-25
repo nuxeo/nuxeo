@@ -8,32 +8,30 @@
 <link rel="stylesheet" href="/nuxeo/site/files/resources/css/webengine.css" type="text/css" media="screen" charset="utf-8">
 <link rel="stylesheet" href="/nuxeo/site/files/resources/css/wiki.css" type="text/css" media="screen" charset="utf-8">
 <link rel="stylesheet" href="/nuxeo/site/files/resources/script/jquery/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
+<link rel="stylesheet" type="text/css" href="/nuxeo/site/files/resources/script/markitup/skins/markitup/style.css" />
+<link rel="stylesheet" type="text/css" href="/nuxeo/site/files/resources/script/markitup/sets/wiki/style.css" />
 
 <script src="/nuxeo/site/files/resources/script/jquery/jquery.js"></script>
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.base.js"></script>
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.tabs.js"></script>
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/base64.js"></script>
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/cookie.js"></script>
+  <script type="text/javascript" src="/nuxeo/site/files/resources/script/nxlogin.js"></script>
   
   <link rel="shortcut icon" href="/nuxeo/site/files/resources/image/favicon.gif" />
   
   <base href="${This.urlPath}">
 
 <script>  
+$(document).ready(function(){
 
-$.fn.search = function() {
-	return $(this).focus(function() {
-		if( $(this).value == This.defaultValue ) {
-			$(this).value = "";
-		}
-	}).blur(function() {
-		if( !This.value.length ) {
-			This.value = This.defaultValue;
-		}
-	});
-};
+$('#q').focus(function() {
+  if (this.value == "Search") {
+     this.value = ""
+  }
+})
 
-
+})
 
 </script>
 
@@ -45,7 +43,7 @@ $.fn.search = function() {
     <div id="header">
        <div class="searchBox">
       <form action="${Root.urlPath}@@search" method="get" accept-charset="utf-8">
-        <input type="text" name="q" id="q" autosave="com.mysite" results="5" value="Search">
+        <input type="search" name="q" id="q" autosave="${Request.localName}" results="5" value="Search">
         <input type="hidden" name="p" value="${Root.repositoryPath}">
       </form>
      </div>  

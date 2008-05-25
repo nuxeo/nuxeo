@@ -1,12 +1,15 @@
 <#assign files = Document.files.files />
+
+<#if (files?size != 0 || base.canWrite)>
 <div class="attachedTitle">Attached files</div>
+
 <div id="attached_files">
 <#if (files?size != 0)>
     <#list files as file>
       <#if (file_index == 0)><ul></#if>
       <@compress single_line=true>
       <li><a href="${This.urlPath}@@getfile?property=files:files/item[${file_index}]/file">${file.filename}</a>
-        <#if (canWrite)>
+        <#if (base.webcanWrite)>
         - <a href="${This.urlPath}@@deletefile?property=files:files/item[${file_index}]">Remove</a>
         </#if>
       </li>
@@ -24,3 +27,5 @@
     </form>
 </#if>
 </div>
+
+</#if>
