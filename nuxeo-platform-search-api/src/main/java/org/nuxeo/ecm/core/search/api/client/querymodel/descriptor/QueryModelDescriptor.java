@@ -222,6 +222,8 @@ public class QueryModelDescriptor {
                 } else if (params[i] instanceof Boolean) {
                     boolean b = (Boolean) params[i];
                     queryBuilder.append(b ? 1 : 0);
+                } else if (params[i] instanceof Number) {
+                    queryBuilder.append(params[i]);
                 } else {
                     String queryParam = params[i].toString();
                     // TODO will escape everything as if it where a string

@@ -50,6 +50,18 @@
       </pattern>
     </queryModel>
 
+    <queryModel name="statelessModelWithIntegerParam">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:integerParameter = ?
+      </pattern>
+    </queryModel>
+
+    <queryModel name="statelessModelWithFloatParam">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:floatParameter = ?
+      </pattern>
+    </queryModel>
+
     <queryModel name="statefulModel" docType="TestQuery">
 
       <whereClause>

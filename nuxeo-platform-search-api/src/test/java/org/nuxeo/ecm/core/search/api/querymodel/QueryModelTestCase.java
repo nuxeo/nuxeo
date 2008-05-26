@@ -46,6 +46,10 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
 
     private QueryModel statelessModelWithBooleanParam;
 
+    private QueryModel statelessModelWithIntegerParam;
+
+    private QueryModel statelessModelWithFloatParam;
+
     protected QueryModel statefulModel;
 
     protected DocumentModel documentModel;
@@ -93,6 +97,12 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
                 null);
 
         statelessModelWithBooleanParam = new QueryModel(service.getQueryModelDescriptor("statelessModelWithBooleanParam"),
+                null);
+
+        statelessModelWithIntegerParam = new QueryModel(service.getQueryModelDescriptor("statelessModelWithIntegerParam"),
+                null);
+
+        statelessModelWithFloatParam = new QueryModel(service.getQueryModelDescriptor("statelessModelWithFloatParam"),
                 null);
 
     }
@@ -173,6 +183,26 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
         // test with true boolean
         query = "SELECT * FROM Document WHERE ecm:booleanParameter = 1";
         assertEquals(query, descriptor.getQuery(new Object[] { true }));
+    }
+
+    // NXP-2418
+    public void testStratelessModelWithIntegerParam() throws ClientException {
+        QueryModelDescriptor descriptor = statelessModelWithIntegerParam.getDescriptor();
+        assertTrue(descriptor.isStateless());
+        assertFalse(descriptor.isStateful());
+
+        String query = "SELECT * FROM Document WHERE ecm:integerParameter = 234";
+        assertEquals(query, descriptor.getQuery(new Object[] { 234 }));
+    }
+
+    // NXP-2418
+    public void testStratelessModelWithFloatParam() throws ClientException {
+        QueryModelDescriptor descriptor = statelessModelWithFloatParam.getDescriptor();
+        assertTrue(descriptor.isStateless());
+        assertFalse(descriptor.isStateful());
+
+        String query = "SELECT * FROM Document WHERE ecm:floatParameter = 123.4";
+        assertEquals(query, descriptor.getQuery(new Object[] { 123.4f }));
     }
 
     public void testSerialization() throws Exception {
