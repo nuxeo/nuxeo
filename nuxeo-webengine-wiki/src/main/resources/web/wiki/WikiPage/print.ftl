@@ -24,7 +24,7 @@
 
 <hr/>
 
-<div class="wikiName">From <span>${Root.document.title}</span></div>
+<div class="wikiName">URL: <span>${This.getUrlPath()}</span></div>
 
 <hr/>
 

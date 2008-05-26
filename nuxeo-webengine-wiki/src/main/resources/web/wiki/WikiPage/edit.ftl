@@ -1,17 +1,16 @@
-  <!-- markit up -->
-
+<!-- markit up -->
 <script src="/nuxeo/site/files/resources/script/markitup/jquery.markitup.pack.js"></script>
 <script src="/nuxeo/site/files/resources/script/markitup/sets/wiki/set.js"></script>
-
-
-<link rel="stylesheet" type="text/css" href="/nuxeo/site/files/resources/script/markitup/skins/markitup/style.css" />
-<link rel="stylesheet" type="text/css" href="/nuxeo/site/files/resources/script/markitup/sets/wiki/style.css" />
-
 <!-- end markitup -->
 
 <script>
-  $(function() {  
-   $('#content').markItUp(myWikiSettings);
+
+function launchEditor() {
+  $('#content').markItUp(myWikiSettings)
+}
+
+$('#content').ready(function(){
+  setTimeout(launchEditor, 10)
   })
 </script>
 
