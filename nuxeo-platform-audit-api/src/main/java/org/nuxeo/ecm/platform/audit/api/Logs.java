@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.audit.api;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -102,6 +103,31 @@ public interface Logs extends Serializable {
     List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String category,String path,
             int pageNb, int pageSize) throws AuditException;
 
+    
+    
+    /**
+     * Returns the batched list of log entries.
+     *
+     * <p>
+     * Note we will use NXQL in the future when the search engine will index
+     * history.
+     * </p>
+     *
+     * @see org.nuxeo.ecm.platform.audit.api.query.DateRangeQueryConstants
+     *
+     * @param eventIds : the event ids.
+     * @param limit : filter envents by date from limit to now
+     * @param category : add filter on events category
+     * @param path : add filter on document path
+     * @param pageNb : page number (ignore if <=1)
+     * @param pageSize : number of results per page
+     * @return a list of log entries.
+     * @throws AuditException
+     */
+    List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String category,String path,
+            int pageNb, int pageSize) throws AuditException;
+
+    
     /**
      * Forces log Synchronisation for a branch of the repository. This can be
      * usefull to add the create entries if DB was initializd from a bulk import.
