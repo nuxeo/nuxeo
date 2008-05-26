@@ -37,10 +37,28 @@
       </pattern>
       <sortable defaultSortColumn="dc:modified" defaultSortAscending="true" />
     </queryModel>
-    
+
     <queryModel name="statelessModelWithListParam">
       <pattern>
         SELECT * FROM Document WHERE ecm:primaryType IN ?
+      </pattern>
+    </queryModel>
+
+    <queryModel name="statelessModelWithBooleanParam">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:booleanParameter = ?
+      </pattern>
+    </queryModel>
+
+    <queryModel name="statelessModelWithIntegerParam">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:integerParameter = ?
+      </pattern>
+    </queryModel>
+
+    <queryModel name="statelessModelWithFloatParam">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:floatParameter = ?
       </pattern>
     </queryModel>
 
