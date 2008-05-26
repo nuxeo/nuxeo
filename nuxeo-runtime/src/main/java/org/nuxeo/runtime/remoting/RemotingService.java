@@ -19,6 +19,7 @@
 
 package org.nuxeo.runtime.remoting;
 
+import java.util.Iterator;
 import java.util.Properties;
 
 import javax.management.MBeanServer;
@@ -141,10 +142,13 @@ public class RemotingService extends DefaultComponent {
             // locatorUrl on the servlet impl. - see docs
             // when this will be supported ignore regitsering the mbean and use locatorUrl to retrieve the invoker
             // (this aproach is more portable)
-            MBeanServer mb = (MBeanServer)MBeanServerFactory.findMBeanServer(null).iterator().next();
-            if (mb != null) {
-                mb.registerMBean(transporterServer.getConnector().getServerInvoker(),
-                        new ObjectName(INVOKER_NAME));
+            Iterator<?> it = MBeanServerFactory.findMBeanServer(null).iterator();
+            if (it.hasNext()) {
+                MBeanServer mb = (MBeanServer)it.next();
+                if (mb != null) {
+                    mb.registerMBean(transporterServer.getConnector().getServerInvoker(),
+                            new ObjectName(INVOKER_NAME));
+                }
             }
         }
 

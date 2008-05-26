@@ -196,8 +196,6 @@ public class BundleImpl implements Bundle {
         } catch (Exception e) {
             throw new BundleException("Failed to start activator: "
                     + headers.get(Constants.BUNDLE_ACTIVATOR), e);
-        } finally {
-            setResolved();
         }
     }
 
@@ -210,8 +208,6 @@ public class BundleImpl implements Bundle {
         } catch (Exception e) {
             throw new BundleException("Failed to stop activator: "
                     + headers.get(Constants.BUNDLE_ACTIVATOR), e);
-        } finally {
-            setResolved();
         }
     }
 
