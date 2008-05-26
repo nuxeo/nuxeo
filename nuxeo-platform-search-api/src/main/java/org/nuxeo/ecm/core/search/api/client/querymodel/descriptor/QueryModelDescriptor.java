@@ -174,6 +174,7 @@ public class QueryModelDescriptor {
 
     /**
      * Return the string literal in a form ready to embed in an NXQL statement.
+     * TODO remove this once we work on org.nuxeo.core, v 1.4
      *
      * @param s
      * @return
@@ -218,6 +219,11 @@ public class QueryModelDescriptor {
                 } else if (params[i] instanceof List) {
                     appendQuotedStringList(queryBuilder,
                             (List<? extends Object>) params[i]);
+                } else if (params[i] instanceof Boolean) {
+                    boolean b = (Boolean) params[i];
+                    queryBuilder.append(b ? 1 : 0);
+                } else if (params[i] instanceof Number) {
+                    queryBuilder.append(params[i]);
                 } else {
                     String queryParam = params[i].toString();
                     // TODO will escape everything as if it where a string
@@ -290,6 +296,8 @@ public class QueryModelDescriptor {
      * <p>
      * This is meant to be called at extension point contribution registration
      * time.
+     * time
+     * </p>
      *
      * @param context surrounding context, used to load the correct class.
      */
