@@ -119,8 +119,7 @@ public class QueryModelDescriptor {
         return getQuery(model, null);
     }
 
-    public SortInfo getDefaultSortInfo(DocumentModel model)
-            throws ClientException {
+    public SortInfo getDefaultSortInfo(DocumentModel model) {
         if (isStateful()) {
             if (sortColumnField == null || sortAscendingField == null) {
                 return null;
@@ -175,24 +174,24 @@ public class QueryModelDescriptor {
 
     /**
      * Return the string literal in a form ready to embed in an NXQL statement.
-     * TODO remove this once we work on org.nuxeo.core, v 1.4
      *
      * @param s
      * @return
      */
+    // TODO remove this once we work on org.nuxeo.core, v 1.4
     public static String prepareStringLiteral(String s) {
         return "'" + s.replaceAll("'", "\\\\'") + "'";
     }
 
     private static void appendQuotedStringList(StringBuilder queryBuilder,
             List<? extends Object> listParam) {
-        queryBuilder.append("(");
+        queryBuilder.append('(');
         List<String> quotedParam = new ArrayList<String>(listParam.size());
         for (int j = 0; j < listParam.size(); j++) {
             quotedParam.add(prepareStringLiteral(listParam.get(j).toString()));
         }
         queryBuilder.append(StringUtils.join(quotedParam, ", "));
-        queryBuilder.append(")");
+        queryBuilder.append(')');
     }
 
     @SuppressWarnings("unchecked")
@@ -295,7 +294,7 @@ public class QueryModelDescriptor {
      * Init the escaper object for stateful query models.
      * <p>
      * This is meant to be called at extension point contribution registration
-     * time
+     * time.
      * </p>
      *
      * @param context surrounding context, used to load the correct class.

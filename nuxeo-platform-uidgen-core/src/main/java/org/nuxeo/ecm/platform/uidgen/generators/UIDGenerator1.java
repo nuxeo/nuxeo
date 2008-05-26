@@ -17,7 +17,7 @@
  * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
-package org.nuxeo.ecm.platform.uidgen.tests.generators;
+package org.nuxeo.ecm.platform.uidgen.generators;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -49,8 +49,7 @@ public class UIDGenerator1 extends AbstractUIDGenerator {
         String n = String.format(NFORMAT, index);
 
         final String seqKey = getSequenceKey(doc);
-        String uid = seqKey + n;
 
-        return uid;
+        return seqKey + n;
     }
 }
