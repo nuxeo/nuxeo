@@ -26,7 +26,12 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
+import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallbackHandler;
+import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
+import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPropagator;
+import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoCallbackHandlerFactory;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -39,6 +44,10 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     public static final String EP_CHAIN = "chain";
 
+    public static final String EP_PROPAGATOR = "propagator";
+
+    public static final String EP_CBFACTORY = "JbossCallbackfactory";
+
     public static final String EP_STARTURL = "startURL";
 
     private static final Log log = LogFactory.getLog(PluggableAuthenticationService.class);
@@ -46,6 +55,10 @@ public class PluggableAuthenticationService extends DefaultComponent {
     private Map<String, AuthenticationPluginDescriptor> authenticatorsDescriptors;
 
     private Map<String, NuxeoAuthenticationPlugin> authenticators;
+
+    private NuxeoAuthenticationPropagator propagator=null;
+
+    private NuxeoCallbackHandlerFactory cbhFactory=null;
 
     private List<String> authChain;
 
@@ -107,6 +120,33 @@ public class PluggableAuthenticationService extends DefaultComponent {
             StartURLPatternDescriptor startupURLContrib = (StartURLPatternDescriptor) contribution;
             startupURLs.addAll(startupURLContrib.getStartURLPatterns());
         }
+        else if (extensionPoint.equals(EP_PROPAGATOR)) {
+        	AuthenticationPropagatorDescriptor propagationContrib = (AuthenticationPropagatorDescriptor) contribution;
+
+        	// create the new instance
+        	try {
+				propagator = (NuxeoAuthenticationPropagator) propagationContrib.getClassName().newInstance();
+			} catch (InstantiationException e) {
+				log.error("Unable to creeate propagator", e);
+			} catch (IllegalAccessException e) {
+				log.error("Unable to creeate propagator", e);
+			}
+
+        }
+        else if (extensionPoint.equals(EP_CBFACTORY)) {
+            CallbackHandlerFactoryDescriptor cbhfContrib = (CallbackHandlerFactoryDescriptor) contribution;
+
+            // create the new instance
+            try {
+                cbhFactory = (NuxeoCallbackHandlerFactory) cbhfContrib.getClassName().newInstance();
+            } catch (InstantiationException e) {
+                log.error("Unable to create callback handler factory", e);
+            } catch (IllegalAccessException e) {
+                log.error("Unable to creeate callback handler factory", e);
+            }
+
+        }
+
     }
 
     @Override
@@ -151,6 +191,22 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     public List<String> getAuthChain() {
         return authChain;
+    }
+
+
+    public UserIdentificationInfoCallbackHandler getCallbackHandler(UserIdentificationInfo userIdent)
+    {
+        if (cbhFactory==null)
+        {
+            return new UserIdentificationInfoCallbackHandler(userIdent);
+        }
+        return cbhFactory.createCallbackHandler(userIdent);
+    }
+
+    public void propagateUserIdentificationInformation(CachableUserIdentificationInfo cachableUserIdent)
+    {
+    	if (propagator!=null)
+    		propagator.propagateUserIdentificationInformation(cachableUserIdent);
     }
 
     public List<NuxeoAuthenticationPlugin> getPluginChain() {
