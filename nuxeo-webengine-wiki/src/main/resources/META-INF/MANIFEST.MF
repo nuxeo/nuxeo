@@ -5,10 +5,10 @@ Bundle-SymbolicName: org.nuxeo.ecm.webengine.wiki;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Vendor: Nuxeo
 Provide-Package: org.nuxeo.ecm.webengine.wiki
-Require-Bundle: org.nuxeo.runtime,
+Require-Bundle: org.nuxeo.ecm.core.api, org.nuxeo.ecm.webengine.core
+Nuxeo-Require: org.nuxeo.runtime,
  org.nuxeo.ecm.core.api,
- org.nuxeo.ecm.core,
- org.nuxeo.ecm.webapp.core
+ org.nuxeo.ecm.webengine.core
 Nuxeo-Component: OSGI-INF/core-types-contrib.xml, 
  OSGI-INF/document-types-contrib.xml,
  OSGI-INF/lifecycle-contrib.xml, 

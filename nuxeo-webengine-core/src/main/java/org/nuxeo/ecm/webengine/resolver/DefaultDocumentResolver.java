@@ -34,12 +34,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
-import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
-import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
-import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.webengine.WebApplication;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
@@ -182,13 +178,7 @@ public class DefaultDocumentResolver implements DocumentResolver {
         SearchService searchService = Framework.getService(SearchService.class);
 
         if (!useCoreSearch && searchService != null) {
-            ResultSet result = searchService.searchQuery(new ComposedNXQueryImpl(query), 0, 1);
-            if (result.isEmpty()) {
-                return null;
-            }
-            ResultItem rootResult = result.get(0);
-            String ref = (String) rootResult.get("ecm:uuid");
-            root = session.getDocument(new IdRef(ref));
+            root = SearchHelper.search(session, query);
         } else {
             DocumentModelList result = session.query(query);
             if (!result.isEmpty()) {

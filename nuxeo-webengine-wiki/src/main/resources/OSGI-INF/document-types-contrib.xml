@@ -3,6 +3,7 @@
 <component name="org.nuxeo.webengine.document.types">
 
   <require>org.nuxeo.ecm.platform.types.TypeService</require>
+  <require>org.nuxeo.ecm.core.search.service.defaultconfig</require>
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService"
              point="types">
@@ -68,6 +69,33 @@
       </subtypes>
     </type>
 
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.search.service.SearchServiceImpl" point="indexableDocType">
+    <indexableDocType indexAllSchemas="true" name="Wiki"/>
+    <indexableDocType indexAllSchemas="true" name="WikiPage"/>
+    <indexableDocType indexAllSchemas="true" name="Blog"/>
+    <indexableDocType indexAllSchemas="true" name="BlogPost"/>
+  </extension>
+
+  <extension
+      target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
+      point="fullTextField">
+    <fullText name="ecm:fulltext" analyzer="default"
+              blobExtractorName="nuxeoTransform">
+      <field>dublincore:title</field>
+      <field>dublincore:description</field>
+      <field>file:content</field>
+      <field>files:files:file</field>
+      <field>note:note</field>
+      <field>wikiPage:content</field>
+
+      <mimetype name="application/pdf">pdf2text</mimetype>
+      <mimetype name="application/msword">word2text_poi</mimetype>
+      <mimetype name="text/xml">xml2text</mimetype>
+      <mimetype name="text/xhtml">xml2text</mimetype>
+      <mimetype name=".*/.*">any2text</mimetype>
+    </fullText>
   </extension>
 
 </component>

@@ -21,9 +21,7 @@ package org.nuxeo.ecm.webengine.install;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,26 +121,16 @@ public class Installer {
 
 
     public static void copyResources(Bundle bundle, String path, File root) throws URISyntaxException, IOException {
-        root.mkdirs(); // create root dir if not already exists
-        // copy web dir located in the bundle jar into this dir
-        //TODO: getLocation() may not work with some OSGi impl.
-        String location = bundle.getLocation();
-        if (location.startsWith("file:")) {
-            if (location.endsWith(".jar")) {
-                ZipUtils.unzip(path, new URL(location), root);
-            } else {
-                File file = new File(new URL(location).toURI());
-                file = new File(file, path);
-                FileUtils.copy(file.listFiles(), root);
-            }
+        File file = Framework.getRuntime().getBundleFile(bundle);
+        if (file == null) {
+            throw new UnsupportedOperationException("Couldn't transform the bundle location into a file");
+        }
+        root.mkdirs();
+        if (file.isDirectory()) {
+            file = new File(file, path);
+            FileUtils.copy(file.listFiles(), root);
         } else {
-            if (location.endsWith(".jar")) {
-                ZipUtils.unzip(path, new File(location), root);
-            } else {
-                File file = new File(location);
-                file = new File(file, path);
-                FileUtils.copy(file.listFiles(), root);
-            }
+            ZipUtils.unzip(path, file, root);
         }
     }
 
@@ -152,38 +140,19 @@ public class Installer {
 
     protected File getOrCreateBundleDir(Bundle bundle) throws Exception {
         File bundleDir = null;
-        String location = ctx.getBundle().getLocation();
-        if (location.contains(":/")) { // an URL
-            if (location.startsWith("file:")) {
-                File file = new File(new URI(location));
-                if (file.isFile()) { // a jar?
-                    bundleDir = getTempBundleDir(bundle);
-                    ZipUtils.unzip(file, bundleDir);
-                } else if (file.isDirectory()) {
-                    bundleDir = file;
-                } else {
-                    logError("Don't now how to handle the bundle location string: "+location);
-                    return null;
-                }
-            } else { // assume a jar
-                bundleDir = getTempBundleDir(ctx.getBundle());
-                ZipUtils.unzip(new URL(location), bundleDir);
-            }
-        } else { // a file?
-            File file = new File(location);
-            if (!file.exists()) {
-                logError("Don't now how to handle the bundle location string: "+location);
-                return null;
-            }
-            if (file.isFile()) { // should be a jar
-                bundleDir = getTempBundleDir(ctx.getBundle());
-                ZipUtils.unzip(file, bundleDir);
-            } else {
-                bundleDir = file;
-            }
+        File file = Framework.getRuntime().getBundleFile(bundle);
+        if (file == null) {
+            throw new UnsupportedOperationException("Couldn't transform the bundle location into a file");
+        }
+        if (file.isDirectory()) {
+            bundleDir = file;
+        } else {
+            bundleDir = getTempBundleDir(bundle);
+            ZipUtils.unzip(file, bundleDir);
         }
         return bundleDir;
     }
+
 
 
 }

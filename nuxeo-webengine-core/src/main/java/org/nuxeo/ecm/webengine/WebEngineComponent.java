@@ -73,8 +73,15 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
         ctx = context;
-        File root = new File(Framework.getRuntime().getHome(), "web");
+        String webDir = Framework.getProperty("org.nuxeo.ecm.web.root");
+        File root = null;
+        if (webDir != null) {
+            root = new File(webDir);
+        } else {
+            root = new File(Framework.getRuntime().getHome(), "web");
+        }
         root = root.getCanonicalFile();
+        log.info("Using web root: "+root);
         if (!root.exists()) {
             root.mkdirs();
             // runtime predeployment is not supporting conditional unziping so we do the predeployment here:

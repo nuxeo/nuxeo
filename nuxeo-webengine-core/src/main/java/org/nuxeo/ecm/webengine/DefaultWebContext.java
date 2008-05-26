@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,18 +44,15 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
-import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
-import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
-import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
+import org.nuxeo.ecm.webengine.resolver.SearchHelper;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.servlet.WebServlet;
@@ -98,6 +96,9 @@ public class DefaultWebContext implements WebContext {
     protected List<File> scriptExecutionStack;
 
     protected String targetScriptPath;
+
+    protected Principal principal; // allow overriding request principal
+
 
     public DefaultWebContext(WebApplication app, HttpServletRequest req, HttpServletResponse resp) {
         this.request = req;
@@ -180,7 +181,15 @@ public class DefaultWebContext implements WebContext {
     }
 
     public Principal getPrincipal() {
-        return request.getUserPrincipal();
+        if (principal == null) {
+            principal = request.getUserPrincipal();
+            // TODO XX temporary code
+            if (principal == null) {
+                principal = new UserPrincipal("system");
+            }
+            // TODO XX temporary code
+        }
+        return principal;
     }
 
     public HttpServletRequest getRequest() {
@@ -521,14 +530,7 @@ public class DefaultWebContext implements WebContext {
                     USE_CORE_SEARCH = true;
                     return session.query(query);
                 }
-                ResultSet result = search.searchQuery(new ComposedNXQueryImpl(query), 0, Integer.MAX_VALUE);
-                DocumentModelList docs = new DocumentModelListImpl();
-                for (ResultItem item : result) {
-                    String id = (String)item.get("ecm:uuid");
-                    DocumentModel doc = session.getDocument(new IdRef(id));
-                    docs.add(doc);
-                }
-                return docs;
+                return SearchHelper.search(session, query, 0, Integer.MAX_VALUE);
             }
         } catch (Exception e) {
             throw new WebException("Failed to perform search: "+query, e);
@@ -668,8 +670,24 @@ public class DefaultWebContext implements WebContext {
             throw new ClientException("Unable to get " + repoName
                     + " repository");
         }
-        return repo.open();
+        // we should set the principal in the session context to be sure it will work for
+        // both POJO session and bean session (bean session are working always
+        // because they get the principal from the bean context)
+        Principal principal = request.getUserPrincipal();
+        //TODO ========== temporary code
+        if (principal == null) {
+            principal = new UserPrincipal("system");
+        }
+        //TODO ========== temporary code
+        if (principal instanceof Serializable) {
+            HashMap<String,Serializable> ctx = new HashMap<String, Serializable>();
+            ctx.put("principal", (Serializable)principal);
+            return repo.open(ctx);
+        } else {
+            return repo.open();
+        }
     }
+
     public static String getTargetRepositoryName(HttpServletRequest req) {
         return "default";
     }
