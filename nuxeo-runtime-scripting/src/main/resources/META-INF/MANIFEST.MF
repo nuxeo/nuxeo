@@ -9,6 +9,7 @@ Bundle-SymbolicName: org.nuxeo.runtime.scripting;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Localization: bundle
 Require-Bundle: org.nuxeo.runtime
+Eclipse-BuddyPolicy: dependent
 Nuxeo-Component: OSGI-INF/ScriptingService.xml
 Export-Package: com.sun.script.groovy,
  com.sun.script.jexl,
