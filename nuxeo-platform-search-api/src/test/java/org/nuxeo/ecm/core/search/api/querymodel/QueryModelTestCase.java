@@ -44,6 +44,8 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
 
     private QueryModel statelessModelWithListParam;
 
+    private QueryModel statelessModelWithBooleanParam;
+
     protected QueryModel statefulModel;
 
     protected DocumentModel documentModel;
@@ -88,6 +90,9 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
 
         statelessModelWithListParam = new QueryModel(
                 service.getQueryModelDescriptor("statelessModelWithListParam"),
+                null);
+
+        statelessModelWithBooleanParam = new QueryModel(service.getQueryModelDescriptor("statelessModelWithBooleanParam"),
                 null);
 
     }
@@ -153,6 +158,21 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
         typeList = Arrays.asList(typeArray);
         assertEquals(query, descriptor.getQuery(new Object[] { typeList }));
 
+    }
+
+    // NXP-2418
+    public void testStratelessModelWithBooleanParam() throws ClientException {
+        QueryModelDescriptor descriptor = statelessModelWithBooleanParam.getDescriptor();
+        assertTrue(descriptor.isStateless());
+        assertFalse(descriptor.isStateful());
+
+        // test with false boolean
+        String query = "SELECT * FROM Document WHERE ecm:booleanParameter = 0";
+        assertEquals(query, descriptor.getQuery(new Object[] { false }));
+
+        // test with true boolean
+        query = "SELECT * FROM Document WHERE ecm:booleanParameter = 1";
+        assertEquals(query, descriptor.getQuery(new Object[] { true }));
     }
 
     public void testSerialization() throws Exception {
