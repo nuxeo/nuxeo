@@ -31,8 +31,17 @@ import org.nuxeo.ecm.core.search.api.client.querymodel.Escaper;
 @XObject(value = "predicate")
 public class PredicateDescriptor {
 
+    private static final String ATOMIC_PREDICATE = "atomic";
+
+    private static final String SUB_CLAUSE_PREDICATE = "subClause";
+
+    private static final String STATIC_PREDICATE = "static";
+
     @XNode("@parameter")
     protected String parameter;
+
+    @XNode("@type")
+    protected String type = ATOMIC_PREDICATE;
 
     protected String operator;
 
@@ -58,7 +67,34 @@ public class PredicateDescriptor {
         return getQueryElement(model, null);
     }
 
-    public String getQueryElement(DocumentModel model, Escaper escaper) throws ClientException {
+    public String getQueryElement(DocumentModel model, Escaper escaper)
+            throws ClientException {
+        if (ATOMIC_PREDICATE.equals(type)) {
+            return atomicQueryElement(model, escaper);
+        }
+        if (SUB_CLAUSE_PREDICATE.equals(type)) {
+            return subClauseQueryElement(model);
+        }
+        throw new ClientException("Unknown predicate type: " + type);
+    }
+
+    protected String subClauseQueryElement(DocumentModel model)
+            throws ClientException {
+        if (values == null || values.length != 1) {
+            throw new ClientException(
+                    "subClause predicate needs exactly one field");
+        }
+        FieldDescriptor fieldDescriptor = values[0];
+        if (!fieldDescriptor.getFieldType().equals("string")) {
+            throw new ClientException(String.format(
+                    "type of field %s.%s is not string",
+                    fieldDescriptor.getSchema(), fieldDescriptor.getName()));
+        }
+        return "(" + (String) fieldDescriptor.getRawValue(model) + ")";
+    }
+
+    protected String atomicQueryElement(DocumentModel model, Escaper escaper)
+            throws ClientException {
         String operator = null;
         if (operatorField != null && operatorSchema != null) {
             FieldDescriptor operatorFieldDescriptor = new FieldDescriptor(

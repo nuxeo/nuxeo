@@ -48,6 +48,7 @@ public class VersioningChangeListener extends AbstractEventListener implements
     /**
      * @param coreEvent instance thrown at core layer
      */
+    @Override
     public void notifyEvent(CoreEvent coreEvent) {
 
         final String logPrefix = "<notifyEvent> ";
@@ -92,6 +93,6 @@ public class VersioningChangeListener extends AbstractEventListener implements
                 .getRuntime().getComponent(VersioningModifierService.NAME);
 
         service.doModifications(newDoc);
-
     }
+
 }
