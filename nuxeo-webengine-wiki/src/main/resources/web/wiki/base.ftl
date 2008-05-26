@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="/nuxeo/site/files/resources/script/jquery/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
     <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.base.js"></script>
     <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.tabs.js"></script>
+    <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/cookie.js"></script>
+    
     <link rel="shortcut icon" href="/nuxeo/site/files/resources/image/favicon.gif" />
   </head>
 
@@ -30,6 +32,7 @@
       </div>
 
       <div id="sidebar">
+        <@block name="sidebar"/>
       </div>
     </div>
     <div id="footer">

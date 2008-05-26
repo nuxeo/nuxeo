@@ -1,7 +1,7 @@
 <#if (base.canWrite)>
 <div class="sideblock general">
   <p class="createButton">
-   <a href="${Root.urlPath}@@create_entry"><span>Add Page!</span></a>
+   <a href="${Root.urlPath}/@@create_entry"><span>Add Page!</span></a>
   </p>
 </div>  
 </#if>

@@ -1,5 +1,7 @@
 <html>
 <#import "common/util.ftl" as base/>
+<#import "navigation/tree.ftl" as nav/>
+
 <head>
     <title>${Root.document.title} :: ${This.document.title}</title>
     
@@ -10,6 +12,7 @@
 <link rel="stylesheet" href="/nuxeo/site/files/resources/script/jquery/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
 <link rel="stylesheet" type="text/css" href="/nuxeo/site/files/resources/script/markitup/skins/markitup/style.css" />
 <link rel="stylesheet" type="text/css" href="/nuxeo/site/files/resources/script/markitup/sets/wiki/style.css" />
+
 
 <script src="/nuxeo/site/files/resources/script/jquery/jquery.js"></script>
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.base.js"></script>
@@ -60,6 +63,7 @@ $('#q').focus(function() {
 
       <div id="sidebar">
           <#include "includes/sidebar.ftl"/>
+          <@nav.navtree rootdoc=Root.document />
       </div>
     </div>
     <div id="footer">

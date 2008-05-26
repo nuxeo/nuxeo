@@ -28,6 +28,14 @@
           <script>/markitup/preview.ftl</script>
           <!--traversal>${path}</traversal-->
         </mapping>
+        <mapping pattern=".*search.*">
+          <script>/search.ftl</script>
+          <traversal>${path}</traversal>
+        </mapping>
+        <mapping pattern=".*/registration_form">
+          <script>/users/registration_form.ftl</script>
+          <traversal>${path}</traversal>
+        </mapping>
       </mappings>
     </webapp>
   </extension>
@@ -93,6 +101,9 @@
           <permission expression="Write"/>
         </action>
         <action id="publish_comment" enabled="true" script="comments/publishComment.groovy">
+          <permission expression="Write"/>
+        </action>
+        <action id="create_form" enabled="true" script="Wiki/create_entry.ftl">
           <permission expression="Write"/>
         </action>
       </actions>

@@ -10,7 +10,8 @@
  *   http://www.gnu.org/licenses/gpl.html
  *
  * Revision: $Id$
- *
+ * Original by: XXX
+ * Modified by: Nuxeo
  */
 
 ;(function($) {
@@ -18,7 +19,13 @@
 function load(settings, root, child, container) {
 	$.getJSON(settings.url, {root: root}, function(response) {
 		function createNode(parent) {
-			var current = $("<li/>").attr("id", this.id || "").html("<span>" + this.text + "</span>").appendTo(parent);
+		    if (this.href) {
+		        var item = $("<a/>").attr('href', this.href).html(this.text)
+		    } else {
+		        var item = "<span>" + this.text + "</span>"
+		    }
+		    
+			var current = $("<li/>").attr("id", this.id || "").html(item).appendTo(parent);
 			if (this.classes) {
 				current.children("span").addClass(this.classes);
 			}
@@ -27,6 +34,7 @@ function load(settings, root, child, container) {
 			}
 			if (this.hasChildren || this.children && this.children.length) {
 				var branch = $("<ul/>").appendTo(current);
+				branch.addClass('branch');
 				if (this.hasChildren) {
 					current.addClass("hasChildren");
 					createNode.call({
