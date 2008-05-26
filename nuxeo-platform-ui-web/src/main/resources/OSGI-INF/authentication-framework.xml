@@ -55,4 +55,27 @@
     <object
       class="org.nuxeo.ecm.platform.ui.web.auth.service.StartURLPatternDescriptor" />
   </extension-point>
+
+ <extension-point name="propagator">
+  <documentation>
+    Contribute a App Server specific security propagation handler.
+    Usefull to externalize dependencies on JBossSX
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPropagatorDescriptor" />
+  </extension-point>
+
+ <extension-point name="callBackHandlerFactory">
+  <documentation>
+    Contribute a App Server specific JAAS CallBackHandler Factory
+    Usefull to externalize dependencies on JBossSX
+
+    @author Thierry Delprat (td@nuxeo.com)
+  </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.ui.web.auth.service.CallbackHandlerFactoryDescriptor" />
+  </extension-point>
+
 </component>

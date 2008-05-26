@@ -22,15 +22,12 @@ package org.nuxeo.ecm.platform.ui.web.auth;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.security.AccessController;
 import java.security.Principal;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -50,7 +47,6 @@ import org.jboss.seam.Seam;
 import org.jboss.seam.contexts.ContextAdaptor;
 import org.jboss.seam.contexts.Lifecycle;
 import org.jboss.seam.core.Manager;
-import org.jboss.security.SecurityAssociation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
@@ -199,8 +195,10 @@ public class NuxeoAuthenticationFilter implements Filter {
             // JbossSecurityPropagationCallbackHandler(cachableUserIdent.getUserInfo());
             // handler = new
             // UserIdentificationInfoCallbackHandler(cachableUserIdent.getUserInfo());
-            CallbackHandler handler = new JBossUserIdentificationInfoCallbackHandler(
-                    cachableUserIdent.getUserInfo());
+            //CallbackHandler handler = new JBossUserIdentificationInfoCallbackHandler(
+            //        cachableUserIdent.getUserInfo());
+
+            CallbackHandler handler = service.getCallbackHandler(cachableUserIdent.getUserInfo());
 
             loginContext = new LoginContext(LOGIN_DOMAIN, handler);
             loginContext.login();
@@ -596,35 +594,9 @@ public class NuxeoAuthenticationFilter implements Filter {
     }
 
     // App Server JAAS SPI
-
-    protected static void propagateUserIdentificationInformation(
+    protected  void propagateUserIdentificationInformation(
             CachableUserIdentificationInfo cachableUserIdent) {
-
-        // JBoss specific implementation
-
-        // need to transfer principal info onto calling thread...
-        // this is normally done by ClientLoginModule, but in this
-        // case we don't do a re-authentication.
-
-        UserIdentificationInfo userInfo = cachableUserIdent.getUserInfo();
-
-        final Object password = userInfo.getPassword().toCharArray();
-        final Object cred = userInfo;
-        final boolean useLP = userInfo.getLoginPluginName() != null;
-        final Principal prin = cachableUserIdent.getPrincipal();
-        final Subject subj = cachableUserIdent.getLoginContext().getSubject();
-
-        AccessController.doPrivileged(new PrivilegedAction() {
-            public Object run() {
-                if (useLP) {
-                    SecurityAssociation.pushSubjectContext(subj, prin, cred);
-                } else {
-                    SecurityAssociation.pushSubjectContext(subj, prin, password);
-                }
-                return null;
-            }
-        });
-
+    		service.propagateUserIdentificationInformation(cachableUserIdent);
     }
 
     // Plugin API

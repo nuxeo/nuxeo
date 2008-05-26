@@ -37,21 +37,20 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.security.SimpleGroup;
-import org.jboss.security.SimplePrincipal;
-import org.jboss.security.auth.callback.ObjectCallback;
-import org.jboss.security.auth.callback.SecurityAssociationCallback;
-import org.jboss.security.auth.spi.AbstractServerLoginModule;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallback;
+import org.nuxeo.ecm.platform.login.CallbackResult;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.LoginComponent;
 
-public class NuxeoLoginModule extends AbstractServerLoginModule {
+import sun.security.acl.GroupImpl;
+import sun.security.acl.PrincipalImpl;
+
+public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
 
     private static final Log log = LogFactory.getLog(NuxeoLoginModule.class);
 
@@ -119,14 +118,14 @@ public class NuxeoLoginModule extends AbstractServerLoginModule {
         String username = identity.getName();
         List<String> roles = identity.getRoles();
 
-        Group roleSet = new SimpleGroup("Roles");
+        Group roleSet = new GroupImpl("Roles");
         log.debug("Getting roles for user=" + username);
         for (String roleName : roles) {
-            SimplePrincipal role = new SimplePrincipal(roleName);
+            PrincipalImpl role = new PrincipalImpl(roleName);
             log.debug("Found role=" + roleName);
             roleSet.addMember(role);
         }
-        Group callerPrincipal = new SimpleGroup("CallerPrincipal");
+        Group callerPrincipal = new GroupImpl("CallerPrincipal");
         callerPrincipal.addMember(identity);
 
         return new Group[] { roleSet, callerPrincipal };
@@ -145,8 +144,8 @@ public class NuxeoLoginModule extends AbstractServerLoginModule {
         UserIdentificationInfoCallback uic = new UserIdentificationInfoCallback();
 
         // JBoss specific cb : handle web=>ejb propagation
-        SecurityAssociationCallback ac = new SecurityAssociationCallback();
-        ObjectCallback oc = new ObjectCallback("UserInfo:");
+        //SecurityAssociationCallback ac = new SecurityAssociationCallback();
+        //ObjectCallback oc = new ObjectCallback("UserInfo:");
 
         // **** handle callbacks
         // We can't check the callback handler class to know what will be supported
@@ -158,7 +157,7 @@ public class NuxeoLoginModule extends AbstractServerLoginModule {
         try {
             // only try this cbh when called from the web layer
             if (useUserIdentificationInfoCB) {
-                callbackHandler.handle(new Callback[] { ac, nc, pc, uic });
+                callbackHandler.handle(new Callback[] { uic });
                 // First check UserInfo CB return
                 userIdent = uic.getUserInfo();
                 cb_handled = true;
@@ -170,27 +169,36 @@ public class NuxeoLoginModule extends AbstractServerLoginModule {
                     + e.getMessage());
         }
 
+        Principal principal = null;
+        Object credential = null;
+
         if (!cb_handled) {
-            try {
-                // If this is a SecurityAssociationCBH
-                // try to get UserInfo from objectCB
-                callbackHandler.handle(new Callback[] { oc, ac, nc, pc });
-                Object cred = oc.getCredential();
-                cb_handled = true;
-                if (cred instanceof UserIdentificationInfo) {
-                    userIdent = (UserIdentificationInfo) cred;
+
+
+
+            CallbackResult result = loginPluginManager.handleSpecifcCallbacks(callbackHandler);
+
+            if (result!=null && result.cb_handled)
+            {
+                if (result.userIdent!=null && result.userIdent.containsValidIdentity())
+                {
+                    userIdent = result.userIdent;
+                    cb_handled=true;
                 }
-            } catch (UnsupportedCallbackException e) {
-                log.debug("objectCB is not supported");
-            } catch (IOException e) {
-                log.warn("Error calling callback handler with objectCB : "
-                        + e.getMessage());
+                else
+                {
+                    principal=result.principal;
+                    credential = result.credential;
+                    if (principal!=null)
+                        cb_handled=true;
+                }
             }
         }
+
         if (!cb_handled) {
             try {
                 // Std CBH : will only works for L/P
-                callbackHandler.handle(new Callback[] { ac, nc, pc });
+                callbackHandler.handle(new Callback[] { nc, pc });
                 cb_handled = true;
             } catch (UnsupportedCallbackException e) {
                 LoginException le = new LoginException(
@@ -216,8 +224,7 @@ public class NuxeoLoginModule extends AbstractServerLoginModule {
                 }
                 return nxp;
             }
-            Principal principal = ac.getPrincipal();
-            Object credential = ac.getCredential();
+
             if (LoginComponent.isSystemLogin(principal)) {
                 return new SystemPrincipal(principal.getName());
             }
@@ -254,7 +261,7 @@ public class NuxeoLoginModule extends AbstractServerLoginModule {
         }
     }
 
-    @Override
+
     public boolean login() throws LoginException {
         if (manager == null) {
             throw new LoginException("UserManager implementation not found");
@@ -285,7 +292,7 @@ public class NuxeoLoginModule extends AbstractServerLoginModule {
         return identity;
     }
 
-    @Override
+
     public Principal createIdentity(String name) throws LoginException {
         log.debug("createIdentity: " + name);
         try {
