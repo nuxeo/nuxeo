@@ -174,6 +174,7 @@ public class QueryModelDescriptor {
 
     /**
      * Return the string literal in a form ready to embed in an NXQL statement.
+     * TODO remove this once we work on org.nuxeo.core, v 1.4
      *
      * @param s
      * @return
