@@ -35,7 +35,6 @@ for (d in rdoc) {
     def c = [:]
     c['id'] = d.id
     c['cell'] = []
-    //c['yop'] = Context.getUrlPath(d)
     c['cell'].add(d.getPropertyValue('dc:title').toString())
     c['cell'].add(d.getPropertyValue('dc:modified').time.toString())
     c['cell'].add(d.getPropertyValue('dc:creator').toString())

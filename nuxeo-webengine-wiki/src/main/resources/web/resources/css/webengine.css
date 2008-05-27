@@ -171,6 +171,14 @@ body {
   margin:5px 0 0 25px;
 }
 
+#treenav.treeview {
+    margin:0px;
+}
+
+#sidebar ul.branch {
+    margin:0px;
+}
+
 #sidebar .contextual ul {
   list-style-image: url(/nuxeo/site/files/resources/image/bullet.gif);
   margin-top:0;
@@ -258,7 +266,7 @@ body {
   padding:3px 5px;
 } 
 
-    
+
 #footer {
     background-color:#ccc;
     clear:both;
