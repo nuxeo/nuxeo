@@ -25,6 +25,7 @@ import java.net.URISyntaxException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.install.Installer;
 import org.nuxeo.ecm.webengine.rendering.RenderingExtensionDescriptor;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
@@ -83,9 +84,13 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
         root = root.getCanonicalFile();
         log.info("Using web root: "+root);
         if (!root.exists()) {
-            root.mkdirs();
-            // runtime predeployment is not supporting conditional unziping so we do the predeployment here:
-            deployWebDir(context.getRuntimeContext().getBundle(), root);
+            try {
+                root.mkdirs();
+                // runtime predeployment is not supporting conditional unziping so we do the predeployment here:
+                deployWebDir(context.getRuntimeContext().getBundle(), root);
+            } catch (Exception e) { // delete incomplete files
+                FileUtils.deleteTree(root);
+            }
         }
         // register contrib managers
         registerContributionManager(APPLICATION_XP, new ContributionManager(this));
