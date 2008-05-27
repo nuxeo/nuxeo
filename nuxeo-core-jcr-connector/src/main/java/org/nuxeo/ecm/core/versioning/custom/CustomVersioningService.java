@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.repository.jcr.JCRDocument;
 import org.nuxeo.ecm.core.repository.jcr.JCRName;
+import org.nuxeo.ecm.core.repository.jcr.JCRQueryXPath;
 import org.nuxeo.ecm.core.repository.jcr.JCRSession;
 import org.nuxeo.ecm.core.repository.jcr.NodeConstants;
 import org.nuxeo.ecm.core.repository.jcr.versioning.VersioningService;
@@ -426,7 +427,7 @@ public class CustomVersioningService implements VersioningService {
      */
     public void fixupAfterCopy(JCRDocument doc) throws RepositoryException {
         String queryString = String.format("/jcr:root%s//element(*, %s)[%s]",
-                doc.getNode().getPath(),
+                JCRQueryXPath.quotePath(doc.getNode().getPath()),
                 NodeConstants.ECM_VERSIONABLE_MIXIN.rawname,
                 NodeConstants.ECM_VERSION_HISTORY.rawname);
         QueryManager queryManager = doc.jcrSession().getSession().getWorkspace().getQueryManager();

@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.util.ISO9075;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryParseException;
@@ -139,6 +140,19 @@ public class JCRQueryXPath implements Query {
         buffer.append(ModelAdapter.path2Jcr(new Path(s.replaceAll("\\.", "/"))));
         buffer.append('/');
         return buffer.toString();
+    }
+
+    /**
+     * Quote a path so that it can be fed to an XPath parser.
+     * <p>
+     * Basically all-digit names are forbidden and have to be escaped.
+     */
+    public static String quotePath(String path) {
+        String[] names = path.split("/");
+        for (int i = 0; i < names.length; i++) {
+            names[i] = ISO9075.encode(names[i]);
+        }
+        return StringUtils.join(names, "/");
     }
 
 }
