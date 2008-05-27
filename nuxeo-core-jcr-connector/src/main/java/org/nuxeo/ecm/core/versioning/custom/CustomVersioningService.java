@@ -37,12 +37,11 @@ import javax.jcr.version.VersionException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jackrabbit.util.ISO9075;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.repository.jcr.JCRDocument;
 import org.nuxeo.ecm.core.repository.jcr.JCRName;
+import org.nuxeo.ecm.core.repository.jcr.JCRQueryXPath;
 import org.nuxeo.ecm.core.repository.jcr.JCRSession;
 import org.nuxeo.ecm.core.repository.jcr.NodeConstants;
 import org.nuxeo.ecm.core.repository.jcr.versioning.VersioningService;
@@ -432,7 +431,7 @@ public class CustomVersioningService implements VersioningService {
      */
     public void fixupAfterCopy(JCRDocument doc) throws RepositoryException {
         String queryString = String.format("/jcr:root%s//element(*, %s)[%s]",
-                escapeForXPath(doc.getNode().getPath()),
+                JCRQueryXPath.quotePath(doc.getNode().getPath()),
                 NodeConstants.ECM_VERSIONABLE_MIXIN.rawname,
                 NodeConstants.ECM_VERSION_HISTORY.rawname);
         QueryManager queryManager = doc.jcrSession().getSession().getWorkspace().getQueryManager();
@@ -450,19 +449,6 @@ public class CustomVersioningService implements VersioningService {
         if (node.hasProperty(NodeConstants.ECM_VERSION_HISTORY.rawname)) {
             node.getProperty(NodeConstants.ECM_VERSION_HISTORY.rawname).remove();
         }
-    }
-
-    /**
-     * Escape a path so that it can be fed to an XPath parser.
-     * <p>
-     * Basically all-digit names are forbidden and have to be escaped.
-     */
-    protected static String escapeForXPath(String path) {
-        String[] names = path.split("/");
-        for (int i = 0; i < names.length; i++) {
-            names[i] = ISO9075.encode(names[i]);
-        }
-        return StringUtils.join(names, "/");
     }
 
 }

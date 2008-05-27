@@ -398,9 +398,9 @@ public class JCRSession implements Session {
             if (folder == null) {
                 queryString = "/";
             } else {
-                queryString = "/jcr:root/" +
-                        ((JCRDocument) folder).getNode().getPath() + '/' +
-                        NodeConstants.ECM_CHILDREN.rawname;
+                String path = ((JCRDocument) folder).getNode().getPath();
+                queryString = "/jcr:root/" + JCRQueryXPath.quotePath(path) +
+                        '/' + NodeConstants.ECM_CHILDREN.rawname;
             }
             queryString += "/element(*, " +
                     NodeConstants.ECM_NT_DOCUMENT_PROXY.rawname + ")[@" +
