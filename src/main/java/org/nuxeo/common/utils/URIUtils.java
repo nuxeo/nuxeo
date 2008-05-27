@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,15 +12,15 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
- *
- * $Id: URIUtils.java 28167 2007-12-15 17:51:26Z sfermigier $
+ *     Anahide Tchertchian
+ *     Florent Guillaume
  */
 
 package org.nuxeo.common.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -34,7 +34,8 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Helper class to parse a URI or build one given parameters.
  *
- * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ * @author Anahide Tchertchian
+ * @author Florent Guillaume
  */
 public final class URIUtils {
 
@@ -142,6 +143,21 @@ public final class URIUtils {
             log.error("Failed to add new parameters to uri", e);
         }
         return res;
+    }
+
+    public static String quoteURIPathComponent(String s, boolean quoteSlash) {
+        URI uri;
+        try {
+            // fake scheme so that a colon is not mistaken as a scheme
+            uri = new URI("x", s, null);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Illegal characters in: " + s);
+        }
+        String r = uri.toASCIIString().substring(2).replace(":", "%3A");
+        if (quoteSlash) {
+            r = r.replace("/", "%2F");
+        }
+        return r;
     }
 
 }

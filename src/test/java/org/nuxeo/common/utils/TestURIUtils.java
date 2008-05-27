@@ -68,4 +68,13 @@ public class TestURIUtils extends TestCase {
                 newParams));
     }
 
+    public void testQuoteURIPathComponent() throws Exception {
+        String s = "test yes:no /caf\u00e9.bin";
+        assertEquals("test%20yes%3Ano%20%2Fcaf%C3%A9.bin", URIUtils.quoteURIPathComponent(s, true));
+        s = "http://foo/bar";
+        assertEquals("http%3A%2F%2Ffoo%2Fbar", URIUtils.quoteURIPathComponent(s, true));
+        s = "a/b/c";
+        assertEquals("a/b/c", URIUtils.quoteURIPathComponent(s, false));
+    }
+
 }
