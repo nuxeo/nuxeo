@@ -489,6 +489,7 @@ public abstract class AbstractSession implements CoreSession,
             Document srcDoc = resolveReference(src);
             Document dstDoc = resolveReference(dst);
             checkPermission(dstDoc, ADD_CHILDREN);
+            checkPermission(srcDoc.getParent(), REMOVE_CHILDREN);
             checkPermission(srcDoc, REMOVE);
 
             DocumentModel srcDocModel = readModel(srcDoc, null);
