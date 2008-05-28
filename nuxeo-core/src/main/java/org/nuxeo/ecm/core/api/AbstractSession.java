@@ -439,7 +439,7 @@ public abstract class AbstractSession implements CoreSession,
         try {
             Document srcDoc = resolveReference(src);
             Document dstDoc = resolveReference(dst);
-            checkPermission(dstDoc, WRITE);
+            checkPermission(dstDoc, ADD_CHILDREN);
 
             DocumentModel srcDocModel = readModel(srcDoc, null);
             notifyEvent(DocumentEventTypes.ABOUT_TO_COPY, srcDocModel, null,
@@ -488,8 +488,8 @@ public abstract class AbstractSession implements CoreSession,
         try {
             Document srcDoc = resolveReference(src);
             Document dstDoc = resolveReference(dst);
-            checkPermission(dstDoc, WRITE);
-            checkPermission(srcDoc, WRITE);
+            checkPermission(dstDoc, ADD_CHILDREN);
+            checkPermission(srcDoc, REMOVE);
 
             DocumentModel srcDocModel = readModel(srcDoc, null);
             notifyEvent(DocumentEventTypes.ABOUT_TO_MOVE, srcDocModel, null,
@@ -1699,7 +1699,8 @@ public abstract class AbstractSession implements CoreSession,
 
         try {
             Document doc = resolveReference(docRef);
-            checkPermission(doc, WRITE);
+            checkPermission(doc, WRITE_PROPERTIES);
+            checkPermission(doc, VERSION);
 
             DocumentModel docModel = readModel(doc, null);
 
@@ -1751,7 +1752,9 @@ public abstract class AbstractSession implements CoreSession,
 
         try {
             Document doc = resolveReference(docRef);
-            checkPermission(doc, WRITE);
+            // TODO: add a new permission names CHECKIN and use it instead of
+            // WRITE_PROPERTIES
+            checkPermission(doc, WRITE_PROPERTIES);
 
             DocumentModel docModel = readModel(doc, null);
             notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, null,
@@ -1780,7 +1783,9 @@ public abstract class AbstractSession implements CoreSession,
         assert docRef != null;
         try {
             Document doc = resolveReference(docRef);
-            checkPermission(doc, WRITE);
+            // TODO: add a new permission names CHECKOUT and use it instead of
+            // WRITE_PROPERTIES
+            checkPermission(doc, WRITE_PROPERTIES);
             DocumentModel docModel = readModel(doc, null);
             Map<String, Object> options = new HashMap<String, Object>();
             options.put(CoreEventConstants.DOCUMENT, doc);
@@ -2258,7 +2263,9 @@ public abstract class AbstractSession implements CoreSession,
     public void setLock(DocumentRef docRef, String key) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
-            checkPermission(doc, WRITE);
+            // TODO: add a new permission named LOCK and use it instead of
+            // WRITE_PROPERTIES
+            checkPermission(doc, WRITE_PROPERTIES);
             doc.setLock(key);
             DocumentModel docModel = readModel(doc, null);
             Map<String, Object> options = new HashMap<String, Object>();
@@ -2281,6 +2288,10 @@ public abstract class AbstractSession implements CoreSession,
                 return null;
             }
             String username = getPrincipal().getName();
+
+            // TODO: isAdministrator() should be replaced by a check on the
+            // UNLOCK permission to be given to the "administrators" group in
+            // the default ACLs
             if (isAdministrator() || lockDetails[0].equals(username)) {
                 String lockKey = doc.unlock();
                 DocumentModel docModel = readModel(doc, null);
