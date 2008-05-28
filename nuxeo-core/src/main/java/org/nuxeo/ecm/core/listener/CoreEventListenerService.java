@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.listener;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.Nullable;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.operation.Operation;
 
@@ -62,16 +63,18 @@ public interface CoreEventListenerService {
     void notifyEventListeners(CoreEvent coreEvent);
 
     /**
-     * Fire a command starting event
+     * Fires a command starting event.
+     *
      * @param command the command
      */
-    public void fireOperationStarted(Operation<?> command);
+    void fireOperationStarted(Operation<?> command);
 
     /**
-     * Fire a command termination event
+     * Fires a command termination event.
+     *
      * @param command the command that terminated
      */
-    public void fireOperationTerminated(Operation<?> command);
+    void fireOperationTerminated(Operation<?> command);
 
     /**
      * Returns the collection of event listeners.
@@ -85,8 +88,9 @@ public interface CoreEventListenerService {
      *
      * @param name
      *            the name of the event listener used a registration time
-     * @return the EventListener instance.
+     * @return the EventListener instance, or null if none found.
      */
+    @Nullable
     EventListener getEventListenerByName(String name);
 
 }

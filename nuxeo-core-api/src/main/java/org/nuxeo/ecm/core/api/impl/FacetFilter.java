@@ -19,9 +19,8 @@
 
 package org.nuxeo.ecm.core.api.impl;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.io.Serializable;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;

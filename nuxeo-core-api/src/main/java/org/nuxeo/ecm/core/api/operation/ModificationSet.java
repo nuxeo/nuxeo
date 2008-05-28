@@ -38,7 +38,7 @@ public class ModificationSet implements Serializable, Iterable<Modification> {
 
     private static final long serialVersionUID = 6074152814184873084L;
 
-    private final static int SIZE = 4;
+    private static final int SIZE = 4;
 
     private Modification[] ar = new Modification[SIZE];
     private int length = 0;
