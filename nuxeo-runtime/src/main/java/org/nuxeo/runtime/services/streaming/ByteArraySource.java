@@ -41,6 +41,11 @@ public class ByteArraySource extends AbstractStreamSource {
         return bytes.length;
     }
 
+    @Override
+    public boolean canReopen() {
+        return true;
+    }
+
     public InputStream getStream() throws IOException {
         return new ByteArrayInputStream(bytes);
     }
