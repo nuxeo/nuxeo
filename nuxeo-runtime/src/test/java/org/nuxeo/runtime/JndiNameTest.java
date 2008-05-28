@@ -19,10 +19,10 @@
 
 package org.nuxeo.runtime;
 
+import junit.framework.TestCase;
+
 import org.nuxeo.runtime.binding.JndiName;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -33,49 +33,48 @@ public class JndiNameTest extends TestCase {
     public void testName() throws Exception {
         JndiName a = new JndiName("a/b/c");
         JndiName b = new JndiName("a/b/c");
-        Assert.assertEquals(a, b);
+        assertEquals(a, b);
 
         b = new JndiName("a/b/d");
-        Assert.assertFalse(a.equals(b));
+        assertFalse(a.equals(b));
         b = new JndiName("a", "b", "c");
-        Assert.assertEquals(a, b);
+        assertEquals(a, b);
 
         // endsWith
-        Assert.assertTrue(a.endsWith(b));
+        assertTrue(a.endsWith(b));
         b = new JndiName("a/b/c/d");
-        Assert.assertFalse(a.endsWith(b));
+        assertFalse(a.endsWith(b));
         b = new JndiName("a/b");
-        Assert.assertFalse(a.endsWith(b));
+        assertFalse(a.endsWith(b));
         b = new JndiName("b/c");
-        Assert.assertTrue(a.endsWith(b));
+        assertTrue(a.endsWith(b));
         b = new JndiName("c");
-        Assert.assertTrue(a.endsWith(b));
+        assertTrue(a.endsWith(b));
 
         // startsWith
         a = new JndiName("a/b/c");
         b = new JndiName("a/b/c");
-        Assert.assertTrue(a.startsWith(b));
+        assertTrue(a.startsWith(b));
         b = new JndiName("a/b/c/d");
-        Assert.assertFalse(a.startsWith(b));
+        assertFalse(a.startsWith(b));
         b = new JndiName("a/b");
-        Assert.assertTrue(a.startsWith(b));
+        assertTrue(a.startsWith(b));
         b = new JndiName("a");
-        Assert.assertTrue(a.startsWith(b));
+        assertTrue(a.startsWith(b));
 
         // add
         a = new JndiName("a/b/c");
-        Assert.assertEquals(a.add("d"), new JndiName("a/b/c/d"));
-        Assert.assertEquals(a.add(a.size(), "TAIL"), new JndiName("a/b/c/d/TAIL"));
-        Assert.assertEquals(a.add(0, "HEAD"), new JndiName("HEAD/a/b/c/d/TAIL"));
-        Assert.assertEquals(a.add(1, "x"), new JndiName("HEAD/x/a/b/c/d/TAIL"));
+        assertEquals(a.add("d"), new JndiName("a/b/c/d"));
+        assertEquals(a.add(a.size(), "TAIL"), new JndiName("a/b/c/d/TAIL"));
+        assertEquals(a.add(0, "HEAD"), new JndiName("HEAD/a/b/c/d/TAIL"));
+        assertEquals(a.add(1, "x"), new JndiName("HEAD/x/a/b/c/d/TAIL"));
 
-        Assert.assertEquals(a.remove(1), "x");
-        Assert.assertEquals(a, new JndiName("HEAD/a/b/c/d/TAIL"));
-        Assert.assertEquals(a.remove(a.size()-1), "TAIL");
-        Assert.assertEquals(a, new JndiName("HEAD/a/b/c/d"));
-        Assert.assertEquals(a.remove(0), "HEAD");
-        Assert.assertEquals(a, new JndiName("a/b/c/d"));
-
+        assertEquals(a.remove(1), "x");
+        assertEquals(a, new JndiName("HEAD/a/b/c/d/TAIL"));
+        assertEquals(a.remove(a.size()-1), "TAIL");
+        assertEquals(a, new JndiName("HEAD/a/b/c/d"));
+        assertEquals(a.remove(0), "HEAD");
+        assertEquals(a, new JndiName("a/b/c/d"));
     }
 
 }

@@ -19,8 +19,8 @@
 
 package org.nuxeo.runtime.api;
 
-import java.util.Properties;
 import java.io.Serializable;
+import java.util.Properties;
 
 /**
  * A service locator is used to locate services given a service ID or descriptor.
