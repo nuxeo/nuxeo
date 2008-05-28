@@ -65,37 +65,22 @@ public class StreamingService extends DefaultComponent{
         super.deactivate(context);
     }
 
-    /**
-     * @param isServer the isServer to set.
-     */
     public void setServer(boolean isServer) {
         this.isServer = isServer;
     }
 
-    /**
-     * @param serverLocator the serverLocator to set.
-     */
     public void setServerLocator(String serverLocator) {
         this.serverLocator = serverLocator;
     }
 
-    /**
-     * @return the isServer.
-     */
     public boolean isServer() {
         return isServer;
     }
 
-    /**
-     * @return the serverLocator.
-     */
     public String getServerLocator() {
         return serverLocator;
     }
 
-    /**
-     * @return the context.
-     */
     public ComponentContext getContext() {
         return context;
     }

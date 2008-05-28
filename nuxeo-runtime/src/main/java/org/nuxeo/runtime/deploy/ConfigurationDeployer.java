@@ -46,7 +46,7 @@ public class ConfigurationDeployer implements FileChangeListener {
 
     public ConfigurationDeployer(FileChangeNotifier notifier) {
         this.notifier = notifier;
-        this.urls = new HashMap<String, Entry>();
+        urls = new HashMap<String, Entry>();
         if (notifier != null) {
             notifier.addListener(this);
         }
@@ -144,33 +144,24 @@ public class ConfigurationDeployer implements FileChangeListener {
         URL url;
         File watchFile;
         Entry(RuntimeContext ctx, URL config, File watchFile) throws IOException {
-            this.url = config;
+            url = config;
             this.ctx = ctx;
             if (watchFile != null) {
                 this.watchFile = watchFile.getCanonicalFile();
             }
         }
-        /**
-         * @return the ctx.
-         */
+
         public RuntimeContext getContext() {
             return ctx;
         }
 
-        /**
-         * @return the watchFile.
-         */
         public File getWatchFile() {
             return watchFile;
         }
 
-        /**
-         * @return the url.
-         */
         public URL getUrl() {
             return url;
         }
-
 
         @Override
         public String toString() {

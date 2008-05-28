@@ -62,7 +62,7 @@ public abstract class CompositeContribution extends ExtensibleContribution {
      * @param isEnabled the isEnabled to set.
      */
     public void setContributionEnabled(boolean isEnabled) {
-        this.isContributionEnabled = isEnabled;
+        isContributionEnabled = isEnabled;
     }
 
     public void addContributionFragment(CompositeContribution fragment) {
@@ -122,7 +122,9 @@ public abstract class CompositeContribution extends ExtensibleContribution {
 
     @Override
     public String toString() {
-        if (baseContributionId == null) return contributionId;
+        if (baseContributionId == null) {
+            return contributionId;
+        }
         return contributionId + "@" + baseContributionId;
     }
 

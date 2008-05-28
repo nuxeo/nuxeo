@@ -27,7 +27,6 @@ import java.util.Properties;
 import javax.naming.Context;
 
 import org.jboss.remoting.InvokerLocator;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.remoting.RemotingService;
 
@@ -129,7 +128,9 @@ public class NodeConfiguration implements Serializable, Cloneable {
                 env.put(key.substring(len), entry.getValue());
             }
         }
-        if (env.isEmpty()) env = null;
+        if (env.isEmpty()) {
+            env = null;
+        }
     }
 
     //TODO XXX should find something else. Cannot rely on JBoss variables  ...
@@ -145,30 +146,18 @@ public class NodeConfiguration implements Serializable, Cloneable {
         return isServer;
     }
 
-    /**
-     * @return the serverType.
-     */
     public String getServerType() {
         return serverType;
     }
 
-    /**
-     * @return the locator.
-     */
     public InvokerLocator getLocator() {
         return locator;
     }
 
-    /**
-     * @return the host.
-     */
     public String getHost() {
         return locator.getHost();
     }
 
-    /**
-     * @return the port.
-     */
     public int getPort() {
         return locator.getPort();
     }
