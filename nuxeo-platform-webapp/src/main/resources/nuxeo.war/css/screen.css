@@ -162,38 +162,61 @@
 
 /* WaitDialog styles */
 
-.Wait_Label {
+.dialog {
+	display: block;
+	position: absolute;
+}
+
+.dialog table.table_window  {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+	margin: 0px;
+	padding:0px;
+}
+
+.dialog table.table_window td , .dialog table.table_window th {
+  padding: 0;
+}
+
+.dialog .title_window {
+  -moz-user-select:none;
+}
+
+
+.overlay_waiter {
+	background-color: #CCCCFF;
+	filter:alpha(opacity=60);
+	-moz-opacity: 0.6;
+	opacity: 0.6;
+}
+
+.waiter_content {
+	float:left;
+	margin:auto;
+	text-align:center;
+	background: no-repeat center center;
+        font: 13px arial;
+        border-width:1px;
+        border-color:red;
+        border-style:solid:
+}
+#waiter_message
+{
   color: #444;
   font-size: 10px;
   line-height: 12px;
   text-align: center;
 }
-
-.Wait_Link {
+#waiter_close
+{
   color: #444;
   font-size: 9px;
   line-height: 100%;
   text-align: right;
 }
 
-#WD_overlay {
-  position: absolute;
-  margin: auto;
-  top: 0;
-  left: 0;
-  z-index: 100;
-}
 
-#WD_window {
-  font-family: helvetica, verdana, sans-serif;
-  left: 0;
-  top: 0;
-  font-size: 1px;
-  position: absolute;
-  overflow: visible;
-  z-index: 150;
-  text-align: right;
-}
 
 /* PART I: Detailed Day Renderer */
 div.schedule-detailed-default table {
