@@ -36,9 +36,12 @@ import org.jboss.seam.contexts.Context;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.shield.NuxeoJavaBeanErrorHandler;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
@@ -144,7 +147,11 @@ public class StartupHelper implements Serializable {
             // documents thus forwarding her to her dashboard
             return DASHBOARD_VIEW;
         }
-        DocumentModelList domains = documentManager.getChildren(rootDocument.getRef());
+
+        FacetFilter facetFilter = new FacetFilter(
+                FacetNames.HIDDEN_IN_NAVIGATION, false);
+        DocumentModelList domains = documentManager.getChildren(
+                rootDocument.getRef(), null, SecurityConstants.READ, facetFilter, null);
 
         if (domains.size() == 1) {
             // select and go to the unique domain
