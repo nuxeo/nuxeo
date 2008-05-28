@@ -40,8 +40,6 @@ function getUploadURL()
  return baseURL + "restAPI/" + currentDocURL;
 }
 
-var WD_IMG_DIR = getBaseURL() + "/waitdialog/";
-
  function addFileFromPlugin(fullName,content,mime,path,UseBase64){
     //Seam.Remoting.contextPath = "/nuxeo";
     // XXX use the path as a relative path on currentDocument
@@ -86,7 +84,6 @@ function initTransfert(nbFiles,CancelCB)
 // Called by Plugin to end transfert
 function endTransfert()
 {
-  //WD_hide();
   WaitScreenDisplayed=false;
   window.location = window.location;
 }
@@ -162,7 +159,7 @@ function fireCreateFolder(name,path,plugin_callback)
 
 function transfertCanceled()
 {
-  WD_hide();
+  closeWaiter();
 // RC: per Vlad's request
 //  ECMPluginCancelCallBack();
   if (ECMPluginCancelCallBack)
@@ -179,7 +176,7 @@ function displayWaitScreen(nbFiles)
 {
 if (!WaitScreenDisplayed)
   {
-  WD_show(transfertCanceled);
+  openWaiter();
   WaitScreenDisplayed=true;
   }
 }
@@ -188,7 +185,7 @@ function updateWaitScreen()
 {
 try {
   var txt = 'Processing file ' + ECMNBFilesProcessed + '/' + ECMNBTotalFiles;
-  WD_setText(txt);
+  $('waiter_message').innerHTML=txt;
   }
 catch (e)
   {
@@ -320,6 +317,14 @@ if (window.addEventListener)
 
 -->
 </script>
+<!-- waiter html -->
+<div id="waiter" style="display: none;">
+<span id="waiter_message"> upload in progress </span><br/>
+<img src="#{baseURL}/waitdialog/NXwaiter.gif"/><br/>
+<a id="waiter_close" href="#" onclick="transfertCanceled()">close</a>
+</div>
+<!--  waiter overlay  -->
+<div style="position: absolute; top: 0pt; left: 0pt; z-index: 9; width: 100%; opacity: 0.6; display: none;" class="overlay_waiter" id="overlay_modal"></div>
 <!--  don't remove or the plugin won't be activated -->
 <input id="Nx5PluginEnabled" type="hidden" value="true" />
 </div>
