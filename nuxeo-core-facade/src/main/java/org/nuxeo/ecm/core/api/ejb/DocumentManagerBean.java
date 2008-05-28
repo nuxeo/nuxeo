@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJBContext;
@@ -92,6 +93,18 @@ public class DocumentManagerBean extends AbstractSession {
     @PermitAll
     public void destroy() {
         log.debug("@Remove");
+        //super.destroy();
+    }
+
+    @PreDestroy
+    /**
+     * This method is called before the stateful bean instance is destroyed.
+     * <p>
+     * When a client is explicitly destroying a bean using the @Remove method this method will be automatically
+     * called before the instance is destroyed
+     */
+    public void preDestroy() {
+        log.debug("@PreDestroy");
         super.destroy();
     }
 
@@ -119,7 +132,6 @@ public class DocumentManagerBean extends AbstractSession {
             log.error("Failed to close session", e);
         }
     }
-
 
     @Override
     public Principal getPrincipal() {

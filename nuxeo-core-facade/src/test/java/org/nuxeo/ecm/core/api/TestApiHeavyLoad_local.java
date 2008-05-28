@@ -40,6 +40,7 @@ public class TestApiHeavyLoad_local extends TestApiHeavyLoad {
 
     @Override
     public void setUp() throws Exception {
+        super.setUp();
         runtime = new TestRuntime();
         Framework.initialize(runtime);
 
