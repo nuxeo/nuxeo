@@ -19,10 +19,12 @@
 
 package org.nuxeo.ecm.platform.relations;
 
+import java.io.Serializable;
+
 /**
  * Dummy object that can be considered as a resource.
  */
-public class DummyResourceLike {
+public class DummyResourceLike implements Serializable {
 
     private String id;
 

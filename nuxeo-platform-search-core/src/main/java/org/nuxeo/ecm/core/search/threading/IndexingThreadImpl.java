@@ -63,7 +63,7 @@ public class IndexingThreadImpl extends Thread implements IndexingThread {
     private transient SearchService searchService;
 
     public IndexingThreadImpl(Runnable r) {
-        super(r);
+        super(r, "NuxeoIndexingThread");
         log.debug(getThreadNameAndId() + " : Indexing thread with name="
                 + getThreadNameAndId());
         // // FIXME Initialze this in a lazy way
@@ -118,7 +118,6 @@ public class IndexingThreadImpl extends Thread implements IndexingThread {
                     "Error when cleaning CoreSession bound to indexing thread",
                     t);
         }
-
     }
 
     /**
@@ -151,8 +150,7 @@ public class IndexingThreadImpl extends Thread implements IndexingThread {
     }
 
     @Override
-    public void interrupt()
-    {
+    public void interrupt() {
         closeSearchServiceSession();
         closeCoreSession();
         logout();
@@ -168,7 +166,6 @@ public class IndexingThreadImpl extends Thread implements IndexingThread {
     }*/
 
     public SearchServiceSession getSearchServiceSession() throws Exception {
-
         if (searchServiceSession == null) {
             searchServiceSession = getSearchService().openSession();
         }
