@@ -301,7 +301,8 @@ public class MimetypeRegistryService extends DefaultComponent implements
             throws MimetypeNotFoundException, MimetypeDetectionException {
         File file = null;
         try {
-            // make sure the blob can be read several times without exhausting its
+            // make sure the blob can be read several times without exhausting
+            // its
             // binary source
             if (!blob.isPersistent()) {
                 blob = blob.persist();
@@ -377,6 +378,30 @@ public class MimetypeRegistryService extends DefaultComponent implements
                 return defaultMimetype;
             }
         }
+    }
+
+    public Blob updateMimetype(Blob blob, String filename)
+            throws MimetypeDetectionException {
+        if (!blob.isPersistent()) {
+            try {
+                blob = blob.persist();
+            } catch (IOException e) {
+                throw new MimetypeDetectionException(e.getMessage(), e);
+            }
+        }
+        if (filename == null) {
+            filename = blob.getFilename();
+        } else if (blob.getFilename() == null) {
+            blob.setFilename(filename);
+        }
+        String mimetype = getMimetypeFromFilenameAndBlobWithDefault(filename,
+                blob, DEFAULT_MIMETYPE);
+        blob.setMimeType(mimetype);
+        return blob;
+    }
+
+    public Blob updateMimetype(Blob blob) throws MimetypeDetectionException {
+        return updateMimetype(blob, null);
     }
 
 }

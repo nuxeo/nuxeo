@@ -127,5 +127,13 @@ public class MimetypeRegistryBean implements MimetypeRegistry {
         ((MimetypeRegistryService) getService()).unregisterFileExtension(extension);
     }
 
+    public Blob updateMimetype(Blob blob, String filename)
+            throws MimetypeDetectionException {
+        return getService().updateMimetype(blob, filename);
+    }
+
+    public Blob updateMimetype(Blob blob) throws MimetypeDetectionException {
+        return getService().updateMimetype(blob);
+    }
 
 }
