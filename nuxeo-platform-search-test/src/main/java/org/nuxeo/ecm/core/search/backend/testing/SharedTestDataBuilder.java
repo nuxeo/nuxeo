@@ -69,7 +69,6 @@ public class SharedTestDataBuilder {
                 null, // published
                 437 // pages
         );
-
     }
 
     /** Same with different barcode **/
@@ -84,7 +83,6 @@ public class SharedTestDataBuilder {
                 null, // published
                 437 // pages
         );
-
     }
 
     public static ACP makeAboutLifeACP() {

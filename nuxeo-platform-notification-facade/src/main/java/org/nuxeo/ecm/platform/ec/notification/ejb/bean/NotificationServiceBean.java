@@ -128,12 +128,12 @@ public class NotificationServiceBean implements NotificationManager {
 
 //        mail.put("doc", docMessage); - should be already there
 
-    	String subject = notif.getSubject() == null ? "Notification"
+        String subject = notif.getSubject() == null ? "Notification"
                 : notif.getSubject();
         if (notif.getSubjectTemplate() != null) {
-        	subject = notif.getSubjectTemplate();
+            subject = notif.getSubjectTemplate();
         }
-        	
+
         subject = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix()
                 + subject;
 
