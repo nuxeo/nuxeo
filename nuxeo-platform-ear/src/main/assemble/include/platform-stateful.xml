@@ -47,7 +47,6 @@
       <artifact name="nuxeo-platform" />
       <artifact name="nuxeo-platform-ws" />
 
-      <artifact name="nuxeo-platform-archive-*" />
       <!--
       <artifact name="nuxeo-platform-mimetype-facade" />
       <artifact name="nuxeo-platform-comment" />
@@ -56,11 +55,7 @@
     </excludes>
   </artifactSet>
 
-  <artifactSet extends="nuxeo-platform-unpacked">
-    <excludes>
-      <artifact name="nuxeo-platform-archive-facade" />
-    </excludes>
-  </artifactSet>
+  <artifactSet id="nuxeo-platform-unpacked" />
 
   <artifactSet id="nuxeo-web" />
 
