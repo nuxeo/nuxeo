@@ -90,6 +90,7 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
                 deployWebDir(context.getRuntimeContext().getBundle(), root);
             } catch (Exception e) { // delete incomplete files
                 FileUtils.deleteTree(root);
+                throw e;
             }
         }
         // register contrib managers
