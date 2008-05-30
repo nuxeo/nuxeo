@@ -33,9 +33,6 @@
     <event name="documentUnlocked"/>
     <event name="documentPublished"/>
     <event name="documentSecurityUpdated"/>
-    <event name="archiveRecordCreated"/>
-    <event name="archiveRecordEdited"/>
-    <event name="archiveRecordDeleted"/>
     <event name="documentUnPublished"/>
     <event name="documentSubmitedForPublication"/>
     <event name="documentPublicationRejected"/>

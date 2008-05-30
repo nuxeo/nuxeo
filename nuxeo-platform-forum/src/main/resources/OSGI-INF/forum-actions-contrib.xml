@@ -92,14 +92,6 @@
         </rule>
       </filter>
     </action>
-    <action id="TAB_CONTENT_ARCHIVE">
-      <filter id="no_archive_on_thread_and_forum">
-        <rule grant="false">
-          <type>Thread</type>
-          <type>Forum</type>
-        </rule>
-      </filter>
-    </action>
     <action id="TAB_METADATA_VIEW">
       <filter id="no_metadata_view_on_thread">
         <rule grant="false">
