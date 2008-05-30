@@ -94,7 +94,6 @@
       <artifact name="nuxeo-platform-workflow-jbpm" />
       <artifact name="nuxeo-platform-workflow-jbpm-document-handlers" />
 
-      <artifact name="nuxeo-platform-archive-*" />
       <!--
       <artifact name="nuxeo-platform-mimetype-facade"/>
       <artifact name="nuxeo-platform-url-facade" />

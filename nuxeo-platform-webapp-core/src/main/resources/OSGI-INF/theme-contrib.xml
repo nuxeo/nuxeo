@@ -72,7 +72,7 @@
       <!-- include JS used for waiter -->
       <resource>effects.js</resource>
       <resource>window.js</resource>
-      <resource>window_effetcs.js</resource>
+      <resource>window_effects.js</resource>
       <resource>waitdlg.js</resource>
       <!-- include JS used for D&D and tableSelection -->
       <resource>utils.js</resource>

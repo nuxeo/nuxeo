@@ -27,7 +27,6 @@
       <exclude>config/default-sql-directories-bundle.xml</exclude>
       <exclude>config/nuxeo-webapp-core.properties</exclude>
       <exclude>config/nxrelations-default-jena-bundle.xml</exclude>
-      <exclude>datasources/nxarchive*.xml</exclude>
       <exclude>datasources/nxaudit*.xml</exclude>
       <exclude>datasources/nxcomment*.xml</exclude>
       <exclude>datasources/nxplaceful*.xml</exclude>
