@@ -31,6 +31,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import org.nuxeo.ecm.core.api.DocumentRef;
+
 /**
  * Entity holding a document reference.
  *
@@ -44,17 +46,16 @@ public class DocumentRefEntry implements Serializable {
 
     private int id;
 
-    private org.nuxeo.ecm.core.api.DocumentRef docRef;
+    private DocumentRef docRef;
 
     /** Corresponding workflow instance refs. */
     private Set<WorkflowInstanceRefEntry> workflowInstanceRefs = new HashSet<WorkflowInstanceRefEntry>();
 
     public DocumentRefEntry() {
-
     }
 
-    public DocumentRefEntry(org.nuxeo.ecm.core.api.DocumentRef docRef) {
-        this.id = docRef.hashCode();
+    public DocumentRefEntry(DocumentRef docRef) {
+        id = docRef.hashCode();
         this.docRef = docRef;
     }
 
@@ -80,11 +81,11 @@ public class DocumentRefEntry implements Serializable {
     }
 
     @Column(name = "DOC_REF")
-    public org.nuxeo.ecm.core.api.DocumentRef getDocRef() {
+    public DocumentRef getDocRef() {
         return docRef;
     }
 
-    public void setDocRef(org.nuxeo.ecm.core.api.DocumentRef docRef) {
+    public void setDocRef(DocumentRef docRef) {
         this.docRef = docRef;
     }
 

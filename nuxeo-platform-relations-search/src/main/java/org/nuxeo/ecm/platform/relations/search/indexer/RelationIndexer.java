@@ -165,7 +165,7 @@ public class RelationIndexer {
         }
     }
 
-    private String computeResourcesGlobalKey(Statement statement,
+    private static String computeResourcesGlobalKey(Statement statement,
             Serializable object, List<IndexableResource> resources) {
         // TODO good enough ?
         return String.format("%d", statement.hashCode());
