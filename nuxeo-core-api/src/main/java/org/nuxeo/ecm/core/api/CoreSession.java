@@ -69,7 +69,7 @@ public interface CoreSession {
      *
      * @param repositoryUri the repository URI (unique in the platform)
      * @param context a map of properties used to initialize the session. Can be
-     *                null if no context properties are specified.
+     *            null if no context properties are specified.
      * @return the session ID if the connection succeed, null otherwise
      * @throws ClientException
      */
@@ -269,7 +269,7 @@ public interface CoreSession {
      *
      * @param parentRef the parent reference
      * @param perm the permission to check on the children (usually READ); if
-     *                null, <b>no permission is checked</b>
+     *            null, <b>no permission is checked</b>
      * @return a list of children references
      * @throws ClientException
      * @since 1.4.1
@@ -492,7 +492,7 @@ public interface CoreSession {
      *
      * @param typeName
      * @param options additional contextual data provided to core event
-     *                listeners
+     *            listeners
      * @return the initial document model
      * @throws ClientException
      */
@@ -602,11 +602,13 @@ public interface CoreSession {
      * <p>
      * If the destination document is not a folder or it doesn't exists then
      * throws an exception.
+     * <p>
+     * If the source is a proxy the destination will be a copy of the proxy.
      *
      * @param src the source document reference
      * @param dst the destination folder reference
      * @param name the new name of the file or null if the original name must be
-     *                preserved
+     *            preserved
      * @throws ClientException
      * @throws SecurityException
      */
@@ -625,6 +627,33 @@ public interface CoreSession {
             throws ClientException;
 
     /**
+     * Work like copy but in the case of a source proxy the destination will be
+     * a new document instead of a proxy.
+     *
+     * @see CoreSession#copy(DocumentRef, DocumentRef, String)
+     *
+     * @param src the source document reference
+     * @param dst the destination folder reference
+     * @param name the new name of the file or null if the original name must be
+     *            preserved
+     * @throws ClientException
+     * @throws SecurityException
+     */
+    DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst,
+            String name) throws ClientException;
+
+    /**
+     * Bulk copyProxyAsDocument. Destination must be a folder document.
+     *
+     * @param src the documents to copy
+     * @param dst the destination folder
+     * @throws ClientException
+     * @throws SecurityException
+     */
+    List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src,
+            DocumentRef dst) throws ClientException;
+
+    /**
      * Moves the source document to the destination folder under the given name.
      * If the name is null the original name is preserved.
      * <p>
@@ -634,7 +663,7 @@ public interface CoreSession {
      * @param src the source document reference
      * @param dst the destination folder reference
      * @param name the new name of the file or null if the original name must be
-     *                preserved
+     *            preserved
      * @throws ClientException
      * @throws SecurityException
      */
@@ -762,7 +791,7 @@ public interface CoreSession {
      *
      * @param docRef the document reference
      * @param path the path of the content field. Must be the raw path of the
-     *                property (i.e. in the prefixed form)
+     *            property (i.e. in the prefixed form)
      * @return the content data as a byte array content source
      */
     byte[] getContentData(DocumentRef docRef, String path)
@@ -878,7 +907,7 @@ public interface CoreSession {
      *
      * @param docRef the reference to the document
      * @param version the version to which the document should be restored to -
-     *                only the label is used for the moment
+     *            only the label is used for the moment
      */
     DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version)
             throws ClientException;
@@ -1147,7 +1176,7 @@ public interface CoreSession {
      * @param doc the document reference
      * @param key the lock key
      * @throws ClientException if a lock is already set or other exception
-     *                 occurred
+     *             occurred
      */
     void setLock(DocumentRef doc, String key) throws ClientException;
 
@@ -1284,8 +1313,7 @@ public interface CoreSession {
      *
      * @param docModel the document node from where the security export is done
      * @param includeParents flag is the parent nodes holding security
-     *                information should be added at the top of the returned
-     *                list
+     *            information should be added at the top of the returned list
      * @return a list of SecuritySummaryEntry
      * @throws ClientException
      */
@@ -1338,10 +1366,10 @@ public interface CoreSession {
      * @param parent the parent document
      * @param src the document to be moved (ordered)
      * @param dest the document before which the reordered document will be
-     *                placed If null the source document will be placed at the
-     *                end of the children list
+     *            placed If null the source document will be placed at the end
+     *            of the children list
      * @throws ClientException if the parent document is not an orderable folder
-     *                 or other error occurs
+     *             or other error occurs
      */
     void orderBefore(DocumentRef parent, String src, String dest)
             throws ClientException;

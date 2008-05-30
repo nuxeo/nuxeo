@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.api;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -1804,6 +1805,57 @@ public abstract class TestAPI extends TestConnection {
         assertTrue(remote.exists(new PathRef("folder2/file")));
         assertTrue(remote.getChildren(folder1.getRef()).contains(copy5));
         assertNotSame(copy1.getName(), copy5.getName());
+
+        remote.cancel();
+    }
+
+    public void testCopyProxyAsDocument() throws Exception {
+        // create a folder tree
+        DocumentModel root = getRootDocument();
+        DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(),
+                "folder1", "Folder");
+        DocumentModel folder2 = new DocumentModelImpl(root.getPathAsString(),
+                "folder2", "Folder");
+        DocumentModel folder3 = new DocumentModelImpl(root.getPathAsString(),
+                "folder3", "Folder");
+        DocumentModel file = new DocumentModelImpl(folder1.getPathAsString(),
+                "copyProxyAsDocument_test", "File");
+        folder1 = createChildDocument(folder1);
+        folder2 = createChildDocument(folder2);
+        folder3 = createChildDocument(folder3);
+        file = createChildDocument(file);
+        remote.save();
+
+        // create a file in folder 1
+        file.setProperty("dublincore", "title", "the title");
+        file = remote.saveDocument(file);
+
+        VersionModel version = new VersionModelImpl();
+        version.setCreated(Calendar.getInstance());
+        version.setLabel("v1");
+        remote.checkIn(file.getRef(), version);
+        remote.save();
+
+        // create a proxy in folder2
+        DocumentModel proxy = remote.createProxy(folder2.getRef(),
+                file.getRef(), version, true);
+        assertTrue(proxy.isProxy());
+
+        // copy proxy into folder3
+        DocumentModel copy1 = remote.copyProxyAsDocument(proxy.getRef(), folder3.getRef(),
+                null);
+        assertFalse(copy1.isProxy());
+        assertEquals(proxy.getName(), copy1.getName());
+        assertEquals(proxy.getProperty("dublincore", "title"),
+                copy1.getProperty("dublincore", "title"));
+
+        // copy proxy using another name
+        DocumentModel copy2 = remote.copyProxyAsDocument(proxy.getRef(), folder3.getRef(),
+                "foo");
+        assertFalse(copy2.isProxy());
+        assertEquals("foo", copy2.getName());
+        assertEquals(file.getProperty("dublincore", "title"),
+                copy2.getProperty("dublincore", "title"));
 
         remote.cancel();
     }
