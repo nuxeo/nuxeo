@@ -286,8 +286,10 @@ public class ClipboardActionsBean extends InputController implements
         return pasteDocumentList(documentsListsManager.getWorkingList(listName));
     }
 
-    public String pasteDocumentListInside(String listName, String docId) throws ClientException {
-        return pasteDocumentListInside(documentsListsManager.getWorkingList(listName), docId);
+    public String pasteDocumentListInside(String listName, String docId)
+            throws ClientException {
+        return pasteDocumentListInside(
+                documentsListsManager.getWorkingList(listName), docId);
     }
 
     public String pasteDocumentList(List<DocumentModel> docPaste)
@@ -314,7 +316,8 @@ public class ClipboardActionsBean extends InputController implements
         return computeOutcome(PASTE_OUTCOME);
     }
 
-    public String pasteDocumentListInside(List<DocumentModel> docPaste, String docId) throws ClientException {
+    public String pasteDocumentListInside(List<DocumentModel> docPaste,
+            String docId) throws ClientException {
         DocumentModel targetDoc = documentManager.getDocument(new IdRef(docId));
         if (null != docPaste) {
             List<DocumentModel> newDocs = recreateDocumentsWithNewParent(
@@ -449,26 +452,23 @@ public class ClipboardActionsBean extends InputController implements
             }
         }
 
+        // copying proxy or document
         boolean isPublishSpace = isPublishSpace(parent);
-        String parentPath = parent.getPathAsString();
         List<DocumentRef> docRefs = new ArrayList<DocumentRef>();
-        List<DocumentModel> newDocs = new ArrayList<DocumentModel>();
+        List<DocumentRef> proxyRefs = new ArrayList<DocumentRef>();
         for (DocumentModel doc : documentsToPast) {
-            DocumentRef docRef = doc.getRef();
-            if (!doc.isProxy() || isPublishSpace) {
-                // copy as is
-                docRefs.add(docRef);
+            if (doc.isProxy() && !isPublishSpace) {
+                // in a non-publish space, we want to expand proxies into normal
+                // docs
+                proxyRefs.add(doc.getRef());
             } else {
-                // in a non-publish space, expand proxies into normal docs
-                DocumentModel newDoc = documentManager.createDocumentModel(
-                        parentPath, doc.getName(), doc.getType());
-                newDoc.copyContent(doc);
-                newDocs.add(newDoc);
+                // copy as is
+                docRefs.add(doc.getRef());
             }
         }
-        if (!newDocs.isEmpty()) {
-            DocumentModel[] docs = newDocs.toArray(new DocumentModel[newDocs.size()]);
-            newDocuments.addAll(Arrays.asList(documentManager.createDocument(docs)));
+        if (!proxyRefs.isEmpty()) {
+            newDocuments.addAll(documentManager.copyProxyAsDocument(proxyRefs,
+                    parent.getRef()));
         }
         if (!docRefs.isEmpty()) {
             newDocuments.addAll(documentManager.copy(docRefs, parent.getRef()));
@@ -678,7 +678,8 @@ public class ClipboardActionsBean extends InputController implements
         }
     }
 
-    public boolean getCanPasteInside(String listName, DocumentModel document) throws ClientException {
+    public boolean getCanPasteInside(String listName, DocumentModel document)
+            throws ClientException {
         if (documentsListsManager.isWorkingListEmpty(listName)
                 || document == null) {
             return false;
@@ -764,7 +765,8 @@ public class ClipboardActionsBean extends InputController implements
         return getCanPaste(DocumentsListsManager.CLIPBOARD);
     }
 
-    public boolean getCanPasteFromClipboardInside(DocumentModel document) throws ClientException {
+    public boolean getCanPasteFromClipboardInside(DocumentModel document)
+            throws ClientException {
         return getCanPasteInside(DocumentsListsManager.CLIPBOARD, document);
     }
 
