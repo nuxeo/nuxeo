@@ -524,7 +524,7 @@ public class DeleteActionsBean extends InputController implements
                 // FIXME: should be checked sooner so that no exception is thrown
                 throw new ClientException("Impossible to move document="
                         + docModel.getPathAsString()
-                        + " Life Cycle is not available");
+                        + " Life Cycle state " + DELETE_TRANSITION + " is not available");
             }
             // JMS message preparation and sending
             if (document.isFolder()) {
