@@ -39,8 +39,8 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Contexts;
-import org.jboss.seam.contexts.Lifecycle;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.contexts.FacesLifecycle;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
@@ -130,7 +130,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache, Seriali
 
     public PagedDocumentsProvider get(String name, SortInfo sortInfo)
             throws ClientException, SortNotSupportedException {
-        PhaseId lifeCycleId = Lifecycle.getPhaseId();
+        PhaseId lifeCycleId = FacesLifecycle.getPhaseId();
         PagedDocumentsProvider provider = resultsProvidersCache.get(name);
         if (cleanProviders == null) {
             cleanProviders = new HashSet<String>();
