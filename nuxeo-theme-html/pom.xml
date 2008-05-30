@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -9,7 +11,9 @@
 
   <artifactId>nuxeo-theme-html</artifactId>
   <name>Nuxeo Theme HTML</name>
-  <description>Nuxeo Theme: HTML rendering for the Nuxeo ECM platform.</description>
+  <description>
+    Nuxeo Theme: HTML rendering for the Nuxeo ECM platform.
+  </description>
 
   <dependencies>
     <dependency>
@@ -19,6 +23,7 @@
     <dependency>
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
+      <classifier>jdk15</classifier>
     </dependency>
     <dependency>
       <groupId>net.sf.ezmorph</groupId>
@@ -78,7 +83,9 @@
         <groupId>net.sourceforge.maven-taglib</groupId>
         <artifactId>maven-taglib-plugin</artifactId>
         <configuration>
-          <taglib.src.dir>${project.build.directory}/classes/META-INF</taglib.src.dir>
+          <taglib.src.dir>
+            ${project.build.directory}/classes/META-INF
+          </taglib.src.dir>
         </configuration>
       </plugin>
     </plugins>
