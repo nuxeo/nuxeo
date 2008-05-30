@@ -1,0 +1,4 @@
+<assembly>
+  <include>include/commands.xml</include>
+  <include>include/nuxeo-all-categorized.xml.xml</include>
+</assembly>
