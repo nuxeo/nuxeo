@@ -60,7 +60,7 @@ public class SubscriptionsAction extends InputController implements
 
     private static final Log log = LogFactory.getLog(SubscriptionsAction.class);
 
-    @In(required = true)
+    @In
     private transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
@@ -75,7 +75,7 @@ public class SubscriptionsAction extends InputController implements
     @DataModelSelection(value="notificationList")
     private SelectableSubscription currentSubscription;
 
-    @In(required = true, create = true)
+    @In(create = true)
     private transient NotificationManager notificationManager;
 
     /**
@@ -151,7 +151,7 @@ public class SubscriptionsAction extends InputController implements
     }
 
     @Observer(EventNames.DOCUMENT_SELECTION_CHANGED)
-    public void invalidateNotificationsSelection() throws Exception {
+    public void invalidateNotificationsSelection() {
         log.debug("Invalidate archive records.................");
         notificationList = null;
         currentSubscription = null;

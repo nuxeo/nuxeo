@@ -50,7 +50,6 @@ public final class DateRangeParser {
                 if (parsed.containsKey(DateRangeQueryConstants.MIN)) {
                     calendar.add(Calendar.MINUTE,
                             -parsed.get(DateRangeQueryConstants.MIN));
-
                 }
             }
             return calendar.getTime();

@@ -399,9 +399,10 @@ public class UIEditableList extends UIInput implements NamingContainer {
             try {
                 Object template = getTemplate();
                 if (template instanceof Serializable) {
+                    Serializable serializableTemplate = (Serializable) template;
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
                     ObjectOutputStream oos = new ObjectOutputStream(out);
-                    oos.writeObject(template);
+                    oos.writeObject(serializableTemplate);
                     oos.close();
                     for (int i = 0; i < missing; i++) {
                         // deserialize to make sure it is not the same instance
@@ -925,7 +926,6 @@ public class UIEditableList extends UIInput implements NamingContainer {
                 throw (RuntimeException) exception;
             }
         }
-
     }
 
     protected final void processComponent(FacesContext context,
