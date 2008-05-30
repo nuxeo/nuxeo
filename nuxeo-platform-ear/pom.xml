@@ -400,10 +400,12 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-webapp-types</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-workflow-api</artifactId>
     </dependency>
+     -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-workflow-client</artifactId>
@@ -555,16 +557,8 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-nuxeo-plugin</artifactId>
+        <version>1.0.5-SNAPSHOT</version>
         <extensions>true</extensions>
-        <configuration>
-          <runPreprocessor>false</runPreprocessor>
-          <format>directory</format>
-          <outputDirectory>target</outputDirectory>
-          <targetFile>${nuxeo.ear.assembly}.ear</targetFile>
-          <descriptor>
-            ${basedir}/src/main/assemble/${nuxeo.ear.assembly}.xml
-          </descriptor>
-        </configuration>
         <executions>
           <execution>
             <id>assemble-ear</id>
@@ -572,30 +566,15 @@
             <goals>
               <goal>assembly</goal>
             </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-nuxeo-plugin</artifactId>
-        <version>1.0.5-SNAPSHOT</version>
-        <extensions>true</extensions>
-        <configuration>
-          <runPreprocessor>false</runPreprocessor>
-          <format>directory</format>
-          <outputDirectory>newtarget</outputDirectory>
-          <targetFile>nuxeo-mono.ear</targetFile>
-          <descriptor>
-            ${basedir}/src/main/assemble/newnuxeo.xml
-          </descriptor>
-        </configuration>
-        <executions>
-          <execution>
-            <id>assemble-ear</id>
-            <phase>package</phase>
-            <goals>
-              <goal>assembly-new</goal>
-            </goals>
+            <configuration>
+              <runPreprocessor>false</runPreprocessor>
+              <format>directory</format>
+              <outputDirectory>target</outputDirectory>
+              <targetFile>${nuxeo.ear.assembly}.ear</targetFile>
+              <descriptor>
+                ${basedir}/src/main/assemble/${nuxeo.ear.assembly}.xml
+              </descriptor>
+            </configuration>
           </execution>
         </executions>
       </plugin>
