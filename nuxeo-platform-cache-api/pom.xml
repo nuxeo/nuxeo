@@ -43,11 +43,6 @@
       <artifactId>jsr181</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
