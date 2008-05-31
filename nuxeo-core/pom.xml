@@ -44,6 +44,10 @@
       <artifactId>nuxeo-runtime-osgi</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_core</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>log4j</groupId>
