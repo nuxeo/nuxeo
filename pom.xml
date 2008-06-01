@@ -66,6 +66,7 @@
         <groupId>com.sun.facelets</groupId>
         <artifactId>jsf-facelets</artifactId>
         <version>1.1.11</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>commons-collections</groupId>
@@ -112,6 +113,7 @@
         <groupId>javax.ejb</groupId>
         <artifactId>ejb</artifactId>
         <version>${jboss.ejb.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.annotation</groupId>
@@ -133,6 +135,7 @@
         <groupId>javax.faces</groupId>
         <artifactId>jsf-api</artifactId>
         <version>1.2_04</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.faces</groupId>
@@ -143,6 +146,7 @@
         <groupId>javax.jms</groupId>
         <artifactId>jms</artifactId>
         <version>1.1</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.jws</groupId>
@@ -158,6 +162,7 @@
         <groupId>javax.persistence</groupId>
         <artifactId>persistence</artifactId>
         <version>3.0</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.servlet.jsp</groupId>
@@ -188,11 +193,13 @@
         <groupId>jboss</groupId>
         <artifactId>jboss</artifactId>
         <version>${jboss.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-annotations-ejb3</artifactId>
         <version>${jboss.ejb.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
@@ -223,6 +230,7 @@
         <groupId>jboss</groupId>
         <artifactId>jboss-j2ee</artifactId>
         <version>${jboss.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
@@ -233,6 +241,7 @@
         <groupId>jboss</groupId>
         <artifactId>jboss-jmx</artifactId>
         <version>${jboss.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
@@ -249,6 +258,7 @@
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam</artifactId>
         <version>1.1.5.NX3</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
