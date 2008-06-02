@@ -20,6 +20,9 @@
 package org.nuxeo.ecm.core.api.repository.cache;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -32,12 +35,17 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryExceptionHandler;
 import org.nuxeo.ecm.core.api.repository.RepositoryInstance;
 import org.nuxeo.ecm.core.api.repository.RepositoryInstanceHandler;
 
 /**
+ *
+ * Cached children are not preserving order
+ * The order should be updated from notifications
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
@@ -48,7 +56,10 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
 
     protected final ConcurrentMap<String, DocumentModel> cache = new ConcurrentHashMap<String, DocumentModel>();
     protected final ConcurrentMap<String, String> path2Ids = new ConcurrentHashMap<String, String>();
-    // TODO cache children?
+
+    /** Children Cache: parentId -> list of child Ids  */
+    protected final Map<String, List<DocumentRef>> childrenCache = new HashMap<String, List<DocumentRef>>();
+
     // TODO fix sync pb
 
 
@@ -196,13 +207,17 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
     }
 
     public DocumentModelList getChildren(DocumentRef parent) throws ClientException {
-        // TODO children list is not cached - we allways refetch it from the server
-        return new CachingDocumentList(this, session.getChildren(parent));
+        String id = getDocumentId(parent);
+        if (id != null) {
+            DocumentModelList result = getCachedChildren(parent);
+            return result != null ? result
+                    : fetchAndCacheChildren(parent);
+        }
+        return new DocumentModelListImpl(); // empty children
     }
 
     public DocumentModelIterator getChildrenIterator(DocumentRef parent) throws ClientException {
-        // TODO children iterator is not cached - we allways refetch it from the server
-        return new CachingDocumentIterator(this, session.getChildrenIterator(parent));
+        return new SimpleDocumentModelIterator(getChildren(parent));
     }
 
     public DocumentModelList query(String query) throws ClientException {
@@ -210,15 +225,30 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
     }
 
     public DocumentModelList getFiles(DocumentRef parent) throws ClientException {
-        return new CachingDocumentList(this, session.getFiles(parent));
+        // get all children and filter locally
+        DocumentModelList docs = getCachedChildrenWithoutFacet(parent, "Folderish");
+        if (docs == null) {
+            docs = filterWithoutFacet(fetchAndCacheChildren(parent), "Folderish");
+        }
+        return docs;
     }
 
     public DocumentModelList getFolders(DocumentRef parent) throws ClientException {
-        return new CachingDocumentList(this, session.getFolders(parent));
+        // get all children and filter locally
+        DocumentModelList docs = getCachedChildrenWithFacet(parent, "Folderish");
+        if (docs == null) {
+            docs = filterByFacet(fetchAndCacheChildren(parent), "Folderish");
+        }
+        return docs;
     }
 
     public DocumentModelList getChildren(DocumentRef parent, String type) throws ClientException {
-        return new CachingDocumentList(this, session.getChildren(parent, type));
+        // get all children and filter locally
+        DocumentModelList docs = getCachedChildrenWithType(parent, type);
+        if (docs == null) {
+            docs = filterByType(fetchAndCacheChildren(parent), type);
+        }
+        return docs;
     }
 
     public DocumentModel createDocument(DocumentModel doc) throws ClientException {
@@ -251,6 +281,214 @@ public class CachingRepositoryInstanceHandler extends RepositoryInstanceHandler
             VersionModel version, boolean overwriteExistingProxy) throws ClientException {
         return cacheDocument(
                 session.createProxy(parentRef, docRef, version, overwriteExistingProxy));
+    }
+
+
+    /** Children Cache */
+
+    public String getDocumentId(DocumentRef docRef) {
+        switch (docRef.type()) {
+        case DocumentRef.ID:
+            return (String) docRef.reference();
+        case DocumentRef.PATH:
+            String path = (String)docRef.reference();
+            return path2Ids.get(path);
+        default:
+            return null;
+        }
+    }
+
+    /**
+     * This will modify the given list and replace documents with the cached versions
+     * @param parent
+     * @param children
+     * @throws ClientException
+     */
+    public void cacheChildren(DocumentRef parent, DocumentModelList children) throws ClientException {
+        String id = getDocumentId(parent);
+        if (id != null) {
+            ArrayList<DocumentRef> cache = new ArrayList<DocumentRef>();
+            for (int i=0, len=children.size(); i<len; i++) {
+                DocumentModel child = children.get(i);
+                child = cacheDocument(child);
+                children.set(i, child); // replace by the cached document
+                cache.add(child.getRef());
+            }
+            synchronized (childrenCache) {
+                childrenCache.put(id, cache);
+            }
+        }
+    }
+
+    public void uncacheChildren(DocumentRef parent) {
+        String id = getDocumentId(parent);
+        if (id != null) {
+            synchronized (childrenCache) {
+                childrenCache.remove(id);
+            }
+        }
+    }
+
+    public DocumentModelList fetchChildren(DocumentRef parent)
+            throws Exception {
+        return getSession().getChildren(parent);
+    }
+
+    public DocumentModelList  filterByFacet(DocumentModelList docs, String facet) {
+        DocumentModelList result = new DocumentModelListImpl();
+        for (DocumentModel doc : docs) {
+            if (doc.hasFacet(facet)) {
+                result.add(doc);
+            }
+        }
+        return result;
+    }
+
+    public DocumentModelList  filterWithoutFacet(DocumentModelList docs, String facet) {
+        DocumentModelList result = new DocumentModelListImpl();
+        for (DocumentModel doc : docs) {
+            if (!doc.hasFacet(facet)) {
+                result.add(doc);
+            }
+        }
+        return result;
+    }
+
+    public DocumentModelList  filterByType(DocumentModelList docs, String type) {
+        DocumentModelList result = new DocumentModelListImpl();
+        for (DocumentModel doc : docs) {
+            if (type.equals(doc.getType())) {
+                result.add(doc);
+            }
+        }
+        return result;
+    }
+
+    public DocumentModelList fetchAndCacheChildren(DocumentRef parent) throws ClientException {
+        try {
+            DocumentModelList children =  getSession().getChildren(parent);
+            cacheChildren(parent, children);
+            return children;
+        } catch (ClientException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ClientException("Failed to get proxy session", e);
+        }
+    }
+
+    public DocumentModelList getCachedChildren(DocumentRef parent) throws ClientException {
+        String id = getDocumentId(parent);
+        if (id != null) {
+            List<DocumentRef> children = null;
+            synchronized (childrenCache) {
+                children = childrenCache.get(id);
+            }
+            if (children != null) {
+                // avoid concurrent modifications by using a copy (an array)
+                DocumentRef[] refs = children.toArray(new DocumentRef[children.size()]);
+                DocumentModelList result = new DocumentModelListImpl();
+                for (DocumentRef ref : refs) {
+                    result.add(getDocument(ref));
+                }
+                return result;
+            }
+        }
+        return null;
+    }
+
+    public DocumentModelList getCachedChildrenWithType(DocumentRef parent, String type) throws ClientException {
+        String id = getDocumentId(parent);
+        if (id != null) {
+            List<DocumentRef> children = null;
+            synchronized (childrenCache) {
+                children = childrenCache.get(id);
+            }
+            if (children != null) {
+                // avoid concurrent modifications by using a copy (an array)
+                DocumentRef[] refs = children.toArray(new DocumentRef[children.size()]);
+                DocumentModelList result = new DocumentModelListImpl();
+                for (DocumentRef ref : refs) {
+                    DocumentModel doc = getDocument(ref);
+                    if (type.equals(doc.getType())) {
+                        result.add(doc);
+                    }
+                }
+                return result;
+            }
+        }
+        return null;
+    }
+
+    public DocumentModelList getCachedChildrenWithFacet(DocumentRef parent, String facet) throws ClientException {
+        String id = getDocumentId(parent);
+        if (id != null) {
+            List<DocumentRef> children = null;
+            synchronized (childrenCache) {
+                children = childrenCache.get(id);
+            }
+            if (children != null) {
+                // avoid concurrent modifications by using a copy (an array)
+                DocumentRef[] refs = children.toArray(new DocumentRef[children.size()]);
+                DocumentModelList result = new DocumentModelListImpl();
+                for (DocumentRef ref : refs) {
+                    DocumentModel doc = getDocument(ref);
+                    if (doc.hasFacet(facet)) {
+                        result.add(doc);
+                    }
+                }
+                return result;
+            }
+        }
+        return null;
+    }
+
+    public DocumentModelList getCachedChildrenWithoutFacet(DocumentRef parent, String facet) throws ClientException {
+        String id = getDocumentId(parent);
+        if (id != null) {
+            List<DocumentRef> children = null;
+            synchronized (childrenCache) {
+                children = childrenCache.get(id);
+            }
+            if (children != null) {
+                // avoid concurrent modifications by using a copy (an array)
+                DocumentRef[] refs = children.toArray(new DocumentRef[children.size()]);
+                DocumentModelList result = new DocumentModelListImpl();
+                for (DocumentRef ref : refs) {
+                    DocumentModel doc = getDocument(ref);
+                    if (!doc.hasFacet(facet)) {
+                        result.add(doc);
+                    }
+                }
+                return result;
+            }
+        }
+        return null;
+    }
+
+    public void cacheChild(DocumentRef parent, DocumentRef child) {
+        String id = getDocumentId(parent);
+        if (id != null) {
+            synchronized (childrenCache) {
+                List<DocumentRef> list = childrenCache.get(id);
+                if (list == null) {
+                    list = new ArrayList<DocumentRef>();
+                    childrenCache.put(id, list);
+                }
+                list.add(child);
+            }
+        }
+    }
+
+    public void uncacheChild(DocumentRef parent, DocumentRef child) {
+        String id = getDocumentId(parent);
+        if (id != null) {
+            synchronized (childrenCache) {
+                List<DocumentRef> list = childrenCache.get(id);
+                if (list != null) {
+                    list.remove(child);
+                }
+            }
+        }
     }
 
 }
