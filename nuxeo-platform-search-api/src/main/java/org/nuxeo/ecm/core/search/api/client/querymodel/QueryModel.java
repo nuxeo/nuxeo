@@ -54,7 +54,9 @@ public class QueryModel implements Serializable {
 
     protected transient QueryModelDescriptor descriptor;
 
-    private String descriptorName;
+    protected String descriptorName;
+
+    protected Integer max;
 
     protected final DocumentModel documentModel;
 
@@ -71,6 +73,7 @@ public class QueryModel implements Serializable {
         this.descriptor = descriptor;
         if (descriptor != null) {
             descriptorName = descriptor.getName();
+            setMax(descriptor.getMax());
         }
 
         this.documentModel = documentModel;
@@ -147,7 +150,6 @@ public class QueryModel implements Serializable {
             log.warn("Cannot find Search Service");
             return null;
         }
-        Integer max = descriptor.getMax();
 
         if (sortInfo == null) {
             sortInfo = descriptor.getDefaultSortInfo(documentModel);
@@ -160,9 +162,6 @@ public class QueryModel implements Serializable {
             query = descriptor.getQuery(params, sortInfo);
         }
 
-        if (max == null) {
-            max = Integer.MAX_VALUE;
-        }
         try {
             if (log.isDebugEnabled()) {
                 log.debug("execute query: " + query.replace('\n', ' '));
@@ -245,6 +244,17 @@ public class QueryModel implements Serializable {
                     defaultValues.get(schemaName));
             documentModel.setProperties(schemaName, defaultData);
         }
+    }
+
+    public Integer getMax() {
+        return max;
+    }
+
+    public void setMax(Integer max) {
+        if (max == null) {
+            max = Integer.MAX_VALUE;
+        }
+        this.max = max;
     }
 
 }
