@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.search;
 
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
-import org.nuxeo.ecm.core.search.api.backend.SearchEngineBackend;
 import org.nuxeo.ecm.core.search.api.backend.impl.AbstractSearchEngineBackend;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResources;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
@@ -36,8 +35,7 @@ import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
  */
-public class FakeSearchEnginePlugin extends AbstractSearchEngineBackend
-        implements SearchEngineBackend {
+public class FakeSearchEnginePlugin extends AbstractSearchEngineBackend {
 
     private static final long serialVersionUID = -9160814888437944361L;
 
@@ -79,22 +77,16 @@ public class FakeSearchEnginePlugin extends AbstractSearchEngineBackend
     }
 
     public void clear() throws IndexingException {
-        // TODO Auto-generated method stub
     }
 
     public void closeSession(String sid) {
-        // TODO Auto-generated method stub
-
     }
 
     public SearchServiceSession createSession() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public void saveAllSessions() throws IndexingException {
-        // TODO Auto-generated method stub
-
     }
 
 }

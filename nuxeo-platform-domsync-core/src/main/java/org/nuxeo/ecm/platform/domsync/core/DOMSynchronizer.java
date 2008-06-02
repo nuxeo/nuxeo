@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.domsync.core;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.nuxeo.ecm.platform.domsync.core.events.DOMAttrModifiedEvent;

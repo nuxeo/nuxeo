@@ -173,7 +173,6 @@ public class SQLDirectory extends AbstractDirectory {
             } catch (SQLException e) {
                 throw new DirectoryException(e);
             }
-
         } finally {
             try {
                 sqlConnection.close();
