@@ -119,7 +119,7 @@ public class OperationEventFactory {
             //TODO getParentRef() is a PATH reference -> should put a ID ref!
             modifs.add(docModel.getParentRef(), Modification.ADD_CHILD);
         } else if (DocumentEventTypes.DOCUMENT_REMOVED.equals(id)) {
-            modifs.add(docRef, Modification.CREATE);
+            modifs.add(docRef, Modification.REMOVE);
           //TODO getParentRef() is a PATH reference -> should put a ID ref!
             modifs.add(docModel.getParentRef(), Modification.REMOVE_CHILD);
         } else if (LifeCycleEventTypes.LIFECYCLE_TRANSITION_EVENT.equals(id)) {

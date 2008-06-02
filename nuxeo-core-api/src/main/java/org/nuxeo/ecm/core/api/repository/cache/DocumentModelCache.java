@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.api.repository.cache;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
@@ -38,5 +39,27 @@ public interface DocumentModelCache {
     void flushDocumentCache();
 
     DocumentModel fetchDocument(DocumentRef ref) throws ClientException;
+
+    /** Children Cache */
+
+    void cacheChildren(DocumentRef parent, DocumentModelList children) throws ClientException;
+
+    void uncacheChildren(DocumentRef parent);
+
+    DocumentModelList  fetchChildren(DocumentRef parent) throws Exception;
+
+    DocumentModelList  getCachedChildren(DocumentRef parent) throws ClientException;
+
+    public void cacheChild(DocumentRef parent, DocumentRef child);
+
+    public void uncacheChild(DocumentRef parent, DocumentRef child);
+
+    /**
+     * This can be used to refresh the children cache
+     * @param parent
+     * @return
+     * @throws ClientException
+     */
+    public DocumentModelList fetchAndCacheChildren(DocumentRef parent) throws ClientException;
 
 }
