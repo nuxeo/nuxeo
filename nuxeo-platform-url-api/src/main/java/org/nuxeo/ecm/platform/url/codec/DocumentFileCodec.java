@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.url.codec;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -84,12 +83,7 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
             items.add(docLoc.getServerLocationName());
             items.add(docLoc.getDocRef().toString());
             items.add(filepath);
-            try {
-                filename = URLEncoder.encode(filename, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                filename = StringUtils.toAscii(filename);
-            }
-            items.add(filename);
+            items.add(URIUtils.quoteURIPathComponent(filename, true));
             String uri = StringUtils.join(items, "/");
 
             Map<String, String> requestParams = new HashMap<String, String>(

@@ -28,10 +28,6 @@
     <module>nuxeo-platform-actions-core</module>
     <module>nuxeo-platform-api</module>
     <module>nuxeo-platform-api-test</module>
-    <module>nuxeo-platform-archive-api</module>
-    <module>nuxeo-platform-archive-default-config</module>
-    <module>nuxeo-platform-archive-facade</module>
-    <module>nuxeo-platform-archive-web</module>
     <module>nuxeo-platform-audit-api</module>
     <module>nuxeo-platform-audit-client</module>
     <module>nuxeo-platform-audit-core</module>
@@ -220,28 +216,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-api-test</artifactId>
         <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-archive-api</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-archive-default-config</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-archive-facade</artifactId>
-        <version>${nuxeo.platform.version}</version>
-        <type>ejb</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-archive-web</artifactId>
-        <version>${nuxeo.platform.version}</version>
-        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>

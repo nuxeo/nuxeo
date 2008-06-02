@@ -66,9 +66,12 @@
       <resource>calendar.js</resource>
       <resource>calendar-setup.js</resource>
       <resource>calendar-en.js</resource>
-      <!-- include JS used for D&D and tableSelection -->
-      <resource>AJS.js</resource>
+      <!-- include JS used for waiter -->
+      <resource>effects.js</resource>
+      <resource>window.js</resource>
+      <resource>window_effects.js</resource>
       <resource>waitdlg.js</resource>
+      <!-- include JS used for D&D and tableSelection -->
       <resource>utils.js</resource>
       <resource>tableSelections.js</resource>
       <!-- include JS for contextual menu -->
@@ -216,7 +219,8 @@
     </resource>
 
 
-      <resource name="AJS.js"><path>waitdialog/AJS.js</path></resource>
+      <resource name="window.js"><path>scripts/window.js</path></resource>
+      <resource name="window_effects.js"><path>scripts/window_effects.js</path></resource>
       <resource name="waitdlg.js"><path>waitdialog/waitdlg.js</path></resource>
       <resource name="utils.js"><path>scripts/utils.js</path></resource>
       <resource name="tableSelections.js"><path>scripts/tableSelections.js</path></resource>

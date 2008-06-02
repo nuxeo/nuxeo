@@ -59,7 +59,7 @@ public class TestDocumentFileCodec extends TestCase {
         params.put(DocumentFileCodec.FILENAME_KEY, "my doc \u00e9.odt");
         DocumentView docView = new DocumentViewImpl(docLoc, null, params);
 
-        String url = "nxfile/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/file:content/my+doc+%C3%A9.odt";
+        String url = "nxfile/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/file:content/my%20doc%20%C3%A9.odt";
         assertEquals(url, codec.getUrlFromDocumentView(docView));
     }
 
