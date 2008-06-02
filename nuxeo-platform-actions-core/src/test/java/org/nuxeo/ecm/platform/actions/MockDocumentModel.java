@@ -19,9 +19,9 @@
 
 package org.nuxeo.ecm.platform.actions;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Arrays;
 
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 

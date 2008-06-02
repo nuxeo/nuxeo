@@ -23,6 +23,7 @@ import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.io.Serializable;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.PostActivate;
@@ -60,7 +61,9 @@ import org.nuxeo.ecm.platform.cache.client.ClientCacheServiceFactory;
 @Name(CacheUpdateNotifier.SEAM_NAME_CACHE_NOTIFIER)
 @Scope(ScopeType.SESSION)
 @SerializedConcurrentAccess
-public class CacheUpdateNotifierBean implements CacheUpdateNotifier {
+public class CacheUpdateNotifierBean implements CacheUpdateNotifier, Serializable {
+
+    private static final long serialVersionUID = -4658013073616597630L;
 
     private static final Log log = LogFactory.getLog(CacheUpdateNotifierBean.class);
 
@@ -120,7 +123,7 @@ public class CacheUpdateNotifierBean implements CacheUpdateNotifier {
      * a Seam context (the thread is started by an event = web request).
      */
     @In
-    public transient Context sessionContext;
+    private transient Context sessionContext;
 
     /**
      * List of listeners registered by other Seam components which are taken
