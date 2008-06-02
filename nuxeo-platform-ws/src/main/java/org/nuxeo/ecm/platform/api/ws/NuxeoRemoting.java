@@ -192,7 +192,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      * @throws ClientException
      */
     ACE[] getDocumentLocalACL(String sid, String uuid) throws ClientException;
-    
+
     /**
      * Checks the given permission for the current user on the given document.
      *
@@ -259,5 +259,15 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
 
     String uploadDocument(String sid, String path, String type,
             String[] properties) throws ClientException;
+
+
+    /**
+     * Gets all properties and ACLs from a document
+     * @param sid the session id
+     * @param uuid the doc uuid
+     * @return
+     * @throws ClientException
+     */
+    DocumentSnapshot getDocumentSnapshot(String sid, String uuid) throws ClientException;
 
 }
