@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.publishing;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -59,6 +60,7 @@ import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeImpl;
+import org.nuxeo.ecm.core.api.impl.DocumentModelTreeNodeComparator;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeNodeImpl;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -390,14 +392,22 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
         int firstLevel = sectionRootPath.split("/").length + 1;
 
+        DocumentModelTreeImpl nodes = new DocumentModelTreeImpl();
         for (DocumentModel currentSection : mainSections) {
             if (documentManager.hasPermission(currentSection.getRef(),
                     SecurityConstants.READ)) {
                 int currentLevel = currentSection.getPathAsString().split("/").length;
-                DocumentModelTreeNode node = new DocumentModelTreeNodeImpl(
-                        currentSection, currentLevel - firstLevel);
-                sections.add(node);
+                nodes.add(currentSection, currentLevel - firstLevel);
             }
+        }
+        // sort sections using titles
+        DocumentModelTreeNodeComparator comp = new DocumentModelTreeNodeComparator(
+                nodes.getPathTitles());
+        Collections.sort((ArrayList)nodes, comp);
+
+        // populate sections
+        for (DocumentModelTreeNode node: nodes) {
+            sections.add(node);
         }
     }
 
