@@ -45,7 +45,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.WrappedException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.cache.AbstractCacheListener;
 import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
@@ -91,9 +90,8 @@ public class TreeManagerBean extends InputController implements TreeManager,
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             DocumentModel firstAccessibleParent = getFirstAccessibleParent(currentDocument);
             if (typesTool != null && firstAccessibleParent != null) {
-                LazyTreeNode treeNode = new LazyTreeNode(typesTool,
-                        documentManager, firstAccessibleParent,
-                        TreeManagerService.getDocumentFilter());
+                LazyTreeNode treeNode = new LazyTreeNode(firstAccessibleParent,
+                        documentManager, TreeManagerService.getDocumentFilter());
 
                 treeModel = new LazyTreeModel(treeNode);
 
@@ -332,8 +330,10 @@ public class TreeManagerBean extends InputController implements TreeManager,
         return null;
     }
 
+    /**
+     * @deprecated use {@link #refreshTreeNodeChildren(DocumentModel)} instead
+     */
     @Deprecated
-    // use refreshTreeNodeChildren(DocumentModel targetDoc) instead
     public void refreshTreeNodeChildren() throws ClientException {
         if (documentManager == null || treeModel == null) {
             return;
