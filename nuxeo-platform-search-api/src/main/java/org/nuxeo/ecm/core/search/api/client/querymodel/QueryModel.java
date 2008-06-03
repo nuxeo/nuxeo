@@ -73,7 +73,6 @@ public class QueryModel implements Serializable {
         this.descriptor = descriptor;
         if (descriptor != null) {
             descriptorName = descriptor.getName();
-            setMax(descriptor.getMax());
         }
 
         this.documentModel = documentModel;

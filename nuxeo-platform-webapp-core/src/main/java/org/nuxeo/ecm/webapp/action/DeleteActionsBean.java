@@ -83,7 +83,9 @@ public class DeleteActionsBean extends InputController implements
         DeleteActions, Serializable, SelectDataModelListener,
         ResultsProviderFarm {
 
-    class PathComparator implements Comparator<DocumentModel> {
+    private static class PathComparator implements Comparator<DocumentModel>, Serializable {
+
+        private static final long serialVersionUID = -6449747704324789701L;
 
         public int compare(DocumentModel o1, DocumentModel o2) {
             return o1.getPathAsString().compareTo(o2.getPathAsString());
@@ -263,7 +265,8 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public boolean getCanDeleteSections() throws ClientException {
-        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
 
         if (docsToDelete == null || docsToDelete.isEmpty()) {
             return false;
@@ -271,19 +274,22 @@ public class DeleteActionsBean extends InputController implements
 
         List<DocumentModel> realDocsToDelete = new ArrayList<DocumentModel>();
         for (DocumentModel doc : docsToDelete) {
-            if (!doc.isProxy())
+            if (!doc.isProxy()) {
                 realDocsToDelete.add(doc);
+            }
         }
 
-        if (realDocsToDelete.isEmpty())
+        if (realDocsToDelete.isEmpty()) {
             return false;
+        }
 
         // do simple filtering
         return checkDeletePermOnParents(realDocsToDelete);
     }
 
     public boolean getCanPurge() throws ClientException {
-        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
+        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
 
         if (docsToDelete == null || docsToDelete.isEmpty()) {
             return false;
@@ -394,10 +400,12 @@ public class DeleteActionsBean extends InputController implements
     }
 
     public String deleteSelectionSections() throws ClientException {
-        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
+        List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
 
-        if (docsToDelete == null || docsToDelete.isEmpty())
+        if (docsToDelete == null || docsToDelete.isEmpty()) {
             return null;
+        }
         boolean selectionContainsProxy = false;
         List<DocumentModel> nonProxyDocsToDelete = new ArrayList<DocumentModel>();
         for (DocumentModel doc : docsToDelete) {
@@ -408,8 +416,7 @@ public class DeleteActionsBean extends InputController implements
             }
         }
 
-        if (selectionContainsProxy)
-        {
+        if (selectionContainsProxy) {
             FacesMessage message = FacesMessages.createFacesMessage(
                     FacesMessage.SEVERITY_WARN, "can_not_delete_proxies", null);
             facesMessages.add(message);
@@ -517,7 +524,7 @@ public class DeleteActionsBean extends InputController implements
                 // FIXME: should be checked sooner so that no exception is thrown
                 throw new ClientException("Impossible to move document="
                         + docModel.getPathAsString()
-                        + " Life Cycle is not available");
+                        + " Life Cycle state " + DELETE_TRANSITION + " is not available");
             }
             // JMS message preparation and sending
             if (document.isFolder()) {
@@ -692,7 +699,8 @@ public class DeleteActionsBean extends InputController implements
             throws ClientException {
 
         DocumentModelList documents = getCurrentDocumentDeletedChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(
                 DocumentActions.CHILDREN_DOCUMENT_LIST, documents,
                 selectedDocuments);
@@ -865,7 +873,6 @@ public class DeleteActionsBean extends InputController implements
         }
         searchActions.getDocumentModel().setProperty("advanced_search",
                 "currentLifeCycleStates", states);
-
     }
 
     public void restoreCurrentDocument() throws ClientException {

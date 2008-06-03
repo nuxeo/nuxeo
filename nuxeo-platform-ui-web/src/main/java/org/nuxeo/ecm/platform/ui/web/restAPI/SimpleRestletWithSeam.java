@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
+import java.io.Serializable;
+
 import static org.jboss.seam.ScopeType.EVENT;
 
 import org.jboss.seam.annotations.In;
@@ -43,13 +45,16 @@ import org.restlet.data.Response;
 
 @Name("testSeamRestlet")
 @Scope(EVENT)
-public class SimpleRestletWithSeam extends Restlet {
+public class SimpleRestletWithSeam extends Restlet implements Serializable {
+
+    private static final long serialVersionUID = -5264946092445282305L;
 
     @In(create = true)
     NavigationContext navigationContext;
 
     CoreSession documentManager;
 
+    @Override
     public void handle(Request req, Response res) {
         String repo = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");
