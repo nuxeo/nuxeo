@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.tree.LazyTreeModel;
@@ -49,7 +50,11 @@ public class LazyTreeNode extends TreeNodeBase {
 
     private static final Log log = LogFactory.getLog(LazyTreeNode.class);
 
-    //protected CoreSession handle;
+    public static final String TREE_FACET_NAME = "Document";
+
+    public static final String DEFAULT_TITLE_PROPERTY_NAME = "dc:title";
+
+    // protected CoreSession handle;
 
     protected String sid;
 
@@ -61,16 +66,49 @@ public class LazyTreeNode extends TreeNodeBase {
 
     protected String nodeCellId = "defaultId";
 
+    /**
+     * @deprecated types tool is not useful anymore for the tree rendering
+     */
+    @Deprecated
     protected TypesTool typesTool;
-
-    protected boolean leaf;
 
     protected boolean noData = true;
 
-    protected final FacetFilter facetFilter = new FacetFilter("HiddenInNavigation", false);
+    protected final FacetFilter facetFilter = new FacetFilter(
+            "HiddenInNavigation", false);
 
     protected final DocumentFilter docFilter;
 
+    public LazyTreeNode(DocumentModel document, CoreSession session,
+            DocumentFilter docFilter) {
+        // standard attributes
+        setType(TREE_FACET_NAME);
+        setDescription(getDefaultDescription(document));
+        if (document != null) {
+            documentIdentifier = document.getRef();
+            setLeaf(document.isFolder());
+        }
+        if (documentIdentifier != null) {
+            setIdentifier(documentIdentifier.toString());
+        }
+
+        // specific attributes
+
+        this.doc = document;
+        setHandle(session);
+        setNodeCellId("nodeRef:" + getIdentifier());
+        this.docFilter = docFilter;
+
+        noData = true;
+    }
+
+    public LazyTreeNode(DocumentModel document, CoreSession session,
+            DocumentFilter docFilter, boolean leaf) {
+        this(document, session, docFilter);
+        setLeaf(leaf);
+    }
+
+    @Deprecated
     public LazyTreeNode(String type, String description,
             DocumentRef identifier, TypesTool typesTool, CoreSession handle,
             boolean leaf, DocumentModel doc, DocumentFilter docFilter) {
@@ -81,22 +119,24 @@ public class LazyTreeNode extends TreeNodeBase {
         this.doc = doc;
         setHandle(handle);
         nodeCellId = "nodeRef:" + doc.getRef();
-        this.leaf = leaf;
+        setLeaf(leaf);
         this.docFilter = docFilter;
 
         noData = true;
     }
 
+    @Deprecated
     public LazyTreeNode(TypesTool typesTool, CoreSession handle,
             DocumentModel doc, DocumentFilter docFilter) {
         this(doc.getType(), typesTool, handle, doc, docFilter);
-        nodeCellId = "nodeRef:" + doc.getRef();
+        setNodeCellId("nodeRef:" + doc.getRef());
     }
 
+    @Deprecated
     public LazyTreeNode(String type, TypesTool typesTool, CoreSession handle,
             DocumentModel doc, DocumentFilter docFilter) {
-        super(type, (String) doc.getProperty("dublincore", "title"), doc
-                .getRef().toString(), !doc.isFolder());
+        super(type, (String) doc.getProperty("dublincore", "title"),
+                doc.getRef().toString(), !doc.isFolder());
 
         documentIdentifier = doc.getRef();
         this.typesTool = typesTool;
@@ -104,24 +144,20 @@ public class LazyTreeNode extends TreeNodeBase {
         setHandle(handle);
         nodeCellId = "nodeRef:" + doc.getRef();
         noData = true;
-        leaf = !doc.isFolder();
+        setLeaf(!doc.isFolder());
         this.docFilter = docFilter;
-    }
-
-    @Override
-    public boolean isLeaf() {
-        return leaf;
-        //return leaf || !hasChildren();
     }
 
     public boolean hasChildren() {
         return getChildCount() != 0;
     }
 
+    @Deprecated
     public TypesTool getTypesTool() {
         return typesTool;
     }
 
+    @Deprecated
     public void setTypesTool(TypesTool typesTool) {
         this.typesTool = typesTool;
     }
@@ -205,7 +241,8 @@ public class LazyTreeNode extends TreeNodeBase {
      * @param currentItem
      * @throws ClientException
      */
-    public boolean resetNodeDescription(DocumentModel currentItem) throws ClientException {
+    public boolean resetNodeDescription(DocumentModel currentItem)
+            throws ClientException {
         boolean nodeReset = false;
         // if the selected document reference is the same as the current node
         // reference we refresh the children of the node
@@ -217,9 +254,21 @@ public class LazyTreeNode extends TreeNodeBase {
         return nodeReset;
     }
 
+    public static String getDefaultDescription(DocumentModel doc) {
+        String desc = null;
+        if (doc != null) {
+            try {
+                desc = (String) doc.getPropertyValue(DEFAULT_TITLE_PROPERTY_NAME);
+            } catch (PropertyException e) {
+                log.error(e);
+            }
+        }
+        return desc;
+    }
+
     public void refreshDescription() throws ClientException {
         doc = getHandle().getDocument(documentIdentifier);
-        setDescription((String) doc.getProperty("dublincore", "title"));
+        setDescription(getDefaultDescription(doc));
     }
 
     /**
@@ -235,14 +284,14 @@ public class LazyTreeNode extends TreeNodeBase {
         super.getChildren().clear();
 
         List<DocumentModel> coreChildren = getHandle().getChildren(
-                documentIdentifier, null, SecurityConstants.READ,
-                facetFilter, null);
+                documentIdentifier, null, SecurityConstants.READ, facetFilter,
+                null);
         for (DocumentModel document : coreChildren) {
-            String title = (String) document.getProperty("dublincore", "title");
+            String title = getDefaultDescription(document);
             if (title != null) {
                 if (docFilter != null && docFilter.accept(document)) {
-                    LazyTreeNode treeNode = new LazyTreeNode(nodeType(document.getType()),
-                            typesTool, getHandle(), document, docFilter);
+                    LazyTreeNode treeNode = new LazyTreeNode(document,
+                            getHandle(), docFilter);
                     children.add(treeNode);
                 }
             }
@@ -266,7 +315,8 @@ public class LazyTreeNode extends TreeNodeBase {
     @Override
     public int compareTo(Object obj) {
         TreeNode otherNode = (TreeNode) obj;
-        return getDescription().toUpperCase().compareTo(otherNode.getDescription().toUpperCase());
+        return getDescription().toUpperCase().compareTo(
+                otherNode.getDescription().toUpperCase());
     }
 
     @Override
@@ -282,7 +332,7 @@ public class LazyTreeNode extends TreeNodeBase {
         // ...
         int nbChildren = super.getChildren().size();
         if (nbChildren == 0) {
-            leaf = true;
+            setLeaf(true);
         }
         return nbChildren;
     }
@@ -294,8 +344,10 @@ public class LazyTreeNode extends TreeNodeBase {
      * dynamically for the tree.
      *
      * @param documentType
+     * @deprecated use {@link #getType()}
      * @return
      */
+    @Deprecated
     protected String nodeType(String documentType) {
         String nodeType = null;
 
