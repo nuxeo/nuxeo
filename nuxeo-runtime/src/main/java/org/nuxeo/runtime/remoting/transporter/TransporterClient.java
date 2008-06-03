@@ -51,7 +51,6 @@ import org.jboss.remoting.network.NetworkRegistry;
  *
  * @author <a href="mailto:tom.elrod@jboss.com">Tom Elrod</a>
  */
-
 public class TransporterClient implements InvocationHandler, Serializable {
 
     private static final long serialVersionUID = 3894857374386677211L;

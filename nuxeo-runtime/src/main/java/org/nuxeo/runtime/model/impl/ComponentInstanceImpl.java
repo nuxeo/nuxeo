@@ -33,8 +33,6 @@ import org.nuxeo.runtime.model.Property;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 
-import sun.print.resources.serviceui;
-
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -151,7 +149,8 @@ public class ComponentInstanceImpl implements ComponentInstance {
                 return;
             }
         } else {
-            System.err.println("Warning: TARGET EXTENSION POINT IS UNKNOWN. Check your extension in "+extension.getComponent().getName());
+            System.err.println("Warning: TARGET EXTENSION POINT IS UNKNOWN. Check your extension in "
+                    +extension.getComponent().getName());
         }
         // this extension is for us - register it
         // activate the implementation instance
@@ -229,4 +228,5 @@ public class ComponentInstanceImpl implements ComponentInstance {
     public String[] getProvidedServiceNames() {
         return ri.getProvidedServiceNames();
     }
+
 }

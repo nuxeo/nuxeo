@@ -52,20 +52,19 @@ import org.osgi.framework.BundleListener;
  */
 public class ServiceBindings implements BundleListener {
 
-    public final static Log log = LogFactory.getLog(ServiceBindings.class);
+    private static final Log log = LogFactory.getLog(ServiceBindings.class);
 
     protected BundleContext bundleContext;
     protected InitialContext jndiContext;
 
-
     public ServiceBindings(BundleContext ctx) throws NamingException {
-        this (ctx, new InitialContext());
+        this(ctx, new InitialContext());
     }
 
     public ServiceBindings(BundleContext bundleContext, InitialContext jndContext) {
         this.bundleContext = bundleContext;
         this.bundleContext.addBundleListener(this);
-        this.jndiContext = jndContext;
+        jndiContext = jndContext;
     }
 
     public void createAlias(String fromName, String aliasName) throws NamingException {
@@ -79,7 +78,6 @@ public class ServiceBindings implements BundleListener {
     public void destroy() {
         bundleContext.removeBundleListener(this);
     }
-
 
     public void bundleChanged(BundleEvent event) {
         try {
@@ -144,7 +142,7 @@ public class ServiceBindings implements BundleListener {
         } else {
             name = beanClass;
         }
-        return "nuxeo/"+name+"/remote";
+        return "nuxeo/" + name + "/remote";
     }
 
     protected String getLocalName(String beanClass) {
@@ -155,7 +153,7 @@ public class ServiceBindings implements BundleListener {
         } else {
             name = beanClass;
         }
-        return "nuxeo/"+name+"/local";
+        return "nuxeo/" + name + "/local";
     }
 
     protected Properties loadBindings(Bundle bundle) throws IOException {
@@ -190,7 +188,7 @@ public class ServiceBindings implements BundleListener {
         aliasCtx.rebind(atom, link);
 
         if (log.isDebugEnabled()) {
-            log.debug("Created JNDI link [" + aliasName + "] pointing to ["+existingName+"]");
+            log.debug("Created JNDI link [" + aliasName + "] pointing to [" + existingName + "]");
         }
     }
 
