@@ -20,7 +20,10 @@
 package org.nuxeo.ecm.platform.relations.adapters;
 
 import java.io.Serializable;
+import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -44,41 +47,63 @@ import org.nuxeo.runtime.api.Framework;
 public class DocumentModelResourceAdapter extends AbstractResourceAdapter
         implements Serializable {
 
+    private static final Log log = LogFactory.getLog(DocumentModelResourceAdapter.class);
+
     private static final long serialVersionUID = -5307418102496342779L;
 
     @Override
-    public Object getResourceRepresentation(Resource resource) {
-        Object object = null;
+    public Serializable getResourceRepresentation(Resource resource,
+            Map<String, Serializable> context) {
+        Serializable object = null;
         if (resource.isQNameResource()) {
-            CoreInstance core = CoreInstance.getInstance();
             CoreSession session = null;
+            boolean sessionOpened = false;
             try {
                 RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-                Repository repo;
+                String repoName = null;
                 String uid = null;
                 String localName = ((QNameResource) resource).getLocalName();
                 int index = localName.indexOf("/");
                 if (index == -1) {
                     // BBB for when repository name was not included in the
                     // local name
-                    repo = mgr.getDefaultRepository();
+                    repoName = mgr.getDefaultRepository().getName();
                     uid = localName;
                 } else {
-                    String repositoryName = localName.substring(0, index);
-                    repo = mgr.getRepository(repositoryName);
+                    repoName = localName.substring(0, index);
                     uid = localName.substring(index + 1);
                 }
                 DocumentRef ref = new IdRef(uid);
-                session = repo.open();
+
+                if (context != null) {
+                    Serializable givenSessionId = context.get(CORE_SESSION_ID_CONTEXT_KEY);
+                    if (givenSessionId instanceof String) {
+                        session = CoreInstance.getInstance().getSession(
+                                (String) givenSessionId);
+                        if (!session.getRepositoryName().equals(repoName)) {
+                            // let's open one
+                            session = null;
+                        }
+                    }
+                }
+                if (session == null) {
+                    // open one
+                    sessionOpened = true;
+                    Repository repo = mgr.getRepository(repoName);
+                    session = repo.open();
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format(
+                                "Opened a new session '%s' with id %s",
+                                repoName, session.getSessionId()));
+                    }
+                }
                 object = session.getDocument(ref);
             } catch (ClientException e) {
             } catch (Exception e) {
             } finally {
-                if (session != null) {
-                    try {
-                        core.close(session);
-                    } catch (ClientException e) {
-                    }
+                if (session != null && sessionOpened) {
+                    CoreInstance core = CoreInstance.getInstance();
+                    core.close(session);
                 }
             }
         }
@@ -86,10 +111,21 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter
     }
 
     @Override
+    public Object getResourceRepresentation(Resource resource) {
+        return getResourceRepresentation(resource, null);
+    }
+
+    @Override
     public Resource getResource(Object object) {
         DocumentModel doc = (DocumentModel) object;
         String localName = doc.getRepositoryName() + '/' + doc.getId();
         return new QNameResourceImpl(namespace, localName);
+    }
+
+    @Override
+    public Resource getResource(Serializable object,
+            Map<String, Serializable> context) {
+        return getResource(object);
     }
 
     @Override
