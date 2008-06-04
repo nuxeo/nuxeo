@@ -194,9 +194,12 @@ public abstract class AbstractSession implements CoreSession,
                         // check
                         sessionContext.put("principal", new SimplePrincipal(
                                 "system"));
-                        handler.initializeRepository(this);
                         try {
+                            handler.initializeRepository(this);
                             session.save();
+                        } catch (ClientException e) {
+                            // shouldn't remove the root? ... to restart with an empty repository
+                            log.error("Failed to initialize repository content , e");
                         } catch (DocumentException e) {
                             log.error("Unable to save session after repository init : "
                                     + e.getMessage());
