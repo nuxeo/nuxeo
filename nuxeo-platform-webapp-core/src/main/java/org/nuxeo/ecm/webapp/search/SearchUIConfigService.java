@@ -75,7 +75,7 @@ public class SearchUIConfigService extends DefaultComponent {
         }
     }
 
-    public void registerConfig(Extension extension) throws Exception {
+    public void registerConfig(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
             ConfigDescriptor config = (ConfigDescriptor) contrib;
@@ -85,7 +85,7 @@ public class SearchUIConfigService extends DefaultComponent {
         }
     }
 
-    public void registerResultColumnGroup(Extension extension) throws Exception {
+    public void registerResultColumnGroup(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
             ResultColumnsDescriptor desc = (ResultColumnsDescriptor) contrib;
