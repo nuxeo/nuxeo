@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.repository.Repository;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
+import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.resolver.SearchHelper;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
@@ -214,6 +216,8 @@ public class DefaultWebContext implements WebContext {
                 session = getCoreSession(request);
             } catch (WebException e) {
                 throw e;
+            } catch (DocumentSecurityException e) {
+                throw new WebSecurityException("Failed to get a session to the core repository", e);
             } catch (Exception e) {
                 throw new WebException("Failed to get core session", e);
             }
@@ -674,11 +678,11 @@ public class DefaultWebContext implements WebContext {
         // both POJO session and bean session (bean session are working always
         // because they get the principal from the bean context)
         Principal principal = request.getUserPrincipal();
-        //TODO ========== temporary code
-        if (principal == null) {
-            principal = new UserPrincipal("system");
-        }
-        //TODO ========== temporary code
+//        //TODO ========== temporary code
+//        if (principal == null) {
+//            principal = new UserPrincipal("system");
+//        }
+//        //TODO ========== temporary code
         if (principal instanceof Serializable) {
             HashMap<String,Serializable> ctx = new HashMap<String, Serializable>();
             ctx.put("principal", (Serializable)principal);

@@ -12,11 +12,13 @@ Nuxeo-Require: org.nuxeo.ecm.platform.search.api,
  org.nuxeo.runtime.scripting,
  org.nuxeo.ecm.platform.rendering
 Nuxeo-Component: OSGI-INF/webengine-framework.xml,
- OSGI-INF/wiki-transformer-contrib.xml
+ OSGI-INF/wiki-transformer-contrib.xml, 
+ OSGI-INF/web-deployment-contrib.xml
 Provide-Package: org.nuxeo.ecm.webengine,
  org.nuxeo.ecm.webengine.actions,
  org.nuxeo.ecm.webengine.exceptions,
  org.nuxeo.ecm.webengine.install,
+ org.nuxeo.ecm.webengine.login,
  org.nuxeo.ecm.webengine.mapping,
  org.nuxeo.ecm.webengine.rendering,
  org.nuxeo.ecm.webengine.resolver,

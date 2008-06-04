@@ -2,7 +2,7 @@
 
 <@block name="a2">
  a2: Derived Block in c. Document: ${doc.title}
- <@transform name="wiki">${doc.dublincore.content.data}</@transform>
+ <@wiki>${doc.dublincore.content.data}</@wiki>
 </@block>
 
 <@block name="b.nested">

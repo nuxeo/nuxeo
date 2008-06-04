@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.webengine.deployment">
+
+	<!--extension
+		target="org.nuxeo.ecm.webengine.WebEngineComponent"
+		point="install">
+
+	    <install guard="/wiki">
+	      <copy path="web/web.xml" target="/" />
+	      <copy path="web/wiki" target="/" />	      
+	      <copy path="web/resources" target="/" />
+	      <append path="web/i18n/messages.properties" target="/i18n/messages.properties"/>
+	    </install>
+	    
+	</extension>
+
+  <extension
+            target="org.nuxeo.ecm.webengine.WebEngineComponent"
+            point="configuration">
+    
+    <configuration path="/wiki/nuxeo-web.xml" />
+    
+  </extension-->
+
+  <extension target="org.nuxeo.runtime.server" point="webapp">
+    <webapp name="nuxeo" path="/nuxeo">
+      <root>web</root>
+    </webapp>
+  </extension>
+  
+</component>
