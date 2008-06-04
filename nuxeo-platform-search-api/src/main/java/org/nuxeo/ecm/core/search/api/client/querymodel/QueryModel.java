@@ -168,7 +168,7 @@ public class QueryModel implements Serializable {
             }
             ResultSet resultSet = searchService.searchQuery(
                     new ComposedNXQueryImpl(SQLQueryParser.parse(query),
-                            principal), 0, max);
+                            principal), 0, getMaxForSearch());
             return new SearchPageProvider(resultSet, isSortable(), sortInfo,
                     query);
         } catch (Exception e) {
@@ -183,7 +183,7 @@ public class QueryModel implements Serializable {
                 log.debug("re-execute query without sort: " + query);
                 ResultSet resultSet = searchService.searchQuery(
                         new ComposedNXQueryImpl(SQLQueryParser.parse(query),
-                                principal), 0, max);
+                                principal), 0, getMaxForSearch());
                 return new SearchPageProvider(resultSet, isSortable(), null,
                         query);
             } catch (SearchException e2) {
@@ -246,14 +246,19 @@ public class QueryModel implements Serializable {
         }
     }
 
+    protected int getMaxForSearch() {
+        // dummy method that makes resolution Integer -> int
+        if (max == null) {
+            max = Integer.MAX_VALUE -1;
+        }
+        return max;
+    }
+
     public Integer getMax() {
         return max;
     }
 
     public void setMax(Integer max) {
-        if (max == null) {
-            max = Integer.MAX_VALUE;
-        }
         this.max = max;
     }
 
