@@ -1,11 +1,11 @@
 <!--
   (C) Copyright 2006 Nuxeo SAS <http://nuxeo.com> and others
-
+  
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the Eclipse Public License v1.0
   which accompanies this distribution, and is available at
   http://www.eclipse.org/legal/epl-v10.html
-
+  
   Contributors:
   Nuxeo - initial API and implementation
 -->
@@ -57,7 +57,12 @@
       rendering info. This is comparable to f:param or ui:param tags, but using
       method bindings instead of value bindings.
       </p>
-      <b>WARNING</b>: the method result should be Serializable.
+      <p>
+      <b>WARNING</b>: the variable is only exposed inside the tag: this is a
+      different behaviour than the c:set tag that can be closed immediately.
+      </p>
+      <p>
+      <b>WARNING bis</b>: the method result should be Serializable.
       </p>
       ]]>
     </description>
@@ -96,6 +101,58 @@
 ...
   </nxu:dataList>
 </nxu:methodResult>
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>repeat</name>
+    <tag-class>None</tag-class>
+    <body-content>None</body-content>
+    <description>
+      <![CDATA[
+      <p>
+      Facelet tag handler that performs an iteration.      
+      </p>
+      <p>
+      This handler is different from the standard one because it performs a real
+      iteration on the tree structure, instead of keeping the same components and
+      saving their state in each of the iteration.
+      </p>
+      <p>
+      A real iteration is the only viable solution when using variables that will
+      have an impact on the tree structure, like a layout name and mode.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <description>
+        Value binding representing the object to iterate on.
+      </description>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Name of the variable representing each iteration item. Must be a string.
+      </description>
+    </attribute>
+    <attribute>
+      <name>index</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Name of the variable representing the iteration index. Must be a string.
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxu:repeat value="#{layoutNames}" var="layout">
+  <nxl:layout name="#{layout}" value="#{document}" />
+</nxu:repeat>
       ]]>
     </example>
   </tag>
