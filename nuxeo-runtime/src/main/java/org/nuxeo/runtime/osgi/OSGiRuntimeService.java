@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
@@ -170,32 +171,34 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
     }
 
     protected void loadConfig() throws Exception {
-        String configDir = Framework.getProperty("org.nuxeo.config.dir");
-        if (configDir != null) {
-            File dir = new File(configDir);
-            System.out.println(dir.getAbsolutePath());
-            if (dir.isDirectory()) {
-                for (String name : dir.list()) {
-                    if (name.endsWith("-config.xml") || name.endsWith("-bundle.xml")) {
-                        //TODO
-                        // because of somen dep bugs (regarding the depoyment of demo-ds.xml)
-                        // we cannot let the runtime deploy config dir at begining...
-                        // until fixing this we deploy config dir from
-                        // NuxeoDeployer
-                      File file = new File(dir, name);
-                      context.deploy(file.toURL());
-                    } else if (name.endsWith(".config")
-                            || name.endsWith(".ini")
-                            || name.endsWith(".properties")) {
-                        File file = new File(dir, name);
-                        loadProperties(file);
+        Environment env = Environment.getDefault();
+        if (env != null) {
+            File dir = env.getConfig() ;
+            if (dir != null) {
+                System.out.println(dir.getAbsolutePath());
+                if (dir.isDirectory()) {
+                    for (String name : dir.list()) {
+                        if (name.endsWith("-config.xml") || name.endsWith("-bundle.xml")) {
+                            //TODO
+                            // because of somen dep bugs (regarding the depoyment of demo-ds.xml)
+                            // we cannot let the runtime deploy config dir at begining...
+                            // until fixing this we deploy config dir from
+                            // NuxeoDeployer
+                            File file = new File(dir, name);
+                            context.deploy(file.toURL());
+                        } else if (name.endsWith(".config")
+                                || name.endsWith(".ini")
+                                || name.endsWith(".properties")) {
+                            File file = new File(dir, name);
+                            loadProperties(file);
+                        }
                     }
+                    return;
                 }
-                return;
             }
         }
 
-        configDir = bundleContext.getProperty(PROP_CONFIG_DIR);
+        String configDir = bundleContext.getProperty(PROP_CONFIG_DIR);
         if (configDir == null) {
             return;
         }
@@ -258,6 +261,21 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         for (Map.Entry<Object, Object> prop : props.entrySet()) {
             properties.put(prop.getKey().toString(), prop.getValue().toString());
         }
+    }
+
+    /**
+     * Overrides the default method to be able to inculde OSGi properties
+     */
+    @Override
+    public String getProperty(String name, String defValue) {
+        String value = properties.getProperty(name);
+        if (value == null) {
+            value = bundleContext.getProperty(name);
+            if (value == null) {
+                return defValue == null ? null : expandVars(defValue);
+            }
+        }
+        return expandVars(value);
     }
 
     /* --------------- FrameworkListener API ------------------ */
@@ -330,6 +348,12 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         } else if (location.startsWith("file:")) { // nuxeo osgi adapter
             try {
                 file = new File(new URI(location));
+            }catch (Exception e) {
+                return null;
+            }
+        } else { // may be a file path - this happens when using JarFileBundle (for ex. in nxshell)
+            try {
+                file = new File(location);
             }catch (Exception e) {
                 return null;
             }
