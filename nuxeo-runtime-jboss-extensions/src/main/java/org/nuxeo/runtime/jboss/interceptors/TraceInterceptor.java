@@ -19,6 +19,13 @@
 
 package org.nuxeo.runtime.jboss.interceptors;
 
+import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 import org.jboss.aop.joinpoint.Invocation;
 import org.jboss.aop.joinpoint.MethodInvocation;
 
@@ -30,23 +37,30 @@ public class TraceInterceptor implements org.jboss.aop.advice.Interceptor, java.
 
     private static final long serialVersionUID = 1839232187157414668L;
 
+    private static SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+
     public Object invoke(Invocation invocation) throws Throwable {
         if (invocation instanceof MethodInvocation) {
+            Date date = new Date();
+            String d = sdf.format(date);
             MethodInvocation mi = (MethodInvocation)invocation;
-            mi.getActualMethod();
             StackTraceElement[] st = new Exception().getStackTrace();
+            Object[] ar = mi.getArguments();
+            List<Object> args = ar == null ? new ArrayList<Object>() : Arrays.asList(ar);
             System.out.println("---------------------------------------------");
-            System.out.print("# "+Thread.currentThread()+" : Invoking : "+mi.getActualMethod());
+            System.out.println("# "+d+" : Invoking : "+mi.getActualMethod());
+            System.out.println("---------------------------------------------");
+            System.out.println("#Args: "+args);
+            System.out.println("---------------------------------------------");
             double s = System.currentTimeMillis();
             try {
                 return invocation.invokeNext();
             } finally {
                 System.out.println(" ["+((System.currentTimeMillis()-s)/1000)+" sec.]");
                 System.out.println("---------------------------------------------");
-                for (int i=0; i<Math.min(st.length, 10); i++) {
+                for (int i=0; i<Math.min(st.length, 15); i++) {
                     System.out.println(">> "+st[i]);
                 }
-                System.out.println("---------------------------------------------");
             }
         } else {
             return invocation.invokeNext();
