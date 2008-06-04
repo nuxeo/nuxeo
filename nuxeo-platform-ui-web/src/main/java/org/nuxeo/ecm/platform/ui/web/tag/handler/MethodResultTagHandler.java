@@ -23,11 +23,13 @@ import java.io.IOException;
 
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
+import javax.el.VariableMapper;
 import javax.faces.component.UIComponent;
 
 import org.nuxeo.ecm.platform.ui.web.binding.MethodValueExpression;
 
 import com.sun.facelets.FaceletContext;
+import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.MetaTagHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
@@ -70,11 +72,11 @@ public class MethodResultTagHandler extends MetaTagHandler {
         Class[] paramTypesClasses = resolveParamTypes(ctx);
         MethodExpression meth = value.getMethodExpression(ctx, Object.class,
                 paramTypesClasses);
-        ValueExpression ve = null;
         Boolean invokeNow = false;
         if (immediate != null) {
             invokeNow = immediate.getBoolean(ctx);
         }
+        ValueExpression ve;
         if (invokeNow) {
             Object res = meth.invoke(ctx, paramTypesClasses);
             ve = ctx.getExpressionFactory().createValueExpression(res,
@@ -82,8 +84,16 @@ public class MethodResultTagHandler extends MetaTagHandler {
         } else {
             ve = new MethodValueExpression(ctx, meth, paramTypesClasses);
         }
-        ctx.getVariableMapper().setVariable(nameStr, ve);
-        this.nextHandler.apply(ctx, parent);
+
+        VariableMapper orig = ctx.getVariableMapper();
+        VariableMapper vm = new VariableMapperWrapper(orig);
+        ctx.setVariableMapper(vm);
+        vm.setVariable(nameStr, ve);
+        try {
+            nextHandler.apply(ctx, parent);
+        } finally {
+            ctx.setVariableMapper(orig);
+        }
     }
 
 }
