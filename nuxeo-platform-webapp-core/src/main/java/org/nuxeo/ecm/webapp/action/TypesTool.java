@@ -56,7 +56,7 @@ public class TypesTool implements Serializable {
 
     private static final Log log = LogFactory.getLog(TypesTool.class);
 
-    @In(required = true)
+    @In
     private transient TypeManager typeManager;
 
     private List<Type> typesList;

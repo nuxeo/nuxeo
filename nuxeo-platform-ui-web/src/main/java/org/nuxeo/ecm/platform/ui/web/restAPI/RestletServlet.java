@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.core.Manager;
 import org.nuxeo.ecm.platform.ui.web.restAPI.service.PluggableRestletService;
 import org.nuxeo.ecm.platform.ui.web.restAPI.service.RestletPluginDescriptor;
 import org.nuxeo.runtime.api.Framework;

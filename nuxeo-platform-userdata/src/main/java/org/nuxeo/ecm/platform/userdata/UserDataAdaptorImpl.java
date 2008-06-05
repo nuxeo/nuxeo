@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.userdata;
 
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
