@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.launcher;
+package org.nuxeo.osgi.application;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Main {
+public class TestMain {
 
     public static final String CONFIG_FILE = ".properties";
 
@@ -44,7 +44,7 @@ public class Main {
     public static void main(String[] args) {
 
         try {
-            CommandLineArgs cmdArgs = new CommandLineArgs(args);
+            CommandLineOptions cmdArgs = new CommandLineOptions(args);
 
             //String clear = cmdArgs.getOption("c");
 
@@ -80,7 +80,7 @@ public class Main {
                 installDir = new File(installDirProp);
             }
 
-            SharedClassLoader cl = new SharedClassLoader(Main.class.getClassLoader());
+            SharedClassLoader cl = new SharedClassLoader(TestMain.class.getClassLoader());
             if (libList != null) {
                 String[] libs = STR_LIST.split(libList, 0);
                 //loadLibs(cl, installDir, libs);

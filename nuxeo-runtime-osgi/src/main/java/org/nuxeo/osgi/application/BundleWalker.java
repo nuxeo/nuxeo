@@ -17,22 +17,25 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.launcher;
+package org.nuxeo.osgi.application;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.nuxeo.common.utils.FileNamePattern;
 import org.nuxeo.common.utils.JarUtils;
-import org.nuxeo.runtime.launcher.FileWalker.Visitor;
+import org.nuxeo.osgi.BundleFile;
+import org.nuxeo.osgi.DirectoryBundleFile;
+import org.nuxeo.osgi.JarBundleFile;
 import org.osgi.framework.Constants;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class BundleVisitor extends Visitor {
+public class BundleWalker extends FileWalker.Visitor {
 
     public static final FileNamePattern[] DEFAULT_PATTERNS = new FileNamePattern[] {
         new FileNamePattern("*.jar"),
@@ -47,11 +50,11 @@ public class BundleVisitor extends Visitor {
     private FileNamePattern[] patterns;
     private final Callback callback;
 
-    public BundleVisitor(Callback cb) {
+    public BundleWalker(Callback cb) {
         this (cb, DEFAULT_PATTERNS);
     }
 
-    public BundleVisitor(Callback cb, String[] patterns) {
+    public BundleWalker(Callback cb, String[] patterns) {
         if (patterns != null) {
             this.patterns = new FileNamePattern[patterns.length];
             for (int i = 0; i < patterns.length; i++) {
@@ -61,13 +64,37 @@ public class BundleVisitor extends Visitor {
         callback = cb;
     }
 
-    public BundleVisitor(Callback cb, FileNamePattern[] patterns) {
+    public BundleWalker(Callback cb, FileNamePattern[] patterns) {
         this.patterns = patterns;
         callback = cb;
     }
 
     public void visit(File root) {
         new FileWalker().walk(root, this);
+    }
+
+    public void visit(Collection<File> files) {
+        for (File file : files) {
+            if (file.isFile()) {
+                if (file.isFile()) {
+                    visitFile(file);
+                } else if (file.isDirectory()) {
+                    visitDirectory(file);
+                }
+            }
+        }
+    }
+
+    public void visit(File ... files) {
+        for (File file : files) {
+            if (file.isFile()) {
+                if (file.isFile()) {
+                    visitFile(file);
+                } else if (file.isDirectory()) {
+                    visitDirectory(file);
+                }
+            }
+        }
     }
 
     @Override

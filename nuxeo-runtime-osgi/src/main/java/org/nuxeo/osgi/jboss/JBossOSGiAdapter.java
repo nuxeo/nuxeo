@@ -17,7 +17,7 @@
  * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
-package org.nuxeo.runtime.jboss.osgi;
+package org.nuxeo.osgi.jboss;
 
 import java.io.File;
 import java.util.Arrays;

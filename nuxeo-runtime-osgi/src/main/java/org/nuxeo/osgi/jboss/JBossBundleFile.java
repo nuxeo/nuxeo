@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.jboss.osgi;
+package org.nuxeo.osgi.jboss;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +28,8 @@ import java.util.jar.Manifest;
 
 import org.jboss.deployment.DeploymentInfo;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.BundleManifestReader;
-import org.nuxeo.runtime.launcher.BundleFile;
 import org.osgi.framework.Constants;
 
 /**

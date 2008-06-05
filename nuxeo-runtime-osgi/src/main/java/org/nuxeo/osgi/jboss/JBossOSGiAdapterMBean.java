@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.jboss.osgi;
+package org.nuxeo.osgi.jboss;
 
 import org.jboss.system.ListenerServiceMBean;
 

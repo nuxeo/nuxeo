@@ -17,44 +17,32 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.launcher;
+package org.nuxeo.osgi.application;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.jar.JarFile;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class NestedJarBundleFile extends JarBundleFile {
+public class SharedClassLoader extends URLClassLoader {
 
-    protected final String location;
-
-    public NestedJarBundleFile(String location, File file) throws IOException {
-        this(location, new JarFile(file));
+    public SharedClassLoader(ClassLoader parent) {
+        this (new URL[0], parent);
     }
 
-    public NestedJarBundleFile(String location, JarFile jarFile) {
-        super(jarFile);
-        this.location = location;
+    public SharedClassLoader(URL[] urls) {
+        this (urls, getSystemClassLoader());
     }
 
-    @Override
-    public String getFileName() {
-        int p = location.lastIndexOf('/');
-        if (p == -1) {
-            return location;
-        }
-        if (p == 0) {
-            return "";
-        }
-        return location.substring(p + 1);
+    public SharedClassLoader(URL[] urls, ClassLoader parent) {
+        super (urls, parent);
     }
 
     @Override
-    public String getLocation() {
-        return location;
+    public void addURL(URL url) {
+        super.addURL(url);
     }
 
 }

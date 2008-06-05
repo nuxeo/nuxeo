@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -17,17 +17,16 @@
  * $Id$
  */
 
-package org.nuxeo.osgi;
+package org.nuxeo.osgi.application;
 
+import org.nuxeo.osgi.BundleFile;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class SystemBundle extends BundleImpl {
+public interface BundleFileVisitor {
 
-    public SystemBundle(OSGiAdapter osgi, BundleFile file, ClassLoader loader) {
-        super(osgi, file, loader, true);
-    }
+     void visit(BundleFile bf);
 
 }

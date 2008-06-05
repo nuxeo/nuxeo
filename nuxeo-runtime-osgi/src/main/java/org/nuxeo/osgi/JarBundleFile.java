@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.launcher;
+package org.nuxeo.osgi;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,7 +36,6 @@ import java.util.zip.ZipEntry;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.osgi.BundleManifestReader;
 import org.osgi.framework.Constants;
 
 /**

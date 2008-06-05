@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.launcher;
+package org.nuxeo.osgi;
 
 import java.io.File;
 import java.io.IOException;

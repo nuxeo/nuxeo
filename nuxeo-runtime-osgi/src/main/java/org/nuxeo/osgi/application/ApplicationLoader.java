@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.launcher;
+package org.nuxeo.osgi.application;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +25,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.common.utils.FileNamePattern;
+import org.nuxeo.osgi.BundleFile;
+import org.nuxeo.osgi.NestedJarBundleFile;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.osgi.framework.BundleException;
 
@@ -38,13 +40,13 @@ public abstract class ApplicationLoader {
     protected boolean extractNestedJARs = false;
     protected boolean scanForNestedJARs = false;
 
-    private FileNamePattern[] patterns = BundleVisitor.DEFAULT_PATTERNS;
+    private FileNamePattern[] patterns = BundleWalker.DEFAULT_PATTERNS;
 
     private final File tmpDir;
 
     protected ApplicationLoader(OSGiAdapter osgi) {
         this.osgi = osgi;
-        tmpDir = new File(osgi.getWorkingDir(), "nested-bundles");
+        tmpDir = new File(osgi.getDataDir(), "nested-bundles");
         tmpDir.mkdirs();
     }
 
@@ -55,6 +57,9 @@ public abstract class ApplicationLoader {
 
     public abstract void loadJAR(BundleFile bundleFile);
 
+    public File getNestedBundleDirectory() {
+        return tmpDir;
+    }
 
     /**
      * @param extractNestedJARs The extractNestedJARs to set.
@@ -110,7 +115,7 @@ public abstract class ApplicationLoader {
      */
     public void load(File root, List<BundleFile> bundles, List<BundleFile> jars) {
         BundleFileLoader callback = new BundleFileLoader(bundles, jars);
-        BundleVisitor visitor = new BundleVisitor(callback, patterns);
+        BundleWalker visitor = new BundleWalker(callback, patterns);
         visitor.visit(root);
     }
 
@@ -135,7 +140,7 @@ public abstract class ApplicationLoader {
      */
     public void install(File root) {
         BundleInstaller callback = new BundleInstaller();
-        BundleVisitor visitor = new BundleVisitor(callback, patterns);
+        BundleWalker visitor = new BundleWalker(callback, patterns);
         visitor.visit(root);
     }
 
@@ -149,7 +154,7 @@ public abstract class ApplicationLoader {
      */
     public void scan(File root, List<BundleFile> bundles, List<BundleFile> ljars) {
         BundleFileScanner callback = new BundleFileScanner(bundles, ljars);
-        BundleVisitor visitor = new BundleVisitor(callback, patterns);
+        BundleWalker visitor = new BundleWalker(callback, patterns);
         visitor.visit(root);
     }
 
@@ -246,7 +251,7 @@ public abstract class ApplicationLoader {
     }
 
 
-    public abstract class DefaultCallback implements BundleVisitor.Callback {
+    public abstract class DefaultCallback implements BundleWalker.Callback {
 
         public void visitBundle(BundleFile bundleFile) throws IOException {
             visitNestedBundles(bundleFile);

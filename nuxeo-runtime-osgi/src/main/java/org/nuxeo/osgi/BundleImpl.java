@@ -25,7 +25,6 @@ import java.net.URL;
 import java.util.Dictionary;
 import java.util.Enumeration;
 
-import org.nuxeo.runtime.launcher.BundleFile;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -314,4 +313,10 @@ public class BundleImpl implements Bundle {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return symbolicName;
+    }
+
 }

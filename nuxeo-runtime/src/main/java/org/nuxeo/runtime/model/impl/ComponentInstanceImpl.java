@@ -229,4 +229,12 @@ public class ComponentInstanceImpl implements ComponentInstance {
         return ri.getProvidedServiceNames();
     }
 
+    @Override
+    public String toString() {
+        if (ri == null) {
+            return super.toString();
+        }
+        return ri.toString();
+    }
+
 }

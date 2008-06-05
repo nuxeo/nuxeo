@@ -8,9 +8,9 @@
   </parent>
 
   <groupId>org.nuxeo.runtime</groupId>
-  <artifactId>nuxeo-server-configuration</artifactId>
+  <artifactId>nuxeo-runtime-server</artifactId>
   <version>1.5-SNAPSHOT</version>
-  <name>Nuxeo Server Configuration</name>
+  <name>Nuxeo Server</name>
   <description>
   This module is defining all nuxeo server configuration objects. 
   Needed to define API used by server adapters (like jetty or gf3) to contribute extensions
