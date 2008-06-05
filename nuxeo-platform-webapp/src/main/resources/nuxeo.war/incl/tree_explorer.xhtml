@@ -7,7 +7,7 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   class="menu">
-  
+
 <c:if test="#{treeManager.treeModel != null}">
 
   <a4j:region renderRegionOnly="true">
@@ -31,6 +31,7 @@
         <t:graphicImage value="/img/toggle_plus.png"
           rendered="#{!t.nodeExpanded}" />
       </a4j:commandLink>
+      <span class="popupTarget" docRef="#{node.doc.ref}">
       <nxd:restDocumentLink document="#{node.doc}"
         actionListener="#{t.setNodeSelected}"
         rendered="#{node.doc.folder}" styleClass="treeLink">
@@ -54,11 +55,17 @@
           styleClass="iconImage" rendered="#{!node.doc.folder}" />
         <h:outputText value="#{nxd:titleOrId(node.doc)}" />
       </nxd:restDocumentLink>
+      </span>
     </div>
   </h:panelGroup>
 </f:facet>
 
             </nxu:lazyTree>
+			<script>
+			  if (window.loaded) {
+			    jQuery("table td div span.popupTarget").contextMenu("popupMenu");
+			  }
+			</script>
           </h:panelGroup>
         </h:form>
       </dd>
@@ -67,5 +74,16 @@
   </a4j:region>
 
 </c:if>
+
+<ui:include src="/incl/popupMenu.xhtml"/>
+<script>
+  if (window.addEventListener) {
+    window.addEventListener("load", function (e) {window.loaded = true}, true);
+  } else if (window.attachEvent) {
+	window.attachEvent("onload", function (e) {window.loaded = true});
+  }
+
+  setupContextMenu("table td div span.popupTarget");
+</script>
 
 </div>

@@ -447,6 +447,11 @@
       enabled="true" label="command.rename" icon="/icons/txt.png">
       <category>POPUP</category>
       <filter-id>edit</filter-id>
+      <filter id="canRenamePopup">
+        <rule grant="true">
+          <condition>#{popupHelper.isCurrentContainerDirectParent}</condition>
+        </rule>
+      </filter>
     </action>
 
     <action id="POPUP_DEL" link="javascript:doDelete"
