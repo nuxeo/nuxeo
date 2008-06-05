@@ -562,7 +562,13 @@ public class SQLSession implements Session, EntrySource {
         try {
             Field field = schemaFieldMap.get(fieldName);
             String typeName = field.getType().getName();
-            String columnName = table.getColumn(fieldName).getName();
+            Column column = table.getColumn(fieldName);
+            if (column == null) {
+                throw new DirectoryException(String.format(
+                        "Column '%s' does not exist in table '%s'", fieldName,
+                        table.getName()));
+            }
+            String columnName = column.getName();
             if ("string".equals(typeName)) {
                 return rs.getString(columnName);
             } else if ("integer".equals(typeName) || "long".equals(typeName)) {

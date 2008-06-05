@@ -54,7 +54,9 @@ public class QueryModel implements Serializable {
 
     protected transient QueryModelDescriptor descriptor;
 
-    private String descriptorName;
+    protected String descriptorName;
+
+    protected Integer max;
 
     protected final DocumentModel documentModel;
 
@@ -71,6 +73,7 @@ public class QueryModel implements Serializable {
         this.descriptor = descriptor;
         if (descriptor != null) {
             descriptorName = descriptor.getName();
+            max = descriptor.getMax();
         }
 
         this.documentModel = documentModel;
@@ -147,7 +150,6 @@ public class QueryModel implements Serializable {
             log.warn("Cannot find Search Service");
             return null;
         }
-        Integer max = descriptor.getMax();
 
         if (sortInfo == null) {
             sortInfo = descriptor.getDefaultSortInfo(documentModel);
@@ -160,16 +162,13 @@ public class QueryModel implements Serializable {
             query = descriptor.getQuery(params, sortInfo);
         }
 
-        if (max == null) {
-            max = Integer.MAX_VALUE;
-        }
         try {
             if (log.isDebugEnabled()) {
                 log.debug("execute query: " + query.replace('\n', ' '));
             }
             ResultSet resultSet = searchService.searchQuery(
                     new ComposedNXQueryImpl(SQLQueryParser.parse(query),
-                            principal), 0, max);
+                            principal), 0, getMaxForSearch());
             return new SearchPageProvider(resultSet, isSortable(), sortInfo,
                     query);
         } catch (Exception e) {
@@ -184,7 +183,7 @@ public class QueryModel implements Serializable {
                 log.debug("re-execute query without sort: " + query);
                 ResultSet resultSet = searchService.searchQuery(
                         new ComposedNXQueryImpl(SQLQueryParser.parse(query),
-                                principal), 0, max);
+                                principal), 0, getMaxForSearch());
                 return new SearchPageProvider(resultSet, isSortable(), null,
                         query);
             } catch (SearchException e2) {
@@ -239,12 +238,28 @@ public class QueryModel implements Serializable {
         return getDescriptor().isSortable();
     }
 
-    public void reset() {
+    public void reset() throws ClientException {
         for (String schemaName : defaultValues.keySet()) {
             Map<String, Object> defaultData = new HashMap<String, Object>(
                     defaultValues.get(schemaName));
             documentModel.setProperties(schemaName, defaultData);
         }
+    }
+
+    protected int getMaxForSearch() {
+        // dummy method that makes resolution Integer -> int
+        if (max == null) {
+            max = Integer.MAX_VALUE -1;
+        }
+        return max;
+    }
+
+    public Integer getMax() {
+        return max;
+    }
+
+    public void setMax(Integer max) {
+        this.max = max;
     }
 
 }

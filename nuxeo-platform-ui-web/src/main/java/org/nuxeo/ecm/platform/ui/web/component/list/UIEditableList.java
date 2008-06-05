@@ -49,6 +49,7 @@ import org.nuxeo.ecm.platform.ui.web.model.EditableModel;
 import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelImpl;
 import org.nuxeo.ecm.platform.ui.web.model.impl.EditableModelRowEvent;
 import org.nuxeo.ecm.platform.ui.web.model.impl.ProtectedEditableModelImpl;
+import org.nuxeo.ecm.platform.ui.web.resolver.FieldAdapterManager;
 
 import com.sun.facelets.tag.jsf.ComponentSupport;
 
@@ -173,6 +174,7 @@ public class UIEditableList extends UIInput implements NamingContainer {
         if (value instanceof ListProperty) {
             try {
                 value = ((ListProperty) value).getValue();
+                value = FieldAdapterManager.getValueForDisplay(value);
             } catch (PropertyException e) {
             }
         }

@@ -133,6 +133,12 @@
       org.nuxeo.ecm.platform.ui.web.tag.handler.MethodResultTagHandler
     </handler-class>
   </tag>
+  <tag>
+    <tag-name>repeat</tag-name>
+    <handler-class>
+      org.nuxeo.ecm.platform.ui.web.tag.handler.RepeatTagHandler
+    </handler-class>
+  </tag>
   <!-- selectItems easy utility -->
   <tag>
     <tag-name>selectItems</tag-name>
