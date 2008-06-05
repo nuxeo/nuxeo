@@ -149,12 +149,7 @@ public class VersioningMessageListener implements MessageListener {
             log.error("Cannot set versioning policy: " + e.getMessage(), e);
             // TODO maybe throw exception
         } finally {
-            try {
-                CoreInstance.getInstance().close(coreSession);
-            } catch (ClientException e) {
-                log.error("error closing managed core session: "
-                        + e.getMessage(), e);
-            }
+            CoreInstance.getInstance().close(coreSession);
             loginContext.logout();
         }
     }

@@ -89,7 +89,6 @@ public abstract class DirectoryAwareComponent extends UIInput {
         } else {
             return defaultValue;
         }
-
     }
 
     protected Boolean getBooleanValue(String name, boolean defaultValue) {

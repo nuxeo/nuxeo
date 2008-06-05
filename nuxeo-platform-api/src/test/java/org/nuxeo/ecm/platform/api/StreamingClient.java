@@ -59,12 +59,11 @@ public class StreamingClient extends NXRuntimeApplication {
 
     @Override
     protected void run() throws Exception {
-        Platform platform;
         SystemSession ss = new SystemSession();
         ss.login();
 
         // upload a big blob
-        platform = ECM.getPlatform();
+        Platform platform = ECM.getPlatform();
         Repository repository = platform.getDefaultRepository();
         System.out.println("Connecting to: " + repository.getName());
         CoreSession session = repository.open();
