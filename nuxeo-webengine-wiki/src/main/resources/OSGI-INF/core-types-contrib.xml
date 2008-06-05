@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <component name="org.nuxeo.webengine.core.types" version="1.0">
-
+  <require>org.nuxeo.ecm.core.schema.TypeService</require>
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
 
   <documentation>
     Content type definition for Blog and Wiki.

@@ -83,7 +83,7 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
         }
         root = root.getCanonicalFile();
         log.info("Using web root: "+root);
-        if (!root.exists()) {
+        if (!new File(root, "default").exists()) {
             try {
                 root.mkdirs();
                 // runtime predeployment is not supporting conditional unziping so we do the predeployment here:

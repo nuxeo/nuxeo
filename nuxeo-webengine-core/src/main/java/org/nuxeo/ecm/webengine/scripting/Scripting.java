@@ -34,6 +34,7 @@ import javax.script.Compilable;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 import javax.script.SimpleScriptContext;
@@ -42,8 +43,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.WebContext;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.scripting.ScriptingService;
 import org.python.core.PyDictionary;
 import org.python.core.PyList;
 import org.python.core.PyObject;
@@ -59,13 +58,10 @@ public class Scripting {
 
     private final ConcurrentMap<File, Entry> cache = new ConcurrentHashMap<File, Entry>();
 
-    final ScriptingService  scriptService;
+    protected ScriptEngineManager scriptMgr = new ScriptEngineManager();
+
 
     public Scripting() {
-        scriptService = Framework.getLocalService(ScriptingService.class);
-        if (scriptService == null) {
-            throw new RuntimeException("Scripting is not enabled: Put nuxeo-runtime-scripting in the classpath");
-        }
     }
 
 
@@ -100,7 +96,7 @@ public class Scripting {
         }
         String ext = script.getExtension();
         // check for a script engine
-        ScriptEngine engine = scriptService.getScriptEngineManager().getEngineByExtension(ext);
+        ScriptEngine engine = scriptMgr.getEngineByExtension(ext);
         if (engine != null) {
             ScriptContext ctx = new SimpleScriptContext();
             ctx.setBindings(args, ScriptContext.ENGINE_SCOPE);

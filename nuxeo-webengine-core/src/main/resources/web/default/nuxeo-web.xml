@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.webengine.config">
 
+  
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)
     Default Objects
@@ -10,15 +11,15 @@
     point="application">
     <webapp id="nuxeo-web">
       <errorPage>error.groovy</errorPage>
-      <!--resolver>
-        <roots>
+      <resolver>
+        <!--roots>
           <root>default-domain/workspaces/ws</root>
-        </roots>
+        </roots-->
         <mappings>
-          <mapping id="wiki">default-domain/workspaces/ws/wiki</mapping>
+          <mapping id="admin">default-domain</mapping>
         </mappings>
-        <query>Select * from Document where ecm:name='%s'</query>
-      </resolver-->
+        <!--query>Select * from Document where ecm:name='%s'</query-->
+      </resolver>
       <roots>
         <root priority="0">default</root>
       </roots>

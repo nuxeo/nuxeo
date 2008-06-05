@@ -10,7 +10,6 @@
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
              point="application">
     <webapp id="nuxeo-wiki" extends="nuxeo-web">
-      <defaultPage>default.groovy</defaultPage>
       <roots>
         <root priority="1">wiki</root>
       </roots>
