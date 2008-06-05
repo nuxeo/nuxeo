@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/dateArray"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/dateArray">
+
+  <xs:element name="dates" type="nxs:dateArray" />
+  <xs:simpleType name="dateArray">
+    <xs:list itemType="xs:date" />
+  </xs:simpleType>
+
+</xs:schema>
+
+
