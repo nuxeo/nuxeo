@@ -120,10 +120,11 @@ status() {
 }
 
 start() {
-    if ! status check_dead warn; then
+    status check_dead warn
+    if [ $? ] ; then
         return 0 # success
     fi
-    echo -n "Starting JBoss... "
+    echo "Starting JBoss... \c"
     echo "(pressing Ctrl+C will interrupt starting process)"
     if [ -z "$SU" ]; then
         eval "$CMD_START" >>${LOG} 2>&1 &
@@ -132,7 +133,7 @@ start() {
     fi
     sleep 2
     extract_pid || exit 1
-    echo -n "[$JBOSS_PID]: "
+    echo "[$JBOSS_PID]: \c"
     waiting_loops=`expr $START_WAITING_TIME / 1`
     count=0
     while [ $count -le $waiting_loops ]; do
@@ -141,10 +142,10 @@ start() {
         tail -n1 $LOGF |grep "Started in" >/dev/null
         if [ $? = 0 ]; then
             echo "Server started."
-            egrep 'Nuxeo ECM Started|Nuxeo EP Started' -B1 -A5 $LOGF|tail -n7
+            ggrep 'Nuxeo ECM Started|Nuxeo EP Started' -B1 -A5 $LOGF|tail -n7
             return 0
         fi
-        echo -n "."
+        echo ".\c"
         count=`expr $count + 1`
         sleep 1 || return 1 # Ctrl-C
     done
@@ -153,7 +154,8 @@ start() {
 }
 
 startd() {
-    if ! status check_dead warn; then
+    status check_dead warn
+    if [ $? ] ; then
         return 0 # success
     fi
     echo "Setup debug configuration"
@@ -166,7 +168,7 @@ stop() {
     if ! status check_alive warn; then
         return 0 # success
     fi
-    echo -n "Stopping JBoss... "
+    echo "Stopping JBoss... \c"
     echo "(using jnp://$JNPHOST:$JNPPORT)"
     echo -n "[$JBOSS_PID]"
     if [ -z "$SU" ]; then
@@ -179,11 +181,11 @@ stop() {
         if status check_dead nowarn; then
             break;
         fi
-        echo -n "."
+        echo ".\c"
     done
     if status check_alive nowarn; then
         #kill it
-        echo -n " SIGKILL"
+        echo " SIGKILL\c"
         cmd="kill -9 $JBOSS_PID"
         if [ -z "$SU" ]; then
             eval $cmd
