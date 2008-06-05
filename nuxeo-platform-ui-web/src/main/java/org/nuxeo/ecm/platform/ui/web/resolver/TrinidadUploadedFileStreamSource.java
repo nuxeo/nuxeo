@@ -22,7 +22,7 @@ package org.nuxeo.ecm.platform.ui.web.resolver;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.myfaces.trinidad.model.UploadedFile;
+import org.nuxeo.ecm.platform.ui.web.file.UploadedFile;
 import org.nuxeo.runtime.services.streaming.AbstractStreamSource;
 
 /**

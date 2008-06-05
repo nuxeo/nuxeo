@@ -2,7 +2,6 @@
 
 <fragment>
 
-
   <extension target="application#MODULE">
 
     <module>
@@ -160,27 +159,6 @@
   <extension target="web#FILTER">
 
     <filter>
-      <filter-name>Trinidad</filter-name>
-      <filter-class>
-        org.apache.myfaces.trinidad.webapp.TrinidadFilter
-      </filter-class>
-    </filter>
-
-    <filter-mapping>
-      <filter-name>Trinidad</filter-name>
-      <url-pattern>*.seam</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
-
-    <filter-mapping>
-      <filter-name>Trinidad</filter-name>
-      <url-pattern>*.faces</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
-
-    <filter>
       <filter-name>Seam Filter</filter-name>
       <filter-class>org.jboss.seam.web.SeamFilter</filter-class>
     </filter>
@@ -311,19 +289,6 @@
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
 
-    <!-- Trinidad filter config for file upload -->
-    <context-param>
-      <!-- Maximum memory per request (in bytes) -->
-      <param-name>org.apache.myfaces.trinidad.UPLOAD_MAX_MEMORY</param-name>
-      <!-- Use 500K -->
-      <param-value>512000</param-value>
-    </context-param>
-    <context-param>
-      <!-- Maximum disk space per request (in bytes) -->
-      <param-name>org.apache.myfaces.trinidad.UPLOAD_MAX_DISK_SPACE</param-name>
-      <!-- Use 20,000K -->
-      <param-value>20480000</param-value>
-    </context-param>
   </extension>
 
   <!-- AT: mixing servlets and mappings for clarity, does not change
@@ -368,20 +333,6 @@
       <url-pattern>/seam/resource/*</url-pattern>
     </servlet-mapping>
 
-    <!-- Trinidad servlet -->
-    <servlet>
-      <servlet-name>Trinidad Resources</servlet-name>
-      <servlet-class>
-        org.apache.myfaces.trinidad.webapp.ResourceServlet
-      </servlet-class>
-    </servlet>
-
-    <!-- This cannot be configured currently -->
-    <servlet-mapping>
-      <servlet-name>Trinidad Resources</servlet-name>
-      <url-pattern>/adf/*</url-pattern>
-    </servlet-mapping>
-
     <!-- restlet API mapping -->
     <servlet>
       <servlet-name>Nuxeo Restlet Servlet</servlet-name>
@@ -394,7 +345,6 @@
       <servlet-name>Nuxeo Restlet Servlet</servlet-name>
       <url-pattern>/restAPI/*</url-pattern>
     </servlet-mapping>
-
 
   </extension>
 
@@ -415,9 +365,8 @@
     <context-param>
       <param-name>facelets.LIBRARIES</param-name>
       <param-value>
-        /WEB-INF/tomahawk.taglib.xml; /WEB-INF/nxdirectory.taglib.xml;
-        /WEB-INF/nxweb-html.taglib.xml; /WEB-INF/nxweb-util.taglib.xml;
-        /WEB-INF/nxweb-document.taglib.xml;
+        /WEB-INF/nxdirectory.taglib.xml; /WEB-INF/nxweb-html.taglib.xml;
+        /WEB-INF/nxweb-util.taglib.xml; /WEB-INF/nxweb-document.taglib.xml;
       </param-value>
     </context-param>
 
@@ -442,69 +391,6 @@
       <param-name>facelets.REFRESH_PERIOD</param-name>
       <param-value>-1</param-value>
     </context-param>
-
-    <!--  Seam and Ajax4JSF  integration-->
-    <!--
-      <context-param>
-      <param-name>org.ajax4jsf.VIEW_HANDLERS</param-name>
-      <param-value>
-      org.jboss.seam.ui.facelet.SeamFaceletViewHandler
-      </param-value>
-      </context-param>
-    -->
-
-    <!--  Trinidad conf replacing the above ajax4jsf.VIEW_HANDLERS conf,
-      see http://wiki.apache.org/myfaces/TrinidadSeamAjax4Jsf -->
-    <context-param>
-      <param-name>
-        org.apache.myfaces.trinidad.ALTERNATE_VIEW_HANDLER
-      </param-name>
-      <param-value>
-        org.nuxeo.theme.jsf.facelets.NXThemesFaceletViewHandler
-      </param-value>
-    </context-param>
-
-    <!-- Configure Ajax4Jsf Filter-->
-    <context-param>
-      <param-name>org.ajax4jsf.Filter</param-name>
-      <param-value>org.ajax4jsf.FastFilter</param-value>
-    </context-param>
-
-    <!-- MyFaces Tomahawk conf -->
-    <context-param>
-      <param-name>org.apache.myfaces.ALLOW_JAVASCRIPT</param-name>
-      <param-value>true</param-value>
-    </context-param>
-
-    <!-- MyFaces RedirectTracker default conf -->
-    <context-param>
-      <param-name>org.apache.myfaces.redirectTracker.POLICY</param-name>
-      <param-value>
-        org.apache.myfaces.custom.redirectTracker.policy.NoopRedirectTrackPolicy
-      </param-value>
-    </context-param>
-    <context-param>
-      <param-name>org.apache.myfaces.redirectTracker.MAX_REDIRECTS</param-name>
-      <param-value>20</param-value>
-    </context-param>
-
-    <!-- IceFaces configuration -->
-    <!--
-      <context-param>
-      <param-name>org.ajax4jsf.VIEW_HANDLERS</param-name>
-      <param-value>com.icesoft.faces.facelets.D2DSeamFaceletViewHandler</param-value>
-      </context-param>
-      
-      <context-param>
-      <param-name>com.icesoft.faces.doJSFStateManagement</param-name>
-      <param-value>true</param-value>
-      </context-param>
-      
-      <context-param>
-      <param-name>com.icesoft.faces.actionURLSuffix</param-name>
-      <param-value>.faces</param-value>
-      </context-param>
-    -->
 
     <context-param>
       <param-name>com.sun.faces.responseBufferSize</param-name>
@@ -540,19 +426,6 @@
     <!-- This line should not strictly speaking be necessary, but it works
       around a minor bug in the RI.) -->
     <el-resolver>org.jboss.seam.el.SeamELResolver</el-resolver>
-
-    <!-- disabled, problem for trinidad integration -->
-    <!--
-      <view-handler>
-      org.jboss.seam.ui.facelet.SeamFaceletViewHandler
-      </view-handler>
-    -->
-
-    <!-- view-handler>com.sun.facelets.FaceletViewHandler</view-handler-->
-
-    <default-render-kit-id>
-      org.apache.myfaces.trinidad.core
-    </default-render-kit-id>
 
   </extension>
 
