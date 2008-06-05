@@ -88,7 +88,7 @@ public final class FieldAdapterManager {
         } else if (value instanceof List) {
             List list = (List) value;
             for (int i = 0; i < list.size(); i++) {
-                list.set(i, getValueForDisplay(list.get(i)));
+                list.set(i, getValueForStorage(list.get(i)));
             }
         } else if (value instanceof Map) {
             Map<Object, Object> map = (Map) value;
@@ -127,7 +127,7 @@ public final class FieldAdapterManager {
         } else if (value instanceof Object[]) {
             Object[] array = (Object[]) value;
             Class<?> oldType = array.getClass().getComponentType();
-            Class<?> newType = getComponentTypeForStorage(oldType);
+            Class<?> newType = getComponentTypeForDisplay(oldType);
             Object[] newArray = (Object[]) Array.newInstance(newType,
                     array.length);
             for (int i = 0; i < array.length; i++) {
@@ -177,7 +177,8 @@ public final class FieldAdapterManager {
     }
 
     private static Blob getTrinidadFileAsBlob(UploadedFile upFile) {
-        Blob blob = new StreamingBlob(new TrinidadUploadedFileStreamSource(upFile));
+        Blob blob = new StreamingBlob(new TrinidadUploadedFileStreamSource(
+                upFile));
         try {
             MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
             String mimeType = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
@@ -196,7 +197,8 @@ public final class FieldAdapterManager {
 
     private static Blob getTomahawkFileAsBlob(
             org.apache.myfaces.custom.fileupload.UploadedFile upFile) {
-        Blob blob = new StreamingBlob(new MyfacesUploadedFileStreamSource(upFile));
+        Blob blob = new StreamingBlob(new MyfacesUploadedFileStreamSource(
+                upFile));
         try {
             MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
             String mimeType = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
