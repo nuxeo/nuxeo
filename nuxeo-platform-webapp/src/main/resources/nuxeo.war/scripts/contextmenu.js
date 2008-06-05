@@ -237,5 +237,9 @@ function hideMenu()
 
 function setupContextMenu(target)
 {
-  window.onload=function (e) {jQuery(target).contextMenu("popupMenu")}
+  if (window.addEventListener) {
+    window.addEventListener("load", function (e) {jQuery(target).contextMenu("popupMenu")}, true);
+  } else if (window.attachEvent) {
+	window.attachEvent("onload", function (e) {jQuery(target).contextMenu("popupMenu")});
+  }
 }
