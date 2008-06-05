@@ -1,3 +1,0 @@
-traverse method should use the requesthandler to resolve objects to documents.
-This way we can easly plug a custom mechanism to change the object resolval and get rid of
-the DocumentResolver class
