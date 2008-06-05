@@ -62,7 +62,6 @@ public class JettyComponent extends DefaultComponent {
     }
     @Override
     public void activate(ComponentContext context) throws Exception {
-        server = new Server(8081);
         // apply bundled configuration
         URL cfg = null;
 
@@ -84,7 +83,18 @@ public class JettyComponent extends DefaultComponent {
         }
         if (cfg != null) {
             XmlConfiguration configuration = new XmlConfiguration(cfg);
-            configuration.configure(server);
+            server = (Server)configuration.configure();
+        } else {
+            int p = 8080;
+            String port = Environment.getDefault().getProperty("http_port");
+            if (port != null) {
+                try {
+                p = Integer.parseInt(port);
+                } catch (NumberFormatException e) {
+                    // do noting
+                }
+            }
+            server = new Server(p);
         }
         Handler[] handlers = server.getHandlers();
         if (handlers != null && handlers.length > 0 && handlers[0] instanceof ContextHandlerCollection) {
