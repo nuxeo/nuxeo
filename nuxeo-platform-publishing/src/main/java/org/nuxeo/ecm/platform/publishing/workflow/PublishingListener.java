@@ -44,6 +44,7 @@ import org.nuxeo.ecm.platform.events.api.JMSConstant;
 import org.nuxeo.ecm.platform.publishing.PublishingServiceImpl;
 import org.nuxeo.ecm.platform.publishing.api.PublishingService;
 import org.nuxeo.ecm.platform.workflow.api.client.delegate.WAPIBusinessDelegate;
+import org.nuxeo.ecm.platform.workflow.api.client.events.EventNames;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WAPI;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMActivityInstance;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMProcessDefinition;
@@ -55,28 +56,31 @@ import org.nuxeo.ecm.platform.workflow.document.api.ejb.delegate.WorkflowDocumen
 import org.nuxeo.ecm.platform.workflow.document.api.security.WorkflowDocumentSecurityManager;
 import org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicy;
 import org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicyManager;
-//import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.platform.workflow.api.client.events.EventNames;
+import org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicyManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Publishin' message listener.
- *
+ * Publishing message listener.
  * <p>
- * Listen for messages on the NXP topic to trigger publishing operations.
- * </p>
+ * Listens for messages on the NXP topic to trigger publishing operations.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 @MessageDriven(activationConfig = {
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "topic/NXPMessages"),
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
         @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
-        @ActivationConfigProperty(propertyName = "messageSelector",
-                propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " = '" + JMSConstant.DOCUMENT_MESSAGE +
-                "' AND " + JMSConstant.NUXEO_EVENT_ID + " = '" + EventNames.PROXY_PUSLISHING_PENDING + "'") })
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE
+                + " IN  ('"
+                + JMSConstant.DOCUMENT_MESSAGE
+                + "','"
+                + JMSConstant.EVENT_MESSAGE
+                + "') AND "
+                + JMSConstant.NUXEO_EVENT_ID
+                + " = '"
+                + EventNames.PROXY_PUSLISHING_PENDING + "'") })
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class PublishingListener implements MessageListener {
     private static final Log log = LogFactory.getLog(PublishingListener.class);
@@ -89,7 +93,7 @@ public class PublishingListener implements MessageListener {
 
     private PublishingService publishingService;
 
-    private PublishingService getPublishingService() throws Exception {
+    private PublishingService getPublishingService() {
         if (publishingService == null) {
             publishingService = (PublishingService) Framework.getRuntime().getComponent(
                     PublishingServiceImpl.NAME);
@@ -169,7 +173,8 @@ public class PublishingListener implements MessageListener {
         WMProcessInstance pi = activity.getProcessInstance();
         WorkflowDocumentSecurityManager workflowSecurityManager = getSecuManager(msg.getRepositoryName());
         WorkflowDocumentSecurityPolicyManager secuPolicyManager = getSecuPolicyManager();
-        WorkflowDocumentSecurityPolicy policy = secuPolicyManager.getWorkflowDocumentSecurityPolicyFor(activity.getProcessInstance().getName());
+        WorkflowDocumentSecurityPolicy policy = secuPolicyManager.getWorkflowDocumentSecurityPolicyFor(
+                activity.getProcessInstance().getName());
         if (policy != null) {
             List<UserEntry> userEntries = policy.getRules(pi.getId(), null);
             workflowSecurityManager.setRules(msg.getRef(), userEntries,
@@ -180,8 +185,8 @@ public class PublishingListener implements MessageListener {
     public void onMessage(Message message) {
 
         try {
-            Object obj = ((ObjectMessage)message).getObject();
-            if(!(obj instanceof DocumentMessage))
+            Object obj = ((ObjectMessage) message).getObject();
+            if (!(obj instanceof DocumentMessage))
                 return;
             DocumentMessage doc = (DocumentMessage) obj;
             moderate(doc);

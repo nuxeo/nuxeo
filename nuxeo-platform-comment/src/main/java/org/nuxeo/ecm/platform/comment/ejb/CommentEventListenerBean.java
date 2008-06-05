@@ -35,8 +35,6 @@ import org.jboss.annotation.security.SecurityDomain;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
@@ -65,9 +63,15 @@ import org.nuxeo.runtime.api.Framework;
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "topic/NXPMessages"),
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
         @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
-        @ActivationConfigProperty(propertyName = "messageSelector",
-            propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " = '" + JMSConstant.DOCUMENT_MESSAGE +
-            "' AND " + JMSConstant.NUXEO_EVENT_ID + " = '" + DocumentEventTypes.ABOUT_TO_REMOVE + "'") })
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE
+                + " IN ('"
+                + JMSConstant.DOCUMENT_MESSAGE
+                + "','"
+                + JMSConstant.EVENT_MESSAGE
+                + "') AND "
+                + JMSConstant.NUXEO_EVENT_ID
+                + " = '"
+                + DocumentEventTypes.ABOUT_TO_REMOVE + "'") })
 public class CommentEventListenerBean implements MessageListener {
 
     private static final Log log = LogFactory.getLog(CommentEventListenerBean.class);
@@ -113,8 +117,8 @@ public class CommentEventListenerBean implements MessageListener {
 
     public void onMessage(Message message) {
         try {
-            Object obj = ((ObjectMessage)message).getObject();
-            if(!(obj instanceof DocumentMessage))
+            Object obj = ((ObjectMessage) message).getObject();
+            if (!(obj instanceof DocumentMessage))
                 return;
             DocumentMessage doc = (DocumentMessage) obj;
             onDocumentRemoved(doc);

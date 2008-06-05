@@ -84,8 +84,12 @@ import org.nuxeo.runtime.api.Framework;
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "topic/NXPMessages"),
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
-        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") ,
-        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " = '" + JMSConstant.DOCUMENT_MESSAGE + "'") })
+        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE
+                + " IN ('"
+                + JMSConstant.DOCUMENT_MESSAGE
+                + "','"
+                + JMSConstant.EVENT_MESSAGE + "')") })
 public class NotificationMessageListener implements MessageListener {
 
     private static final Log log = LogFactory.getLog(NotificationMessageListener.class);
@@ -95,8 +99,8 @@ public class NotificationMessageListener implements MessageListener {
     public void onMessage(Message message) {
         log.debug("onMessage");
         try {
-            Object obj = ((ObjectMessage)message).getObject();
-            if(!(obj instanceof DocumentMessage))
+            Object obj = ((ObjectMessage) message).getObject();
+            if (!(obj instanceof DocumentMessage))
                 return;
             DocumentMessage doc = (DocumentMessage) obj;
 
@@ -130,7 +134,8 @@ public class NotificationMessageListener implements MessageListener {
                     String recipient = (String) info.get("recipients");
                     if (recipient == null || recipient.trim().length() <= 0) {
                         // nobody to send notification to
-                        log.warn("An autosubscribed notification ["+eventId+"] was requested but found no target adress");
+                        log.warn("An autosubscribed notification [" + eventId
+                                + "] was requested but found no target adress");
                         continue;
                     }
                     List<String> users = getUsersForMultiRecipients(recipient);
@@ -287,7 +292,7 @@ public class NotificationMessageListener implements MessageListener {
         eventInfo.put("dateTime", message.getEventDate());
         eventInfo.put("author", message.getPrincipalName());
 
-        if (! documentHasBeenDeleted(message)){
+        if (!documentHasBeenDeleted(message)) {
             DocumentLocation docLoc = new DocumentLocationImpl(
                     message.getRepositoryName(), message.getRef());
             DocumentView docView = new DocumentViewImpl(docLoc);
@@ -302,7 +307,7 @@ public class NotificationMessageListener implements MessageListener {
             try {
                 LoginContext lc = Framework.login();
                 eventInfo.put("docTitle", message.getTitle());
-//                eventInfo.put("document", message);
+                // eventInfo.put("document", message);
                 lc.logout();
             } catch (LoginException le) {
                 log.debug("Exception at reconnect !!! - no document data will be available in the template");
@@ -375,7 +380,7 @@ public class NotificationMessageListener implements MessageListener {
             mail.put("principalAuthor", author);
         }
 
-        mail.put("document", (DocumentModel)docMessage);
+        mail.put("document", docMessage);
         String subject = notif.getSubject() == null ? "Notification"
                 : notif.getSubject();
         subject = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix()

@@ -66,11 +66,19 @@ import org.nuxeo.runtime.api.Framework;
         @ActivationConfigProperty(propertyName = "destination", propertyValue = "topic/NXPMessages"),
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
         @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
-        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " = '" + JMSConstant.DOCUMENT_MESSAGE +
-                "' AND " + JMSConstant.NUXEO_EVENT_ID + " IN ('" +
-                WorkflowEventTypes.WORKFLOW_STARTED + "','" +
-                WorkflowEventTypes.WORKFLOW_ABANDONED + "','" +
-                WorkflowEventTypes.WORKFLOW_ENDED + "')") })
+        @ActivationConfigProperty(propertyName = "messageSelector", propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE
+                + " IN ('"
+                + JMSConstant.DOCUMENT_MESSAGE
+                + "','"
+                + JMSConstant.EVENT_MESSAGE
+                + "') AND "
+                + JMSConstant.NUXEO_EVENT_ID
+                + " IN ('"
+                + WorkflowEventTypes.WORKFLOW_STARTED
+                + "','"
+                + WorkflowEventTypes.WORKFLOW_ABANDONED
+                + "','"
+                + WorkflowEventTypes.WORKFLOW_ENDED + "')") })
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class VersioningMessageListener implements MessageListener {
 
@@ -79,8 +87,8 @@ public class VersioningMessageListener implements MessageListener {
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void onMessage(Message message) {
         try {
-            Object obj = ((ObjectMessage)message).getObject();
-            if(!(obj instanceof DocumentMessage))
+            Object obj = ((ObjectMessage) message).getObject();
+            if (!(obj instanceof DocumentMessage))
                 return;
             DocumentMessage doc = (DocumentMessage) obj;
 
@@ -124,8 +132,7 @@ public class VersioningMessageListener implements MessageListener {
                     doc.getTitle(), doc.getEventId()));
             return;
         }
-        String versioningPolicy = WFVersioningPolicyProvider.getVersioningPolicyFor(
-                doc.getRef());
+        String versioningPolicy = WFVersioningPolicyProvider.getVersioningPolicyFor(doc.getRef());
 
         log.debug("versioning policy: " + versioningPolicy);
 
@@ -149,12 +156,7 @@ public class VersioningMessageListener implements MessageListener {
             log.error("Cannot set versioning policy: " + e.getMessage(), e);
             // TODO maybe throw exception
         } finally {
-            try {
-                CoreInstance.getInstance().close(coreSession);
-            } catch (ClientException e) {
-                log.error("error closing managed core session: "
-                        + e.getMessage(), e);
-            }
+            CoreInstance.getInstance().close(coreSession);
             loginContext.logout();
         }
     }
