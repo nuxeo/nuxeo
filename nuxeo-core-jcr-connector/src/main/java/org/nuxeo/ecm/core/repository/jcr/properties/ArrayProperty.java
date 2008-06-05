@@ -214,9 +214,9 @@ class ArrayProperty extends JCRScalarProperty {
                 }
                 return ar;
             } else if (type == PropertyType.DATE) {
-                long[] ar = new long[values.length];
+                Calendar[] ar = new Calendar[values.length];
                 for (int i = 0; i < values.length; i++) {
-                    ar[i] = values[i].getLong();
+                    ar[i] = values[i].getDate();
                 }
                 return ar;
             } else if (type == PropertyType.BOOLEAN) {
