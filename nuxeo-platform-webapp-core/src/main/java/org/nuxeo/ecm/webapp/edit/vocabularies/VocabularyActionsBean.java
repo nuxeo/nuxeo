@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.io.Serializable;
 
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
@@ -117,7 +118,7 @@ public class VocabularyActionsBean implements VocabularyActions {
     protected transient FacesMessages facesMessages;
 
     @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
+    protected transient ResourcesAccessor resourcesAccessor;
 
     @Begin(join = true)
     @Create
@@ -168,7 +169,6 @@ public class VocabularyActionsBean implements VocabularyActions {
                 resourcesAccessor.getMessages().get(message));
         showAddEntryForm = false;
         return "view_vocabularies";
-
     }
 
     public String addVocabularyEntry() throws ClientException {
@@ -317,7 +317,9 @@ public class VocabularyActionsBean implements VocabularyActions {
         return "view_vocabularies";
     }
 
-    static class VocabularyComparator implements Comparator<String> {
+    private static class VocabularyComparator implements Comparator<String>, Serializable {
+
+        private static final long serialVersionUID = -3178630590907764894L;
 
         // use locale?
         static final Collator collator = Collator.getInstance();

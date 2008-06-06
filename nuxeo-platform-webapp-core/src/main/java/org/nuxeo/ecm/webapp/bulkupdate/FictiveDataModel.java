@@ -62,7 +62,7 @@ public class FictiveDataModel implements DataModel {
     public String getSchema() {
         // TODO Auto-generated method stub
         log.error("getSchema not implemented");
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new UnsupportedOperationException("not implemented");
     }
 
     public boolean isDirty() {
