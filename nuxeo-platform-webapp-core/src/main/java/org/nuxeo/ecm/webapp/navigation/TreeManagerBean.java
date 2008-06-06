@@ -79,11 +79,11 @@ public class TreeManagerBean extends InputController implements TreeManager,
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
-    private transient AbstractCacheListener cacheListener;
+    protected transient AbstractCacheListener cacheListener;
 
     // flag to know when it is necessary to expand the tree to the current
     // document before rendering the tree
-    private boolean isTreeSyncedWithCurrentDocument = false;
+    protected boolean isTreeSyncedWithCurrentDocument = false;
 
     public void initialize() throws ClientException {
         try {
