@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.ec.notification.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,11 +99,17 @@ public class NotificationRegistryImpl implements NotificationRegistry {
     public List<Notification> getNotificationsForSubscriptions(String parentType) {
         List<Notification> result = new ArrayList<Notification>();
         for (Notification notification : notificationList) {
-            if (!notification.getAutoSubscribed()
-                    && (notification.getAvailableIn() == null
-                            || "all".equals(notification.getAvailableIn())
-                    || parentType.equals(notification.getAvailableIn()))) {
+            if (notification.getAutoSubscribed()) {
+                continue;
+            }
+            String type = notification.getAvailableIn();
+            if (type == null || "all".equals(type) || "*".equals(type)) {
                 result.add(notification);
+            } else {
+                String[] types = type.replace(",", " ").split(" ");
+                if (Arrays.asList(types).contains(parentType)) {
+                    result.add(notification);
+                }
             }
         }
         return result;

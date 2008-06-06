@@ -19,6 +19,9 @@
 package org.nuxeo.ecm.platform.ec.notification;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
@@ -34,6 +37,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public class TestRegisterNotificationService extends NXRuntimeTestCase {
 
     NotificationService notificationService;
+
     NotificationRegistry notificationRegistry;
 
     @Override
@@ -49,18 +53,44 @@ public class TestRegisterNotificationService extends NXRuntimeTestCase {
         notificationRegistry = notificationService.getNotificationRegistry();
     }
 
-    public void testResgitration() {
-        List<Notification> notifsForVersion = notificationRegistry.getNotificationsForEvent(
-                "version_created");
-        List<Notification> notifsForWorkflowStarted = notificationRegistry.getNotificationsForEvent(
-                "workflowStarted");
+    public void testRegistration() {
+        List<Notification> notifsForVersion = notificationRegistry.getNotificationsForEvent("version_created");
+        List<Notification> notifsForWorkflowStarted = notificationRegistry.getNotificationsForEvent("workflowStarted");
 
         assertEquals(0, notifsForVersion.size());
+        assertEquals(1, notifsForWorkflowStarted.size());
     }
 
     public void testTemplateOverride() {
         URL newModifTemplate = notificationService.getTemplateURL("modif");
         assertTrue(newModifTemplate.getFile().endsWith("templates/modif_fr.ftl"));
+    }
+
+    protected List<String> sortedNotificationNames(List<Notification> notifs) {
+        List<String> names = new ArrayList<String>(notifs.size());
+        for (Notification notif : notifs) {
+            names.add(notif.getName());
+        }
+        Collections.sort(names);
+        return names;
+    }
+
+    public void testAvailableIn() {
+        List<Notification> notifs = notificationRegistry.getNotificationsForSubscriptions("section");
+        assertEquals(Arrays.asList("Ajout d'un commentaire",
+                "Publication de contenu", "Something important",
+                "Workflow Change"), sortedNotificationNames(notifs));
+
+        notifs = notificationRegistry.getNotificationsForSubscriptions("workspace");
+        assertEquals(Arrays.asList("Ajout d'un commentaire",
+                "Approbation review started",
+                "Cr\u00e9ation/modification de contenu", "Something important",
+                "Workflow Change"), sortedNotificationNames(notifs));
+
+        notifs = notificationRegistry.getNotificationsForSubscriptions("something");
+        assertEquals(
+                Arrays.asList("Ajout d'un commentaire", "Workflow Change"),
+                sortedNotificationNames(notifs));
     }
 
 }

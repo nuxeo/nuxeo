@@ -5,16 +5,42 @@
   <implementation
     class="org.nuxeo.ecm.platform.ec.notification.service.NotificationService" />
   <documentation>
-    This component provides a registry for notifications
-    <p>
-      By registring to it's extention point one can specify the possible
-      notifications a user can subscribe to.
-    </p>
+    This component provides a registry for notifications.
+
+    By registering with this extension point one can specify the possible
+    notifications to which a user can subscribe, or to which a user is
+    automatically subscribed.
   </documentation>
   <extension-point name="notifications">
     <documentation>
-      This extension point can be used to specify the notifications.
+      This extension point can be used to configure available notifications.
+      A given notification has the form:
+      <code>
+        <notification name="Publication" channel="email" availableIn="Section, Workspace"
+          autoSubscribed="false" template="publishContent">
+          <event name="sectionContentPublished"/>
+          <event name="myContentPublished"/>
+        </notification>       
+      </code>   
+      The <em>name</em> is the identifier for this notification.
 
+      The <em>channel</em> is always "email".
+
+      The <em>autoSubscribed</em> flag can be true if this notification is aways
+      taken into account, or false if you want to allow users to enable/disable
+      this notification by themselves.
+
+      The <em>template</em> refers to the body template, which can be configured
+      through the "templates" extension point.
+
+      The <em>availableIn</em> attribute specifies in which types of superspaces
+      the notification is active, it can be a comma-separated lists of types,
+      or "*" or "all" to make the notification active in any container.
+
+      To disable an existing notification:
+      <code>
+        <notification name="Publication" enabled="false" />
+      </code>      
     </documentation>
     <object
       class="org.nuxeo.ecm.platform.ec.notification.service.NotificationDescriptor" />
