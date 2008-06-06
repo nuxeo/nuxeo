@@ -110,7 +110,7 @@ public class VersioningManagerBean implements VersioningManager {
 
     @Deprecated
     public VersionIncEditOptions getVersionIncOptions(DocumentRef docRef,
-            CoreSession documentManager) throws VersioningException, DocumentException, ClientException {
+            CoreSession documentManager) throws VersioningException, ClientException {
 
         final String logPrefix = "<getVersionIncOptions> ";
 
