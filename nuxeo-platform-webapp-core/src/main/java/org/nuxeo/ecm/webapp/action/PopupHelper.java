@@ -227,8 +227,12 @@ public class PopupHelper implements Serializable {
     }
 
     public boolean getIsCurrentContainerDirectParent() throws ClientException {
-        DocumentModel parent = documentManager.getParentDocument(currentPopupDocument.getRef());
-        return currentContainer.equals(parent);
+        if (documentManager != null && currentContainer != null
+                && currentPopupDocument != null) {
+            DocumentModel parent = documentManager.getParentDocument(currentPopupDocument.getRef());
+            return currentContainer.equals(parent);
+        }
+        return false;
     }
 
 }
