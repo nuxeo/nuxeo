@@ -67,6 +67,7 @@
       <fieldMapping name="password">userPassword</fieldMapping>
       <fieldMapping name="email">mail</fieldMapping>
       <fieldMapping name="intField">employeeNumber</fieldMapping>
+      <fieldMapping name="company">o</fieldMapping>
       <!-- <fieldMapping name="dateField">mydate</fieldMapping> -->
 
       <references>
