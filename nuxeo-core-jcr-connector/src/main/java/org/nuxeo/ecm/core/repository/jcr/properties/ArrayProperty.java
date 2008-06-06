@@ -41,8 +41,8 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@SuppressWarnings({ "SuppressionAnnotation" })
-class ArrayProperty extends JCRScalarProperty {
+@SuppressWarnings( { "SuppressionAnnotation" })
+public class ArrayProperty extends JCRScalarProperty {
 
     ArrayProperty(JCRNodeProxy parent, Property property, Field field) {
         super(parent, property, field);
