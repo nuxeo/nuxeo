@@ -244,15 +244,17 @@ public class DeleteActionsBean extends InputController implements
         return false;
     }
 
-    public boolean getCanDeleteItem(DocumentModel container) throws ClientException
-    {
-    	if (documentManager.hasPermission(container.getRef(),
-                SecurityConstants.REMOVE_CHILDREN)) {
-            return true;
+    public boolean getCanDeleteItem(DocumentModel container)
+            throws ClientException {
+        if (documentManager != null && container != null) {
+            if (documentManager.hasPermission(container.getRef(),
+                    SecurityConstants.REMOVE_CHILDREN)) {
+                return true;
+            }
         }
-    	else
-    		return false;
+        return false;
     }
+
     public boolean getCanDelete() throws ClientException {
         List<DocumentModel> docsToDelete = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
 
@@ -521,7 +523,8 @@ public class DeleteActionsBean extends InputController implements
                     DELETE_TRANSITION)) {
                 document.followTransition(DELETE_TRANSITION);
             } else {
-                // FIXME: should be checked sooner so that no exception is thrown
+                // FIXME: should be checked sooner so that no exception is
+                // thrown
                 throw new ClientException("Impossible to move document="
                         + docModel.getPathAsString()
                         + " Life Cycle state " + DELETE_TRANSITION + " is not available");
