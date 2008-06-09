@@ -18,8 +18,16 @@
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-schema</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-search-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-transform-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -30,17 +38,16 @@
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
       <version>1.0.1B</version>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jnp-client</artifactId>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
+      <groupId>jboss</groupId>
+      <artifactId>jnp-client</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -51,6 +58,11 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jcr-connector-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-query</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

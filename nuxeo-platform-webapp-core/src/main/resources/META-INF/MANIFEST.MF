@@ -4,6 +4,7 @@ Bundle-Name: NuxeoWeb
 Bundle-SymbolicName: org.nuxeo.ecm.webapp.core
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
+Bundle-Category: web
 Nuxeo-Component: OSGI-INF/theme-contrib.xml,
   OSGI-INF/querymodel-contrib.xml,
   OSGI-INF/resultsprovider-framework.xml,

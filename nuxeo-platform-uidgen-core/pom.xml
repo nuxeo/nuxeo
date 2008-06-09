@@ -21,26 +21,31 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-schema</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>persistence</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

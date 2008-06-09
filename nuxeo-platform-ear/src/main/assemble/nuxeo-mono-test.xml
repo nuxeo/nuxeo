@@ -1,0 +1,17 @@
+<assembly>
+
+  <assemble>
+    <outputFile>/</outputFile>
+    <set>nuxeo</set>
+  </assemble>
+
+  <artifactSet id="nuxeo">
+    <import>**</import>
+    <includeDependencies>true</includeDependencies>
+    <includes>
+      <artifact category="core" />
+      <artifact category="search" />
+      <artifact category="web" />
+    </includes>
+  </artifactSet>
+</assembly>

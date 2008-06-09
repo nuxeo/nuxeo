@@ -18,6 +18,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-query</artifactId>
       <scope>test</scope>
@@ -25,11 +30,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-schema</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency><!-- For LocalSessionFactory -->
@@ -47,6 +47,11 @@
       <artifactId>nuxeo-core-jcr-connector-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency><!-- For integration tests -->
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-search-core</artifactId>
@@ -60,6 +65,11 @@
     <dependency><!-- For integration tests -->
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-search-core-listener</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-search-api</artifactId>
       <scope>test</scope>
     </dependency>
 

@@ -18,10 +18,6 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-workflow-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -30,7 +26,12 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-audit-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

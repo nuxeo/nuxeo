@@ -20,7 +20,19 @@
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-query</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-schema</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -45,7 +57,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-api</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -73,12 +84,15 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-filemanager-api</artifactId>
     </dependency>
-    <!--
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-url-core</artifactId>
+      <artifactId>nuxeo-platform-usermanager-api</artifactId>
     </dependency>
-     -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-search-api</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb</artifactId>
@@ -87,22 +101,18 @@
     <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>jsf-impl</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.sun.facelets</groupId>
       <artifactId>jsf-facelets</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.myfaces.trinidad</groupId>
@@ -120,12 +130,14 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.servlet.jsp</groupId>
       <artifactId>jsp-api</artifactId>
-      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jbosssx</artifactId>
     </dependency>
     <dependency>
       <groupId>dom4j</groupId>
@@ -135,7 +147,7 @@
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
