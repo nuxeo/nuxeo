@@ -20,11 +20,13 @@
 package org.nuxeo.ecm.core.api.impl.blob;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Serializable;
 import java.net.URL;
@@ -52,27 +54,28 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
 
     protected transient StreamSource src;
 
+    protected transient File persistedTmpFile;
 
     public StreamingBlob(StreamSource src) {
-        this (src, null, null);
+        this(src, null, null);
     }
 
     public StreamingBlob(StreamSource src, String mimeType) {
-        this (src, mimeType, null);
+        this(src, mimeType, null);
     }
 
     public StreamingBlob(StreamSource src, String mimeType, String encoding) {
-        this (src, mimeType, encoding, null, null);
+        this(src, mimeType, encoding, null, null);
     }
 
-    public StreamingBlob(StreamSource src, String mimeType, String encoding, String filename, String digest) {
+    public StreamingBlob(StreamSource src, String mimeType, String encoding,
+            String filename, String digest) {
         this.src = src;
         this.mimeType = mimeType;
         this.encoding = encoding;
         this.filename = filename;
         this.digest = digest;
     }
-
 
     public static StreamingBlob createFromStream(InputStream is) {
         return createFromStream(is, null);
@@ -90,7 +93,8 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
         return createFromByteArray(bytes, null);
     }
 
-    public static StreamingBlob createFromByteArray(byte[] bytes, String mimeType) {
+    public static StreamingBlob createFromByteArray(byte[] bytes,
+            String mimeType) {
         if (mimeType == null) {
             mimeType = "application/octet-stream";
         }
@@ -138,7 +142,6 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
         return src.getBytes();
     }
 
-
     public long getLength() {
         try {
             return src.getLength();
@@ -163,8 +166,45 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
         return src.canReopen();
     }
 
+    /**
+     * If the source is cannot be reopen, copy the binary content of the
+     * original source to a temporary file and replace the source inplace by a
+     * new FileSource instance pointing to the tmp file.
+     *
+     * return the current instance with a re-openable internal source
+     */
     public Blob persist() throws IOException {
-        return isPersistent() ? this : new FileBlob(getStream());
+        if (!isPersistent()) {
+            OutputStream out = null;
+            InputStream in = null;
+            try {
+                persistedTmpFile = File.createTempFile(
+                        "NXCore-persisted-StreamingBlob-", ".tmp");
+                persistedTmpFile.deleteOnExit();
+                in = src.getStream();
+                out = new FileOutputStream(persistedTmpFile);
+                copy(in, out);
+                src = new FileSource(persistedTmpFile);
+            } finally {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    // TODO: log the error here
+                }
+                if (out != null) {
+                    out.close();
+                }
+            }
+        }
+        return this;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        if (persistedTmpFile != null) {
+            persistedTmpFile.delete();
+        }
+        super.finalize();
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {
@@ -172,12 +212,14 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
         long len = src.getLength();
         StreamManager sm = Framework.getLocalService(StreamManager.class);
         if (sm == null || (len > -1 && len <= MEM_MAX_LIMIT)) {
-            // use in memory buffers for less than 1MB of data or if no streaming service is available
+            // use in memory buffers for less than 1MB of data or if no
+            // streaming service is available
             byte[] bytes = src.getBytes();
             out.writeInt(bytes.length);
             out.write(bytes);
         } else {
-            out.writeInt(-1); // marker how many bytes follows - if -1 => an URI follow
+            out.writeInt(-1); // marker how many bytes follows - if -1 => an
+            // URI follow
             String uri = sm.addStream(src);
             out.writeUTF(uri);
         }
@@ -190,10 +232,11 @@ public class StreamingBlob extends DefaultBlob implements Serializable {
         if (len == -1) {
             StreamManager sm = Framework.getLocalService(StreamManager.class);
             if (sm == null) {
-                throw new IOException("There is no streaming service registered");
+                throw new IOException(
+                        "There is no streaming service registered");
             }
             String uri = in.readUTF();
-            src =  sm.getStream(uri);
+            src = sm.getStream(uri);
         } else {
             byte[] bytes = new byte[len];
             in.readFully(bytes);

@@ -484,14 +484,28 @@ public class TestLocalAPI extends TestAPI {
 
             joeContributorSession.saveDocument(joeContributorDoc);
 
-            joeContributorSession.createDocument(new DocumentModelImpl(
-                    joeContributorDoc.getPathAsString(), "child", "File"));
+            DocumentRef childRef = joeContributorSession.createDocument(new DocumentModelImpl(
+                    joeContributorDoc.getPathAsString(), "child", "File")).getRef();
+            joeContributorSession.save();
 
+            // joe contributor can copy the newly created doc
+            joeContributorSession.copy(childRef, ref, "child_copy");
+
+            // joe contributor cannot move the doc
+            try {
+                joeContributorSession.move(childRef, ref, "child_move");
+                fail("should have raised a security exception");
+            } catch (DocumentSecurityException e) {
+            }
+
+            // joe contributor cannot remove the folder either
             try {
                 joeContributorSession.removeDocument(ref);
                 fail("should have raised a security exception");
             } catch (DocumentSecurityException e) {
             }
+
+
             joeContributorSession.save();
 
             // local manager can read, write, create and remove
@@ -500,8 +514,15 @@ public class TestLocalAPI extends TestAPI {
 
             joeLocalManagerSession.saveDocument(joeLocalManagerDoc);
 
-            joeLocalManagerSession.createDocument(new DocumentModelImpl(
-                    joeLocalManagerDoc.getPathAsString(), "child2", "File"));
+            childRef = joeLocalManagerSession.createDocument(new DocumentModelImpl(
+                    joeLocalManagerDoc.getPathAsString(), "child2", "File")).getRef();
+            joeLocalManagerSession.save();
+
+            // joe local manager can copy the newly created doc
+            joeLocalManagerSession.copy(childRef, ref, "child2_copy");
+
+            // joe local manager cannot move the doc
+            joeLocalManagerSession.move(childRef, ref, "child2_move");
 
             joeLocalManagerSession.removeDocument(ref);
             joeLocalManagerSession.save();

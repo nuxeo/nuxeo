@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.api.impl.blob;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,25 +31,31 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Random;
 
-import junit.framework.TestCase;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.runtime.services.streaming.ByteArraySource;
+import org.nuxeo.runtime.services.streaming.FileSource;
+import org.nuxeo.runtime.services.streaming.InputStreamSource;
+import org.nuxeo.runtime.services.streaming.StreamSource;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @author <a href="mailto:sf@nuxeo.com">Stefane Fermigier</a>
  */
-@SuppressWarnings({"IOResourceOpenedButNotSafelyClosed", "UnusedAssignment"})
-public class TestBlob extends TestCase {
+@SuppressWarnings( { "IOResourceOpenedButNotSafelyClosed", "UnusedAssignment" })
+public class TestBlob extends NXRuntimeTestCase {
 
     private URL url;
+
     private int length;
+
     private byte[] blobContent;
 
     @Override
     protected void setUp() throws Exception {
-        url = Thread.currentThread().getContextClassLoader().getResource("test.blob");
+        super.setUp();
+        url = Thread.currentThread().getContextClassLoader().getResource(
+                "test.blob");
         File file = new File(url.toURI());
         length = (int) file.length();
         blobContent = new byte[length];
@@ -57,8 +64,9 @@ public class TestBlob extends TestCase {
     }
 
     @Override
-    protected void tearDown() {
+    protected void tearDown() throws Exception {
         blobContent = null;
+        super.tearDown();
     }
 
     private static void checkSerialization(Blob blob) throws Exception {
@@ -67,12 +75,14 @@ public class TestBlob extends TestCase {
 
         File tmpFile = File.createTempFile("FileBlobtest-", ".tmp");
 
-        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(tmpFile));
+        ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(
+                tmpFile));
         out.writeObject(blob);
         out.close();
 
         ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
-        ObjectInputStream in = new ObjectInputStream(new FileInputStream(tmpFile));
+        ObjectInputStream in = new ObjectInputStream(new FileInputStream(
+                tmpFile));
         FileBlob blob2 = (FileBlob) in.readObject();
         blob2.transferTo(baos2);
         tmpFile.delete();
@@ -109,20 +119,76 @@ public class TestBlob extends TestCase {
     }
 
     public void testStreamingBlob() throws Exception {
-        Blob blob = new StreamingBlob(new ByteArraySource(blobContent));
+        Blob blob = StreamingBlob.createFromStream(new FileInputStream(
+                new File(url.toURI())));
 
-        assertNull(blob.getMimeType());
+        assertEquals("application/octet-stream", blob.getMimeType());
         assertNull(blob.getEncoding());
-        assertEquals(length, blob.getLength());
+        // unknown length without exhausting the source stream
+        assertEquals(-1, blob.getLength());
 
         assertFalse(blob.isPersistent());
 
         Blob blob2 = blob.persist();
+        // the internal structure of the StreamingBlob is updated to get
+        // persisted inplace
+        assertTrue(blob.isPersistent());
+        assertTrue(blob2.isPersistent());
+        assertEquals(length, blob.getLength());
+        assertEquals(length, blob2.getLength());
+
         String s1 = blob.getString();
         String s2 = blob2.getString();
         assertEquals(s1, s2);
         s1 = null;
         s2 = null;
+    }
+
+    public void testStreamingBlobSerialization() throws Exception {
+        Blob blob = new StreamingBlob(new ByteArraySource(blobContent));
+        ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+        ObjectOutputStream outStream = new ObjectOutputStream(byteOutStream);
+        outStream.writeObject(blob);
+        ByteArrayInputStream byteInStream = new ByteArrayInputStream(
+                byteOutStream.toByteArray());
+        ObjectInputStream inStream = new ObjectInputStream(byteInStream);
+        Blob blob2 = (Blob) inStream.readObject();
+        assertTrue(Arrays.equals(blob.getByteArray(), blob2.getByteArray()));
+    }
+
+    public void testStreamingBlobSerialization2() throws Exception {
+        Blob blob = StreamingBlob.createFromStream(new FileInputStream(
+                new File(url.toURI())));
+        ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+        ObjectOutputStream outStream = new ObjectOutputStream(byteOutStream);
+        outStream.writeObject(blob);
+        ByteArrayInputStream byteInStream = new ByteArrayInputStream(
+                byteOutStream.toByteArray());
+        ObjectInputStream inStream = new ObjectInputStream(byteInStream);
+        Blob blob2 = (Blob) inStream.readObject();
+        assertTrue(Arrays.equals(blobContent, blob2.getByteArray()));
+    }
+
+    public void testStreamingBlobSerializationAfterPersist() throws Exception {
+        StreamingBlob blob = StreamingBlob.createFromStream(new FileInputStream(
+                new File(url.toURI())));
+        assertTrue(blob.src instanceof InputStreamSource);
+        assertFalse(blob.isPersistent());
+        blob = (StreamingBlob) blob.persist();
+        assertTrue(blob.src instanceof FileSource);
+
+        ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+        ObjectOutputStream outStream = new ObjectOutputStream(byteOutStream);
+        outStream.writeObject(blob);
+        ByteArrayInputStream byteInStream = new ByteArrayInputStream(
+                byteOutStream.toByteArray());
+        ObjectInputStream inStream = new ObjectInputStream(byteInStream);
+        StreamingBlob blob2 = (StreamingBlob) inStream.readObject();
+        assertEquals(blob.getString(), blob2.getString());
+
+        // after StreamingBlob deserialization, the source of a StreamingBlob
+        // is either a StreamSource of a ByteArraySourcce
+        assertFalse(blob2.src instanceof FileSource);
     }
 
     public void testURLBlob() throws Exception {

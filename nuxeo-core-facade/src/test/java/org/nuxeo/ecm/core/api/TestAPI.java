@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.api;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -36,6 +37,8 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.adapter.AnnotatedDocument;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.DocumentModelTreeImpl;
+import org.nuxeo.ecm.core.api.impl.DocumentModelTreeNodeComparator;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
@@ -1808,6 +1811,57 @@ public abstract class TestAPI extends TestConnection {
         remote.cancel();
     }
 
+    public void testCopyProxyAsDocument() throws Exception {
+        // create a folder tree
+        DocumentModel root = getRootDocument();
+        DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(),
+                "folder1", "Folder");
+        DocumentModel folder2 = new DocumentModelImpl(root.getPathAsString(),
+                "folder2", "Folder");
+        DocumentModel folder3 = new DocumentModelImpl(root.getPathAsString(),
+                "folder3", "Folder");
+        DocumentModel file = new DocumentModelImpl(folder1.getPathAsString(),
+                "copyProxyAsDocument_test", "File");
+        folder1 = createChildDocument(folder1);
+        folder2 = createChildDocument(folder2);
+        folder3 = createChildDocument(folder3);
+        file = createChildDocument(file);
+        remote.save();
+
+        // create a file in folder 1
+        file.setProperty("dublincore", "title", "the title");
+        file = remote.saveDocument(file);
+
+        VersionModel version = new VersionModelImpl();
+        version.setCreated(Calendar.getInstance());
+        version.setLabel("v1");
+        remote.checkIn(file.getRef(), version);
+        remote.save();
+
+        // create a proxy in folder2
+        DocumentModel proxy = remote.createProxy(folder2.getRef(),
+                file.getRef(), version, true);
+        assertTrue(proxy.isProxy());
+
+        // copy proxy into folder3
+        DocumentModel copy1 = remote.copyProxyAsDocument(proxy.getRef(),
+                folder3.getRef(), null);
+        assertFalse(copy1.isProxy());
+        assertEquals(proxy.getName(), copy1.getName());
+        assertEquals(proxy.getProperty("dublincore", "title"),
+                copy1.getProperty("dublincore", "title"));
+
+        // copy proxy using another name
+        DocumentModel copy2 = remote.copyProxyAsDocument(proxy.getRef(),
+                folder3.getRef(), "foo");
+        assertFalse(copy2.isProxy());
+        assertEquals("foo", copy2.getName());
+        assertEquals(file.getProperty("dublincore", "title"),
+                copy2.getProperty("dublincore", "title"));
+
+        remote.cancel();
+    }
+
     public void testCopyVersionable() throws Exception {
         DocumentModel note = new DocumentModelImpl("/", "note", "Note");
         DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
@@ -2322,4 +2376,67 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("myfile", content);
     }
 
+    public void testDocumentModelTreeSort() throws Exception {
+        // create a folder tree
+        DocumentModel root = getRootDocument();
+        DocumentModel a_folder = new DocumentModelImpl(root.getPathAsString(),
+                "a_folder", "Folder");
+        a_folder.setProperty("dublincore", "title", "Z title for a_folder");
+        DocumentModel b_folder = new DocumentModelImpl(root.getPathAsString(),
+                "b_folder", "Folder");
+        b_folder.setProperty("dublincore", "title", "B title for b_folder");
+        DocumentModel c_folder = new DocumentModelImpl(root.getPathAsString(),
+                "c_folder", "Folder");
+        c_folder.setProperty("dublincore", "title", "C title for c_folder");
+
+        DocumentModel a1_folder = new DocumentModelImpl(a_folder.getPathAsString(),
+                "a1_folder", "Folder");
+        a1_folder.setProperty("dublincore", "title", "ZZ title for a1_folder");
+        DocumentModel a2_folder = new DocumentModelImpl(a_folder.getPathAsString(),
+                "a2_folder", "Folder");
+        a2_folder.setProperty("dublincore", "title", "AA title for a2_folder");
+
+        DocumentModel b1_folder = new DocumentModelImpl(b_folder.getPathAsString(),
+                "b1_folder", "Folder");
+        b1_folder.setProperty("dublincore", "title", "A title for b1_folder");
+        DocumentModel b2_folder = new DocumentModelImpl(b_folder.getPathAsString(),
+                "b2_folder", "Folder");
+        b2_folder.setProperty("dublincore", "title", "B title for b2_folder");
+
+        a_folder = createChildDocument(a_folder);
+        b_folder = createChildDocument(b_folder);
+        c_folder = createChildDocument(c_folder);
+        a1_folder = createChildDocument(a1_folder);
+        a2_folder = createChildDocument(a2_folder);
+        b1_folder = createChildDocument(b1_folder);
+        b2_folder = createChildDocument(b2_folder);
+
+
+        DocumentModelTreeImpl tree = new DocumentModelTreeImpl();
+        tree.add(a_folder, 1);
+        tree.add(a1_folder, 2);
+        tree.add(a2_folder, 2);
+        tree.add(b_folder, 1);
+        tree.add(b1_folder, 2);
+        tree.add(b2_folder, 2);
+        tree.add(c_folder, 1);
+
+        // sort using title
+        DocumentModelTreeNodeComparator comp = new DocumentModelTreeNodeComparator(
+                tree.getPathTitles());
+        Collections.sort((ArrayList)tree, comp);
+
+        assertEquals(b_folder, tree.get(0).getDocument());
+        assertEquals(b1_folder, tree.get(1).getDocument());
+        assertEquals(b2_folder, tree.get(2).getDocument());
+
+        assertEquals(c_folder, tree.get(3).getDocument());
+
+        assertEquals(a_folder, tree.get(4).getDocument());
+        assertEquals(a2_folder, tree.get(5).getDocument());
+        assertEquals(a1_folder, tree.get(6).getDocument());
+
+
+        remote.cancel();
+    }
 }
