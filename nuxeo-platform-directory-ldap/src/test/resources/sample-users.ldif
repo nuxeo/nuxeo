@@ -95,7 +95,8 @@ employeeNumber: 2
 preferredLanguage: FR
 telephoneNumber: 7160
 facsimileTelephoneNumber: 7160
-mail: ogrisel+user2@nuxeo.com
+# no mail to test missing ids
+#mail: ogrisel+user2@nuxeo.com
 o: DIR
 ou: MOS
 userPassword: {SSHA}LYE/IHy43vnqhuPzuXF+qoy1H307iishAHBMZA==

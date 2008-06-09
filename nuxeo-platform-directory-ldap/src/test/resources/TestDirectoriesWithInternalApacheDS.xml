@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 
+<!-- XXX if you change this conf, change the equivalent -override.xml  -->
+
 <component name="org.nuxeo.ecm.directory.ldap.storage">
   <implementation class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor" />
   <require>org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory</require>
@@ -62,6 +64,7 @@
       <fieldMapping name="firstName">givenName</fieldMapping>
       <fieldMapping name="lastName">sn</fieldMapping>
       <fieldMapping name="password">userPassword</fieldMapping>
+      <fieldMapping name="email">mail</fieldMapping>
       <fieldMapping name="company">o</fieldMapping>
 
       <!-- LDAP references do not work with the internal server  -->

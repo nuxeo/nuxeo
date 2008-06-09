@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 
+<!-- XXX if you change this conf, change the equivalent -override.xml  -->
+
 <component name="org.nuxeo.ecm.directory.ldap.storage">
   <implementation class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor" />
   <require>org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory</require>

@@ -286,7 +286,20 @@ public class LDAPDirectory extends AbstractDirectory {
     }
 
     public String getBaseFilter() {
-        return baseFilter;
+        // NXP-2461: always add control on id field in base filter
+        String idField = getIdField();
+        DirectoryFieldMapper fieldMapper = getFieldMapper();
+        String idAttribute = fieldMapper.getBackendField(idField);
+        String idFilter = String.format("(%s=*)", idAttribute);
+        if (baseFilter != null && !"".equals(baseFilter)) {
+            if (baseFilter.startsWith("(")) {
+                return String.format("(&%s%s)", baseFilter, idFilter);
+            } else {
+                return String.format("(&(%s)%s)", baseFilter, idFilter);
+            }
+        } else {
+            return idFilter;
+        }
     }
 
     public LDAPDirectoryDescriptor getConfig() {

@@ -440,8 +440,14 @@ public class LDAPReference extends AbstractReference {
                 Object value;
                 while (results.hasMore()) {
                     attributes = results.next().getAttributes();
-                    value = attributes.get(sourceSession.idAttribute).get();
-                    sourceIds.add(value.toString());
+                    // NXP-2461: check that id field is filled
+                    Attribute attr = attributes.get(sourceSession.idAttribute);
+                    if (attr != null) {
+                        value = attr.get();
+                        if (value != null) {
+                            sourceIds.add(value.toString());
+                        }
+                    }
                 }
             } catch (NamingException e) {
                 throw new DirectoryException(
@@ -615,7 +621,7 @@ public class LDAPReference extends AbstractReference {
                         continue;
                     }
                     // find the id of the referenced entry
-                    String id;
+                    String id = null;
 
                     if (targetSession.rdnMatchesIdField()) {
                         // optim: do not fetch the entry to get its true id but
@@ -634,7 +640,11 @@ public class LDAPReference extends AbstractReference {
                             log.error("could not find " + targetDn);
                             continue;
                         }
-                        id = entry.get(targetSession.idAttribute).get().toString();
+                        // NXP-2461: check that id field is filled
+                        Attribute attr = entry.get(targetSession.idAttribute);
+                        if (attr != null) {
+                            id = attr.get().toString();
+                        }
                     }
                     if (forceDnConsistencyCheck.booleanValue()) {
                         // check that the referenced entry is actually part of
@@ -648,7 +658,10 @@ public class LDAPReference extends AbstractReference {
                             continue;
                         }
                     }
-                    targetIds.add(id);
+                    // NXP-2461: check that id field is filled
+                    if (id != null) {
+                        targetIds.add(id);
+                    }
                 }
             }
             // step #2: fetched dynamically referenced ids
@@ -704,9 +717,16 @@ public class LDAPReference extends AbstractReference {
                         NamingEnumeration<SearchResult> results = targetSession.dirContext.search(
                                 linkDn, filter, scts);
                         while (results.hasMore()) {
-                            String collectedId = results.next().getAttributes().get(
-                                    targetSession.idAttribute).get().toString();
-                            targetIds.add(collectedId);
+                            // NXP-2461: check that id field is filled
+                            Attribute attr = results.next().getAttributes().get(
+                                    targetSession.idAttribute);
+                            if (attr != null) {
+                                String collectedId = attr.get().toString();
+                                if (collectedId != null) {
+                                    targetIds.add(collectedId);
+                                }
+                            }
+
                         }
                     }
                 }

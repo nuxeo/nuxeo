@@ -67,7 +67,6 @@ import org.nuxeo.ecm.directory.DirectoryFieldMapper;
 import org.nuxeo.ecm.directory.EntrySource;
 import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.ecm.directory.AbstractDirectory.EntryComparator;
 
 /**
  * This class represents a session against an LDAPDirectory.
@@ -653,10 +652,13 @@ public class LDAPSession implements Session, EntrySource {
             throws DirectoryException {
         DocumentModelList list = new DocumentModelListImpl();
         try {
+            DocumentModel entry;
             while (results.hasMore()) {
                 SearchResult result = results.next();
-                list.add(ldapResultToDocumentModel(result, null,
-                        fetchReferences));
+                entry = ldapResultToDocumentModel(result, null, fetchReferences);
+                if (entry != null) {
+                    list.add(entry);
+                }
             }
         } catch (NamingException e) {
             throw new DirectoryException("Could not create DocumentModelList",
@@ -676,11 +678,23 @@ public class LDAPSession implements Session, EntrySource {
 
         if (entryId == null) {
             try {
-                entryId = attributes.get(idAttribute).get().toString();
+                // NXP-2461: check that id field is filled
+                attribute = attributes.get(idAttribute);
+                if (attribute != null) {
+                    Object entry = attribute.get();
+                    if (entry != null) {
+                        entryId = entry.toString();
+                    }
+                }
             } catch (NamingException e) {
                 throw new DirectoryException("could not fetch " + idAttribute,
                         e);
             }
+        }
+
+        if (entryId == null) {
+            // don't bother
+            return null;
         }
 
         for (String fieldName : schemaFieldMap.keySet()) {

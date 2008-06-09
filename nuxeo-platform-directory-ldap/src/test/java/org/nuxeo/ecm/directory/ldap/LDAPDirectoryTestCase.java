@@ -58,6 +58,10 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
 
     public String INTERNAL_SERVER_SETUP = "TestDirectoriesWithInternalApacheDS.xml";
 
+    public String EXTERNAL_SERVER_SETUP_OVERRIDE = "TestDirectoriesWithExternalOpenLDAP-override.xml";
+
+    public String INTERNAL_SERVER_SETUP_OVERRIDE = "TestDirectoriesWithInternalApacheDS-override.xml";
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -74,9 +78,11 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.directory.ldap.tests",
                 "ldap-test-setup/LDAPDirectoryFactory.xml");
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            deployContrib("org.nuxeo.ecm.directory.ldap.tests", EXTERNAL_SERVER_SETUP);
+            deployContrib("org.nuxeo.ecm.directory.ldap.tests",
+                    EXTERNAL_SERVER_SETUP);
         } else {
-            deployContrib("org.nuxeo.ecm.directory.ldap.tests", INTERNAL_SERVER_SETUP);
+            deployContrib("org.nuxeo.ecm.directory.ldap.tests",
+                    INTERNAL_SERVER_SETUP);
             getLDAPDirectory("userDirectory").setTestServer(SERVER);
             getLDAPDirectory("groupDirectory").setTestServer(SERVER);
         }
