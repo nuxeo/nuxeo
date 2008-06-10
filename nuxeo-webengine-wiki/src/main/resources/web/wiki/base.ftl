@@ -17,7 +17,7 @@
 
 <div id="wrap">
     <div id="header">
-       <h1><a href="/nuxeo/site/${Root.document.name}">${Root.document.title}</a></h1>
+       <h1><a href="${basePath}/${Root.document.name}">${Root.document.title}</a></h1>
     </div>
     <div id="main-wrapper">
       <div id="main">
