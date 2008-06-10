@@ -30,12 +30,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
-import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.util.FormData;
 
@@ -82,36 +80,15 @@ public interface WebContext {
     WebObject getLastObject();
 
     /**
-     * Tests whether the current request was made on the web engine root (there is no traversal path)
-     *
-     * @return true if this is a root request or false otherwise
-     */
-    boolean hasTraversalObjects();
-
-    /**
-     * Tests whether there are unresolved objects on the traversal path
-     * @return true if there are unresolved objects, false otherwise
-     */
-    boolean hasUnresolvedObjects();
-
-    /**
-     * Get the object traversal path
-     * @return the traversal path. Cannot return null
-     */
-    Path getTraversalPath();
-
-    /**
-     * Get the trailing path. This path represents the trailing unresolved portion of the request path.
-     * @return the trailing path if any otherwise null
-     */
-    Path getTrailingPath();
-
-    /**
      * Get the list of resolved objects (the traversal obejcts)
      * @return the resolved objects. Cannot return null
      */
     List<WebObject> getTraversalObjects();
 
+    /**
+     * Go up into the traversal path
+     */
+    void removeLastTraversalObject();
 
     /**
      * The target context object. This is the last object that was traversed and that can be seen as the target
@@ -148,23 +125,6 @@ public interface WebContext {
      */
     ScriptFile getTargetScript() throws IOException;
 
-    /**
-     * Set a script path to be used to respond to client.
-     * <p>
-     * If no script was explicitly set then the context will try to guess one
-     * from the current info such as current action, mapping etc.
-     * <p>
-     * This method can be used to programatically change the target script
-     * @param path the target script to use or null if you want the context choose one
-     */
-    void setTargetScriptPath(String path);
-
-    /**
-     * Get the target script path to be used to respond to clients.
-     *
-     * @return the target script if one was explicitly set using {@link #setTargetScriptPath(String)} otherwise return null
-     */
-    String getTargetScriptPath();
 
     /**
      * The Core Session (or Repository Session) corresponding to that request.
@@ -194,21 +154,11 @@ public interface WebContext {
     FormData getForm();
 
     /**
-     * Get the mapping that was done on the request path.
-     * The mapping is a rule to rewrite the URL or to set some special variables based on a regex pattern on the request path.
-     * <p>
-     * Mappings are user configurable and can be used to redirect some URLs to custom scripts.
-     * @return the mapping if any or null if no mapping was done on this requets
-     */
-    Mapping getMapping();
-
-    /**
-     * Get the request path info.
-     * This is the same as the {@link HttpServletRequest#getPathInfo()} with the difference that null is neveer returned.
-     * In the case when the underlying {HttpServletRequest#getPathInfo()} method returns null this method will return "/"
+     * Get the request path info. The path info is build from the request path info and contains additional
+     * information needed to map the request to a document
      * @return the path info. Cannot return null.
      */
-    String getPathInfo();
+    PathInfo getPathInfo();
 
     /**
      * Get the URL requested by the client. Same as {@link HttpServletRequest#getRequestURL()}
@@ -235,7 +185,14 @@ public interface WebContext {
      * Same as servlet context path + servlet path
      * @return the site path
      */
-    String getApplicationPath();
+    String getBasePath();
+
+    /**
+     * Get the URL of the base path. This is the same as {@link #getURL()} after removing the path segments
+     * over the base path
+     * @return the base URL
+     */
+    String getBaseURL();
 
     /**
      * Get the path  path corresponding to the target object of the request.
@@ -251,21 +208,6 @@ public interface WebContext {
      * XXX can this method return null?
      */
     String getUrlPath(DocumentModel document); // try to resolve a nuxeo doc to a web object path
-
-    /**
-     * Set the action name for this request. The action name is the string following "@@" at the end of the request URI.
-     * This method can be used to change the action that will be executed.
-     * This will work only if the action was not yet executed.
-     * @param name the new action name
-     */
-    void setActionName(String name);
-
-    /**
-     * Get the request action name
-     * @see WebContext#setActionName(String)
-     * @return the action name or null if none
-     */
-    String getActionName();
 
     /**
      * Get the actions that are available on the target object

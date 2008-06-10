@@ -19,18 +19,17 @@
 
 package org.nuxeo.ecm.webengine.resolver;
 
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webengine.WebApplication;
+import org.nuxeo.ecm.webengine.WebContext;
 
 /**
  * Interface for resolving SiteObjects resources from a URL Path
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
- *
+ * @deprecated use PathInfo
  */
 public interface DocumentResolver {
 
-    DocumentModel getRootDocument(WebApplication app, String rootName, CoreSession session) throws Exception;
+    DocumentModel getDocument(WebContext ctx, String pathName) throws Exception;
 
 }

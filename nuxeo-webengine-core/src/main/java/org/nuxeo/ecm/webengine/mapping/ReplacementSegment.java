@@ -19,12 +19,14 @@
 
 package org.nuxeo.ecm.webengine.mapping;
 
+import org.nuxeo.ecm.webengine.util.Attributes;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public interface ReplacementSegment {
 
-    String getReplacement(Mapping mapping);
+    String getReplacement(Attributes attrs);
 
 }

@@ -21,8 +21,8 @@ package org.nuxeo.ecm.webengine.mapping;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+
+import org.nuxeo.ecm.webengine.PathInfo;
 
 
 /**
@@ -36,7 +36,6 @@ public class PathMapper {
 
     List<MappingDescriptor> entries;
 
-    final ConcurrentMap<String, Mapping> cache;
 
     public PathMapper() {
         this (null);
@@ -44,7 +43,6 @@ public class PathMapper {
 
     public PathMapper(List<MappingDescriptor> mappings) {
         this.entries = mappings;
-        cache = new ConcurrentHashMap<String, Mapping>();
     }
 
     public void addMapping(MappingDescriptor mdef) {
@@ -60,17 +58,19 @@ public class PathMapper {
         }
     }
 
-    public final Mapping getMapping(String pathInfo) {
-        if (entries == null) return null;
-        for (MappingDescriptor entry: entries) {
-            Mapping mapping = entry.match(pathInfo);
-            if (mapping != null) {
-                return mapping;
+    public final PathInfo getPathInfo(String pathInfo) {
+        if (pathInfo == null) {
+            pathInfo = "/";
+        }
+        if (entries != null) {
+            for (MappingDescriptor entry: entries) {
+                PathInfo mapping = entry.match(pathInfo);
+                if (mapping != null) {
+                    return mapping;
+                }
             }
         }
-//        Mapping mapping = new Mapping();
-//        mapping.traversalPath =
-        return null;
+        return new PathInfo(pathInfo);
     }
 
 }

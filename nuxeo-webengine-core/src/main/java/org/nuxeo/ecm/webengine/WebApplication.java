@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
-import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.resolver.DocumentResolver;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
@@ -35,9 +34,11 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
  */
 public interface WebApplication extends ResourceLocator {
 
+    String getId();
+
     RenderingEngine getRendering();
 
-    Mapping getMapping(String pathInfo);
+    PathInfo getPathInfo(String pathInfo);
 
     String getTypeBinding(String type);
 

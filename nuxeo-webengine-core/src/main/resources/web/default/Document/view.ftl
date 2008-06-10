@@ -1,8 +1,8 @@
 <@extends src="base.ftl">
 <@block name="content">
-<h2>${Document.name}</h2>
-<h3>${Document.title}</h3>
 <p>
+<b>Name:</b> ${Document.name}
+<br/>
 <b>Type:</b> ${Document.type}
 <br/>
 <b>Id:</b> ${Document.id}
@@ -21,12 +21,7 @@ ${Document.description}
   </#list>
   </ul>
   <hr/>
-  <form>
-  
-  </form>
 </#if>
-
-
 
 </@block>
 </@extends>

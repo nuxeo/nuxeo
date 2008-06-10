@@ -53,7 +53,6 @@ import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
-import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.resolver.SearchHelper;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
@@ -71,7 +70,6 @@ public class DefaultWebContext implements WebContext {
 
     private final static Log log = LogFactory.getLog(WebContext.class);
 
-    public final static String MAPPING_KEY = "mapping";
     public static final String CORESESSION_KEY = "SiteCoreSession";
 
     public static boolean USE_CORE_SEARCH = false;
@@ -86,23 +84,28 @@ public class DefaultWebContext implements WebContext {
     protected final HttpServletRequest request;
     protected final HttpServletResponse response;
 
-    protected String pathInfo;
-    protected Path trailingPath;
+    protected PathInfo pathInfo;
 
     protected WebApplication app;
-    protected String action; // the current object view
     protected FormData form;
 
     protected final Map<String,Object> vars; // global vars to share between scripts
 
     protected List<File> scriptExecutionStack;
 
-    protected String targetScriptPath;
-
     protected Principal principal; // allow overriding request principal
 
+    protected String basePath;
 
-    public DefaultWebContext(WebApplication app, HttpServletRequest req, HttpServletResponse resp) {
+
+    public DefaultWebContext(WebApplication app,
+            HttpServletRequest req, HttpServletResponse resp) {
+        this (app, new PathInfo(req.getPathInfo()), req, resp);
+    }
+
+    public DefaultWebContext(WebApplication app, PathInfo pathInfo,
+            HttpServletRequest req, HttpServletResponse resp) {
+        this.pathInfo = pathInfo;
         this.request = req;
         this.app = app;
         engine = app.getWebEngine();
@@ -122,15 +125,6 @@ public class DefaultWebContext implements WebContext {
     public void cancel(int errorCode) {
         isCanceled = true;
         response.setStatus(errorCode);
-    }
-
-
-    public String getActionName() {
-        return action;
-    }
-
-    public Mapping getMapping() {
-        return (Mapping)vars.get("mapping");
     }
 
     public Collection<ActionDescriptor> getActions() throws WebException {
@@ -165,21 +159,29 @@ public class DefaultWebContext implements WebContext {
     }
 
     public String getUrlPath(DocumentModel document) {
-        if (head == null) return null;
-        Path rootPath = head.getDocument().getPath().makeAbsolute();
+        StringBuffer buf = new StringBuffer(512);
+        buf.append(getBasePath());
+        // resolve the document relative to the root
+        String rootStringPath = pathInfo.getRoot();
         Path path = document.getPath().makeAbsolute();
-        int cnt = path.matchingFirstSegments(rootPath);
-        if (cnt == rootPath.segmentCount()) {
-            path = path.removeFirstSegments(cnt).makeAbsolute();
-            return head.getUrlPath()+path.toString();
-        } else {
-            return null;
+        if (rootStringPath != null) {
+            // append the leading path
+            if (pathInfo.hasLeadingPath()) {
+                buf.append(pathInfo.getLeadingPath());
+            }
+            Path rootPath = new Path(rootStringPath);
+            int cnt = path.matchingFirstSegments(rootPath);
+            if (cnt == rootPath.segmentCount()) {
+                path = path.removeFirstSegments(cnt).makeAbsolute();
+            }
         }
+        buf.append(path.toString());
+        // TODO install a document view handler to be able to view any document
+        return buf.toString();
     }
 
-    public String getPathInfo() {
-        String path = request.getPathInfo();
-        return path == null ? "/" : path;
+    public PathInfo getPathInfo() {
+        return pathInfo;
     }
 
     public Principal getPrincipal() {
@@ -233,48 +235,39 @@ public class DefaultWebContext implements WebContext {
         WebObject obj = getTargetObject();
         return obj != null ? obj.getUrlPath() : null;
     }
-    public void setTargetScriptPath(String targetScript) {
-        this.targetScriptPath = targetScript;
-    }
 
-    public String getTargetScriptPath() {
-        return this.targetScriptPath;
-    }
 
     public ScriptFile getTargetScript() throws IOException {
-        ScriptFile script = null;
-        if (targetScriptPath != null) {
-            script = getFile(targetScriptPath);
-        } else {
-            script = computeTargetScript();
-        }
+        ScriptFile script = computeTargetScript();
         if (script == null && tail != null) { // show default page only when the target document exists
-            targetScriptPath = app.getDefaultPage();
-            script = getFile(targetScriptPath);
+            script = getFile(app.getDefaultPage());
         }
         return script;
     }
 
     protected ScriptFile computeTargetScript() throws IOException {
-        if (targetScriptPath != null) {
+        String targetScriptPath = pathInfo.getScript();
+        if (targetScriptPath != null) { // custom script
             return getFile(targetScriptPath);
         } else if (tail == null) { // there is no traversal path
-            if (trailingPath != null) {
+            if (pathInfo.hasTrailingPath()) { // use the trail path
+                Path trailingPath = pathInfo.getTrailingPath();
                 String path = trailingPath.toString();
                 ScriptFile script = getFile(path);
                 if (script != null) {
                     return script;
                 }
-            } else {
+            } else { // use the index page
                 String path = app.getIndexPage();
                 ScriptFile script = getFile(path);
                 if (script != null) {
                     return script;
                 }
             }
-        } else if (action != null) {
-            return tail.getActionScript(action);
-        } else if (trailingPath != null) { // there is no action
+        } else if (pathInfo.getAction() != null) { // there is a contextual object and an action
+            return tail.getActionScript(pathInfo.getAction());
+        } else if (pathInfo.hasTrailingPath()) { // there is no action - use the trailing path
+            Path trailingPath = pathInfo.getTrailingPath();
             String path = trailingPath.toString();
             ScriptFile script = getFile(path);
             if (script != null) {
@@ -364,14 +357,25 @@ public class DefaultWebContext implements WebContext {
         return buf.toString();
     }
 
-    public String getApplicationPath() {
-        StringBuilder buf = new StringBuilder(request.getRequestURI().length());
-        String path = request.getContextPath();
-        if (path == null) {
-            path = "/nuxeo/site"; // for testing
+    public String getBasePath() {
+        if (basePath == null) {
+            StringBuilder buf = new StringBuilder(request.getRequestURI().length());
+            String path = request.getContextPath();
+            if (path == null) {
+                path = "/nuxeo/site"; // for testing
+            }
+            basePath = buf.append(path).append(request.getServletPath()).toString();
         }
-        buf.append(path).append(request.getServletPath());
-        return buf.toString();
+        return basePath;
+    }
+
+    public String getBaseURL() {
+        StringBuffer sb = request.getRequestURL();
+        int p = sb.indexOf(getBasePath());
+        if (p > -1) {
+            return sb.substring(0, p);
+        }
+        return sb.toString();
     }
 
     public Object getProperty(String key) {
@@ -481,11 +485,6 @@ public class DefaultWebContext implements WebContext {
         }
     }
 
-    public void setActionName(String name) {
-        this.action = name;
-    }
-
-
     public void setProperty(String key, Object value) {
         vars.put(key, value);
     }
@@ -495,22 +494,17 @@ public class DefaultWebContext implements WebContext {
         return tail;
     }
 
-    public boolean hasTraversalObjects() {
-        return head == null;
+    public boolean hasTraversalPath() {
+        return head != null;
     }
 
-    public boolean hasUnresolvedObjects() {
-        return trailingPath != null;
-    }
 
-    public Path getTraversalPath() {
-        ArrayList<String> list = new ArrayList<String>();
-        WebObject p = head;
-        while (p != null) {
-            list.add(p.getName());
-            p = p.next;
+
+    public void removeLastTraversalObject() {
+        if (head != null) {
+            tail.prev.next = null;
+            tail = tail.prev;
         }
-        return Path.createFromSegments(list.toArray(new String[list.size()]));
     }
 
     public List<WebObject> getTraversalObjects() {
@@ -550,23 +544,22 @@ public class DefaultWebContext implements WebContext {
     }
 
     public void resolveFirstUnresolvedSegment(DocumentModel doc) {
-        if (trailingPath != null) {
+        if (pathInfo.hasTrailingPath()) {
+            Path trailingPath = pathInfo.getTrailingPath();
             String name = trailingPath.lastSegment();
             trailingPath = trailingPath.removeLastSegments(1);
-            if (trailingPath.segmentCount() == 0) {
-                trailingPath = null;
-            }
+            pathInfo.setTrailingPath(trailingPath);
             addWebObject(name, doc);
         }
     }
 
     /**
-     * XXX this is a shortcut metod we need to remove
+     * XXX this is a shortcut method we need to remove
      * @return
      */
     public String getFirstUnresolvedSegment() {
-        if (trailingPath != null && trailingPath.segmentCount() > 0) {
-            return trailingPath.segment(0);
+        if (pathInfo.hasTrailingPath()) {
+            return pathInfo.getTrailingPath().segment(0);
         }
         return null;
     }
@@ -590,24 +583,13 @@ public class DefaultWebContext implements WebContext {
         bindings.put("Root", getFirstObject());
         bindings.put("Document", getTargetDocument());
         bindings.put("Engine", engine);
+        bindings.put("basePath", getBasePath());
         try {
             bindings.put("Session", getCoreSession());
         } catch (Exception e) {
             e.printStackTrace(); // TODO
         }
     }
-
-   public void setTrailingPath(Path path) {
-       this.trailingPath = path;
-   }
-
-   /**
-    * @return the trailingPath.
-    */
-   public Path getTrailingPath() {
-       return trailingPath;
-   }
-
 
 
    /**
@@ -633,8 +615,7 @@ public class DefaultWebContext implements WebContext {
 
    @Override
    public String toString() {
-       return "Resolved Path: " + getTraversalPath() + "; Unresolved Path:" + getTrailingPath()
-               + "; Action: " + action + "; script: " + targetScriptPath;
+       return "PathInfo: " + pathInfo.toString();
    }
 
 

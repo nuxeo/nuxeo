@@ -3,7 +3,7 @@
 
 <h3>Unknown Page</h3>
 
-<#if Context.hasUnresolvedObjects()>
+<#if Context.pathInfo.hasTrailingPath()>
 
 <#assign name = Context.getFirstUnresolvedSegment()>
 

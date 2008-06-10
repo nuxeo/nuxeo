@@ -5,18 +5,17 @@
 <body>
 <h1>Nuxeo WebEngine</h1>
 <p>
-Hello ${user}! This is the root of your web site.
+Hello ${Context.principal.name}! This is the root of your web site.
 </p>
 <hr>
 <p>
-In order to configure your sites you need to put your resources, template and script files into
+Your web root is <pre>${env.installDir}</pre>
 </p>
-<pre>
-${env.installDir}
-</pre>
-<p/>
 <p>
-See the <a href="manual/index.html">manual</a> for more information.
+To setup your web application go <a href="${Request.contextPath}/admin">here</a>. 
+</p>
+<p>
+See the <a href="${basePath}/docs/index.ftl">manual</a> for more information.
 </p>
 </body>
 </html>

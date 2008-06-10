@@ -33,8 +33,10 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.ConfigurationChangedListener;
 import org.nuxeo.ecm.webengine.DefaultWebContext;
+import org.nuxeo.ecm.webengine.PathInfo;
 import org.nuxeo.ecm.webengine.RequestHandler;
 import org.nuxeo.ecm.webengine.WebApplication;
 import org.nuxeo.ecm.webengine.WebContext;
@@ -42,8 +44,6 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebObject;
 import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
-import org.nuxeo.ecm.webengine.mapping.Mapping;
-import org.nuxeo.ecm.webengine.resolver.DocumentResolver;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.runtime.api.Framework;
 
@@ -122,18 +122,19 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
             CONTEXT.set(context);
             service(context, req, resp);
         } catch (Throwable e) {
+            WebException we = WebException.wrap(e);
             log.error("Site Servlet failed to handle request", e);
             if (context == null) { // create an empty context
                 context = new DefaultWebContext(app, req, resp);
             }
             ScriptFile page = context.getFile(app.getErrorPage());
             if (page == null) {
-                displayError(resp, e, "ErrorPage not found: "+app.getErrorPage(),
+                displayError(resp, we, "ErrorPage not found: "+app.getErrorPage(),
                         WebConst.SC_INTERNAL_SERVER_ERROR);
                 return;
             }
             try {
-                context.setProperty("error", e);
+                context.setProperty("error", we);
                 context.exec(page, null);
             } catch (Throwable ee) {
                 displayError(resp, ee, "Failed to show error page",
@@ -159,7 +160,7 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
             return;
         }
         // avoid running default action handling mechanism when invocation is redirected to scripts
-        if (context.getMapping() == null) {
+        if (context.getPathInfo().getScript() == null) {
             RequestHandler handler = targetObject.getRequestHandler();
             if (handler != null) {
                 if (method.equals(WebConst.METHOD_POST)) {
@@ -226,77 +227,42 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
     }
 
     public WebContext createRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-        String pathInfo = req.getPathInfo();
-        if (pathInfo == null || "/".equals(pathInfo)) {
-            pathInfo = "/index.ftl"; //TODO use the config to get the name of the index
-        }
-        DefaultWebContext context = new DefaultWebContext(app, req, resp);
+        PathInfo pathInfo = app.getPathInfo(req.getPathInfo());
+        DefaultWebContext context = new DefaultWebContext(app, pathInfo, req, resp);
         // traverse documents if any
-        String[] traversal = null;
-        Mapping mapping = app.getMapping(pathInfo);
-        if (mapping != null) { // get the traversal defined by the mapping if any
-            traversal = mapping.getTraversalPath();
-        }
-        if (traversal == null) { // no traversal defined - compute it from pathInfo
-            traversal = new Path(pathInfo).segments();
-        }
-        buildTraversalPath(context, traversal);
-        if (mapping != null) {
-            WebObject obj = context.getLastObject();
-            if (obj != null) {
-                mapping.addVar("type", obj.getDocument().getType());
-            }
-            context.setTargetScriptPath(mapping.getScript()); // should use mapping script if one was defined
-            context.setProperty(DefaultWebContext.MAPPING_KEY, mapping);
-        }
+        buildTraversalPath(context);
         return context;
     }
 
-    public static void buildTraversalPath(DefaultWebContext context, String[] traversal) throws Exception {
-        if (traversal == null || traversal.length == 0) {
-            // nothing to traverse
+    public static void buildTraversalPath(DefaultWebContext context) throws Exception {
+        PathInfo pathInfo = context.getPathInfo();
+        String rootPath = pathInfo.getRoot();
+        if (rootPath == null) {
+            pathInfo.setTrailingPath(pathInfo.getTraversalPath());
+            pathInfo.setTraversalPath(PathInfo.EMPTY_PATH);
+//            if (!context.hasTraversalPath() && !pathInfo.hasTrailingPath() && pathInfo.getScript() == null) { // a request to "/"
+//                context.setTargetScriptPath("index.ftl"); //TODO: use platform configured index
+//            }
             return;
         }
-        String lastSegment = traversal[traversal.length-1];
-        int p = lastSegment.lastIndexOf(WebConst.ACTION_SEPARATOR);
-        if (p > -1) {
-            context.setActionName(lastSegment.substring(p+WebConst.ACTION_SEPARATOR.length()));
-            lastSegment = lastSegment.substring(0, p);
-            if (lastSegment.length() == 0) {
-                // remove empty segments - this may happen for paths like /wiki/@@create
-                // we allow these path because they ease writing creation forms
-                String[] tmp = new String[traversal.length-1];
-                System.arraycopy(traversal, 0, tmp, 0, tmp.length);
-                traversal = tmp;
-            } else {
-                traversal[traversal.length-1] = lastSegment;
-            }
-        }
-
-        WebApplication app = context.getApplication();
         CoreSession session = context.getCoreSession();
-        String name = traversal[0];
-        DocumentResolver resolver = app.getDocumentResolver();
-        DocumentModel doc = resolver.getRootDocument(app, name, session);
-        if (doc == null) { // abort traversing - and create the trailing path
-            Path trailingPath = Path.createFromSegments(traversal);
-            context.setTrailingPath(trailingPath);
-            return;
-        }
-        context.addWebObject(name, doc);
-        if (traversal.length > 1) {
-            for (int i=1; i<traversal.length; i++) {
-                name = traversal[i];
-                doc = context.getLastObject().traverse(name); // get next object if any
-                if (doc != null) {
-                    context.addWebObject(name, doc);
-                } else {
-                    String[] tmp = new String[traversal.length - i];
-                    System.arraycopy(traversal, i, tmp, 0, tmp.length);
-                    Path trailingPath = Path.createFromSegments(tmp);
-                    context.setTrailingPath(trailingPath);
-                    break;
-                }
+        DocumentModel doc =  session.getDocument(new PathRef(rootPath));
+        context.addWebObject(doc.getName(), doc);
+        Path traversalPath = pathInfo.getTraversalPath();
+
+        for (int i=0, len=traversalPath.segmentCount(); i<len; i++) {
+            String name = traversalPath.segment(i);
+            doc = context.getLastObject().traverse(name); // get next object if any
+            if (doc != null) {
+                context.addWebObject(name, doc);
+            } else if (i == 0) {
+                pathInfo.setTrailingPath(traversalPath);
+                pathInfo.setTraversalPath(PathInfo.EMPTY_PATH);
+                break;
+            } else {
+                pathInfo.setTrailingPath(traversalPath.removeFirstSegments(i));
+                pathInfo.setTraversalPath(traversalPath.removeLastSegments(len-i));
+                break;
             }
         }
     }
@@ -308,7 +274,7 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
             if (script != null) {
                 context.exec(script, null);
             } else {
-                context.getResponse().setStatus(WebConst.SC_NOT_FOUND);
+                context.getResponse().sendError(WebConst.SC_NOT_FOUND);
             }
             //System.out.println(">>>>>>>>>> STATIC RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
         } catch (WebException e) {

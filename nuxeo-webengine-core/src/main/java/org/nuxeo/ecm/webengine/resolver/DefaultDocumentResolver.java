@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
-import org.nuxeo.ecm.webengine.WebApplication;
+import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.runtime.api.Framework;
@@ -136,7 +136,8 @@ public class DefaultDocumentResolver implements DocumentResolver {
         }
     }
 
-    public DocumentModel getRootDocument(WebApplication app, String rootName, CoreSession session) throws WebException {
+    public DocumentModel getDocument(WebContext ctx, String rootName) throws WebException {
+        CoreSession session = ctx.getCoreSession();
         try {
             if (mappings != null) {
                 PathRef ref = mappings.get(rootName);

@@ -38,10 +38,8 @@ import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
-import org.nuxeo.ecm.webengine.mapping.Mapping;
 import org.nuxeo.ecm.webengine.mapping.MappingDescriptor;
 import org.nuxeo.ecm.webengine.mapping.PathMapper;
-import org.nuxeo.ecm.webengine.resolver.DefaultDocumentResolver;
 import org.nuxeo.ecm.webengine.resolver.DocumentResolver;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.util.DirectoryStack;
@@ -81,7 +79,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         this.errorPage = desc.getErrorPage("error.ftl");
         this.documentResolver = desc.getDocumentResolver();
         if (this.documentResolver == null) {
-            this.documentResolver = new DefaultDocumentResolver();
+            this.documentResolver = engine.getDocumentMapper(); //new DefaultDocumentResolver();
         }
         List<WebObjectBindingDescriptor> list = desc.getBindings();
         if (list != null && !list.isEmpty()) {
@@ -93,6 +91,8 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         List<MappingDescriptor> mappings = desc.getMappings();
         if (mappings != null && !mappings.isEmpty()) {
             mapper = new PathMapper(mappings);
+        } else {
+            mapper = new PathMapper();
         }
         try {
             List<RootDescriptor> roots = desc.getRoots();
@@ -139,8 +139,6 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
             throw new WebDeployException("Failed to create virtual directory for webapp: "+id, e);
         }
     }
-
-
 
     public RenderingEngine getRendering() {
         return rendering;
@@ -208,9 +206,8 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         return indexPage;
     }
 
-    public Mapping getMapping(String pathInfo) {
-        if (mapper == null) return null;
-        return mapper.getMapping(pathInfo);
+    public PathInfo getPathInfo(String pathInfo) {
+        return mapper.getPathInfo(pathInfo);
     }
 
 

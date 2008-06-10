@@ -37,7 +37,7 @@ public class DefaultRequestHandler implements RequestHandler, Actions {
     }
 
     public void doGet(WebObject object) throws WebException {
-        if (object.getWebContext().hasUnresolvedObjects()) {
+        if (object.getWebContext().getPathInfo().hasTrailingPath()) {
             doAction(object, null); // avoid doing an action since we have unresolved segments
         } else {
             doAction(object, VIEW);
@@ -49,7 +49,7 @@ public class DefaultRequestHandler implements RequestHandler, Actions {
     }
 
     public void doPost(WebObject object) throws WebException {
-        if (!object.getWebContext().hasUnresolvedObjects()) { // there is not any trailing path -> the default action is update
+        if (!object.getWebContext().getPathInfo().hasTrailingPath()) { // there is not any trailing path -> the default action is update
             doAction(object, UPDATE);
         } else if (object.getDocument().isFolder()) {
             doAction(object, CREATE);
@@ -71,10 +71,11 @@ public class DefaultRequestHandler implements RequestHandler, Actions {
     }
 
     public static void doAction(WebObject object, String defaultAction) throws WebException {
-        String action = object.getWebContext().getActionName();
+        PathInfo  pi = object.getWebContext().getPathInfo();
+        String action = pi.getAction();
         if (action == null) {
             action = defaultAction;
-            object.getWebContext().setActionName(action);
+            pi.setAction(action);
             if (action == null) {
                 return;
             }

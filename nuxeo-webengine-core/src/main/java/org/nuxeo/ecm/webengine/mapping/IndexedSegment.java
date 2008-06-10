@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webengine.mapping;
 
+import org.nuxeo.ecm.webengine.util.Attributes;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -31,7 +33,7 @@ public class IndexedSegment implements ReplacementSegment {
         this.index = index;
     }
 
-    public String getReplacement(Mapping mapping) {
+    public String getReplacement(Attributes mapping) {
         return mapping.getValue(index);
     }
 

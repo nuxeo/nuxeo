@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.nuxeo.ecm.webengine.util.Attributes;
+
 
 /**
  * Match patterns of the type:
@@ -111,17 +113,21 @@ public class PathPattern  {
         }
     }
 
-    public Mapping match(String input) {
+    public Attributes match(String input) {
         Matcher m = pattern.matcher(input);
         if (m.matches()) {
-            Mapping mapping = new Mapping();
-            int n = m.groupCount();
-            for (int i=0; i<=n; i++) {
-                mapping.addVar(vars[i], m.group(i));
-            }
-            return mapping;
+            return createMapping(m);
         }
         return null;
+    }
+
+    protected final Attributes createMapping(Matcher m) {
+        Attributes attrs = new Attributes(vars.length);
+        int n = m.groupCount();
+        for (int i=0; i<=n; i++) {
+            attrs.add(vars[i], m.group(i));
+        }
+        return attrs;
     }
 
 }

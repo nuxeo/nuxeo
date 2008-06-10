@@ -19,13 +19,10 @@
 
 package org.nuxeo.ecm.webengine.mapping;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.webengine.PathInfo;
+import org.nuxeo.ecm.webengine.util.Attributes;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -34,82 +31,62 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("mapping")
 public class MappingDescriptor {
 
-    public static final Pattern DOLAR_PATTERN = Pattern.compile("\\$([0-9]+|[A-Za-z_][A-Za-z_0-9]*)");
-
     PathPattern pattern;
-    ReplacementSegment[] script;
-    ReplacementSegment[] traversal;
+    VariableString action;
+    VariableString script;
+    VariableString leadingPath;
+    VariableString root;
 
     @XNode("@pattern")
     public void setPattern(String pattern) {
         this.pattern = new PathPattern(pattern);
     }
 
+    @XNode("root")
+    public void setRoot(RootMapping rootMapping) {
+        if (rootMapping != null) {
+            this.root = rootMapping.root;
+            this.leadingPath = rootMapping.leadingPath;
+        }
+    }
+
+    @XNode("action")
+    public void setAction(String action) {
+        if (action != null) {
+            this.action = VariableString.parse(action);
+        }
+    }
+
+
     @XNode("script")
     public void setScript(String script) {
         if (script != null) {
-            this.script = parseReplacement(script);
+            this.script = VariableString.parse(script);
         }
     }
 
-    @XNode("traversalPath")
-    public void setTraversal(String traversal) {
-        if (traversal != null) {
-            this.traversal = parseReplacement(traversal);
-        }
-    }
-
-    public static ReplacementSegment[] parseReplacement(String replacement) {
-        Matcher m = DOLAR_PATTERN.matcher(replacement);
-        if (!m.find()) {
-            return new ReplacementSegment[] {new StringSegment(replacement)};
-        }
-
-        List<ReplacementSegment> ar = new ArrayList<ReplacementSegment>();
-        int s = 0;
-        do {
-            int e = m.start();
-            // add segment
-            if (e > s) {
-                ar.add(new StringSegment(replacement.substring(s, e)));
-            }
-            // add dolar
-            String var = m.group(1);
-            if (Character.isDigit(var.charAt(0))) {
-                ar.add(new IndexedSegment(Integer.parseInt(var)));
-            } else {
-                ar.add(new NamedSegment(var));
-            }
-            s = m.end();
-        } while (m.find());
-        if (s < replacement.length()) {
-            // add segment
-            ar.add(new StringSegment(replacement.substring(s)));
-        }
-        return ar.toArray(new ReplacementSegment[ar.size()]);
-    }
-
-    public final Mapping match(String input) {
-        Mapping mapping = pattern.match(input);
-        if (mapping == null) {
+    public final PathInfo match(String input) {
+        Attributes attrs = pattern.match(input);
+        if (attrs == null) {
             return null;
         }
-        if (mapping.size() != 0) {
-            for (int i=0; i<pattern.vars.length ; i++) {
-                String name = pattern.vars[i];
-                if (name != null) {
-                    mapping.setName(i, name);
-                }
-            }
-        }
-        mapping.mdef = this;
+        String leading = null;
         // it's matching - do the rewrite
-        if (traversal != null) {
-            mapping.traversalPath = mapping.resolveSegments(traversal);
-        } else {
-            mapping.traversalPath = new Path(input).segments; // TODO get parent segments
+        if (leadingPath != null) {
+            leading = leadingPath.getValue(attrs);
         }
-        return mapping;
+        PathInfo pathInfo = new PathInfo(input, leading, attrs);
+        if (root != null) {
+            pathInfo.setRoot(this.root.getValue(attrs));
+        }
+        if (script != null) {
+            pathInfo.setScript(this.script.getValue(attrs));
+        }
+        if (action != null) {
+            pathInfo.setAction(this.action.getValue(attrs));
+        }
+        return pathInfo;
     }
+
 
 }

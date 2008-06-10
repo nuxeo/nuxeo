@@ -147,9 +147,6 @@ public class WebApplicationDescriptor extends CompositeContribution {
     }
 
     public DocumentResolver getDocumentResolver() throws WebDeployException {
-        if (resolver == null) {
-            resolver = DefaultDocumentResolver.DEFAULT;
-        }
         return resolver;
     }
 

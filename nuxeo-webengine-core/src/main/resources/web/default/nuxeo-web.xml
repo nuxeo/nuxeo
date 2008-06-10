@@ -11,15 +11,6 @@
     point="application">
     <webapp id="nuxeo-web">
       <errorPage>error.groovy</errorPage>
-      <resolver>
-        <!--roots>
-          <root>default-domain/workspaces/ws</root>
-        </roots-->
-        <mappings>
-          <mapping id="admin">default-domain</mapping>
-        </mappings>
-        <!--query>Select * from Document where ecm:name='%s'</query-->
-      </resolver>
       <roots>
         <root priority="0">default</root>
       </roots>
@@ -29,6 +20,27 @@
         <rendering-extension>render</rendering-extension>
       </rendering-extensions>
     </webapp>
+
+    <webapp id="admin">
+      <errorPage>error.groovy</errorPage>
+      <roots>
+        <root priority="0">default</root>
+	<root priority="1">admin</root>
+      </roots>
+   
+      <mappings> 
+        <mapping pattern="/repository(/.*)?">
+          <root leadingPath="/repository">/default-domain</root>
+        </mapping>  
+      </mappings>
+
+      <rendering-extensions>
+        <rendering-extension>script</rendering-extension>
+        <rendering-extension>wiki</rendering-extension>
+        <rendering-extension>render</rendering-extension>
+      </rendering-extensions>
+    </webapp>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"

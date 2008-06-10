@@ -61,12 +61,12 @@ public class WebException extends ClientException {
     }
 
 
-    public static WebException wrap(Exception e) {
+    public static WebException wrap(Throwable e) {
         return wrap(null, e);
     }
 
     @SuppressWarnings({"ThrowableInstanceNeverThrown"})
-    public static WebException wrap(String message, Exception e) {
+    public static WebException wrap(String message, Throwable e) {
         if (e instanceof DocumentSecurityException) {
             return new WebSecurityException(message, e);
         } else if (e instanceof ClientException) {

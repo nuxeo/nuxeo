@@ -19,22 +19,32 @@
 
 package org.nuxeo.ecm.webengine.mapping;
 
-import org.nuxeo.ecm.webengine.util.Attributes;
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class StringSegment implements ReplacementSegment {
+@XObject("root")
+public class RootMapping {
 
-    final String string;
+    VariableString root;
+    VariableString leadingPath;
 
-    public StringSegment(String string) {
-        this.string = string;
+    @XNode("@leadingPath")
+    public void setLeadingPath(String leadingPath) {
+        if (leadingPath != null) {
+            this.leadingPath = VariableString.parse(leadingPath);
+        }
     }
 
-    public String getReplacement(Attributes mapping) {
-        return string;
+    @XNode
+    public void setRoot(String root) {
+        if (root != null) {
+            this.root = VariableString.parse(root);
+        }
     }
+
 
 }

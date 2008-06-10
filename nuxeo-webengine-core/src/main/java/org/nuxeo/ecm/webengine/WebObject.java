@@ -37,6 +37,8 @@ public class WebObject {
 
     protected final static Log log = LogFactory.getLog(WebObject.class);
 
+    protected String urlPath;
+
     protected WebObject next;
     protected WebObject prev;
 
@@ -163,26 +165,22 @@ public class WebObject {
     }
 
     public String getPath() {
-        StringBuilder buf = new StringBuilder();
-        collectPath(buf);
-        return buf.toString();
+        return doc.getPathAsString();
     }
 
     public String getUrlPath() {
-        StringBuilder buf = new StringBuilder(context.getApplicationPath());
-        collectPath(buf);
-        return buf.toString();
-    }
-
-    public String getRepositoryPath() {
-        return doc == null ? null : doc.getPathAsString();
-    }
-
-    protected void collectPath(StringBuilder buf) {
-        if (prev != null) {
-            prev.collectPath(buf);
+        if (urlPath == null) {
+            PathInfo pi = context.getPathInfo();
+            StringBuilder buf = new StringBuilder(context.getBasePath());
+            if (pi.hasLeadingPath()) {
+                buf.append(pi.getLeadingPath().toString());
+            }
+            if (pi.hasTraversalPath()) {
+                buf.append(pi.getTraversalPath().toString());
+            }
+            urlPath = buf.toString();
         }
-        buf.append('/').append(name);
+        return urlPath;
     }
 
     public DocumentModel traverse(String nextSegment) throws WebException {

@@ -40,6 +40,9 @@ public class CreateActionHandler implements ActionHandler {
     public void run(WebObject object) throws WebException {
         DocumentModel parent = object.getDocument();
         String name = object.getWebContext().getFirstUnresolvedSegment();
+        if (name == null) { // try the name attribute
+            name = object.getWebContext().getForm().getString("name");
+        }
         if (name == null) { /// create a child with a generated name
             DocumentModel doc = createSubPage(parent, null, object.getWebContext());
             String path = object.getUrlPath();
