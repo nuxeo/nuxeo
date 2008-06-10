@@ -69,10 +69,10 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
     @In(required = false, create = true)
     private ActionContext currentActionContext;
 
-    @In(required = true, create = true)
+    @In(create = true)
     private transient ActionManager actionManager;
 
-    @In(required = true, create = true)
+    @In(create = true)
     private transient ActionContextProvider actionContextProvider;
 
     @In(create = true)
@@ -280,7 +280,7 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
         if (subTabsList != null) {
             for (Action a : subTabsList) {
                 if (a.getId().equals(tabId)) {
-                    setCurrentSubTabAction(a);
+                    currentSubTabAction = a;
                     set = true;
                     break;
                 }

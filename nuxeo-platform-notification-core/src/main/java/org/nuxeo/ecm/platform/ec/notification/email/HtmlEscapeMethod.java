@@ -30,7 +30,7 @@ import org.apache.commons.lang.StringEscapeUtils;
  *
  */
 public class HtmlEscapeMethod implements TemplateMethodModel {
-	
+
     public Object exec(List arg0) throws TemplateModelException {
         if (arg0.size() != 1) {
             throw new IllegalArgumentException();

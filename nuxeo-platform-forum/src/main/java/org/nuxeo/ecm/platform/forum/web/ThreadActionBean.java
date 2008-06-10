@@ -64,30 +64,30 @@ import org.nuxeo.ecm.webapp.security.PrincipalListManager;
 @Scope(ScopeType.CONVERSATION)
 public class ThreadActionBean extends InputController implements ThreadAction {
 
-    private static final long serialVersionUID = 1L;
-
     private static final Log log = LogFactory.getLog(ThreadActionBean.class);
 
-    protected final String schema = "thread";
+    private static final long serialVersionUID = -2667460487440135732L;
 
-    protected final String type = "Thread";
+    protected static final String schema = "thread";
+
+    protected static final String type = "Thread";
 
     protected boolean principalIsAdmin;
 
     @In(create = true)
-    protected Principal currentUser;
+    protected transient Principal currentUser;
 
     @In(create = true, required = false)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true)
-    protected DocumentActions documentActions;
+    protected transient DocumentActions documentActions;
 
     @In(create = true)
     protected PrincipalListManager principalListManager;
 
     @In(create = true)
-    protected CommentManagerActions commentManagerActions;
+    protected transient CommentManagerActions commentManagerActions;
 
     @In(create = true)
     protected PostAction postAction;
@@ -228,9 +228,7 @@ public class ThreadActionBean extends InputController implements ThreadAction {
         return basicCommentList;
     }
 
-
-    public ThreadAdapter getAdapter(DocumentModel thread)
-    {
+    public ThreadAdapter getAdapter(DocumentModel thread) {
         return thread.getAdapter(ThreadAdapter.class);
     }
 

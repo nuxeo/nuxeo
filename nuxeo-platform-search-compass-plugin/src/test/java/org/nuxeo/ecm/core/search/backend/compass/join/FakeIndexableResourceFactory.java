@@ -37,15 +37,14 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableR
 @SuppressWarnings("serial")
 public class FakeIndexableResourceFactory implements IndexableResourceFactory {
 
-    @SuppressWarnings("serial")
-    public class FakeIndexableResource extends AbstractIndexableResource {
+    private static class FakeIndexableResource extends AbstractIndexableResource {
+        private static final long serialVersionUID = -918113431681470085L;
 
-        public FakeIndexableResource(String name, IndexableResourceConf conf) {
+        FakeIndexableResource(String name, IndexableResourceConf conf) {
             super(name, conf);
         }
 
-        public FakeIndexableResource() {
-            super();
+        FakeIndexableResource() {
         }
 
         public String computeId() {
@@ -56,7 +55,6 @@ public class FakeIndexableResourceFactory implements IndexableResourceFactory {
                 throws IndexingException {
             return null;
         }
-
     }
 
     public IndexableResource createEmptyIndexableResource() {

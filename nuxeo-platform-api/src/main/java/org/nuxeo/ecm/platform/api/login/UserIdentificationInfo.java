@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.platform.api.login;
 
-import java.util.Map;
 import java.io.Serializable;
+import java.util.Map;
 
 /**
 * Encapsulates some information about a user and how it must be authenticated.

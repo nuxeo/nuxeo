@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.relations.search;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -43,7 +42,6 @@ import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.jena.JenaGraph;
 import org.nuxeo.ecm.platform.relations.search.indexer.RelationIndexer;
 import org.nuxeo.ecm.platform.relations.search.resources.indexing.RelationIndexableResourceImpl;
-import org.nuxeo.ecm.platform.relations.search.resources.indexing.api.RelationIndexableResource;
 import org.nuxeo.ecm.platform.relations.services.RelationService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
