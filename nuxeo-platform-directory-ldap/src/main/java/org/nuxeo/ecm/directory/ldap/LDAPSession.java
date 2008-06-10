@@ -672,7 +672,7 @@ public class LDAPSession implements Session, EntrySource {
         if (entryId == null) {
             try {
                 // NXP-2461: check that id field is filled
-                attribute = attributes.get(idAttribute);
+                Attribute attribute = attributes.get(idAttribute);
                 if (attribute != null) {
                     Object entry = attribute.get();
                     if (entry != null) {
