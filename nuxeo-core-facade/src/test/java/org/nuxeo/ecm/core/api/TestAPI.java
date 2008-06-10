@@ -888,10 +888,12 @@ public abstract class TestAPI extends TestConnection {
         String fname1 = "file1#" + generateUnique();
         DocumentModel childFile1 = new DocumentModelImpl(
                 root.getPathAsString(), fname1, "File");
+        childFile1.setProperty("dublincore", "title", "abc");
 
         String fname2 = "file2#" + generateUnique();
         DocumentModel childFile2 = new DocumentModelImpl(
                 root.getPathAsString(), fname2, "HiddenFile");
+        childFile2.setProperty("dublincore", "title", "def");
 
         List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
         childDocs.add(childFolder);
@@ -956,6 +958,12 @@ public abstract class TestAPI extends TestConnection {
         // assertEquals(3, schemas.size());
         assertTrue(schemas.contains("common"));
         assertTrue(schemas.contains("dublincore"));
+
+        list = remote.query("SELECT * FROM Document WHERE dc:title = 'abc'");
+        assertEquals(1, list.size());
+
+        list = remote.query("SELECT * FROM Document WHERE dc:title = 'abc' OR dc:title = 'def'");
+        assertEquals(2, list.size());
 
         remote.removeDocument(returnedChildDocs.get(0).getRef());
         remote.removeDocument(returnedChildDocs.get(1).getRef());
