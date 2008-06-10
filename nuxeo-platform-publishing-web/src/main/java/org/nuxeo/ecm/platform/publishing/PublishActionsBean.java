@@ -695,6 +695,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
             // section, principal, comment);
             Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
             eventInfo.put("targetSection", section.getName());
+            eventInfo.put("sectionPath", section.getPathAsString());
             notifyEvent(
                     org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_PUBLISHED,
                     eventInfo, comment, null, docToPublish);

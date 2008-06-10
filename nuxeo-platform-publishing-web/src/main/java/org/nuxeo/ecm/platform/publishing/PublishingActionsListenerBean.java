@@ -215,7 +215,7 @@ public class PublishingActionsListenerBean extends InputController implements
             Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
             eventInfo.put("targetSection", section);
             eventInfo.put("proxy", currentDocument);
-
+            eventInfo.put("sectionPath", currentDocument.getPathAsString());
             notifyEvent(
                     org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_PUBLICATION_APPROVED,
                     eventInfo, rejectPublishingComment, sourceDocument);
