@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -37,6 +36,8 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.tree.LazyTreeModel;
 import org.nuxeo.ecm.webapp.action.TypesTool;
+import org.nuxeo.ecm.webapp.treesorter.TreeSorter;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * This represents a tree node. Knows how to load the children from backend when
@@ -309,14 +310,25 @@ public class LazyTreeNode extends TreeNodeBase {
     }
 
     /**
-     * Overrides comparison so that children are always sorted by description,
-     * whether they are leaves or not.
+     * Overrides comparison so that children are always sorted by by the
+     * implementation defined in Tree Sorter Service
      */
     @Override
     public int compareTo(Object obj) {
-        TreeNode otherNode = (TreeNode) obj;
-        return getDescription().toUpperCase().compareTo(
-                otherNode.getDescription().toUpperCase());
+        TreeSorter treeSorterService = null;
+        try {
+            treeSorterService = Framework.getService(TreeSorter.class);
+        } catch (Exception e) {
+            log.error("Couldn't get Tree Sorter Service", e);
+            return 0;
+        }
+
+        try {
+            return treeSorterService.getCompareToResult(this, obj);
+        } catch (ClientException e) {
+            log.error(e);
+            return 0;
+        }
     }
 
     @Override
