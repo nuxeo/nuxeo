@@ -21,8 +21,8 @@ package org.nuxeo.ecm.core.jcr.search;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.net.URL;
+import java.util.Arrays;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -34,17 +34,17 @@ import javax.jcr.ValueFormatException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.core.repository.jcr.properties.BlobProperty;
-import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryResult;
 import org.nuxeo.ecm.core.repository.jcr.JCRDocument;
+import org.nuxeo.ecm.core.repository.jcr.properties.BlobProperty;
+import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 
 /**
  * Test Queries.
@@ -375,7 +375,7 @@ public class TestFtsQuery extends RepositoryTestCase {
         printResults(qr, logPrefix);
         assertEquals(1, qr.count());
 
-        final Document doc = (JCRDocument) qr.getObject();
+        final Document doc = (Document) qr.getObject();
         // need to do the test for document with attached content
         final BlobProperty blob = (BlobProperty) doc.getProperty("content");
         assertNotNull(blob);
@@ -393,7 +393,6 @@ public class TestFtsQuery extends RepositoryTestCase {
         printResults(qr2, logPrefix);
         assertEquals(1, qr2.count());
     }
-
 
     /* -- these won't work any more :
      * TODO enable them when CONTAINS is added to NXQL
@@ -465,7 +464,7 @@ public class TestFtsQuery extends RepositoryTestCase {
      * @throws RepositoryException
      * @throws QueryException
      */
-    private void printResults(final QueryResult qr, final String logPrefix)
+    private static void printResults(final QueryResult qr, final String logPrefix)
             throws RepositoryException, QueryException {
         while (qr.next()) {
 

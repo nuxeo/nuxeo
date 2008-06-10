@@ -21,10 +21,10 @@ package org.nuxeo.ecm.core.schema;
 
 import java.util.Set;
 
+import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.core.schema.types.Schema;
 
 public class TestTypeManager extends NXRuntimeTestCase {
 
@@ -119,7 +119,7 @@ public class TestTypeManager extends NXRuntimeTestCase {
         assertTrue(tff.contains("Parent"));
     }
 
-    public void testInheritanceCache() throws Exception {
+    public void testInheritanceCache() {
         SchemaDescriptor[] schemas = new SchemaDescriptor[0];
         DocumentTypeDescriptor dtd;
         dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT,

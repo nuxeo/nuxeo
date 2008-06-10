@@ -70,7 +70,7 @@ public class JCRBlob extends StreamBlob {
             try {
                 node.setProperty(FILENAME, filename);
             } catch (Exception e) {
-                if (compat_14_adaptNode(node)) {// if node type was invalid and adapting was succesfull - try again
+                if (compat_14_adaptNode(node)) {// if node type was invalid and adapting was successful - try again
                     try {
                         node.setProperty(FILENAME, filename);
                     } catch (Exception ee) {
@@ -86,7 +86,7 @@ public class JCRBlob extends StreamBlob {
             try {
                 node.setProperty(DIGEST, digest);
             } catch (Exception e) {
-                if (compat_14_adaptNode(node)) {// if node type was invalid and adapting was succesfull - try again
+                if (compat_14_adaptNode(node)) {// if node type was invalid and adapting was successful - try again
                     try {
                         node.setProperty(DIGEST, digest);
                     } catch (Exception ee) {
@@ -209,14 +209,15 @@ public class JCRBlob extends StreamBlob {
     }
 
     /**
-     * Do not return the jackrabbit stream directly. Wrap it inside a JCRBlobInputStream to be able to
-     * reset the stream and read it more than once.
+     * Do not return the Jackrabbit stream directly. Wrap it inside a
+     * JCRBlobInputStream to be able to reset the stream and read it more than
+     * once.
      * <p>
-     * Fix for NXP-2072
+     * Fix for NXP-2072. See also NXP-2072.
+     *
      * @see JCRBlobInputStream
-     * @see NXP-2072
      */
-    public InputStream getStream() throws IOException {
+    public InputStream getStream() {
         return new JCRBlobInputStream(this);
     }
 
@@ -270,8 +271,7 @@ public class JCRBlob extends StreamBlob {
         return false;
     }
 
-    public static void setContent(Node node, Blob value)
-            throws DocumentException {
+    public static void setContent(Node node, Blob value) throws DocumentException {
         // TODO: move this into JCRContentSource ?
         InputStream in = null;
         try {
@@ -279,7 +279,8 @@ public class JCRBlob extends StreamBlob {
                 node.remove();
                 return;
             }
-            // set first the filename, length and digest first - to catch node type incompatibility errors from the begining
+            // set first the filename, length and digest first - to catch node
+            // type incompatibility errors from the begining
             String filename = value.getFilename();
             if (filename != null) {
                 node.setProperty(FILENAME, filename);
@@ -308,7 +309,7 @@ public class JCRBlob extends StreamBlob {
             node.setProperty("jcr:lastModified", Calendar.getInstance());
         } catch (Exception e) {
             if (compat_14_adaptNode(node)) {
-                // if node type was invalid and adapting was succesfull - try again
+                // if node type was invalid and adapting was successful - try again
                 setContent(node, value);
                 return; // do not thrown exception
             }

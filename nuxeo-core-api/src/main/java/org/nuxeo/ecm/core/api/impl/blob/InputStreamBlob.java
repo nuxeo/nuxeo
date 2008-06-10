@@ -48,13 +48,13 @@ public class InputStreamBlob extends DefaultStreamBlob {
 
     public InputStreamBlob(InputStream in, String ctype, String encoding) {
         this.in = in;
-        this.mimeType = ctype;
+        mimeType = ctype;
         this.encoding = encoding;
     }
 
     public InputStreamBlob(InputStream in, String ctype, String encoding, String filename, String digest) {
         this.in = in;
-        this.mimeType = ctype;
+        mimeType = ctype;
         this.encoding = encoding;
         this.filename = filename;
         this.digest = digest;
