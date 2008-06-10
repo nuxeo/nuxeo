@@ -209,13 +209,11 @@ public class PublishingActionsListenerBean extends InputController implements
                 throw new ClientException(e);
             }
 
-            String section = documentManager.getParentDocument(
-                    currentDocument.getRef()).getName();
-
+            DocumentModel section = documentManager.getParentDocument(currentDocument.getRef());
             Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
-            eventInfo.put("targetSection", section);
+            eventInfo.put("targetSection", section.getName());
             eventInfo.put("proxy", currentDocument);
-            eventInfo.put("sectionPath", currentDocument.getPathAsString());
+            eventInfo.put("sectionPath", section.getPathAsString());
             notifyEvent(
                     org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_PUBLICATION_APPROVED,
                     eventInfo, rejectPublishingComment, sourceDocument);
