@@ -24,9 +24,9 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
-import org.nuxeo.ecm.core.model.NoSuchRepositoryException;
 
 /**
  * @author bstefanescu
