@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.webengine.config">
 
-  
+
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)
     Default Objects
@@ -25,13 +25,33 @@
       <errorPage>error.groovy</errorPage>
       <roots>
         <root priority="0">default</root>
-	<root priority="1">admin</root>
+  <root priority="1">admin</root>
       </roots>
-   
-      <mappings> 
+
+      <mappings>
         <mapping pattern="/repository(/.*)?">
           <root leadingPath="/repository">/default-domain</root>
-        </mapping>  
+        </mapping>
+
+        <mapping pattern="/users">
+          <script>/users/users.groovy</script>
+        </mapping>
+        <mapping pattern="/users/create_user">
+          <script>/users/user_form.groovy</script>
+        </mapping>
+        <mapping pattern="/users/save_user">
+          <script>/users/save_user.groovy</script>
+        </mapping>
+        <mapping pattern="/users/create_group">
+          <script>/users/group_form.ftl</script>
+        </mapping>
+        <mapping pattern="/users/save_group">
+          <script>/users/save_group.groovy</script>
+        </mapping>
+        <mapping pattern="/users/user/(?username:[a-zA-Z0-9]+)$">
+          <script>/users/user_form.groovy</script>
+        </mapping>
+
       </mappings>
 
       <rendering-extensions>
@@ -49,10 +69,10 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
-  	point="webObject">
-  	<object id="WebObject">
-  		<actions>
-  			<action id="view" enabled="true">
+    point="webObject">
+    <object id="WebObject">
+      <actions>
+        <action id="view" enabled="true">
           <permission  expression="Read"/>
           <category>VIEW</category>
         </action>
@@ -81,7 +101,7 @@
           <permission expression="Write" />
         </action>
       </actions>
-  	</object>
+    </object>
 
   </extension>
 
