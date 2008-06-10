@@ -80,19 +80,20 @@ public abstract class AbstractIOResourceAdapter implements IOResourceAdapter {
         if (value == null) {
             return false;
         }
-        return value.booleanValue();
+        return value;
     }
 
     protected void setBooleanProperty(String propName, Serializable propValue) {
         if (propValue == null) {
             return;
         }
-        if (!(propValue instanceof String)) {
+        if (propValue instanceof String) {
+            properties.put(propName, Boolean.valueOf((String) propValue));
+        } else {
             log.error(String.format(
                     "Property %s needs a string representing a boolean:"
                             + " invalid value %s", propName, propValue));
         }
-        properties.put(propName, Boolean.valueOf((String) propValue));
     }
 
     protected String getStringProperty(String propName) {

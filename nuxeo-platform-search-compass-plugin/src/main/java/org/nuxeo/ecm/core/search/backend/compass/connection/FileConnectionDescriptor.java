@@ -37,7 +37,7 @@ public class FileConnectionDescriptor implements ConnectionConf {
 
     protected String absolutePath;
 
-    private final static String URL_PROTOCOL = "file://";
+    private static final String URL_PROTOCOL = "file://";
 
     public String getConnectionString() {
         if (absolutePath == null) {

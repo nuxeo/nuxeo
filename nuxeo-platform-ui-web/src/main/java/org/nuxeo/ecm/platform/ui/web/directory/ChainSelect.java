@@ -60,16 +60,17 @@ public class ChainSelect extends UIInput {
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(ChainSelect.class);
 
+    // Direct access from ChainSelectStatus
     Map<Integer, NestedChainSelectComponentInfo> compInfos = new HashMap<Integer, NestedChainSelectComponentInfo>();
 
     /**
      * The keys of the selected items in chain controls.
      */
-    List<String> keyList = new ArrayList<String>();
+    private List<String> keyList = new ArrayList<String>();
 
     private String onchange;
 
-    private HashMap<String, DirectorySelectItem>[] optionList;
+    private Map<String, DirectorySelectItem>[] optionList;
 
     private Integer size;
 
@@ -144,7 +145,7 @@ public class ChainSelect extends UIInput {
         Object[] values = (Object[]) state;
         super.restoreState(context, values[0]);
         componentValue = (Selection[]) values[1];
-        optionList = (HashMap<String, DirectorySelectItem>[]) values[2];
+        optionList = (Map<String, DirectorySelectItem>[]) values[2];
         localize = (Boolean) values[3];
         size = (Integer) values[4];
         multiSelect = (Boolean) values[5];
@@ -240,7 +241,6 @@ public class ChainSelect extends UIInput {
                 component.setValue(componentValue);
             }
         }
-
     }
 
     public static String format(Object o) {
@@ -365,7 +365,7 @@ public class ChainSelect extends UIInput {
         return optionList[index];
     }
 
-    public void setOptions(int index, HashMap<String, DirectorySelectItem> opts) {
+    public void setOptions(int index, Map<String, DirectorySelectItem> opts) {
         optionList[index] = opts;
     }
 
@@ -618,7 +618,7 @@ public class ChainSelect extends UIInput {
                 items = DirectoryHelper.getSelectItems(directoryValues, filter);
             }
             if (items == null) {
-                throw new RuntimeException(String.format(
+                throw new IllegalStateException(String.format(
                         "Item not found: directoryName=%s, filter=%s",
                         directoryName, filter));
             }
@@ -661,16 +661,17 @@ public class ChainSelect extends UIInput {
      * This structure is needed to keep data for dynamically generated
      * components.
      */
-    public class NestedChainSelectComponentInfo {
-        public String directoryName;
+    static class NestedChainSelectComponentInfo {
 
-        public VocabularyEntryList directoryValues;
+        String directoryName;
 
-        public boolean displayObsoleteEntries;
+        VocabularyEntryList directoryValues;
 
-        public boolean localize;
+        boolean displayObsoleteEntries;
 
-        public String display;
+        boolean localize;
+
+        String display;
 
     }
 
@@ -710,7 +711,7 @@ public class ChainSelect extends UIInput {
             }
 
             String[] rows = StringUtils.split(newValueStr, getKeySeparator());
-            if (!allowBranchSelection && rows.length != this.size) {
+            if (!allowBranchSelection && rows.length != size) {
                 String messageStr = ComponentUtils.translate(context,
                         "label.chainSelect.incomplete_selection");
                 FacesMessage message = new FacesMessage(
@@ -719,7 +720,6 @@ public class ChainSelect extends UIInput {
                 setValid(false);
             }
         }
-
     }
 
 }

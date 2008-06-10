@@ -121,8 +121,8 @@ public final class ComponentUtils {
     @SuppressWarnings("unchecked")
     public static void copyValues(UIComponent parent, UIComponent child,
             String[] valueNames) {
-        Map parentAttributes = parent.getAttributes();
-        Map childAttributes = child.getAttributes();
+        Map<String, Object> parentAttributes = parent.getAttributes();
+        Map<String, Object> childAttributes = child.getAttributes();
         for (String name : valueNames) {
             // attributes
             if (parentAttributes.containsKey(name)) {
