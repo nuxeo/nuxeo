@@ -12,73 +12,12 @@
     </excludes>
   </fileSet>
 
-  <artifactSet id="nuxeo-runtime">
-    <import>**</import>
-    <includes>
-      <artifact group="org.nuxeo.runtime" />
-    </includes>
-  </artifactSet>
-
-  <artifactSet id="nuxeo-core">
-    <import>**</import>
-    <includes>
-      <artifact group="org.nuxeo.ecm.core" />
-    </includes>
-  </artifactSet>
-
-  <artifactSet id="nuxeo-platform">
-    <import>**</import>
-    <includes>
-      <artifact group="org.nuxeo.ecm.platform" />
-    </includes>
-    <excludes>
-      <artifact name="nuxeo-platform-webapp" />
-      <artifact name="nuxeo-platform-webapp-core" />
-
-      <artifact name="nuxeo-platform-archive-facade" />
-      <artifact name="nuxeo-platform-audit-facade" />
-      <artifact name="nuxeo-platform-placeful-facade" />
-      <artifact name="nuxeo-platform-search-compass-plugin" />
-    </excludes>
-  </artifactSet>
-
-  <artifactSet id="nuxeo-platform-unpacked">
-    <import>**</import>
-    <includes>
-      <artifact name="nuxeo-platform-archive-facade" />
-      <artifact name="nuxeo-platform-audit-facade" />
-      <artifact name="nuxeo-platform-placeful-facade" />
-      <artifact name="nuxeo-platform-search-compass-plugin" />
-    </includes>
-  </artifactSet>
-
-  <artifactSet id="nuxeo-web">
-    <import>**</import>
-    <includes>
-      <artifact name="nuxeo-platform-webapp" />
-      <artifact name="nuxeo-platform-webapp-core" />
-    </includes>
-  </artifactSet>
-
-  <artifactSet id="nuxeo-themes">
-    <import>**</import>
-    <includes>
-      <artifact group="org.nuxeo.theme" />
-    </includes>
-  </artifactSet>
-
-
   <!-- TOOD
     This dependencySet is not working correctly because of bad project poms.
     After fixing the problems you can enable this for a fully automatic build
   -->
   <artifactSet id="nuxeo-libs">
-    <import>nuxeo-runtime</import>
-    <import>nuxeo-core</import>
-    <import>nuxeo-platform</import>
-    <import>nuxeo-platform-unpacked</import>
-    <import>nuxeo-web</import>
-    <import>nuxeo-theme</import>
+    <import>**</import>
     <includeDependencies>true</includeDependencies>
     <excludes>
       <artifact group="org.nuxeo.*" />
@@ -126,6 +65,73 @@
       <artifact group="com.sun.facelets" name="jsf-facelets" version="1.1.11" />
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-jbossws-wrapper" version="4.0.5.GA" />
     </artifacts>
+  </artifactSet>
+
+  <artifactSet id="nuxeo-themes">
+    <import>**</import>
+    <includeDependencies>true</includeDependencies>
+    <includes>
+      <artifact group="org.nuxeo.theme" category="core" />
+      <artifact group="org.nuxeo.theme" category="search" />
+      <artifact group="org.nuxeo.theme" category="web" />
+    </includes>
+  </artifactSet>
+
+  <artifactSet id="nuxeo-web">
+    <import>**</import>
+    <includes>
+      <artifact name="nuxeo-platform-webapp" category="web" />
+      <artifact name="nuxeo-platform-webapp-core" category="web" />
+    </includes>
+  </artifactSet>
+
+  <artifactSet id="nuxeo-platform-unpacked">
+    <import>**</import>
+    <includes>
+      <artifact name="nuxeo-platform-archive-facade" />
+      <artifact name="nuxeo-platform-audit-facade" />
+      <artifact name="nuxeo-platform-placeful-facade" />
+      <artifact name="nuxeo-platform-search-compass-plugin" />
+    </includes>
+  </artifactSet>
+
+  <artifactSet id="nuxeo-platform">
+    <import>**</import>
+    <includeDependencies>true</includeDependencies>
+    <includes>
+      <artifact group="org.nuxeo.ecm.platform" category="core" />
+      <artifact group="org.nuxeo.ecm.platform" category="search" />
+      <artifact group="org.nuxeo.ecm.platform" category="web" />
+    </includes>
+    <excludes>
+      <artifact name="nuxeo-platform-webapp" />
+      <artifact name="nuxeo-platform-webapp-core" />
+
+      <artifact name="nuxeo-platform-archive-facade" />
+      <artifact name="nuxeo-platform-audit-facade" />
+      <artifact name="nuxeo-platform-placeful-facade" />
+      <artifact name="nuxeo-platform-search-compass-plugin" />
+    </excludes>
+  </artifactSet>
+
+  <artifactSet id="nuxeo-runtime">
+    <import>**</import>
+    <includeDependencies>true</includeDependencies>
+    <includes>
+      <artifact group="org.nuxeo.runtime" category="core" />
+      <artifact group="org.nuxeo.runtime" category="search" />
+      <artifact group="org.nuxeo.runtime" category="web" />
+    </includes>
+  </artifactSet>
+
+  <artifactSet id="nuxeo-core">
+    <import>**</import>
+    <includeDependencies>true</includeDependencies>
+    <includes>
+      <artifact group="org.nuxeo.ecm.core" category="core" />
+      <artifact group="org.nuxeo.ecm.core" category="search" />
+      <artifact group="org.nuxeo.ecm.core" category="web" />
+    </includes>
   </artifactSet>
 
 </assembly>

@@ -51,22 +51,22 @@
     </excludes>
   </fileSet>
 
-  <artifactSet id="nuxeo-runtime">
+  <artifactSet id="nuxeo-themes">
     <import>**</import>
     <includes>
-      <artifact group="org.nuxeo.runtime" category="core" />
+      <artifact group="org.nuxeo.theme" category="core" />
     </includes>
-    <excludes>
-      <artifact name="nuxeo-runtime-extensions" />
-      <artifact name="nuxeo-runtime-template" />
-      <artifact name="nuxeo-runtime-test" />
-    </excludes>
   </artifactSet>
 
-  <artifactSet id="nuxeo-core">
+  <artifactSet id="nuxeo-web" />
+
+  <artifactSet id="nuxeo-platform-unpacked">
     <import>**</import>
     <includes>
-      <artifact group="org.nuxeo.ecm.core" category="core" />
+      <artifact name="nuxeo-platform-archive-facade" category="core" />
+      <artifact name="nuxeo-platform-audit-facade" category="core" />
+      <artifact name="nuxeo-platform-placeful-facade" category="core" />
+      <artifact name="nuxeo-platform-search-compass-plugin" category="core" />
     </includes>
   </artifactSet>
 
@@ -83,22 +83,17 @@
     </excludes>
   </artifactSet>
 
-  <artifactSet id="nuxeo-platform-unpacked">
+  <artifactSet id="nuxeo-runtime">
     <import>**</import>
     <includes>
-      <artifact name="nuxeo-platform-archive-facade" category="core" />
-      <artifact name="nuxeo-platform-audit-facade" category="core" />
-      <artifact name="nuxeo-platform-placeful-facade" category="core" />
-      <artifact name="nuxeo-platform-search-compass-plugin" category="core" />
+      <artifact group="org.nuxeo.runtime" category="core" />
     </includes>
   </artifactSet>
 
-  <artifactSet id="nuxeo-web" />
-
-  <artifactSet id="nuxeo-themes">
+  <artifactSet id="nuxeo-core">
     <import>**</import>
     <includes>
-      <artifact group="org.nuxeo.theme" category="core" />
+      <artifact group="org.nuxeo.ecm.core" category="core" />
     </includes>
   </artifactSet>
 

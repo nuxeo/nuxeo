@@ -10,19 +10,16 @@
     <set>nuxeo-fixed-libs</set>
   </assemble>
 
-  <!--assemble>
-    <outputFile>lib-all</outputFile>
+<!--
+  <assemble>
+    <outputFile>lib-test</outputFile>
     <set>nuxeo-libs</set>
-    </assemble-->
-
-  <assemble>
-    <outputFile>system</outputFile>
-    <set>nuxeo-runtime</set>
   </assemble>
+ -->
 
   <assemble>
-    <outputFile>core</outputFile>
-    <set>nuxeo-core</set>
+    <outputFile>themes</outputFile>
+    <set>nuxeo-themes</set>
   </assemble>
 
   <assemble>
@@ -38,13 +35,18 @@
   </assemble>
 
   <assemble>
-    <outputFile>themes</outputFile>
-    <set>nuxeo-themes</set>
+    <outputFile>/</outputFile>
+    <set>nuxeo-web</set>
   </assemble>
 
   <assemble>
-    <outputFile>/</outputFile>
-    <set>nuxeo-web</set>
+    <outputFile>system</outputFile>
+    <set>nuxeo-runtime</set>
+  </assemble>
+
+  <assemble>
+    <outputFile>core</outputFile>
+    <set>nuxeo-core</set>
   </assemble>
 
 </assembly>
