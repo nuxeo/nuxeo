@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.transform.plugin.joooconverter.impl;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.net.ConnectException;
 import java.util.ArrayList;
@@ -239,7 +240,9 @@ public class JOOoConvertPluginImpl extends AbstractPlugin implements
                     // Copy in a file to be able to read it several time
                     sourceFile = File.createTempFile(
                             "NXJOOoConverterDocumentIn", ".bin");
-                    FileUtils.copyToFile(sources[0].getBlob().getStream(), sourceFile);
+                    InputStream stream = sources[0].getBlob().getStream();
+                    stream.reset(); // works on a JCRBlobInputStream
+                    FileUtils.copyToFile(stream, sourceFile);
                     DocumentFormat sourceFormat = null;
 
                     // TODO: JODconverter2.1.1 bug on excel file
