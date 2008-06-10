@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/dateArray"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/dateArray">
+
+  <xs:include schemaLocation="core-types.xsd" />
+
+  <xs:element name="stringArray" type="nxs:stringArrayType" />
+  <xs:simpleType name="stringArrayType">
+    <xs:list itemType="xs:string" />
+  </xs:simpleType>
+
+  <xs:element name="dateArray" type="nxs:dateArrayType" />
+  <xs:simpleType name="dateArrayType">
+    <xs:list itemType="xs:date" />
+  </xs:simpleType>
+
+  <xs:element name="intArray" type="nxs:intArrayType" />
+  <xs:simpleType name="intArrayType">
+    <xs:list itemType="xs:int" />
+  </xs:simpleType>
+
+  <xs:element name="complex" type="nxs:complexType" />
+  <xs:complexType name="complexType">
+    <xs:sequence>
+      <xs:element name="string" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" />
+      <xs:element name="date" type="xs:date" minOccurs="0"
+        maxOccurs="unbounded" />
+      <xs:element name="int" type="xs:int" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="complexList" type="nxs:complexListType" />
+  <xs:complexType name="complexListType">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:complexType" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="fileList" type="nxs:fileListType" />
+  <xs:complexType name="fileListType">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:content" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="fileComplexList" type="nxs:fileComplexListType" />
+  <xs:complexType name="fileComplexListType">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:fileComplexType" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="fileComplexType">
+    <xs:sequence>
+      <xs:element name="blob" type="nxs:content" minOccurs="0"
+        maxOccurs="unbounded" />
+      <xs:element name="filename" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
+
+

@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.repository.jcr.model;
 
+import java.util.Arrays;
 import java.util.Calendar;
 
 import org.nuxeo.ecm.core.model.Document;
@@ -47,7 +48,7 @@ public class TestArrayProperty extends RepositoryTestCase {
         session = getSession();
         root = session.getRootDocument();
         // add test date doc
-        dateDoc = root.addChild("dateDocument", "DateArrayDocument");
+        dateDoc = root.addChild("dateDocument", "TestDocument");
     }
 
     // NXP-2454
@@ -55,9 +56,10 @@ public class TestArrayProperty extends RepositoryTestCase {
         Calendar date = Calendar.getInstance();
         date.set(2008, 6, 5);
         Calendar[] calendarArray = new Calendar[] { date };
-        dateDoc.setPropertyValue("dates", calendarArray);
+        dateDoc.setPropertyValue("dateArray", calendarArray);
 
-        assertEquals(calendarArray, dateDoc.getPropertyValue("dates"));
+        assertTrue(Arrays.equals(calendarArray,
+                (Object[]) dateDoc.getPropertyValue("dateArray")));
     }
 
 }
