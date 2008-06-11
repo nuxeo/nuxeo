@@ -100,6 +100,9 @@
         <action id="deletefile" enabled="true" handler="org.nuxeo.ecm.webengine.actions.DeleteFileActionHandler">
           <permission expression="Write" />
         </action>
+        <action id="addpermission" enabled="true" script="/Document/addpermission.groovy">
+          <permission expression="Write" />
+        </action>
       </actions>
     </object>
 
