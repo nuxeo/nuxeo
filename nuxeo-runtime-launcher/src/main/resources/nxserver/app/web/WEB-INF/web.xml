@@ -27,6 +27,21 @@
     <url-pattern>/site/*</url-pattern>
 </servlet-mapping>
 <servlet>
+    <servlet-name>Nuxeo WebEngine Administration</servlet-name>
+    <servlet-class>
+        org.nuxeo.ecm.webengine.servlet.WebServlet
+    </servlet-class>
+    <init-param>
+      <param-name>webapp</param-name>
+      <param-value>admin</param-value>
+    </init-param>
+</servlet>
+<servlet-mapping>
+    <servlet-name>Nuxeo WebEngine Administration</servlet-name>
+    <url-pattern>/admin/*</url-pattern>
+</servlet-mapping>
+
+<servlet>
     <servlet-name>Nuxeo Resource Servlet</servlet-name>
     <servlet-class>
         org.nuxeo.ecm.webengine.servlet.ResourceServlet
