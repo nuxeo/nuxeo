@@ -58,6 +58,7 @@ import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
+import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeNodeComparator;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeNodeImpl;
@@ -619,9 +620,19 @@ public class PublishActionsBean implements PublishActions, Serializable {
                     "Cannot publish because not enough rights");
         }
 
-        if (!docToPublish.isProxy()) {
+        // set issued date only if the doc is dirty, to avoid setting it
+        // repeatedly if several publishings are done
+        final boolean setIssuedDate = documentManager.isDirty(docToPublish.getRef()) &&
+                !docToPublish.isProxy();
+        if (setIssuedDate) {
             docToPublish.setProperty("dublincore", "issued",
                     Calendar.getInstance());
+            // make sure that saveDocument doesn't create a snapshot,
+            // as publishDocument will do it
+            docToPublish.putContextData(
+                    org.nuxeo.common.collections.ScopeType.REQUEST,
+                    VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY,
+                    Boolean.FALSE);
         }
 
         DocumentModel proxy;
@@ -638,7 +649,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
                 @Override
                 public void run() throws ClientException {
 
-                    if (!docToPublish.isProxy()) {
+                    if (setIssuedDate) {
                         unrestrictedSession.saveDocument(docToPublish);
                     }
                     DocumentModel proxy = unrestrictedSession.publishDocument(
@@ -683,7 +694,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
             proxy = misc[0]; // get info from inner method
 
         } else {
-            if (!docToPublish.isProxy()) {
+            if (setIssuedDate) {
                 documentManager.saveDocument(docToPublish);
             }
             proxy = documentManager.publishDocument(docToPublish, section);
