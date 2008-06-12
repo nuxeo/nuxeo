@@ -120,6 +120,8 @@ public class EventManager implements Serializable {
 
             if ("Domain".equals(docType)) {
                 eventName = EventNames.DOMAIN_SELECTION_CHANGED;
+            } else if ("Root".equals(docType)) {
+                eventName = EventNames.GO_HOME;
             } else if ("WorkspaceRoot".equals(docType)
                     || "SectionRoot".equals(docType)) {
                 eventName = EventNames.CONTENT_ROOT_SELECTION_CHANGED;
