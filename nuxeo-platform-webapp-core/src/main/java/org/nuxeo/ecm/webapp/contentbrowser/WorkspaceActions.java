@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webapp.contentbrowser;
 
 import javax.annotation.security.PermitAll;
-import javax.ejb.Local;
 import javax.ejb.Remove;
 import org.jboss.seam.annotations.Destroy;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -32,12 +31,9 @@ import org.nuxeo.ecm.webapp.base.StatefulBaseLifeCycle;
 /**
  * Provides contentRoot-specific actions.
  *
- * XXX AT: content roots should be handled like documents => deprecated, use
- * document actions instead
- *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
-
+// XXX AT: content roots should be handled like documents => deprecated, use
 public interface WorkspaceActions extends StatefulBaseLifeCycle {
     void initialize() throws ClientException;
 
