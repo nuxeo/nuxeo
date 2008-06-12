@@ -70,7 +70,7 @@ public class DefaultValidatorsRule extends AbstractNuxeoCoreValidatorsRule {
          */
         /*NXP-1981 Rux: use the exported API instead of Core internal SecurityService. The
          * code has to be duplicated, but this way at least we can keep the multi-server
-         * deployment working. Instead of using SecurityService.getPermissionsToCheck(), 
+         * deployment working. Instead of using SecurityService.getPermissionsToCheck(),
          * I am replicating the code here based on PermissionProvider.getPermissionsGroups
          * in order to have the same business logic.
          */
@@ -83,12 +83,12 @@ public class DefaultValidatorsRule extends AbstractNuxeoCoreValidatorsRule {
         } catch (Exception e) {
             throw new PublishingValidatorException(e);
         }
-        
+
         Set<String> requiredPermissions = new HashSet<String>();
         requiredPermissions.addAll(Arrays.asList(permProvider.getPermissionGroups(
                 SecurityConstants.WRITE)));
         requiredPermissions.add(SecurityConstants.WRITE);
-        
+
         /*Rux: Everything is not added!!! Go workaround*/
         requiredPermissions.add(SecurityConstants.EVERYTHING);
         //String[] reviewers = acp.listUsernamesForPermission(SecurityConstants.EVERYTHING);

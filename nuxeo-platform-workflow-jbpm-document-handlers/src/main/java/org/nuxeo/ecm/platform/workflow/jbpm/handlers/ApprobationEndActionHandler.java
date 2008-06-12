@@ -35,13 +35,9 @@ public class ApprobationEndActionHandler extends
     private static final long serialVersionUID = -6338380183606090792L;
 
     public void execute(ExecutionContext ec) throws Exception {
-
-        log.info("##########################################");
-        log.info("             PROCESS ENDS                 ");
-        log.info("##########################################");
+        log.info("PROCESS ENDS");
 
         try {
-
             ProcessInstance pi = getProcessInstance(ec);
 
             // Try to change life cycle of the bound document to specified
@@ -73,7 +69,6 @@ public class ApprobationEndActionHandler extends
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
 }

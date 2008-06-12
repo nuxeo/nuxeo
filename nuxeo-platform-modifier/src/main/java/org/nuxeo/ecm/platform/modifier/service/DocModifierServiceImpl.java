@@ -63,7 +63,8 @@ public class DocModifierServiceImpl extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(DocModifierServiceImpl.class);
 
-    private final Map<String, List<DocModifierEPDescriptor>> docModifDescriptorsMap = new HashMap<String, List<DocModifierEPDescriptor>>();
+    private final Map<String, List<DocModifierEPDescriptor>> docModifDescriptorsMap
+            = new HashMap<String, List<DocModifierEPDescriptor>>();
 
     static class TransformationOutcome {
         ByteArrayBlob content;
@@ -79,7 +80,6 @@ public class DocModifierServiceImpl extends DefaultComponent implements
     public void activate(ComponentContext context) throws Exception {
         log.debug("<activate>");
         super.activate(context);
-
     }
 
     @Override
@@ -397,7 +397,7 @@ public class DocModifierServiceImpl extends DefaultComponent implements
      *         data)
      * @throws Exception
      */
-    private TransformationOutcome performTransformation(Blob content,
+    private static TransformationOutcome performTransformation(Blob content,
             Map<String, Serializable> fieldValues, String pluginName)
             throws Exception {
         assert content != null;

@@ -146,9 +146,8 @@ public class LDAPSession implements Session, EntrySource {
                 attrs.put(attr);
             }
 
-            String backendFieldId;
             for (String fieldId : fieldMap.keySet()) {
-                backendFieldId = directory.getFieldMapper().getBackendField(
+                String backendFieldId = directory.getFieldMapper().getBackendField(
                         fieldId);
                 if (backendFieldId.equals(getPasswordField())) {
                     attr = new BasicAttribute(backendFieldId);
@@ -290,7 +289,6 @@ public class LDAPSession implements Session, EntrySource {
 
             if (!isReadOnly() && !updateList.isEmpty()) {
                 Attributes attrs = new BasicAttributes();
-                Attribute attr;
                 SearchResult ldapEntry = getLdapEntry(docModel.getId());
                 if (ldapEntry == null) {
                     throw new DirectoryException(docModel.getId()
@@ -304,7 +302,8 @@ public class LDAPSession implements Session, EntrySource {
                     Object value = docModel.getProperty(schemaName, f);
                     String backendField = directory.getFieldMapper().getBackendField(
                             f);
-                    if ((value == null) || (value.equals(""))) {
+                    if (value == null || value.equals("")) {
+                        Attribute attr;
                         if (getMandatoryAttributes().contains(backendField)) {
                             attr = new BasicAttribute(backendField);
                             attr.add(" ");
@@ -331,7 +330,6 @@ public class LDAPSession implements Session, EntrySource {
                         schemaName, referenceFieldName);
                 reference.setTargetIdsForSource(docModel.getId(), targetIds);
             }
-
         } catch (Exception e) {
             throw new DirectoryException("updateEntry failed: "
                     + e.getMessage(), e);
@@ -462,9 +460,7 @@ public class LDAPSession implements Session, EntrySource {
     public DocumentModelList query(Map<String, Object> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws DirectoryException {
-
         return query(filter, fulltext, false, orderBy);
-
     }
 
     public DocumentModelList query(Map<String, Object> filter,
@@ -581,7 +577,6 @@ public class LDAPSession implements Session, EntrySource {
                                 : trimmedValue));
                 return defaultValue;
             }
-
         } else if ("date".equals(typeName)) {
             if ("".equals(trimmedValue)) {
                 return defaultValue;
@@ -671,15 +666,13 @@ public class LDAPSession implements Session, EntrySource {
     protected DocumentModel ldapResultToDocumentModel(SearchResult result,
             String entryId, boolean fetchReferences) throws DirectoryException {
         Attributes attributes = result.getAttributes();
-        Attribute attribute;
-        String attributeId;
         String passwordFieldId = getPasswordField();
         Map<String, Object> fieldMap = new HashMap<String, Object>();
 
         if (entryId == null) {
             try {
                 // NXP-2461: check that id field is filled
-                attribute = attributes.get(idAttribute);
+                Attribute attribute = attributes.get(idAttribute);
                 if (attribute != null) {
                     Object entry = attribute.get();
                     if (entry != null) {
@@ -721,9 +714,9 @@ public class LDAPSession implements Session, EntrySource {
                 fieldMap.put(fieldName, referencedIds);
             } else {
                 // manage directly stored fields
-                attributeId = directory.getFieldMapper().getBackendField(
+                String attributeId = directory.getFieldMapper().getBackendField(
                         fieldName);
-                attribute = attributes.get(attributeId);
+                Attribute attribute = attributes.get(attributeId);
                 if (fieldName.equals(passwordFieldId)) {
                     // do not try to fetch the password attribute
                     continue;
@@ -801,21 +794,17 @@ public class LDAPSession implements Session, EntrySource {
             List<String> mandatoryAttributes = new ArrayList<String>();
 
             DirContext schema = dirContext.getSchema("");
-            Attributes attributes;
-            Attribute attribute;
-            NamingEnumeration<String> values;
-            String value;
             List<String> creationClasses = new ArrayList<String>(
                     Arrays.asList(directory.getConfig().getCreationClasses()));
             creationClasses.remove("top");
             for (String creationClass : creationClasses) {
-                attributes = schema.getAttributes("ClassDefinition/"
+                Attributes attributes = schema.getAttributes("ClassDefinition/"
                         + creationClass);
-                attribute = attributes.get("MUST");
+                Attribute attribute = attributes.get("MUST");
                 if (attribute != null) {
-                    values = (NamingEnumeration<String>) attribute.getAll();
+                    NamingEnumeration<String> values = (NamingEnumeration<String>) attribute.getAll();
                     while (values.hasMore()) {
-                        value = values.next();
+                        String value = values.next();
                         mandatoryAttributes.add(value);
                     }
                 }

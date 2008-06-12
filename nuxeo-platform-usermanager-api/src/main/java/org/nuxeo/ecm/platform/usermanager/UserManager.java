@@ -144,7 +144,7 @@ public interface UserManager {
      * Sets the user directory name.
      *
      * @param userDirectoryName the user directory name.
-     * @throws ClientException 
+     * @throws ClientException
      */
     void setUserDirectoryName(String userDirectoryName) throws ClientException;
 
@@ -152,7 +152,7 @@ public interface UserManager {
      * Gets the user directory name.
      *
      * @return the user directory name.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getUserDirectoryName() throws ClientException;
 
@@ -160,7 +160,7 @@ public interface UserManager {
      * Sets the user email field.
      *
      * @param userEmailField the email field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     void setUserEmailField(String userEmailField) throws ClientException;
 
@@ -168,7 +168,7 @@ public interface UserManager {
      * Gets the user email field.
      *
      * @return the user email field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getUserEmailField() throws ClientException;
 
@@ -177,7 +177,7 @@ public interface UserManager {
      * done.
      *
      * @param userSearchFields the search fields.
-     * @throws ClientException 
+     * @throws ClientException
      */
     void setUserSearchFields(Set<String> userSearchFields) throws ClientException;
 
@@ -186,7 +186,7 @@ public interface UserManager {
      * done.
      *
      * @return the search fields.
-     * @throws ClientException 
+     * @throws ClientException
      */
     Set<String> getUserSearchFields() throws ClientException;
 
@@ -194,7 +194,7 @@ public interface UserManager {
      * Sets the group directory name.
      *
      * @param groupDirectoryName the user directory name.
-     * @throws ClientException 
+     * @throws ClientException
      */
     void setGroupDirectoryName(String groupDirectoryName) throws ClientException;
 
@@ -202,7 +202,7 @@ public interface UserManager {
      * Gets the group directory name.
      *
      * @return the group directory name.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getGroupDirectoryName() throws ClientException;
 
@@ -210,7 +210,7 @@ public interface UserManager {
      * Sets the group members field.
      *
      * @param groupMembersField the members field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     void setGroupMembersField(String groupMembersField) throws ClientException;
 
@@ -218,7 +218,7 @@ public interface UserManager {
      * Gets the group members field.
      *
      * @return the group members field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getGroupMembersField() throws ClientException;
 
@@ -226,7 +226,7 @@ public interface UserManager {
      * Sets the group sub-groups field.
      *
      * @param groupSubGroupsField the sub-groups field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     void setGroupSubGroupsField(String groupSubGroupsField) throws ClientException;
 
@@ -234,7 +234,7 @@ public interface UserManager {
      * Gets the group sub-groups field.
      *
      * @return the sub-groups field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getGroupSubGroupsField() throws ClientException;
 
@@ -242,7 +242,7 @@ public interface UserManager {
      * Sets the group parentGroups field.
      *
      * @param groupParentGroupsField the parentGroups field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     void setGroupParentGroupsField(String groupParentGroupsField) throws ClientException;
 
@@ -250,7 +250,7 @@ public interface UserManager {
      * Gets the group parent-groups field.
      *
      * @return the parent-groups field.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getGroupParentGroupsField() throws ClientException;
 
@@ -258,7 +258,7 @@ public interface UserManager {
      * Sets the anonymous user properties.
      *
      * @param anonymousUser the anonymous user properties.
-     * @throws ClientException 
+     * @throws ClientException
      */
     void setAnonymousUser(Map<String, String> anonymousUser) throws ClientException;
 
@@ -266,7 +266,7 @@ public interface UserManager {
      * Gets the anonymous user id.
      *
      * @return the anonymous user id, or null if none is defined.
-     * @throws ClientException 
+     * @throws ClientException
      */
     String getAnonymousUserId() throws ClientException;
 
