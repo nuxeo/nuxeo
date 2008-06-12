@@ -29,8 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.naming.InitialContext;
-import javax.naming.NamingEnumeration;
 import javax.naming.NameClassPair;
+import javax.naming.NamingEnumeration;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,13 +48,12 @@ import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.io.api.IOManager;
-
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * A test/sample class for remote copying of documents and resources.
- *
+ * <p>
  * Warning : this test is deactivated from autorun unit tests as it needs a particular configuration
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
