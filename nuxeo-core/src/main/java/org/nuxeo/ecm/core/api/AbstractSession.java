@@ -553,6 +553,10 @@ public abstract class AbstractSession implements CoreSession,
             String comment = srcDoc.getRepository().getName() + ':'
                     + srcDoc.getParent().getUUID();
 
+            if (name == null) {
+                name = srcDoc.getName();
+            }
+            name = generateDocumentName(dstDoc, name);
             Document doc = getSession().move(srcDoc, dstDoc, name);
 
             // notify document moved

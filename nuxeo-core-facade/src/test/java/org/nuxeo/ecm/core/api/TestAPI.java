@@ -1974,6 +1974,17 @@ public abstract class TestAPI extends TestConnection {
 
         assertTrue(remote.exists(new PathRef("folder1/fileMove")));
 
+        DocumentModel file2 = new DocumentModelImpl(folder2.getPathAsString(),
+                "file2", "File");
+        file2 = createChildDocument(file2);
+        assertTrue(remote.exists(new PathRef("folder2/file2")));
+        DocumentModel newFile2 = remote.move(file.getRef(), folder2.getRef(),
+                "file2"); // collision
+        String newName = newFile2.getName();
+        assertFalse("file2".equals(newName));
+        assertTrue(remote.exists(new PathRef("folder2/file2")));
+        assertTrue(remote.exists(new PathRef("folder2/" + newName)));
+
         remote.cancel();
     }
 
