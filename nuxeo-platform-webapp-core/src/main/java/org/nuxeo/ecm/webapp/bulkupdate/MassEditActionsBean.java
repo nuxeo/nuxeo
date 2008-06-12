@@ -39,9 +39,9 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.End;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
@@ -104,19 +104,14 @@ public class MassEditActionsBean extends InputController implements
     @In(create = true)
     protected transient DocumentVersioning documentVersioning;
 
-    @Out(required = false)
     FictiveDocumentModel fictiveDocumentModel;
 
-    @Out(required = false)
     DocumentModel changeCheckboxes;
 
-    @Out(required = false)
     DocumentModel currentFieldValues;
 
-    @Out(required = false)
     DocumentModel docModelExistingSelect;
 
-    @Out(required = false)
     DocumentModel docModelExistingSelectVerbose;
 
     @DataModelSelection
@@ -129,6 +124,7 @@ public class MassEditActionsBean extends InputController implements
     private List<DocumentModel> changingDocuments;
 
     private List<DocumentModel> unchangingDocuments;
+
 
     /**
      * This will be set from the preview page if the user wants to remove saved
@@ -154,6 +150,36 @@ public class MassEditActionsBean extends InputController implements
         log.debug(logPrefix + "add to worklist processed...");
 
         return NAVIGATION_MASS_EDIT;
+    }
+
+    @Factory(value="fictiveDocumentModel", scope=ScopeType.EVENT)
+    public DocumentModel getFictiveDocumentModel()
+    {
+        return fictiveDocumentModel;
+    }
+
+    @Factory(value="docModelExistingSelect", scope=ScopeType.EVENT)
+    public DocumentModel getDocModelExistingSelect()
+    {
+        return docModelExistingSelect;
+    }
+
+    @Factory(value="changeCheckboxes", scope=ScopeType.EVENT)
+    public DocumentModel getChangeCheckboxes()
+    {
+        return changeCheckboxes;
+    }
+
+    @Factory(value="currentFieldValues", scope=ScopeType.EVENT)
+    public DocumentModel getCurrentFieldValues()
+    {
+        return currentFieldValues;
+    }
+
+    @Factory(value="docModelExistingSelectVerbose", scope=ScopeType.EVENT)
+    public DocumentModel getDocModelExistingSelectVerbose()
+    {
+        return docModelExistingSelectVerbose;
     }
 
     /**
@@ -252,6 +278,15 @@ public class MassEditActionsBean extends InputController implements
 
         FieldWidget[] filteredWidgets = new FieldWidget[filteredWidgetsList.size()];
         filteredWidgets = filteredWidgetsList.toArray(filteredWidgets);
+
+        // init selection checkboxes to avoid NPE
+        if (changeCheckboxes!=null)
+        {
+            for (FieldWidget fw : filteredWidgetsList)
+            {
+                changeCheckboxes.setProperty(fw.getSchemaName(), fw.getFieldName(), false);
+            }
+        }
 
         return filteredWidgets;
     }

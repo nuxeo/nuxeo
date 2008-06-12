@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.bulkupdate;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,6 +40,7 @@ import org.nuxeo.ecm.core.api.impl.DataModelMapImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.impl.DefaultPropertyFactory;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
 
@@ -49,7 +51,7 @@ import org.nuxeo.ecm.core.schema.DocumentType;
  * @author DM
  */
 // TODO move to a common availability package
-public class FictiveDocumentModel implements DocumentModel {
+public class FictiveDocumentModel implements DocumentModel, Serializable {
 
     private static final Log log = LogFactory.getLog(FictiveDocumentModel.class);
 
@@ -376,19 +378,45 @@ public class FictiveDocumentModel implements DocumentModel {
     }
 
     public Property getProperty(String xpath) throws PropertyException {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+
+        // tmp hack : use xpath as schemaName:property
+        String schemaName = xpath.split(":")[0];
+        DocumentPart dp = DefaultPropertyFactory.newDocumentPart(schemaName);
+        String prefix = dp.getSchema().getNamespace().prefix;
+
+        Map<String,Serializable> map = new HashMap<String, Serializable>();
+
+        if (!dataModels.containsKey(schemaName))
+        {
+            String[] schemas = new String[1];
+            schemas[0]=schemaName;
+            registerSchemas(schemas);
+        }
+
+        Map<String,Object> dmMap = dataModels.get(schemaName).getMap();
+        for (String k : dmMap.keySet())
+        {
+            map.put(k, (Serializable)dmMap.get(k));
+        }
+        dp.init((Serializable) map);
+        try
+        {
+            return dp.resolvePath(xpath);
+        }
+        catch (PropertyException e) {
+            return dp.resolvePath(xpath.replace(schemaName+":", prefix + ":"));
+        }
+
+
     }
 
     public Serializable getPropertyValue(String xpath) throws PropertyException {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        return getProperty(xpath).getValue();
     }
 
     public void setPropertyValue(String xpath, Serializable value)
             throws PropertyException {
-        // TODO Auto-generated method stub
-        throw new java.lang.UnsupportedOperationException("not implemented");
+        getProperty(xpath).setValue(value);
     }
 
     public long getFlags() {
@@ -398,10 +426,20 @@ public class FictiveDocumentModel implements DocumentModel {
 
     @Override
     public DocumentModel clone() throws CloneNotSupportedException {
-    	throw new java.lang.UnsupportedOperationException("not implemented");
+        throw new java.lang.UnsupportedOperationException("not implemented");
     }
 
     public void reset() {
+        throw new java.lang.UnsupportedOperationException("not implemented");
+    }
+
+    public void refresh() throws ClientException {
+        throw new java.lang.UnsupportedOperationException("not implemented");
+
+    }
+
+    public void refresh(int refreshFlags, String[] schemas)
+            throws ClientException {
         throw new java.lang.UnsupportedOperationException("not implemented");
     }
 
