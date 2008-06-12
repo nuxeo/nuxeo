@@ -113,13 +113,15 @@ public class EventManager implements Serializable {
             // XXX AT: kind of BBB, not sure why this was used like this
             eventsFired = raiseEventsOnLocationSelectionChanged();
         } else {
-        	Events evtManager = Events.instance();
+            Events evtManager = Events.instance();
 
             String docType = document.getType();
             String eventName;
 
             if ("Domain".equals(docType)) {
                 eventName = EventNames.DOMAIN_SELECTION_CHANGED;
+            } else if ("Root".equals(docType)) {
+                eventName = EventNames.GO_HOME;
             } else if ("WorkspaceRoot".equals(docType)
                     || "SectionRoot".equals(docType)) {
                 eventName = EventNames.CONTENT_ROOT_SELECTION_CHANGED;
