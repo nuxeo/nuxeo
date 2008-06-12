@@ -29,11 +29,11 @@ import javax.resource.spi.ManagedConnectionMetaData;
 import javax.security.auth.Subject;
 import javax.transaction.xa.XAResource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Session;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * This class implements the managed connection for

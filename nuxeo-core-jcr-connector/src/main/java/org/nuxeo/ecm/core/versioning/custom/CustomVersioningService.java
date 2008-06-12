@@ -38,19 +38,18 @@ import javax.jcr.version.VersionException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.repository.jcr.versioning.VersioningService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.repository.jcr.JCRDocument;
 import org.nuxeo.ecm.core.repository.jcr.JCRName;
 import org.nuxeo.ecm.core.repository.jcr.JCRQueryXPath;
 import org.nuxeo.ecm.core.repository.jcr.JCRSession;
 import org.nuxeo.ecm.core.repository.jcr.NodeConstants;
+import org.nuxeo.ecm.core.repository.jcr.versioning.VersioningService;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;
 import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
 
 /**
- * Implementation of the {@link org.nuxeo.ecm.core.versioning.VersioningService}
- * interface.
+ * Implementation of the {@link VersioningService} interface.
  * <p>
  * It delegates most of the calls to VerServUtils functions.
  *
@@ -73,16 +72,11 @@ public class CustomVersioningService implements VersioningService {
         checkin(doc, label, null);
     }
 
-    private boolean hasPendingChangesSafe(Node docNode)
-            throws DocumentException {
-
+    private static boolean hasPendingChangesSafe(Node docNode) throws DocumentException {
         try {
             return hasPendingChanges(docNode);
         } catch (RepositoryException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-
-            throw new DocumentException("Failed to check document state ");
+            throw new DocumentException("Failed to check document state ", e);
         }
     }
 
@@ -105,7 +99,6 @@ public class CustomVersioningService implements VersioningService {
 
     public void checkin(Document doc, String label, String description)
             throws DocumentException {
-        final String logPrefix = "<checkin> ";
 
         JCRDocument jdoc = (JCRDocument) doc;
 
@@ -113,11 +106,8 @@ public class CustomVersioningService implements VersioningService {
         try {
             checkVersionable(jdoc);
         } catch (RepositoryException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-
-            throw new DocumentException("Failed to checkin document " +
-                    doc.getName() + " : " + label);
+            throw new DocumentException("Failed to checkin document "
+                    + doc.getName() + " : " + label, e);
         }
 
         final Node docNode = jdoc.getNode();
@@ -146,11 +136,8 @@ public class CustomVersioningService implements VersioningService {
 
             // step 4: set ecm:baseVersion to the new version
         } catch (RepositoryException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-
-            throw new DocumentException("Failed to checkin document " +
-                    doc.getName() + " : " + label, e);
+            throw new DocumentException("Failed to checkin document "
+                    + doc.getName() + " : " + label, e);
         }
 
         // VersionableDocument
@@ -189,8 +176,8 @@ public class CustomVersioningService implements VersioningService {
                     true);
         } catch (RepositoryException e) {
             // e.printStackTrace();
-            throw new DocumentException("Failed to checkout document " +
-                    doc.getName());
+            throw new DocumentException("Failed to checkout document "
+                    + doc.getName(), e);
         }
     }
 
@@ -435,7 +422,6 @@ public class CustomVersioningService implements VersioningService {
                 log.error(e);
             }
         }
-
         VerServUtils.removeVersion(doc, versionLabel);
     }
 

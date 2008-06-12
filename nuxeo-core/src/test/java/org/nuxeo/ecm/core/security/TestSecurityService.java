@@ -53,13 +53,13 @@ public class TestSecurityService extends NXRuntimeTestCase {
     }
 
     // TODO: Make this test independent of the permissions-contrib.xml file.
-    public void testGetPermissionsToCheck() throws Exception {
+    public void testGetPermissionsToCheck() {
         List<String> perms = Arrays.asList(service.getPermissionsToCheck(SecurityConstants.READ));
         assertEquals(3, perms.size());
         assertTrue(perms.contains(SecurityConstants.READ));
     }
 
-    public void testDefaultPermissions() throws Exception {
+    public void testDefaultPermissions() {
         PermissionProvider pp = service.getPermissionProvider();
 
         String[] groups = pp.getPermissionGroups("Read");
@@ -172,7 +172,7 @@ public class TestSecurityService extends NXRuntimeTestCase {
                 Arrays.asList(orderedVisiblePermissions));
     }
 
-    public void testOverridedPermissions2() throws Exception {
+    public void testOverriddenPermissions2() throws Exception {
         // deploy a new atomic permission and a new compound permission
         deployContrib(CoreTestConstants.CORE_TESTS_BUNDLE,
                 "permissions-override2-contrib.xml");
