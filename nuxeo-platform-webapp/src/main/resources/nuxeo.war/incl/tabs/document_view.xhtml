@@ -19,10 +19,6 @@
     <ui:include src="/incl/lock_details.xhtml" />
   </a4j:outputPanel>
 
-  <h:panelGrid rendered="#{deleteActions.trashManagementEnabled}">
-    <ui:include src="/incl/trash_details.xhtml" />
-  </h:panelGrid>
-
   <c:if test="#{empty documentActions.currentType.layout}">
     <nxl:documentLayout mode="view" value="#{currentDocument}" />
   </c:if>
@@ -116,6 +112,12 @@
   <h:outputText
     value="#{messages['label.workflow.currentLifeCycleState']}" />
   <h:outputText value="${messages[currentDocument.currentLifeCycleState]}" />
+  <c:if test="#{deleteActions.trashManagementEnabled}">
+    <h:outputText/>
+    <h:commandButton type="submit" value="#{messages['command.undeleteDocs']}" 
+      styleClass="button" action="#{deleteActions.restoreCurrentDocument}"
+      rendered="#{deleteActions.canRestoreCurrentDoc}" />
+  </c:if>
 </h:panelGrid>
 
 <nxu:methodResult name="versionable" value="#{currentDocument.hasFacet('Versionable')}">
