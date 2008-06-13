@@ -50,8 +50,8 @@ public class RelationManagerBusinessDelegate implements Serializable {
     protected RelationManager relationManager;
 
     // @Create
+    @Deprecated
     public void initialize() {
-        log.info("Seam component initialized...");
     }
 
     /**
@@ -84,8 +84,7 @@ public class RelationManagerBusinessDelegate implements Serializable {
         if (null != relationManager) {
             relationManager = null;
         }
-
-        log.info("Destroyed the seam component...");
+        log.debug("Destroyed the seam component");
     }
 
 }
