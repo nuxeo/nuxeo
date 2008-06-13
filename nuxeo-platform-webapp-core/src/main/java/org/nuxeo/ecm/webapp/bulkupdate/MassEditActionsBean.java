@@ -519,7 +519,7 @@ public class MassEditActionsBean extends InputController implements
             // copy selected fields only
 
             boolean canWrite = documentManager.hasPermission(docModel.getRef(),
-                    SecurityConstants.WRITE)
+                    SecurityConstants.WRITE_PROPERTIES)
                     && !docModel.hasFacet("Immutable");
             if (!canWrite) {
                 String titleOrId = docModel.getTitle();

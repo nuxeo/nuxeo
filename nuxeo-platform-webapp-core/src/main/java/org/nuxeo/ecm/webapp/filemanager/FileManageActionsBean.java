@@ -337,10 +337,9 @@ public class FileManageActionsBean extends InputController implements
 
         if (container.getType().equals("Section")
                 && !doc.getType().equals("Section")) {
-            // We try to do a publication
-            // check read in sections
+            // We try to do a publication check browse in sections
             if (!documentManager.hasPermission(containerRef,
-                    SecurityConstants.READ)) {
+                    SecurityConstants.BROWSE)) {
                 // This should never append since user can only drop in visible
                 // sections
                 facesMessages.add(FacesMessage.SEVERITY_WARN,
@@ -349,9 +348,11 @@ public class FileManageActionsBean extends InputController implements
                 return MOVE_IMPOSSIBLE;
             }
 
-            // check write in source folder :
+            // check the right to remove an element from the source folder :
             if (!documentManager.hasPermission(doc.getParentRef(),
-                    SecurityConstants.WRITE)) {
+                    SecurityConstants.REMOVE_CHILDREN)
+                    || documentManager.hasPermission(doc.getRef(),
+                            SecurityConstants.REMOVE)) {
                 // This should never append since user can only drop in visible
                 // sections
                 facesMessages.add(FacesMessage.SEVERITY_WARN,

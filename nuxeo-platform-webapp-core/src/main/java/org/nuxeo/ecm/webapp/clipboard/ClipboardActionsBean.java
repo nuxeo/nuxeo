@@ -1086,7 +1086,7 @@ public class ClipboardActionsBean extends InputController implements
             throws ClientException {
         for (DocumentModel documentModel : selectedDocs) {
             boolean canWrite = documentManager.hasPermission(
-                    documentModel.getRef(), SecurityConstants.WRITE);
+                    documentModel.getRef(), SecurityConstants.WRITE_PROPERTIES);
             if (!canWrite) {
                 return false;
             }

@@ -532,8 +532,9 @@ public class PublishActionsBean implements PublishActions, Serializable {
     }
 
     public boolean isReviewer(DocumentModel dm) throws ClientException {
+        // TODO: introduce a specific publication reviewer permission
         return documentManager.hasPermission(dm.getRef(),
-                SecurityConstants.WRITE);
+                SecurityConstants.WRITE_PROPERTIES);
     }
 
     // TODO move to protected
@@ -572,8 +573,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
         int nbPublishedDocs = 0;
         for (DocumentModel doc : docs2Publish) {
-            if (!documentManager.hasPermission(doc.getParentRef(),
-                    SecurityConstants.WRITE)) {
+            if (!documentManager.hasPermission(doc.getRef(),
+                    SecurityConstants.READ_PROPERTIES)) {
                 continue;
             }
 
