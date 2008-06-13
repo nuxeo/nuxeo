@@ -97,28 +97,28 @@ public class DocumentActionsBean extends InputController implements
 
     private static final Log log = LogFactory.getLog(DocumentActionsBean.class);
 
-    private static final long BIG_FILE_SIZE_LIMIT = 1024*1024*5;
+    protected static final long BIG_FILE_SIZE_LIMIT = 1024 * 1024 * 5;
 
     @In(create = true)
-    private transient NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    private transient ResultsProvidersCache resultsProvidersCache;
+    protected transient ResultsProvidersCache resultsProvidersCache;
 
     @RequestParameter
-    private String fileFieldFullName;
+    protected String fileFieldFullName;
 
     @RequestParameter
-    private String filenameFieldFullName;
+    protected String filenameFieldFullName;
 
     @RequestParameter
-    private String filename;
+    protected String filename;
 
     @In(create = true, required = false)
-    private transient CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(required = false, create = true)
-    private transient DocumentsListsManager documentsListsManager;
+    protected transient DocumentsListsManager documentsListsManager;
 
     @In(create = true)
     protected transient DeleteActions deleteActions;
@@ -126,11 +126,11 @@ public class DocumentActionsBean extends InputController implements
     @In(create = true)
     protected transient WebActions webActions;
 
-    private static transient MimetypeRegistry mimetypeService;
+    protected static transient MimetypeRegistry mimetypeService;
 
-    private String comment;
+    protected String comment;
 
-    private MimetypeRegistry getMimetypeService() {
+    protected MimetypeRegistry getMimetypeService() {
         if (mimetypeService == null) {
             try {
                 mimetypeService = Framework.getService(MimetypeRegistry.class);
@@ -141,7 +141,7 @@ public class DocumentActionsBean extends InputController implements
         return mimetypeService;
     }
 
-    //@Create
+    // @Create
     public void initialize() {
         log.debug("Initializing...");
     }
@@ -253,25 +253,27 @@ public class DocumentActionsBean extends InputController implements
                 String filename = DocumentFileCodec.getFilename(doc, docView);
                 // download
                 FacesContext context = FacesContext.getCurrentInstance();
-                if (blob.getLength()>BIG_FILE_SIZE_LIMIT)
-                {
+                if (blob.getLength() > BIG_FILE_SIZE_LIMIT) {
                     HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
                     HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
 
                     String bigDownloadURL = BaseURL.getBaseURL(request);
-                    bigDownloadURL+="nxbigfile" + "/";
-                    bigDownloadURL+=doc.getRepositoryName() + "/";
-                    bigDownloadURL+=doc.getRef().toString() + "/";
-                    bigDownloadURL+=docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY) + "/";
-                    bigDownloadURL+=docView.getParameter(DocumentFileCodec.FILENAME_KEY);
+                    bigDownloadURL += "nxbigfile" + "/";
+                    bigDownloadURL += doc.getRepositoryName() + "/";
+                    bigDownloadURL += doc.getRef().toString() + "/";
+                    bigDownloadURL += docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY)
+                            + "/";
+                    bigDownloadURL += docView.getParameter(DocumentFileCodec.FILENAME_KEY);
                     try {
                         response.sendRedirect(bigDownloadURL);
                     } catch (IOException e) {
-                        log.error("Error while redirecting for big file downloader", e);
+                        log.error(
+                                "Error while redirecting for big file downloader",
+                                e);
                     }
-                }
-                else
+                } else {
                     ComponentUtils.download(context, blob, filename);
+                }
             }
         }
     }
@@ -635,6 +637,10 @@ public class DocumentActionsBean extends InputController implements
     }
 
     public boolean getWriteRight() throws ClientException {
+        // TODO: WRITE is a highlevel compound permission (i.e. more like a user
+        // profile), public methods of the Nuxeo framework should only check
+        // atomic / specific permissions such as WRITE_PROPERTIES, REMOVE,
+        // ADD_CHILDREN depending on the action to execute instead
         return documentManager.hasPermission(
                 navigationContext.getCurrentDocument().getRef(),
                 SecurityConstants.WRITE);
