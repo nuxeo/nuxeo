@@ -428,11 +428,14 @@ public class SearchPageProvider implements PagedDocumentsProvider {
             log.warn("Wrong value for flags..." + flags);
         }
 
+        String path = (String) rItem.get(BuiltinDocumentFields.FIELD_DOC_PATH);
+        if (path == null) { // Root
+            path = "/";
+        }
         ResultDocumentModel docModel = new ResultDocumentModel(
                 (String) rItem.get(BuiltinDocumentFields.FIELD_DOC_TYPE),
                 id,
-                new Path(
-                        (String) rItem.get(BuiltinDocumentFields.FIELD_DOC_PATH)),
+                new Path(path),
                 docRef,
                 (DocumentRef) rItem.get(BuiltinDocumentFields.FIELD_DOC_PARENT_REF),
                 schemas,
