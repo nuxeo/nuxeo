@@ -115,7 +115,7 @@ public class LockActionsBean implements LockActions {
                     canLock = docLock == null
                             && (userName.isAdministrator() || documentManager.hasPermission(
                                     currentDocument.getRef(),
-                                    SecurityConstants.WRITE))
+                                    SecurityConstants.WRITE_PROPERTIES))
                             && !currentDocument.isVersion();
                 } catch (Exception e) {
                     log.info("evaluation of document lock "
@@ -146,7 +146,7 @@ public class LockActionsBean implements LockActions {
                                 : (userName.getName().equals(
                                         lockDetails.get(LOCKER)) && documentManager.hasPermission(
                                         currentDocument.getRef(),
-                                        SecurityConstants.WRITE)))
+                                        SecurityConstants.WRITE_PROPERTIES)))
                                 && !currentDocument.isVersion();
                     }
                 } catch (Exception e) {
@@ -168,7 +168,7 @@ public class LockActionsBean implements LockActions {
         log.debug("Lock a document ...");
         String message = "document.lock.failed";
         DocumentRef ref = document.getRef();
-        if (documentManager.hasPermission(ref, SecurityConstants.WRITE)
+        if (documentManager.hasPermission(ref, SecurityConstants.WRITE_PROPERTIES)
                 && documentManager.getLock(ref) == null) {
             documentManager.setLock(ref, getDocumentLockKey());
             documentManager.save();
@@ -199,7 +199,7 @@ public class LockActionsBean implements LockActions {
                     || userName.getName().equals(lockDetails.get(LOCKER))) {
 
                 if (!documentManager.hasPermission(document.getRef(),
-                        SecurityConstants.WRITE)) {
+                        SecurityConstants.WRITE_PROPERTIES)) {
 
                     try {
                         // Here administrator should always be able to unlock so
@@ -311,14 +311,14 @@ public class LockActionsBean implements LockActions {
                 String docLock = documentManager.getLock(currentDocument.getRef());
                 if (docLock == null) {
                     isLiveEditable = (userName.isAdministrator() || documentManager.hasPermission(
-                            currentDocument.getRef(), SecurityConstants.WRITE))
+                            currentDocument.getRef(), SecurityConstants.WRITE_PROPERTIES))
                             && !currentDocument.isVersion();
                 } else {
                     isLiveEditable = (userName.isAdministrator() ? true
                             : (userName.getName().equals(
                                     getLockDetails(currentDocument).get(LOCKER)) && documentManager.hasPermission(
                                     currentDocument.getRef(),
-                                    SecurityConstants.WRITE)))
+                                    SecurityConstants.WRITE_PROPERTIES)))
                             && !currentDocument.isVersion();
                 }
             } catch (Exception e) {

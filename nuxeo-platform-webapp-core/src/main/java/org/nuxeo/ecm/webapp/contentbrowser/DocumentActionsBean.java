@@ -97,28 +97,28 @@ public class DocumentActionsBean extends InputController implements
 
     private static final Log log = LogFactory.getLog(DocumentActionsBean.class);
 
-    private static final long BIG_FILE_SIZE_LIMIT = 1024*1024*5;
+    protected static final long BIG_FILE_SIZE_LIMIT = 1024 * 1024 * 5;
 
     @In(create = true)
-    private transient NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    private transient ResultsProvidersCache resultsProvidersCache;
+    protected transient ResultsProvidersCache resultsProvidersCache;
 
     @RequestParameter
-    private String fileFieldFullName;
+    protected String fileFieldFullName;
 
     @RequestParameter
-    private String filenameFieldFullName;
+    protected String filenameFieldFullName;
 
     @RequestParameter
-    private String filename;
+    protected String filename;
 
     @In(create = true, required = false)
-    private transient CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(required = false, create = true)
-    private transient DocumentsListsManager documentsListsManager;
+    protected transient DocumentsListsManager documentsListsManager;
 
     @In(create = true)
     protected transient DeleteActions deleteActions;
@@ -126,11 +126,11 @@ public class DocumentActionsBean extends InputController implements
     @In(create = true)
     protected transient WebActions webActions;
 
-    private static transient MimetypeRegistry mimetypeService;
+    protected static transient MimetypeRegistry mimetypeService;
 
-    private String comment;
+    protected String comment;
 
-    private MimetypeRegistry getMimetypeService() {
+    protected MimetypeRegistry getMimetypeService() {
         if (mimetypeService == null) {
             try {
                 mimetypeService = Framework.getService(MimetypeRegistry.class);
@@ -636,6 +636,10 @@ public class DocumentActionsBean extends InputController implements
     }
 
     public boolean getWriteRight() throws ClientException {
+        // TODO: WRITE is a highlevel compound permission (i.e. more like a user
+        // profile), public methods of the Nuxeo framework should only check
+        // atomic / specific permissions such as WRITE_PROPERTIES, REMOVE,
+        // ADD_CHILDREN depending on the action to execute instead
         return documentManager.hasPermission(
                 navigationContext.getCurrentDocument().getRef(),
                 SecurityConstants.WRITE);

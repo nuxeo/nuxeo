@@ -164,9 +164,10 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     }
 
     public boolean getCanRestore() throws ClientException {
+        // TODO: should check for a specific RESTORE permission instead
         return documentManager.hasPermission(
                 navigationContext.getCurrentDocument().getRef(),
-                SecurityConstants.WRITE);
+                SecurityConstants.WRITE_PROPERTIES);
     }
 
     /**

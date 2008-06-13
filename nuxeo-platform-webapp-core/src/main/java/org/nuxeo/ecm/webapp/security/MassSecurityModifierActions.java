@@ -79,7 +79,7 @@ public class MassSecurityModifierActions implements Serializable {
 
         for (DocumentModel doc : docs2Modify) {
             if (!documentManager.hasPermission(doc.getParentRef(),
-                    SecurityConstants.WRITE)) {
+                    SecurityConstants.WRITE_PROPERTIES)) {
                 continue;
             }
         }
