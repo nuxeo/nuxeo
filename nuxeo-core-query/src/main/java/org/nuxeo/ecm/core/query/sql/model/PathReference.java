@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
+ *     bstefanescu
  *
  * $Id$
  */
@@ -20,17 +20,20 @@
 package org.nuxeo.ecm.core.query.sql.model;
 
 /**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class Literal implements Operand {
+public class PathReference extends Reference {
 
-    private static final long serialVersionUID = 7459498561660866191L;
+    private static final long serialVersionUID = 1L;
 
-    /**
-     * Get a string representation of the value
-     * @return
-     */
-    public abstract String asString();
+    public PathReference(String path) {
+        super (path);
+    }
+
+    @Override
+    public boolean isPathReference() {
+        return true;
+    }
 
 }

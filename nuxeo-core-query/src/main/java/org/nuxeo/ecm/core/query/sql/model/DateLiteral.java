@@ -73,7 +73,14 @@ public class DateLiteral extends Literal {
         }
     }
 
-    @Override
+    public String asString() {
+        if (onlyDate) {
+            return dateFormatter.print(value);
+        } else {
+            return dateTimeFormatter.print(value);
+        }
+    }
+
     public void accept(IVisitor visitor) {
         visitor.visitDateLiteral(this);
     }
@@ -94,4 +101,11 @@ public class DateLiteral extends Literal {
         return value.hashCode();
     }
 
+    public static String dateTime(DateLiteral date) {
+        return dateTimeFormatter.print(date.value);
+    }
+
+    public static String date(DateLiteral date) {
+        return dateFormatter.print(date.value);
+    }
 }
