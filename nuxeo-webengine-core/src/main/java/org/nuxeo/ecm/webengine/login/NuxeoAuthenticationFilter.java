@@ -99,7 +99,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                 currentPrincipal = principal;
             }
             if (currentPrincipal != null) { // if a current principal is defined wrap the request
-                request = new NuxeoSecuredRequestWrapper(req, principal);
+                request = new NuxeoSecuredRequestWrapper(req, currentPrincipal);
             }
         } catch (ClientException e) {
             throw new ServletException("Failed to perform authentication", e);

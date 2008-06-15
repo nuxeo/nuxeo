@@ -46,7 +46,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
@@ -92,8 +91,6 @@ public class DefaultWebContext implements WebContext {
     protected final Map<String,Object> vars; // global vars to share between scripts
 
     protected List<File> scriptExecutionStack;
-
-    protected Principal principal; // allow overriding request principal
 
     protected String basePath;
 
@@ -185,15 +182,7 @@ public class DefaultWebContext implements WebContext {
     }
 
     public Principal getPrincipal() {
-        if (principal == null) {
-            principal = request.getUserPrincipal();
-            // TODO XX temporary code
-            if (principal == null) {
-                principal = new UserPrincipal("system");
-            }
-            // TODO XX temporary code
-        }
-        return principal;
+        return request.getUserPrincipal();
     }
 
     public HttpServletRequest getRequest() {
