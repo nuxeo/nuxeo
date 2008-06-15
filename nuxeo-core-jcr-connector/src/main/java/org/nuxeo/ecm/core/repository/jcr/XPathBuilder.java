@@ -19,7 +19,11 @@
 
 package org.nuxeo.ecm.core.repository.jcr;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import org.apache.jackrabbit.JcrConstants;
+import org.joda.time.DateTime;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryParseException;
@@ -203,6 +207,55 @@ public class XPathBuilder implements QueryConstants {
                     xq.predicate.append(" not(@").append(ECM_FROZEN_NODE).append(") ");
                 }
                 return true;
+            } else if (expr.rvalue.getClass() == DateLiteral.class) { // dates
+                //*[@dc:created > "2008-06-03T00:00:00.000+01:00" and @dc:created < xs:dateTime("2008-06-04T00:00:00.000+01:00")]
+                // xs:date seems to not be correctly handled  in jackrabbit .
+                // see https://issues.apache.org/jira/browse/JCR-1386?page=com.atlassian.jira.plugin.system.issuetabpanels:all-tabpanel
+                DateLiteral dl = (DateLiteral)expr.rvalue;
+                Reference ref = (Reference)expr.lvalue;
+                if (dl.onlyDate) {
+                    DateTime d0 = dl.value;
+                    DateTime d1 = d0.plusDays(1);
+                    int month = d0.getMonthOfYear();
+                    int day = d0.getDayOfMonth();
+                    xq.predicate.append("(");
+                    reference(xq.predicate, ref);
+                    xq.predicate.append(" >= xs:dateTime('").append(d0.getYear()).append("-");
+                    if (month < 10) {
+                        xq.predicate.append("0").append(month);
+                    } else {
+                        xq.predicate.append(month);
+                    }
+                    xq.predicate.append("-");
+                    if (day < 10) {
+                        xq.predicate.append("0").append(day);
+                    } else {
+                        xq.predicate.append(day);
+                    }
+                    xq.predicate.append("T00:00:00.000Z') and ");
+
+                    month = d1.getMonthOfYear();
+                    day = d1.getDayOfMonth();
+                    reference(xq.predicate, ref);
+                    xq.predicate.append(" < xs:dateTime('").append(d1.getYear()).append("-");
+                    if (month < 10) {
+                        xq.predicate.append("0").append(month);
+                    } else {
+                        xq.predicate.append(month);
+                    }
+                    xq.predicate.append("-");
+                    if (day < 10) {
+                        xq.predicate.append("0").append(day);
+                    } else {
+                        xq.predicate.append(day);
+                    }
+                    xq.predicate.append("T00:00:00.000Z'))");
+                } else {
+                    reference(xq.predicate, ref);
+                    operator(xq.predicate, expr.operator);
+                    xq.predicate.append("xs:dateTime('"+DateLiteral.dateTime(dl)+"')");
+                }
+                return true;
             }
         }
         return false;
@@ -326,7 +379,7 @@ public class XPathBuilder implements QueryConstants {
             //*[@dc:created > "2008-06-03T00:00:00.000+01:00" and @dc:created < xs:dateTime("2008-06-04T00:00:00.000+01:00")]
             // xs:date seems to not be correctly handled  in jackrabbit .
             // see https://issues.apache.org/jira/browse/JCR-1386?page=com.atlassian.jira.plugin.system.issuetabpanels:all-tabpanel
-            buf.append("xs:dateTime(\""+DateLiteral.dateTime((DateLiteral)literal)+"\")");
+            buf.append("xs:dateTime('"+DateLiteral.dateTime((DateLiteral)literal)+"')");
         } else {
             buf.append(literal.asString());
         }

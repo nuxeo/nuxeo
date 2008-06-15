@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Calendar;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -99,6 +100,11 @@ public class TestQuery extends RepositoryTestCase {
      *
      */
     private void createDocs() throws Exception {
+        Calendar date1 = Calendar.getInstance();
+        date1.set(1974, 6-1, 24); // month is 0 based
+        Calendar date2 = Calendar.getInstance();
+        date2.set(1975, 6-1, 24);
+
         // put some data in workspace
         Document folder1 = root.addChild("testfolder1", "Folder");
 
@@ -122,15 +128,16 @@ public class TestQuery extends RepositoryTestCase {
 
         // create folder 2
         Document folder2 = root.addChild("testfolder2", "Folder");
-
+        folder2.setDate("dc:issued", date1);
         // create folder 3
         Document folder3 = folder2.addChild("testfolder3", "Folder");
+        folder3.setDate("dc:issued", date1);
 
         // create file 4
         Document file4 = folder3.addChild("testfile4", "File");
         file4.setString("dc:title", "testfile4_Title");
         file4.setString("dc:description", "testfile4_DESCRIPTION4");
-
+        file4.setDate("dc:issued", date2);
         session.save();
     }
 
@@ -153,6 +160,30 @@ public class TestQuery extends RepositoryTestCase {
 
         session.save();
     }
+
+    public void testDateQuery() throws Exception {
+        String sql = "SELECT * FROM document WHERE dc:issued = DATE '1974-06-24'";
+        Query qry = session.createQuery(sql, Query.Type.NXQL);
+        QueryResult qr = qry.execute();
+        assertEquals(2, qr.count());
+
+        sql = "SELECT * FROM document WHERE dc:issued = DATE '1975-06-24'";
+        qry = session.createQuery(sql, Query.Type.NXQL);
+        qr = qry.execute();
+        assertEquals(1, qr.count());
+
+        sql = "SELECT * FROM document WHERE dc:issued >= TIMESTAMP '1974-06-24 00:00:00'";
+        qry = session.createQuery(sql, Query.Type.NXQL);
+        qr = qry.execute();
+        assertEquals(3, qr.count());
+
+        sql = "SELECT * FROM document WHERE dc:issued >= TIMESTAMP '1974-06-25 00:00:00'";
+        qry = session.createQuery(sql, Query.Type.NXQL);
+        qr = qry.execute();
+        assertEquals(1, qr.count());
+
+    }
+
 
     public void testSQLWithLike() throws Exception {
         final String logPrefix = "<testJCRXPathContain> ";
