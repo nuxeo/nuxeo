@@ -214,42 +214,56 @@ public class XPathBuilder implements QueryConstants {
                 DateLiteral dl = (DateLiteral)expr.rvalue;
                 Reference ref = (Reference)expr.lvalue;
                 if (dl.onlyDate) {
-                    DateTime d0 = dl.value;
-                    DateTime d1 = d0.plusDays(1);
-                    int month = d0.getMonthOfYear();
-                    int day = d0.getDayOfMonth();
-                    xq.predicate.append("(");
-                    reference(xq.predicate, ref);
-                    xq.predicate.append(" >= xs:dateTime('").append(d0.getYear()).append("-");
-                    if (month < 10) {
-                        xq.predicate.append("0").append(month);
-                    } else {
-                        xq.predicate.append(month);
-                    }
-                    xq.predicate.append("-");
-                    if (day < 10) {
-                        xq.predicate.append("0").append(day);
-                    } else {
-                        xq.predicate.append(day);
-                    }
-                    xq.predicate.append("T00:00:00.000Z') and ");
+                    if (expr.operator == Operator.EQ) {
+                        DateTime d0 = dl.value;
+                        DateTime d1 = d0.plusDays(1);
+                        int month = d0.getMonthOfYear();
+                        int day = d0.getDayOfMonth();
+                        xq.predicate.append("(");
+                        reference(xq.predicate, ref);
+                        xq.predicate.append(" >= xs:dateTime('").append(d0.getYear()).append("-");
+                        if (month < 10) {
+                            xq.predicate.append("0").append(month);
+                        } else {
+                            xq.predicate.append(month);
+                        }
+                        xq.predicate.append("-");
+                        if (day < 10) {
+                            xq.predicate.append("0").append(day);
+                        } else {
+                            xq.predicate.append(day);
+                        }
+                        xq.predicate.append("T00:00:00.000Z') and ");
 
-                    month = d1.getMonthOfYear();
-                    day = d1.getDayOfMonth();
-                    reference(xq.predicate, ref);
-                    xq.predicate.append(" < xs:dateTime('").append(d1.getYear()).append("-");
-                    if (month < 10) {
-                        xq.predicate.append("0").append(month);
-                    } else {
-                        xq.predicate.append(month);
+                        month = d1.getMonthOfYear();
+                        day = d1.getDayOfMonth();
+                        reference(xq.predicate, ref);
+                        xq.predicate.append(" < xs:dateTime('").append(d1.getYear()).append("-");
+                        if (month < 10) {
+                            xq.predicate.append("0").append(month);
+                        } else {
+                            xq.predicate.append(month);
+                        }
+                        xq.predicate.append("-");
+                        if (day < 10) {
+                            xq.predicate.append("0").append(day);
+                        } else {
+                            xq.predicate.append(day);
+                        }
+                        xq.predicate.append("T00:00:00.000Z'))");
+                    } else if (expr.operator == Operator.GTEQ) {
+                        DateTime date = dl.value;
+                        compareDate(xq.predicate, ref, expr.operator, date);
+                    } else if (expr.operator == Operator.GT) {
+                        DateTime date = dl.value.plusDays(1);
+                        compareDate(xq.predicate, ref, Operator.GTEQ, date);
+                    } else if (expr.operator == Operator.LT) {
+                        DateTime date = dl.value;
+                        compareDate(xq.predicate, ref, expr.operator, date);
+                    } else if (expr.operator == Operator.LTEQ) {
+                        DateTime date = dl.value.plusDays(1);
+                        compareDate(xq.predicate, ref, Operator.LT, date);
                     }
-                    xq.predicate.append("-");
-                    if (day < 10) {
-                        xq.predicate.append("0").append(day);
-                    } else {
-                        xq.predicate.append(day);
-                    }
-                    xq.predicate.append("T00:00:00.000Z'))");
                 } else {
                     reference(xq.predicate, ref);
                     operator(xq.predicate, expr.operator);
@@ -259,6 +273,26 @@ public class XPathBuilder implements QueryConstants {
             }
         }
         return false;
+    }
+
+    static void compareDate(StringBuilder buf, Reference ref, Operator operator, DateTime date) {
+        int month = date.getMonthOfYear();
+        int day = date.getDayOfMonth();
+        reference(buf, ref);
+        operator(buf, operator);
+        buf.append("xs:dateTime('").append(date.getYear()).append("-");
+        if (month < 10) {
+            buf.append("0").append(month);
+        } else {
+            buf.append(month);
+        }
+        buf.append("-");
+        if (day < 10) {
+            buf.append("0").append(day);
+        } else {
+            buf.append(day);
+        }
+        buf.append("T00:00:00.000Z')");
     }
 
     static void between(XPathQuery xq, Operand lvalue, Operand rvalue) throws QueryException {

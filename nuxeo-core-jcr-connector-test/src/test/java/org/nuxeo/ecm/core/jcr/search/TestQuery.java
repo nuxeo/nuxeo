@@ -167,6 +167,11 @@ public class TestQuery extends RepositoryTestCase {
         QueryResult qr = qry.execute();
         assertEquals(2, qr.count());
 
+        sql = "SELECT * FROM document WHERE dc:issued >= DATE '1975-06-23'";
+        qry = session.createQuery(sql, Query.Type.NXQL);
+        qr = qry.execute();
+        assertEquals(1, qr.count());
+
         sql = "SELECT * FROM document WHERE dc:issued = DATE '1975-06-24'";
         qry = session.createQuery(sql, Query.Type.NXQL);
         qr = qry.execute();
