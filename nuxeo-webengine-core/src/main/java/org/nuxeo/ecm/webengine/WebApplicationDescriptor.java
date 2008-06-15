@@ -25,10 +25,7 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.MappingDescriptor;
-import org.nuxeo.ecm.webengine.resolver.DefaultDocumentResolver;
-import org.nuxeo.ecm.webengine.resolver.DocumentResolver;
 import org.nuxeo.runtime.deploy.CompositeContribution;
 import org.nuxeo.runtime.deploy.Contribution;
 import org.nuxeo.runtime.deploy.ExtensibleContribution;
@@ -52,6 +49,9 @@ public class WebApplicationDescriptor extends CompositeContribution {
     @XNodeList(value="roots/root", type=ArrayList.class, componentType=RootDescriptor.class, nullByDefault=true)
     protected List<RootDescriptor> roots;
 
+    @XNode("repository")
+    protected String repositoryName;
+
     @XNode("errorPage")
     protected String errorPage;
 
@@ -70,12 +70,17 @@ public class WebApplicationDescriptor extends CompositeContribution {
     @XNodeList(value="rendering-extensions/rendering-extension", type=ArrayList.class, componentType=String.class, nullByDefault=true)
     protected List<String> renderingExtensions;
 
-    @XNode("resolver")
-    protected DefaultDocumentResolver resolver;
 
 
     public String getId() {
         return contributionId;
+    }
+
+    /**
+     * @return the repositoryName.
+     */
+    public String getRepositoryName() {
+        return repositoryName;
     }
 
     public String getIndexPage() {
@@ -146,10 +151,6 @@ public class WebApplicationDescriptor extends CompositeContribution {
         this.renderingExtensions = templates;
     }
 
-    public DocumentResolver getDocumentResolver() throws WebDeployException {
-        return resolver;
-    }
-
     public void copyOver(ExtensibleContribution contrib) {
         WebApplicationDescriptor desc = (WebApplicationDescriptor)contrib;
         if (defaultPage != null) {
@@ -160,9 +161,6 @@ public class WebApplicationDescriptor extends CompositeContribution {
         }
         if (errorPage != null) {
             desc.errorPage = errorPage;
-        }
-        if (resolver != null && resolver != DefaultDocumentResolver.DEFAULT) {
-            desc.resolver = resolver;
         }
         if (roots != null && !roots.isEmpty()) {
             if (desc.roots == null) {

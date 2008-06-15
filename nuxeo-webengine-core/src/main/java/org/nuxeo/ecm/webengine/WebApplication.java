@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
-import org.nuxeo.ecm.webengine.resolver.DocumentResolver;
+import org.nuxeo.ecm.webengine.mapping.PathMapper;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 
 /**
@@ -60,12 +60,13 @@ public interface WebApplication extends ResourceLocator {
 
     WebEngine getWebEngine();
 
-    DocumentResolver getDocumentResolver();
-
-    void setDocumentResolver(DocumentResolver resolver);
-
     void registerRenderingExtension(String id, Object obj);
 
     void unregisterRenderingExtension(String id);
 
+    PathMapper getPathMapper();
+
+    String getRepositoryName();
+
+    void setRepositoryName(String repositoryName);
 }

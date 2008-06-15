@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import org.nuxeo.ecm.webengine.resolver.DocumentMapper;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
 
@@ -80,8 +79,6 @@ public interface WebEngine {
     Object getRenderingExtension(String id);
 
     FileChangeNotifier getFileChangeNotifier();
-
-    DocumentMapper getDocumentMapper();
 
     void destroy();
 

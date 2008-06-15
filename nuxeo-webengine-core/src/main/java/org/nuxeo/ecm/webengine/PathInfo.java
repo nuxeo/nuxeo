@@ -68,8 +68,8 @@ public class PathInfo {
 //                throw new IllegalArgumentException("Not a valid trailingPath: "+trailingPath+"for path: "+path);
 //            }
             traversalPath = this.path.removeFirstSegments(this.leadingPath.segmentCount()).makeAbsolute();
-            this.attrs = attrs;
         }
+        this.attrs = attrs == null ? Attributes.EMPTY_ATTRS : attrs;
     }
 
     /**

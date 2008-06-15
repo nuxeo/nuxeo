@@ -40,7 +40,6 @@ import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.MappingDescriptor;
 import org.nuxeo.ecm.webengine.mapping.PathMapper;
-import org.nuxeo.ecm.webengine.resolver.DocumentResolver;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.util.DirectoryStack;
 import org.nuxeo.runtime.deploy.FileChangeListener;
@@ -61,10 +60,9 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
     protected String errorPage;
     protected String indexPage;
     protected String defaultPage;
-    protected DocumentResolver documentResolver;
     protected Map<String, String> typeBindings;
     protected PathMapper mapper;
-
+    protected String repositoryName;
     protected WebApplicationDescriptor desc;
 
     // object binding cache
@@ -77,9 +75,9 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         this.defaultPage = desc.getDefaultPage("default.ftl");
         this.indexPage = desc.getIndexPage("index.ftl");
         this.errorPage = desc.getErrorPage("error.ftl");
-        this.documentResolver = desc.getDocumentResolver();
-        if (this.documentResolver == null) {
-            this.documentResolver = engine.getDocumentMapper(); //new DefaultDocumentResolver();
+        this.repositoryName = desc.getRepositoryName();
+        if (repositoryName == null) {
+            repositoryName = "default";
         }
         List<WebObjectBindingDescriptor> list = desc.getBindings();
         if (list != null && !list.isEmpty()) {
@@ -144,8 +142,23 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         return rendering;
     }
 
+    /**
+     * @param repositoryName the repositoryName to set.
+     */
+    public void setRepositoryName(String repositoryName) {
+        this.repositoryName = repositoryName;
+    }
+
+    public String getRepositoryName() {
+        return repositoryName;
+    }
+
     public WebApplicationDescriptor getDescriptor(){
         return desc;
+    }
+
+    public PathMapper getPathMapper() {
+        return mapper;
     }
 
     /**
@@ -164,17 +177,6 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
 
     public DirectoryStack getDirectoryStack() {
         return dirStack;
-    }
-
-    /**
-     * @return the documentResolver.
-     */
-    public DocumentResolver getDocumentResolver() {
-        return documentResolver;
-    }
-
-    public void setDocumentResolver(DocumentResolver resolver) {
-        this.documentResolver = resolver;
     }
 
     /**

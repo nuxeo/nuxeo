@@ -56,7 +56,6 @@ import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.resolver.SearchHelper;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
-import org.nuxeo.ecm.webengine.servlet.WebServlet;
 import org.nuxeo.ecm.webengine.util.FormData;
 import org.nuxeo.ecm.webengine.util.JSonHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -73,6 +72,7 @@ public class DefaultWebContext implements WebContext {
     public static final String CORESESSION_KEY = "SiteCoreSession";
 
     public static boolean USE_CORE_SEARCH = false;
+    private static CoreSession anonymousSession; //TODO: this should be relative to the web app
 
     protected final WebEngine engine;
     protected CoreSession session;
@@ -599,6 +599,9 @@ public class DefaultWebContext implements WebContext {
     * @return
     */
    public WebObject addWebObject(String name, DocumentModel doc) {
+       if (name == null) {
+           name = ""; // this happens for the root node
+       }
        WebObject object = new WebObject(this, name, doc);
        if (head == null) {
            head = tail = object;
@@ -620,7 +623,7 @@ public class DefaultWebContext implements WebContext {
 
 
 
-    public static CoreSession getCoreSession(HttpServletRequest request)
+    public CoreSession getCoreSession(HttpServletRequest request)
     throws Exception {
         CoreSession session = null;
 
@@ -634,12 +637,12 @@ public class DefaultWebContext implements WebContext {
         Principal principal = request.getUserPrincipal();
         if (principal instanceof NuxeoPrincipal) {
             if (((NuxeoPrincipal)principal).isAnonymous()) { // use the anonymous session
-                session = WebServlet.getAnonymousSession(request);
+                session = getAnonymousSession();
             } else {
-                session = openSession(request);
+                session = openSession();
             }
         } else {
-            session = openSession(request);
+            session = openSession();
         }
         if (httpSession != null) {
             httpSession.setAttribute(CORESESSION_KEY, session);
@@ -647,8 +650,8 @@ public class DefaultWebContext implements WebContext {
         return session;
     }
 
-    public  static CoreSession openSession(HttpServletRequest request) throws Exception {
-        String repoName = getTargetRepositoryName(request);
+    public  CoreSession openSession() throws Exception {
+        String repoName = app.getRepositoryName();
         RepositoryManager rm = Framework.getService(RepositoryManager.class);
         Repository repo = rm.getRepository(repoName);
         if (repo == null) {
@@ -673,9 +676,24 @@ public class DefaultWebContext implements WebContext {
         }
     }
 
-    public static String getTargetRepositoryName(HttpServletRequest req) {
-        return "default";
+    /**
+     * TODO move this into WebApplication
+     * @deprecated
+     * @return
+     * @throws Exception
+     */
+    public CoreSession getAnonymousSession() throws Exception {
+        if (anonymousSession == null) {
+            anonymousSession = openSession();
+        }
+        return anonymousSession;
     }
 
+    public static void destroyAnonymousSession() {
+        if (anonymousSession != null) {
+            anonymousSession.destroy();
+        }
+        anonymousSession = null;
+    }
 
 }

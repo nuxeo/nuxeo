@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.nuxeo.common.collections.ListenerList;
-import org.nuxeo.ecm.webengine.resolver.DocumentMapper;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.runtime.deploy.FileChangeListener;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
@@ -57,8 +56,6 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
     protected FileChangeNotifier notifier;
     protected long lastMessagesUpdate = 0;
 
-    DocumentMapper docMapper;
-
     protected Scripting scripting;
 
     public DefaultWebEngine(File root, FileChangeNotifier notifier) throws IOException {
@@ -77,7 +74,6 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         this.renderingExtensions = new Hashtable<String, Object>();
         loadMessageBundle(true);
         scripting = new Scripting();
-        docMapper = new DocumentMapper(this);
     }
 
     public Scripting getScripting() {
@@ -218,10 +214,6 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         for (Object obj : listeners.getListenersCopy()) {
             ((ConfigurationChangedListener)obj).configurationChanged(this);
         }
-    }
-
-    public DocumentMapper getDocumentMapper() {
-        return docMapper;
     }
 
     public FileChangeNotifier getFileChangeNotifier() {

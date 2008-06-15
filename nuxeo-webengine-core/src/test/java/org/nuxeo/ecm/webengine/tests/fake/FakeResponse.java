@@ -49,7 +49,7 @@ public class FakeResponse implements HttpServletResponse {
 
     protected final Map<String, String> headers = new HashMap<String, String>();
 
-    protected final OutputStream out = new ByteArrayOutputStream();
+    protected final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
     protected final FakeServletOutputStream fout = new FakeServletOutputStream(out);
 
@@ -117,11 +117,13 @@ public class FakeResponse implements HttpServletResponse {
     }
 
     public void sendError(int sc) throws IOException {
-        throw new NotImplementedException();
+        setStatus(sc);
+        fout.print("ERROR: "+sc);
     }
 
     public void sendError(int sc, String msg) throws IOException {
-        throw new NotImplementedException();
+        setStatus(sc);
+        fout.print("ERROR: "+sc+" - "+msg);
     }
 
     public void sendRedirect(String location) throws IOException {

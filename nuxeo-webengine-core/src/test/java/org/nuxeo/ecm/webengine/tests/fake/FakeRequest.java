@@ -65,6 +65,8 @@ public class FakeRequest implements HttpServletRequest {
 
     protected String ct = "application/octetstream";
 
+    protected FakeSession session = new FakeSession();
+
     public FakeRequest(String method, String subUrl, InputStream is) {
         this.method = method;
 
@@ -192,11 +194,11 @@ public class FakeRequest implements HttpServletRequest {
     }
 
     public HttpSession getSession() {
-        throw new NotImplementedException();
+        return session;
     }
 
     public HttpSession getSession(boolean create) {
-        return null;
+        return session;
     }
 
     public Principal getUserPrincipal() {

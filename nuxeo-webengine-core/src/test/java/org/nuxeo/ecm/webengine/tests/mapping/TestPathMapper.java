@@ -35,7 +35,6 @@ public class TestPathMapper extends TestCase {
         mdef.setScript("$1 $2 $path");
         mapper.addMapping(mdef);
         PathInfo mapping = mapper.getPathInfo("/wiki/a/b/c/demo/index.view");
-        mapping.getAttributes().add("path", "ThePath");
         //System.out.println(mapping.getScript());
         assertEquals("/wiki/a/b/c index.view /wiki/a/b/c/demo/index.view", mapping.getScript());
 
@@ -47,7 +46,6 @@ public class TestPathMapper extends TestCase {
         mdef.setScript("$name1 $name2 $path");
         mapper.addMapping(mdef);
         mapping = mapper.getPathInfo("/wiki/a/b/c/demo/index.view");
-        mapping.getAttributes().add("path", "ThePath");
         //System.out.println(mapping.getScript());
         assertEquals("/wiki/a/b/c index.view /wiki/a/b/c/demo/index.view", mapping.getScript());
     }
