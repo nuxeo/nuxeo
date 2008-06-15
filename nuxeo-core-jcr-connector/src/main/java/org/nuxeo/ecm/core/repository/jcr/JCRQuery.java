@@ -218,7 +218,7 @@ public class JCRQuery implements Query {
     throws QueryException {
         try {
             final String jcrQuery = XPathBuilder.fromNXQL(sqlQuery);
-            System.out.println(">>>>> "+jcrQuery);
+            //System.out.println(">>>>> "+jcrQuery);
             final QueryManager qm = session.jcrSession().getWorkspace().getQueryManager();
             return qm.createQuery(jcrQuery, javax.jcr.query.Query.XPATH);
         } catch (RepositoryException e) {
