@@ -43,16 +43,13 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
-import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
-import org.nuxeo.ecm.webengine.resolver.SearchHelper;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.util.FormData;
@@ -504,24 +501,6 @@ public class DefaultWebContext implements WebContext {
             p = p.next;
         }
         return objects;
-    }
-
-    public DocumentModelList search(String query) throws WebException {
-        CoreSession session = getCoreSession();
-        try {
-            if (USE_CORE_SEARCH) {
-                return session.query(query);
-            } else {
-                SearchService search = Framework.getService(SearchService.class);
-                if (search == null) {
-                    USE_CORE_SEARCH = true;
-                    return session.query(query);
-                }
-                return SearchHelper.search(session, query, 0, Integer.MAX_VALUE);
-            }
-        } catch (Exception e) {
-            throw new WebException("Failed to perform search: "+query, e);
-        }
     }
 
     public JSONObject toJSon(DocumentModel doc) throws WebException {
