@@ -491,23 +491,32 @@ public class XPathBuilder implements QueryConstants {
                 docName="*";
             } else {
                 buf.append("/jcr:root/ecm:root/ecm:children/");
-                docName =segment;
+                if (startsWith) {
+                    buf.append(segment).append("/ecm:children//");
+                } else if (path.hasTrailingSeparator()) {
+                    buf.append(segment).append("/ecm:children/");
+                } else {
+                    docName =segment;
+                }
             }
             return docName;
         }
         // we have more than one segment
         if (segment.length() == 1 && segment.charAt(0)=='%') { // "%/..."
-            buf.append("//jcr:root/ecm:root/ecm:children/");
+            buf.append("//").append(segment).append("/ecm:children/");
         } else { // "/..."
             buf.append("/jcr:root/ecm:root/ecm:children/").append(segment).append("/ecm:children/");
         }
         segment = path.lastSegment();
         if (segment.length() == 1 && segment.charAt(0)=='%') { // "../%"
             startsWith = true;
-        } else { // "/..."
+            cnt--;
+        } else if (path.hasTrailingSeparator()) { // "/.../"
+            docName = null;
+        } else { // /...
             docName = segment;
+            cnt--;
         }
-        cnt--;
         for (int i=1; i<cnt; i++) {
             segment = path.segment(i);
             buf.append(segment).append("/ecm:children/");
