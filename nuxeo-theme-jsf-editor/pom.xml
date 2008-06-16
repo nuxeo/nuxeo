@@ -29,6 +29,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam-remoting</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb</artifactId>
       <scope>provided</scope>
