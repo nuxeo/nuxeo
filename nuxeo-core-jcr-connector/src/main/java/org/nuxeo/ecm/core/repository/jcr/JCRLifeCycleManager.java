@@ -29,14 +29,11 @@ import org.nuxeo.ecm.core.model.Document;
 
 /**
  * JCR Life Cycle Manager.
- *
  * <p>
  * Deals with the storage of the life cycle properties within a dedicated JCR
  * node on the document itself.
- * </p>
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class JCRLifeCycleManager extends AbstractLifeCycleManager {
 
@@ -84,14 +81,12 @@ public class JCRLifeCycleManager extends AbstractLifeCycleManager {
 
     /**
      * Returns the node where to find the current life cycle name.
-     *
      * <p>
      * Override this if you want to store the property differently on the
      * document node.
-     * </p>
      *
-     * @param docNode : the document node.
-     * @param create : create the node if does not exist.
+     * @param docNode the document node.
+     * @param create create the node if does not exist (TODO: not implemented)
      * @return the (sub)node containing the current life cycle
      */
     protected Node getLifeCycleNode(Node docNode, boolean create) {
@@ -100,14 +95,12 @@ public class JCRLifeCycleManager extends AbstractLifeCycleManager {
 
     /**
      * Returns the node where to find the life cycle policy name.
-     *
      * <p>
      * Override this if you want to store the property differently on the
      * document node.
-     * </p>
      *
-     * @param docNode : the document node.
-     * @param create : create the node if does not exist.
+     * @param docNode the document node.
+     * @param create create the node if does not exist (TODO: not implemented)
      * @return the (sub)node containing the life cycle policy name.
      */
     protected Node getLifeCyclePolicyNode(Node docNode, boolean create) {
@@ -115,15 +108,13 @@ public class JCRLifeCycleManager extends AbstractLifeCycleManager {
     }
 
     /**
-     * Set the current life cycle on a given document.
-     *
+     * Sets the current life cycle on a given document.
      * <p>
      * Override this if you want to store the property differently on the
      * document node.
-     * </p>
      *
-     * @param doc : a Nuxeo core document.
-     * @param stateName : the state name.
+     * @param doc a Nuxeo core document.
+     * @param stateName the state name.
      * @throws LifeCycleException if write operations failed JCR side.
      */
     protected void setCurrentLifeCycleState(Document doc, String stateName)
@@ -141,15 +132,13 @@ public class JCRLifeCycleManager extends AbstractLifeCycleManager {
     }
 
     /**
-     * Set the life cycle policy on a givent document.
-     *
+     * Sets the life cycle policy on a givent document.
      * <p>
      * Override this if you want to store the property differently on the
      * document node.
-     * </p>
      *
-     * @param doc : a Nuxeo core document.
-     * @param policy : the policy name.
+     * @param doc a Nuxeo core document.
+     * @param policy the policy name.
      * @throws LifeCycleException if write operations failed JCR side.
      */
     protected void setLifeCyclePolicy(Document doc, String policy)

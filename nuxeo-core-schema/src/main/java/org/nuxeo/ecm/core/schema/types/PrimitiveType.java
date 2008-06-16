@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.core.schema.types;
 
-import org.nuxeo.ecm.core.schema.TypeRef;
 import org.nuxeo.ecm.core.schema.SchemaNames;
+import org.nuxeo.ecm.core.schema.TypeRef;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

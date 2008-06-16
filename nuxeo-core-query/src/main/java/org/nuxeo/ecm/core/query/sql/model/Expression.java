@@ -90,4 +90,9 @@ public class Expression implements Operand {
         return result;
     }
 
+
+    public boolean isPathExpression() {
+        return (lvalue instanceof Reference) && "ecm:path".equals(((Reference)lvalue).name);
+    }
+
 }
