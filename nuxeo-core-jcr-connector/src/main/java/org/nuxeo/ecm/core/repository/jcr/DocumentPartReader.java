@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.repository.jcr;
 
 import java.io.Serializable;
+import java.util.Calendar;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -160,25 +161,25 @@ public class DocumentPartReader {
                 }
                 return ar;
             } else if (type == PropertyType.LONG) {
-                long[] ar = new long[values.length];
+                Long[] ar = new Long[values.length];
                 for (int i = 0; i < values.length; i++) {
                     ar[i] = values[i].getLong();
                 }
                 return ar;
             } else if (type == PropertyType.DOUBLE) {
-                double[] ar = new double[values.length];
+                Double[] ar = new Double[values.length];
                 for (int i = 0; i < values.length; i++) {
                     ar[i] = values[i].getDouble();
                 }
                 return ar;
             } else if (type == PropertyType.DATE) {
-                long[] ar = new long[values.length];
+                Calendar[] ar = new Calendar[values.length];
                 for (int i = 0; i < values.length; i++) {
-                    ar[i] = values[i].getLong();
+                    ar[i] = values[i].getDate();
                 }
                 return ar;
             } else if (type == PropertyType.BOOLEAN) {
-                boolean[] ar = new boolean[values.length];
+                Boolean[] ar = new Boolean[values.length];
                 for (int i = 0; i < values.length; i++) {
                     ar[i] = values[i].getBoolean();
                 }
