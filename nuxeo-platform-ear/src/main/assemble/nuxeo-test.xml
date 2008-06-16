@@ -1,7 +1,0 @@
-<assembly>
-
-  <include>include/commands.xml</include>
-  <include>include/nuxeo-all-test.xml</include>
-
-</assembly>
-
