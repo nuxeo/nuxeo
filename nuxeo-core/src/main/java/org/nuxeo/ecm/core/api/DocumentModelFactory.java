@@ -58,29 +58,31 @@ public class DocumentModelFactory {
 
     private static final SecureRandom random = new SecureRandom();
 
-    // Utility class.
-    //private DocumentModelFactory() {
-    //}
-
     public static DocumentModel newDocument(DocumentModel parent, String type) {
-        DocumentType docType = ((DocumentModelImpl) parent).getClient().getDocumentType(type);
+        DocumentType docType = ((DocumentModelImpl) parent).getClient().getDocumentType(
+                type);
         return newDocument(parent, docType);
     }
 
-    public static DocumentModel newDocument(DocumentModel parent, String name, String type) {
-        DocumentType docType = ((DocumentModelImpl) parent).getClient().getDocumentType(type);
+    public static DocumentModel newDocument(DocumentModel parent, String name,
+            String type) {
+        DocumentType docType = ((DocumentModelImpl) parent).getClient().getDocumentType(
+                type);
         return newDocument(parent, name, docType);
     }
 
-    public static DocumentModel newDocument(DocumentModel parent, DocumentType type) {
-        return newDocument(parent, "Untitled_" + Long.toHexString(random.nextLong()), type);
+    public static DocumentModel newDocument(DocumentModel parent,
+            DocumentType type) {
+        return newDocument(parent, "Untitled_"
+                + Long.toHexString(random.nextLong()), type);
     }
 
-    public static DocumentModel newDocument(DocumentModel parent, String name, DocumentType type) {
+    public static DocumentModel newDocument(DocumentModel parent, String name,
+            DocumentType type) {
         return new DocumentModelImpl(null, type.getName(), null,
-                parent.getPath(), null, null,
-                parent.getRef(), type.getSchemaNames(), type.getFacets(),
-                null, parent.getRepositoryName());
+                parent.getPath(), null, null, parent.getRef(),
+                type.getSchemaNames(), type.getFacets(), null,
+                parent.getRepositoryName());
     }
 
     public static DocumentModelImpl createDocumentModel(Document doc)
@@ -95,11 +97,11 @@ public class DocumentModelFactory {
         return createDocumentModel(doc, schemas);
     }
 
-    public static Map<String, Serializable> updatePrefetch(DocumentModel docModel) {
+    public static Map<String, Serializable> updatePrefetch(
+            DocumentModel docModel) {
         Map<String, Serializable> prefetchMap = new HashMap<String, Serializable>();
 
-        PrefetchInfo prefetchInfo = docModel.getDocumentType()
-                .getPrefetchInfo();
+        PrefetchInfo prefetchInfo = docModel.getDocumentType().getPrefetchInfo();
 
         if (prefetchInfo != null) {
             Field[] prefetchFields = prefetchInfo.getFields();
@@ -179,12 +181,19 @@ public class DocumentModelFactory {
             prefetchSchemas = prefetchInfo.getSchemas();
             Field[] prefetchFields = prefetchInfo.getFields();
             for (Field field : prefetchFields) {
-                // TODO: the document model don't know to work using prefixed names
-                // this should be fixed and register the property here directly by its prefixed name
-                // and not by the "schema.field" id
-                Object value = doc.getPropertyValue(field.getName().getPrefixedName());
-                docModel.prefetchProperty(field.getDeclaringType().getName()
-                        + '.' + field.getName().getLocalName(), value);
+                // TODO: the document model don't know to work using prefixed
+                // names -this should be fixed and register the property here
+                // directly
+                // by its prefixed name and not by the "schema.field" id
+                try {
+                    Object value = doc.getPropertyValue(field.getName().getPrefixedName());
+                    docModel.prefetchProperty(
+                            field.getDeclaringType().getName() + '.'
+                                    + field.getName().getLocalName(), value);
+                } catch (DocumentException e) {
+                    log.error("Error while building prefetch fields, "
+                            + "check the document configuration", e);
+                }
             }
         }
 
@@ -196,8 +205,7 @@ public class DocumentModelFactory {
             }
         } else if (prefetchSchemas != null && prefetchSchemas.length > 0) {
             for (Schema schema : prefetchSchemas) {
-                DataModel dataModel = exportSchema(sid, docRef, doc,
-                        schema);
+                DataModel dataModel = exportSchema(sid, docRef, doc, schema);
                 docModel.addDataModel(dataModel);
             }
         }
@@ -209,8 +217,8 @@ public class DocumentModelFactory {
             String lifeCyclePolicy = doc.getLifeCyclePolicy();
             docModel.prefetchLifeCyclePolicy(lifeCyclePolicy);
         } catch (LifeCycleException e) {
-            log.debug("Cannot prefetch lifecycle for doc: " + doc.getName() +
-                    ". Error: " + e.getMessage());
+            log.debug("Cannot prefetch lifecycle for doc: " + doc.getName()
+                    + ". Error: " + e.getMessage());
         }
 
         return docModel;
@@ -225,7 +233,7 @@ public class DocumentModelFactory {
      * @throws DocumentException
      */
     public static DocumentModelImpl createDocumentModel(DocumentType docType)
-    throws DocumentException {
+            throws DocumentException {
         return createDocumentModel(null, docType);
     }
 
@@ -238,9 +246,10 @@ public class DocumentModelFactory {
      * @return the document model initialized thanks to the type definition
      * @throws DocumentException
      */
-    public static DocumentModelImpl createDocumentModel(String sessionId, DocumentType docType)
-            throws DocumentException {
-        DocumentModelImpl docModel = new DocumentModelImpl(sessionId, docType.getName());
+    public static DocumentModelImpl createDocumentModel(String sessionId,
+            DocumentType docType) throws DocumentException {
+        DocumentModelImpl docModel = new DocumentModelImpl(sessionId,
+                docType.getName());
         for (Schema schema : docType.getSchemas()) {
             DataModel dataModel = exportSchema(null, null, null, schema);
             docModel.addDataModel(dataModel);
@@ -298,7 +307,7 @@ public class DocumentModelFactory {
         DocumentPart part = new DocumentPartImpl(schema);
         if (doc != null) {
             try {
-            doc.readDocumentPart(part);
+                doc.readDocumentPart(part);
             } catch (DocumentException e) {
                 throw e;
             } catch (Exception e) {
