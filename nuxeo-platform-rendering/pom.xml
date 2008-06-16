@@ -71,11 +71,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-search-api</artifactId>
-      <version>${nuxeo.platform.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-versioning-api</artifactId>
       <version>${nuxeo.platform.version}</version>
     </dependency>

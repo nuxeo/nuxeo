@@ -30,10 +30,6 @@
           <script>/markitup/preview.ftl</script>
           <!--traversal>${path}</traversal-->
         </mapping>
-        <mapping pattern=".*search.*">
-          <script>/search.ftl</script>
-          <traversal>${path}</traversal>
-        </mapping>
         <mapping pattern=".*/registration_form">
           <script>/users/registration_form.ftl</script>
           <traversal>${path}</traversal>

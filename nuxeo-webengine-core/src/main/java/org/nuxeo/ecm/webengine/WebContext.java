@@ -32,7 +32,6 @@ import net.sf.json.JSONObject;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.util.FormData;
@@ -105,6 +104,12 @@ public interface WebContext {
      * @return the target object (or the target object). May return null in the case of a root request.
      */
     WebObject getTargetObject();
+
+    /**
+     * Tests whether the context is bound to a document
+     * @return true if there is a traversal path 9a current document), false otherwise
+     */
+    boolean hasTraversalPath();
 
     /**
      * Get the target script for this request if any.
@@ -392,21 +397,6 @@ public interface WebContext {
      */
     JSONObject toJSon(DocumentModel doc, String ... schemas) throws WebException;
 
-    /**
-     * This is a helper method that performs a query against nuxeo repository.
-     * <p>
-     * This method is provided as a convenience method to perform searches since the search API
-     * is for now difficult to use from a scripting environment
-     * <p>
-     * This method will be removed in the future when the search API will be cleaned-up and
-     * then replaced with {@link CoreSession#query(String)}
-     *
-     * @param query the query to perform
-     * @return a list of documents that matched the query
-     * @throws WebException
-     * @deprecated will be replaced by {@link CoreSession#query(String)} in future
-     */
-    DocumentModelList search(String query) throws WebException;
 
     /**
      * Resolve first segment from the trailing path if one exists.

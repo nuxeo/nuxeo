@@ -19,13 +19,18 @@
         <rendering-extension>wiki</rendering-extension>
         <rendering-extension>render</rendering-extension>
       </rendering-extensions>
+      <mappings>
+        <mapping pattern="/search">
+          <script>/search.ftl</script>
+        </mapping>
+      </mappings>
     </webapp>
 
     <webapp id="admin">
       <errorPage>error.groovy</errorPage>
       <roots>
         <root priority="0">default</root>
-  <root priority="1">admin</root>
+        <root priority="1">admin</root>
       </roots>
 
       <mappings>
@@ -102,6 +107,9 @@
         </action>
         <action id="addpermission" enabled="true" script="/Document/addpermission.groovy">
           <permission expression="Write" />
+        </action>
+        <action id="search" enabled="true" script="search.ftl">
+          <permission expression="Browse" />
         </action>
       </actions>
     </object>
