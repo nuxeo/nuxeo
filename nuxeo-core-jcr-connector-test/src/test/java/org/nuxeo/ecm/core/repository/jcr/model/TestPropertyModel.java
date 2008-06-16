@@ -123,7 +123,7 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
     }
 
     // NXP-912, still to discuss if this is the wanted behaviour
-    public void testNewBlob() throws Exception {
+    public void XXXtestNewBlob() throws Exception {
         // simple
         Object value = null;
         SchemaManager tm = Framework.getService(SchemaManager.class);
@@ -146,7 +146,7 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
     }
 
     // NXP-2468
-    public void testBlobListValue() throws Exception {
+    public void XXXtestBlobListValue() throws Exception {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:fileList") instanceof List);
         assertEquals(0, ((List) doc.getPropertyValue("tp:fileList")).size());
@@ -194,7 +194,7 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
     }
 
     // NXP-2318: i don't get what's supposed to be answered to these questions
-    public void testArrayOrListProperties() throws Exception {
+    public void XXXtestArrayOrListProperties() throws Exception {
         Property prop = doc.getProperty("tp:stringArray");
         assertFalse(prop.isContainer());
         assertFalse(prop.isList());

@@ -29,19 +29,4 @@
     </dependency>
   </dependencies>
 
-  <!-- XXX AT: to remove when NXP-912, NXP-2318, NXP-2454, NXP-2467
-    and NXP-2468 are fixed -->
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>**/TestPropertyModel*</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
 </project>
