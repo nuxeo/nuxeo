@@ -511,7 +511,7 @@ public class XPathBuilder implements QueryConstants {
         if (segment.length() == 1 && segment.charAt(0)=='%') { // "../%"
             startsWith = true;
             cnt--;
-        } else if (path.hasTrailingSeparator()) { // "/.../"
+        } else if (startsWith || path.hasTrailingSeparator()) { // "/.../"
             docName = null;
         } else { // /...
             docName = segment;
