@@ -38,6 +38,16 @@
       <artifactId>nuxeo-platform-workflow-jbpm</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jbpm</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

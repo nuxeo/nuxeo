@@ -48,6 +48,10 @@
       <artifactId>apacheds-core-shared</artifactId>
       <version>${apacheds.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_core</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>

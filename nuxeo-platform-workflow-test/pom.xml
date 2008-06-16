@@ -88,6 +88,14 @@
       <groupId>jboss</groupId>
       <artifactId>jboss-j2ee</artifactId>
     </dependency>
+    <dependency>
+      <groupId>jmock</groupId>
+      <artifactId>jmock</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jbpm</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

@@ -60,6 +60,10 @@
       <artifactId>jsr181</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-cache-jdk50</artifactId>
+    </dependency>
 
   </dependencies>
 
