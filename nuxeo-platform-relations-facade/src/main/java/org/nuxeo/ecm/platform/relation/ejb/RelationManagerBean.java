@@ -21,20 +21,18 @@ package org.nuxeo.ecm.platform.relation.ejb;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Local;
-import javax.ejb.PostActivate;
 import javax.ejb.Remote;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
 import javax.ejb.Stateless;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.relations.api.Graph;
@@ -74,7 +72,8 @@ public class RelationManagerBean implements RelationManager {
         }
     }
 
-    public void remove() {}
+    public void remove() {
+    }
 
     // TODO: maybe hack here to get graph in a cleaner way
     public Graph getGraphByName(String name) throws ClientException {
@@ -94,6 +93,17 @@ public class RelationManagerBean implements RelationManager {
         }
     }
 
+    public Serializable getResourceRepresentation(String namespace,
+            Resource resource, Map<String, Serializable> context)
+            throws ClientException {
+        try {
+            return service.getResourceRepresentation(namespace, resource,
+                    context);
+        } catch (Throwable t) {
+            throw EJBExceptionHandler.wrapException(t);
+        }
+    }
+
     public Resource getResource(String namespace, Object object)
             throws ClientException {
         try {
@@ -103,9 +113,27 @@ public class RelationManagerBean implements RelationManager {
         }
     }
 
+    public Resource getResource(String namespace, Serializable object,
+            Map<String, Serializable> context) throws ClientException {
+        try {
+            return service.getResource(namespace, object, context);
+        } catch (Throwable t) {
+            throw EJBExceptionHandler.wrapException(t);
+        }
+    }
+
     public Set<Resource> getAllResources(Object object) throws ClientException {
         try {
             return service.getAllResources(object);
+        } catch (Throwable t) {
+            throw EJBExceptionHandler.wrapException(t);
+        }
+    }
+
+    public Set<Resource> getAllResources(Serializable object,
+            Map<String, Serializable> context) throws ClientException {
+        try {
+            return service.getAllResources(object, context);
         } catch (Throwable t) {
             throw EJBExceptionHandler.wrapException(t);
         }
