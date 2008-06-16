@@ -7,8 +7,7 @@
     <version>5.2-SNAPSHOT</version>
   </parent>
 
-
- <!--parent>
+  <!--parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
     <version>5.2-SNAPSHOT</version>
@@ -30,17 +29,16 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-launcher</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-
-      <dependency>
         <groupId>org.nuxeo.common</groupId>
         <artifactId>nuxeo-common</artifactId>
         <version>${nuxeo.common.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-launcher</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime</artifactId>
@@ -66,7 +64,6 @@
         <artifactId>nuxeo-runtime-jetty-adapter</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
-
 
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
@@ -185,7 +182,6 @@
         <version>${nuxeo.platform.version}</version>
       </dependency>
 
-
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-webengine-core</artifactId>
@@ -211,8 +207,6 @@
         <artifactId>nuxeo-platform-comment</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
-
-
 
       <!-- jboss client -->
       <dependency>
@@ -509,7 +503,6 @@
     </dependency>
   </dependencies>
 
-
   <build>
     <plugins>
       <plugin>
@@ -552,13 +545,11 @@
 
     <pluginManagement>
       <plugins>
-
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-nuxeo-plugin</artifactId>
           <version>1.0.4</version>
         </plugin>
-
       </plugins>
     </pluginManagement>
 
