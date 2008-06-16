@@ -203,16 +203,16 @@ public final class DOMHelper {
         return el;
     }
 
-    public abstract static class NodeVisitor {
+    public static interface NodeVisitor {
 
-        public abstract void visitNode(Context ctx, XAnnotatedMember xam,
+        void visitNode(Context ctx, XAnnotatedMember xam,
                 Node node, Collection<Object> result);
 
     }
 
-    public abstract static class NodeMapVisitor {
+    public static interface NodeMapVisitor {
 
-        public abstract void visitNode(Context ctx, XAnnotatedMember xam,
+        void visitNode(Context ctx, XAnnotatedMember xam,
                 Node node, String key, Map<String, Object> result);
 
     }
