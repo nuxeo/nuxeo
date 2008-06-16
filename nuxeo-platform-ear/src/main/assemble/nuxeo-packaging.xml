@@ -1,0 +1,84 @@
+<packaging>
+  <serverSet id="nuxeo-mono">
+    <type>directory</type>
+    <name>nuxeo.ear</name>
+    <includes>
+      <artifacts output="system" group="org.nuxeo.*" category="core" includeDependencies="true"/>
+      <artifacts output="system" group="org.nuxeo.*" category="search" includeDependencies="true"/>
+      <artifacts output="system" group="org.nuxeo.*" category="web" includeDependencies="true"/>
+      <!-- resources downloaded from an artifact -->
+      <resources output="/" sourceArtifact="nuxeo-platform-ear:resources-core" />
+      <resources output="/" sourceArtifact="nuxeo-platform-ear:resources-search" />
+      <resources output="/" sourceArtifact="nuxeo-platform-ear:resources-web" />
+      <resources output="/" sourceArtifact="nuxeo-platform-ear:resources" />
+      <!-- local resources overriding default ones from artifacts downloaded -->
+      <resources output="/" sourceDirectory="src/main/resources" />
+    </includes>
+    <excludes>
+      <artifact group="org.nuxeo.common" />
+      <artifact name="nuxeo-runtime-jboss-extensions" />
+    </excludes>
+    <assembly>
+      <output pattern="nuxeo-platform-audit-facade" unpack="true" directory="system" />
+      <output pattern="nuxeo-platform-placeful-facade" unpack="true" directory="system" />
+      <output pattern="nuxeo-platform-search-compass-plugin" unpack="true" directory="system" />
+      <output pattern="nuxeo-*" unpack="false" directory="system" />
+      <output pattern="*" unpack="false" directory="lib" />
+    </assembly>
+    <preprocessing>true</preprocessing>
+  </serverSet>
+
+  <!-- Nuxeo 3 parts -->
+  <serverSet id="nuxeo-core">
+    <type>directory</type>
+    <name>nuxeo-core.ear</name>
+    <includes>
+      <artifacts output="system" group="org.nuxeo.*" category="core" includeDependencies="true"/>
+      <!-- resources downloaded from an artifact -->
+      <resources output="/" sourceArtifact="nuxeo-platform-ear:resources-core" />
+      <!-- local resources overriding default ones from artifacts downloaded -->
+      <resources output="/" sourceDirectory="src/main/resources-core" />
+    </includes>
+    <excludes>
+      <artifact group="org.nuxeo.common" />
+      <artifact name="nuxeo-runtime-jboss-extensions" />
+    </excludes>
+    <assembly>
+      <output pattern="nuxeo-*" unpack="false" directory="system" />
+      <output pattern="*" unpack="false" directory="lib" />
+    </assembly>
+  </serverSet>
+  <serverSet id="nuxeo-search">
+    <type>directory</type>
+    <name>nuxeo-indexing.ear</name>
+    <includes>
+      <artifacts output="system" group="org.nuxeo.*" category="search" includeDependencies="true"/>
+      <artifacts output="system" name="nuxeo-platform-search-compass-plugin" unpack="true" />
+      <!-- resources downloaded from an artifact -->
+      <resources output="/" sourceArtifact="nuxeo-platform-ear:resources-search" />
+      <!-- local resources overriding default ones from artifacts downloaded -->
+      <resources output="/" sourceDirectory="src/main/resources-search" />
+    </includes>
+    <excludes>
+      <artifact group="org.nuxeo.common" />
+      <artifact name="nuxeo-runtime-jboss-extensions" />
+    </excludes>
+  </serverSet>
+  <serverSet id="nuxeo-web">
+    <type>directory</type>
+    <name>nuxeo-webplatform.ear</name>
+    <includes>
+      <artifacts output="system" group="org.nuxeo.*" category="web" includeDependencies="true"/>
+      <artifacts output="system" name="nuxeo-platform-audit-facade" unpack="true" />
+      <artifacts output="system" name="nuxeo-platform-placeful-facade" unpack="true" />
+      <!-- resources downloaded from an artifact -->
+      <resources output="/" sourceArtifact="nuxeo-platform-ear:resources-webplatform" />
+      <!-- local resources overriding default ones from artifacts downloaded -->
+      <resources output="/" sourceDirectory="src/main/resources-webplatform" />
+    </includes>
+    <excludes>
+      <artifact group="org.nuxeo.common" />
+      <artifact name="nuxeo-runtime-jboss-extensions" />
+    </excludes>
+  </serverSet>
+</packaging>
