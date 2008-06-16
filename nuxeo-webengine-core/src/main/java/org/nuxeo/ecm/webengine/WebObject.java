@@ -51,7 +51,7 @@ public class WebObject {
     public WebObject(WebContext context, String name, DocumentModel doc) {
         if (context == null  || doc == null || name == null) {
             throw new IllegalArgumentException("Failed to create WebObject. " +
-            		"All three constructor arguments must be non null: "+context +","+ name+","+doc);
+                    "All three constructor arguments must be non null: "+context +","+ name+","+doc);
         }
         this.context = context;
         this.name = name;
