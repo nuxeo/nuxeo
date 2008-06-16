@@ -454,16 +454,13 @@
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging-api</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.intellij</groupId>
       <artifactId>annotations</artifactId>
+      <scope>provided</scope>
     </dependency>
-    <!--dependency>
-      <groupId>net.sf.opencsv</groupId>
-      <artifactId>opencsv</artifactId>
-      <version>1.7</version>
-    </dependency-->
   </dependencies>
 
   <build>
