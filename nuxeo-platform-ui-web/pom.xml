@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -10,11 +12,11 @@
   <artifactId>nuxeo-platform-ui-web</artifactId>
   <name>Nuxeo Web Framework</name>
   <description>
-    Nuxeo Enterprise Platform: Web Framework, based on JBoss SEAM, to build web applications
-    on top of Nuxeo EP.
-    It includes JSF components for Nuxeo EP / Nuxeo Core, custom JSF converters and resolvers,
-    REST URL support, REST API, authentication management (Basic + Form),
-    BLOB download via REST URL, error interceptors, batching management, path handlings, etc.
+    Nuxeo Enterprise Platform: Web Framework, based on JBoss SEAM, to build web
+    applications on top of Nuxeo EP. It includes JSF components for Nuxeo EP /
+    Nuxeo Core, custom JSF converters and resolvers, REST URL support, REST API,
+    authentication management (Basic + Form), BLOB download via REST URL, error
+    interceptors, batching management, path handlings, etc.
   </description>
 
   <dependencies>
@@ -25,6 +27,10 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-ui-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-ui-web-compat</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -73,12 +79,6 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-filemanager-api</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-url-core</artifactId>
-    </dependency>
-     -->
     <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb</artifactId>
@@ -105,17 +105,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.myfaces.trinidad</groupId>
-      <artifactId>trinidad-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.myfaces.trinidad</groupId>
-      <artifactId>trinidad-impl</artifactId>
-      <scope>runtime</scope> <!-- needed only for execution -->
-    </dependency>
-    <dependency>
-      <groupId>org.apache.myfaces.tomahawk</groupId>
-      <artifactId>tomahawk</artifactId>
+      <groupId>org.richfaces.framework</groupId>
+      <artifactId>richfaces-api</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -170,9 +162,9 @@
       <version>1.0.7</version>
     </dependency>
     <dependency>
-       <groupId>javax.transaction</groupId>
-       <artifactId>jta</artifactId>
-       <version>1.0.1B</version>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <version>1.0.1B</version>
     </dependency>
   </dependencies>
 
@@ -224,17 +216,22 @@
                 <artifactItem>
                   <groupId>org.jboss.seam</groupId>
                   <artifactId>jboss-seam-mail</artifactId>
-                  <version>1.1.5.GA</version>
+                  <version>2.0.2.CR1</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.jboss.seam</groupId>
                   <artifactId>jboss-seam-ui</artifactId>
-                  <version>1.1.5.GA</version>
+                  <version>2.0.2.CR1</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.jboss.seam</groupId>
                   <artifactId>jboss-seam-debug</artifactId>
-                  <version>1.1.5.GA</version>
+                  <version>2.0.2.CR1</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.jboss.seam</groupId>
+                  <artifactId>jboss-seam-remoting</artifactId>
+                  <version>2.0.2.CR1</version>
                 </artifactItem>
                 <!--  also in parent pom but shouldn't -->
                 <artifactItem>
@@ -248,9 +245,14 @@
                   <version>2.3.2</version>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>org.ajax4jsf</groupId>
-                  <artifactId>ajax4jsf</artifactId>
-                  <version>1.1.0</version>
+                  <groupId>org.richfaces.framework</groupId>
+                  <artifactId>richfaces-impl</artifactId>
+                  <version>3.1.4.GA</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.richfaces.ui</groupId>
+                  <artifactId>richfaces-ui</artifactId>
+                  <version>3.1.4.GA</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>taglibs</groupId>

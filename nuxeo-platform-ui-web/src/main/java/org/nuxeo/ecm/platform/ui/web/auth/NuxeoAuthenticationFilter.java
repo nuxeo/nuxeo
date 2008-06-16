@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -44,8 +46,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Seam;
-import org.jboss.seam.contexts.ContextAdaptor;
-import org.jboss.seam.contexts.Lifecycle;
+import org.jboss.seam.contexts.ServletLifecycle;
 import org.jboss.seam.core.Manager;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -257,11 +258,13 @@ public class NuxeoAuthenticationFilter implements Filter {
         // because the session would be invalidated at the end of the request !
         HttpSession session = httpRequest.getSession(false);
         if (session != null) {
+            ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+            // Make long-running conversation temporary
             Manager.instance().endConversation(true);
-            Manager.instance().endRequest(ContextAdaptor.getSession(session));
-            Lifecycle.endRequest(session);
-            Lifecycle.setServletRequest(null);
-            Lifecycle.setPhaseId(null);
+
+            Manager.instance().endRequest(externalContext.getSessionMap());
+            ServletLifecycle.endRequest(httpRequest);
+            session.invalidate();
 
             session = httpRequest.getSession(false);
             if (session != null) {
@@ -287,8 +290,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
 
         // reinit Seam so the afterResponseComplete does not crash
-        Lifecycle.beginRequest(session.getServletContext(), session,
-                httpRequest);
+        ServletLifecycle.beginRequest(httpRequest);
 
         // flag redirect to not be catched by URLPolicy
         request.setAttribute(URLPolicyService.DISABLE_REDIRECT_REQUEST_KEY,
@@ -719,4 +721,3 @@ public class NuxeoAuthenticationFilter implements Filter {
     }
 
 }
-
