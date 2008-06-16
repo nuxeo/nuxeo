@@ -63,6 +63,21 @@ public class TestDocumentFileCodec extends TestCase {
         assertEquals(url, codec.getUrlFromDocumentView(docView));
     }
 
+    // same with reserved characters in file name and additional request params
+    public void testGetUrlFromDocumentViewWithReservedAndParams() {
+        DocumentFileCodec codec = new DocumentFileCodec();
+        DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef(
+                "dbefd5a0-35ee-4ed2-a023-6817714f32cf"));
+        Map<String, String> params = new HashMap<String, String>();
+        params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, "file:content");
+        params.put(DocumentFileCodec.FILENAME_KEY, "my [doc]? \u00e9.odt");
+        params.put("foo", "bar");
+        DocumentView docView = new DocumentViewImpl(docLoc, null, params);
+
+        String url = "nxfile/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/file:content/my%20%5Bdoc%5D%3F%20%C3%A9.odt?foo=bar";
+        assertEquals(url, codec.getUrlFromDocumentView(docView));
+    }
+
     public void testGetDocumentViewFromUrl() {
         DocumentFileCodec codec = new DocumentFileCodec();
         String url = "nxfile/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/file:content/mydoc.odt";
@@ -84,7 +99,7 @@ public class TestDocumentFileCodec extends TestCase {
     // same with spaces in file name
     public void testGetDocumentViewFromUrlDecoding() {
         DocumentFileCodec codec = new DocumentFileCodec();
-        String url = "nxfile/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/file:content/my+doc+%C3%A9.odt";
+        String url = "nxfile/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/file:content/my%20doc%20%C3%A9.odt";
         DocumentView docView = codec.getDocumentViewFromUrl(url);
 
         DocumentLocation docLoc = docView.getDocumentLocation();
@@ -99,6 +114,27 @@ public class TestDocumentFileCodec extends TestCase {
                 params.get(DocumentFileCodec.FILE_PROPERTY_PATH_KEY));
         assertEquals("my doc \u00e9.odt",
                 params.get(DocumentFileCodec.FILENAME_KEY));
+    }
+
+    // same with reserved characters in file name and params
+    public void testGetDocumentViewFromUrlWithReservedAndParams() {
+        DocumentFileCodec codec = new DocumentFileCodec();
+        String url = "nxfile/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/file:content/my%20%5Bdoc%5D%3F%20%C3%A9.odt?foo=bar";
+        DocumentView docView = codec.getDocumentViewFromUrl(url);
+
+        DocumentLocation docLoc = docView.getDocumentLocation();
+        assertEquals("demo", docLoc.getServerLocationName());
+        assertEquals(new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"),
+                docLoc.getDocRef());
+        assertNull(docView.getViewId());
+        assertNull(docView.getSubURI());
+
+        Map<String, String> params = docView.getParameters();
+        assertEquals("file:content",
+                params.get(DocumentFileCodec.FILE_PROPERTY_PATH_KEY));
+        assertEquals("my [doc]? \u00e9.odt",
+                params.get(DocumentFileCodec.FILENAME_KEY));
+        assertEquals("bar", params.get("foo"));
     }
 
     // do the same with filename property path

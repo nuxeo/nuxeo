@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.platform.url.codec;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,11 +41,9 @@ import org.nuxeo.ecm.platform.url.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentLocation;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
-import org.nuxeo.ecm.platform.url.codec.api.DocumentViewCodec;
 import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
 
-public class DocumentFileCodec extends AbstractDocumentViewCodec implements
-        DocumentViewCodec {
+public class DocumentFileCodec extends AbstractDocumentViewCodec {
 
     public static final String PREFIX = "nxfile";
 
@@ -102,10 +102,11 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec implements
      * server/path_or_docId/view_id/tab_id .
      */
     public DocumentView getDocumentViewFromUrl(String url) {
+        URI uri;
         try {
-            url = URLDecoder.decode(url, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            // should not happen.
+            uri = new URI(url);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
         final Pattern pattern = Pattern.compile(getPrefix() + URLPattern);
         Matcher m = pattern.matcher(url);
@@ -149,10 +150,8 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec implements
 
                 final DocumentLocation docLoc = new DocumentLocationImpl(
                         server, docRef);
-                final DocumentView docView = new DocumentViewImpl(docLoc, null,
-                        params);
 
-                return docView;
+                return new DocumentViewImpl(docLoc, null, params);
             }
         }
 
@@ -160,8 +159,7 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec implements
     }
 
     public static String getBlobPropertyName(DocumentView docView) {
-        String propertyPath = docView.getParameter(FILE_PROPERTY_PATH_KEY);
-        return propertyPath;
+        return docView.getParameter(FILE_PROPERTY_PATH_KEY);
     }
 
     public static Blob getBlob(DocumentModel doc, DocumentView docView) {
