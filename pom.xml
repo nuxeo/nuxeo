@@ -21,7 +21,6 @@
 
   <modules>
     <module>nuxeo-runtime</module>
-    <module>nuxeo-jetty-adapter</module>
     <module>nuxeo-runtime-jboss-adapter</module>
     <module>nuxeo-runtime-jboss-extensions</module>
     <module>nuxeo-runtime-osgi</module>
