@@ -45,21 +45,25 @@
       <groupId>jsr170</groupId>
       <artifactId>jcr</artifactId>
       <version>1.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-api</artifactId>
       <version>${jackrabbit.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-core</artifactId>
       <version>${jackrabbit.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-text-extractors</artifactId>
       <version>${jackrabbit.version}</version>
+      <scope>provided</scope>
       <exclusions>
         <exclusion>
           <groupId>poi</groupId>
@@ -71,6 +75,7 @@
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-jcr-commons</artifactId>
       <version>${jackrabbit.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>concurrent</groupId>

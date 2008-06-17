@@ -69,6 +69,7 @@
       <groupId>javax.ressource</groupId>
       <artifactId>jca-api</artifactId>
       <version>1.5</version>
+      <scope>provided</scope>
     </dependency>
 
   </dependencies>
