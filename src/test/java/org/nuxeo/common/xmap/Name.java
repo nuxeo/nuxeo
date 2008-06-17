@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.xmap;
+package org.nuxeo.common.xmap;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
