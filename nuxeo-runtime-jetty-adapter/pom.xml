@@ -73,13 +73,6 @@
       <scope>provided</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-server-configuration</artifactId>
-      <version>1.5-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
-    
   </dependencies>
 
 </project>

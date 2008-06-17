@@ -13,11 +13,11 @@
   </service>
 
   <extension-point name="webapp">
-    <object class="org.nuxeo.runtime.server.configuration.WebApplication"/>
+    <object class="org.nuxeo.common.server.WebApplication"/>
   </extension-point>
 
   <extension-point name="datasource">
-    <object class="org.nuxeo.runtime.server.configuration.DataSource"/>
+    <object class="org.nuxeo.common.server.DataSource"/>
   </extension-point>
 
 </component>

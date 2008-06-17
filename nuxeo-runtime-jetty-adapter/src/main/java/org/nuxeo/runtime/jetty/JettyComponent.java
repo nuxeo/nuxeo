@@ -31,12 +31,12 @@ import org.mortbay.jetty.handler.RequestLogHandler;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.mortbay.xml.XmlConfiguration;
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.server.WebApplication;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.server.configuration.WebApplication;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

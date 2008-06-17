@@ -25,8 +25,8 @@
     <module>nuxeo-runtime-jboss-extensions</module>
     <module>nuxeo-runtime-osgi</module>
     <module>nuxeo-runtime-launcher</module>
-    <module>nuxeo-runtime-server</module>
     <module>nuxeo-runtime-test</module>
+    <module>nuxeo-runtime-jetty-adapter</module>
     <module>nuxeo-runtime-scripting</module>
   </modules>
 
