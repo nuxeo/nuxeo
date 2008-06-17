@@ -44,7 +44,7 @@ public final class DeepCopy {
     }
 
     public static Object deepCopy(Object object) {
-        Object copy = null;
+        Object copy;
         try {
             // Write the object out to a byte array
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
