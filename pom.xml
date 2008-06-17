@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
-    <version>5.2.0.m1</version>
+    <version>5.2.0.m1.PATXT</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.core</groupId>
   <artifactId>nuxeo-core-parent</artifactId>
-  <version>1.5.0.m1</version>
+  <version>1.5.0.m1.PATXT</version>
   <name>Nuxeo Core Parent</name>
   <packaging>pom</packaging>
   <description>
@@ -20,7 +20,7 @@
   <properties>
     <nuxeo.runtime.version>1.5.0.m1</nuxeo.runtime.version>
     <nuxeo.common.version>1.5.0.m1</nuxeo.common.version>
-    <nuxeo.core.version>1.5.0.m1</nuxeo.core.version>
+    <nuxeo.core.version>1.5.0.m1.PATXT</nuxeo.core.version>
   </properties>
 
   <modules>
