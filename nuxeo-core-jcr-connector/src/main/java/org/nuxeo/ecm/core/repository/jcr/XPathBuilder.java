@@ -19,9 +19,6 @@
 
 package org.nuxeo.ecm.core.repository.jcr;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import org.apache.jackrabbit.JcrConstants;
 import org.joda.time.DateTime;
 import org.nuxeo.common.utils.Path;
@@ -69,15 +66,15 @@ public class XPathBuilder implements QueryConstants {
         if (query.from.elements.size() != 1) {
             throw new QueryParseException("Invalid query");
         }
-        if (!query.select.elements.isEmpty()) {
-            xq.name = query.select.elements.get(0).toString();
-        }
 
         String from = query.from.elements.get(0);
         if (query.from.getType() == FromClause.LOCATION) { // TODO nxql parser doesn't support this
             xq.type = NodeConstants.ECM_NT_DOCUMENT.rawname;
             StringBuilder buf = new StringBuilder(1024);
-            buildPathPattern(buf, from, false);
+            String name = buildPathPattern(buf, from, false);
+            if (name != null) {
+                xq.name = name;
+            }
         } else if ("document".equals(from) || "*".equals(from)) {
             xq.type = NodeConstants.ECM_NT_DOCUMENT.rawname;
         } else {

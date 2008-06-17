@@ -34,6 +34,9 @@ public class XPathQuery {
     StringBuilder orderBy = new StringBuilder();
 
     public String toString() {
+        if (name == null) {
+            name = "*";
+        }
         if (predicate.length() > 0) {
             return new StringBuilder(256).append(path == null ? "//" : path)
             .append("element(").append(name).append(",").append(type)
