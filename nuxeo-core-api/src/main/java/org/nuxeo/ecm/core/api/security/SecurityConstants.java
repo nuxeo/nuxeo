@@ -59,5 +59,7 @@ public interface SecurityConstants {
     static final String MANAGE_WORKFLOWS = "ManageWorkflows";
 
     static final String VIEW_WORKLFOW = "ReviewParticipant";
+    
+    static final String FORCE_UNLOCK = "ForceUnlock";
 
 }

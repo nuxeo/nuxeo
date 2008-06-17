@@ -2291,7 +2291,8 @@ public abstract class AbstractSession implements CoreSession,
                 return null;
             }
             String username = getPrincipal().getName();
-            if (isAdministrator() || lockDetails[0].equals(username)) {
+
+            if (hasPermission(docRef, FORCE_UNLOCK) || lockDetails[0].equals(username)) {
                 String lockKey = doc.unlock();
                 DocumentModel docModel = readModel(doc, null);
                 Map<String, Object> options = new HashMap<String, Object>();
