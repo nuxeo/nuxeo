@@ -115,7 +115,7 @@ public class DashBoardActionsBean extends InputController implements
     @In
     protected transient Context eventContext;
 
-    @In(create = true, required = false)
+    @In(required = true)
     protected transient CoreSession documentManager;
 
     @In(create = true)
@@ -231,18 +231,7 @@ public class DashBoardActionsBean extends InputController implements
                 procs.add(procsIt.next());
             }
 
-            // Workflow started by one of the current user group
-            // This case doesn't happend in the default Nuxeo app but could be
-            // in a custom application.
-            for (String groupName : groupNames) {
-                participant = new WMParticipantImpl(groupName);
-                procsIt = wapi.listProcessInstances(new WMFilterImpl(
-                        WorkflowConstants.WORKFLOW_CREATOR, WMFilter.EQ,
-                        participant.getName()));
-                while (procsIt.hasNext()) {
-                    procs.add(procsIt.next());
-                }
-            }
+            procs.addAll(wapi.getProcessInstanceForGroup(groupNames));
 
             for (WMProcessInstance proc : procs) {
 

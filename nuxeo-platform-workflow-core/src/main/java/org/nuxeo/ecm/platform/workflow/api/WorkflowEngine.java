@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -396,4 +397,12 @@ public interface WorkflowEngine {
      */
     WMWorkItemIterator listWorkItems(WMFilter filter)
             throws WMWorkflowException;
+
+    /**
+     * Return a list of process instance having one of the group has creator.
+     *
+     * @param groupNames a list of group.
+     * @return
+     */
+    Collection<WMProcessInstance> listProcessInstanceForGroup(List<String> groupNames);
 }
