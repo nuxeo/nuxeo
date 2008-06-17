@@ -15,15 +15,28 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql.ra;
+package org.nuxeo.test.servlet;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Florent Guillaume
  */
-public class TestResourceAdapter extends GlassFishTestCase {
+public class TestServlet extends HttpServlet {
 
-    public void XXXtestResourceAdapter() throws Exception {
+    private static final long serialVersionUID = 1L;
 
+    @Override
+    protected void doGet(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/plain");
+        PrintWriter out = response.getWriter();
+        out.println("this is the test servlet");
     }
 }

@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql.ra;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -27,6 +28,7 @@ import junit.framework.TestCase;
 
 import org.glassfish.embed.GFApplication;
 import org.glassfish.embed.GlassFish;
+import org.glassfish.embed.ScatteredWar;
 import org.w3c.dom.Document;
 
 /**
@@ -36,26 +38,32 @@ import org.w3c.dom.Document;
  */
 public abstract class GlassFishTestCase extends TestCase {
 
-    private GlassFish glassfish;
+    protected GlassFish glassfish;
 
-    private GFApplication gfApplication;
+    private GFApplication rarApp;
+
+    protected int httpPort = 8123;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        GlassFish.setLogLevel(Level.CONFIG);
+        GlassFish.setLogLevel(Level.FINE);
 
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         String uri = getClass().getResource("/test-domain.xml").toExternalForm();
         Document domainXml = builder.parse(uri);
 
         glassfish = new GlassFish(domainXml);
-        gfApplication = glassfish.deploy(new File("target/classes"));
+        // start server
+        glassfish.createVirtualServer(glassfish.createHttpListener(httpPort ));
+
+        // deploy rar
+        rarApp = glassfish.deploy(new File("target/classes"));
     }
 
     @Override
     public void tearDown() throws Exception {
-        gfApplication.undeploy();
+        rarApp.undeploy();
         glassfish.stop();
         super.tearDown();
     }
