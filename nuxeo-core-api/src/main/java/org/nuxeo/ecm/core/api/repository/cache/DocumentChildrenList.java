@@ -28,22 +28,17 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
- *
- * A document list that uses document cached from the document cache.
- * This is not using the children cache. If you need to cache getChildren calls it is better to use
- * the {@link DocumentChildrenList} which is caching children lists
- *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class CachingDocumentList implements DocumentModelList {
+public class DocumentChildrenList implements DocumentModelList {
 
     private static final long serialVersionUID = 6370206124496509919L;
 
     private final List<DocumentModel> list;
     private final DocumentModelCache cache;
 
-    public CachingDocumentList(DocumentModelCache cache, List<DocumentModel> list) {
+    public DocumentChildrenList(DocumentModelCache cache, List<DocumentModel> list) {
         this.list = list;
         this.cache = cache;
     }
@@ -130,7 +125,7 @@ public class CachingDocumentList implements DocumentModelList {
     }
 
     public List<DocumentModel> subList(int fromIndex, int toIndex) {
-        return new CachingDocumentList(cache, list.subList(fromIndex, toIndex));
+        return new DocumentChildrenList(cache, list.subList(fromIndex, toIndex));
     }
 
     public Object[] toArray() {
