@@ -200,6 +200,21 @@ public interface IOManager extends Serializable {
             Collection<String> ioAdapters) throws ClientException;
 
     /**
+     * Exports documents as an streamable archive - using all options
+     * @param repo
+     * @param sources
+     * @param docReaderFactoryName
+     * @param readerFactoryParams
+     * @param ioAdapters
+     * @return
+     * @throws ClientException
+     */
+    public String externalizeExport(String repo,
+            Collection<DocumentRef> sources, String docReaderFactoryName,
+            Map<String, Object> readerFactoryParams,
+            Collection<String> ioAdapters) throws ClientException;
+
+    /**
      * Should be called by client code after using the export created by
      * calling the {@link #externalizeExport(...)}.
      *
