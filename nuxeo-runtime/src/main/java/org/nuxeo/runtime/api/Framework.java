@@ -125,17 +125,13 @@ public final class Framework {
     }
 
     /**
-     * Get a (possibly remote) object that is bound to the given key.
-     * This method is using the regietred service providers to find the object
-     * @param key the object key
-     * @return the object or null if none (or if an error occured)
-     *
-     * This method exists on the branch 1.4 only for compatibility with Apogee.
+     * Lookup a registered object given its key
+     * @param key
+     * @return
      */
     public static Object lookup(String key) {
-        return null;
+        return null; //TODO
     }
-
 
     /**
      * Login in the system as the system user (a pseudo-user having all

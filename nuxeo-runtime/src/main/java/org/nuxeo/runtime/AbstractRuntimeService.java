@@ -35,6 +35,7 @@ import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.impl.ComponentManagerImpl;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
 import org.nuxeo.runtime.services.adapter.AdapterManager;
+import org.osgi.framework.Bundle;
 
 /**
  * Abstract implementation of the Runtime Service.
@@ -290,4 +291,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         return result.toString();
     }
 
+    public File getBundleFile(Bundle bundle) {
+        return null;
+    }
 }
