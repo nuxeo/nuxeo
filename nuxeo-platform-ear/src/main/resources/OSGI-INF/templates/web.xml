@@ -45,4 +45,23 @@
     <session-timeout>60</session-timeout>
   </session-config>
 
+  <servlet>
+    <servlet-name>NuxeoRuntimeInvokerServlet</servlet-name>
+    <description>The ServerInvokerServlet receives requests via HTTP
+      protocol from within a web container and passes it onto the
+      ServletServerInvoker for processing.
+    </description>
+    <servlet-class>org.jboss.remoting.transport.servlet.web.ServerInvokerServlet</servlet-class>
+    <init-param>
+      <param-name>invokerName</param-name>
+      <param-value>nx:service=invoker,name=remoting</param-value>
+      <description>The mbean name of the invoker. See org.nuxeo.runtime.remoting.RemotingService.INVOKER_NAME</description>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>NuxeoRuntimeInvokerServlet</servlet-name>
+    <url-pattern>/NuxeoRuntimeInvokerServlet/*</url-pattern>
+  </servlet-mapping>
+
 </web-app>

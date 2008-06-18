@@ -20,8 +20,8 @@
 
 package org.nuxeo.ecm.platform.events;
 
-import java.util.Map;
 import java.io.Serializable;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;

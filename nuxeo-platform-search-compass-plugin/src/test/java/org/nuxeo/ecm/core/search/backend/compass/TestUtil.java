@@ -27,11 +27,11 @@ import junit.framework.TestCase;
  */
 public class TestUtil extends TestCase {
 
-    private static void checkDiffers(String s) throws Exception {
+    private static void checkDiffers(String s) {
         assertNotSame(s, Util.escapeSpecialMarkers(s));
     }
 
-    private static void checkLoop(String s) throws Exception {
+    private static void checkLoop(String s) {
         assertEquals(s, Util.unescapeSpecialMarkers(
                 Util.escapeSpecialMarkers(s)));
     }

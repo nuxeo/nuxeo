@@ -30,7 +30,7 @@ package org.nuxeo.ecm.platform.api;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
- * @deprecated - you should use {@link org.nuxeo.runtime.api.Framework}
+ * @deprecated - you should use {@link org.nuxeo.runtime.api.Framework} - Remove in 5.2.
  */
 @SuppressWarnings({"ALL"})
 @Deprecated

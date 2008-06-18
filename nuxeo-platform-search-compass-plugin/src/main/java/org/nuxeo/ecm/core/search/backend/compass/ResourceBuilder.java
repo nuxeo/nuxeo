@@ -29,6 +29,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Calendar;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,6 +57,7 @@ import org.nuxeo.ecm.core.search.api.backend.indexing.resources.factory.BuiltinD
 import org.nuxeo.ecm.core.search.api.backend.security.SecurityFiltering;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.FieldConstants;
+import sun.misc.BASE64Encoder;
 
 /**
  * Takes care of building one Compass Resource. DO NOT reuse in another session
@@ -151,8 +153,7 @@ public class ResourceBuilder {
     @SuppressWarnings("unchecked")
     protected void addProperty(String name, Object value, String type,
             Boolean indexed, Boolean stored, Boolean multiple,
-            boolean sortable, Map<String, Serializable> properties,
-            String sortOption) throws IndexingException {
+            boolean sortable, Map<String, Serializable> properties, String sortOption) throws IndexingException {
 
         // Get rid of null case first
         if (value == null || value instanceof Null) {
@@ -181,7 +182,7 @@ public class ResourceBuilder {
             } else { // still support collections
                 Collection<Object> coll = (Collection<Object>) value;
                 empty = coll.isEmpty();
-                for (Object val : coll) {
+               for (Object val : coll) {
                     addProperty(name, val, type, indexed, stored, false,
                             sortable, properties, sortOption);
                 }
@@ -217,10 +218,10 @@ public class ResourceBuilder {
         if (value instanceof String) {
             value = Util.escapeSpecialMarkers((String) value);
             sValue = (String) value;
-        } else if (value instanceof GregorianCalendar) {
-            sValue = String.valueOf(((GregorianCalendar) value).getTimeInMillis());
+        } else if (value instanceof Calendar) {
+            sValue = String.valueOf(((Calendar) value).getTimeInMillis());
         } else if (value instanceof Date) {
-            sValue = String.valueOf(((Date) value).getTime());
+            sValue = String.valueOf(((Date)value).getTime());
         } else if (value instanceof Integer || value instanceof Long
                 || value instanceof Boolean || value instanceof Double) {
             sValue = String.valueOf(value);
@@ -281,10 +282,8 @@ public class ResourceBuilder {
                             name));
                     return;
                 }
-                addPathProperty(
-                        name,
-                        sValue,
-                        (String) properties.get(FieldConstants.PROPERTY_PATH_SEPARATOR),
+                addPathProperty(name, sValue, (String) properties.get(
+                        FieldConstants.PROPERTY_PATH_SEPARATOR),
                         indexed, stored);
                 return;
             }
@@ -299,7 +298,7 @@ public class ResourceBuilder {
                 } catch (IOException e) {
                     throw new IndexingException(e.getMessage(), e);
                 }
-                sValue = new sun.misc.BASE64Encoder().encode(b.toByteArray());
+                sValue = new BASE64Encoder().encode(b.toByteArray());
             }
 
             // Note the existence of other Property.Store.* Use Compress on
@@ -383,20 +382,21 @@ public class ResourceBuilder {
     /**
      * @param name
      * @param value
-     * @param separator The separator, if <code>null</code> defaults to a
-     *            slash
+     * @param separator The separator,
+     *   if <code>null</code> defaults to a slash
      */
-    public void addPathProperty(String name, String value, String separator,
-            boolean indexed, boolean stored) {
+    public void addPathProperty(String name, String value,
+            String separator, boolean indexed, boolean stored) {
         if (separator == null) {
             separator = "/";
         }
         StringBuilder sb;
         int j = -1;
         do {
-            j = value.indexOf(separator, j + 1);
+            j = value.indexOf(separator, j+1);
             if (j != -1) {
-                addTermProperty(name, value.substring(0, j), indexed, false);
+                addTermProperty(name, value.substring(0, j),
+                        indexed, false);
             }
         } while (j < value.length() && j != -1);
         // In case the "stored" stuff would be global, and last one wins
