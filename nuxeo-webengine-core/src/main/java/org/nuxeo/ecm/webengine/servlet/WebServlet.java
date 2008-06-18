@@ -111,6 +111,8 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
             throws ServletException, IOException {
         //double start = System.currentTimeMillis();
 
+        resp.setContentType("text/html");
+
         if (req.getMethod().equals(WebConst.METHOD_HEAD)) {
             resp = new NoBodyResponse(resp);
         }
