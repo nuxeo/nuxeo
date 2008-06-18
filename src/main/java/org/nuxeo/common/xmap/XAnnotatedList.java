@@ -99,8 +99,7 @@ public class XAnnotatedList extends XAnnotatedMember {
     }
 }
 
-class ElementVisitor extends DOMHelper.NodeVisitor {
-    @Override
+class ElementVisitor implements DOMHelper.NodeVisitor {
     public void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result) {
         try {
             result.add(xam.xao.newInstance(ctx, (Element) node));
@@ -111,8 +110,7 @@ class ElementVisitor extends DOMHelper.NodeVisitor {
     }
 }
 
-class ElementValueVisitor extends DOMHelper.NodeVisitor {
-    @Override
+class ElementValueVisitor implements DOMHelper.NodeVisitor {
     public void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result) {
         String val = node.getTextContent();
         if (xam.trim) {
@@ -127,8 +125,7 @@ class ElementValueVisitor extends DOMHelper.NodeVisitor {
     }
 }
 
-class AttributeValueVisitor extends DOMHelper.NodeVisitor {
-    @Override
+class AttributeValueVisitor implements DOMHelper.NodeVisitor {
     public void visitNode(Context ctx, XAnnotatedMember xam, Node node, Collection<Object> result) {
         String val = node.getNodeValue();
         if (xam.valueFactory != null) {
