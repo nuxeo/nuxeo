@@ -98,11 +98,10 @@ public class Scripting {
             args = new SimpleBindings();
         }
         String ext = script.getExtension();
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@: enter script: "+ext);
-        if ("groovy".equals(ext)) {
-            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@ groovy");
-            return new GroovyShell(new Binding(args)).evaluate(script.getFile());
-        }
+// TODO: add debug mode
+//        if ("groovy".equals(ext)) {
+//            return new GroovyShell(new Binding(args)).evaluate(script.getFile());
+//        }
         // check for a script engine
         ScriptEngine engine = scriptMgr.getEngineByExtension(ext);
         if (engine != null) {
