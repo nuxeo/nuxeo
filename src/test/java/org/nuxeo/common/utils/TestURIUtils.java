@@ -30,10 +30,10 @@ import junit.framework.TestCase;
  */
 public class TestURIUtils extends TestCase {
 
-    private static final String URI_QUERY
-            = "currentTab=TAB_CONTENT&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&repositoryName=demo";
+    private static final String URI_QUERY = "currentTab=TAB_CONTENT&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&repositoryName=demo";
 
-    private static final String PARTIAL_URI = "nuxeo/view_documents.faces?" + URI_QUERY;
+    private static final String PARTIAL_URI = "nuxeo/view_documents.faces?"
+            + URI_QUERY;
 
     private static final String URI = "http://localhost:8080/" + PARTIAL_URI;
 
@@ -51,7 +51,8 @@ public class TestURIUtils extends TestCase {
         assertEquals(parameters, URIUtils.getRequestParameters(URI_QUERY));
     }
 
-    // FIXME: this tests makes too string assumptions on how the params will be ordered (fails under Java 6)
+    // FIXME: this tests makes too string assumptions on how the params will be
+    // ordered (fails under Java 6)
     public void XXXtestAddParametersToURIQuery() {
         String newUri = "http://localhost:8080/nuxeo/view_documents.faces?currentTab=TAB_CONTENT&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&conversationId=0NXMAIN21&repositoryName=demo";
         Map<String, String> newParams = new HashMap<String, String>();
@@ -59,7 +60,8 @@ public class TestURIUtils extends TestCase {
         assertEquals(newUri, URIUtils.addParametersToURIQuery(URI, newParams));
     }
 
-    // FIXME: this tests makes too string assumptions on how the params will be ordered (fails under Java 6)
+    // FIXME: this tests makes too string assumptions on how the params will be
+    // ordered (fails under Java 6)
     public void XXXtestAddParametersToPartialURIQuery() {
         String newUri = "nuxeo/view_documents.faces?currentTab=TAB_CONTENT&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&conversationId=0NXMAIN21&repositoryName=demo";
         Map<String, String> newParams = new HashMap<String, String>();
@@ -70,11 +72,17 @@ public class TestURIUtils extends TestCase {
 
     public void testQuoteURIPathComponent() throws Exception {
         String s = "test yes:no /caf\u00e9.bin";
-        assertEquals("test%20yes%3Ano%20%2Fcaf%C3%A9.bin", URIUtils.quoteURIPathComponent(s, true));
+        assertEquals("test%20yes%3Ano%20%2Fcaf%C3%A9.bin",
+                URIUtils.quoteURIPathComponent(s, true));
         s = "http://foo/bar";
-        assertEquals("http%3A%2F%2Ffoo%2Fbar", URIUtils.quoteURIPathComponent(s, true));
+        assertEquals("http%3A%2F%2Ffoo%2Fbar", URIUtils.quoteURIPathComponent(
+                s, true));
         s = "a/b/c";
         assertEquals("a/b/c", URIUtils.quoteURIPathComponent(s, false));
+        // NXP-2480
+        s = "[foo] bar?";
+        assertEquals("%5Bfoo%5D%20bar%3F", URIUtils.quoteURIPathComponent(s,
+                true));
     }
 
 }

@@ -147,17 +147,30 @@ public final class URIUtils {
 
     public static String quoteURIPathComponent(String s, boolean quoteSlash) {
         URI uri;
+        if ("".equals(s))
+            return s;
         try {
             // fake scheme so that a colon is not mistaken as a scheme
             uri = new URI("x", s, null);
         } catch (URISyntaxException e) {
-            throw new RuntimeException("Illegal characters in: " + s);
+            throw new RuntimeException("Illegal characters in: " + s, e);
         }
-        String r = uri.toASCIIString().substring(2).replace(":", "%3A");
+        String r = uri.toASCIIString().substring(2);
+        // replace reserved characters ;:$&+=?/[]@
+        // FIXME: find a better way to do this...
+        r = r.replace(";", "%3B");
+        r = r.replace(":", "%3A");
+        r = r.replace("$", "%25");
+        r = r.replace("&", "%26");
+        r = r.replace("+", "%2B");
+        r = r.replace("=", "%3D");
+        r = r.replace("?", "%3F");
+        r = r.replace("[", "%5B");
+        r = r.replace("]", "%5D");
+        r = r.replace("@", "%40");
         if (quoteSlash) {
             r = r.replace("/", "%2F");
         }
         return r;
     }
-
 }
