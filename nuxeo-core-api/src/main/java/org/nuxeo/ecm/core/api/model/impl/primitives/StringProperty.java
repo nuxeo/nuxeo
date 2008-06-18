@@ -57,14 +57,13 @@ public class StringProperty extends ScalarProperty {
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {
         if (toType == String.class) {
-            return (T)value;
+            return (T) value;
         }
         throw new PropertyConversionException(value.getClass(), toType);
     }
 
     @Override
-    public Object newInstance() throws InstantiationException,
-            IllegalAccessException {
+    public Object newInstance() {
         return "";
     }
 

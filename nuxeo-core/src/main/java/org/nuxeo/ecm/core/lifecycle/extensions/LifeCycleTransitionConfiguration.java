@@ -62,11 +62,11 @@ public class LifeCycleTransitionConfiguration {
         Element transitionsElement=null;
         if (transitionsElements.getLength() > 0) {
             // NXP-1472 : don't get the first element, but the first one attached to <lifecycle>
-            for (int i = 0 ; i<transitionsElements.getLength(); i++)
-            {
+            for (int i = 0; i < transitionsElements.getLength(); i++) {
                 transitionsElement = (Element) transitionsElements.item(i);
-                if (TAG_LIFECYCLE.equals(transitionsElement.getParentNode().getNodeName()))
+                if (TAG_LIFECYCLE.equals(transitionsElement.getParentNode().getNodeName())) {
                     break;
+                }
             }
         } else {
             return transitions;

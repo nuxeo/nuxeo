@@ -79,7 +79,7 @@ public abstract class CompositePropertyFactory {
 
     public static final CompositePropertyFactory CONTENT = new CompositePropertyFactory() {
         @Override
-        public org.nuxeo.ecm.core.model.Property create(JCRNodeProxy parent,
+        public Property create(JCRNodeProxy parent,
                 Node property, Field field) {
             return new BlobProperty(parent, property, field);
         }
