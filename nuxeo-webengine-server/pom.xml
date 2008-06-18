@@ -56,11 +56,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-server</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-jetty-adapter</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
@@ -272,10 +267,6 @@
 	    
     <!-- ######### -->
 
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-server</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.common</groupId>
@@ -285,11 +276,6 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-launcher</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-server</artifactId>
     </dependency>
 
     <dependency>

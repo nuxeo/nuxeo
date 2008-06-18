@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.webengine.scripting;
 
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -95,6 +98,11 @@ public class Scripting {
             args = new SimpleBindings();
         }
         String ext = script.getExtension();
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@: enter script: "+ext);
+        if ("groovy".equals(ext)) {
+            System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@ groovy");
+            return new GroovyShell(new Binding(args)).evaluate(script.getFile());
+        }
         // check for a script engine
         ScriptEngine engine = scriptMgr.getEngineByExtension(ext);
         if (engine != null) {

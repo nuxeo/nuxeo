@@ -1,6 +1,6 @@
 import org.nuxeo.ecm.webengine.exceptions.*
 
-error = Context.getProperty("error");
+def error = Context.getProperty("error");
 Context.print("<h1>Error Page</h1>");
 
 if (error instanceof WebSecurityException) {
