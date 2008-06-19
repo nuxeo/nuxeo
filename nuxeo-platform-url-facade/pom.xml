@@ -22,6 +22,7 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-api</artifactId>
     </dependency>
+
     <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb</artifactId>

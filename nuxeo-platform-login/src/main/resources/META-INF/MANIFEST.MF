@@ -4,6 +4,7 @@ Bundle-Name: Nuxeo Login Module
 Bundle-SymbolicName: org.nuxeo.ecm.platform.login
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
+Bundle-Category: core,search,web
 Export-Package: org.nuxeo.ecm.platform.login
 Require-Bundle: org.nuxeo.ecm.platform.api,
  org.nuxeo.ecm.platform.usermanager.api

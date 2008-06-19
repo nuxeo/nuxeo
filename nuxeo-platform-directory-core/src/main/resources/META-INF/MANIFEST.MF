@@ -5,6 +5,7 @@ Bundle-SymbolicName: org.nuxeo.ecm.directory;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Localization: bundle
 Bundle-ClassPath: .
+Bundle-Category: web
 Export-Package: org.nuxeo.ecm.directory,
  org.nuxeo.ecm.directory.api,
  org.nuxeo.ecm.directory.constants

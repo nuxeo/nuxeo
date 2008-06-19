@@ -3,6 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo ECM Workflow Web Client
 Bundle-SymbolicName: org.nuxeo.ecm.platform.workflow.web;singleton:=true
 Bundle-Vendor: Nuxeo
+Bundle-Category: web
 Eclipse-LazyStart: false
 Nuxeo-Component: OSGI-INF/actions-contrib.xml,
   OSGI-INF/document-adapter-service-contrib.xml
