@@ -397,11 +397,12 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             // serialize bootstrap XML document in the response
             Document xmlDoc = DocumentFactory.getInstance().createDocument();
             xmlDoc.setRootElement(root);
-            response.setContentType("text/xml");
+            response.setContentType("text/xml; charset=UTF-8");
 
             // use a formatter to make it easier to debug live edit client
             // implementations
             OutputFormat format = OutputFormat.createPrettyPrint();
+            format.setEncoding("UTF-8");
             XMLWriter writer = new XMLWriter(response.getOutputStream(), format);
             writer.write(xmlDoc);
 
