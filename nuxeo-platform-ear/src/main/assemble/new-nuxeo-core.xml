@@ -3,10 +3,10 @@
   <!-- RESOURCES -->
   <assemble>
     <outputFile>/</outputFile>
-    <set>root-resources</set>
+    <set>common-resources</set>
   </assemble>
-  <fileSet id="root-resources">
-    <directory>src/main/resources</directory>
+  <fileSet id="common-resources">
+    <directory>src/main/resources_common</directory>
     <excludes>
       <exclude>**/.svn</exclude>
     </excludes>
@@ -32,6 +32,7 @@
     <import>**</import>
     <includeDependencies>true</includeDependencies>
     <includes>
+      <artifact group="org.nuxeo.*" category="runtime" includeDependsOn="false"/>
       <artifact group="org.nuxeo.*" category="core" />
     </includes>
     <excludes>
@@ -87,6 +88,22 @@
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-jbossws-wrapper"
         version="4.0.5.GA" />
     </artifacts>
+  </artifactSet>
+
+  <!-- third party libraries embedded in the ear -->
+  <assemble>
+    <outputFile>lib2</outputFile>
+    <set>nuxeo-libs-via-dependency-tree</set>
+  </assemble>
+  <artifactSet id="nuxeo-libs-via-dependency-tree">
+    <import>**</import>
+    <includeDependencies>true</includeDependencies>
+    <includes>
+      <artifact scope="compile" />
+    </includes>
+    <excludes>
+      <artifact group="org.nuxeo.*" />
+    </excludes>
   </artifactSet>
 
 </assembly>

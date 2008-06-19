@@ -3,6 +3,17 @@
   <!-- RESOURCES -->
   <assemble>
     <outputFile>/</outputFile>
+    <set>common-resources</set>
+  </assemble>
+  <fileSet id="common-resources">
+    <directory>src/main/resources_common</directory>
+    <excludes>
+      <exclude>**/.svn</exclude>
+    </excludes>
+  </fileSet>
+
+  <assemble>
+    <outputFile>/</outputFile>
     <set>core-resources</set>
   </assemble>
   <fileSet id="core-resources">
@@ -34,16 +45,18 @@
     </excludes>
   </fileSet>
 
+  <!--
   <assemble>
     <outputFile>/</outputFile>
-    <set>common-resources</set>
+    <set>root-resources</set>
   </assemble>
-  <fileSet id="common-resources">
+  <fileSet id="root-resources">
     <directory>src/main/resources</directory>
     <excludes>
       <exclude>**/.svn</exclude>
     </excludes>
   </fileSet>
+   -->
 
   <!-- ARTIFACTS -->
   <assemble>
@@ -66,6 +79,7 @@
     <import>**</import>
     <includeDependencies>true</includeDependencies>
     <includes>
+      <artifact group="org.nuxeo.*" category="runtime" includeDependsOn="false"/>
       <artifact group="org.nuxeo.*" category="core" />
       <artifact group="org.nuxeo.*" category="search" />
       <artifact group="org.nuxeo.*" category="web" />
