@@ -13,12 +13,20 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-schema</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
@@ -33,6 +41,10 @@
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
     </dependency>
   </dependencies>
 

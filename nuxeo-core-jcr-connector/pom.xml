@@ -18,7 +18,19 @@
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-query</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-schema</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
@@ -33,32 +45,37 @@
       <groupId>jsr170</groupId>
       <artifactId>jcr</artifactId>
       <version>1.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-api</artifactId>
       <version>${jackrabbit.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-core</artifactId>
       <version>${jackrabbit.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-text-extractors</artifactId>
       <version>${jackrabbit.version}</version>
+      <scope>provided</scope>
       <exclusions>
         <exclusion>
           <groupId>poi</groupId>
           <artifactId>poi</artifactId>
         </exclusion>
-      </exclusions> 
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-jcr-commons</artifactId>
       <version>${jackrabbit.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>concurrent</groupId>
