@@ -66,7 +66,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 public class VersionedActionsBean implements VersionedActions, Serializable {
 
     private static final long serialVersionUID = 4472648747609642493L;
-    
+
     private static final Log log = LogFactory.getLog(VersionedActionsBean.class);
 
     @In(create = true, required = true)
@@ -164,9 +164,10 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     }
 
     public boolean getCanRestore() throws ClientException {
+        // TODO: should check for a specific RESTORE permission instead
         return documentManager.hasPermission(
                 navigationContext.getCurrentDocument().getRef(),
-                SecurityConstants.WRITE);
+                SecurityConstants.WRITE_PROPERTIES);
     }
 
     /**

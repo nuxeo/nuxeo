@@ -182,9 +182,6 @@ public class EditableListBean {
             String parameterName) {
         String string = requestMap.get(parameterName);
         if (string == null || string.length() == 0) {
-            log.error(String.format(
-                    "Could not find '%s' parameter in the request map",
-                    parameterName));
             return null;
         } else {
             return string;
@@ -195,7 +192,11 @@ public class EditableListBean {
             UIComponent component, Map<String, String> requestMap) {
         UIEditableList listComponent = null;
         String forString = getParameterValue(requestMap, FOR_PARAMETER_NAME);
-        if (forString != null) {
+        if (forString == null) {
+            log.error(String.format(
+                    "Could not find '%s' parameter in the request map",
+                    FOR_PARAMETER_NAME));
+        } else {
             try {
                 UIComponent forComponent = component.findComponent(forString);
                 if (forComponent == null) {
@@ -220,7 +221,11 @@ public class EditableListBean {
             Map<String, String> requestMap) {
         EditableListModificationType type = null;
         String typeString = getParameterValue(requestMap, TYPE_PARAMETER_NAME);
-        if (typeString != null) {
+        if (typeString == null) {
+            log.error(String.format(
+                    "Could not find '%s' parameter in the request map",
+                    TYPE_PARAMETER_NAME));
+        } else {
             try {
                 type = EditableListModificationType.valueOfString(typeString);
             } catch (IllegalArgumentException err) {
@@ -236,7 +241,11 @@ public class EditableListBean {
     protected static Integer getIndex(Map<String, String> requestMap) {
         Integer index = null;
         String indexString = getParameterValue(requestMap, INDEX_PARAMETER_NAME);
-        if (indexString != null) {
+        if (indexString == null) {
+            log.error(String.format(
+                    "Could not find '%s' parameter in the request map",
+                    INDEX_PARAMETER_NAME));
+        } else {
             try {
                 index = Integer.valueOf(indexString);
             } catch (Exception e) {

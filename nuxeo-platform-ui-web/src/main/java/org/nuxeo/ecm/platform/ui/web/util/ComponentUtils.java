@@ -178,6 +178,9 @@ public final class ComponentUtils {
                 }
                 HttpServletRequest request = (HttpServletRequest) econtext.getRequest();
                 String userAgent = request.getHeader("User-Agent");
+                String inline =request.getParameter("inline");
+                if (inline==null)
+                {
                 if (userAgent != null && userAgent.contains("MSIE")) {
                     // XXX AT: IE does not understand the filename* encoding,
                     // but decodes correctly the filename this way.
@@ -187,6 +190,7 @@ public final class ComponentUtils {
                     // follow RFC-2231 for charset setting
                     response.setHeader("Content-Disposition",
                             "attachment; filename*=UTF-8''" + filename + ';');
+                }
                 }
                 log.debug("Downloading with mime/type : " + blob.getMimeType());
                 response.setContentType(blob.getMimeType());

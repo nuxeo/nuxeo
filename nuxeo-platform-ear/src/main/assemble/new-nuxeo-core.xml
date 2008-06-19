@@ -32,10 +32,11 @@
     <import>**</import>
     <includeDependencies>true</includeDependencies>
     <includes>
-      <artifact group="org.nuxeo.*" category="runtime" includeDependsOn="false"/>
+      <artifact group="org.nuxeo.*" category="runtime" includeDependsOnCategory="false"/>
       <artifact group="org.nuxeo.*" category="core" />
     </includes>
     <excludes>
+      <artifact group="!org.nuxeo*" />
       <artifact group="org.nuxeo.common" />
       <artifact name="nuxeo-runtime-jboss-extensions" />
     </excludes>

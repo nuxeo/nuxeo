@@ -274,8 +274,8 @@ public class CommentManagerImpl implements CommentManager {
                 dm.setProperty("dublincore", "title", name);
                 dm.setProperty("dublincore", "description", "");
                 dm.setProperty("dublincore", "created", Calendar.getInstance());
-                setFolderPermissions(dm);
                 dm = mySession.createDocument(dm);
+                setFolderPermissions(dm);
 
                 mySession.save();
                 parent = dm;

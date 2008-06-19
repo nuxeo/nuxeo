@@ -58,6 +58,7 @@ import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
+import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeNodeComparator;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeNodeImpl;
@@ -531,8 +532,9 @@ public class PublishActionsBean implements PublishActions, Serializable {
     }
 
     public boolean isReviewer(DocumentModel dm) throws ClientException {
+        // TODO: introduce a specific publication reviewer permission
         return documentManager.hasPermission(dm.getRef(),
-                SecurityConstants.WRITE);
+                SecurityConstants.WRITE_PROPERTIES);
     }
 
     // TODO move to protected
@@ -571,8 +573,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
         int nbPublishedDocs = 0;
         for (DocumentModel doc : docs2Publish) {
-            if (!documentManager.hasPermission(doc.getParentRef(),
-                    SecurityConstants.WRITE)) {
+            if (!documentManager.hasPermission(doc.getRef(),
+                    SecurityConstants.READ_PROPERTIES)) {
                 continue;
             }
 
@@ -619,9 +621,19 @@ public class PublishActionsBean implements PublishActions, Serializable {
                     "Cannot publish because not enough rights");
         }
 
-        if (!docToPublish.isProxy()) {
+        // set issued date only if the doc is dirty, to avoid setting it
+        // repeatedly if several publishings are done
+        final boolean setIssuedDate = documentManager.isDirty(docToPublish.getRef()) &&
+                !docToPublish.isProxy();
+        if (setIssuedDate) {
             docToPublish.setProperty("dublincore", "issued",
                     Calendar.getInstance());
+            // make sure that saveDocument doesn't create a snapshot,
+            // as publishDocument will do it
+            docToPublish.putContextData(
+                    org.nuxeo.common.collections.ScopeType.REQUEST,
+                    VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY,
+                    Boolean.FALSE);
         }
 
         DocumentModel proxy;
@@ -638,7 +650,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
                 @Override
                 public void run() throws ClientException {
 
-                    if (!docToPublish.isProxy()) {
+                    if (setIssuedDate) {
                         unrestrictedSession.saveDocument(docToPublish);
                     }
                     DocumentModel proxy = unrestrictedSession.publishDocument(
@@ -683,7 +695,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
             proxy = misc[0]; // get info from inner method
 
         } else {
-            if (!docToPublish.isProxy()) {
+            if (setIssuedDate) {
                 documentManager.saveDocument(docToPublish);
             }
             proxy = documentManager.publishDocument(docToPublish, section);
@@ -695,6 +707,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
             // section, principal, comment);
             Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
             eventInfo.put("targetSection", section.getName());
+            eventInfo.put("proxy", proxy);
+            eventInfo.put("sectionPath", section.getPathAsString());
             notifyEvent(
                     org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_PUBLISHED,
                     eventInfo, comment, null, docToPublish);

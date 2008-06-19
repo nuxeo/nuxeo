@@ -45,7 +45,7 @@
     <import>**</import>
     <includeDependencies>true</includeDependencies>
     <includes>
-      <artifact group="org.nuxeo.*" category="runtime" includeDependsOn="false"/>
+      <artifact group="org.nuxeo.*" category="runtime" includeDependsOnCategory="false"/>
       <artifact group="org.nuxeo.*" category="web" />
     </includes>
     <excludes>

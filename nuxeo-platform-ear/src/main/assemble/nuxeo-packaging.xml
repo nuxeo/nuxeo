@@ -1,12 +1,12 @@
 <packaging>
   <serverSet id="nuxeo-mono">
     <includes>
-      <artifact group="org.nuxeo.*" category="runtime" includeDependsOn="false"/>
+      <artifacts group="org.nuxeo.*" category="runtime" includeDependsOn="false"/>
       <artifacts group="org.nuxeo.*" category="core,search,web" />
     </includes>
     <excludes>
-      <artifact group="org.nuxeo.common" />
-      <artifact name="nuxeo-runtime-jboss-extensions" />
+      <artifacts group="org.nuxeo.common" />
+      <artifacts name="nuxeo-runtime-jboss-extensions" />
     </excludes>
     <assembly type="directory" name="nuxeo.ear" >
       <artifactsSet pattern="nuxeo-platform-audit-facade" unpack="true" output="system" />
@@ -30,12 +30,12 @@
   <!-- Nuxeo 3 parts -->
   <serverSet id="nuxeo-core">
     <includes>
-      <artifact group="org.nuxeo.*" category="runtime" includeDependsOn="false"/>
+      <artifacts group="org.nuxeo.*" category="runtime" includeDependsOn="false"/>
       <artifacts group="org.nuxeo.*" category="core" />
     </includes>
     <excludes>
-      <artifact group="org.nuxeo.common" />
-      <artifact name="nuxeo-runtime-jboss-extensions" />
+      <artifacts group="org.nuxeo.common" />
+      <artifacts name="nuxeo-runtime-jboss-extensions" />
     </excludes>
     <assembly type="directory" name="nuxeo-core.ear" >
       <!-- resources downloaded from an artifact -->
@@ -50,12 +50,12 @@
   </serverSet>
   <serverSet id="nuxeo-search">
     <includes>
-      <artifact group="org.nuxeo.*" category="runtime" includeDependsOn="false"/>
+      <artifacts group="org.nuxeo.*" category="runtime" includeDependsOn="false"/>
       <artifacts group="org.nuxeo.*" category="search" />
     </includes>
     <excludes>
-      <artifact group="org.nuxeo.common" />
-      <artifact name="nuxeo-runtime-jboss-extensions" />
+      <artifacts group="org.nuxeo.common" />
+      <artifacts name="nuxeo-runtime-jboss-extensions" />
     </excludes>
     <assembly type="directory" name="nuxeo-indexing.ear" >
       <artifactsSet pattern="nuxeo-platform-search-compass-plugin" unpack="true" output="system" />
@@ -71,12 +71,12 @@
   </serverSet>
   <serverSet id="nuxeo-web">
     <includes>
-      <artifact group="org.nuxeo.*" category="runtime" includeDependsOn="false"/>
+      <artifacts group="org.nuxeo.*" category="runtime" includeDependsOn="false"/>
       <artifacts group="org.nuxeo.*" category="web" />
     </includes>
     <excludes>
-      <artifact group="org.nuxeo.common" />
-      <artifact name="nuxeo-runtime-jboss-extensions" />
+      <artifacts group="org.nuxeo.common" />
+      <artifacts name="nuxeo-runtime-jboss-extensions" />
     </excludes>
     <assembly type="directory" name="nuxeo-webplatform.ear" >
       <artifactsSet pattern="nuxeo-platform-audit-facade" unpack="true" output="system" />

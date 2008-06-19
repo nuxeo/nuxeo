@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.ec.notification.NotificationImpl;
@@ -121,7 +122,15 @@ public class NotificationMessageListener implements MessageListener {
             Map<Notification, List<String>> targetUsers = new HashMap<Notification, List<String>>();
 
             LoginContext lc = Framework.login();
-            gatherConcernedUsersForDocument(doc, notifs, targetUsers);
+            if (eventId.equals("documentPublicationApproved")
+                    || eventId.equals("documentPublished")) {
+                DocumentModel publishedDoc = getDocFromPath((String) doc.getEventInfo().get(
+                        "sectionPath"), doc);
+                gatherConcernedUsersForDocument(publishedDoc, notifs,
+                        targetUsers);
+            } else {
+                gatherConcernedUsersForDocument(doc, notifs, targetUsers);
+            }
             lc.logout();
 
             for (Notification notif : targetUsers.keySet()) {
@@ -149,6 +158,34 @@ public class NotificationMessageListener implements MessageListener {
         } catch (Exception e) {
             throw new EJBException(e);
         }
+    }
+
+    private DocumentModel getDocFromPath(String path, DocumentMessage doc) throws ClientException {
+        DocumentModel sectionDoc;
+        // Create a new system session.
+        try {
+            LoginContext lc = Framework.login();
+            RepositoryManager mgr = Framework.getService(RepositoryManager.class);
+            String repoName = doc.getRepositoryName();
+            if (repoName != null) {
+                Repository repo = mgr.getRepository(repoName);
+                if (repo != null) {
+                    CoreSession coreSession = repo.open();
+                    sectionDoc = coreSession.getDocument(new PathRef(path));
+                    CoreInstance.getInstance().close(coreSession);
+                } else {
+                    throw new ClientException(
+                            "Cannot find repository instance : + " + repoName);
+                }
+            } else {
+                throw new ClientException("No associated repository...");
+            }
+            lc.logout();
+        } catch (Exception e) {
+            throw new ClientException(e);
+        }
+
+        return sectionDoc;
     }
 
     private List<String> getUsersForMultiRecipients(String recipient)

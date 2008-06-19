@@ -104,6 +104,8 @@ public class ClipboardActionsBean extends InputController implements
 
     private static final String MOVE_OUTCOME = "after_move";
 
+    private static final String DELETED_LIFECYCLE_STATE = "deleted";
+
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
@@ -580,6 +582,10 @@ public class ClipboardActionsBean extends InputController implements
                     doc = documentManager.getDocument(doc.getRef());
                 }
 
+                // NXP-2334 : skip deleted docs
+                if (doc.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE))
+                    continue;
+
                 if (doc.isFolder() && !isEmptyFolder(doc, documentManager)) {
 
                     SummaryEntry summaryLeaf = new SummaryEntry(doc);
@@ -780,6 +786,10 @@ public class ClipboardActionsBean extends InputController implements
         List<DocumentModel> docList = documentManager.getChildren(doc.getRef());
         for (DocumentModel docChild : docList) {
 
+            // NXP-2334 : skip deleted docs
+            if (docChild.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE))
+                continue;
+
             if (docChild.isFolder()
                     && !isEmptyFolder(docChild, documentManager)) {
 
@@ -874,8 +884,23 @@ public class ClipboardActionsBean extends InputController implements
         BufferedInputStream buffi = new BufferedInputStream(
                 content.getStream(), BUFFER);
 
-        ZipEntry entry = new ZipEntry(path + fileName);
-        out.putNextEntry(entry);
+        // Workaround to deal with duplicate file names.
+        int tryCount = 0;
+        while (true) {
+            try {
+                ZipEntry entry;
+                if (tryCount == 0) {
+                    entry = new ZipEntry(path + fileName);
+                } else {
+                    entry = new ZipEntry(path + fileName + '(' + tryCount
+                            + ')');
+                }
+                out.putNextEntry(entry);
+                break;
+            } catch (ZipException e) {
+                tryCount++;
+            }
+        }
         int count = buffi.read(data, 0, BUFFER);
 
         while (count != -1) {
@@ -1061,7 +1086,7 @@ public class ClipboardActionsBean extends InputController implements
             throws ClientException {
         for (DocumentModel documentModel : selectedDocs) {
             boolean canWrite = documentManager.hasPermission(
-                    documentModel.getRef(), SecurityConstants.WRITE);
+                    documentModel.getRef(), SecurityConstants.WRITE_PROPERTIES);
             if (!canWrite) {
                 return false;
             }

@@ -57,6 +57,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.platform.api.ws.DocumentBlob;
 import org.nuxeo.ecm.platform.api.ws.DocumentDescriptor;
 import org.nuxeo.ecm.platform.api.ws.DocumentProperty;
+import org.nuxeo.ecm.platform.api.ws.DocumentSnapshot;
 import org.nuxeo.ecm.platform.api.ws.NuxeoRemoting;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSession;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
@@ -104,6 +105,27 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
     }
 
     @WebMethod
+    public DocumentSnapshot getDocumentSnapshot(String sid, String uuid) throws ClientException
+    {
+        WSRemotingSession rs = initSession(sid);
+        DocumentModel doc = rs.getDocumentManager().getDocument(new IdRef(uuid));
+
+        DocumentProperty[] props = getDocumentNoBlobProperties(doc, rs);
+        DocumentBlob[] blobs = getDocumentBlobs(doc, rs);
+
+        ACE[] resACP=null;
+
+        ACP acp = doc.getACP();
+        if (acp != null) {
+            ACL acl = acp.getMergedACLs("MergedACL");
+            resACP= acl.toArray(new ACE[acl.size()]);
+        }
+        DocumentSnapshot ds = new DocumentSnapshot(props,blobs,doc.getPathAsString(),resACP);
+        return ds;
+    }
+
+
+    @WebMethod
     public ACE[] getDocumentLocalACL(String sid, String uuid) throws ClientException {
         WSRemotingSession rs = initSession(sid);
         ACP acp = rs.getDocumentManager().getACP(new IdRef(uuid));
@@ -119,7 +141,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
             return null;
         }
     }
-    
+
     public boolean hasPermission(String sid, String uuid, String permission)
             throws ClientException {
         WSRemotingSession rs = initSession(sid);
@@ -140,6 +162,11 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
             return null;
         }
 
+        return getDocumentBlobs(doc, rs);
+    }
+
+    protected DocumentBlob[] getDocumentBlobs(DocumentModel doc,  WSRemotingSession rs) throws ClientException
+    {
         List<DocumentBlob> blobs = new ArrayList<DocumentBlob>();
         String[] schemas = doc.getDeclaredSchemas();
         for (String schema : schemas) {
@@ -152,6 +179,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         }
         return blobs.toArray(new DocumentBlob[blobs.size()]);
     }
+
 
     @WebMethod
     public String[] listUsers(String sid, int from, int to)
@@ -207,6 +235,11 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         WSRemotingSession rs = initSession(sid);
 
         DocumentModel doc = rs.getDocumentManager().getDocument(new IdRef(uuid));
+        return getDocumentNoBlobProperties(doc, rs);
+    }
+
+    protected DocumentProperty[] getDocumentNoBlobProperties(DocumentModel doc, WSRemotingSession rs) throws ClientException {
+
         List<DocumentProperty> props = new ArrayList<DocumentProperty>();
         if (doc != null) {
             String[] schemas = doc.getDeclaredSchemas();
