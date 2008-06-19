@@ -80,8 +80,6 @@ public final class StringUtils {
     /**
      * Improved versions of join method from org.apache.commons.lang.StringUtils.
      *
-     * @param array
-     * @return
      */
     public static String join(Object[] array) {
         if (array == null) {
@@ -103,9 +101,6 @@ public final class StringUtils {
     /**
      * Improved versions of join method from org.apache.commons.lang.StringUtils.
      *
-     * @param array
-     * @param separator
-     * @return
      */
     public static String join(Object[] array, String separator) {
         if (array == null) {
@@ -239,8 +234,9 @@ public final class StringUtils {
      * @param properties a map containing variables
      * @return
      */
+    // XXX: Never used. Remove?
     public static String expandVars(String expression,
-            Map<?, ?> properties) {
+            Map<String, ?> properties) {
         int p = expression.indexOf("${");
         if (p == -1) {
             return expression; // do not expand if not needed
