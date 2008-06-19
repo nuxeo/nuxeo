@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webengine;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.webengine.exceptions.WebDocumentException;
+import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.servlet.WebConst;
 
@@ -69,7 +70,15 @@ public class WebException extends ClientException {
     public static WebException wrap(String message, Throwable e) {
         if (e instanceof DocumentSecurityException) {
             return new WebSecurityException(message, e);
+        } else if (e instanceof WebException) {
+            return (WebException)e;
         } else if (e instanceof ClientException) {
+            Throwable cause = e.getCause();
+            if (cause != null && cause.getMessage() != null) {
+                if (cause.getMessage().contains("org.nuxeo.ecm.core.model.NoSuchDocumentException")) {
+                    return new WebResourceNotFoundException(cause.getMessage(), (ClientException)e);
+                }
+            }
             return new WebDocumentException(message, (ClientException)e);
         } else {
             return new WebException(message, e);

@@ -16,7 +16,7 @@
         <tr bgcolor="#ffffff" align="right">
           <td colspan="2">
             <input type="reset"/>
-            <input name="nuxeo@@login" type="submit" value="Sign In"/>
+            <input name="nuxeo_login" type="submit" value="Sign In"/>
           </td>
         </tr>
         <#if Request.getParameter("failed") == "true">
@@ -29,3 +29,4 @@
   </tr>
 </table>
 </form>
+

@@ -19,9 +19,6 @@
 
 package org.nuxeo.ecm.webengine.scripting;
 
-import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;

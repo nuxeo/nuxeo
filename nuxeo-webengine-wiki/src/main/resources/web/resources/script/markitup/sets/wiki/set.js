@@ -2,7 +2,7 @@
 
 myWikiSettings = {
     nameSpace:          "wiki", // Useful to prevent multi-instances CSS conflict
-    previewParserPath:  "/nuxeo/site/markitup_preview",
+    previewParserPath:  document.location.pathname+"@@preview",
     previewParserVar: 'content',
     previewAutorefresh: true,
     previewInWindow: 'width=500, height=700, resizable=yes, scrollbars=yes',

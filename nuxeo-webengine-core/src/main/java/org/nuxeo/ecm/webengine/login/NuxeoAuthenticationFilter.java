@@ -67,13 +67,22 @@ public class NuxeoAuthenticationFilter implements Filter {
         NuxeoPrincipal principal = null;
         String[] auth = getClientAuthorizationTokens(req);
         try {
-            if (auth != null) { // a login request
-                if (mgr.checkUsernamePassword(auth[0], auth[1])) {
-                    principal = mgr.getPrincipal(auth[0]);
-                }
-                if (principal == null) {
-                    clientAuthenticationError(req, resp);
-                    return;
+            if (auth != null) { // a login/logout request
+                if (auth[0] == null) { // a logout request
+                    session.setAttribute("nuxeo.principal", null);
+                    String userId = mgr.getAnonymousUserId();
+                    // reset user to anonymous
+                    if (userId != null) {
+                        currentPrincipal = mgr.getPrincipal(userId);
+                    }
+                } else {
+                    if (mgr.checkUsernamePassword(auth[0], auth[1])) {
+                        principal = mgr.getPrincipal(auth[0]);
+                    }
+                    if (principal == null) {
+                        clientAuthenticationError(req, resp);
+                        return;
+                    }
                 }
             } else {
                 auth = getBasicAuthorizationTokens(req);
@@ -146,9 +155,16 @@ public class NuxeoAuthenticationFilter implements Filter {
         return null;
     }
 
+    /**
+     * If a request contains the "nuxeo@@login" parameter a login will be performed using
+     * 'userid' and 'password' parameters. If the 'userid' is null (not specified by the client) a logout will be performed
+     * @param httpRequest
+     * @return
+     * @throws IOException
+     */
     public String[] getClientAuthorizationTokens(
             HttpServletRequest httpRequest) throws IOException {
-        if (httpRequest.getParameter("nuxeo@@login") != null) {
+        if (httpRequest.getParameter("nuxeo_login") != null) {
             String userId = httpRequest.getParameter("userid");
             String passwd = httpRequest.getParameter("password");
             return new String[] { userId, passwd };

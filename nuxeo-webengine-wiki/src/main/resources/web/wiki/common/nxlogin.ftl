@@ -17,7 +17,7 @@
       }
     })
     
-    $('#login_form').submit(function() {
+/*    $('#login_form').submit(function() {
       
       username = $('#username')[0].value;
       password = $('#password')[0].value;
@@ -37,7 +37,7 @@
         showLoginError("Username or password incorrect.")
       }
       return false;
-    })
+    })*/
     
   })
 </script>
@@ -47,9 +47,9 @@
   <div id="logstate">Hi Guest! You are not logged in.</div>
   
   <div id="login">
-  <form id="login_form" method="post" action="/nuxeo/site/login">
-    <input type="text" name="user_name" id="username" value="Username" class="username"> <input type="password" name="user_password" id="password" value="password" class="password">
-    <input type="submit" name="login" value="Log In" id="login" class="button">
+  <form id="login_form" method="post" action="">
+    <input type="text" name="userid" id="username" value="Username" class="username"> <input type="password" name="password" id="password" value="password" class="password">
+    <input type="submit" name="nuxeo_login" value="Log In" id="login" class="button">
   </form>
   </div>
 <#else>

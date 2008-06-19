@@ -21,7 +21,13 @@
       </rendering-extensions>
       <mappings>
         <mapping pattern="/search">
-          <script>/search.ftl</script>
+          <script>/common/search.ftl</script>
+        </mapping>
+        <mapping pattern="/login">
+          <script>/common/login.groovy</script>
+        </mapping>
+        <mapping pattern="/logout">
+          <script>/common/logout.groovy</script>
         </mapping>
       </mappings>
     </webapp>

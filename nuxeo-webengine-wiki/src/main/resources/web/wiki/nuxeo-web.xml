@@ -26,10 +26,6 @@
         <mapping pattern="/user/(?username:[a-zA-Z0-9]+)$">
           <script>/users/user_detail.groovy</script>
         </mapping>
-        <mapping pattern="/markitup_preview">
-          <script>/markitup/preview.ftl</script>
-          <!--traversal>${path}</traversal-->
-        </mapping>
         <mapping pattern=".*/registration_form">
           <script>/users/registration_form.ftl</script>
           <traversal>${path}</traversal>
@@ -103,6 +99,9 @@
         </action>
         <action id="create_form" enabled="true" script="Wiki/create_entry.ftl">
           <permission expression="Write"/>
+        </action>
+        <action id="preview" enabled="true" script="markitup/preview.ftl">
+          <permission expression="Read"/>
         </action>
       </actions>
     </object>

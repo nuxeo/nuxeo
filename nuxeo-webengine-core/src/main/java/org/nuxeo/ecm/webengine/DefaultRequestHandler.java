@@ -49,12 +49,13 @@ public class DefaultRequestHandler implements RequestHandler, Actions {
     }
 
     public void doPost(WebObject object) throws WebException {
-        if (!object.getWebContext().getPathInfo().hasTrailingPath()) { // there is not any trailing path -> the default action is update
+        if (!object.getWebContext().getPathInfo().hasTrailingPath()) { // there is any trailing path -> the default action is update
             doAction(object, UPDATE);
-        } else if (object.getDocument().isFolder()) {
-            doAction(object, CREATE);
+// XXX this may create unwanted documents !!!
+//        } else if (object.getDocument().isFolder()) {
+//            doAction(object, CREATE);
         } else {
-            doAction(object, UPDATE);
+            doAction(object, VIEW);
         }
     }
 

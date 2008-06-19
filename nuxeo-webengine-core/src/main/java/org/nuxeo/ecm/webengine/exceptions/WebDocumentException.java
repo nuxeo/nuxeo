@@ -33,6 +33,10 @@ public class WebDocumentException extends WebException {
     private static final long serialVersionUID = 1L;
 
 
+    public WebDocumentException(String message) {
+        super (message);
+    }
+
     public WebDocumentException(ClientException cause) {
         super (null, cause);
     }

@@ -170,15 +170,7 @@ public class WebObject {
 
     public String getUrlPath() {
         if (urlPath == null) {
-            PathInfo pi = context.getPathInfo();
-            StringBuilder buf = new StringBuilder(context.getBasePath());
-            if (pi.hasLeadingPath()) {
-                buf.append(pi.getLeadingPath().toString());
-            }
-            if (pi.hasTraversalPath()) {
-                buf.append(pi.getTraversalPath().toString());
-            }
-            urlPath = buf.toString();
+            urlPath = context.getUrlPath(doc);
         }
         return urlPath;
     }

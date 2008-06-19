@@ -2,9 +2,21 @@
 //Requires jQuery and the Cookies plugin for jQuery
 
 function doLogout() {
-  jQuery.cookie("JSESSIONID", null, {path: "/"});
+  //jQuery.cookie("JSESSIONID", null, {path: "/"});
+  jQuery.post(document.location.pathname, {nuxeo_login : "true"})
   document.location.reload();
 }
+
+function doLogin(username, password) {
+  //jQuery.cookie("JSESSIONID", null, {path: "/"});
+  req = jQuery.post(document.location.pathname, {nuxeo_login : "true", userid : username, password : password});
+  if (req.status == 200) {
+    document.location.reload();
+    return true;
+  }
+  return false;
+}
+
 
 function make_base_auth(user, pass) {
   var tok = user + ':' + pass;
@@ -12,7 +24,7 @@ function make_base_auth(user, pass) {
   return "Basic " + hash;
 }
 
-function doLogin(username, password, loginUrl) {
+function doLogin2(username, password, loginUrl) {
     
       auth = make_base_auth(username, password)
 
