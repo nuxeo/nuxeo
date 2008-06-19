@@ -3,15 +3,13 @@ package org.nuxeo.ecm.platform.ui.web.download;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -87,25 +85,11 @@ public class DownloadServlet extends HttpServlet {
             if (fileName == null || fileName.length() == 0) {
                 fileName = "file";
             }
-            // url encode filename in UTF-8
-            try {
-                fileName = URLEncoder.encode(fileName, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                fileName = StringUtils.toAscii(fileName);
-            }
-
+            boolean inline = req.getParameter("inline") != null;
             String userAgent = req.getHeader("User-Agent");
-            if (userAgent != null && userAgent.contains("MSIE")) {
-                // XXX AT: IE does not understand the filename* encoding,
-                // but decodes correctly the filename this way.
-                resp.setHeader("Content-Disposition", "attachment; filename="
-                        + fileName + ';');
-            } else {
-                // follow RFC-2231 for charset setting
-                resp.setHeader("Content-Disposition",
-                        "attachment; filename*=UTF-8''" + fileName + ';');
-            }
-
+            String contentDisposition = RFC2231.encodeContentDisposition(
+                    fileName, inline, userAgent);
+            resp.setHeader("Content-Disposition", contentDisposition);
             resp.setContentType(blob.getMimeType());
 
             OutputStream out = resp.getOutputStream();

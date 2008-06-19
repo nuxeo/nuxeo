@@ -20,8 +20,6 @@
 package org.nuxeo.ecm.platform.ui.web.util;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Locale;
 import java.util.Map;
 
@@ -35,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.Blob;
 
@@ -170,28 +168,12 @@ public final class ComponentUtils {
                 if (filename == null || filename.length() == 0) {
                     filename = "file";
                 }
-                // url encode filename in UTF-8
-                try {
-                    filename = URLEncoder.encode(filename, "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    filename = StringUtils.toAscii(filename);
-                }
                 HttpServletRequest request = (HttpServletRequest) econtext.getRequest();
+                boolean inline = request.getParameter("inline") != null;
                 String userAgent = request.getHeader("User-Agent");
-                String inline =request.getParameter("inline");
-                if (inline==null)
-                {
-                if (userAgent != null && userAgent.contains("MSIE")) {
-                    // XXX AT: IE does not understand the filename* encoding,
-                    // but decodes correctly the filename this way.
-                    response.setHeader("Content-Disposition",
-                            "attachment; filename=" + filename + ';');
-                } else {
-                    // follow RFC-2231 for charset setting
-                    response.setHeader("Content-Disposition",
-                            "attachment; filename*=UTF-8''" + filename + ';');
-                }
-                }
+                String contentDisposition = RFC2231.encodeContentDisposition(
+                        filename, inline, userAgent);
+                response.setHeader("Content-Disposition", contentDisposition);
                 log.debug("Downloading with mime/type : " + blob.getMimeType());
                 response.setContentType(blob.getMimeType());
                 try {
