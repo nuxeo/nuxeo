@@ -48,12 +48,10 @@ import org.nuxeo.runtime.api.Framework;
 @Remote(MimetypeRegistry.class)
 public class MimetypeRegistryBean implements MimetypeRegistry {
 
-    private transient MimetypeRegistry service;
+    private MimetypeRegistry service;
 
-    private MimetypeRegistry getService()
-    {
-        if (service==null)
-        {
+    private MimetypeRegistry getService() {
+        if (service == null) {
             service = Framework.getLocalService(MimetypeRegistry.class);
         }
         return service;
@@ -91,15 +89,14 @@ public class MimetypeRegistryBean implements MimetypeRegistry {
         return getService().getMimetypeFromBlobWithDefault(blob, defaultMimetype);
     }
 
-
     public String getMimetypeFromFilenameAndBlobWithDefault(String filename,
-            Blob blob, String defaultMimetype) throws MimetypeDetectionException
-    {
-        return getService().getMimetypeFromFilenameAndBlobWithDefault(filename, blob, defaultMimetype);
+            Blob blob, String defaultMimetype) throws MimetypeDetectionException {
+        return getService().getMimetypeFromFilenameAndBlobWithDefault(filename, blob,
+                defaultMimetype);
     }
 
-
     // to be removed !!!!
+    @Deprecated
     public MimetypeEntry getMimetypeEntryByName(String name) {
         return getService().getMimetypeEntryByName(name);
     }
@@ -107,8 +104,6 @@ public class MimetypeRegistryBean implements MimetypeRegistry {
     public MimetypeEntry getMimetypeEntryByMimeType(String normalized) {
         return getService().getMimetypeEntryByMimeType(normalized);
     }
-
-
 
     // make it easier to test the bean API
     public void registerMimetype(MimetypeEntry mimetype) {
@@ -126,6 +121,5 @@ public class MimetypeRegistryBean implements MimetypeRegistry {
     public void unregisterFileExtension(ExtensionDescriptor extension) {
         ((MimetypeRegistryService) getService()).unregisterFileExtension(extension);
     }
-
 
 }

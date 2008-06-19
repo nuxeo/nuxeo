@@ -23,8 +23,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.AbstractIndexableResource;
@@ -38,22 +36,16 @@ import org.nuxeo.ecm.platform.audit.search.resources.indexing.api.AuditIndexable
 
 /**
  * Audit indexable resource implementation.
- *
  * <p>
  * Takes care of fetching log entries, generating log entry data maps and
  * returns log entry data given a key.
- * </p>
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class AuditIndexableResourceImpl extends AbstractIndexableResource
         implements AuditIndexableResource {
 
     private static final long serialVersionUID = 1L;
-
-    @SuppressWarnings("unused")
-    private static final Log log = LogFactory.getLog(AuditIndexableResourceImpl.class);
 
     protected long logUUID;
 
@@ -80,7 +72,7 @@ public class AuditIndexableResourceImpl extends AbstractIndexableResource
 
         Logs logsRemote = getAuditLogsService();
 
-        if (logsRemote != null) {
+        if (logsRemote == null) {
             throw new IndexingException("LogsBean remote stub is null...");
         }
 

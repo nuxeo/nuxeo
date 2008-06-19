@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.core.search.api.client.search.results.document;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,7 +38,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -108,7 +106,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
 
     private SchemaManager typeManager;
 
-    private static Map<String, String> prefix2SchemaNameCache = new HashMap<String, String>();
+    private static final Map<String, String> prefix2SchemaNameCache = new HashMap<String, String>();
 
     /**
      * Constructor to create a sortable provider. Note that a provider can be
@@ -191,7 +189,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
     public String getCurrentPageStatus() {
         int total = getNumberOfPages();
         int current = getCurrentPageIndex() + 1;
-        if (total == PagedDocumentsProvider.UNKNOWN_SIZE) {
+        if (total == UNKNOWN_SIZE) {
             return String.format("%d", current);
         } else {
             return String.format("%d/%d", current, total);
@@ -348,8 +346,7 @@ public class SearchPageProvider implements PagedDocumentsProvider {
         return schemaName;
     }
 
-    protected DocumentModelList constructDocumentModels()
-            throws SearchException {
+    protected DocumentModelList constructDocumentModels() {
         if (searchResults == null) {
             return EMPTY;
         }
@@ -453,7 +450,6 @@ public class SearchPageProvider implements PagedDocumentsProvider {
         }
 
         return docModel;
-
     }
 
     protected Field getSchemaField(String schemaName, String fieldName) {

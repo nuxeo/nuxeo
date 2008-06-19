@@ -40,7 +40,7 @@ public class MassSecurityModifierActions implements Serializable {
 
     private static final long serialVersionUID = 4978984433628773791L;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected transient NavigationContext navigationContext;
 
     @In(create = true)

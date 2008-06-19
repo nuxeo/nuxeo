@@ -45,11 +45,6 @@ public class TestSearchServiceBean extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     public void testBean() throws Exception {
         //SearchService service = new SearchServiceBean();
         // :XXX: Just checking the logs here for now.
