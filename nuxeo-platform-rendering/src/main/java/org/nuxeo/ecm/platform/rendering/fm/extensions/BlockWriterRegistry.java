@@ -33,7 +33,14 @@ public class BlockWriterRegistry {
     public void addBlock(String name, BlockWriter bw) {
         BlockWriter existingBw = blockMap.get(name);
         if (existingBw != null) {
-            existingBw.superBlock = bw;
+            // get the base block and set its superBlock
+            if (existingBw.baseBlock != null) {
+                existingBw.baseBlock.superBlock = bw;
+                existingBw.baseBlock = bw;
+            } else {
+                existingBw.superBlock = bw;
+                existingBw.baseBlock = bw;
+            }
         } else {
             blockMap.put(name, bw);
         }

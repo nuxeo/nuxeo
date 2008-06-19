@@ -39,10 +39,15 @@ public class BlockWriter extends Writer {
     StringBuilder buf = new StringBuilder();
     List<String> segments = new ArrayList<String>();
     List<String> blocks = new ArrayList<String>();
-    BlockWriter superBlock;
+
+    BlockWriter superBlock; // the direct parent in the hierarchy - null if none
+    BlockWriter baseBlock; // the root of the block hierarchy - null if none
 
     String ifBlockDefined;
 
+    // used to avoid writing blocks or characters in the current block writer.
+    // This is the case of the extension tag - that should ignore any content and blocks too because blocks inside extension tag
+    // must be derived blocks (the base hierarchy block will be found later when the extended base template will be parsed)
     boolean suppressOutput = false;
 
 
@@ -78,6 +83,10 @@ public class BlockWriter extends Writer {
         // do nothing
     }
 
+    public boolean isEmpty() {
+        return buf.length() == 0 && segments.isEmpty() && blocks.isEmpty();
+    }
+
     @Override
     public void write(char[] cbuf, int off, int len) throws IOException {
         if (!suppressOutput) {
@@ -87,23 +96,19 @@ public class BlockWriter extends Writer {
 
     public void writeBlock(BlockWriter bw) throws IOException {
         if (!suppressOutput) {
-            segments.add(buf.toString()); // add the precedent buffer to the segments list
+            segments.add(buf.toString()); // add the current buffer to the segments list
             buf.setLength(0); // reset buffer
             blocks.add(bw.name); // ad the sub block to the children block list
         }
         reg.addBlock(bw.name, bw); // inform the container about the new block
     }
 
-    public boolean isEmpty() {
-        return buf.length() == 0 && segments.isEmpty() && blocks.isEmpty();
-    }
-
-    //TODO - is not working for now
     public void writeSuperBlock() throws IOException {
-//        segments.add(buf.toString()); // add the precedent buffer to the segments list
-//        buf.setLength(0); // reset buffer
-//        String name = new StringBuilder(64).append(this.name).append('#').append(reg.level+1).toString();
-//        blocks.add(name); // add the sub block to the children block list
+        if (!suppressOutput) {
+            segments.add(buf.toString()); // add the current buffer to the segments list
+            buf.setLength(0); // reset buffer
+            blocks.add(".."); // add a special key that represent the syper block
+        }
     }
 
     public void copyTo(Writer writer) throws TemplateException, IOException {
@@ -116,13 +121,20 @@ public class BlockWriter extends Writer {
         }
         for (int i=0, len=segments.size(); i<len; i++) {
             writer.write(segments.get(i));
-            reg.getBlock(blocks.get(i)).copyTo(writer);
+            String key = blocks.get(i);
+            BlockWriter bw = null;
+            if (key == "..") { // the super block
+                bw = superBlock;
+            } else { // a regular block
+                bw = reg.getBlock(key);
+            }
+            bw.copyTo(writer);
         }
         writer.write(buf.toString());
     }
 
     @Override
     public String toString() {
-        return name;
+        return name + "@" + page;
     }
 }

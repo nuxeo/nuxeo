@@ -1,7 +1,7 @@
 Test doc: ${doc.dublincore.title}
 BEGIN
 --------------
-<@block name="a1"/>
+<@block name="a1">some default content in base block</@block>
 --------------
 <@block name="a2">
 Default Block Content2
