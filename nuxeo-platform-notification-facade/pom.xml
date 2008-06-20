@@ -42,10 +42,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-api-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-usermanager-api</artifactId>
     </dependency>
 
@@ -69,6 +65,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-api-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>jboss</groupId>
       <artifactId>jbosssx</artifactId>
       <scope>test</scope>
@@ -78,33 +79,28 @@
       <artifactId>jboss-common</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jnp-client</artifactId>
       <version>4.0.2</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>ejb3</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-aspect-jdk50-client</artifactId>
       <version>1.5</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-aop-jdk50</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-transaction-client</artifactId>
