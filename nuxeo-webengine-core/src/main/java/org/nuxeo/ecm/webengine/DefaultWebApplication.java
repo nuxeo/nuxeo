@@ -51,7 +51,7 @@ import org.nuxeo.runtime.deploy.FileChangeNotifier;
  */
 public class DefaultWebApplication implements WebApplication, FileChangeListener {
 
-    public final static Log log = LogFactory.getLog(WebApplication.class);
+    public static final Log log = LogFactory.getLog(WebApplication.class);
 
     protected WebEngine engine;
     protected FreemarkerEngine rendering;
@@ -71,11 +71,11 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
 
     public DefaultWebApplication(WebEngine engine, WebApplicationDescriptor desc) throws WebException {
         this.engine = engine;
-        this.id = desc.getId();
-        this.defaultPage = desc.getDefaultPage("default.ftl");
-        this.indexPage = desc.getIndexPage("index.ftl");
-        this.errorPage = desc.getErrorPage("error.ftl");
-        this.repositoryName = desc.getRepositoryName();
+        id = desc.getId();
+        defaultPage = desc.getDefaultPage("default.ftl");
+        indexPage = desc.getIndexPage("index.ftl");
+        errorPage = desc.getErrorPage("error.ftl");
+        repositoryName = desc.getRepositoryName();
         if (repositoryName == null) {
             repositoryName = "default";
         }
@@ -94,18 +94,18 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         }
         try {
             List<RootDescriptor> roots = desc.getRoots();
-            this.dirStack = new DirectoryStack();
+            dirStack = new DirectoryStack();
             if (roots == null) {
-                this.dirStack.addDirectory(new File(engine.getRootDirectory(), "default"), 0);
+                dirStack.addDirectory(new File(engine.getRootDirectory(), "default"), 0);
             } else {
                 Collections.sort(roots);
                 for (RootDescriptor rd : roots) {
                     File file =new File(engine.getRootDirectory(), rd.path);
-                    this.dirStack.addDirectory(file, rd.priority);
+                    dirStack.addDirectory(file, rd.priority);
                 }
             }
 
-            this.rendering = new FreemarkerEngine();
+            rendering = new FreemarkerEngine();
             rendering.setResourceLocator(this);
             rendering.setMessageBundle(engine.getMessageBundle());
             rendering.setSharedVariable("env", engine.getEnvironment());
@@ -276,7 +276,9 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
 
     public ScriptFile getFile(String path) throws IOException {
         int len = path.length();
-        if (path == null || len == 0) return null;
+        if (path == null || len == 0) {
+            return null;
+        }
         char c = path.charAt(0);
         if (c == '.') { // avoid getting files outside the web root
             path = new Path(path).makeAbsolute().toString();

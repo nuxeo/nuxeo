@@ -30,16 +30,14 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class FreemarkerComponent extends DefaultComponent {
 
-    public final static ComponentName NAME = new ComponentName(FreemarkerComponent.class.getName());
+    public static final ComponentName NAME = new ComponentName(FreemarkerComponent.class.getName());
 
     @Override
     public void activate(ComponentContext context) throws Exception {
-
     }
 
     @Override
     public void deactivate(ComponentContext context) throws Exception {
-
     }
 
     @Override

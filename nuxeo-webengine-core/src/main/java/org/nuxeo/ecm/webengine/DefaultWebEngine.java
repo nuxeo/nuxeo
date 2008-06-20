@@ -66,12 +66,12 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         }
         registry = new Hashtable<String, WebObjectDescriptor>();
         bindings = new HashMap<String, String>();
-        this.env = new HashMap<String, Object>();
-        this.apps = new HashMap<String, WebApplication>();
+        env = new HashMap<String, Object>();
+        apps = new HashMap<String, WebApplication>();
         env.put("installDir", root);
         env.put("engine", "Nuxeo Web Engine");
         env.put("version", "1.0.0");
-        this.renderingExtensions = new Hashtable<String, Object>();
+        renderingExtensions = new Hashtable<String, Object>();
         loadMessageBundle(true);
         scripting = new Scripting();
     }
@@ -221,7 +221,9 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
     }
 
     public void fileChanged(FileEntry entry, long now) throws Exception {
-        if (lastMessagesUpdate == now) return;
+        if (lastMessagesUpdate == now) {
+            return;
+        }
         String path = entry.file.getAbsolutePath();
         String rootPath = root.getAbsolutePath();
         if (!path.startsWith(rootPath)) {
@@ -230,4 +232,5 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         lastMessagesUpdate = now;
         loadMessageBundle(false);
     }
+
 }

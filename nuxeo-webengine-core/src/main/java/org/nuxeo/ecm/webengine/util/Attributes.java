@@ -27,9 +27,9 @@ import java.util.Arrays;
  */
 public class Attributes implements Cloneable {
 
-    public final static Attributes EMPTY_ATTRS = new Attributes(0);
+    public static final Attributes EMPTY_ATTRS = new Attributes(0);
 
-    protected final static int GROW_SIZE = 8;
+    protected static final int GROW_SIZE = 8;
 
     protected String[] ar;
     protected int size;
@@ -118,7 +118,9 @@ public class Attributes implements Cloneable {
                 return false;
             }
             for (int i=0; i<size; i++) {
-                if (!attrs.ar[i].equals(ar[i])) return false;
+                if (!attrs.ar[i].equals(ar[i])) {
+                    return false;
+                }
             }
             return true;
         }
@@ -129,4 +131,5 @@ public class Attributes implements Cloneable {
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+
 }

@@ -25,12 +25,12 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Arrays;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletInputStream;
@@ -99,6 +99,7 @@ public class FakeRequest implements HttpServletRequest {
             if (val == null) {
                 ar = new String[] {tuple[1]};
             } else {
+                // FIXME: can't work as ar == null here
                 String[] tmp = new String[ar.length+1];
                 System.arraycopy(ar, 0, tmp, 0, ar.length);
                 tmp[ar.length] = tuple[1];
@@ -271,7 +272,9 @@ public class FakeRequest implements HttpServletRequest {
 
     public String getParameter(String name) {
         String[] vals = parameters.get(name);
-        if (vals != null && vals.length > 0) return vals[0];
+        if (vals != null && vals.length > 0) {
+            return vals[0];
+        }
         return null;
     }
 

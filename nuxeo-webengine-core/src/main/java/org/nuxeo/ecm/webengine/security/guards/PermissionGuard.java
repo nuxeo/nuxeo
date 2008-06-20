@@ -23,15 +23,12 @@ import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.webengine.security.Guard;
 
 /**
  * Check access against a built-in permission
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 @XObject("permission")
 public class PermissionGuard implements Guard {
@@ -58,4 +55,5 @@ public class PermissionGuard implements Guard {
     public String toString() {
         return "PERM[" + perm + "]";
     }
+
 }

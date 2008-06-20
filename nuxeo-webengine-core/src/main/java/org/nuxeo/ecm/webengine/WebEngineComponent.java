@@ -57,10 +57,9 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
     public static final String WEB_OBJ_XP = "webObject";
     public static final String BINDING_XP = "binding";
     public static final String GUARD_XP = "guard"; // global guards
-    public final static String APPLICATION_XP = "application";
-    public final static String INSTALL_XP = "install";
-    public final static String CONFIG_XP = "configuration";
-
+    public static final String APPLICATION_XP = "application";
+    public static final String INSTALL_XP = "install";
+    public static final String CONFIG_XP = "configuration";
 
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
@@ -177,7 +176,8 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
             try {
                 engine.registerRenderingExtension(fed.name, fed.newInstance());
             } catch (Exception e) {
-                throw new RuntimeServiceException("Deployment Error. Failed to contribute freemarker template extension: "+fed.name);
+                throw new RuntimeServiceException(
+                        "Deployment Error. Failed to contribute freemarker template extension: "+fed.name);
             }
         } else if (extensionPoint.equals(INSTALL_XP)) {
             Installer installer = (Installer)contribution;
@@ -256,7 +256,9 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
     }
 
     public void configurationChanged(Entry entry) throws Exception {
-        if (engine != null) engine.fireConfigurationChanged();
+        if (engine != null) {
+            engine.fireConfigurationChanged();
+        }
     }
 
 }

@@ -29,12 +29,6 @@ public class TestPostSiteRequests extends BaseSiteRequestTestCase {
 
     DocumentModel page;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-    }
-
     public void testUpdateTemplate() throws Exception {
         FakeResponse response = execSiteRequest("GET", "/site/page");
         assertEquals(200, response.getStatus());

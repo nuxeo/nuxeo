@@ -412,6 +412,6 @@ public interface WebContext {
      * Get the first segment from the trailing path if any
      * @return the first unresolved segment or null if none
      */
-    public String getFirstUnresolvedSegment();
+    String getFirstUnresolvedSegment();
 
 }

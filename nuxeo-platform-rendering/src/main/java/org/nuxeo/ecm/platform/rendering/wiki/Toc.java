@@ -19,14 +19,12 @@
 
 package org.nuxeo.ecm.platform.rendering.wiki;
 
-
 /**
  * Table of contents model.
  * <p>
  * A simple linked list of toc entries.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class Toc {
 
@@ -41,7 +39,8 @@ public class Toc {
     }
 
     /**
-     * Add an heading to the TOC list and return the ID of that heading (to be used for anchors)
+     * Adds a heading to the TOC list and returns the ID of that heading (to be used for anchors).
+     *
      * @param title the heading title
      * @param level the heading level
      * @return the heading id
@@ -60,9 +59,11 @@ public class Toc {
             entry.index = 1;
         } else {
             Entry prev = tail.parent;
+            // FIXME: null consistency check
             while (prev.level > level && prev != null) {
                 prev = prev.parent;
             }
+            // FIXME: null consistency check
             if (prev == null || prev.parent == null) {
                 throw new IllegalStateException("Invalid headers. Header levels underflowed");
             }

@@ -29,7 +29,7 @@ import org.nuxeo.ecm.webengine.util.Attributes;
  */
 public class PathInfo {
 
-    public final static Path EMPTY_PATH = new Path("");
+    public static final Path EMPTY_PATH = new Path("");
 
     protected Path path;
     protected Path leadingPath = EMPTY_PATH;
@@ -51,7 +51,7 @@ public class PathInfo {
         } else {
             int p = path.lastIndexOf(WebConst.ACTION_SEPARATOR);
             if (p > -1) {
-                this.action = path.substring(p+WebConst.ACTION_SEPARATOR.length());
+                action = path.substring(p+WebConst.ACTION_SEPARATOR.length());
                 path = path.substring(0, p);
             }
             this.path = new Path(path).makeAbsolute().removeTrailingSeparator();

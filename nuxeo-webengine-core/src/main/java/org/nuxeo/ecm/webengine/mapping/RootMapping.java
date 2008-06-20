@@ -22,9 +22,6 @@ package org.nuxeo.ecm.webengine.mapping;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
-import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
-import sun.security.action.GetLongAction;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -49,16 +46,10 @@ public class RootMapping {
         }
     }
 
-    /**
-     * @return the root.
-     */
     public VariableString getRoot() {
         return root;
     }
 
-    /**
-     * @return the leadingPath.
-     */
     public VariableString getLeadingPath() {
         return leadingPath;
     }

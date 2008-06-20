@@ -22,7 +22,6 @@ package org.nuxeo.ecm.webengine.tests.fake;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -66,7 +65,7 @@ public class FakeResponse implements HttpServletResponse {
     public String getOutput() throws UnsupportedEncodingException {
         if (output == null) {
             printer.flush();
-            output = ((ByteArrayOutputStream) out).toString("UTF-8");
+            output = (out).toString("UTF-8");
         }
         return output;
     }

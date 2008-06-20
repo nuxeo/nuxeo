@@ -24,11 +24,6 @@ import org.nuxeo.ecm.webengine.tests.fake.FakeResponse;
 
 public class TestGetSiteRequests extends BaseSiteRequestTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
     public void testResolver() throws Exception {
         FakeResponse response = execSiteRequest("GET", "/site/page");
         assertEquals(200, response.getStatus());

@@ -88,7 +88,9 @@ public class Installer {
     public void install(RuntimeContext ctx, File installDir) throws WebDeployException {
         this.ctx = ctx;
         if (guard != null) {
-            if (new File(installDir, guard).exists()) return;
+            if (new File(installDir, guard).exists()) {
+                return;
+            }
         }
         File bundleDir = null;
         try {

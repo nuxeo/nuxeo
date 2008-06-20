@@ -49,7 +49,7 @@ public class CreateActionHandler implements ActionHandler {
             if (path.endsWith("/")) {
                 path += doc.getName();
             } else {
-                path = path + '/' + doc.getName();
+                path += '/' + doc.getName();
             }
             try {
                 object.getWebContext().getResponse().sendRedirect(path);

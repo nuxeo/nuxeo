@@ -63,7 +63,7 @@ import org.python.core.PyDictionary;
  */
 public class DefaultWebContext implements WebContext {
 
-    private final static Log log = LogFactory.getLog(WebContext.class);
+    private static final Log log = LogFactory.getLog(WebContext.class);
 
     public static final String CORESESSION_KEY = "SiteCoreSession";
 
@@ -100,12 +100,12 @@ public class DefaultWebContext implements WebContext {
     public DefaultWebContext(WebApplication app, PathInfo pathInfo,
             HttpServletRequest req, HttpServletResponse resp) {
         this.pathInfo = pathInfo;
-        this.request = req;
+        request = req;
         this.app = app;
         engine = app.getWebEngine();
-        this.response = resp;
+        response = resp;
         vars = new HashMap<String, Object>();
-        this.scriptExecutionStack = new ArrayList<File>();
+        scriptExecutionStack = new ArrayList<File>();
     }
 
     public boolean isCanceled() {
@@ -264,7 +264,9 @@ public class DefaultWebContext implements WebContext {
     }
 
     public ScriptFile getFile(String path) throws IOException {
-        if (path == null || path.length() == 0) return null;
+        if (path == null || path.length() == 0) {
+            return null;
+        }
         char c = path.charAt(0);
         if (c == '.') { // local path - use the path stack to resolve it
             File file = getCurrentScriptDirectory();
@@ -596,6 +598,8 @@ public class DefaultWebContext implements WebContext {
         CoreSession session = null;
 
         HttpSession httpSession = request.getSession(true);
+
+        // FIXME: session is alway null here, there is no need to check ?
         if (session == null) {
             session = (CoreSession) httpSession.getAttribute(CORESESSION_KEY);
             if (session != null) {
@@ -650,6 +654,7 @@ public class DefaultWebContext implements WebContext {
      * @return
      * @throws Exception
      */
+    @Deprecated
     public CoreSession getAnonymousSession() throws Exception {
         if (anonymousSession == null) {
             anonymousSession = openSession();
