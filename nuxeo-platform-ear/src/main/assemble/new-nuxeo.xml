@@ -85,8 +85,10 @@
       <artifact group="org.nuxeo.*" category="web" />
     </includes>
     <excludes>
+      <artifact group="!org.nuxeo*" />
       <artifact group="org.nuxeo.common" />
       <artifact name="nuxeo-runtime-jboss-extensions" />
+
       <artifact name="nuxeo-platform-webapp" />
       <artifact name="nuxeo-platform-webapp-core" />
 
