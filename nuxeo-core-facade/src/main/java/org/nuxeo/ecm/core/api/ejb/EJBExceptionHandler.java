@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.api.ClientException;
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
-final class EJBExceptionHandler implements Serializable {
+public final class EJBExceptionHandler implements Serializable {
 
     private static final long serialVersionUID = 3571163516248088734L;
 
@@ -48,7 +48,6 @@ final class EJBExceptionHandler implements Serializable {
      * @param exception
      * @return
      */
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
     public static ClientException wrapException(Throwable exception) {
         ClientException clientException;
 
