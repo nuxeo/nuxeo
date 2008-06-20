@@ -120,7 +120,7 @@
     </artifacts>
   </artifactSet>
 
-  <!-- third party libraries embedded in the ear -->
+  <!-- third party libraries based on dependencies
   <assemble>
     <outputFile>lib2</outputFile>
     <set>nuxeo-libs-via-dependency-tree</set>
@@ -135,4 +135,5 @@
       <artifact group="org.nuxeo.*" />
     </excludes>
   </artifactSet>
+  -->
 </assembly>

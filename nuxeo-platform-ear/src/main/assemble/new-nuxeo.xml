@@ -149,4 +149,20 @@
     </artifacts>
   </artifactSet>
 
+  <!-- third party libraries based on dependencies
+  <assemble>
+    <outputFile>lib2</outputFile>
+    <set>nuxeo-libs-via-dependency-tree</set>
+  </assemble>
+  <artifactSet id="nuxeo-libs-via-dependency-tree">
+    <import>**</import>
+    <includeDependencies>true</includeDependencies>
+    <includes>
+      <artifact scope="compile" />
+    </includes>
+    <excludes>
+      <artifact group="org.nuxeo.*" />
+    </excludes>
+  </artifactSet>
+  -->
 </assembly>
