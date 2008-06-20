@@ -10,6 +10,7 @@
     <excludes>
       <exclude>**/.svn</exclude>
       <exclude>nxdocument.cpm.xml</exclude>
+      <exclude>DEPRECATED.txt</exclude>
     </excludes>
   </fileSet>
 
