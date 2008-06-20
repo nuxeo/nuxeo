@@ -20,10 +20,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-io</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
 
