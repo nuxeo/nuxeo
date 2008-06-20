@@ -1,0 +1,7 @@
+<fragments>
+
+  <fragment name="jbpm-3.1.2.jar">
+	  <require>org.nuxeo.ecm.platform.workflow.jbpm</require>
+  </fragment>
+
+</fragments>

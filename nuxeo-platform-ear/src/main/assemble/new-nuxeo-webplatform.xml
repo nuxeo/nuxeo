@@ -49,14 +49,15 @@
       <artifact group="org.nuxeo.*" category="web" />
     </includes>
     <excludes>
+      <artifact group="!org.nuxeo*" />
       <artifact group="org.nuxeo.common" />
       <artifact name="nuxeo-runtime-jboss-extensions" />
+
       <artifact name="nuxeo-platform-webapp" />
       <artifact name="nuxeo-platform-webapp-core" />
 
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
-      <artifact name="nuxeo-platform-search-compass-plugin" />
     </excludes>
   </artifactSet>
 
@@ -119,4 +120,19 @@
     </artifacts>
   </artifactSet>
 
+  <!-- third party libraries embedded in the ear -->
+  <assemble>
+    <outputFile>lib2</outputFile>
+    <set>nuxeo-libs-via-dependency-tree</set>
+  </assemble>
+  <artifactSet id="nuxeo-libs-via-dependency-tree">
+    <import>**</import>
+    <includeDependencies>true</includeDependencies>
+    <includes>
+      <artifact scope="compile" />
+    </includes>
+    <excludes>
+      <artifact group="org.nuxeo.*" />
+    </excludes>
+  </artifactSet>
 </assembly>

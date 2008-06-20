@@ -36,8 +36,10 @@
       <artifact group="org.nuxeo.*" category="search" />
     </includes>
     <excludes>
+      <artifact group="!org.nuxeo*" />
       <artifact group="org.nuxeo.common" />
       <artifact name="nuxeo-runtime-jboss-extensions" />
+
       <artifact name="nuxeo-platform-search-compass-plugin" />
     </excludes>
   </artifactSet>
@@ -98,6 +100,22 @@
       <artifact group="com.sun.facelets" name="jsf-facelets" version="1.1.11" />
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-jbossws-wrapper" version="4.0.5.GA" />
     </artifacts>
+  </artifactSet>
+
+  <!-- third party libraries embedded in the ear -->
+  <assemble>
+    <outputFile>lib2</outputFile>
+    <set>nuxeo-libs-via-dependency-tree</set>
+  </assemble>
+  <artifactSet id="nuxeo-libs-via-dependency-tree">
+    <import>**</import>
+    <includeDependencies>true</includeDependencies>
+    <includes>
+      <artifact scope="compile" />
+    </includes>
+    <excludes>
+      <artifact group="org.nuxeo.*" />
+    </excludes>
   </artifactSet>
 
 </assembly>
