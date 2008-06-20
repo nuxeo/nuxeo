@@ -3,17 +3,6 @@
   <!-- RESOURCES -->
   <assemble>
     <outputFile>/</outputFile>
-    <set>common-resources</set>
-  </assemble>
-  <fileSet id="common-resources">
-    <directory>src/main/resources_common</directory>
-    <excludes>
-      <exclude>**/.svn</exclude>
-    </excludes>
-  </fileSet>
-
-  <assemble>
-    <outputFile>/</outputFile>
     <set>core-resources</set>
   </assemble>
   <fileSet id="core-resources">
@@ -45,18 +34,16 @@
     </excludes>
   </fileSet>
 
-  <!--
   <assemble>
     <outputFile>/</outputFile>
-    <set>root-resources</set>
+    <set>common-resources</set>
   </assemble>
-  <fileSet id="root-resources">
-    <directory>src/main/resources</directory>
+  <fileSet id="common-resources">
+    <directory>src/main/resources_common</directory>
     <excludes>
       <exclude>**/.svn</exclude>
     </excludes>
   </fileSet>
-   -->
 
   <!-- ARTIFACTS -->
   <assemble>
