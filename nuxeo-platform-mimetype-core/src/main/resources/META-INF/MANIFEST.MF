@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: NXMimeType Core
 Bundle-SymbolicName: org.nuxeo.ecm.platform.mimetype.core
 Bundle-Localization: plugin
-Bundle-Category: search,web
+Bundle-Category: core,search,web
 Export-Package: org.nuxeo.ecm.platform.mimetype,
  org.nuxeo.ecm.platform.mimetype.interfaces,
  org.nuxeo.ecm.platform.mimetype.service,

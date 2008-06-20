@@ -8,3 +8,4 @@ Nuxeo-Component: OSGI-INF/comment-schemas-contrib.xml,
   OSGI-INF/comment-life-cycle-contrib.xml
 Eclipse-LazyStart: true
 Require-Bundle: org.nuxeo.ecm.core.schema
+Nuxeo-RequiredBy: org.nuxeo.ecm.platform.comment
