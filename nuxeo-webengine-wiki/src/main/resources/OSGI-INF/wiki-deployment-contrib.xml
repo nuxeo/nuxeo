@@ -7,7 +7,6 @@
 		point="install">
 
 	    <install guard="/wiki">
-	      <copy path="web/web.xml" target="/" />
 	      <copy path="web/wiki" target="/" />	      
 	      <copy path="web/resources" target="/" />
 	      <append path="web/i18n/messages.properties" target="/i18n/messages.properties"/>
