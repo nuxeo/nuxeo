@@ -86,7 +86,7 @@ public class MessagesMethod implements TemplateMethodModelEx {
             for (int i=0; i<args.length; i++) {
                 args[i] = ((SimpleScalar) arguments.get(i + 1)).getAsString();
             }
-            value = MessageFormat.format(value, (Object[])args);
+            value = MessageFormat.format(value, (Object[]) args);
         }
         return value;
     }
