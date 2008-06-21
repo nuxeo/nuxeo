@@ -38,12 +38,6 @@ public class JSonDocumentExporter implements PropertyVisitor {
 
     private JSONObject result;
 
-    /**
-     *
-     */
-    public JSonDocumentExporter() {
-    }
-
     public JSONObject getResult() {
         return result;
     }

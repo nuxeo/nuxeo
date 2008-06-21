@@ -27,18 +27,11 @@ public class TestSimpleRender extends BaseSiteRequestTestCase {
 
     DocumentModel site;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
     public void testEmpty() {
-
     }
 
     /**
      * TODO register test templates to be able to test rendering
-     * @throws Exception
      */
     public void xxx_testStaticTemplate() throws Exception {
         FakeResponse response = execSiteRequest("GET", "/testSite/testFile");
@@ -51,7 +44,5 @@ public class TestSimpleRender extends BaseSiteRequestTestCase {
         assertTrue(
                 output.contains("My Super Context Doc Path: /default-domain/workspaces/testSite"));
     }
-
-
 
 }
