@@ -34,7 +34,7 @@ public class TestPathMapper extends TestCase {
         mdef.setPattern("(?name1:.*)/demo/(?name2:[^/]+)");
         mdef.setScript("$1 $2 $path");
         mapper.addMapping(mdef);
-        PathInfo mapping = mapper.getPathInfo("/wiki/a/b/c/demo/index.view");
+        PathInfo mapping = mapper.rewrite(new PathInfo("/wiki/a/b/c/demo/index.view"));
         //System.out.println(mapping.getScript());
         assertEquals("/wiki/a/b/c index.view /wiki/a/b/c/demo/index.view", mapping.getScript());
 
@@ -45,7 +45,7 @@ public class TestPathMapper extends TestCase {
         mdef.setPattern("(?name1:.*)/demo/(?name2:[^/]+)");
         mdef.setScript("$name1 $name2 $path");
         mapper.addMapping(mdef);
-        mapping = mapper.getPathInfo("/wiki/a/b/c/demo/index.view");
+        mapping = mapper.rewrite(new PathInfo("/wiki/a/b/c/demo/index.view"));
         //System.out.println(mapping.getScript());
         assertEquals("/wiki/a/b/c index.view /wiki/a/b/c/demo/index.view", mapping.getScript());
     }

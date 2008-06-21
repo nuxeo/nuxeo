@@ -67,7 +67,7 @@ public interface WebApplication extends ResourceLocator {
      * @return the context
      * @throws WebException if any error occurs
      */
-    WebContext createContext(Path path, HttpServletRequest req, HttpServletResponse resp) throws WebException;
+    WebContext createContext(PathInfo pathInfo, HttpServletRequest req, HttpServletResponse resp) throws WebException;
 
     /**
      * Get the document root for this application if any
@@ -75,9 +75,26 @@ public interface WebApplication extends ResourceLocator {
      */
     DocumentRef getDocumentRoot();
 
-    RenderingEngine getRendering();
+    /**
+     * Given a document path return its relative path to the root document if any.
+     * <p>
+     * If no root document is not defined or the path cannot be made relative to the
+     * root then null is returned
+     * <br>
+     * The returned path is always starting with a '/'
+     *
+     * @param docPath the path
+     * @return the relative path or null if the relative path cannot be computed
+     */
+    Path getRelativeDocumentPath(Path docPath);
 
-    PathInfo getPathInfo(String pathInfo);
+    /**
+     * Tests if this application is the default repository view
+     * @return
+     */
+    boolean isDefaultRepositoryView();
+
+    RenderingEngine getRendering();
 
     String getTypeBinding(String type);
 

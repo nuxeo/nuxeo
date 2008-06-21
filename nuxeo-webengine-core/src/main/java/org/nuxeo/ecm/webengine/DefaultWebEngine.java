@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webengine;
 
-import java.applet.Applet;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -29,8 +28,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import javax.swing.text.Segment;
-
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
@@ -38,7 +35,6 @@ import org.nuxeo.ecm.webengine.util.PathMap;
 import org.nuxeo.runtime.deploy.FileChangeListener;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
 import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
-import org.python.modules.synchronize;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -53,6 +49,7 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
 
     protected Map<String, WebApplication> apps;
     protected PathMap<WebApplication> pathMap;
+    protected WebApplication defaultRepositoryView;
 
     protected final Map<String,Object> env;
     protected ResourceBundle messages;
@@ -174,10 +171,17 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         return pathMap.match(path);
     }
 
+    public WebApplication getDefaultRepositoryView() {
+        return defaultRepositoryView;
+    }
+
     public synchronized void registerApplication(WebApplicationDescriptor desc) throws WebException {
         WebApplication app =  new DefaultWebApplication(this, desc);
         apps.put(desc.getId(), app);
         pathMap.put(app.getPath(), app);
+        if (desc.isDefaultRepositoryView) {
+            defaultRepositoryView = app;
+        }
         fireConfigurationChanged();
     }
 
@@ -185,6 +189,9 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         WebApplication app = apps.remove(id);
         if (app != null) {
             pathMap.remove(app.getPath());
+            if (app == defaultRepositoryView) {
+                defaultRepositoryView = null;
+            }
         }
     }
 

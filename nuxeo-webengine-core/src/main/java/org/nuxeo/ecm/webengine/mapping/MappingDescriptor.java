@@ -65,13 +65,13 @@ public class MappingDescriptor {
         }
     }
 
-    public final PathInfo match(String input) {
+    public final boolean rewrite(String input, PathInfo pathInfo) {
         Attributes attrs = pattern.match(input);
         if (attrs == null) {
-            return null;
+            return false;
         }
         // it's matching - do the rewrite
-        PathInfo pathInfo = new PathInfo(input, attrs);
+        pathInfo.setAttributes(attrs);
         if (document != null) {
             String val = this.document.getValue(attrs);
             if (val.startsWith("/")) {
@@ -86,7 +86,7 @@ public class MappingDescriptor {
         if (action != null) {
             pathInfo.setAction(this.action.getValue(attrs));
         }
-        return pathInfo;
+        return true;
     }
 
 

@@ -58,19 +58,16 @@ public class PathMapper {
         }
     }
 
-    public final PathInfo getPathInfo(String pathInfo) {
-        if (pathInfo == null) {
-            pathInfo = "/";
-        }
+    public final PathInfo rewrite(PathInfo pathInfo) {
+        String input = pathInfo.getTraversalPath().toString();
         if (entries != null) {
             for (MappingDescriptor entry: entries) {
-                PathInfo mapping = entry.match(pathInfo);
-                if (mapping != null) {
-                    return mapping;
+                if (entry.rewrite(input, pathInfo)) {
+                    break;
                 }
             }
         }
-        return new PathInfo(pathInfo);
+        return pathInfo;
     }
 
 }

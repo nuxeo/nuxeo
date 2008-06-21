@@ -51,6 +51,9 @@ public class WebApplicationDescriptor extends ExtensibleContribution {
     @XNode("documentRoot")
     protected String documentRoot;
 
+    @XNode("defaultRepositoryView")
+    protected boolean isDefaultRepositoryView;
+
     @XNodeList(value="roots/root", type=ArrayList.class, componentType=RootDescriptor.class, nullByDefault=true)
     protected List<RootDescriptor> roots;
 
@@ -180,6 +183,7 @@ public class WebApplicationDescriptor extends ExtensibleContribution {
 
     public void copyOver(ExtensibleContribution contrib) {
         WebApplicationDescriptor desc = (WebApplicationDescriptor)contrib;
+        desc.isDefaultRepositoryView = isDefaultRepositoryView;
         if (defaultPage != null) {
             desc.defaultPage = defaultPage;
         }

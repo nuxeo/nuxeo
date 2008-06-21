@@ -30,8 +30,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.webengine.DefaultWebContext;
+import org.nuxeo.ecm.webengine.PathInfo;
 import org.nuxeo.ecm.webengine.RequestHandler;
 import org.nuxeo.ecm.webengine.WebApplication;
 import org.nuxeo.ecm.webengine.WebContext;
@@ -82,14 +82,9 @@ public class WebServlet extends HttpServlet {
             resp = new NoBodyResponse(resp);
         }
 
-        // create the request path
-        String pathInfo = req.getPathInfo();
-        if (pathInfo == null) {
-            pathInfo = "/";
-        }
-        Path path = new Path(pathInfo);
+        PathInfo pathInfo = new PathInfo(req.getPathInfo());
         // get the application that match that path
-        WebApplication app = engine.getApplicationByPath(path);
+        WebApplication app = engine.getApplicationByPath(pathInfo.getPath());
         if (app == null) {
             // don't have a context so send an error
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No web application found on that path");
@@ -99,7 +94,7 @@ public class WebServlet extends HttpServlet {
         WebContext context = null;
         try {
             // create the request context
-            context = app.createContext(path, req, resp);
+            context = app.createContext(pathInfo, req, resp);
             CONTEXT.set(context);
             service(context, req, resp);
         } catch (Throwable e) {
