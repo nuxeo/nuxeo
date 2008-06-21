@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
 
@@ -60,6 +61,8 @@ public interface WebEngine {
 
     WebApplication getApplication(String name);
 
+    WebApplication getApplicationByPath(Path path);
+
     void registerApplication(WebApplicationDescriptor desc) throws WebException;
 
     void unregisterApplication(String id);
@@ -77,6 +80,8 @@ public interface WebEngine {
     void unregisterRenderingExtension(String id);
 
     Object getRenderingExtension(String id);
+
+    Map<String, Object> getRenderingExtensions();
 
     FileChangeNotifier getFileChangeNotifier();
 

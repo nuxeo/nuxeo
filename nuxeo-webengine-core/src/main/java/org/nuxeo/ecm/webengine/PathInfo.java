@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine;
 
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.webengine.servlet.WebConst;
 import org.nuxeo.ecm.webengine.util.Attributes;
 
@@ -32,19 +33,18 @@ public class PathInfo {
     public static final Path EMPTY_PATH = new Path("");
 
     protected Path path;
-    protected Path leadingPath = EMPTY_PATH;
     protected Path traversalPath;
     protected Path trailingPath = EMPTY_PATH;
     protected String action;
-    protected String root;
+    protected DocumentRef document;
     protected String script;
     protected Attributes attrs;
 
     public PathInfo(String path) {
-        this (path, null, Attributes.EMPTY_ATTRS);
+        this (path, Attributes.EMPTY_ATTRS);
     }
 
-    public PathInfo(String path, String leadingPath, Attributes attrs) {
+    public PathInfo(String path, Attributes attrs) {
         if (path == null || path.length() == 0
                 || (path.length() == 1 && path.charAt(0) == '/')) {
             this.path = EMPTY_PATH;
@@ -56,19 +56,7 @@ public class PathInfo {
             }
             this.path = new Path(path).makeAbsolute().removeTrailingSeparator();
         }
-        if (leadingPath == null || leadingPath.length() ==0
-                || (path.length() == 1 && path.charAt(0) == '/')) {
-            this.leadingPath = EMPTY_PATH;
-            traversalPath = this.path;
-        } else {
-            this.leadingPath = new Path(leadingPath).makeAbsolute().removeTrailingSeparator();
-            // TODO check whether the leading path is valid?
-//            int p = this.path.matchingFirstSegments(this.leadingPath);
-//            if (p != this.leadingPath.segmentCount()) {
-//                throw new IllegalArgumentException("Not a valid trailingPath: "+trailingPath+"for path: "+path);
-//            }
-            traversalPath = this.path.removeFirstSegments(this.leadingPath.segmentCount()).makeAbsolute();
-        }
+         traversalPath = this.path;
         this.attrs = attrs == null ? Attributes.EMPTY_ATTRS : attrs;
     }
 
@@ -98,20 +86,6 @@ public class PathInfo {
      */
     public Path getTraversalPath() {
         return traversalPath;
-    }
-
-    /**
-     * @param leadingPath the leadingPath to set.
-     */
-    public void setLeadingPath(Path leadingPath) {
-        this.leadingPath = leadingPath == null ? EMPTY_PATH : leadingPath.makeAbsolute();
-    }
-
-    /**
-     * @return the leadingPath.
-     */
-    public Path getLeadingPath() {
-        return leadingPath;
     }
 
     /**
@@ -145,15 +119,15 @@ public class PathInfo {
     /**
      * @param root the root to set.
      */
-    public void setRoot(String root) {
-        this.root = root;
+    public void setDocument(DocumentRef root) {
+        this.document = root;
     }
 
     /**
      * @return the root.
      */
-    public String getRoot() {
-        return root;
+    public DocumentRef getDocument() {
+        return document;
     }
 
     /**
@@ -174,14 +148,6 @@ public class PathInfo {
         return trailingPath.segmentCount() > 0;
     }
 
-    /**
-     * Tests whether this path info has a traversal path
-     * (i.e. the leading path contains at least a segment)
-     * @return
-     */
-    public boolean hasLeadingPath() {
-        return leadingPath.segmentCount() > 0;
-    }
 
     /**
      * This pathInfo is empty (input path is either null, "" or "/")
@@ -197,7 +163,7 @@ public class PathInfo {
      * @return
      */
     public boolean hasDocumentMapping() {
-        return root != null && root.length() > 0;
+        return document != null;
     }
 
     /**
@@ -209,9 +175,9 @@ public class PathInfo {
 
     @Override
     public String toString() {
-        return path.toString() + " [leading: "+leadingPath.toString()+"; traversal: "
+        return path.toString() + " [traversal: "
             +traversalPath.toString()+"; trailing: "
-            +trailingPath.toString()+"; root: "+root+"; script: "+script+"; action: "+action+"]";
+            +trailingPath.toString()+"; root: "+document+"; script: "+script+"; action: "+action+"]";
     }
 
     @Override

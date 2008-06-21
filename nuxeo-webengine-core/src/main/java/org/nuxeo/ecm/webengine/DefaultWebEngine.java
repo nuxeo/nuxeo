@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webengine;
 
+import java.applet.Applet;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -28,11 +29,16 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import javax.swing.text.Segment;
+
 import org.nuxeo.common.collections.ListenerList;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
+import org.nuxeo.ecm.webengine.util.PathMap;
 import org.nuxeo.runtime.deploy.FileChangeListener;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
 import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
+import org.python.modules.synchronize;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -46,6 +52,7 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
     protected final Map<String, String> bindings;
 
     protected Map<String, WebApplication> apps;
+    protected PathMap<WebApplication> pathMap;
 
     protected final Map<String,Object> env;
     protected ResourceBundle messages;
@@ -58,6 +65,7 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
 
     protected Scripting scripting;
 
+
     public DefaultWebEngine(File root, FileChangeNotifier notifier) throws IOException {
         this.root = root;
         this.notifier = notifier;
@@ -68,6 +76,7 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         bindings = new HashMap<String, String>();
         env = new HashMap<String, Object>();
         apps = new HashMap<String, WebApplication>();
+        this.pathMap =new PathMap<WebApplication>();
         env.put("installDir", root);
         env.put("engine", "Nuxeo Web Engine");
         env.put("version", "1.0.0");
@@ -161,14 +170,22 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         return apps.get(name);
     }
 
-    public void registerApplication(WebApplicationDescriptor desc) throws WebException {
+    public WebApplication getApplicationByPath(Path path) {
+        return pathMap.match(path);
+    }
+
+    public synchronized void registerApplication(WebApplicationDescriptor desc) throws WebException {
         WebApplication app =  new DefaultWebApplication(this, desc);
         apps.put(desc.getId(), app);
+        pathMap.put(app.getPath(), app);
         fireConfigurationChanged();
     }
 
-    public void unregisterApplication(String id) {
-        apps.remove(id);
+    public synchronized void unregisterApplication(String id) {
+        WebApplication app = apps.remove(id);
+        if (app != null) {
+            pathMap.remove(app.getPath());
+        }
     }
 
     public WebApplication[]  getApplications() {

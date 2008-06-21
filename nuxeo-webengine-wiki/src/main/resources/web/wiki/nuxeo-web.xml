@@ -9,14 +9,13 @@
   
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
              point="application">
-    <webapp id="nuxeo-wiki" extends="nuxeo-web">
+    <webapp id="wiki" extends="repository">
+      <path>/wiki</path>
+      <documentRoot>/default-domain/workspaces/ws/wiki</documentRoot>
       <roots>
         <root priority="1">wiki</root>
       </roots>
       <mappings>
-        <mapping pattern="/wiki(/.*)?">
-          <root leadingPath="/wiki">/default-domain/workspaces/ws/wiki</root>
-        </mapping>
         <mapping pattern="^(.+)/archives/(?year:[0-9]{4})/?(?month:[0-9]{2})?">
           <script>/Blog/archives.groovy</script>
         </mapping>

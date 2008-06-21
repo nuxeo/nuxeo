@@ -31,19 +31,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.webengine.ConfigurationChangedListener;
 import org.nuxeo.ecm.webengine.DefaultWebContext;
-import org.nuxeo.ecm.webengine.PathInfo;
 import org.nuxeo.ecm.webengine.RequestHandler;
 import org.nuxeo.ecm.webengine.WebApplication;
 import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebObject;
-import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.runtime.api.Framework;
 
@@ -54,7 +48,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebServlet extends HttpServlet implements ConfigurationChangedListener {
+public class WebServlet extends HttpServlet {
 
     private static final long serialVersionUID = 965764764858L;
 
@@ -66,7 +60,6 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
 
 
     private WebEngine engine;
-    private WebApplication app;
 
 
     public final static WebContext getContext() {
@@ -77,49 +70,36 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         engine = Framework.getLocalService(WebEngine.class);
-        String webappId = config.getInitParameter("webapp");
-        if (webappId == null) {
-            webappId = "nuxeo-web"; // the default webapp
-        }
-        app = engine.getApplication(webappId);
-        if (app == null) {
-            throw new ServletException("Cannot initialize the webengine servlet: no web application found with ID "+webappId);
-        }
-        engine.addConfigurationChangedListener(this);
     }
 
-    public void configurationChanged(WebEngine engine) throws WebException {
-        String webappId = getServletConfig().getInitParameter("webapp");
-        if (webappId == null) {
-            webappId = "nuxeo-web"; // the default webapp
-        }
-        app = engine.getApplication(webappId);
-        if (app == null) {
-            throw new WebDeployException("Cannot initialize the webengine servlet: no web application found with ID "+webappId);
-        }
-    }
-
-    /**
-     * @return the web app bound to this servlet
-     */
-    public WebApplication getApplication() {
-        return app;
-    }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         //double start = System.currentTimeMillis();
-
         resp.setContentType("text/html");
-
         if (req.getMethod().equals(WebConst.METHOD_HEAD)) {
             resp = new NoBodyResponse(resp);
         }
 
+        // create the request path
+        String pathInfo = req.getPathInfo();
+        if (pathInfo == null) {
+            pathInfo = "/";
+        }
+        Path path = new Path(pathInfo);
+        // get the application that match that path
+        WebApplication app = engine.getApplicationByPath(path);
+        if (app == null) {
+            // don't have a context so send an error
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No web application found on that path");
+            return;
+        }
+
         WebContext context = null;
         try {
-            context = createRequest(req, resp);
+            // create the request context
+            context = app.createContext(path, req, resp);
             CONTEXT.set(context);
             service(context, req, resp);
         } catch (Throwable e) {
@@ -224,47 +204,6 @@ public class WebServlet extends HttpServlet implements ConfigurationChangedListe
             displayError(resp, t, message, st.getReturnCode());
         } else {
             displayError(resp, t, message, WebConst.SC_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public WebContext createRequest(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-        PathInfo pathInfo = app.getPathInfo(req.getPathInfo());
-        DefaultWebContext context = new DefaultWebContext(app, pathInfo, req, resp);
-        // traverse documents if any
-        buildTraversalPath(context);
-        return context;
-    }
-
-    public static void buildTraversalPath(DefaultWebContext context) throws Exception {
-        PathInfo pathInfo = context.getPathInfo();
-        String rootPath = pathInfo.getRoot();
-        if (rootPath == null) {
-            pathInfo.setTrailingPath(pathInfo.getTraversalPath());
-            pathInfo.setTraversalPath(PathInfo.EMPTY_PATH);
-//            if (!context.hasTraversalPath() && !pathInfo.hasTrailingPath() && pathInfo.getScript() == null) { // a request to "/"
-//                context.setTargetScriptPath("index.ftl"); //TODO: use platform configured index
-//            }
-            return;
-        }
-        CoreSession session = context.getCoreSession();
-        DocumentModel doc =  session.getDocument(new PathRef(rootPath));
-        context.addWebObject(doc.getName(), doc);
-        Path traversalPath = pathInfo.getTraversalPath();
-
-        for (int i=0, len=traversalPath.segmentCount(); i<len; i++) {
-            String name = traversalPath.segment(i);
-            doc = context.getLastObject().traverse(name); // get next object if any
-            if (doc != null) {
-                context.addWebObject(name, doc);
-            } else if (i == 0) {
-                pathInfo.setTrailingPath(traversalPath);
-                pathInfo.setTraversalPath(PathInfo.EMPTY_PATH);
-                break;
-            } else {
-                pathInfo.setTrailingPath(traversalPath.removeFirstSegments(i));
-                pathInfo.setTraversalPath(traversalPath.removeLastSegments(len-i));
-                break;
-            }
         }
     }
 

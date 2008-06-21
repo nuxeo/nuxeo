@@ -21,6 +21,11 @@ package org.nuxeo.ecm.webengine;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
@@ -34,7 +39,41 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
  */
 public interface WebApplication extends ResourceLocator {
 
+    /**
+     * The application identifier.
+     * @return the identifier. Cannot be null.
+     */
     String getId();
+
+    /**
+     * The application path. An application is mapped to a path so that any
+     * request that comes into an application path is delegated to the application
+     *
+     * @return the path. Cannot return null.
+     */
+    Path getPath();
+
+    /**
+     * Get the application path as a string
+     * @return the application path as a string. Cannot be null
+     */
+    String getPathAsString();
+
+    /**
+     * Create a new web context given a servlet request and response
+     * @param path the path info
+     * @param req the servlet request
+     * @param resp the servlet response
+     * @return the context
+     * @throws WebException if any error occurs
+     */
+    WebContext createContext(Path path, HttpServletRequest req, HttpServletResponse resp) throws WebException;
+
+    /**
+     * Get the document root for this application if any
+     * @return the document root reference or null if this application is not bound on a repository tree.
+     */
+    DocumentRef getDocumentRoot();
 
     RenderingEngine getRendering();
 

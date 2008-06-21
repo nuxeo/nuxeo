@@ -156,21 +156,18 @@ public class DefaultWebContext implements WebContext {
         StringBuffer buf = new StringBuffer(512);
         buf.append(getBasePath());
         // resolve the document relative to the root
-        String rootStringPath = pathInfo.getRoot();
-        Path path = document.getPath().makeAbsolute();
-        if (rootStringPath != null) {
-            // append the leading path
-            if (pathInfo.hasLeadingPath()) {
-                buf.append(pathInfo.getLeadingPath());
-            }
-            Path rootPath = new Path(rootStringPath);
-            int cnt = path.matchingFirstSegments(rootPath);
+        Path rootPath = null;
+        Path docPath = document.getPath().makeAbsolute();
+        if (head != null) { // TODO: use a default path provider
+            rootPath = head.doc.getPath().makeAbsolute();
+            int cnt = docPath.matchingFirstSegments(rootPath);
             if (cnt == rootPath.segmentCount()) {
-                path = path.removeFirstSegments(cnt).makeAbsolute();
+                docPath = docPath.removeFirstSegments(cnt).makeAbsolute();
+                buf.append(app.getPathAsString());
             }
         }
-        buf.append(path.toString());
-        // TODO install a document view handler to be able to view any document
+        //TODO use a prefix (as configured by the user) for fallback
+        buf.append(docPath.toString());
         return buf.toString();
     }
 

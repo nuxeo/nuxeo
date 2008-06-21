@@ -1,24 +1,42 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.webengine.config">
 
-
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)
     Default Objects
   </documentation>
 
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent" point="rendering-extension">
+    <rendering-extension name="script" class="org.nuxeo.ecm.webengine.rendering.ScriptMethod"/>
+    <rendering-extension name="render" class="org.nuxeo.ecm.webengine.rendering.RenderDirective"/>
+    <rendering-extension name="wiki" class="org.nuxeo.ecm.platform.rendering.wiki.WikiTransformer"/>
+  </extension>
+  
+  <extension target="org.nuxeo.ecm.webengine.rendering.wiki" point="rendering-extension">
+    <rendering-extension name="wiki" serializer="org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer">
+      <filter pattern="[A-Z]+[a-z]+[A-Z][A-Za-z]*" replacement="&lt;a href='./$0'&gt;$0&lt;/a&gt;"/>
+      <filter pattern="NXP-[0-9]+" replacement="&lt;a href='http://jira.nuxeo.org/browse/$0'&gt;$0&lt;/a&gt;"/>
+    </rendering-extension>
+  </extension>
+
+  
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="application">    
+    <webapp id="default">
+      <path>/</path>
+    </webapp>
+  </extension>
+  
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="application">
-    <webapp id="nuxeo-web">
+    <webapp id="repository">
+      <path>/repository</path>
+      <repository>default</repository>
+      <documentRoot>/default-domain</documentRoot>
       <errorPage>error.groovy</errorPage>
       <roots>
         <root priority="0">default</root>
       </roots>
-      <rendering-extensions>
-        <rendering-extension>script</rendering-extension>
-        <rendering-extension>wiki</rendering-extension>
-        <rendering-extension>render</rendering-extension>
-      </rendering-extensions>
       <mappings>
         <mapping pattern="/search">
           <script>/common/search.ftl</script>
@@ -32,18 +50,13 @@
       </mappings>
     </webapp>
 
-    <webapp id="admin">
-      <errorPage>error.groovy</errorPage>
+    <webapp id="admin" extends="repository">
+      <path>/admin</path>
+      <documentRoot/>
       <roots>
-        <root priority="0">default</root>
         <root priority="1">admin</root>
       </roots>
-
       <mappings>
-        <mapping pattern="/repository(/.*)?">
-          <root leadingPath="/repository">/default-domain</root>
-        </mapping>
-
         <mapping pattern="/users">
           <script>/users/users.groovy</script>
         </mapping>
@@ -62,14 +75,13 @@
         <mapping pattern="/users/user/(?username:[a-zA-Z0-9]+)$">
           <script>/users/user_form.groovy</script>
         </mapping>
-
       </mappings>
+    </webapp>
 
-      <rendering-extensions>
-        <rendering-extension>script</rendering-extension>
-        <rendering-extension>wiki</rendering-extension>
-        <rendering-extension>render</rendering-extension>
-      </rendering-extensions>
+    <webapp id="repository-admin" extends="admin">
+      <path>/admin/repository</path>
+      <repository>default</repository>
+      <documentRoot>/default-domain</documentRoot>
     </webapp>
 
   </extension>
@@ -114,24 +126,12 @@
         <action id="addpermission" enabled="true" script="/Document/addpermission.groovy">
           <permission expression="Write" />
         </action>
-        <action id="search" enabled="true" script="search.ftl">
+        <action id="search" enabled="true" script="/common/search.ftl">
           <permission expression="Browse" />
         </action>
       </actions>
     </object>
 
-  </extension>
-
-  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent" point="rendering-extension">
-    <rendering-extension name="script" class="org.nuxeo.ecm.webengine.rendering.ScriptMethod"/>
-    <rendering-extension name="render" class="org.nuxeo.ecm.webengine.rendering.RenderDirective"/>
-  </extension>
-
-  <extension target="org.nuxeo.ecm.webengine.rendering.wiki" point="rendering-extension">
-    <rendering-extension name="wiki" serializer="org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer">
-      <filter pattern="[A-Z]+[a-z]+[A-Z][A-Za-z]*" replacement="&lt;a href='./$0'&gt;$0&lt;/a&gt;"/>
-      <filter pattern="NXP-[0-9]+" replacement="&lt;a href='http://jira.nuxeo.org/browse/$0'&gt;$0&lt;/a&gt;"/>
-    </rendering-extension>
   </extension>
 
 </component>

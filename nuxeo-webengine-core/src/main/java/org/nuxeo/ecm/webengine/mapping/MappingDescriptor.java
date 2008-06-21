@@ -21,6 +21,8 @@ package org.nuxeo.ecm.webengine.mapping;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.PathInfo;
 import org.nuxeo.ecm.webengine.util.Attributes;
 
@@ -34,19 +36,17 @@ public class MappingDescriptor {
     PathPattern pattern;
     VariableString action;
     VariableString script;
-    VariableString leadingPath;
-    VariableString root;
+    VariableString document;
 
     @XNode("@pattern")
     public void setPattern(String pattern) {
         this.pattern = new PathPattern(pattern);
     }
 
-    @XNode("root")
+    @XNode("document")
     public void setRoot(RootMapping rootMapping) {
         if (rootMapping != null) {
-            this.root = rootMapping.root;
-            this.leadingPath = rootMapping.leadingPath;
+            this.document = rootMapping.root;
         }
     }
 
@@ -70,14 +70,15 @@ public class MappingDescriptor {
         if (attrs == null) {
             return null;
         }
-        String leading = null;
         // it's matching - do the rewrite
-        if (leadingPath != null) {
-            leading = leadingPath.getValue(attrs);
-        }
-        PathInfo pathInfo = new PathInfo(input, leading, attrs);
-        if (root != null) {
-            pathInfo.setRoot(this.root.getValue(attrs));
+        PathInfo pathInfo = new PathInfo(input, attrs);
+        if (document != null) {
+            String val = this.document.getValue(attrs);
+            if (val.startsWith("/")) {
+                pathInfo.setDocument(new PathRef(val));
+            } else {
+                pathInfo.setDocument(new IdRef(val));
+            }
         }
         if (script != null) {
             pathInfo.setScript(this.script.getValue(attrs));

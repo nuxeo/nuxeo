@@ -29,9 +29,17 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.url.URLFactory;
@@ -51,11 +59,13 @@ import org.nuxeo.runtime.deploy.FileChangeNotifier;
  */
 public class DefaultWebApplication implements WebApplication, FileChangeListener {
 
-    public static final Log log = LogFactory.getLog(WebApplication.class);
+    public final static Log log = LogFactory.getLog(WebApplication.class);
 
     protected WebEngine engine;
     protected FreemarkerEngine rendering;
     protected String id;
+    protected Path path;
+    protected String pathAsString;
     protected DirectoryStack dirStack;
     protected String errorPage;
     protected String indexPage;
@@ -63,6 +73,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
     protected Map<String, String> typeBindings;
     protected PathMapper mapper;
     protected String repositoryName;
+    protected DocumentRef documentRoot = null;
     protected WebApplicationDescriptor desc;
 
     // object binding cache
@@ -71,11 +82,26 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
 
     public DefaultWebApplication(WebEngine engine, WebApplicationDescriptor desc) throws WebException {
         this.engine = engine;
-        id = desc.getId();
-        defaultPage = desc.getDefaultPage("default.ftl");
-        indexPage = desc.getIndexPage("index.ftl");
-        errorPage = desc.getErrorPage("error.ftl");
-        repositoryName = desc.getRepositoryName();
+        this.id = desc.getId();
+        String path = desc.getPath();
+        if (path == null || path.length() == 0) {
+            pathAsString = "/";
+        } else {
+            pathAsString = path;
+        }
+        this.path = new Path(pathAsString).makeAbsolute();
+        String docRoot = desc.getDocumentRoot();
+        if (docRoot != null && docRoot.length() > 0) {
+            if (docRoot.startsWith("/")) {
+                documentRoot = new PathRef(docRoot);
+            } else {
+                documentRoot = new IdRef(docRoot);
+            }
+        }
+        this.defaultPage = desc.getDefaultPage("default.ftl");
+        this.indexPage = desc.getIndexPage("index.ftl");
+        this.errorPage = desc.getErrorPage("error.ftl");
+        this.repositoryName = desc.getRepositoryName();
         if (repositoryName == null) {
             repositoryName = "default";
         }
@@ -94,30 +120,24 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         }
         try {
             List<RootDescriptor> roots = desc.getRoots();
-            dirStack = new DirectoryStack();
+            this.dirStack = new DirectoryStack();
             if (roots == null) {
-                dirStack.addDirectory(new File(engine.getRootDirectory(), "default"), 0);
+                this.dirStack.addDirectory(new File(engine.getRootDirectory(), "default"), 0);
             } else {
                 Collections.sort(roots);
                 for (RootDescriptor rd : roots) {
                     File file =new File(engine.getRootDirectory(), rd.path);
-                    dirStack.addDirectory(file, rd.priority);
+                    this.dirStack.addDirectory(file, rd.priority);
                 }
             }
 
-            rendering = new FreemarkerEngine();
+            this.rendering = new FreemarkerEngine();
             rendering.setResourceLocator(this);
             rendering.setMessageBundle(engine.getMessageBundle());
             rendering.setSharedVariable("env", engine.getEnvironment());
-            if (desc.renderingExtensions != null) {
-                for (String name : desc.renderingExtensions) {
-                    Object tpl = engine.getRenderingExtension(name);
-                    if (tpl != null) {
-                        rendering.setSharedVariable(name, tpl);
-                    } else {
-                        log.warn("Unknown rendering extension: "+name);
-                    }
-                }
+            Map<String, Object> renderingExtensions = engine.getRenderingExtensions();
+            for (Map.Entry<String, Object> entry : renderingExtensions.entrySet()) {
+                rendering.setSharedVariable(entry.getKey(), entry.getValue());
             }
             objects = new ConcurrentHashMap<String, WebObjectDescriptor>();
             fileCache = new ConcurrentHashMap<String, ScriptFile>();
@@ -173,6 +193,18 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
      */
     public String getId() {
         return id;
+    }
+
+    public Path getPath() {
+        return path;
+    }
+
+    public String getPathAsString() {
+        return pathAsString;
+    }
+
+    public DocumentRef getDocumentRoot() {
+        return documentRoot;
     }
 
     public DirectoryStack getDirectoryStack() {
@@ -276,9 +308,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
 
     public ScriptFile getFile(String path) throws IOException {
         int len = path.length();
-        if (path == null || len == 0) {
-            return null;
-        }
+        if (path == null || len == 0) return null;
         char c = path.charAt(0);
         if (c == '.') { // avoid getting files outside the web root
             path = new Path(path).makeAbsolute().toString();
@@ -327,16 +357,63 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         return engine;
     }
 
-    public void registerRenderingExtension(String id, Object obj) {
-        if (desc.getRenderingExtensions() != null && desc.getRenderingExtensions().contains(id)) {
-            rendering.setSharedVariable(id, obj);
+    public WebContext createContext(Path path, HttpServletRequest req,
+            HttpServletResponse resp) throws WebException {
+        int cnt = this.path.segmentCount();
+        if (cnt > 0) {
+            path = path.removeFirstSegments(cnt).makeAbsolute();
+        }
+        PathInfo pathInfo = getPathInfo(path.toString());
+        DefaultWebContext context = new DefaultWebContext(this, pathInfo, req, resp);
+        // traverse documents if any
+        buildTraversalPath(context);
+        return context;
+    }
+
+    public void buildTraversalPath(DefaultWebContext context) throws WebException {
+        PathInfo pathInfo = context.getPathInfo();
+        if (documentRoot == null) {
+            pathInfo.setTrailingPath(pathInfo.getTraversalPath());
+            pathInfo.setTraversalPath(PathInfo.EMPTY_PATH);
+//            if (!context.hasTraversalPath() && !pathInfo.hasTrailingPath() && pathInfo.getScript() == null) { // a request to "/"
+//                context.setTargetScriptPath("index.ftl"); //TODO: use platform configured index
+//            }
+            return;
+        }
+        CoreSession session = context.getCoreSession();
+        DocumentModel doc =  null;
+        try {
+            doc = session.getDocument(documentRoot);
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+        context.addWebObject(doc.getName(), doc);
+        Path traversalPath = pathInfo.getTraversalPath();
+
+        for (int i=0, len=traversalPath.segmentCount(); i<len; i++) {
+            String name = traversalPath.segment(i);
+            doc = context.getLastObject().traverse(name); // get next object if any
+            if (doc != null) {
+                context.addWebObject(name, doc);
+            } else if (i == 0) {
+                pathInfo.setTrailingPath(traversalPath);
+                pathInfo.setTraversalPath(PathInfo.EMPTY_PATH);
+                break;
+            } else {
+                pathInfo.setTrailingPath(traversalPath.removeFirstSegments(i));
+                pathInfo.setTraversalPath(traversalPath.removeLastSegments(len-i));
+                break;
+            }
         }
     }
 
+
+    public void registerRenderingExtension(String id, Object obj) {
+        rendering.setSharedVariable(id, obj);
+    }
+
     public void unregisterRenderingExtension(String id) {
-        if (desc.getRenderingExtensions() != null && desc.getRenderingExtensions().contains(id)) {
-            rendering.setSharedVariable(id, null);
-        }
+        rendering.setSharedVariable(id, null);
     }
 
     public URL getResourceURL(String key) {

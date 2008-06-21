@@ -26,7 +26,6 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.webengine.mapping.MappingDescriptor;
-import org.nuxeo.runtime.deploy.CompositeContribution;
 import org.nuxeo.runtime.deploy.Contribution;
 import org.nuxeo.runtime.deploy.ExtensibleContribution;
 import org.nuxeo.runtime.deploy.ManagedComponent;
@@ -36,7 +35,7 @@ import org.nuxeo.runtime.deploy.ManagedComponent;
  *
  */
 @XObject("webapp")
-public class WebApplicationDescriptor extends CompositeContribution {
+public class WebApplicationDescriptor extends ExtensibleContribution {
 
     @XNode("@id")
     @Override
@@ -45,6 +44,12 @@ public class WebApplicationDescriptor extends CompositeContribution {
     @XNode("@extends")
     @Override
     public void setBaseContributionId(String id) { this.baseContributionId = id; }
+
+    @XNode("path")
+    protected String path;
+
+    @XNode("documentRoot")
+    protected String documentRoot;
 
     @XNodeList(value="roots/root", type=ArrayList.class, componentType=RootDescriptor.class, nullByDefault=true)
     protected List<RootDescriptor> roots;
@@ -67,13 +72,22 @@ public class WebApplicationDescriptor extends CompositeContribution {
     @XNodeList(value="bindings/binding", type=ArrayList.class, componentType=WebObjectBindingDescriptor.class, nullByDefault=true)
     protected List<WebObjectBindingDescriptor> bindings;
 
-    @XNodeList(value="rendering-extensions/rendering-extension", type=ArrayList.class, componentType=String.class, nullByDefault=true)
-    protected List<String> renderingExtensions;
-
-
-
     public String getId() {
         return contributionId;
+    }
+
+    /**
+     * @return the path.
+     */
+    public String getPath() {
+        return path;
+    }
+
+    /**
+     * @param path the path to set.
+     */
+    public void setPath(String path) {
+        this.path = path;
     }
 
     /**
@@ -81,6 +95,27 @@ public class WebApplicationDescriptor extends CompositeContribution {
      */
     public String getRepositoryName() {
         return repositoryName;
+    }
+
+    /**
+     * @param repositoryName the repositoryName to set.
+     */
+    public void setRepositoryName(String repositoryName) {
+        this.repositoryName = repositoryName;
+    }
+
+    /**
+     * @return the documentRoot.
+     */
+    public String getDocumentRoot() {
+        return documentRoot;
+    }
+
+    /**
+     * @param documentRoot the documentRoot to set.
+     */
+    public void setDocumentRoot(String documentRoot) {
+        this.documentRoot = documentRoot;
     }
 
     public String getIndexPage() {
@@ -143,14 +178,6 @@ public class WebApplicationDescriptor extends CompositeContribution {
         this.bindings = bindings;
     }
 
-    public List<String> getRenderingExtensions() {
-        return renderingExtensions;
-    }
-
-    public void setRenderingExtensions(List<String> templates) {
-        this.renderingExtensions = templates;
-    }
-
     public void copyOver(ExtensibleContribution contrib) {
         WebApplicationDescriptor desc = (WebApplicationDescriptor)contrib;
         if (defaultPage != null) {
@@ -161,6 +188,15 @@ public class WebApplicationDescriptor extends CompositeContribution {
         }
         if (errorPage != null) {
             desc.errorPage = errorPage;
+        }
+        if (repositoryName != null) {
+            desc.repositoryName = repositoryName;
+        }
+        if (path != null){
+            desc.path = path;
+        }
+        if (documentRoot != null) {
+            desc.documentRoot = documentRoot;
         }
         if (roots != null && !roots.isEmpty()) {
             if (desc.roots == null) {
@@ -179,12 +215,6 @@ public class WebApplicationDescriptor extends CompositeContribution {
                 desc.mappings = new ArrayList<MappingDescriptor>();
             }
             desc.mappings.addAll(mappings);
-        }
-        if (renderingExtensions != null && !renderingExtensions.isEmpty()) {
-            if (desc.renderingExtensions == null) {
-                desc.renderingExtensions = new ArrayList<String>();
-            }
-            desc.renderingExtensions.addAll(renderingExtensions);
         }
     }
 
