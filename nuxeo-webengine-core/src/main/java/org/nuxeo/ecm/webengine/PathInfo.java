@@ -31,8 +31,9 @@ import org.nuxeo.ecm.webengine.util.Attributes;
 public class PathInfo {
 
     public static final Path EMPTY_PATH = new Path("");
+    public static final Path ROOT_PATH = new Path("/");
 
-    protected Path path;
+    protected Path path; // original path (without action)
     protected Path traversalPath;
     protected Path trailingPath = EMPTY_PATH;
     protected String action;
@@ -47,7 +48,7 @@ public class PathInfo {
     public PathInfo(String path, Attributes attrs) {
         if (path == null || path.length() == 0
                 || (path.length() == 1 && path.charAt(0) == '/')) {
-            this.path = EMPTY_PATH;
+            this.path = ROOT_PATH;
         } else {
             int p = path.lastIndexOf(WebConst.ACTION_SEPARATOR);
             if (p > -1) {
@@ -57,7 +58,22 @@ public class PathInfo {
             this.path = new Path(path).makeAbsolute().removeTrailingSeparator();
         }
          traversalPath = this.path;
+         setAttributes(attrs);
+    }
+
+
+    /**
+     * @param attrs the attrs to set.
+     */
+    public void setAttributes(Attributes attrs) {
         this.attrs = attrs == null ? Attributes.EMPTY_ATTRS : attrs;
+    }
+
+    /**
+     * @return the path.
+     */
+    public Path getPath() {
+        return path;
     }
 
     /**

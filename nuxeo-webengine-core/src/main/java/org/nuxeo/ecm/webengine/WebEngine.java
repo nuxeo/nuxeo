@@ -63,6 +63,12 @@ public interface WebEngine {
 
     WebApplication getApplicationByPath(Path path);
 
+    /**
+     * Get the application registered as the default repository view
+     * @return the default repository view application or null if none was registered
+     */
+    WebApplication getDefaultRepositoryView();
+
     void registerApplication(WebApplicationDescriptor desc) throws WebException;
 
     void unregisterApplication(String id);

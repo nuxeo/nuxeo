@@ -30,6 +30,7 @@
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="application">
     <webapp id="repository">
+      <defaultRepositoryView>true</defaultRepositoryView>
       <path>/repository</path>
       <repository>default</repository>
       <documentRoot>/default-domain</documentRoot>

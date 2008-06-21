@@ -156,18 +156,27 @@ public class DefaultWebContext implements WebContext {
         StringBuffer buf = new StringBuffer(512);
         buf.append(getBasePath());
         // resolve the document relative to the root
-        Path rootPath = null;
         Path docPath = document.getPath().makeAbsolute();
-        if (head != null) { // TODO: use a default path provider
-            rootPath = head.doc.getPath().makeAbsolute();
-            int cnt = docPath.matchingFirstSegments(rootPath);
-            if (cnt == rootPath.segmentCount()) {
-                docPath = docPath.removeFirstSegments(cnt).makeAbsolute();
-                buf.append(app.getPathAsString());
+        Path path = null;
+        path = app.getRelativeDocumentPath(docPath);
+        if (path != null) {
+            buf.append(app.getPathAsString());
+        }
+        if (path == null) { // try the default repository view application
+            WebApplication app = engine.getDefaultRepositoryView();
+            if (app != null) {
+                path = app.getRelativeDocumentPath(docPath);
+                if (path != null) {
+                    buf.append(app.getPathAsString());
+                }
             }
         }
-        //TODO use a prefix (as configured by the user) for fallback
-        buf.append(docPath.toString());
+        if (path == null) {
+            path = docPath;
+        }
+        if (path.segmentCount() > 0) {
+            buf.append(path.removeTrailingSeparator().toString());
+        }
         return buf.toString();
     }
 

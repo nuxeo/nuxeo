@@ -38,7 +38,6 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -74,6 +73,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
     protected PathMapper mapper;
     protected String repositoryName;
     protected DocumentRef documentRoot = null;
+    protected Path documentRootPath;
     protected WebApplicationDescriptor desc;
 
     // object binding cache
@@ -92,11 +92,8 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         this.path = new Path(pathAsString).makeAbsolute();
         String docRoot = desc.getDocumentRoot();
         if (docRoot != null && docRoot.length() > 0) {
-            if (docRoot.startsWith("/")) {
-                documentRoot = new PathRef(docRoot);
-            } else {
-                documentRoot = new IdRef(docRoot);
-            }
+            documentRoot = new PathRef(docRoot);
+            documentRootPath = new Path(docRoot).makeAbsolute().removeTrailingSeparator();
         }
         this.defaultPage = desc.getDefaultPage("default.ftl");
         this.indexPage = desc.getIndexPage("index.ftl");
@@ -207,6 +204,20 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         return documentRoot;
     }
 
+    public Path getRelativeDocumentPath(Path docPath) {
+        if (documentRootPath != null) {
+            int cnt = documentRootPath.matchingFirstSegments(docPath);
+            if (cnt == documentRootPath.segmentCount()) {
+                return docPath.removeFirstSegments(cnt).makeAbsolute();
+            }
+        }
+        return null;
+    }
+
+    public boolean isDefaultRepositoryView() {
+        return desc.isDefaultRepositoryView;
+    }
+
     public DirectoryStack getDirectoryStack() {
         return dirStack;
     }
@@ -238,10 +249,6 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
      */
     public String getIndexPage() {
         return indexPage;
-    }
-
-    public PathInfo getPathInfo(String pathInfo) {
-        return mapper.getPathInfo(pathInfo);
     }
 
 
@@ -357,13 +364,14 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         return engine;
     }
 
-    public WebContext createContext(Path path, HttpServletRequest req,
+    public WebContext createContext(PathInfo pathInfo, HttpServletRequest req,
             HttpServletResponse resp) throws WebException {
         int cnt = this.path.segmentCount();
         if (cnt > 0) {
-            path = path.removeFirstSegments(cnt).makeAbsolute();
+            pathInfo.path = pathInfo.path.removeFirstSegments(cnt).makeAbsolute();
+            pathInfo.traversalPath = pathInfo.path; // TODO do we really need the traversal path? remove it
         }
-        PathInfo pathInfo = getPathInfo(path.toString());
+        mapper.rewrite(pathInfo);
         DefaultWebContext context = new DefaultWebContext(this, pathInfo, req, resp);
         // traverse documents if any
         buildTraversalPath(context);
