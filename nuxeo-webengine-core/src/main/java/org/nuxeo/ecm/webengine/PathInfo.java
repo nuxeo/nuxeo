@@ -34,8 +34,9 @@ public class PathInfo {
     public static final Path ROOT_PATH = new Path("/");
 
     protected Path path; // original path (without action)
-    protected Path traversalPath;
-    protected Path trailingPath = EMPTY_PATH;
+    protected Path applicationPath; // the application path
+    protected Path traversalPath; // original path - application path
+    protected Path trailingPath = EMPTY_PATH; // trailing segments that were not traversed
     protected String action;
     protected DocumentRef document;
     protected String script;
@@ -61,6 +62,25 @@ public class PathInfo {
          setAttributes(attrs);
     }
 
+    public void setApplicationPath(Path appPath) {
+        if (applicationPath != null) {
+            throw new IllegalStateException("Application path already set");
+        }
+        applicationPath = appPath;
+        int cnt = appPath.segmentCount();
+        if (cnt > 0) {
+            traversalPath = path.removeFirstSegments(cnt);
+        } else {
+            traversalPath = path;
+        }
+    }
+
+    /**
+     * @return the applicationPath.
+     */
+    public Path getApplicationPath() {
+        return applicationPath;
+    }
 
     /**
      * @param attrs the attrs to set.
@@ -88,13 +108,6 @@ public class PathInfo {
      */
     public Path getTrailingPath() {
         return trailingPath;
-    }
-
-    /**
-     * @param traversalPath the traversalPath to set.
-     */
-    public void setTraversalPath(Path traversalPath) {
-        this.traversalPath = traversalPath == null ? EMPTY_PATH : traversalPath.makeAbsolute();
     }
 
     /**

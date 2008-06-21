@@ -366,11 +366,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
 
     public WebContext createContext(PathInfo pathInfo, HttpServletRequest req,
             HttpServletResponse resp) throws WebException {
-        int cnt = this.path.segmentCount();
-        if (cnt > 0) {
-            pathInfo.path = pathInfo.path.removeFirstSegments(cnt).makeAbsolute();
-            pathInfo.traversalPath = pathInfo.path; // TODO do we really need the traversal path? remove it
-        }
+        pathInfo.setApplicationPath(path);
         mapper.rewrite(pathInfo);
         DefaultWebContext context = new DefaultWebContext(this, pathInfo, req, resp);
         // traverse documents if any
@@ -382,10 +378,6 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         PathInfo pathInfo = context.getPathInfo();
         if (documentRoot == null) {
             pathInfo.setTrailingPath(pathInfo.getTraversalPath());
-            pathInfo.setTraversalPath(PathInfo.EMPTY_PATH);
-//            if (!context.hasTraversalPath() && !pathInfo.hasTrailingPath() && pathInfo.getScript() == null) { // a request to "/"
-//                context.setTargetScriptPath("index.ftl"); //TODO: use platform configured index
-//            }
             return;
         }
         CoreSession session = context.getCoreSession();
@@ -405,11 +397,9 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
                 context.addWebObject(name, doc);
             } else if (i == 0) {
                 pathInfo.setTrailingPath(traversalPath);
-                pathInfo.setTraversalPath(PathInfo.EMPTY_PATH);
                 break;
             } else {
                 pathInfo.setTrailingPath(traversalPath.removeFirstSegments(i));
-                pathInfo.setTraversalPath(traversalPath.removeLastSegments(len-i));
                 break;
             }
         }

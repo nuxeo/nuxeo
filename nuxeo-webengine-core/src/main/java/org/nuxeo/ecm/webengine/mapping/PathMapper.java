@@ -59,7 +59,7 @@ public class PathMapper {
     }
 
     public final PathInfo rewrite(PathInfo pathInfo) {
-        String input = pathInfo.getPath().toString();
+        String input = pathInfo.getTraversalPath().toString();
         if (entries != null) {
             for (MappingDescriptor entry: entries) {
                 if (entry.rewrite(input, pathInfo)) {
