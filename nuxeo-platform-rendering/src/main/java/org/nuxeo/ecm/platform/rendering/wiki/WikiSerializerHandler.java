@@ -29,12 +29,11 @@ import org.wikimodel.wem.WikiParameters;
 import freemarker.core.Environment;
 
 /**
- * @author <a href="mailt
-import com.sun.corba.se.impl.ior.WireObjectKeyTemplate;
-o:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class WikiSerializerHandler extends PrintListener {
+
     public static final Log log = LogFactory.getLog(WikiSerializerHandler.class);
 
     protected static final String LINE_SEP = System.getProperty("line.separator");
@@ -47,14 +46,12 @@ public class WikiSerializerHandler extends PrintListener {
     protected int mark = -1; // used to mark the current buffer to be able to retrieve printed text that starts at the mark
     protected Toc toc;
 
-
-
     public WikiSerializerHandler(WikiSerializer engine) {
         super (null); // cannot base on the wikiprinter - so we don't use it
         this.engine = engine;
-        this.writer = new WikiWriter();
+        writer = new WikiWriter();
         if (engine.macros.containsKey("toc")) {
-            this.toc =new Toc();
+            toc =new Toc();
         }
     }
 
@@ -73,9 +70,6 @@ public class WikiSerializerHandler extends PrintListener {
         writer.println(str);
     }
 
-    /**
-     * @return the writer.
-     */
     public WikiWriter getWriter() {
         return writer;
     }
@@ -94,7 +88,6 @@ public class WikiSerializerHandler extends PrintListener {
     protected void endElement() {
         flushWords();
     }
-
 
     protected void flushWords() {
         if (words.length() == 0) {
@@ -170,11 +163,13 @@ public class WikiSerializerHandler extends PrintListener {
         beginElement();
         super.beginListItem();
     }
+
     @Override
     public void beginParagraph(WikiParameters params) {
         beginElement();
         super.beginParagraph(params);
     }
+
     @Override
     public void beginPropertyBlock(String propertyUri, boolean doc) {
         beginElement();

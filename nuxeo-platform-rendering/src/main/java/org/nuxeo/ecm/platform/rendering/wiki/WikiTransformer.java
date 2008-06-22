@@ -92,11 +92,11 @@ public class WikiTransformer implements TemplateDirectiveModel {
         }
     }
 
-
     @SuppressWarnings("unchecked")
     public void execute(Environment env, Map params, TemplateModel[] loopVars,
             TemplateDirectiveBody body) throws TemplateException, IOException {
 
+        // TODO: not used for now.
         String syntax = null;
         SimpleScalar scalar = (SimpleScalar)params.get("syntax");
         if (scalar != null) {
@@ -128,7 +128,8 @@ public class WikiTransformer implements TemplateDirectiveModel {
 //                tr.transform(url, env.getOut(), ctxModel.getContext());
             } else if (src == null) {
                 if (body == null) {
-                    throw new TemplateModelException("Transform directive must have either a content either a valid 'src' attribute");
+                    throw new TemplateModelException(
+                            "Transform directive must have either a content either a valid 'src' attribute");
                 }
                 // render body to get back the result
                 StringWriter writer = new StringWriter();

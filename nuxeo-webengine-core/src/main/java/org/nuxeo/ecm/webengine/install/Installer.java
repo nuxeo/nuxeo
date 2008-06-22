@@ -130,7 +130,6 @@ public class Installer {
         //TODO
     }
 
-
     public static void copyResources(Bundle bundle, String path, File root) throws URISyntaxException, IOException {
         File file = Framework.getRuntime().getBundleFile(bundle);
         if (file == null) {
@@ -152,6 +151,5 @@ public class Installer {
     protected File getBundleFile(Bundle bundle) {
         return Framework.getRuntime().getBundleFile(bundle);
     }
-
 
 }

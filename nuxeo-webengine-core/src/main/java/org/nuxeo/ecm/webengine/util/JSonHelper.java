@@ -19,19 +19,21 @@
 
 package org.nuxeo.ecm.webengine.util;
 
-
 import net.sf.json.JSONObject;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.webengine.WebException;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class JSonHelper {
+
+    // Utility class.
+    private JSonHelper() {
+    }
 
     public static String toJSon(DocumentModel doc)  throws WebException {
         return doc2JSon(doc).toString();
@@ -42,37 +44,39 @@ public class JSonHelper {
     }
 
     public static JSONObject doc2JSon(DocumentModel doc) throws WebException {
-        return doc2JSon(doc, (String[])null);
+        return doc2JSon(doc, (String[]) null);
     }
 
-    public static JSONObject doc2JSon(DocumentModel doc, String ... schemas) throws WebException {
+    public static JSONObject doc2JSon(DocumentModel doc, String... schemas)
+            throws WebException {
         try {
-        JSONObject obj = new JSONObject();
-        obj.put("id", doc.getId());
-        obj.put("name", doc.getName());
-        obj.put("path", doc.getPathAsString());
-        obj.put("isLocked", doc.isLocked());
-        obj.put("lifeCycleState", doc.getCurrentLifeCycleState());
-        obj.put("lifeCyclePolicy", doc.getLifeCyclePolicy());
-        obj.put("type", doc.getType());
-        obj.put("isVersion", doc.isVersion());
-        obj.put("isProxy", doc.isProxy());
-        obj.put("sourceId", doc.getSourceId());
-        obj.put("facets", doc.getDeclaredFacets());
-        obj.put("schemas", doc.getDeclaredSchemas());
-        JSonDocumentExporter jde = new JSonDocumentExporter();
-        if (schemas != null) {
-            for (String schema : schemas) {
-                obj.put(schema, jde.run(doc.getPart(schema)));
+            JSONObject obj = new JSONObject();
+            obj.put("id", doc.getId());
+            obj.put("name", doc.getName());
+            obj.put("path", doc.getPathAsString());
+            obj.put("isLocked", doc.isLocked());
+            obj.put("lifeCycleState", doc.getCurrentLifeCycleState());
+            obj.put("lifeCyclePolicy", doc.getLifeCyclePolicy());
+            obj.put("type", doc.getType());
+            obj.put("isVersion", doc.isVersion());
+            obj.put("isProxy", doc.isProxy());
+            obj.put("sourceId", doc.getSourceId());
+            obj.put("facets", doc.getDeclaredFacets());
+            obj.put("schemas", doc.getDeclaredSchemas());
+            JSonDocumentExporter jde = new JSonDocumentExporter();
+            if (schemas != null) {
+                for (String schema : schemas) {
+                    obj.put(schema, jde.run(doc.getPart(schema)));
+                }
+            } else {
+                for (DocumentPart part : doc.getParts()) {
+                    obj.put(part.getName(), jde.run(part));
+                }
             }
-        } else {
-            for (DocumentPart part : doc.getParts()) {
-                obj.put(part.getName(), jde.run(part));
-            }
-        }
-        return obj;
+            return obj;
         } catch (Exception e) {
-            throw new WebException("Failed to export documnt as json: "+doc.getPath(), e);
+            throw new WebException("Failed to export documnt as json: "
+                    + doc.getPath(), e);
         }
     }
 
