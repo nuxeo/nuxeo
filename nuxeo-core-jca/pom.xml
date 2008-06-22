@@ -76,20 +76,6 @@
     </resources>
 
     <plugins>
-<!--
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>jar</goal>
-	    </goals>
-	  </execution>
-	</executions>
-      </plugin>
--->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-rar-plugin</artifactId>
@@ -99,7 +85,6 @@
           <manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
         </configuration>
       </plugin>
-<!--
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
@@ -114,7 +99,7 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>${project.build.directory}/${artifactId}-${version}.jar</file>
+                  <file>${project.build.directory}/${artifactId}-${version}.rar</file>
                   <type>jar</type>
 		</artifact>
 	      </artifacts>
@@ -122,7 +107,6 @@
 	  </execution>
 	</executions>
       </plugin>
--->
     </plugins>
     <finalName>${pom.artifactId}-${pom.version}</finalName>
   </build>
