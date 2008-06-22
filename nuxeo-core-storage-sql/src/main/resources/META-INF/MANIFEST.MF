@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Core SQL Storage
+Bundle-SymbolicName: org.nuxeo.ecm.core.storage.sql;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Require-Bundle: org.nuxeo.runtime,
+ org.nuxeo.ecm.core.schema
+Export-Package: org.nuxeo.ecm.core.storage.sql
+Eclipse-LazyStart: true

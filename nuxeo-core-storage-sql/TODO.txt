@@ -1,0 +1,17 @@
+SQL Storage TODO
+
+- flesh out children api
+
+- pristine cache invalidation on commit
+
+- transactions
+
+- file storage
+
+- complex types vs children storage
+
+- hierarchy management
+
+- table aggregation
+
+- search

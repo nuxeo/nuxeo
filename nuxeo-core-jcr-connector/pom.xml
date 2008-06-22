@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.core</groupId>
     <artifactId>nuxeo-core-parent</artifactId>
-    <version>1.4.3-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-core-jcr-connector</artifactId>
@@ -30,7 +30,7 @@
     </dependency>
 
     <dependency>
-      <groupId>jsr170</groupId>
+      <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>
       <version>1.0</version>
     </dependency>
@@ -114,7 +114,7 @@
                   <artifactId>jackrabbit-jcr-commons</artifactId>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>jsr170</groupId>
+                  <groupId>javax.jcr</groupId>
                   <artifactId>jcr</artifactId>
                 </artifactItem>
               </artifactItems>

@@ -57,8 +57,6 @@ public interface ACP extends Serializable, Cloneable {
      * @param permission the permission to check
      * @return Access.GRANT if granted, Access.DENY if denied or Access.UNKNOWN
      *         if no rule for that permission exists. Never returns null.
-     *
-     * @see ACP#checkPermission(String, String)
      */
     Access getAccess(String principal, String permission);
 
@@ -93,8 +91,8 @@ public interface ACP extends Serializable, Cloneable {
      * <p>
      * The current behavior reset <strong>completely</strong> the current ACL.
      *
+     * @param userEntries
      * @param overwrite overwrite the whole current ACL
-     * @param localEntries
      */
     void setRules(UserEntry[] userEntries, boolean overwrite);
 

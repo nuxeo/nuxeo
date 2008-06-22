@@ -110,16 +110,10 @@ public class DocumentTypeImpl extends CompositeTypeImpl implements DocumentType 
         subtypes = null;
     }
 
-    /**
-     * @param prefetchInfo the prefetchInfo to set.
-     */
     public void setPrefetchInfo(PrefetchInfo prefetchInfo) {
         this.prefetchInfo = prefetchInfo;
     }
 
-    /**
-     * @return the prefetchInfo.
-     */
     public PrefetchInfo getPrefetchInfo() {
         return prefetchInfo;
     }
