@@ -21,13 +21,6 @@
         <field2/>
     </properties>
     <formats>
-        <layout element="page[1]/section[1]">
-            <height>300px</height>
-            <width>100%</width>
-        </layout>
-        <layout element="page[1]/section[1]/cell[1]">
-            <width>100px</width>
-        </layout>
         <!-- The theme headers -->
         <widget element="">
             <view>theme view</view>
@@ -48,6 +41,13 @@
         <widget element="page[1]/section[1]/cell[1]/fragment[1]|page[1]/section[1]/cell[1]/fragment[2]">
             <view>vertical menu</view>
         </widget>
+        <layout element="page[1]/section[1]">
+            <height>300px</height>
+            <width>100%</width>
+        </layout>
+        <layout element="page[1]/section[1]/cell[1]">
+            <width>100px</width>
+        </layout>
         <!-- Common styles -->
         <style name="common styles">
             <selector path="a">

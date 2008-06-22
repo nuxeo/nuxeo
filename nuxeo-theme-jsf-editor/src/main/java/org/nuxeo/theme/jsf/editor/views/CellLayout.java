@@ -26,6 +26,7 @@ public class CellLayout extends DefaultLayoutView {
     static final Pattern contentPattern = Pattern.compile("<.*?>(.*)</td>",
             Pattern.DOTALL);
 
+    @Override
     public String render(final RenderingInfo info) {
         final String markup = info.getMarkup();
         final Matcher contentMatcher = contentPattern.matcher(markup);

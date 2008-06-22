@@ -22,7 +22,7 @@ import javax.faces.component.UIOutput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-import org.nuxeo.theme.jsf.Utils;
+import org.nuxeo.theme.html.Utils;
 
 public class UIButton extends UIOutput {
 
@@ -42,7 +42,7 @@ public class UIButton extends UIOutput {
     public void encodeBegin(final FacesContext context) throws IOException {
         final ResponseWriter writer = context.getResponseWriter();
 
-        final Map attributes = getAttributes();
+        final Map<String, Object> attributes = getAttributes();
         identifier = (String) attributes.get("identifier");
         controlledBy = (String) attributes.get("controlledBy");
         switchTo = (String) attributes.get("switchTo");

@@ -24,10 +24,12 @@
 
     <resource name="nxthemes-jsf-editor-authoring.js">
       <path>nxthemes/jsf/editor/scripts/authoring.js</path>
+      <require>seam-remote.js</require>
     </resource>
 
     <resource name="nxthemes-jsf-style-editor.js">
       <path>nxthemes/jsf/editor/scripts/style-editor.js</path>
+      <require>seam-remote.js</require>
     </resource>
 
     <resource name="nxthemes-jsf-editor-authoring.css">
@@ -236,7 +238,6 @@
       <resource>nxthemes-controllers.js</resource>
       <resource>nxthemes-jsf-editor-authoring.js</resource>
       <resource>nxthemes-jsf-editor-authoring.css</resource>
-      <resource>seam-remote.js</resource>
     </view>
 
     <!--  Pages -->

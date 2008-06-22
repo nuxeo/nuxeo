@@ -42,9 +42,10 @@ public class TestElementRenderer extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         Manager.initializeProtocols();
-        deployContrib("org.nuxeo.theme.jsf.tests", "nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.jsf.tests", "nxthemes-core-contrib.xml");
-        deployContrib("org.nuxeo.theme.jsf.tests", "nxthemes-jsf-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.html", "OSGI-INF/nxthemes-html-contrib.xml");
+        deployContrib("org.nuxeo.theme.jsf", "OSGI-INF/nxthemes-jsf-contrib.xml");
         deployContrib("org.nuxeo.theme.jsf.tests", "fragment-config.xml");
     }
 
@@ -111,7 +112,7 @@ public class TestElementRenderer extends NXRuntimeTestCase {
 
     private String getFileContent(String name) {
         InputStream is = null;
-        StringBuffer content = new StringBuffer();
+        StringBuilder content = new StringBuilder();
         try {
             is = getClass().getClassLoader().getResourceAsStream(name);
             if (is != null) {
@@ -143,6 +144,6 @@ public class TestElementRenderer extends NXRuntimeTestCase {
                 }
             }
         }
-        return content.toString().replaceAll(">(.*?)<", "><");
+        return content.toString().trim();
     }
 }

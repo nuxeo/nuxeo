@@ -22,7 +22,7 @@ import javax.faces.component.UIOutput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-import org.nuxeo.theme.jsf.Utils;
+import org.nuxeo.theme.html.Utils;
 
 public class UIPanel extends UIOutput {
 
@@ -48,7 +48,7 @@ public class UIPanel extends UIOutput {
     public void encodeBegin(final FacesContext context) throws IOException {
         final ResponseWriter writer = context.getResponseWriter();
 
-        final Map attributes = getAttributes();
+        final Map<String, Object> attributes = getAttributes();
         identifier = (String) attributes.get("identifier");
         url = (String) attributes.get("url");
         loading = (String) attributes.get("loading");
