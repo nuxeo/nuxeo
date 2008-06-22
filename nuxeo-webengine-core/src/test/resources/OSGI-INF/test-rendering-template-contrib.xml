@@ -4,14 +4,10 @@
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="application">
-    <webapp id="test" extends="nuxeo-web">
+    <webapp id="test" extends="repository">
       <roots>
         <root priority="0">default</root>
       </roots>
-      <rendering-extensions>
-        <rendering-extension>ext1</rendering-extension>
-        <rendering-extension>ext2</rendering-extension>
-      </rendering-extensions>
     </webapp>
   </extension>
 

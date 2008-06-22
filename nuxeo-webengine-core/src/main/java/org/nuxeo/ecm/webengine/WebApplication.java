@@ -76,6 +76,17 @@ public interface WebApplication extends ResourceLocator {
     DocumentRef getDocumentRoot();
 
     /**
+     * Set the document root to be used by this application
+     * @param root
+     */
+    void setDocumentRoot(Path rootPath);
+
+    /**
+     * Set the application path
+     */
+    void setPath(Path path);
+
+    /**
      * Given a document path return its relative path to the root document if any.
      * <p>
      * If no root document is not defined or the path cannot be made relative to the

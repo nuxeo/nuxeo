@@ -86,6 +86,12 @@
       <version>${nuxeo.platform.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+      <version>2.3.11</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-scripting</artifactId>
       <version>${nuxeo.runtime.version}</version>

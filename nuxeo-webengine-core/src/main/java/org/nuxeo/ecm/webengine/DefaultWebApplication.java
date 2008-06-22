@@ -196,12 +196,22 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         return path;
     }
 
+    public void setPath(Path path) {
+        this.path = path;
+        this.pathAsString = path.toString();
+    }
+
     public String getPathAsString() {
         return pathAsString;
     }
 
     public DocumentRef getDocumentRoot() {
         return documentRoot;
+    }
+
+    public void setDocumentRoot(Path path) {
+        this.documentRoot = new PathRef(path.toString());
+        this.documentRootPath = path;
     }
 
     public Path getRelativeDocumentPath(Path docPath) {

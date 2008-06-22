@@ -37,7 +37,6 @@ public class TestRendering extends NXRuntimeTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        deployBundle("nuxeo-runtime-scripting");
         deployBundle("nuxeo-core-schema");
         deployBundle("nuxeo-core-query");
         deployBundle("nuxeo-core-api");
@@ -51,7 +50,7 @@ public class TestRendering extends NXRuntimeTestCase {
     public void testTemplateContribution() throws Exception {
 
         WebEngine web = Framework.getService(WebEngine.class);
-        WebApplication app = web.getApplication("nuxeo-web");
+        WebApplication app = web.getApplication("test");
         if (app == null) {
             fail("Application nuxeo-web was not defined");
         }

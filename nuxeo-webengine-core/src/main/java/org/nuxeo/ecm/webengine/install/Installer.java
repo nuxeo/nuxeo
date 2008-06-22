@@ -92,11 +92,20 @@ public class Installer {
                 return;
             }
         }
+        boolean deleteDir = false;
         File bundleDir = null;
         try {
-            bundleDir = getOrCreateBundleDir(ctx.getBundle());
-            if (bundleDir == null) {
-                return;
+            Bundle bundle = ctx.getBundle();
+            File file = getBundleFile(bundle);
+            if (file == null) {
+                throw new UnsupportedOperationException("Couldn't transform the bundle location into a file");
+            }
+            if (file.isDirectory()) {
+                bundleDir = file;
+            } else {
+                deleteDir = true;
+                bundleDir = getTempBundleDir(bundle);
+                ZipUtils.unzip(file, bundleDir);
             }
             if (copyOperations != null) {
                 for (CopyOperation copy : copyOperations) {
@@ -111,7 +120,7 @@ public class Installer {
         } catch (Exception e) {
             throw new WebDeployException("Installation failed for bundle: "+ctx.getBundle().getSymbolicName(), e);
         } finally {
-            if (bundleDir != null) {
+            if (deleteDir && bundleDir != null) {
                 FileUtils.deleteTree(bundleDir);
             }
         }
@@ -140,21 +149,9 @@ public class Installer {
         return new File(Framework.getRuntime().getHome(), "tmp/bundles/"+bundle.getSymbolicName());
     }
 
-    protected File getOrCreateBundleDir(Bundle bundle) throws Exception {
-        File bundleDir = null;
-        File file = Framework.getRuntime().getBundleFile(bundle);
-        if (file == null) {
-            throw new UnsupportedOperationException("Couldn't transform the bundle location into a file");
-        }
-        if (file.isDirectory()) {
-            bundleDir = file;
-        } else {
-            bundleDir = getTempBundleDir(bundle);
-            ZipUtils.unzip(file, bundleDir);
-        }
-        return bundleDir;
+    protected File getBundleFile(Bundle bundle) {
+        return Framework.getRuntime().getBundleFile(bundle);
     }
-
 
 
 }

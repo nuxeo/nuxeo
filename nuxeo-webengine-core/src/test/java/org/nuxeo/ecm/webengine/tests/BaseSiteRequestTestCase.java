@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -30,8 +31,6 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.WebApplication;
 import org.nuxeo.ecm.webengine.WebEngine;
-import org.nuxeo.ecm.webengine.mapping.MappingDescriptor;
-import org.nuxeo.ecm.webengine.mapping.RootMapping;
 import org.nuxeo.ecm.webengine.servlet.WebServlet;
 import org.nuxeo.ecm.webengine.tests.fake.FakeRequest;
 import org.nuxeo.ecm.webengine.tests.fake.FakeResponse;
@@ -58,14 +57,10 @@ public abstract class BaseSiteRequestTestCase extends RepositoryOSGITestCase {
         openRepository();
         // setup resolver
         engine = Framework.getLocalService(WebEngine.class);
-        WebApplication app = engine.getApplication("nuxeo-web");
+        WebApplication app = engine.getApplication("default");
         app.setDefaultPage(null);
-        MappingDescriptor mdef = new MappingDescriptor();
-        mdef.setPattern("/.*");
-        RootMapping rootMapping = new RootMapping();
-        rootMapping.setRoot("/");
-        mdef.setRoot(rootMapping);
-        app.getPathMapper().addMapping(mdef);
+        app.setDocumentRoot(new Path("/"));
+        app.setPath(new Path("/"));
         app.setRepositoryName("demo");
 
         // setup repo
@@ -87,7 +82,6 @@ public abstract class BaseSiteRequestTestCase extends RepositoryOSGITestCase {
 
         siteServlet = new WebServlet();
         FakeServletConfig cfg = new FakeServletConfig();
-        cfg.put("webapp", "nuxeo-web");
         siteServlet.init(cfg);
 
     }
