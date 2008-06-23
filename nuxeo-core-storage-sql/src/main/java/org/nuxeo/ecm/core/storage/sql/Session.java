@@ -60,10 +60,10 @@ public interface Session extends Connection {
      * @return the child node, or {@code null} is not found
      * @throws StorageException
      */
-    Node getNode(Node parent, String name) throws StorageException;
+    Node getChildNode(Node parent, String name) throws StorageException;
 
     /**
-     * Creates a new node and adds it as a child of a parent node.
+     * Creates a new child node.
      *
      * @param parent the parent to which the child is added
      * @param name the child name
@@ -71,7 +71,7 @@ public interface Session extends Connection {
      * @return the new node
      * @throws StorageException
      */
-    Node addNode(Node parent, String name, String typeName)
+    Node addChildNode(Node parent, String name, String typeName)
             throws StorageException;
 
     /**

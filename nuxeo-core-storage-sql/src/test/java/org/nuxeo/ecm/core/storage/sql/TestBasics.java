@@ -39,7 +39,7 @@ public class TestBasics extends SQLStorageTestCase {
         assertEquals("Root",
                 root.getSingleProperty("ecm:primaryType").getString());
 
-        Node nodea = session.addNode(root, "foo", "TestDoc");
+        Node nodea = session.addChildNode(root, "foo", "TestDoc");
         assertEquals("TestDoc", nodea.getType().getName());
         nodea.setSingleProperty("tst:title", "hello world");
         nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
@@ -49,8 +49,8 @@ public class TestBasics extends SQLStorageTestCase {
         String[] subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
         assertEquals(Arrays.asList("a", "b", "c"), Arrays.asList(subjects));
 
-        Node nodeabis = session.getNode(root, "foo");
-        Node nodeb = session.addNode(nodea, "bar", "TestDoc");
+        Node nodeabis = session.getChildNode(root, "foo");
+        Node nodeb = session.addChildNode(nodea, "bar", "TestDoc");
         session.save();
 
         // now modify a property and re-save
@@ -62,7 +62,7 @@ public class TestBasics extends SQLStorageTestCase {
         // now read from another session
         Session session2 = repository.getConnection();
         Node root2 = session2.getRootNode();
-        Node nodea2 = session2.getNode(root2, "foo");
+        Node nodea2 = session2.getChildNode(root2, "foo");
         assertEquals("another",
                 nodea2.getSingleProperty("tst:title").getString());
         subjects = nodea2.getCollectionProperty("tst:subjects").getStrings();

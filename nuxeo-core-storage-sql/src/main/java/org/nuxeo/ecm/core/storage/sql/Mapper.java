@@ -52,7 +52,7 @@ import org.nuxeo.ecm.core.storage.sql.db.Column;
  *
  * @author Florent Guillaume
  */
-public class Mapper implements XAResource {
+public class Mapper {
 
     private static final Log log = LogFactory.getLog(Mapper.class);
 
@@ -598,46 +598,42 @@ public class Mapper implements XAResource {
     }
 
     /*
-     * ----- javax.transaction.xa.XAResource -----
+     * ----- part of javax.transaction.xa.XAResource -----
      */
 
-    public boolean isSameRM(XAResource xar) throws XAException {
-        return xaresource.isSameRM(xar);
-    }
-
-    public void start(Xid xid, int flags) throws XAException {
+    protected void start(Xid xid, int flags) throws XAException {
         xaresource.start(xid, flags);
     }
 
-    public int prepare(Xid xid) throws XAException {
+    protected int prepare(Xid xid) throws XAException {
         return xaresource.prepare(xid);
     }
 
-    public void commit(Xid xid, boolean onePhase) throws XAException {
+    protected void commit(Xid xid, boolean onePhase) throws XAException {
         xaresource.commit(xid, onePhase);
     }
 
-    public void end(Xid xid, int flags) throws XAException {
+    protected void end(Xid xid, int flags) throws XAException {
         xaresource.end(xid, flags);
     }
 
-    public void rollback(Xid xid) throws XAException {
+    protected void rollback(Xid xid) throws XAException {
         xaresource.rollback(xid);
     }
 
-    public void forget(Xid xid) throws XAException {
+    protected void forget(Xid xid) throws XAException {
         xaresource.forget(xid);
     }
 
-    public Xid[] recover(int flag) throws XAException {
+    protected Xid[] recover(int flag) throws XAException {
         return xaresource.recover(flag);
     }
 
-    public boolean setTransactionTimeout(int seconds) throws XAException {
+    protected boolean setTransactionTimeout(int seconds) throws XAException {
         return xaresource.setTransactionTimeout(seconds);
     }
 
-    public int getTransactionTimeout() throws XAException {
+    protected int getTransactionTimeout() throws XAException {
         return xaresource.getTransactionTimeout();
     }
 

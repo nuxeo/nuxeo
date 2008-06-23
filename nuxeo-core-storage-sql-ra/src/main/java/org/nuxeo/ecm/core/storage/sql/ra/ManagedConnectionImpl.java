@@ -22,9 +22,6 @@ import java.io.PrintWriter;
 import javax.resource.ResourceException;
 import javax.resource.cci.Connection;
 import javax.resource.cci.ConnectionFactory;
-import javax.resource.cci.ConnectionMetaData;
-import javax.resource.cci.Interaction;
-import javax.resource.cci.ResultSetInfo;
 import javax.resource.spi.ConnectionEvent;
 import javax.resource.spi.ConnectionEventListener;
 import javax.resource.spi.ConnectionRequestInfo;
@@ -39,11 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.ecm.core.storage.Credentials;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
-import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.Node;
-import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
 
 /**
@@ -119,7 +112,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
         if (connection != null) {
             throw new ResourceException("Sharing not supported");
         }
-        connection = new ConnectionImpl(this);
+        connection = new ConnectionImpl(this, session);
         return connection;
     }
 
@@ -159,7 +152,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
         ManagedConnectionImpl managedConnection = connection.getManagedConnection();
         if (managedConnection != this) {
             // reassociate it with us
-            connection.setManagedConnection(this);
+            connection.setManagedConnection(this, session);
             // update ManagedConnection to set who has it
             managedConnection.connection = null;
             this.connection = connection;
@@ -303,42 +296,16 @@ public class ManagedConnectionImpl implements ManagedConnection,
      * ------------------------------------------------------------------
      */
 
+    protected SessionImpl getSession() {
+        return session;
+    }
     /*
      * ----- part of javax.resource.cci.Connection -----
      */
 
-    public void close() throws ResourceException {
+    protected void close() throws ResourceException {
         sendClosedEvent();
         connection = null;
-    }
-
-    /*
-     * ----- Session -----
-     */
-
-    public void save() throws StorageException {
-        session.save();
-    }
-
-    public Node addNode(Node parent, String name, String typeName)
-            throws StorageException {
-        return session.addNode(parent, name, typeName);
-    }
-
-    public Model getModel() {
-        return session.getModel();
-    }
-
-    public Node getNode(Node parent, String name) throws StorageException {
-        return session.getNode(parent, name);
-    }
-
-    public Node getRootNode() throws StorageException {
-        return session.getRootNode();
-    }
-
-    public void removeNode(Node node) throws StorageException {
-        session.removeNode(node);
     }
 
 }

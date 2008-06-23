@@ -105,8 +105,8 @@ public class SessionImpl implements Session, XAResource {
      * ----- javax.transaction.xa.XAResource -----
      */
 
-    public boolean isSameRM(XAResource xaresource) throws XAException {
-        return mapper.isSameRM(xaresource);
+    public boolean isSameRM(XAResource xaresource) {
+        return xaresource == this;
     }
 
     public void start(Xid xid, int flags) throws XAException {
@@ -163,7 +163,7 @@ public class SessionImpl implements Session, XAResource {
         context.save();
     }
 
-    public Node addNode(Node parent, String name, String typeName)
+    public Node addChildNode(Node parent, String name, String typeName)
             throws StorageException {
         checkLive();
         if (name == null || name.contains("/") || name.equals(".") ||
@@ -209,7 +209,7 @@ public class SessionImpl implements Session, XAResource {
         return new Node(type, this, context, rowGroup);
     }
 
-    public Node getNode(Node parent, String name) throws StorageException {
+    public Node getChildNode(Node parent, String name) throws StorageException {
         checkLive();
         if (name == null || name.contains("/") || name.equals(".") ||
                 name.equals("..")) {

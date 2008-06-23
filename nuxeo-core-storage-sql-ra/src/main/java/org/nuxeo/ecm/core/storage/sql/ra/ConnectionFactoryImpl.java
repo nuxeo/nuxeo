@@ -91,9 +91,7 @@ public class ConnectionFactoryImpl implements Repository {
      */
     public Session getConnection(ConnectionSpec connectionSpec)
             throws StorageException {
-        if (!(connectionSpec instanceof ConnectionSpecImpl)) {
-            throw new StorageException("Invalid ConnectionSpec");
-        }
+        assert connectionSpec instanceof ConnectionSpecImpl;
         // encapsulate connectionSpec into internal connectionRequestInfo
         ConnectionRequestInfo connectionRequestInfo = new ConnectionRequestInfoImpl(
                 (ConnectionSpecImpl) connectionSpec);

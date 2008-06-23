@@ -47,8 +47,12 @@ public class ConnectionImpl implements Session {
 
     private ManagedConnectionImpl managedConnection;
 
-    public ConnectionImpl(ManagedConnectionImpl managedConnection) {
+    private SessionImpl session;
+
+    public ConnectionImpl(ManagedConnectionImpl managedConnection,
+            SessionImpl session) {
         this.managedConnection = managedConnection;
+        this.session = session;
     }
 
     /*
@@ -65,8 +69,10 @@ public class ConnectionImpl implements Session {
     /**
      * Called by {@link ManagedConnectionImpl#associateConnection}
      */
-    protected void setManagedConnection(ManagedConnectionImpl managedConnection) {
+    protected void setManagedConnection(
+            ManagedConnectionImpl managedConnection, SessionImpl session) {
         this.managedConnection = managedConnection;
+        this.session = session;
     }
 
     /*
@@ -98,28 +104,28 @@ public class ConnectionImpl implements Session {
      */
 
     public void save() throws StorageException {
-        managedConnection.save();
+        session.save();
     }
 
-    public Node addNode(Node parent, String name, String typeName)
+    public Node addChildNode(Node parent, String name, String typeName)
             throws StorageException {
-        return managedConnection.addNode(parent, name, typeName);
+        return session.addChildNode(parent, name, typeName);
     }
 
     public Model getModel() {
-        return managedConnection.getModel();
+        return session.getModel();
     }
 
-    public Node getNode(Node parent, String name) throws StorageException {
-        return managedConnection.getNode(parent, name);
+    public Node getChildNode(Node parent, String name) throws StorageException {
+        return session.getChildNode(parent, name);
     }
 
     public Node getRootNode() throws StorageException {
-        return managedConnection.getRootNode();
+        return session.getRootNode();
     }
 
     public void removeNode(Node node) throws StorageException {
-        managedConnection.removeNode(node);
+        session.removeNode(node);
     }
 
 }
