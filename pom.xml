@@ -244,15 +244,16 @@
         <artifactId>jboss-remoting</artifactId>
         <version>${jboss.version}</version>
       </dependency>
+      <!-- BBB old version for the benefit of dependent poms -->
       <dependency>
-        <groupId>org.jboss.seam</groupId>
+        <groupId>jboss</groupId>
         <artifactId>jboss-seam</artifactId>
-        <version>2.0.2.CR1-NX</version>
+        <version>1.1.5.NX3</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
-        <artifactId>jboss-seam-remoting</artifactId>
-        <version>2.0.2.CR1</version>
+        <artifactId>jboss-seam</artifactId>
+        <version>1.1.5.NX3</version>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
@@ -426,11 +427,6 @@
         <artifactId>postgresql</artifactId>
         <version>8.2-507.jdbc3</version>
       </dependency>
-      <dependency>
-        <groupId>org.richfaces.framework</groupId>
-        <artifactId>richfaces-api</artifactId>
-        <version>3.1.4.GA</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -558,24 +554,24 @@
         <extensions>true</extensions>
       </plugin>
       <!--
-        <plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
         <version>1.0-beta-1</version>
         <executions>
-        <execution>
-        <phase>validate</phase>
-        <goals>
-        <goal>create</goal>
-        </goals>
-        </execution>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
         </executions>
         <configuration>
-        <doCheck>false</doCheck>
-        <doUpdate>false</doUpdate>
+          <doCheck>false</doCheck>
+          <doUpdate>false</doUpdate>
         </configuration>
-        </plugin>
-      -->
+      </plugin>
+       -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-nuxeo-plugin</artifactId>
@@ -604,9 +600,7 @@
           <configuration>
             <ejbVersion>3.0</ejbVersion>
             <archive>
-              <manifestFile>
-                src/main/resources/META-INF/MANIFEST.MF
-              </manifestFile>
+              <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
               <manifestEntries>
                 <Bundle-Version>${eclipseVersion}</Bundle-Version>
                 <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
@@ -620,9 +614,7 @@
           <version>2.2</version>
           <configuration>
             <archive>
-              <manifestFile>
-                src/main/resources/META-INF/MANIFEST.MF
-              </manifestFile>
+              <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
               <manifestEntries>
                 <Bundle-Version>${eclipseVersion}</Bundle-Version>
                 <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
@@ -631,14 +623,14 @@
           </configuration>
         </plugin>
         <!--
-          <plugin>
+        <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>dashboard-maven-plugin</artifactId>
           <version>1.0-SNAPSHOT</version>
           <configuration>
-          <configLocation>dashboard-config.xml</configLocation>
+            <configLocation>dashboard-config.xml</configLocation>
           </configuration>
-          </plugin>
+        </plugin>
         -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -681,11 +673,11 @@
           <version>2.4</version>
         </plugin>
         <!--
-          <plugin>
+        <plugin>
           <groupId>org.nuxeo.maven.plugins</groupId>
           <artifactId>maven-nuxeo-installer-plugin</artifactId>
           <version>1.0-SNAPSHOT</version>
-          </plugin>
+        </plugin>
         -->
       </plugins>
     </pluginManagement>
@@ -764,9 +756,7 @@
               <windowtitle>
                 Nuxeo Enterprise Platform 5.2 API Documentation
               </windowtitle>
-              <doctitle>
-                Nuxeo Enterprise Platform 5.2 API Documentation
-              </doctitle>
+              <doctitle>Nuxeo Enterprise Platform 5.2 API Documentation</doctitle>
               <header>Nuxeo Enterprise Platform 5.2</header>
               <links>
                 <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
@@ -774,19 +764,13 @@
                 <link>
                   http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/
                 </link>
-                <link>
-                  http://jakarta.apache.org/commons/fileupload/apidocs/
-                </link>
-                <link>
-                  http://jakarta.apache.org/commons/httpclient/apidocs/
-                </link>
+                <link>http://jakarta.apache.org/commons/fileupload/apidocs/</link>
+                <link>http://jakarta.apache.org/commons/httpclient/apidocs/</link>
                 <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
                 <link>http://jakarta.apache.org/commons/io/apidocs/</link>
                 <link>http://junit.sourceforge.net/javadoc/</link>
                 <link>http://logging.apache.org/log4j/docs/api/</link>
-                <link>
-                  http://www.opensymphony.com/compass/versions/1.2M2/api/
-                </link>
+                <link>http://www.opensymphony.com/compass/versions/1.2M2/api/</link>
                 <link>http://jackrabbit.apache.org/api-1/</link>
                 <link>http://www.day.com/maven/jsr170/javadocs/jcr-1.0/</link>
                 <link>http://myfaces.apache.org/tomahawk/apidocs/</link>
@@ -893,16 +877,20 @@
         </site>
         <repository>
           <id>nuxeo_release</id>
-          <url>file:///home/archiva/repositories/nuxeo_release</url>
+          <url>
+            file:///home/archiva/repositories/nuxeo_release
+          </url>
         </repository>
         <snapshotRepository>
           <id>nuxeo_snapshot</id>
-          <url>file:///home/archiva/repositories/nuxeo_snapshot</url>
+          <url>
+            file:///home/archiva/repositories/nuxeo_snapshot
+          </url>
         </snapshotRepository>
       </distributionManagement>
     </profile>
     <!-- build number using build time stamp for apogee -->
-    <profile>
+     <profile>
       <id>timestamp-rev-in-mf</id>
       <activation>
         <activeByDefault>true</activeByDefault>
@@ -940,13 +928,9 @@
               <configuration>
                 <ejbVersion>3.0</ejbVersion>
                 <archive>
-                  <manifestFile>
-                    src/main/resources/META-INF/MANIFEST.MF
-                  </manifestFile>
+                  <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
                   <manifestEntries>
-                    <Bundle-Version>
-                      ${eclipseVersion}-t${buildNumber}
-                    </Bundle-Version>
+                    <Bundle-Version>${eclipseVersion}-t${buildNumber}</Bundle-Version>
                     <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
                   </manifestEntries>
                 </archive>
@@ -958,13 +942,9 @@
               <version>2.2</version>
               <configuration>
                 <archive>
-                  <manifestFile>
-                    src/main/resources/META-INF/MANIFEST.MF
-                  </manifestFile>
+                  <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
                   <manifestEntries>
-                    <Bundle-Version>
-                      ${eclipseVersion}-t${buildNumber}
-                    </Bundle-Version>
+                    <Bundle-Version>${eclipseVersion}-t${buildNumber}</Bundle-Version>
                     <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
                   </manifestEntries>
                 </archive>
@@ -974,7 +954,7 @@
         </pluginManagement>
       </build>
     </profile>
-
+    
     <!-- activating the build number generation in plugins manifest for apogee -->
     <profile>
       <id>svn-rev-in-mf</id>
@@ -1010,13 +990,9 @@
               <configuration>
                 <ejbVersion>3.0</ejbVersion>
                 <archive>
-                  <manifestFile>
-                    src/main/resources/META-INF/MANIFEST.MF
-                  </manifestFile>
+                  <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
                   <manifestEntries>
-                    <Bundle-Version>
-                      ${eclipseVersion}-r${buildNumber}
-                    </Bundle-Version>
+                    <Bundle-Version>${eclipseVersion}-r${buildNumber}</Bundle-Version>
                     <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
                   </manifestEntries>
                 </archive>
@@ -1028,13 +1004,9 @@
               <version>2.2</version>
               <configuration>
                 <archive>
-                  <manifestFile>
-                    src/main/resources/META-INF/MANIFEST.MF
-                  </manifestFile>
+                  <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
                   <manifestEntries>
-                    <Bundle-Version>
-                      ${eclipseVersion}-r${buildNumber}
-                    </Bundle-Version>
+                    <Bundle-Version>${eclipseVersion}-r${buildNumber}</Bundle-Version>
                     <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
                   </manifestEntries>
                 </archive>
