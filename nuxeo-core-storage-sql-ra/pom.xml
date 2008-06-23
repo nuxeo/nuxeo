@@ -12,22 +12,40 @@
   <name>Nuxeo Core SQL Storage Resource Adapter</name>
   <description>Nuxeo Core: SQL Storage Resource Adapter.</description>
 
-  <repositories>
+  <!--repositories>
     <repository>
-      <id>glassfish-repository</id>
-      <url>http://download.java.net/maven/glassfish</url>
+      <id>jboss</id>
+      <name>JBoss Repository</name>
+      <url>http://repository.jboss.org/maven2</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
-    <repository>
-      <id>download.java.net</id>
-      <url>http://download.java.net/maven/2</url>
-    </repository>
-  </repositories>
+  </repositories-->
 
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>jboss</groupId>
+          <artifactId>jboss-common</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jboss</groupId>
+          <artifactId>jboss-remoting</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -45,8 +63,19 @@
     </dependency>
 
     <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate</artifactId>
+      <version>3.2.4.ga</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -55,36 +84,39 @@
       <version>10.2.2.0</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- JBoss Embedded -->
     <dependency>
-      <groupId>org.glassfish.distributions</groupId>
-      <artifactId>web-all</artifactId>
-      <version>10.0-build-20080430</version>
+      <groupId>org.jboss.embedded</groupId>
+      <artifactId>jboss-embedded-all</artifactId>
+      <version>beta3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.glassfish.embedded</groupId>
-      <artifactId>gf-embedded-api</artifactId>
-      <version>1.0-alpha-5-NX1</version>
+      <groupId>org.jboss.embedded</groupId>
+      <artifactId>thirdparty-all</artifactId>
+      <version>beta3</version>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
 
   <profiles>
     <profile>
-      <id>jboss</id>
-      <properties>
-        <raDir>ra-jboss</raDir>
-        <artifactSuffix></artifactSuffix>
-      </properties>
-    </profile>
-    <profile>
-      <id>glassfish</id>
+      <id>jboss4</id>
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
       <properties>
-        <raDir>ra-glassfish</raDir>
-        <artifactSuffix>-jee</artifactSuffix>
+        <raDir>ra-jboss4</raDir>
+        <artifactSuffix></artifactSuffix>
+      </properties>
+    </profile>
+    <profile>
+      <id>javaee</id>
+      <properties>
+        <raDir>ra-javaee</raDir>
+        <!--artifactSuffix>-jee</artifactSuffix-->
       </properties>
     </profile>
   </profiles>
@@ -108,6 +140,26 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.4.3</version>
+        <configuration>
+          <!-- This is so that java.net.URL can load the handler for JBoss's vfs -->
+          <useSystemClassLoader>true</useSystemClassLoader>
+          <!-- Surefire 2.4.3: don't keep the single bootstrap jar on the classpath 
+               otherwise NXRuntimeTestCase bundle lookup fails -->
+          <useManifestOnlyJar>false</useManifestOnlyJar>
+          <systemProperties>
+            <!-- This is because JBoss 5 doesn't use classloaders correctly -->
+            <!-- DOESN'T SEEM TO WORK, mvn test has to be run with Java 5 still -->
+            <property>
+              <name>sun.lang.ClassLoader.allowArraySyntax</name>
+              <value>true</value>
+            </property>
+          </systemProperties>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-rar-plugin</artifactId>
         <version>2.2</version>
         <executions>
@@ -120,29 +172,6 @@
               <rarSourceDirectory>${project.build.outputDirectory}</rarSourceDirectory> <!-- include class files -->
               <raXmlFile>src/main/resources/${raDir}/META-INF/ra.xml</raXmlFile>
               <manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.1</version>
-        <executions>
-          <execution>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                <property name="maven_test_classpath" refid="maven.test.classpath" />
-                <property name="target" value="${basedir}/target/test-servlet-classes" />
-                <delete dir="${target}" />
-                <mkdir dir="${target}" />
-                <javac srcdir="src/test-servlet/java" destdir="${target}"
-                       classpath="${maven_test_classpath}" />
-              </tasks>
             </configuration>
           </execution>
         </executions>

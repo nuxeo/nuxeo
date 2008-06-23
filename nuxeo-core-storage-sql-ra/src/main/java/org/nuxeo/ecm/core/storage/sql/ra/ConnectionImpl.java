@@ -30,10 +30,14 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.Session;
+import org.nuxeo.ecm.core.storage.sql.SessionImpl;
 
 /**
- * The connection wraps a connection to the underlying storage. It is returned
- * by the {@link ConnectionFactory} to application code.
+ * A connection is a handle to the underlying storage. It is returned by the
+ * {@link ConnectionFactory} to application code.
+ * <p>
+ * The actual link to the underlying storage ({@link Session}) is provided by
+ * the {@link ManagedConnection} which created this {@link Connection}.
  *
  * @author Florent Guillaume
  */
@@ -41,13 +45,28 @@ public class ConnectionImpl implements Session {
 
     private static final Log log = LogFactory.getLog(ConnectionImpl.class);
 
-    private final Session session;
-
     private ManagedConnectionImpl managedConnection;
 
-    public ConnectionImpl(ManagedConnectionImpl mc, Session session) {
-        this.managedConnection = mc;
-        this.session = session;
+    public ConnectionImpl(ManagedConnectionImpl managedConnection) {
+        this.managedConnection = managedConnection;
+    }
+
+    /*
+     * ----- -----
+     */
+
+    /**
+     * Called by {@link ManagedConnectionImpl#associateConnection}
+     */
+    protected ManagedConnectionImpl getManagedConnection() {
+        return managedConnection;
+    }
+
+    /**
+     * Called by {@link ManagedConnectionImpl#associateConnection}
+     */
+    protected void setManagedConnection(ManagedConnectionImpl managedConnection) {
+        this.managedConnection = managedConnection;
     }
 
     /*
@@ -55,28 +74,23 @@ public class ConnectionImpl implements Session {
      */
 
     public void close() throws ResourceException {
-        // delegate this to the managed connection
-        managedConnection.closeHandle(this);
+        managedConnection.close();
     }
 
     public Interaction createInteraction() throws ResourceException {
-        // TODO Auto-generated method stub
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException();
     }
 
     public LocalTransaction getLocalTransaction() throws ResourceException {
-        // TODO Auto-generated method stub
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException();
     }
 
     public ConnectionMetaData getMetaData() throws ResourceException {
-        // TODO Auto-generated method stub
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException();
     }
 
     public ResultSetInfo getResultSetInfo() throws ResourceException {
-        // TODO Auto-generated method stub
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -84,59 +98,28 @@ public class ConnectionImpl implements Session {
      */
 
     public void save() throws StorageException {
-        session.save();
+        managedConnection.save();
     }
 
     public Node addNode(Node parent, String name, String typeName)
             throws StorageException {
-        // TODO Auto-generated method stub
-        throw new RuntimeException("Not implemented");
+        return managedConnection.addNode(parent, name, typeName);
     }
 
     public Model getModel() {
-        // TODO Auto-generated method stub
-        throw new RuntimeException("Not implemented");
+        return managedConnection.getModel();
     }
 
     public Node getNode(Node parent, String name) throws StorageException {
-        // TODO Auto-generated method stub
-        throw new RuntimeException("Not implemented");
+        return managedConnection.getNode(parent, name);
     }
 
     public Node getRootNode() throws StorageException {
-        // TODO Auto-generated method stub
-        throw new RuntimeException("Not implemented");
+        return managedConnection.getRootNode();
     }
 
     public void removeNode(Node node) throws StorageException {
-        // TODO Auto-generated method stub
-        throw new RuntimeException("Not implemented");
-    }
-
-    /*
-     * ----- -----
-     */
-
-    public ManagedConnectionImpl getManagedConnection() {
-        return managedConnection;
-    }
-
-    public void setManagedConnection(ManagedConnectionImpl mc) {
-        this.managedConnection = mc;
-    }
-
-    public void dispose() {
-        // delegate this to the managed connection
-        try {
-            managedConnection.closeHandle(this);
-        } catch (ResourceException e) {
-            log.error("error closing session");
-        }
-    }
-
-    @Override
-    public String toString() {
-        return System.identityHashCode(this) + ":" + session.toString();
+        managedConnection.removeNode(node);
     }
 
 }

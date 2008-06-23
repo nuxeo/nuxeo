@@ -27,6 +27,9 @@ import javax.resource.cci.ConnectionMetaData;
 import javax.resource.cci.Interaction;
 import javax.resource.cci.LocalTransaction;
 import javax.resource.cci.ResultSetInfo;
+import javax.transaction.xa.XAException;
+import javax.transaction.xa.XAResource;
+import javax.transaction.xa.Xid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,7 +45,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
  *
  * @author Florent Guillaume
  */
-public class SessionImpl implements Session {
+public class SessionImpl implements Session, XAResource {
 
     private static final Log log = LogFactory.getLog(SessionImpl.class);
 
@@ -50,9 +53,11 @@ public class SessionImpl implements Session {
 
     protected final SchemaManager schemaManager;
 
-    private final Model model;
+    private final Mapper mapper;
 
     private final Credentials credentials;
+
+    private final Model model;
 
     private final PersistenceContext context;
 
@@ -64,6 +69,7 @@ public class SessionImpl implements Session {
             Mapper mapper, Credentials credentials) throws StorageException {
         this.repository = repository;
         this.schemaManager = schemaManager;
+        this.mapper = mapper;
         this.credentials = credentials;
         model = mapper.getModel();
         context = new PersistenceContext(mapper);
@@ -80,19 +86,63 @@ public class SessionImpl implements Session {
     }
 
     public Interaction createInteraction() throws ResourceException {
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException();
     }
 
     public LocalTransaction getLocalTransaction() throws ResourceException {
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException();
     }
 
     public ConnectionMetaData getMetaData() throws ResourceException {
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException();
     }
 
     public ResultSetInfo getResultSetInfo() throws ResourceException {
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException();
+    }
+
+    /*
+     * ----- javax.transaction.xa.XAResource -----
+     */
+
+    public boolean isSameRM(XAResource xaresource) throws XAException {
+        return mapper.isSameRM(xaresource);
+    }
+
+    public void start(Xid xid, int flags) throws XAException {
+        mapper.start(xid, flags);
+    }
+
+    public int prepare(Xid xid) throws XAException {
+        return mapper.prepare(xid);
+    }
+
+    public void commit(Xid xid, boolean onePhase) throws XAException {
+        mapper.commit(xid, onePhase);
+    }
+
+    public void end(Xid xid, int flags) throws XAException {
+        mapper.end(xid, flags);
+    }
+
+    public void rollback(Xid xid) throws XAException {
+        mapper.rollback(xid);
+    }
+
+    public void forget(Xid xid) throws XAException {
+        mapper.forget(xid);
+    }
+
+    public Xid[] recover(int flag) throws XAException {
+        return mapper.recover(flag);
+    }
+
+    public boolean setTransactionTimeout(int seconds) throws XAException {
+        return mapper.setTransactionTimeout(seconds);
+    }
+
+    public int getTransactionTimeout() throws XAException {
+        return mapper.getTransactionTimeout();
     }
 
     /*
@@ -209,7 +259,7 @@ public class SessionImpl implements Session {
      */
 
     public String getUserID() {
-        return credentials.getUserID();
+        return credentials.getUserName();
     }
 
     public boolean isLive() {

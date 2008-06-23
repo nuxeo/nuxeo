@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql.ra;
 
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Set;
 
 import javax.resource.ResourceException;
@@ -32,6 +33,13 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
+import org.nuxeo.ecm.core.storage.sql.SessionImpl;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * The managed connection factory receives requests from the application server
@@ -41,26 +49,29 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Florent Guillaume
  */
-public class ManagedConnectionFactoryImpl implements
-        ManagedConnectionFactory, ResourceAdapterAssociation {
+public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
+        ResourceAdapterAssociation {
 
     private static final Log log = LogFactory.getLog(ManagedConnectionFactoryImpl.class);
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * The repository name
-     * <p>
-     * Needed to be able to lazy load the repository descriptor (the repository
-     * may not be yet registered at time of data source deployment).
-     */
     private String name;
 
     private transient ResourceAdapter resourceAdapter;
 
     private transient PrintWriter out;
 
+    private RepositoryDescriptor repositoryDescriptor;
+
+    /**
+     * The instantiated repository.
+     */
+    private RepositoryImpl repository;
+
     public ManagedConnectionFactoryImpl() {
+        repositoryDescriptor = new RepositoryDescriptor();
+        repositoryDescriptor.properties = new HashMap<String, String>();
     }
 
     /*
@@ -73,6 +84,27 @@ public class ManagedConnectionFactoryImpl implements
 
     public String getName() {
         return name;
+    }
+
+    public void setXaDataSource(String xaDataSourceName) {
+        repositoryDescriptor.xaDataSourceName = xaDataSourceName;
+    }
+
+    public String getXaDataSource() {
+        return repositoryDescriptor.xaDataSourceName;
+    }
+
+    public void setProperty(String property) {
+        String[] split = property.split("=", 2);
+        if (split.length != 2) {
+            log.error("Invalid property: " + property);
+            return;
+        }
+        repositoryDescriptor.properties.put(split[0], split[1]);
+    }
+
+    public String getProperty() {
+        return null;
     }
 
     /*
@@ -97,12 +129,12 @@ public class ManagedConnectionFactoryImpl implements
      * ----- javax.resource.spi.ManagedConnectionFactory -----
      */
 
-    public PrintWriter getLogWriter() {
-        return out;
-    }
-
     public void setLogWriter(PrintWriter out) {
         this.out = out;
+    }
+
+    public PrintWriter getLogWriter() {
+        return out;
     }
 
     /*
@@ -135,11 +167,17 @@ public class ManagedConnectionFactoryImpl implements
     public ManagedConnection createManagedConnection(Subject subject,
             ConnectionRequestInfo connectionRequestInfo)
             throws ResourceException {
-        return new ManagedConnectionImpl(this, connectionRequestInfo);
+        assert connectionRequestInfo instanceof ConnectionRequestInfoImpl;
+        initializeRepository();
+        return new ManagedConnectionImpl(this,
+                (ConnectionRequestInfoImpl) connectionRequestInfo);
     }
 
-    /*
+    /**
      * Returns a matched connection from the candidate set of connections.
+     * <p>
+     * Called by the application server when it's looking for an appropriate
+     * connection to server from a pool.
      */
     @SuppressWarnings("unchecked")
     public ManagedConnection matchManagedConnections(Set set, Subject subject,
@@ -150,16 +188,10 @@ public class ManagedConnectionFactoryImpl implements
                 continue;
             }
             ManagedConnectionImpl managedConnection = (ManagedConnectionImpl) candidate;
-            if (!equals(managedConnection.getManagedConnectionFactory())) {
+            if (!this.equals(managedConnection.getManagedConnectionFactory())) {
                 continue;
             }
-            if (!managedConnection.isHandleValid()) {
-                // reuse the first inactive managedConnection
-                log.debug("------- matching.. " + managedConnection.getHandle());
-                // reinitialize the connection
-                managedConnection.initializeHandle(cri);
-                return managedConnection;
-            }
+            return managedConnection;
         }
         log.debug("---------- no match");
         return null;
@@ -170,23 +202,46 @@ public class ManagedConnectionFactoryImpl implements
         return name == null ? 0 : name.hashCode();
     }
 
-    private boolean equals(ManagedConnectionFactoryImpl other) {
-        return name == null ? false : name.equals(other.name);
-    }
-
     @Override
     public boolean equals(Object other) {
         if (other == this) {
             return true;
-        } else if (other instanceof ManagedConnectionFactoryImpl) {
-            return equals((ManagedConnectionFactoryImpl) other);
-        } else {
-            return false;
         }
+        if (other instanceof ManagedConnectionFactoryImpl) {
+            return equals((ManagedConnectionFactoryImpl) other);
+        }
+        return false;
+    }
+
+    private boolean equals(ManagedConnectionFactoryImpl other) {
+        return name == null ? false : name.equals(other.name);
     }
 
     /*
      * ----- -----
      */
 
+    private void initializeRepository() throws StorageException {
+        synchronized (this) {
+            if (repository == null) {
+                // XXX TODO
+                SchemaManager schemaManager;
+                try {
+                    schemaManager = Framework.getService(SchemaManager.class);
+                } catch (Exception e) {
+                    throw new StorageException(e);
+                }
+                repository = new RepositoryImpl(repositoryDescriptor, schemaManager);
+            }
+        }
+    }
+
+    /**
+     * Called by the {@link ManagedConnectionImpl} constructor to get a new
+     * physical connection.
+     */
+    protected SessionImpl getConnection(ConnectionSpecImpl connectionSpec)
+            throws StorageException {
+        return repository.getConnection(connectionSpec);
+    }
 }

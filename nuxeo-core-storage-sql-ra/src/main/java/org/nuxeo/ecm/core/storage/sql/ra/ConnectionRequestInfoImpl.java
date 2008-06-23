@@ -17,12 +17,7 @@
 
 package org.nuxeo.ecm.core.storage.sql.ra;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.resource.cci.Connection;
-import javax.resource.cci.ConnectionSpec;
 import javax.resource.spi.ConnectionRequestInfo;
 
 import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
@@ -37,49 +32,42 @@ import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
  */
 public class ConnectionRequestInfoImpl implements ConnectionRequestInfo {
 
-    private final Map<String, Serializable> sessionContext;
+    protected final ConnectionSpecImpl connectionSpec;
 
     public ConnectionRequestInfoImpl() {
-        sessionContext = new HashMap<String, Serializable>();
+        connectionSpec = new ConnectionSpecImpl(null);
     }
 
-    public ConnectionRequestInfoImpl(ConnectionSpec connectionSpec)
-            throws IllegalArgumentException {
-        this();
-        if (connectionSpec instanceof ConnectionSpecImpl) {
-            // TODO
-        } else {
-            throw new IllegalArgumentException("Invalid ConnectionSpec");
-        }
+    public ConnectionRequestInfoImpl(ConnectionSpecImpl connectionSpec) {
+        this.connectionSpec = connectionSpec;
     }
 
-    public ConnectionRequestInfoImpl(Map<String, Serializable> context) {
-        sessionContext = context;
-    }
-
-    public Map<String, Serializable> getSessionContext() {
-        return sessionContext;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof ConnectionRequestInfoImpl)) {
-            return false;
-        }
-        ConnectionRequestInfoImpl other = (ConnectionRequestInfoImpl) o;
-        if (sessionContext == null) {
-            return other.sessionContext == null;
-        } else {
-            return sessionContext.equals(other.sessionContext);
-        }
+    public ConnectionSpecImpl getConnectionSpec() {
+        return connectionSpec;
     }
 
     @Override
     public int hashCode() {
-        return sessionContext == null ? 0 : sessionContext.hashCode();
+        return connectionSpec == null ? 0 : connectionSpec.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+        if (other instanceof ConnectionRequestInfoImpl) {
+            return equals((ConnectionRequestInfoImpl) other);
+        }
+        return false;
+    }
+
+    private boolean equals(ConnectionRequestInfoImpl other) {
+        if (connectionSpec == null) {
+            return other.connectionSpec == null;
+        } else {
+            return connectionSpec.equals(other.connectionSpec);
+        }
     }
 
 }

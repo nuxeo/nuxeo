@@ -19,18 +19,7 @@
     <config-property>
       <config-property-name>Name</config-property-name>
       <config-property-type>java.lang.String</config-property-type>
-    </config-property>
-    <config-property>
-      <config-property-name>RepositoryFactory</config-property-name>
-      <config-property-type>java.lang.String</config-property-type>
-    </config-property>
-    <config-property>
-      <config-property-name>HomeDir</config-property-name>
-      <config-property-type>java.lang.String</config-property-type>
-    </config-property>
-    <config-property>
-      <config-property-name>ConfigFile</config-property-name>
-      <config-property-type>java.lang.String</config-property-type>
+      <config-property-value>Nuxeo Core SQL Storage</config-property-value> 
     </config-property>
     <outbound-resourceadapter>
       <connection-definition>

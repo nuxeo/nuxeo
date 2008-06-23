@@ -18,12 +18,13 @@
 package org.nuxeo.ecm.core.storage.sql.ra;
 
 import java.io.PrintWriter;
-import java.io.Serializable;
-import java.util.Map;
 
 import javax.resource.ResourceException;
 import javax.resource.cci.Connection;
 import javax.resource.cci.ConnectionFactory;
+import javax.resource.cci.ConnectionMetaData;
+import javax.resource.cci.Interaction;
+import javax.resource.cci.ResultSetInfo;
 import javax.resource.spi.ConnectionEvent;
 import javax.resource.spi.ConnectionEventListener;
 import javax.resource.spi.ConnectionRequestInfo;
@@ -37,7 +38,13 @@ import javax.transaction.xa.XAResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ListenerList;
+import org.nuxeo.ecm.core.storage.Credentials;
+import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
+import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.Session;
+import org.nuxeo.ecm.core.storage.sql.SessionImpl;
 
 /**
  * The managed connection represents an actual physical connection to the
@@ -56,15 +63,11 @@ public class ManagedConnectionImpl implements ManagedConnection,
 
     private static final Log log = LogFactory.getLog(ManagedConnectionImpl.class);
 
+    private PrintWriter out;
+
     private final ManagedConnectionFactoryImpl managedConnectionFactory;
 
-    private final ConnectionRequestInfo connectionRequestInfo;
-
-    /**
-     * List of listeners set by the application server which we must notify of
-     * all activity happening on our {@link Connection}s.
-     */
-    private final ListenerList listeners;
+    private final ConnectionSpecImpl connectionSpec;
 
     /**
      * High-level {@link Connection} returned to the application, if an
@@ -72,32 +75,38 @@ public class ManagedConnectionImpl implements ManagedConnection,
      */
     private ConnectionImpl connection;
 
-    private PrintWriter out;
+    /**
+     * The low-level session managed by this connection.
+     */
+    private final SessionImpl session;
+
+    /**
+     * List of listeners set by the application server which we must notify of
+     * all activity happening on our {@link Connection}.
+     */
+    private final ListenerList listeners;
 
     /**
      * Creates a new physical connection to the underlying storage. Called by
      * the {@link ManagedConnectionFactory} when it needs a new connection.
+     *
+     * @throws ResourceException
      */
     public ManagedConnectionImpl(
             ManagedConnectionFactoryImpl managedConnectionFactory,
-            ConnectionRequestInfo connectionRequestInfo) {
-        this.managedConnectionFactory = managedConnectionFactory;
-        this.connectionRequestInfo = connectionRequestInfo;
-        listeners = new ListenerList();
+            ConnectionRequestInfoImpl connectionRequestInfo)
+            throws ResourceException {
         out = managedConnectionFactory.getLogWriter();
+        this.managedConnectionFactory = managedConnectionFactory;
+        this.connectionSpec = connectionRequestInfo.connectionSpec;
+        listeners = new ListenerList();
+        // create the underlying session
+        session = managedConnectionFactory.getConnection(connectionSpec);
     }
 
     /*
      * ----- javax.resource.spi.ManagedConnection -----
      */
-
-    public PrintWriter getLogWriter() {
-        return out;
-    }
-
-    public void setLogWriter(PrintWriter out) {
-        this.out = out;
-    }
 
     /**
      * Creates a new {@link Connection} handle to this {@link ManagedConnection}
@@ -106,12 +115,11 @@ public class ManagedConnectionImpl implements ManagedConnection,
     public synchronized Connection getConnection(Subject subject,
             ConnectionRequestInfo connectionRequestInfo)
             throws ResourceException {
-        log.debug("--------- getConnection");
+        assert connectionRequestInfo instanceof ConnectionRequestInfoImpl;
         if (connection != null) {
             throw new ResourceException("Sharing not supported");
         }
-        initializeHandle(connectionRequestInfo);
-        log.debug(">>>>>>>> returning: " + connection);
+        connection = new ConnectionImpl(this);
         return connection;
     }
 
@@ -124,7 +132,6 @@ public class ManagedConnectionImpl implements ManagedConnection,
      * Later, the application server may call {@link #getConnection} again.
      */
     public void cleanup() {
-        log.debug("------- calling cleanup");
         connection = null;
     }
 
@@ -134,37 +141,33 @@ public class ManagedConnectionImpl implements ManagedConnection,
      * Called by the application server before this {@link ManagedConnection} is
      * destroyed.
      */
-    public void destroy() {
-        log.debug("------- calling destroy");
+    public void destroy() throws ResourceException {
         cleanup();
-        // TODO close physical connection
+        session.close();
     }
 
-    /*
-     * Used by the application server to change the association of an
-     * application-level connection handle with a ManagedConnection instance.
+    /**
+     * Called by the application server to change the association of an
+     * application-level {@link Connection} handle with a
+     * {@link ManagedConnection} instance.
+     * <p>
+     * Used when connection sharing is in effect.
      */
-    public synchronized void associateConnection(Object connection)
+    public synchronized void associateConnection(Object object)
             throws ResourceException {
-        log.debug("----- calling associateConnection");
-        ConnectionImpl handle = (ConnectionImpl) connection;
-        if (handle.getManagedConnection() != this) {
-            try {
-                closeHandle(this.connection);
-                this.connection = handle;
-                this.connection.getManagedConnection().connection = null;
-                this.connection.setManagedConnection(this);
-            } catch (ResourceException e) {
-                throw new ResourceException("Failed to close handle", e);
-            }
+        ConnectionImpl connection = (ConnectionImpl) object;
+        ManagedConnectionImpl managedConnection = connection.getManagedConnection();
+        if (managedConnection != this) {
+            // reassociate it with us
+            connection.setManagedConnection(this);
+            // update ManagedConnection to set who has it
+            managedConnection.connection = null;
+            this.connection = connection;
         }
     }
 
-    public XAResource getXAResource() throws ResourceException {
-        log.debug("----- get XAResource");
-        initializeHandle(connectionRequestInfo);
-        // return xar;
-        return null;
+    public XAResource getXAResource() {
+        return session;
     }
 
     public LocalTransaction getLocalTransaction() {
@@ -191,6 +194,14 @@ public class ManagedConnectionImpl implements ManagedConnection,
         return this;
     }
 
+    public void setLogWriter(PrintWriter out) {
+        this.out = out;
+    }
+
+    public PrintWriter getLogWriter() {
+        return out;
+    }
+
     /*
      * ----- javax.resource.spi.ManagedConnectionMetaData -----
      */
@@ -208,82 +219,55 @@ public class ManagedConnectionImpl implements ManagedConnection,
     }
 
     public String getUserName() throws ResourceException {
-        return "XXX"; // XXX
+        Credentials credentials = connectionSpec.getCredentials();
+        if (credentials == null) {
+            return ""; // XXX
+        }
+        return credentials.getUserName();
     }
 
     /*
-     * -----
+     * ----- -----
      */
 
-    private Session openSession(ConnectionRequestInfo cri)
-            throws ResourceException {
-        // Session session =
-        // managedConnectionFactory.getRepository().getSession();
-        // log("Created session for repository " +
-        // managedConnectionFactory.getRepository().getName());
-        // return session;
-        return null;
-    }
-
-    public ManagedConnectionFactoryImpl getManagedConnectionFactory() {
+    /**
+     * Called by {@link ManagedConnectionFactoryImpl#matchManagedConnections}.
+     */
+    protected ManagedConnectionFactoryImpl getManagedConnectionFactory() {
         return managedConnectionFactory;
-    }
-
-    protected void closeHandle(ConnectionImpl connection)
-            throws ResourceException {
-        if (this.connection != connection) {
-            throw new ResourceException(
-                    "Connection not associated with this ManagedConnection");
-        }
-        // log.debug(">>>>>>>>>>>>>>> trying to close handle ........."+
-        // handle);
-        if (isHandleValid()) {
-            // log.debug(">>>>>>>>>>>>>>> closing handle ........."+
-            // handle);
-            sendClosedEvent(connection);
-            // log.debug(">>>>>>>>>>>>>>> close event sent");
-            // connection.getSession().close();
-            // log.debug(">>>>>>>>>>>>>>> jcr session closed");
-        }
-        this.connection = null;
-    }
-
-    public void log(String message) {
-        log(message, null);
-    }
-
-    public void log(String message, Throwable exception) {
-        if (out != null) {
-            out.println(message);
-            if (exception != null) {
-                exception.printStackTrace(out);
-            }
-        }
-    }
-
-    public ConnectionImpl getHandle() {
-        return connection;
-    }
-
-    public synchronized void initializeHandle(ConnectionRequestInfo cri)
-            throws ResourceException {
-        if (!isHandleValid()) {
-            // log.debug(">>>>>>>>>>>>>> handle "+handle+
-            // " is not valid creating a new one ...........");
-            connection = new ConnectionImpl(this, openSession(cri));
-            // /xar.setXAResource(connection.getXAResource());
-            // log.debug(">>>>>>>>>>>>>> new handle is "+handle+
-            // " ...........");
-        }
-    }
-
-    public boolean isHandleValid() {
-        return connection != null; // && connection.isLive();
     }
 
     /*
      * ----- Event management -----
      */
+
+    private void sendClosedEvent() {
+        sendEvent(ConnectionEvent.CONNECTION_CLOSED, null);
+    }
+
+    protected void sendTxStartedEvent() {
+        sendEvent(ConnectionEvent.LOCAL_TRANSACTION_STARTED, null);
+    }
+
+    protected void sendTxCommittedEvent() {
+        sendEvent(ConnectionEvent.LOCAL_TRANSACTION_COMMITTED, null);
+    }
+
+    protected void sendTxRolledbackEvent() {
+        sendEvent(ConnectionEvent.LOCAL_TRANSACTION_ROLLEDBACK, null);
+    }
+
+    protected void sendErrorEvent(Exception cause) {
+        sendEvent(ConnectionEvent.CONNECTION_ERROR_OCCURRED, cause);
+    }
+
+    private void sendEvent(int type, Exception cause) {
+        ConnectionEvent event = new ConnectionEvent(this, type, cause);
+        if (connection != null) {
+            event.setConnectionHandle(connection);
+        }
+        sendEvent(event);
+    }
 
     /**
      * Notifies the application server, through the
@@ -313,32 +297,48 @@ public class ManagedConnectionImpl implements ManagedConnection,
         }
     }
 
-    private void sendEvent(int type, Object handle, Exception cause) {
-        ConnectionEvent event = new ConnectionEvent(this, type, cause);
-        if (handle != null) {
-            event.setConnectionHandle(handle);
-        }
-        sendEvent(event);
+    /**
+     * ------------------------------------------------------------------
+     * delegated methods called from the {@link ConnectionImpl} itself
+     * ------------------------------------------------------------------
+     */
+
+    /*
+     * ----- part of javax.resource.cci.Connection -----
+     */
+
+    public void close() throws ResourceException {
+        sendClosedEvent();
+        connection = null;
     }
 
-    public void sendClosedEvent(ConnectionImpl handle) {
-        sendEvent(ConnectionEvent.CONNECTION_CLOSED, handle, null);
+    /*
+     * ----- Session -----
+     */
+
+    public void save() throws StorageException {
+        session.save();
     }
 
-    public void sendTxStartedEvent(ConnectionImpl handle) {
-        sendEvent(ConnectionEvent.LOCAL_TRANSACTION_STARTED, handle, null);
+    public Node addNode(Node parent, String name, String typeName)
+            throws StorageException {
+        return session.addNode(parent, name, typeName);
     }
 
-    public void sendTxCommittedEvent(ConnectionImpl handle) {
-        sendEvent(ConnectionEvent.LOCAL_TRANSACTION_COMMITTED, handle, null);
+    public Model getModel() {
+        return session.getModel();
     }
 
-    public void sendTxRolledbackEvent(ConnectionImpl handle) {
-        sendEvent(ConnectionEvent.LOCAL_TRANSACTION_ROLLEDBACK, handle, null);
+    public Node getNode(Node parent, String name) throws StorageException {
+        return session.getNode(parent, name);
     }
 
-    public void sendErrorEvent(ConnectionImpl handle, Exception cause) {
-        sendEvent(ConnectionEvent.CONNECTION_ERROR_OCCURRED, handle, cause);
+    public Node getRootNode() throws StorageException {
+        return session.getRootNode();
+    }
+
+    public void removeNode(Node node) throws StorageException {
+        session.removeNode(node);
     }
 
 }

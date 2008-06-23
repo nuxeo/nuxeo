@@ -1,0 +1,234 @@
+<?xml version="1.0"?>
+<deployment xmlns="urn:jboss:bean-deployer:2.0">
+
+   <bean name="SystemProperties" class="org.jboss.embedded.util.SystemProperties">
+      <property name="properties">
+         <map keyClass="java.lang.String" valueClass="java.lang.String">
+            <entry>
+               <key>jboss.bind.address</key>
+               <value>0.0.0.0</value>
+            </entry>
+            <entry>
+               <key>com.arjuna.ats.arjuna.common.propertiesFile</key>
+               <value>${jboss.home.dir}/conf/jbossjta-properties.xml</value>
+            </entry>
+            <entry>
+               <key>com.arjuna.ats.arjuna.objectstore.objectStoreDir</key>
+               <value>${jboss.server.data.dir}/ObjectStore</value>
+            </entry>
+         </map>
+      </property>
+   </bean>
+
+   <!-- The legacy JMX kernel -->
+   <bean name="JMXKernel" class="org.jboss.embedded.adapters.JMXKernel">
+      <property name="kernel">
+         <inject bean="jboss.kernel:service=Kernel"/>
+      </property>
+      <property name="serverConfig">
+         <inject bean="ServerConfig"/>
+      </property>
+   </bean>
+
+   <!-- The MainDeployer -->
+   <bean name="MainDeployer" class="org.jboss.deployers.plugins.main.MainDeployerImpl">
+      <property name="structuralDeployers"><inject bean="StructuralDeployers"/></property>
+      <property name="deployers"><inject bean="Deployers"/></property>
+   </bean>
+
+   <!-- The holder for deployers that determine structure -->
+   <bean name="StructuralDeployers" class="org.jboss.deployers.vfs.plugins.structure.VFSStructuralDeployersImpl">
+      <property name="structureBuilder">
+         <!-- The consolidator of the structure information -->
+         <bean name="StructureBuilder" class="org.jboss.deployers.vfs.plugins.structure.VFSStructureBuilder"/>
+      </property>
+      <!-- Accept any implementor of structure deployer -->
+      <incallback method="addDeployer"/>
+      <uncallback method="removeDeployer"/>
+   </bean>
+      
+   <!-- The holder for deployers that do real deployment -->
+   <bean name="Deployers" class="org.jboss.deployers.plugins.deployers.DeployersImpl">
+      <constructor><parameter><inject bean="jboss.kernel:service=KernelController"/></parameter></constructor>
+      <!-- Accept any implementor of deployer -->
+      <incallback method="addDeployer"/>
+      <uncallback method="removeDeployer"/>
+   </bean>
+
+   <!-- A declared structure descriptor deployer -->
+   <bean name="DeclaredStructure" class="org.jboss.deployers.vfs.plugins.structure.explicit.DeclaredStructure"></bean>
+
+    <!-- JAR Structure -->
+    <bean name="JARStructure" class="org.jboss.deployers.vfs.plugins.structure.jar.JARStructure">
+       <!-- Unless specified the default list of suffixes is .zip, .ear, .jar, ,.rar, .war, .sar, .har, .aop -->
+       <constructor>
+          <parameter>
+             <set elementClass="java.lang.String">
+                <value>.zip</value>
+                <value>.ear</value>
+                <value>.jar</value>
+                <value>.rar</value>
+                <value>.war</value>
+                <value>.sar</value>
+                <value>.har</value>
+                <value>.aop</value>
+                <value>.deployer</value>
+                <value>.beans</value>
+             </set>
+          </parameter>
+       </constructor>
+       <property name="candidateStructureVisitorFactory">
+          <!-- Any file that is not an ordinary directory is a candidate -->
+          <bean name="JARStructureCandidates" class="org.jboss.deployers.vfs.spi.structure.helpers.DefaultCandidateStructureVisitorFactory">
+             <!-- A filter to exclude some obvious non-subdeployments -->
+             <property name="filter">
+                <bean name="JARFilter" class="org.jboss.virtual.plugins.vfs.helpers.SuffixesExcludeFilter">
+                   <constructor><parameter>
+                      <list elementClass="java.lang.String">
+                         <!-- Exclude class files as subdeployments -->
+                         <value>.class</value>
+                      </list>
+                   </parameter></constructor>
+                </bean>
+             </property>
+          </bean>
+       </property>
+    </bean>
+
+    <!-- File Structure -->
+    <bean name="FileStructure" class="org.jboss.deployers.vfs.plugins.structure.file.FileStructure">
+       <!-- Unless specified the default list of suffixes is -service.xml, -beans.xml, -ds.xml, -aop.xml -->
+       <constructor>
+          <parameter>
+             <set elementClass="java.lang.String">
+                <value>-service.xml</value>
+                <value>-beans.xml</value>
+                <value>-ds.xml</value>
+                <value>-aop.xml</value>
+             </set>
+          </parameter>
+       </constructor>
+    </bean>
+
+   <!-- POJO Deployment -->
+   <bean name="BeanDeployer" class="org.jboss.deployers.vfs.deployer.kernel.BeanDeployer">
+      <property name="type">beans</property>
+   </bean>
+   <bean name="KernelDeploymentDeployer" class="org.jboss.deployers.vfs.deployer.kernel.KernelDeploymentDeployer">
+      <property name="type">beans</property>
+   </bean>
+   <bean name="BeanMetaDataDeployer" class="org.jboss.deployers.vfs.deployer.kernel.BeanMetaDataDeployer">
+      <constructor><parameter><inject bean="jboss.kernel:service=Kernel"/></parameter></constructor>
+      <property name="type">beans</property>
+   </bean>
+
+   <!-- JMX Deployment -->
+   <bean name="SARDeployer" class="org.jboss.system.deployers.SARDeployer">
+      <property name="type">sar</property>
+   </bean>
+   <bean name="ServiceClassLoaderDeployer" class="org.jboss.embedded.ClassLoaderDeployer"/>
+   <bean name="ServiceDeploymentDeployer" class="org.jboss.system.deployers.ServiceDeploymentDeployer">
+       <property name="type">sar</property>
+   </bean>
+   <bean name="ServiceDeployer" class="org.jboss.system.deployers.ServiceDeployer">
+       <constructor><parameter><inject bean="JMXKernel" property="serviceController"/></parameter></constructor>
+       <property name="type">sar</property>
+   </bean>
+
+   <!-- A filter for excluding files from the scanner -->
+   <bean name="DeploymentFilter" class="org.jboss.virtual.plugins.vfs.helpers.ExtensibleFilter">
+      <!-- Files starting with theses strings are ignored -->
+      <property name="prefixes">#,%,\,,.,_$</property>
+      <!-- Files ending with theses strings are ignored -->
+      <property name="suffixes">#,$,%,~,\,v,.BAK,.bak,.old,.orig,.tmp,.rej,.sh</property>
+      <!-- Files matching with theses strings are ignored -->
+      <property name="matches">.make.state,.nse_depinfo,CVS,CVS.admin,RCS,RCSLOG,SCCS,TAGS,core,tags</property>
+   </bean>
+
+   <!--
+        JNDI Initialization of basic beans (NO REMOTING)
+     -->
+   <bean name="Naming" class="org.jnp.server.SingletonNamingServer"/>
+   <bean name="java:comp" class="org.jboss.naming.JavaCompInitializer"/>
+
+   <!-- register Naming bean with dispatcher just in case we want to have a remote JNDI connection -->
+   <bean name="JndiRegistration" class="org.jboss.aspects.remoting.DispatcherRegistration">
+      <property name="oid">JNDI</property>
+      <property name="target"><inject bean="Naming"/></property>
+   </bean>
+
+   <!--
+        Bootstrap old JMX-based core services
+        setup deployers
+        setup deploy/ directory
+     -->
+   <bean name="ResourcesToDeploy" class="org.jboss.embedded.DeploymentScanner">
+      <property name="filter">
+         <inject bean="DeploymentFilter"/>
+      </property>
+      <property name="mainDeployer">
+         <inject bean="MainDeployer"/>
+      </property>
+      <property name="kernel">
+         <inject bean="jboss.kernel:service=Kernel"/>
+      </property>
+      <property name="resources">
+         <list elementClass="java.lang.String">
+            <value>${jboss.embedded.bootstrap.resource.path}conf/jboss-service.xml</value>
+         </list>
+      </property>
+   </bean>
+
+   <bean name="UserTransaction" class="org.jboss.embedded.adapters.LocalOnlyUserTransaction"/>
+
+   <bean name="UserTransactionBinding" class="org.jboss.naming.JndiBinder">
+      <property name="target">
+         <inject bean="UserTransaction"/>
+      </property>
+      <property name="bindTo">UserTransaction</property>
+      <property name="serializable">false</property>
+   </bean>
+
+   <!-- FIXME EMB-2 -->
+   <bean name="UserTransactionBinding2" class="org.jboss.naming.JndiBinder">
+      <property name="target">
+         <inject bean="UserTransaction"/>
+      </property>
+      <property name="bindTo">java:comp/UserTransaction</property>
+      <property name="serializable">false</property>
+   </bean>
+
+
+   <bean name="ResourcesToDeploy2" class="org.jboss.embedded.DeploymentScanner">
+      <property name="filter">
+         <inject bean="DeploymentFilter"/>
+      </property>
+      <property name="mainDeployer">
+         <inject bean="MainDeployer"/>
+      </property>
+      <property name="kernel">
+         <inject bean="jboss.kernel:service=Kernel"/>
+      </property>
+      <property name="directoriesByResource">
+         <list elementClass="java.lang.String">
+            <value>${jboss.embedded.bootstrap.resource.path}conf/jboss-service.xml/../deployers</value>
+         </list>
+      </property>
+   </bean>
+   <bean name="ResourcesToDeploy3" class="org.jboss.embedded.DeploymentScanner">
+      <property name="filter">
+         <inject bean="DeploymentFilter"/>
+      </property>
+      <property name="mainDeployer">
+         <inject bean="MainDeployer"/>
+      </property>
+      <property name="kernel">
+         <inject bean="jboss.kernel:service=Kernel"/>
+      </property>
+      <property name="directoriesByResource">
+         <list elementClass="java.lang.String">
+            <value>${jboss.embedded.bootstrap.resource.path}conf/jboss-service.xml/../deploy</value>
+         </list>
+      </property>
+   </bean>
+</deployment>

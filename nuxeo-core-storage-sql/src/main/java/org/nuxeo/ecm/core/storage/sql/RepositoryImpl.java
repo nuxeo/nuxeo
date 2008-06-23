@@ -17,21 +17,20 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionSpec;
 import javax.resource.cci.RecordFactory;
 import javax.resource.cci.ResourceAdapterMetaData;
-import javax.resource.spi.ConnectionRequestInfo;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
@@ -43,7 +42,6 @@ import org.hibernate.dialect.DialectFactory;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.db.Database;
 
 /**
  * @author Florent Guillaume
@@ -56,11 +54,13 @@ public class RepositoryImpl implements Repository {
 
     private final SchemaManager schemaManager;
 
-    private final RepositoryDescriptor descriptor;
+    private final RepositoryDescriptor repositoryDescriptor;
 
     // TODO check if really want something weak w.r.t. remoting
     /** The sessions in a weak hash map. Values are unused. A weak set really. */
-    private final Map<Session, Object> sessions;
+    private final Map<SessionImpl, Object> sessions;
+
+    private XADataSource xadatasource;
 
     // initialized at first login
 
@@ -72,15 +72,14 @@ public class RepositoryImpl implements Repository {
 
     private SQLInfo sqlInfo;
 
-    private Database database;
-
     private final AtomicLong temporaryIdCounter;
 
-    protected RepositoryImpl(RepositoryDescriptor descriptor,
-            SchemaManager schemaManager) {
-        this.descriptor = descriptor;
+    public RepositoryImpl(RepositoryDescriptor repositoryDescriptor,
+            SchemaManager schemaManager) throws StorageException {
+        this.repositoryDescriptor = repositoryDescriptor;
         this.schemaManager = schemaManager;
-        sessions = new WeakHashMap<Session, Object>();
+        sessions = new WeakHashMap<SessionImpl, Object>();
+        xadatasource = getXADataSource();
         temporaryIdCounter = new AtomicLong(0);
     }
 
@@ -107,22 +106,27 @@ public class RepositoryImpl implements Repository {
      * @return the session
      * @throws StorageException
      */
-    public Session getConnection(ConnectionSpec connectionSpec)
+    public synchronized SessionImpl getConnection(ConnectionSpec connectionSpec)
             throws StorageException {
-        if (connectionSpec != null &&
-                !(connectionSpec instanceof ConnectionSpecImpl)) {
-            throw new RuntimeException("Invalid connectionSpec instance");
-        }
+        assert connectionSpec == null ||
+                connectionSpec instanceof ConnectionSpecImpl;
 
         Credentials credentials = connectionSpec == null ? null
-                : ((ConnectionSpecImpl) connectionSpec).credentials;
+                : ((ConnectionSpecImpl) connectionSpec).getCredentials();
 
-        // XXX synchronize initialization
-        if (!initialized) {
-            initialize();
-            // initialized is set to true later
+        XAConnection xaconnection;
+        try {
+            xaconnection = xadatasource.getXAConnection();
+        } catch (SQLException e) {
+            throw new StorageException("Cannot get XAConnection", e);
         }
-        Mapper mapper = new Mapper(model, sqlInfo, getXAConnection());
+
+        if (!initialized) {
+            initialize(xaconnection);
+        }
+
+        Mapper mapper = new Mapper(model, sqlInfo, xaconnection);
+
         if (!initialized) {
             // first connection, initialize the database
             // XXX must check existing tables in the database XXX
@@ -130,20 +134,20 @@ public class RepositoryImpl implements Repository {
             mapper.createDatabase();
             initialized = true;
         }
-        // XXX put in sessions cache?
-        Session session = new SessionImpl(this, schemaManager, mapper,
+
+        SessionImpl session = new SessionImpl(this, schemaManager, mapper,
                 credentials);
-        // XXX synchronize map access
+
         sessions.put(session, null);
         return session;
     }
 
     public ResourceAdapterMetaData getMetaData() {
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException();
     }
 
     public RecordFactory getRecordFactory() {
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -152,12 +156,12 @@ public class RepositoryImpl implements Repository {
 
     private Reference reference;
 
-    public Reference getReference() {
-        return reference;
-    }
-
     public void setReference(Reference reference) {
         this.reference = reference;
+    }
+
+    public Reference getReference() {
+        return reference;
     }
 
     /*
@@ -168,60 +172,103 @@ public class RepositoryImpl implements Repository {
         return temporaryIdCounter.incrementAndGet();
     }
 
-    public void close() {
-        synchronized (sessions) {
-            for (Session session : sessions.keySet()) {
-                if (((SessionImpl) session).isLive()) {
-                    try {
-                        session.close();
-                    } catch (ResourceException e) {
-                        log.error("Error closing session", e);
-                    }
+    public synchronized void close() {
+        for (SessionImpl session : sessions.keySet()) {
+            if (session.isLive()) {
+                try {
+                    session.close();
+                } catch (ResourceException e) {
+                    log.error("Error closing session", e);
                 }
             }
-            sessions.clear();
         }
+        sessions.clear();
     }
 
     /*
      * ----- -----
      */
 
+    private XADataSource getXADataSource() throws StorageException {
+
+        /*
+         * Instantiate the datasource.
+         */
+
+        String className = repositoryDescriptor.xaDataSourceName;
+        Class<?> klass;
+        try {
+            klass = Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new StorageException("Unknown class: " + className, e);
+        }
+        Object instance;
+        try {
+            instance = klass.newInstance();
+        } catch (Exception e) {
+            throw new StorageException(
+                    "Cannot instantiate class: " + className, e);
+        }
+        if (!(instance instanceof XADataSource)) {
+            throw new StorageException("Not a XADataSource: " + className);
+        }
+        XADataSource xadatasource = (XADataSource) instance;
+
+        /*
+         * Set JavaBean properties.
+         */
+
+        Class<?>[] types = new Class[] { String.class };
+        for (Entry<String, String> entry : repositoryDescriptor.properties.entrySet()) {
+            String propertyName = entry.getKey();
+            String methodName = "set" +
+                    Character.toUpperCase(propertyName.charAt(0)) +
+                    propertyName.substring(1);
+            Method method;
+            try {
+                method = xadatasource.getClass().getMethod(methodName, types);
+            } catch (Exception e) {
+                log.error("Cannot get JavaBean method " + methodName +
+                        " for class: " + className, e);
+                continue;
+            }
+            try {
+                method.invoke(xadatasource, new Object[] { entry.getValue() });
+            } catch (Exception e) {
+                log.error("Cannot call JavaBean method " + methodName +
+                        " for class: " + className, e);
+                continue;
+            }
+        }
+
+        return xadatasource;
+    }
+
     /**
      * Lazy initialization, to delay dialect detection until the first
      * connection is really needed.
      */
-    // called by a synchronized method
-    protected void initialize() throws StorageException {
+    private void initialize(XAConnection xaconnection) throws StorageException {
         log.debug("Initializing");
-        dialect = getDialect();
+        dialect = getDialect(xaconnection);
         model = new Model(schemaManager);
         sqlInfo = new SQLInfo(model, dialect);
     }
 
     /**
-     * Gets the {@code Dialect}, by connecting to the datasource if needed to
-     * check what database is used.
+     * Gets the {@code Dialect}, by connecting to the datasource to check what
+     * database is used.
      *
-     * @throws StorageException if a SQL connection problem occurs.
+     * @throws StorageException if a SQL connection problem occurs
      */
-    protected Dialect getDialect() throws StorageException {
-        if (descriptor.dialectName != null) {
-            try {
-                return DialectFactory.buildDialect(descriptor.dialectName);
-            } catch (HibernateException e) {
-                throw new StorageException("Cannot build dialect  " +
-                        descriptor.dialectName, e);
-            }
-        }
-        // find a dialect from the datasource meta information
-        final String dbname;
-        final int dbmajor;
-        final XAConnection xaconnection = getXAConnection();
+    private Dialect getDialect(XAConnection xaconnection)
+            throws StorageException {
         Connection connection = null;
+        String dbname;
+        int dbmajor;
         try {
             connection = xaconnection.getConnection();
-            final DatabaseMetaData metadata = connection.getMetaData();
+            DatabaseMetaData metadata = connection.getMetaData();
             dbname = metadata.getDatabaseProductName();
             dbmajor = metadata.getDatabaseMajorVersion();
         } catch (SQLException e) {
@@ -231,40 +278,19 @@ public class RepositoryImpl implements Repository {
                 try {
                     connection.close();
                 } catch (SQLException e) {
-                    throw new StorageException(e);
+                    throw new StorageException(
+                            "Cannot get metadata for class: " +
+                                    repositoryDescriptor.xaDataSourceName,
+                            e);
                 }
             }
         }
         try {
             return DialectFactory.determineDialect(dbname, dbmajor);
         } catch (HibernateException e) {
-            throw new StorageException(
-                    "Cannot determine dialect for datasource " +
-                            descriptor.dataSourceName, e);
+            throw new StorageException("Cannot determine dialect for class: " +
+                    repositoryDescriptor.xaDataSourceName, e);
         }
-    }
-
-    /**
-     * Gets a new {@code XAConnection} from the underlying datasource.
-     *
-     * @return the connection.
-     */
-    protected XAConnection getXAConnection() throws StorageException {
-        final XADataSource datasource;
-        final XAConnection xaconnection;
-        try {
-            datasource = (XADataSource) new InitialContext().lookup(descriptor.dataSourceName);
-        } catch (NamingException e) {
-            throw new StorageException("Cannot get datasource " +
-                    descriptor.dataSourceName, e);
-        }
-        try {
-            xaconnection = datasource.getXAConnection();
-        } catch (SQLException e) {
-            throw new StorageException("Cannot get connection from datasource",
-                    e);
-        }
-        return xaconnection;
     }
 
 }

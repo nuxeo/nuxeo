@@ -17,14 +17,25 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
+import org.nuxeo.common.xmap.annotation.XObject;
+
 /**
  * Repository descriptor.
  *
  * @author Florent Guillaume
  */
+@XObject(value = "repository", order = { "@name" })
 public class RepositoryDescriptor {
 
-    public String dataSourceName;
+    @XNode("xa-datasource")
+    public String xaDataSourceName;
 
-    public String dialectName;
+    @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
+    public Map<String, String> properties;
+
 }

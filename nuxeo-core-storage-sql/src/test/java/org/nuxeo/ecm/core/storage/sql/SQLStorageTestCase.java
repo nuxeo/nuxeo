@@ -18,13 +18,9 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
-import org.nuxeo.common.mock.jndi.MockContextFactory;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -33,8 +29,6 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * @author Florent Guillaume
  */
 public abstract class SQLStorageTestCase extends NXRuntimeTestCase {
-
-    public final static String DATASOURCE_NAME = "java:/nuxeo-repo-datasource";
 
     public Repository repository;
 
@@ -47,10 +41,7 @@ public abstract class SQLStorageTestCase extends NXRuntimeTestCase {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         assertNotNull(schemaManager);
 
-        prepareDataSource();
-
-        RepositoryDescriptor descriptor = new RepositoryDescriptor();
-        descriptor.dataSourceName = DATASOURCE_NAME;
+        RepositoryDescriptor descriptor = prepareDescriptor();
         repository = new RepositoryImpl(descriptor, schemaManager);
     }
 
@@ -62,24 +53,23 @@ public abstract class SQLStorageTestCase extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-
-
-    protected void prepareDataSource() throws IOException, NamingException {
-        // set a mock initial context
-        MockContextFactory.setAsInitial();
-
-        // clear the initial database
+    protected RepositoryDescriptor prepareDescriptor() {
         File dbdir = new File("target/test/repository");
         deleteRecursive(dbdir);
-        org.apache.derby.jdbc.EmbeddedXADataSource datasource = new org.apache.derby.jdbc.EmbeddedXADataSource();
-        datasource.setCreateDatabase("create");
-        datasource.setDatabaseName(dbdir.getAbsolutePath());
-        datasource.setUser("sa");
-        datasource.setPassword("");
 
-        // bind the datasource in the initial context
-        Context context = new InitialContext();
-        context.bind(DATASOURCE_NAME, datasource);
+        RepositoryDescriptor descriptor = new RepositoryDescriptor();
+
+        String className = org.apache.derby.jdbc.EmbeddedXADataSource.class.getName();
+        descriptor.xaDataSourceName = className;
+
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put("createDatabase", "create");
+        properties.put("databaseName", dbdir.getAbsolutePath());
+        properties.put("user", "sa");
+        properties.put("password", "");
+        descriptor.properties = properties;
+
+        return descriptor;
     }
 
     protected static void deleteRecursive(File file) {

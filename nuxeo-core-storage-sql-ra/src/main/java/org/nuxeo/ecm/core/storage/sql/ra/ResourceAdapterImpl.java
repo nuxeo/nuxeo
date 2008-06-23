@@ -39,9 +39,19 @@ public class ResourceAdapterImpl implements ResourceAdapter {
 
     private static final Log log = LogFactory.getLog(ResourceAdapterImpl.class);
 
+    private String name;
+
     /*
      * ----- Java Bean-----
      */
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 
     /*
      * ----- javax.resource.spi.ResourceAdapter -----

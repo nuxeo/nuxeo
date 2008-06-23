@@ -26,6 +26,7 @@ import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ConnectionRequestInfo;
 
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
 import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.Session;
 
@@ -58,13 +59,18 @@ public class ConnectionFactoryImpl implements Repository {
             ConnectionManager connectionManager) {
         this.managedConnectionFactory = managedConnectionFactory;
         this.connectionManager = connectionManager;
-        managed = connectionManager instanceof ConnectionManagerImpl;
+        managed = !(connectionManager instanceof ConnectionManagerImpl);
     }
 
     /*
      * ----- javax.resource.cci.ConnectionFactory -----
      */
 
+    /**
+     * Gets a new connection, with no credentials.
+     *
+     * @return the connection
+     */
     public Session getConnection() throws StorageException {
         ConnectionRequestInfo connectionRequestInfo = new ConnectionRequestInfoImpl();
         try {
@@ -77,10 +83,20 @@ public class ConnectionFactoryImpl implements Repository {
         }
     }
 
+    /**
+     * Gets a new connection.
+     *
+     * @param connectionSpec the connection spec, containing credentials
+     * @return the connection
+     */
     public Session getConnection(ConnectionSpec connectionSpec)
             throws StorageException {
+        if (!(connectionSpec instanceof ConnectionSpecImpl)) {
+            throw new StorageException("Invalid ConnectionSpec");
+        }
+        // encapsulate connectionSpec into internal connectionRequestInfo
         ConnectionRequestInfo connectionRequestInfo = new ConnectionRequestInfoImpl(
-                connectionSpec);
+                (ConnectionSpecImpl) connectionSpec);
         try {
             return (Session) connectionManager.allocateConnection(
                     managedConnectionFactory, connectionRequestInfo);

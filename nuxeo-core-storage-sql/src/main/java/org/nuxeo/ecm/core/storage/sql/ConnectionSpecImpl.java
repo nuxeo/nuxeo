@@ -30,6 +30,37 @@ import org.nuxeo.ecm.core.storage.Credentials;
  */
 public class ConnectionSpecImpl implements ConnectionSpec {
 
-    public Credentials credentials;
+    private Credentials credentials;
 
+    public ConnectionSpecImpl(Credentials credentials) {
+        this.credentials = credentials;
+    }
+
+    public Credentials getCredentials() {
+        return credentials;
+    }
+
+    @Override
+    public int hashCode() {
+        return credentials == null ? 0 : credentials.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ConnectionSpecImpl)) {
+            return false;
+        }
+        return equals((ConnectionSpecImpl) o);
+    }
+
+    private boolean equals(ConnectionSpecImpl other) {
+        if (credentials == null) {
+            return other.credentials == null;
+        } else {
+            return credentials.equals(other.credentials);
+        }
+    }
 }
