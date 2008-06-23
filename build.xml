@@ -154,6 +154,25 @@
       <param name="pom.file" value="jboss-patch/pom-4.0.5.xml"/>
     </antcall>
   </target>
+  <target name="patch405-2parts" description="Package Nuxeo-EP in two parts">
+    <antcall target="patch405">
+      <param name="jboss.home" value="${jboss1.dir}" />
+    </antcall>
+    <antcall target="patch405">
+      <param name="jboss.home" value="${jboss2.dir}" />
+    </antcall>
+  </target>
+  <target name="patch405-3parts" description="Package Nuxeo-EP in three parts">
+    <antcall target="package">
+      <param name="jboss.home" value="${jboss1.dir}" />
+    </antcall>
+    <antcall target="patch405">
+      <param name="jboss.home" value="${jboss2.dir}" />
+    </antcall>
+    <antcall target="patch405">
+      <param name="jboss.home" value="${jboss3.dir}" />
+    </antcall>
+  </target>
 
   <target name="patch404" description="Patch a JBoss 4.0.4 for use by Nuxeo-EP (deprecated : no more 4.0.4 compatibility)">
     <antcall target="patch">
