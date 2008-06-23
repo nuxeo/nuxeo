@@ -133,6 +133,8 @@ public class DefaultFaceletFactory extends FaceletFactory {
      */
     public Facelet getFacelet(URL url) throws IOException, FaceletException,
             FacesException, ELException {
+        //do not remove this log, it is parsed by the devplugin.
+        log.fine(url.toString());
         ParameterCheck.notNull("url", url);
         DefaultFacelet f = (DefaultFacelet) this.facelets.get(url);
         if (f == null || this.needsToBeRefreshed(f)) {
