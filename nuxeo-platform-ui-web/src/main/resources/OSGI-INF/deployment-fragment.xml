@@ -160,7 +160,7 @@
 
     <filter>
       <filter-name>Seam Filter</filter-name>
-      <filter-class>org.jboss.seam.web.SeamFilter</filter-class>
+      <filter-class>org.jboss.seam.servlet.SeamFilter</filter-class>
     </filter>
 
     <filter-mapping>
@@ -169,8 +169,8 @@
     </filter-mapping>
 
     <filter>
-      <filter-name>Seam Servlet Filter</filter-name>
-      <filter-class>org.jboss.seam.servlet.SeamServletFilter</filter-class>
+      <filter-name>Seam Context Filter</filter-name>
+      <filter-class>org.jboss.seam.web.ContextFilter</filter-class>
     </filter>
 
     <filter>
@@ -353,6 +353,8 @@
 
     <context-param>
       <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+      <!-- XXX warning: before changing this value, note that some libraries may
+        not like the client saving method (gwt for instance) -->
       <!-- <param-value>client</param-value> -->
       <param-value>server</param-value>
     </context-param>
