@@ -25,19 +25,6 @@
 
   <!-- ARTIFACTS -->
   <assemble>
-    <outputFile>/</outputFile>
-    <set>root-artifacts</set>
-  </assemble>
-  <artifactSet id="root-artifacts">
-    <import>**</import>
-    <includeDependencies>false</includeDependencies>
-    <includes>
-      <artifact name="nuxeo-platform-webapp" />
-      <artifact name="nuxeo-platform-webapp-core" />
-    </includes>
-  </artifactSet>
-
-  <assemble>
     <outputFile>system</outputFile>
     <set>system</set>
   </assemble>
@@ -46,6 +33,7 @@
     <includeDependencies>true</includeDependencies>
     <includes>
       <artifact group="org.nuxeo.*" category="runtime" includeDependsOnCategory="false"/>
+      <artifact group="org.nuxeo.*" category="core" />
       <artifact group="org.nuxeo.*" category="stateful" />
     </includes>
     <excludes>
@@ -58,6 +46,7 @@
 
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
+      <artifact name="nuxeo-platform-search-compass-plugin" />
     </excludes>
   </artifactSet>
 
@@ -72,6 +61,7 @@
     <includes>
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
+      <artifact name="nuxeo-platform-search-compass-plugin" />
     </includes>
   </artifactSet>
 

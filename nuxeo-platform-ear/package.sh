@@ -44,6 +44,11 @@ case "$1" in
         mvn -Dnuxeo.ear.assembly=nuxeo-platform-stateful $MVN_OPTS package
         mvn -Dnuxeo.ear.assembly=nuxeo-web-stateless $MVN_OPTS package
   ;;
+    new-nuxeo-2parts)
+        echo "building 2 JVMs nuxeo distrib"
+        mvn -Dnuxeo.ear.assembly=new-nuxeo-platform-stateful $MVN_OPTS package
+        mvn -Dnuxeo.ear.assembly=new-nuxeo-web-stateless $MVN_OPTS package
+  ;;
 
     help)
         echo "Usage: $0 {help|<target config>}"
