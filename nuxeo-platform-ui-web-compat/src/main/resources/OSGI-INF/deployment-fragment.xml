@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+
+<fragment>
+
+  <extension target="application#MODULE">
+
+    <module>
+      <java>${bundle.fileName}</java>
+    </module>
+
+  </extension>
+
+  <extension target="web#FILTER">
+
+    <filter>
+      <filter-name>Trinidad</filter-name>
+      <filter-class>
+        org.apache.myfaces.trinidad.webapp.TrinidadFilter
+      </filter-class>
+    </filter>
+
+    <filter-mapping>
+      <filter-name>Trinidad</filter-name>
+      <url-pattern>*.seam</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>Trinidad</filter-name>
+      <url-pattern>*.faces</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+  </extension>
+
+  <extension target="web#SERVLET">
+
+    <!-- Trinidad servlet -->
+    <servlet>
+      <servlet-name>Trinidad Resources</servlet-name>
+      <servlet-class>
+        org.apache.myfaces.trinidad.webapp.ResourceServlet
+      </servlet-class>
+    </servlet>
+
+    <!-- This cannot be configured currently -->
+    <servlet-mapping>
+      <servlet-name>Trinidad Resources</servlet-name>
+      <url-pattern>/adf/*</url-pattern>
+    </servlet-mapping>
+
+  </extension>
+
+  <extension target="web#CONTEXT-PARAM">
+
+    <!-- Trinidad filter config for file upload -->
+    <context-param>
+      <!-- Maximum memory per request (in bytes) -->
+      <param-name>org.apache.myfaces.trinidad.UPLOAD_MAX_MEMORY</param-name>
+      <!-- Use 500K -->
+      <param-value>512000</param-value>
+    </context-param>
+    <context-param>
+      <!-- Maximum disk space per request (in bytes) -->
+      <param-name>org.apache.myfaces.trinidad.UPLOAD_MAX_DISK_SPACE</param-name>
+      <!-- Use 20,000K -->
+      <param-value>20480000</param-value>
+    </context-param>
+
+    <!--  Trinidad conf replacing the above ajax4jsf.VIEW_HANDLERS conf,
+      see http://wiki.apache.org/myfaces/TrinidadSeamAjax4Jsf -->
+    <context-param>
+      <param-name>
+        org.apache.myfaces.trinidad.ALTERNATE_VIEW_HANDLER
+      </param-name>
+      <param-value>
+        org.nuxeo.theme.jsf.facelets.NXThemesFaceletViewHandler
+      </param-value>
+    </context-param>
+
+    <!-- MyFaces Tomahawk conf -->
+    <context-param>
+      <param-name>org.apache.myfaces.ALLOW_JAVASCRIPT</param-name>
+      <param-value>true</param-value>
+    </context-param>
+
+    <!-- MyFaces RedirectTracker default conf -->
+    <context-param>
+      <param-name>org.apache.myfaces.redirectTracker.POLICY</param-name>
+      <param-value>
+        org.apache.myfaces.custom.redirectTracker.policy.NoopRedirectTrackPolicy
+      </param-value>
+    </context-param>
+    <context-param>
+      <param-name>org.apache.myfaces.redirectTracker.MAX_REDIRECTS</param-name>
+      <param-value>20</param-value>
+    </context-param>
+
+  </extension>
+
+  <extension target="faces-config#APPLICATION">
+
+    <default-render-kit-id>
+      org.apache.myfaces.trinidad.core
+    </default-render-kit-id>
+
+  </extension>
+
+  <extension target="faces-config#COMPONENT">
+
+    <!-- TODO : comps for tomahawk tags compat -->
+
+    <!--  new tree2 renderer -->
+    <renderer>
+      <component-family>org.apache.myfaces.HtmlTree2</component-family>
+      <renderer-type>
+        org.nuxeo.ecm.platform.ui.web.tree.HtmlLazyTreeRenderer
+      </renderer-type>
+      <renderer-class>
+        org.nuxeo.ecm.platform.ui.web.tree.HtmlLazyTreeRenderer
+      </renderer-class>
+    </renderer>
+
+  </extension>
+
+
+  <install>
+
+    <!--  create a temp dir -->
+    <!--  be sure no directory with that name exists -->
+    <delete path="${bundle.fileName}.tmp" />
+    <mkdir path="${bundle.fileName}.tmp" />
+
+    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp">
+      <include>WEB/**</include>
+    </unzip>
+
+    <copy from="${bundle.fileName}.tmp/WEB/" to="nuxeo.war/WEB-INF/" />
+
+    <delete path="${bundle.fileName}.tmp" />
+
+  </install>
+
+</fragment>
+

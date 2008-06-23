@@ -22,9 +22,9 @@ package org.nuxeo.ecm.webapp.note;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.myfaces.trinidad.model.UploadedFile;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.ui.web.file.UploadedFile;
 
 /**
  * Provides actions related to inserting an image for Note documents.
