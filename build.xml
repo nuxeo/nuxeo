@@ -27,6 +27,13 @@
     <property name="nuxeo.ear.build" value="${nuxeo.ear.root}/target/${assembly.ear}" />
   </target>
 
+  <property name="nuxeo.jboss.jmx.protocol" value="" />
+  <property name="nuxeo.jboss.jmx.http.hostname" value="" />
+  <property name="nuxeo.jboss.jmx.http.port" value="" />
+  <condition property="mvn.profile" value="-Phttp" else="">
+    <equals arg1="${nuxeo.jboss.jmx.protocol}" arg2="http" />
+  </condition>
+
   <condition property="osfamily-unix">
     <os family="unix" />
   </condition>
@@ -181,8 +188,12 @@
       <arg value="-f" />
       <arg value="${pom.file}" />
       <arg value="-Djboss.dir=${jboss.home}" />
+      <arg value="-Dnuxeo.jboss.jmx.protocol=${nuxeo.jboss.jmx.protocol}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.hostname=${nuxeo.jboss.jmx.http.hostname}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.port=${nuxeo.jboss.jmx.http.port}" />
       <arg value="clean" />
       <arg value="package" />
+      <arg value="${mvn.profile}" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
@@ -194,8 +205,12 @@
       <arg value="-f" />
       <arg value="${pom.file}" />
       <arg value="-Djboss.dir=${jboss.home}" />
+      <arg value="-Dnuxeo.jboss.jmx.protocol=${nuxeo.jboss.jmx.protocol}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.hostname=${nuxeo.jboss.jmx.http.hostname}" />
+      <arg value="-Dnuxeo.jboss.jmx.http.port=${nuxeo.jboss.jmx.http.port}" />
       <arg value="clean" />
       <arg value="package" />
+      <arg value="${mvn.profile}" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
@@ -279,7 +294,7 @@
       <fileset file="nuxeo-platform/nuxeo-platform-ear/target/postgresql-jdbc-lib/*.jar" />
     </copy>
     <!-- XXX: find a way not to depend on the version number of nxsearch compass -->
-    <copy todir="${jboss.nuxeo.ear}/platform/nuxeo-platform-search-compass-plugin-5.1.6-SNAPSHOT.jar" failonerror="false" overwrite="true">
+    <copy todir="${jboss.nuxeo.ear}/platform/nuxeo-platform-search-compass-plugin-5.2-SNAPSHOT.jar" failonerror="false" overwrite="true">
       <fileset file="${basedir}/${postgresql.config}/compass.cfg.xml" />
     </copy>
   </target>
@@ -298,7 +313,7 @@
       <fileset file="${basedir}/${oracle.config}/lib/*.jar" />
     </copy>
     <!-- XXX: find a way not to depend on the version number of nxsearch compass -->
-    <copy todir="${jboss.nuxeo.ear}/platform/nuxeo-platform-search-compass-plugin-5.1.6-SNAPSHOT.jar" failonerror="false" overwrite="true">
+    <copy todir="${jboss.nuxeo.ear}/platform/nuxeo-platform-search-compass-plugin-5.2-SNAPSHOT.jar" failonerror="false" overwrite="true">
       <fileset file="${basedir}/${oracle.config}/compass.cfg.xml" />
     </copy>
   </target>
@@ -313,7 +328,7 @@
       <fileset file="${basedir}/${derby.config}/datasources/*.xml" />
     </copy>
     <!-- XXX: find a way not to depend on the version number of nxsearch compass -->
-    <copy todir="${jboss.nuxeo.ear}/platform/nuxeo-platform-search-compass-plugin-5.1.6-SNAPSHOT.jar" failonerror="false" overwrite="true">
+    <copy todir="${jboss.nuxeo.ear}/platform/nuxeo-platform-search-compass-plugin-5.2-SNAPSHOT.jar" failonerror="false" overwrite="true">
       <fileset file="${basedir}/${derby.config}/compass.cfg.xml" />
     </copy>
     <!-- TODO: maven config to get derby lib -->
@@ -322,9 +337,11 @@
       <fileset file="nuxeo-platform/nuxeo-platform-ear/target/derby-jdbc-lib/*.jar" />
     </copy>
     -->
-    <echo></echo>
+    <echo>
+    </echo>
     <echo>Done: Don't forget to put derby library in ${jboss.deploy}/lib</echo>
-    <echo></echo>
+    <echo>
+    </echo>
   </target>
 
   <target name="test" depends="test-unix,test-windows" description="Run tests" />
