@@ -61,46 +61,55 @@
         <groupId>cssparser</groupId>
         <artifactId>cssparser</artifactId>
         <version>0.9.4-fix</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>com.sun.facelets</groupId>
         <artifactId>jsf-facelets</artifactId>
         <version>1.1.11</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
         <version>3.1</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>
         <version>1.1.1</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>1.2</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
         <version>2.2</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging-api</artifactId>
         <version>1.1</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>concurrent</groupId>
         <artifactId>concurrent</artifactId>
         <version>1.3.4</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>hsqldb</groupId>
         <artifactId>hsqldb</artifactId>
         <version>1.8.0.1</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.ejb</groupId>
@@ -112,6 +121,7 @@
         <groupId>javax.ejb</groupId>
         <artifactId>ejb</artifactId>
         <version>${jboss.ejb.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.annotation</groupId>
@@ -123,303 +133,364 @@
         <groupId>javax.el</groupId>
         <artifactId>el-api</artifactId>
         <version>unknown</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.el</groupId>
         <artifactId>el-ri</artifactId>
         <version>unknown</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.faces</groupId>
         <artifactId>jsf-api</artifactId>
         <version>1.2_04</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.faces</groupId>
         <artifactId>jsf-impl</artifactId>
         <version>1.2_04</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.jms</groupId>
         <artifactId>jms</artifactId>
         <version>1.1</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.jws</groupId>
         <artifactId>jsr181</artifactId>
         <version>1.0</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.mail</groupId>
         <artifactId>mail</artifactId>
         <version>1.4</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.persistence</groupId>
         <artifactId>persistence</artifactId>
         <version>3.0</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.servlet.jsp</groupId>
         <artifactId>jsp-api</artifactId>
         <version>2.1</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>jstl</artifactId>
         <version>1.1.2</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
         <version>2.4</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.transaction</groupId>
         <artifactId>jta</artifactId>
         <version>1.0.1B</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>ejb3</artifactId>
         <version>${jboss.ejb.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss</artifactId>
         <version>${jboss.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-annotations-ejb3</artifactId>
         <version>${jboss.ejb.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-aop-jdk50</artifactId>
         <version>1.4.0.SP1</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-cache</artifactId>
         <version>1.4.0.BETA2</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-cache-jdk50</artifactId>
         <version>1.4.0.SP1</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>cglib-jboss</artifactId>
         <version>2.1.2</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-common</artifactId>
         <version>${jboss.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-j2ee</artifactId>
         <version>${jboss.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>javassist</artifactId>
         <version>${jboss.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-jmx</artifactId>
         <version>${jboss.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-remoting</artifactId>
         <version>${jboss.version}</version>
+        <scope>provided</scope>
       </dependency>
       <!-- BBB old version for the benefit of dependent poms -->
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-seam</artifactId>
         <version>1.1.5.NX3</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam</artifactId>
         <version>1.1.5.NX3</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-serialization</artifactId>
         <version>1.0.0-RC1</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-system</artifactId>
         <version>${jboss.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jbosssx</artifactId>
         <version>${jboss.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jbpm</artifactId>
         <version>3.1.4</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jbpm-identity</artifactId>
         <version>3.1.4</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jgroups</artifactId>
         <version>2.2.9</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jnp-client</artifactId>
         <version>4.0.2</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
         <version>1.2.13</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>3.8.2</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>com.intellij</groupId>
         <artifactId>annotations</artifactId>
         <version>6.0.5</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>opensymphony</groupId>
         <artifactId>quartz-all</artifactId>
         <version>1.5.2</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-core</artifactId>
         <version>2.0.0</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.myfaces.trinidad</groupId>
         <artifactId>trinidad-api</artifactId>
         <version>1.0.1-incubating-NXEP51M2</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.myfaces.trinidad</groupId>
         <artifactId>trinidad-impl</artifactId>
         <version>1.0.1-incubating-NXEP51M2</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.myfaces.tomahawk</groupId>
         <artifactId>tomahawk</artifactId>
         <version>1.1.5</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.myfaces.tomahawk</groupId>
         <artifactId>tomahawk-sandbox</artifactId>
         <version>1.1.5</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate</artifactId>
         <version>3.2.0.ga</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-annotations</artifactId>
         <version>3.2.0.ga</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
         <version>3.2.0.ga</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate</artifactId>
-        <version>3.2.0.ga</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>1.3.0</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
         <version>1.3.0</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>net.sf</groupId>
         <artifactId>ehcache</artifactId>
         <version>1.2.3</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>net.sf.json-lib</groupId>
         <artifactId>json-lib</artifactId>
-        <version>0.9</version>
+        <version>2.2.1</version>
+        <scope>provided</scope>
+        <classifier>jdk15</classifier>
       </dependency>
       <dependency>
         <groupId>net.sf.ezmorph</groupId>
         <artifactId>ezmorph</artifactId>
         <version>0.9</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>osgi_R4_core</artifactId>
         <version>1.0</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>oro</groupId>
         <artifactId>oro</artifactId>
         <version>2.0.8</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>dom4j</groupId>
         <artifactId>dom4j</artifactId>
         <version>1.6.1</version>
+        <scope>provided</scope>
       </dependency>
       <!-- beanshell -->
       <dependency>
         <groupId>bsh</groupId>
         <artifactId>bsh</artifactId>
         <version>2.0b1</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>taglibs</groupId>
         <artifactId>standard</artifactId>
         <version>1.1.2</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>antlr</groupId>
         <artifactId>antlr</artifactId>
         <version>2.7.7</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.shared</groupId>
         <artifactId>shared-asn1</artifactId>
         <version>0.9.7</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.shared</groupId>
         <artifactId>shared-ldap-constants</artifactId>
         <version>0.9.7</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <version>8.2-507.jdbc3</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>jmock</groupId>
+        <artifactId>jmock</artifactId>
+        <version>1.0.1</version>
+        <scope>provided</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -594,7 +665,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-nuxeo-plugin</artifactId>
-          <version>1.0.4</version>
+          <version>1.0.5</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
