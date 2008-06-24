@@ -522,11 +522,9 @@ public class CacheableDocumentManagerBean extends DocumentManagerBean implements
     private DocumentModelGhost createDocGhost(DocumentModel dm) {
         assert null != dm;
 
-        final DocumentModelGhost ghost = new DocumentModelGhost(dm.getRef(),
+        return new DocumentModelGhost(dm.getRef(),
                 dm.getSessionId(), dm.getType(), dm.getDeclaredSchemas(),
                 dm.getId(), dm.getPath(), dm.getParentRef());
-
-        return ghost;
     }
 
     /**
