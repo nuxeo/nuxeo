@@ -1,13 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <datasources>
+  <!-- Configuration for Postgres -->
   <local-tx-datasource>
-    <jndi-name>placeful_service_ds</jndi-name>
+    <jndi-name>nxarchive-records</jndi-name>
     <connection-url>jdbc:postgresql://localhost:5432/nuxeo</connection-url>
     <driver-class>org.postgresql.Driver</driver-class>
-    <user-name>nuxeo</user-name>
+    <user-name>username</user-name>
     <password>myPr3c1ous</password>
-    <!-- postgresql supports empty statement evaluation to cheaply
-         ensure the connection is still up before using it -->
     <check-valid-connection-sql>;</check-valid-connection-sql>
-  </local-tx-datasource> 
-
+  </local-tx-datasource>
 </datasources>
