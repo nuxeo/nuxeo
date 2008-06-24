@@ -1,0 +1,1 @@
+this resources directory is deprecated and no more used by new packaging system (since maven-nuxeo-plugin version 1.0.5)

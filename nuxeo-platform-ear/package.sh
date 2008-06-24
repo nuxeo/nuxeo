@@ -32,11 +32,22 @@ case "$1" in
         mvn -Dnuxeo.ear.assembly=nuxeo-indexing $MVN_OPTS package
         mvn -Dnuxeo.ear.assembly=nuxeo-webplatform $MVN_OPTS package
   ;;
+    new-nuxeo-3parts)
+        echo "building 3 JVMs nuxeo distrib"
+        mvn -Dnuxeo.ear.assembly=new-nuxeo-core $MVN_OPTS package
+        mvn -Dnuxeo.ear.assembly=new-nuxeo-indexing $MVN_OPTS package
+        mvn -Dnuxeo.ear.assembly=new-nuxeo-webplatform $MVN_OPTS package
+  ;;
 
     nuxeo-2parts)
         echo "building 2 JVMs nuxeo distrib"
         mvn -Dnuxeo.ear.assembly=nuxeo-platform-stateful $MVN_OPTS package
         mvn -Dnuxeo.ear.assembly=nuxeo-web-stateless $MVN_OPTS package
+  ;;
+    new-nuxeo-2parts)
+        echo "building 2 JVMs nuxeo distrib"
+        mvn -Dnuxeo.ear.assembly=new-nuxeo-platform-stateful $MVN_OPTS package
+        mvn -Dnuxeo.ear.assembly=new-nuxeo-web-stateless $MVN_OPTS package
   ;;
 
     help)

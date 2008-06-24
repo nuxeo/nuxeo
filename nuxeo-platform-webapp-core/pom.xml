@@ -17,6 +17,44 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-schema</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-query</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform</artifactId>
+      <type>ejb</type>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-ws</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-cache-jboss</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-types-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-actions-core</artifactId>
+      <type>ejb</type>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-cache-client</artifactId>
     </dependency>
@@ -24,6 +62,10 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-cache-web</artifactId>
       <type>ejb</type>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-events-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -71,7 +113,19 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-placeful-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-placeful-theme</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-usermanager-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-directory-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.theme</groupId>
@@ -98,44 +152,51 @@
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-annotations-ejb3</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>ejb3</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-j2ee</artifactId>
-      <scope>provided</scope>
     </dependency>
-
-
     <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
-      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.myfaces.tomahawk</groupId>
+      <artifactId>tomahawk</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.myfaces.trinidad</groupId>
+      <artifactId>trinidad-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.jws</groupId>
+      <artifactId>jsr181</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-common</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

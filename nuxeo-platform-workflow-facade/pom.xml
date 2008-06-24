@@ -11,10 +11,14 @@
   <artifactId>nuxeo-platform-workflow-facade</artifactId>
   <packaging>ejb</packaging>
   <name>Nuxeo Workflow Service - Facade</name>
-  <description>Nuxeo Enterprise Platform: Java EE Facade for the 
+  <description>Nuxeo Enterprise Platform: Java EE Facade for the
     Workflow Service.</description>
 
   <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-workflow-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-workflow-core</artifactId>
@@ -23,12 +27,10 @@
     <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-j2ee</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -37,8 +39,13 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
+      <groupId>jboss</groupId>
+      <artifactId>jbpm</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

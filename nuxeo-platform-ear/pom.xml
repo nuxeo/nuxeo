@@ -390,10 +390,12 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-webapp-types</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-workflow-api</artifactId>
     </dependency>
+     -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-workflow-client</artifactId>
@@ -428,10 +430,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-workflow-jbpm-document-handlers</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
@@ -546,16 +544,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-nuxeo-plugin</artifactId>
         <extensions>true</extensions>
-        <configuration>
-          <runPreprocessor>false</runPreprocessor>
-          <format>directory</format>
-          <outputDirectory>target</outputDirectory>
-          <targetFile>${nuxeo.ear.assembly}.ear</targetFile>
-          <!--descriptor>${basedir}/src/main/assemble/nuxeo.xml</descriptor-->
-          <descriptor>
-            ${basedir}/src/main/assemble/${nuxeo.ear.assembly}.xml
-          </descriptor>
-        </configuration>
         <executions>
           <execution>
             <id>assemble-ear</id>
@@ -563,6 +551,15 @@
             <goals>
               <goal>assembly</goal>
             </goals>
+            <configuration>
+              <runPreprocessor>false</runPreprocessor>
+              <format>directory</format>
+              <outputDirectory>target</outputDirectory>
+              <targetFile>${nuxeo.ear.assembly}.ear</targetFile>
+              <descriptor>
+                ${basedir}/src/main/assemble/${nuxeo.ear.assembly}.xml
+              </descriptor>
+            </configuration>
           </execution>
         </executions>
       </plugin>

@@ -11,7 +11,7 @@
   <artifactId>nuxeo-platform-placeful-core</artifactId>
   <name>Nuxeo Placeful Configuration Service - Core</name>
   <description>Nuxeo Enterprise Platform: The Placeful Configuration Service
-    allow component to declare configuration/annotation on content objects. 
+    allow component to declare configuration/annotation on content objects.
     This is mainly use to define and store configuration of content/service
     (ex: subscription to user notifications on a given folder). This service
     also manage configuration inheritance in the content tree (ex: on this
@@ -27,7 +27,7 @@
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

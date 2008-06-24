@@ -15,13 +15,16 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-events-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb</artifactId>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 

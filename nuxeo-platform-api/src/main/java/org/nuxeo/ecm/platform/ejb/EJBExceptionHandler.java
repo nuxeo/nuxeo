@@ -29,10 +29,10 @@ import org.nuxeo.ecm.core.api.ClientException;
  * Offers utility methods to handle exceptions.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
+ * @deprecated FIXME duplicate of
+ *             {@link org.nuxeo.ecm.core.api.ejb.EJBExceptionHandler} should be
+ *             moved in a utility package
  *
- * FIXME: this class also exists in core-facade. But platform cannot be
- * dependent on core facade if this class is really needed put it in an utility
- * package, otherwise remove it.
  */
 public final class EJBExceptionHandler implements Serializable {
 
@@ -50,13 +50,12 @@ public final class EJBExceptionHandler implements Serializable {
      * @param exception
      * @return
      */
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
     public static ClientException wrapException(Throwable exception) {
         ClientException clientException;
 
         if (null == exception) {
             clientException = new ClientException(
-                    "Root exception was null. Pls check your code.");
+                    "Root exception was null. Please check your code.");
         } else {
             if (exception instanceof ClientException) {
                 clientException = (ClientException) exception;

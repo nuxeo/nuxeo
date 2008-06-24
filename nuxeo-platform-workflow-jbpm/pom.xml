@@ -21,8 +21,13 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-workflow-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-workflow-document-api</artifactId>
     </dependency>
+
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jbpm</artifactId>
@@ -106,11 +111,6 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform</artifactId>
       <type>ejb</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

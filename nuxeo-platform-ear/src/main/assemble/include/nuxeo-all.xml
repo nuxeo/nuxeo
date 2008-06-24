@@ -10,6 +10,7 @@
     <excludes>
       <exclude>**/.svn</exclude>
       <exclude>nxdocument.cpm.xml</exclude>
+      <exclude>DEPRECATED.txt</exclude>
     </excludes>
   </fileSet>
 
@@ -73,18 +74,12 @@
     </includes>
   </artifactSet>
 
-
   <!-- TOOD
     This dependencySet is not working correctly because of bad project poms.
     After fixing the problems you can enable this for a fully automatic build
   -->
   <artifactSet id="nuxeo-libs">
-    <import>nuxeo-runtime</import>
-    <import>nuxeo-core</import>
-    <import>nuxeo-platform</import>
-    <import>nuxeo-platform-unpacked</import>
-    <import>nuxeo-web</import>
-    <import>nuxeo-theme</import>
+    <import>**</import>
     <includeDependencies>true</includeDependencies>
     <excludes>
       <artifact group="org.nuxeo.*" />

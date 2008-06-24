@@ -14,6 +14,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-events-api</artifactId>
     </dependency>
@@ -21,12 +25,6 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-api</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-api-test</artifactId>
-    </dependency>
-     -->
   </dependencies>
 
 </project>

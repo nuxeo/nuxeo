@@ -1,0 +1,101 @@
+<assembly>
+
+  <fileSet id="nuxeo-template">
+    <directory>src/main/resources</directory>
+    <includes>
+      <include>config</include>
+      <include>config/default-repository-config.xml</include>
+      <include>config/mbeans</include>
+      <include>config/nuxeo.properties</include>
+      <include>config/login-config.xml</include>
+      <include>config/platform-config.xml</include>
+      <include>config/default-versioning-config.xml</include>
+      <include>config/mbeans/*</include>
+      <include>datasources/nxuidsequencer-ds.xml</include>
+      <include>datasources/core-events-ds.xml</include>
+      <include>datasources</include>
+      <include>META-INF/**</include>
+      <include>OSGI-INF/**</include>
+    </includes>
+    <excludes>
+      <exclude>**/.svn</exclude>
+      <exclude>lib-fragments.xml</exclude>
+      <exclude>nxdocument.cpm.xml</exclude>
+      <!--
+      <exclude>config/addWorkspace.jpdl.xml</exclude>
+      <exclude>config/commentService-config-bundle.xml</exclude>
+      <exclude>config/default-sql-directories-bundle.xml</exclude>
+      <exclude>config/nuxeo-webapp-core.properties</exclude>
+      <exclude>config/nxrelations-default-jena-bundle.xml</exclude>
+      <exclude>datasources/nxarchive*.xml</exclude>
+      <exclude>datasources/nxaudit*.xml</exclude>
+      <exclude>datasources/nxcomment*.xml</exclude>
+      <exclude>datasources/nxplaceful*.xml</exclude>
+      <exclude>datasources/nxrelations*.xml</exclude>
+      <exclude>datasources/nxsearch*.xml</exclude>
+      <exclude>datasources/nxsqldirectory*.xml</exclude>
+      <exclude>datasources/nxworkflow*.xml</exclude>
+      <exclude>OSGI-INF/templates/WAR_MANIFEST.MF</exclude>
+      <exclude>config/fileManagerService-config-bundle.xml</exclude>
+      -->
+    </excludes>
+  </fileSet>
+
+  <fileSet id="nuxeo-template-core">
+    <directory>src/main/resources_core</directory>
+    <includes>
+      <include>**</include>
+    </includes>
+    <excludes>
+      <exclude>**/.svn</exclude>
+    </excludes>
+  </fileSet>
+
+  <artifactSet id="nuxeo-themes">
+    <import>**</import>
+    <includes>
+      <artifact group="org.nuxeo.theme" category="core" />
+    </includes>
+  </artifactSet>
+
+  <artifactSet id="nuxeo-web" />
+
+  <artifactSet id="nuxeo-platform-unpacked">
+    <import>**</import>
+    <includes>
+      <artifact name="nuxeo-platform-archive-facade" category="core" />
+      <artifact name="nuxeo-platform-audit-facade" category="core" />
+      <artifact name="nuxeo-platform-placeful-facade" category="core" />
+      <artifact name="nuxeo-platform-search-compass-plugin" category="core" />
+    </includes>
+  </artifactSet>
+
+  <artifactSet id="nuxeo-platform">
+    <import>**</import>
+    <includes>
+      <artifact group="org.nuxeo.ecm.platform" category="core" />
+    </includes>
+    <excludes>
+      <artifact name="nuxeo-platform-archive-facade" />
+      <artifact name="nuxeo-platform-audit-facade" />
+      <artifact name="nuxeo-platform-placeful-facade" />
+      <artifact name="nuxeo-platform-search-compass-plugin" />
+    </excludes>
+  </artifactSet>
+
+  <artifactSet id="nuxeo-runtime">
+    <import>**</import>
+    <includes>
+      <artifact group="org.nuxeo.runtime" category="core" />
+    </includes>
+  </artifactSet>
+
+  <artifactSet id="nuxeo-core">
+    <import>**</import>
+    <includes>
+      <artifact group="org.nuxeo.ecm.core" category="core" />
+    </includes>
+  </artifactSet>
+
+</assembly>
+

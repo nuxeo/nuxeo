@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
   <classpathentry kind="src" path="src/main/resources"/>
+  <classpathentry kind="src" path="src/main/resources_common"/>
   <classpathentry kind="src" path="src/main/resources_core"/>
   <classpathentry kind="src" path="src/main/resources_core_sync_index"/>
   <classpathentry kind="src" path="src/main/resources_platform-stateful"/>
