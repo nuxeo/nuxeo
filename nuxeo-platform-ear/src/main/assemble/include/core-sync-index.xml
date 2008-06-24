@@ -12,6 +12,7 @@
     <include>config/default-versioning-config.xml</include>
     <include>config/mbeans/*</include>
     <include>datasources/nxuidsequencer-ds.xml</include>
+    <include>datasources/unified-nuxeo-ds.xml</include>
     <include>datasources</include>
     <include>META-INF/**</include>
     <include>OSGI-INF/**</include>
