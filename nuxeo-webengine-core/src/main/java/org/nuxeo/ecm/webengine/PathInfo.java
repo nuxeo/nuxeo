@@ -69,7 +69,7 @@ public class PathInfo {
         applicationPath = appPath;
         int cnt = appPath.segmentCount();
         if (cnt > 0) {
-            traversalPath = path.removeFirstSegments(cnt);
+            traversalPath = path.removeFirstSegments(cnt).makeAbsolute();
         } else {
             traversalPath = path;
         }
