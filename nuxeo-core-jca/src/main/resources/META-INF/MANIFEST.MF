@@ -6,6 +6,7 @@ Bundle-Vendor: Nuxeo
 Bundle-Localization: bundle
 Bundle-ClassPath: .,
  lib/connector-api.jar
+Bundle-Category: core
 Export-Package: org.nuxeo.ecm.core.jca
 Eclipse-LazyStart: true
 Require-Bundle: org.nuxeo.ecm.core
