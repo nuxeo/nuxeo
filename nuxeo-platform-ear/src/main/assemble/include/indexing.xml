@@ -11,6 +11,7 @@
       <include>config/mbeans/core-events-client-service.xml</include>
       <include>datasources</include>
       <include>datasources/nxsearch-compass-ds.xml</include>
+      <include>datasources/unified-nuxeo-ds.xml</include>
       <include>META-INF/**</include>
       <include>OSGI-INF/**</include>
     </includes>
