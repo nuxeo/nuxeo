@@ -18,6 +18,7 @@
     <dependency>
       <groupId>concurrent</groupId>
       <artifactId>concurrent</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -28,11 +29,6 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-osgi</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-jboss-extensions</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -53,6 +49,11 @@
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jbosssx</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>

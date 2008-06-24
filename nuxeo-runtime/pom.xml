@@ -28,11 +28,13 @@
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-remoting</artifactId>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-common</artifactId>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
