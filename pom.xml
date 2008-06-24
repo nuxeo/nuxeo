@@ -61,20 +61,35 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>org.nuxeo.common</groupId>
+        <artifactId>nuxeo-common</artifactId>
+        <version>${nuxeo.common.version}</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime</artifactId>
         <version>${nuxeo.runtime.version}</version>
+        <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-test</artifactId>
         <version>${nuxeo.runtime.version}</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-osgi</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+        <scope>compile</scope>
       </dependency>
 
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-core</artifactId>
         <version>${nuxeo.theme.version}</version>
+        <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
@@ -90,12 +105,14 @@
         <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-jsf</artifactId>
         <version>${nuxeo.theme.version}</version>
+        <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-editor</artifactId>
         <version>${nuxeo.theme.version}</version>
         <type>ejb</type>
+        <scope>compile</scope>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.theme</groupId>

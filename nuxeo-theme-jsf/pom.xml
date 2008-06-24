@@ -13,6 +13,14 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-core</artifactId>
     </dependency>
@@ -27,16 +35,16 @@
     <dependency>
       <groupId>net.sf.json-lib</groupId>
       <artifactId>json-lib</artifactId>
-      <version>0.9</version>
+      <classifier>jdk15</classifier>
     </dependency>
     <dependency>
       <groupId>net.sf.ezmorph</groupId>
       <artifactId>ezmorph</artifactId>
-      <version>0.9</version>
     </dependency>
     <dependency>
       <groupId>cssparser</groupId>
       <artifactId>cssparser</artifactId>
+      <version>0.9.4-fix</version>
     </dependency>
 
     <dependency>
@@ -82,6 +90,11 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
