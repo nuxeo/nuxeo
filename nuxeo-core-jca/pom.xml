@@ -39,8 +39,34 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-schema</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-query</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -50,15 +76,6 @@
       <artifactId>jca-api</artifactId>
       <version>1.5</version>
       <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.nuxeo.common</groupId>
-      <artifactId>nuxeo-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime</artifactId>
     </dependency>
 
   </dependencies>
@@ -95,17 +112,17 @@
             <phase>package</phase>
             <goals>
               <goal>attach-artifact</goal>
-	    </goals>
+            </goals>
             <configuration>
               <artifacts>
                 <artifact>
                   <file>${project.build.directory}/${artifactId}-${version}.rar</file>
                   <type>jar</type>
-		</artifact>
-	      </artifacts>
-	    </configuration>
-	  </execution>
-	</executions>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
     <finalName>${pom.artifactId}-${pom.version}</finalName>
