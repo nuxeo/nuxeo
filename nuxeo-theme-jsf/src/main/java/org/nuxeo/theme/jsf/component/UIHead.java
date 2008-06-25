@@ -39,7 +39,7 @@ public class UIHead extends UIOutput {
     @Override
     public void encodeAll(final FacesContext context) throws IOException {
         final ResponseWriter writer = context.getResponseWriter();
-        final ExternalContext externalContext = (ExternalContext) context.getExternalContext();
+        final ExternalContext externalContext = context.getExternalContext();
         final URL themeUrl = (URL) externalContext.getRequestMap().get(
                 "nxthemesThemeUrl");
         final ThemeElement theme = Manager.getThemeManager().getThemeByUrl(

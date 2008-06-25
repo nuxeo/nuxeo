@@ -5,3 +5,6 @@ syntax:glob
 bin
 target
 *~
+*.ipr
+*.iml
+*.iws

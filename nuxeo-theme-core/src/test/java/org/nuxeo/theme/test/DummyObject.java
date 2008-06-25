@@ -17,7 +17,6 @@ package org.nuxeo.theme.test;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings({"CanBeFinal"})
 public class DummyObject {
 
     public String width = "";
