@@ -135,6 +135,7 @@
       <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-fragments</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-annotations</artifactId>
@@ -148,7 +149,6 @@
       <artifactId>opencsv</artifactId>
       <version>1.7</version>
     </dependency>
-
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-annotations-ejb3</artifactId>

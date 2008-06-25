@@ -15,19 +15,12 @@
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-login</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jbosssx</artifactId>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 

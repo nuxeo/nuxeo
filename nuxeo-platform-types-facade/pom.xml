@@ -23,7 +23,6 @@
       <artifactId>ejb</artifactId>
       <scope>provided</scope>
     </dependency>
-
   </dependencies>
 
 </project>

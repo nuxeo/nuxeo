@@ -46,13 +46,6 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-ui-web</artifactId>
     </dependency>
-    <!-- XXX AT: this dep is only useful for org.nuxeo.ecm.platform.comment.web
-      classes, to remove when package is split -->
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-webapp-core</artifactId>
-      <type>ejb</type>
-    </dependency>
 
     <dependency>
       <groupId>javax.ejb</groupId>
