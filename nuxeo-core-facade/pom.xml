@@ -64,13 +64,11 @@
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-osgi</artifactId>
-      <scope>test</scope>
+      <artifactId>nuxeo-runtime-test</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
-      <scope>test</scope>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-jcr-connector-test</artifactId>
     </dependency>
     <dependency><!-- TO BE REMOVED; if not present, tests are running in spite of exclude tags -->
       <groupId>jboss</groupId>
@@ -89,42 +87,36 @@
       <version>4.0.2</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-transaction-client</artifactId>
       <version>4.0.4.GA</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-aop-jdk50</artifactId>
       <version>1.4.0.SP1</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-aspect-jdk50-client</artifactId>
       <version>1.5</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-client</artifactId>
       <version>4.0.2</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>ejb3</artifactId>
       <version>3.0-RC8</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>
