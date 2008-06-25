@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo ECM Transform Plugins
 Bundle-SymbolicName: org.nuxeo.ecm.platform.transform.plugin;singleton:=true
 Bundle-Vendor: Nuxeo
-Bundle-Category: search,web
+Bundle-Category: search,web,stateful
 Eclipse-LazyStart: false
 Export-Package: org.nuxeo.ecm.platform.transform.plugin.joooconverter.api,
  org.nuxeo.ecm.platform.transform.plugin.joooconverter.impl,

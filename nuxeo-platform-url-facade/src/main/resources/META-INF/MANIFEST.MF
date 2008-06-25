@@ -3,5 +3,5 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo URL Facade
 Bundle-SymbolicName: org.nuxeo.ecm.platform.url.facade;singleton:=true
 Bundle-Vendor: Nuxeo
-Bundle-Category: web
+Bundle-Category: web,stateful
 Require-Bundle: org.nuxeo.ecm.core.api, org.nuxeo.ecm.platform.url.core

@@ -1,3 +1,4 @@
+<!-- prototype -->
 <packaging>
   <serverSet id="nuxeo-mono">
     <includes>

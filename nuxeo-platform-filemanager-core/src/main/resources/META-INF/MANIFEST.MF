@@ -4,7 +4,7 @@ Bundle-Name: NXFileManager
 Bundle-SymbolicName: org.nuxeo.ecm.platform.filemanager.core
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
-Bundle-Category: web
+Bundle-Category: web,stateful
 Require-Bundle: org.nuxeo.ecm.platform.mimetype.api,
  org.nuxeo.ecm.platform.types.api,
  org.nuxeo.ecm.platform.filemanager.api,
