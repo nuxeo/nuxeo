@@ -20,8 +20,7 @@
 package org.nuxeo.ecm.platform.workflow.document;
 
 import org.nuxeo.ecm.platform.workflow.document.api.rules.WorkflowRulesManager;
-import org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService;
-import org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService;
+import org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicyManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -42,20 +41,24 @@ public final class NXWorkflowDocument {
      * @see org.nuxeo.ecm.plarform.ec.workflow.model.WorkflowService
      *
      * @return the workflow rules service.
+     * @deprecated use {@link Framework#getService(Class)}
      */
+    @Deprecated
     public static WorkflowRulesManager getWorkflowRulesService() {
         return (WorkflowRulesManager) Framework.getRuntime().getComponent(
-                WorkflowRulesService.NAME);
+                WorkflowRulesManager.NAME);
     }
 
     /**
      * Returns the workflow document rights policy service.
      *
      * @return the workflow document rights policy service
+     * @deprecated use {@link Framework#getService(Class)}
      */
-    public static WorkflowDocumentSecurityPolicyService getWorkflowDocumentRightsPolicyService() {
-        return (WorkflowDocumentSecurityPolicyService) Framework.getRuntime()
-                .getComponent(WorkflowDocumentSecurityPolicyService.NAME);
+    @Deprecated
+    public static WorkflowDocumentSecurityPolicyManager getWorkflowDocumentRightsPolicyService() {
+        return (WorkflowDocumentSecurityPolicyManager) Framework.getRuntime()
+                .getComponent(WorkflowDocumentSecurityPolicyManager.NAME);
     }
 
 }

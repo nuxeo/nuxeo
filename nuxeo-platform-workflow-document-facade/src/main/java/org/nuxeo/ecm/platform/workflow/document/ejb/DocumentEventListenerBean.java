@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.workflow.document.ejb;
 
-import java.io.Serializable;
-
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJBException;
 import javax.ejb.MessageDriven;

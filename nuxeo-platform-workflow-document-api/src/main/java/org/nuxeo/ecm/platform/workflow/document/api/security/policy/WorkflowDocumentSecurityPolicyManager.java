@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.workflow.document.api.security.policy;
 
 import java.io.Serializable;
 
+import org.nuxeo.runtime.model.ComponentName;
+
 
 /**
  * Workflow document rights policy manager.
@@ -28,6 +30,9 @@ import java.io.Serializable;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public interface WorkflowDocumentSecurityPolicyManager extends Serializable {
+
+    public static final ComponentName NAME = new ComponentName(
+                "org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService");
 
     /**
      * Returns the workflow document security policy given it's name.

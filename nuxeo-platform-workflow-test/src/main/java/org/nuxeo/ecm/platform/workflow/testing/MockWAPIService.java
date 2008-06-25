@@ -43,8 +43,6 @@ import org.nuxeo.ecm.platform.workflow.document.ejb.WorkflowDocumentRelationBean
 import org.nuxeo.ecm.platform.workflow.document.ejb.WorkflowDocumentSecurityBean;
 import org.nuxeo.ecm.platform.workflow.document.ejb.WorkflowDocumentSecurityPolicyBean;
 import org.nuxeo.ecm.platform.workflow.document.ejb.WorkflowDocumentVersioningPolicyBean;
-import org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService;
-import org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -115,11 +113,11 @@ public class MockWAPIService extends DefaultComponent {
         } else if (adapter.isAssignableFrom(WorkflowDocumentSecurityPolicy.class)) {
             // here there's a real service behind it, take the component
             return (T) Framework.getRuntime().getComponent(
-                    WorkflowDocumentSecurityPolicyService.NAME);
+                    WorkflowDocumentSecurityPolicyManager.NAME);
         } else if (adapter.isAssignableFrom(WorkflowRulesManager.class)) {
             // here there's a real service behind it, take the component
             return (T) Framework.getRuntime().getComponent(
-                    WorkflowRulesService.NAME);
+                    WorkflowRulesManager.NAME);
         } else if (adapter.isAssignableFrom(WorkItemsListsManager.class)) {
             WorkItemsListsBean man = new WorkItemsListsBean();
             man.setEntityManager(em);

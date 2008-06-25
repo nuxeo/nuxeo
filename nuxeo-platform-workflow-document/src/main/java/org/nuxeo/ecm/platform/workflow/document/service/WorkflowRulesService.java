@@ -29,7 +29,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.workflow.document.api.rules.WorkflowRulesManager;
 import org.nuxeo.ecm.platform.workflow.document.service.extensions.WorkflowDoctypeRuleDescriptor;
 import org.nuxeo.ecm.platform.workflow.document.service.extensions.WorkflowPathRuleDescriptor;
-import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
@@ -42,9 +41,6 @@ import org.nuxeo.runtime.model.Extension;
  */
 public class WorkflowRulesService extends DefaultComponent implements
         WorkflowRulesManager {
-
-    public static final ComponentName NAME = new ComponentName(
-            "org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService");
 
     private static final long serialVersionUID = -2935604737752201932L;
 
