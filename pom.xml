@@ -18,6 +18,7 @@
     <module>nuxeo-platform-rendering</module>
     <module>nuxeo-webengine-core</module>
     <module>nuxeo-webengine-wiki</module>
+    <module>nuxeo-webengine-server</module>
   </modules>
 
 
