@@ -4,16 +4,22 @@
   <parent>
     <groupId>org.nuxeo.runtime</groupId>
     <artifactId>nuxeo-runtime-parent</artifactId>
-    <version>1.4.3-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.runtime</groupId>
   <artifactId>nuxeo-runtime-osgi</artifactId>
-  <version>1.4.3-SNAPSHOT</version>
+  <version>1.5-SNAPSHOT</version>
   <name>Nuxeo Runtime OSGI Adapter</name>
   <description>Nuxeo Runtime: OSGi Framework Adapter.</description>
 
   <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-launcher</artifactId>    
+      <scope>provided</scope>
+    </dependency>
+    
     <dependency>
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>

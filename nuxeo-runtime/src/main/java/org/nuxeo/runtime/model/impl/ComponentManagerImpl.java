@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +50,7 @@ public class ComponentManagerImpl implements ComponentManager {
 
     private static final Log log = LogFactory.getLog(ComponentManager.class);
 
+    // must use an ordered Set to avoid loosing the order of the pending extensions
     protected final Map<ComponentName, Set<Extension>> pendingExtensions;
 
     private ListenerList listeners;
@@ -234,7 +236,8 @@ public class ComponentManagerImpl implements ComponentManager {
             for (RegistrationInfoImpl dep : deps) {
                 try {
                     dep.unresolve();
-                    // TODO ------------- keep waiting comp. in the registry - otherwise the unresolved comp will never be unregistered
+                    // TODO ------------- keep waiting comp. in the registry -
+                    // otherwise the unresolved comp will never be unregistered
                     // add a blocking dependence on me
                     if (dep.waitsFor == null) {
                         dep.waitsFor = new HashSet<ComponentName>();
@@ -255,7 +258,7 @@ public class ComponentManagerImpl implements ComponentManager {
         try {
             if (registry.remove(ri.name) == null) {
                 // may be a pending component
-                //TODO -> put pendings in the registry
+                //TODO -> put pending components in the registry
             }
             ri.unregister();
         } catch (Exception e) {
@@ -346,7 +349,7 @@ public class ComponentManagerImpl implements ComponentManager {
             }
             Set<Extension> extensions = pendingExtensions.get(name);
             if (extensions == null) {
-                extensions = new HashSet<Extension>();
+                extensions = new LinkedHashSet<Extension>(); // must keep order in which extensions are contributed
                 pendingExtensions.put(name, extensions);
             }
             extensions.add(extension);
@@ -426,7 +429,7 @@ public class ComponentManagerImpl implements ComponentManager {
         return services.keySet().toArray(new String[services.size()]);
     }
 
-    public <T> T getService(Class<T> serviceClass) {
+    public ComponentInstance getComponentProvidingService(Class<?> serviceClass) {
         try {
             RegistrationInfoImpl ri = services.get(serviceClass.getName());
             if (ri != null) {
@@ -442,12 +445,17 @@ public class ComponentManagerImpl implements ComponentManager {
                         return null;
                     }
                 }
-                return ri.getComponent().getAdapter(serviceClass);
+                return ri.getComponent();
             }
         } catch (Exception e) {
             log.error("Failed to get service: " + serviceClass);
         }
         return null;
+    }
+
+    public <T> T getService(Class<T> serviceClass) {
+        ComponentInstance comp = getComponentProvidingService(serviceClass);
+        return comp != null ? comp.getAdapter(serviceClass) : null;
     }
 
 }

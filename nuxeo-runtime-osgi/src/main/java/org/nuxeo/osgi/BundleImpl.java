@@ -25,7 +25,6 @@ import java.net.URL;
 import java.util.Dictionary;
 import java.util.Enumeration;
 
-import org.nuxeo.runtime.launcher.BundleFile;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -59,6 +58,8 @@ public class BundleImpl implements Bundle {
     protected long lastModified;
 
     protected BundleActivator activator;
+
+    protected double startupTime;
 
     public BundleImpl(OSGiAdapter osgi, BundleFile file, ClassLoader loader) {
         this (osgi, file, loader, false);
@@ -194,8 +195,6 @@ public class BundleImpl implements Bundle {
         } catch (Exception e) {
             throw new BundleException("Failed to start activator: "
                     + headers.get(Constants.BUNDLE_ACTIVATOR), e);
-        } finally {
-            setResolved();
         }
     }
 
@@ -208,8 +207,6 @@ public class BundleImpl implements Bundle {
         } catch (Exception e) {
             throw new BundleException("Failed to stop activator: "
                     + headers.get(Constants.BUNDLE_ACTIVATOR), e);
-        } finally {
-            setResolved();
         }
     }
 
@@ -298,6 +295,28 @@ public class BundleImpl implements Bundle {
         state = Bundle.RESOLVED;
         BundleEvent event = new BundleEvent(BundleEvent.STOPPED, this);
         osgi.fireBundleEvent(event);
+    }
+
+    public double getStartupTime() {
+        return startupTime;
+    }
+
+    @Override
+    public int hashCode() {
+        return symbolicName.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Bundle) {
+            return symbolicName.equals(((Bundle)obj).getSymbolicName());
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return symbolicName;
     }
 
 }

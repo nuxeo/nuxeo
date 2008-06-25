@@ -19,10 +19,10 @@
 
 package org.nuxeo.runtime;
 
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventService;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

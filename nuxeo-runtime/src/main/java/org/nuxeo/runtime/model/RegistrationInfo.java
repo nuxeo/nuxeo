@@ -19,9 +19,9 @@
 
 package org.nuxeo.runtime.model;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
-import java.io.Serializable;
 
 import org.nuxeo.runtime.Version;
 
@@ -139,5 +139,11 @@ public interface RegistrationInfo extends Serializable {
      * @return true if the component is resolved, false otherwise
      */
     boolean isResolved();
+
+    /**
+     * Get the list of provided services or null if no service is provided
+     * @return an array containing the service class names or null if no service are provided
+     */
+    public String[] getProvidedServiceNames();
 
 }

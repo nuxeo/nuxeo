@@ -18,6 +18,8 @@
 
 package org.nuxeo.runtime.model;
 
+import java.io.Serializable;
+
 import org.w3c.dom.Element;
 
 /**
@@ -26,7 +28,7 @@ import org.w3c.dom.Element;
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ConfigurationDescriptor {
+public interface ConfigurationDescriptor extends Serializable {
 
     Element getElement();
 
