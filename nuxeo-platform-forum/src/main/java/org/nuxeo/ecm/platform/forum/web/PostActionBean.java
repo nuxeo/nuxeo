@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.forum.web;
 
 import java.io.Serializable;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -88,9 +86,11 @@ import org.nuxeo.ecm.webapp.dashboard.DashboardActions;
 @Scope(ScopeType.CONVERSATION)
 public class PostActionBean extends InputController implements PostAction {
 
-    private static final long serialVersionUID = 1L;
+    static final String WRITE = "ReadWrite";
 
     private static final Log log = LogFactory.getLog(PostActionBean.class);
+
+    private static final long serialVersionUID = 2948023661103514559L;
 
     @In(required = false)
     protected RepositoryLocation currentServerLocation;
@@ -99,16 +99,16 @@ public class PostActionBean extends InputController implements PostAction {
     protected WorkflowBeansDelegate workflowBeansDelegate;
 
     @In(create = true)
-    protected NavigationContext navigationContext;
+    protected transient NavigationContext navigationContext;
 
     @In(create = true)
-    protected Principal currentUser;
+    protected transient Principal currentUser;
 
     @In(create = true)
-    protected CommentManagerActions commentManagerActions;
+    protected transient CommentManagerActions commentManagerActions;
 
     @In(create = true, required = false)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true)
     protected ThreadAction threadAction;
@@ -128,8 +128,6 @@ public class PostActionBean extends InputController implements PostAction {
     private String filename;
 
     private Blob fileContent;
-
-    static final String WRITE = "ReadWrite";
 
 
     @Destroy
@@ -329,8 +327,6 @@ public class PostActionBean extends InputController implements PostAction {
 
         List<String> moderators = getModeratorsOnParentThread();
 
-        WMActivityInstance workflowPath = null;
-
         WAPI wapi = workflowBeansDelegate.getWAPIBean();
 
         String processId = getModerationWorkflowId();
@@ -339,21 +335,17 @@ public class PostActionBean extends InputController implements PostAction {
             log.error("Error : No moderators are defined on parent thread. Moderation won't start");
             return null;
         }
+        WMActivityInstance workflowPath = null;
         try {
             Map<String, Serializable> vars = new HashMap<String, Serializable>();
 
             vars.put(WorkflowConstants.DOCUMENT_REF, post.getRef());
-
             vars.put(ForumConstants.THREAD_REF, getParentThread().getRef());
-
             vars.put(ForumConstants.FORUM_MODERATORS_LIST,
                     threadAction.getModerators().toArray());
-
             vars.put(WorkflowConstants.DOCUMENT_LOCATION_URI,
                     post.getRepositoryName());
-
             workflowPath = wapi.startProcess(processId, vars, null);
-
         } catch (WMWorkflowException we) {
             workflowPath = null;
             log.error("An error occurred while grabbing workflow definitions");
@@ -365,12 +357,12 @@ public class PostActionBean extends InputController implements PostAction {
             notifyEvent(post, WorkflowEventTypes.WORKFLOW_STARTED, name, name);
             Events.instance().raiseEvent(EventNames.WORKFLOW_NEW_STARTED);
         }
-        return workflowPath;
 
+        return workflowPath;
     }
 
     /**
-     * Get the WF id associated to the moderation process.
+     * Gets the WF id associated to the moderation process.
      */
     public String getModerationWorkflowId() throws WMWorkflowException {
         WAPI wapi = workflowBeansDelegate.getWAPIBean();
@@ -379,7 +371,7 @@ public class PostActionBean extends InputController implements PostAction {
     }
 
     /**
-     * Get the current task Id.
+     * Gets the current task Id.
      *
      * @return
      * @throws WMWorkflowException
@@ -442,8 +434,7 @@ public class PostActionBean extends InputController implements PostAction {
     }
 
     public List<String> getModeratorsOnParentThread() {
-
-        ArrayList<String> moderators = (ArrayList<String>) getParentThread().getProperty(
+        List<String> moderators = (List<String>) getParentThread().getProperty(
                 "thread", "moderators");
         if (moderators != null) {
             return moderators;
@@ -491,9 +482,9 @@ public class PostActionBean extends InputController implements PostAction {
     }
 
     /**
-     * Get the title of the post for creation purpose. If the post to be created
+     * Gets the title of the post for creation purpose. If the post to be created
      * reply to a previous post, the title of the new post comes with the
-     * previous title, and a prefix (i.e : Re : Previous Title)
+     * previous title, and a prefix (i.e : Re : Previous Title).
      */
     public String getTitle() throws ClientException {
 
@@ -554,8 +545,8 @@ public class PostActionBean extends InputController implements PostAction {
             if (currentUser instanceof NuxeoPrincipal) {
                 List<String> groupNames = ((NuxeoPrincipal) currentUser).getAllGroups();
                 for (String groupName : groupNames) {
-                    witems = wapi.getWorkItemsFor(new WMParticipantImpl(
-                            groupName), null);
+                    witems = wapi.getWorkItemsFor(
+                            new WMParticipantImpl(groupName), null);
                     witem = getWorkItemsForUserFrom(witems, post, groupName);
                     if (witem != null) {
                         break;
@@ -570,17 +561,15 @@ public class PostActionBean extends InputController implements PostAction {
     private String getWorkItemIdFor(DocumentModel post)
             throws WMWorkflowException {
 
-        String weed = null;
-
         if (post == null) {
-            return weed;
+            return null;
         }
 
         WMWorkItemInstance item = getWorkItemFor(post);
+        String weed = null;
         if (item != null) {
             weed = item.getId();
         }
-
 
         return weed;
     }

@@ -282,7 +282,6 @@ public class NotificationService extends DefaultComponent {
         } else {
             log.error("Impossible to notify core events !");
         }
-
     }
 
     public static void removeSubscription(String username, String notification,
