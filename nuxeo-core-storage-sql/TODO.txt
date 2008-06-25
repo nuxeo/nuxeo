@@ -1,17 +1,13 @@
 SQL Storage TODO
 
-- flesh out children api
+- refactor core document apis
 
-- pristine cache invalidation on commit
+- implement core sql adapter
 
-- transactions
+- transactional file storage
 
-- file storage
+- hierarchy management, children optimizations
 
-- complex types vs children storage
+- table aggregation and optimization
 
-- hierarchy management
-
-- table aggregation
-
-- search
+- search apis and implementation
