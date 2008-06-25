@@ -6,6 +6,7 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   class="menu">
 
 <c:if test="#{treeManager.treeModel != null}">
@@ -61,11 +62,11 @@
 </f:facet>
 
             </nxu:lazyTree>
-			<script>
-			  if (window.loaded) {
-			    jQuery("table td div span.popupTarget").contextMenu("popupMenu");
-			  }
-			</script>
+      <script>
+        if (window.loaded) {
+          jQuery("table td div span.popupTarget").contextMenu("popupMenu");
+        }
+      </script>
           </h:panelGroup>
         </h:form>
       </dd>
@@ -80,7 +81,7 @@
   if (window.addEventListener) {
     window.addEventListener("load", function (e) {window.loaded = true}, true);
   } else if (window.attachEvent) {
-	window.attachEvent("onload", function (e) {window.loaded = true});
+  window.attachEvent("onload", function (e) {window.loaded = true});
   }
 
   setupContextMenu("table td div span.popupTarget");
