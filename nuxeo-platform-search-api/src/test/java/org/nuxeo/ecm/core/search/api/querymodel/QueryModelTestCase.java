@@ -28,6 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
+import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModelService;
@@ -137,6 +138,17 @@ public class QueryModelTestCase extends RepositoryOSGITestCase {
             fail("Should have raised an exception since stateless models need a parameters array");
         } catch (ClientException e) {
         }
+    }
+
+    public void testStatelessQueryModelWithLiteral() throws ClientException {
+        QueryModelDescriptor descriptor = statelessModel.getDescriptor();
+        assertTrue(descriptor.isStateless());
+        assertFalse(descriptor.isStateful());
+        // GR stupid query (we don't care)
+        assertEquals(
+                "SELECT * FROM Document WHERE dc:contributors = DATE '2008-06-25' AND ecm:path STARTSWITH 'somelocation'",
+                descriptor.getQuery(new Object[] { new DateLiteral("2008-06-25", true),
+                        "somelocation" }));
     }
 
     // NXP-2059
