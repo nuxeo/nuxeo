@@ -52,11 +52,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-test</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
         <artifactId>nuxeo-runtime-jboss-adapter</artifactId>
         <version>${nuxeo.runtime.version}</version>
         <type>jboss-sar</type>
@@ -67,6 +62,7 @@
         <version>${nuxeo.runtime.version}</version>
       </dependency>
 
+      <!-- scope provided -->
       <dependency>
         <groupId>commons-jexl</groupId>
         <artifactId>commons-jexl</artifactId>
@@ -78,6 +74,14 @@
         <artifactId>osgi-core</artifactId>
         <version>4.1</version>
         <scope>provided</scope>
+      </dependency>
+
+      <!-- scope test -->
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-test</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
