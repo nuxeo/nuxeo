@@ -27,9 +27,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Local;
-import javax.ejb.PostActivate;
 import javax.ejb.Remote;
-import javax.ejb.Remove;
 import javax.ejb.Stateless;
 
 import org.apache.commons.logging.Log;
@@ -209,6 +207,19 @@ public class IOManagerBean implements IOManager {
             Collection<String> ioAdapters) throws ClientException {
         try {
             String uri = service.externalizeExport(repo, docReaderFactoryName,
+                    readerFactoryParams, ioAdapters);
+            return uri;
+        } catch (Throwable t) {
+            throw EJBExceptionHandler.wrapException(t);
+        }
+    }
+
+    public String externalizeExport(String repo,
+            Collection<DocumentRef> sources, String docReaderFactoryName,
+            Map<String, Object> readerFactoryParams,
+            Collection<String> ioAdapters) throws ClientException {
+        try {
+            String uri = service.externalizeExport(repo, sources, docReaderFactoryName,
                     readerFactoryParams, ioAdapters);
             return uri;
         } catch (Throwable t) {

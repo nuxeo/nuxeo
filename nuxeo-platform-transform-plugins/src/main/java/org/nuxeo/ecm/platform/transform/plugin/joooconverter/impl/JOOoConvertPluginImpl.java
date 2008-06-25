@@ -132,13 +132,11 @@ public class JOOoConvertPluginImpl extends AbstractPlugin implements
      * @return DocumentFormat for the given mimetype
      * @throws Exception
      */
-    private static DocumentFormat getSourceFormat(String mimetype)
-            throws Exception {
+    private static DocumentFormat getSourceFormat(String mimetype) {
         return formatRegistry.getFormatByMimeType(mimetype);
     }
 
-    private static DocumentFormat getSourceFormatByExtension(String extension)
-            throws Exception {
+    private static DocumentFormat getSourceFormatByExtension(String extension) {
         return formatRegistry.getFormatByFileExtension(extension);
     }
 
