@@ -58,7 +58,7 @@ import org.nuxeo.runtime.deploy.FileChangeNotifier;
  */
 public class DefaultWebApplication implements WebApplication, FileChangeListener {
 
-    public final static Log log = LogFactory.getLog(WebApplication.class);
+    public static final Log log = LogFactory.getLog(WebApplication.class);
 
     protected WebEngine engine;
     protected FreemarkerEngine rendering;
@@ -82,7 +82,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
 
     public DefaultWebApplication(WebEngine engine, WebApplicationDescriptor desc) throws WebException {
         this.engine = engine;
-        this.id = desc.getId();
+        id = desc.getId();
         String path = desc.getPath();
         if (path == null || path.length() == 0) {
             pathAsString = "/";
@@ -95,10 +95,10 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
             documentRoot = new PathRef(docRoot);
             documentRootPath = new Path(docRoot).makeAbsolute().removeTrailingSeparator();
         }
-        this.defaultPage = desc.getDefaultPage("default.ftl");
-        this.indexPage = desc.getIndexPage("index.ftl");
-        this.errorPage = desc.getErrorPage("error.ftl");
-        this.repositoryName = desc.getRepositoryName();
+        defaultPage = desc.getDefaultPage("default.ftl");
+        indexPage = desc.getIndexPage("index.ftl");
+        errorPage = desc.getErrorPage("error.ftl");
+        repositoryName = desc.getRepositoryName();
         if (repositoryName == null) {
             repositoryName = "default";
         }
@@ -117,18 +117,18 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         }
         try {
             List<RootDescriptor> roots = desc.getRoots();
-            this.dirStack = new DirectoryStack();
+            dirStack = new DirectoryStack();
             if (roots == null) {
-                this.dirStack.addDirectory(new File(engine.getRootDirectory(), "default"), 0);
+                dirStack.addDirectory(new File(engine.getRootDirectory(), "default"), 0);
             } else {
                 Collections.sort(roots);
                 for (RootDescriptor rd : roots) {
                     File file =new File(engine.getRootDirectory(), rd.path);
-                    this.dirStack.addDirectory(file, rd.priority);
+                    dirStack.addDirectory(file, rd.priority);
                 }
             }
 
-            this.rendering = new FreemarkerEngine();
+            rendering = new FreemarkerEngine();
             rendering.setResourceLocator(this);
             rendering.setMessageBundle(engine.getMessageBundle());
             rendering.setSharedVariable("env", engine.getEnvironment());
@@ -198,7 +198,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
 
     public void setPath(Path path) {
         this.path = path;
-        this.pathAsString = path.toString();
+        pathAsString = path.toString();
     }
 
     public String getPathAsString() {
@@ -210,8 +210,8 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
     }
 
     public void setDocumentRoot(Path path) {
-        this.documentRoot = new PathRef(path.toString());
-        this.documentRootPath = path;
+        documentRoot = new PathRef(path.toString());
+        documentRootPath = path;
     }
 
     public Path getRelativeDocumentPath(Path docPath) {
@@ -277,11 +277,13 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         if (obj == null) {
             String id = getTypeBinding("Document");
             if (id == null) {
-                throw new WebRuntimeException("Invalid configuration: The default object (the one mapped to Document type) was not declared");
+                throw new WebRuntimeException(
+                        "Invalid configuration: The default object (the one mapped to Document type) was not declared.");
             }
             obj = engine.getObject(id);
             if (obj == null) {
-                throw new WebRuntimeException("Invalid configuration: The default object (the one mapped to Document type) was not declared");
+                throw new WebRuntimeException(
+                        "Invalid configuration: The default object (the one mapped to Document type) was not declared.");
             }
             objects.put("Document", obj);
         }
@@ -322,10 +324,11 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         fileCache.clear();
     }
 
-
     public ScriptFile getFile(String path) throws IOException {
         int len = path.length();
-        if (path == null || len == 0) return null;
+        if (path == null || len == 0) {
+            return null;
+        }
         char c = path.charAt(0);
         if (c == '.') { // avoid getting files outside the web root
             path = new Path(path).makeAbsolute().toString();
@@ -336,8 +339,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
     }
 
     /**
-     *
-     * @param path a normalized path (absollute path)
+     * @param path a normalized path (absolute path)
      * @return
      */
     private final ScriptFile findFile(String path) throws IOException {
@@ -351,7 +353,6 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         }
         return file;
     }
-
 
     public ScriptFile getActionScript(String action, DocumentType docType) throws IOException {
         String type = docType.getName();
@@ -414,7 +415,6 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
             }
         }
     }
-
 
     public void registerRenderingExtension(String id, Object obj) {
         rendering.setSharedVariable(id, obj);

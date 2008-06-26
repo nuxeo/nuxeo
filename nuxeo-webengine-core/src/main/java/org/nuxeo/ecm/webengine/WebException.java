@@ -28,9 +28,9 @@ import org.nuxeo.ecm.webengine.servlet.WebConst;
 
 public class WebException extends ClientException {
 
-    private static final long serialVersionUID = 176876876786L;
+    public static final String ID = "generic";
 
-    public final static String ID = "generic";
+    private static final long serialVersionUID = 176876876786L;
 
     private int returnCode = WebConst.SC_INTERNAL_SERVER_ERROR;
 
@@ -76,7 +76,7 @@ public class WebException extends ClientException {
             Throwable cause = e.getCause();
             if (cause != null && cause.getMessage() != null) {
                 if (cause.getMessage().contains("org.nuxeo.ecm.core.model.NoSuchDocumentException")) {
-                    return new WebResourceNotFoundException(cause.getMessage(), (ClientException)e);
+                    return new WebResourceNotFoundException(cause.getMessage(), e);
                 }
             }
             return new WebDocumentException(message, (ClientException)e);

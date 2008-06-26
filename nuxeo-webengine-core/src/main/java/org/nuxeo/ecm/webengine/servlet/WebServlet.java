@@ -50,14 +50,13 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class WebServlet extends HttpServlet {
 
+    protected static final int BUFFER_SIZE = 4096 * 16;
+
     private static final long serialVersionUID = 965764764858L;
 
     private static final Log log = LogFactory.getLog(WebServlet.class);
 
-    protected static final int BUFFER_SIZE = 4096 * 16;
-
-    private final static ThreadLocal<WebContext> CONTEXT = new ThreadLocal<WebContext>();
-
+    private static final ThreadLocal<WebContext> CONTEXT = new ThreadLocal<WebContext>();
 
     private WebEngine engine;
 
@@ -71,7 +70,6 @@ public class WebServlet extends HttpServlet {
         super.init(config);
         engine = Framework.getLocalService(WebEngine.class);
     }
-
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp)
@@ -167,7 +165,6 @@ public class WebServlet extends HttpServlet {
         }
         //System.out.println(">>>>>>>>>> RENDERING TOOK: " + ((System.currentTimeMillis() - s) / 1000));
     }
-
 
     protected static void displayError(HttpServletResponse resp, Throwable t,
             String message, int code) {

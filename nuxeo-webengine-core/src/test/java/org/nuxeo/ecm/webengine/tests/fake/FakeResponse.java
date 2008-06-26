@@ -32,12 +32,11 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Fake WebDAV Response for tests.

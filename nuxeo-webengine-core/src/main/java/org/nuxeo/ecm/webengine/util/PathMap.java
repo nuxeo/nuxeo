@@ -30,7 +30,6 @@ import org.nuxeo.common.utils.Path;
  * This map is not synchronized.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class PathMap<T> {
 
@@ -90,7 +89,6 @@ public class PathMap<T> {
     public T match(String path) {
         return match(new Path(path).segments());
     }
-
 
     public static class Entry<T> {
         HashMap<String, Entry<T>> entries;
@@ -160,7 +158,6 @@ public class PathMap<T> {
 
     }
 
-
     public static void main(String[] args) {
         PathMap<Path> pm = new PathMap<Path>();
 
@@ -185,13 +182,12 @@ public class PathMap<T> {
         for (int i=0; i<1000; i++) {
             for (Path p : paths) {
                 Path path = pm.get(p);
-                if (path != p) throw new IllegalArgumentException(path.toString());
+                if (path != p) {
+                    throw new IllegalArgumentException(path.toString());
+                }
             }
         }
         System.out.println("pm.get : "+((System.currentTimeMillis()-s)/1000));
-
-
     }
-
 
 }

@@ -27,23 +27,23 @@ import org.nuxeo.ecm.webengine.WebException;
  */
 public class WebSecurityException extends WebException {
 
-    private static final long serialVersionUID = 1L;
+    public static final String ID = "security";
 
-    public final static String ID = "security";
+    private static final long serialVersionUID = 1L;
 
     protected String action;
 
     public WebSecurityException(String message) {
-        super (message);
+        super(message);
     }
 
     public WebSecurityException(String message, String action) {
-        super (message);
+        super(message);
         this.action = action;
     }
 
     public WebSecurityException(String message, String action, Throwable cause) {
-        super (message, cause);
+        super(message, cause);
         this.action =action;
     }
 
@@ -51,17 +51,10 @@ public class WebSecurityException extends WebException {
         super (message, cause);
     }
 
-    /**
-     * @param action the action to set.
-     */
     public void setAction(String action) {
         this.action = action;
     }
 
-
-    /**
-     * @return the action.
-     */
     public String getAction() {
         return action;
     }
@@ -70,4 +63,5 @@ public class WebSecurityException extends WebException {
     public String getId() {
         return ID;
     }
+
 }
