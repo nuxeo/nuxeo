@@ -86,7 +86,7 @@ public class ActionManagerBusinessDelegate implements Serializable {
 
     @Destroy
     @PermitAll
-    public void destroy() throws ClientException {
+    public void destroy() {
         if (null != actionManager) {
             actionManager.remove();
             actionManager = null;

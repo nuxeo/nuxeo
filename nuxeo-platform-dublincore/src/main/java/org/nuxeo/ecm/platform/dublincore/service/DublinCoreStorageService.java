@@ -27,8 +27,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -81,7 +79,6 @@ public class DublinCoreStorageService extends DefaultComponent {
                 // First time only => creator
                 doc.setProperty("dublincore", "creator", principalName);
             }
-
         }
 
         if (!contributorsList.contains(principalName)) {

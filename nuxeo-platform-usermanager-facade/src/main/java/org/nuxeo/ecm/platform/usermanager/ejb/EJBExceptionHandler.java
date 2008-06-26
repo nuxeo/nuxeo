@@ -19,23 +19,18 @@
 
 package org.nuxeo.ecm.platform.usermanager.ejb;
 
-import java.io.Serializable;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Offers utility methods to handle exceptions.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- *
  */
-public class EJBExceptionHandler implements Serializable {
+public class EJBExceptionHandler {
 
-    private static final long serialVersionUID = 3571163516248088734L;
-
-    private static final Log log = LogFactory.getLog(EJBExceptionHandler.class);
+    // Utility class.
+    private EJBExceptionHandler() {
+    }
 
     /**
      * Wraps the received exception into a {@link ClientException}.
@@ -43,8 +38,7 @@ public class EJBExceptionHandler implements Serializable {
      * @param exception
      * @return
      */
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
-    public ClientException wrapException(Throwable exception) {
+    public static ClientException wrapException(Throwable exception) {
         ClientException clientException;
 
         if (null == exception) {
@@ -73,4 +67,5 @@ public class EJBExceptionHandler implements Serializable {
         }
         return clientException;
     }
+
 }

@@ -68,7 +68,7 @@ public class FancyURLResponseWrapper extends HttpServletResponseWrapper {
      * original url.
      */
     protected String rewriteUrl(String url, DocumentView docView,
-            URLPolicyService service) throws Exception {
+            URLPolicyService service) {
         // try to get outcome that was saved in request by
         // FancyNavigationHandler
         String newViewId = (String) request.getAttribute(URLPolicyService.POST_OUTCOME_REQUEST_KEY);
