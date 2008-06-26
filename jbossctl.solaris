@@ -24,14 +24,14 @@ CONFIG=default
 JBOSS_USER=
 BINDHOST=
 PORT=8080
-
 # The directory containing directories log, bin, conf, etc.
 HERE=`dirname $0`
 JBOSS_HOME=`cd $HERE/..; pwd -P`
 
 # Read an optional running configuration file
 if [ -r "$JBOSS_HOME/bin/jbossctl.conf" ]; then
-    export RUN_CONF=$JBOSS_HOME/bin/jbossctl.conf
+    RUN_CONF=$JBOSS_HOME/bin/jbossctl.conf
+    export RUN_CONF
     . $RUN_CONF
 fi
 if [ -z "$JAVA_HOME" ]; then
@@ -82,7 +82,8 @@ else
 fi
 
 if [ -z "`echo $PATH | grep $JAVA_HOME/bin`" ]; then
-  export PATH=$JAVA_HOME/bin:$PATH
+  PATH=$JAVA_HOME/bin:$PATH
+  export PATH
 fi
 
 extract_pid() {
@@ -101,7 +102,7 @@ status() {
     # check if pid file and process exists
     ps_alive=0
     if [ -f "$PID_FILE" ] && [ -n "$JBOSS_PID" ] && \
-     [ -n "`ps $JBOSS_PID|grep $JBOSS_PID`" ]; then
+     [ -n "`ps -ef |grep $JBOSS_PID`" ]; then
         ps_alive=1;
     fi
     if  [ "$1" = "check_alive" -a $ps_alive = 1 ] ||
@@ -121,7 +122,7 @@ status() {
 
 start() {
     status check_dead warn
-    if [ $? ] ; then
+    if [ ! $? ] ; then
         return 0 # success
     fi
     echo "Starting JBoss... \c"
@@ -139,10 +140,10 @@ start() {
     while [ $count -le $waiting_loops ]; do
 # could use ServerBindPort (8093) from jboss/server/default/deploy/jms/uil2-service.xml ?
 #        netstat -ln |grep $PORT > /dev/null
-        tail -n1 $LOGF |grep "Started in" >/dev/null
+        tail -1 $LOGF |grep "Started in" >/dev/null
         if [ $? = 0 ]; then
             echo "Server started."
-            ggrep 'Nuxeo ECM Started|Nuxeo EP Started' -B1 -A5 $LOGF|tail -n7
+             tail -n9 $LOGF | head -n7
             return 0
         fi
         echo ".\c"
@@ -159,7 +160,8 @@ startd() {
         return 0 # success
     fi
     echo "Setup debug configuration"
-    export JBOSS_DEBUG_MODE=1
+    JBOSS_DEBUG_MODE=1
+    export JBOSS_DEBUG_MODE
     start
     return $?
 }
@@ -168,9 +170,10 @@ stop() {
     if ! status check_alive warn; then
         return 0 # success
     fi
+    extract_pid
     echo "Stopping JBoss... \c"
     echo "(using jnp://$JNPHOST:$JNPPORT)"
-    echo -n "[$JBOSS_PID]"
+    echo "[$JBOSS_PID]\c"
     if [ -z "$SU" ]; then
         $CMD_STOP > /dev/null 2>&1
     else
@@ -201,7 +204,7 @@ stop() {
 waitstopped() {
     echo "Waiting for server to stop..."
     while true; do
-        case `tail -n 1 $LOG` in
+        case `tail -1 $LOG` in
             "Shutdown complete"|"Halting VM")
                 echo "Server stopped."
                 return 0
