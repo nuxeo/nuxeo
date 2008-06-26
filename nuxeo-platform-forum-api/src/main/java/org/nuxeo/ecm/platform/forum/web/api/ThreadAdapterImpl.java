@@ -25,9 +25,7 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
 
     private List<DocumentModel> pendingPosts;
 
-
     private DocumentModel lastPublishedPost;
-
 
     public ThreadAdapterImpl(DocumentModel threadDoc) {
         this.threadDoc = threadDoc;
@@ -95,13 +93,10 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
 
         CommentableDocument commentDoc = doc.getAdapter(CommentableDocument.class);
 
-        if (commentDoc!=null)
-        {
+        if (commentDoc != null) {
             List<DocumentModel> childComments = commentDoc.getComments();
 
-
-            for (DocumentModel childComment : childComments)
-            {
+            for (DocumentModel childComment : childComments) {
                 allSubPosts.add(childComment);
                 allSubPosts.addAll(getSubComments(childComment));
             }
