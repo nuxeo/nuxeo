@@ -69,8 +69,6 @@ public class RepeatTagHandler extends TagHandler {
 
     protected final TagAttribute index;
 
-    private transient DataModel model;
-
     // TODO: add size and offset
 
     public RepeatTagHandler(TagConfig config) {
@@ -91,6 +89,7 @@ public class RepeatTagHandler extends TagHandler {
 
     @SuppressWarnings("unchecked")
     private DataModel getDataModel(FaceletContext ctx) {
+        DataModel model;
         if (value == null) {
             model = EMPTY_MODEL;
         } else {
