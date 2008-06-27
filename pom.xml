@@ -95,7 +95,7 @@
       </dependency>
       <dependency>
         <groupId>commons-logging</groupId>
-        <artifactId>commons-logging-api</artifactId>
+        <artifactId>commons-logging</artifactId>
         <version>1.1</version>
         <scope>provided</scope>
       </dependency>
@@ -564,24 +564,51 @@
         <version>0.4.3</version>
         <scope>provided</scope>
       </dependency>
+      <!--
+      <dependency>
+        <groupId>xml-apis</groupId>
+        <artifactId>xmlParserAPIs</artifactId>
+        <scope>provided</scope>
+        <version>2.6.2</version>
+      </dependency>
+      -->
+      <dependency>
+        <groupId>xml-apis</groupId>
+        <artifactId>xml-apis</artifactId>
+        <scope>provided</scope>
+        <version>1.0.b2</version>
+      </dependency>
+      <dependency>
+        <groupId>xerces</groupId>
+        <artifactId>xmlParserAPIs</artifactId>
+        <scope>provided</scope>
+        <version>2.6.2</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
+    <dependency>
+      <groupId>com.intellij</groupId>
+      <artifactId>annotations</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- test scope -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging-api</artifactId>
-      <scope>provided</scope>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.intellij</groupId>
-      <artifactId>annotations</artifactId>
-      <scope>provided</scope>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -656,24 +683,24 @@
         <extensions>true</extensions>
       </plugin>
       <!--
-      <plugin>
+        <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
         <version>1.0-beta-1</version>
         <executions>
-          <execution>
-            <phase>validate</phase>
-            <goals>
-              <goal>create</goal>
-            </goals>
-          </execution>
+        <execution>
+        <phase>validate</phase>
+        <goals>
+        <goal>create</goal>
+        </goals>
+        </execution>
         </executions>
         <configuration>
-          <doCheck>false</doCheck>
-          <doUpdate>false</doUpdate>
+        <doCheck>false</doCheck>
+        <doUpdate>false</doUpdate>
         </configuration>
-      </plugin>
-       -->
+        </plugin>
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-nuxeo-plugin</artifactId>
@@ -702,7 +729,9 @@
           <configuration>
             <ejbVersion>3.0</ejbVersion>
             <archive>
-              <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+              <manifestFile>
+                src/main/resources/META-INF/MANIFEST.MF
+              </manifestFile>
               <manifestEntries>
                 <Bundle-Version>${eclipseVersion}</Bundle-Version>
                 <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
@@ -716,7 +745,9 @@
           <version>2.2</version>
           <configuration>
             <archive>
-              <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+              <manifestFile>
+                src/main/resources/META-INF/MANIFEST.MF
+              </manifestFile>
               <manifestEntries>
                 <Bundle-Version>${eclipseVersion}</Bundle-Version>
                 <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
@@ -725,14 +756,14 @@
           </configuration>
         </plugin>
         <!--
-        <plugin>
+          <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>dashboard-maven-plugin</artifactId>
           <version>1.0-SNAPSHOT</version>
           <configuration>
-            <configLocation>dashboard-config.xml</configLocation>
+          <configLocation>dashboard-config.xml</configLocation>
           </configuration>
-        </plugin>
+          </plugin>
         -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -774,13 +805,6 @@
           <artifactId>maven-eclipse-plugin</artifactId>
           <version>2.4</version>
         </plugin>
-        <!--
-        <plugin>
-          <groupId>org.nuxeo.maven.plugins</groupId>
-          <artifactId>maven-nuxeo-installer-plugin</artifactId>
-          <version>1.0-SNAPSHOT</version>
-        </plugin>
-        -->
       </plugins>
     </pluginManagement>
     <!--finalName>${pom.artifactId}-${pom.version}-r${buildNumber}</finalName-->
@@ -858,7 +882,9 @@
               <windowtitle>
                 Nuxeo Enterprise Platform 5.1 API Documentation
               </windowtitle>
-              <doctitle>Nuxeo Enterprise Platform 5.1 API Documentation</doctitle>
+              <doctitle>
+                Nuxeo Enterprise Platform 5.1 API Documentation
+              </doctitle>
               <header>Nuxeo Enterprise Platform 5.1</header>
               <links>
                 <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
@@ -866,13 +892,19 @@
                 <link>
                   http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/
                 </link>
-                <link>http://jakarta.apache.org/commons/fileupload/apidocs/</link>
-                <link>http://jakarta.apache.org/commons/httpclient/apidocs/</link>
+                <link>
+                  http://jakarta.apache.org/commons/fileupload/apidocs/
+                </link>
+                <link>
+                  http://jakarta.apache.org/commons/httpclient/apidocs/
+                </link>
                 <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
                 <link>http://jakarta.apache.org/commons/io/apidocs/</link>
                 <link>http://junit.sourceforge.net/javadoc/</link>
                 <link>http://logging.apache.org/log4j/docs/api/</link>
-                <link>http://www.opensymphony.com/compass/versions/1.2M2/api/</link>
+                <link>
+                  http://www.opensymphony.com/compass/versions/1.2M2/api/
+                </link>
                 <link>http://jackrabbit.apache.org/api-1/</link>
                 <link>http://www.day.com/maven/jsr170/javadocs/jcr-1.0/</link>
                 <link>http://myfaces.apache.org/tomahawk/apidocs/</link>
@@ -979,20 +1011,16 @@
         </site>
         <repository>
           <id>nuxeo_release</id>
-          <url>
-            file:///home/archiva/repositories/nuxeo_release
-          </url>
+          <url>file:///home/archiva/repositories/nuxeo_release</url>
         </repository>
         <snapshotRepository>
           <id>nuxeo_snapshot</id>
-          <url>
-            file:///home/archiva/repositories/nuxeo_snapshot
-          </url>
+          <url>file:///home/archiva/repositories/nuxeo_snapshot</url>
         </snapshotRepository>
       </distributionManagement>
     </profile>
     <!-- build number using build time stamp for apogee -->
-     <profile>
+    <profile>
       <id>timestamp-rev-in-mf</id>
       <activation>
         <activeByDefault>true</activeByDefault>
@@ -1030,9 +1058,13 @@
               <configuration>
                 <ejbVersion>3.0</ejbVersion>
                 <archive>
-                  <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+                  <manifestFile>
+                    src/main/resources/META-INF/MANIFEST.MF
+                  </manifestFile>
                   <manifestEntries>
-                    <Bundle-Version>${eclipseVersion}-t${buildNumber}</Bundle-Version>
+                    <Bundle-Version>
+                      ${eclipseVersion}-t${buildNumber}
+                    </Bundle-Version>
                     <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
                   </manifestEntries>
                 </archive>
@@ -1044,9 +1076,13 @@
               <version>2.2</version>
               <configuration>
                 <archive>
-                  <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+                  <manifestFile>
+                    src/main/resources/META-INF/MANIFEST.MF
+                  </manifestFile>
                   <manifestEntries>
-                    <Bundle-Version>${eclipseVersion}-t${buildNumber}</Bundle-Version>
+                    <Bundle-Version>
+                      ${eclipseVersion}-t${buildNumber}
+                    </Bundle-Version>
                     <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
                   </manifestEntries>
                 </archive>
@@ -1091,9 +1127,13 @@
               <configuration>
                 <ejbVersion>3.0</ejbVersion>
                 <archive>
-                  <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+                  <manifestFile>
+                    src/main/resources/META-INF/MANIFEST.MF
+                  </manifestFile>
                   <manifestEntries>
-                    <Bundle-Version>${eclipseVersion}-r${buildNumber}</Bundle-Version>
+                    <Bundle-Version>
+                      ${eclipseVersion}-r${buildNumber}
+                    </Bundle-Version>
                     <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
                   </manifestEntries>
                 </archive>
@@ -1105,9 +1145,13 @@
               <version>2.2</version>
               <configuration>
                 <archive>
-                  <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+                  <manifestFile>
+                    src/main/resources/META-INF/MANIFEST.MF
+                  </manifestFile>
                   <manifestEntries>
-                    <Bundle-Version>${eclipseVersion}-r${buildNumber}</Bundle-Version>
+                    <Bundle-Version>
+                      ${eclipseVersion}-r${buildNumber}
+                    </Bundle-Version>
                     <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
                   </manifestEntries>
                 </archive>
