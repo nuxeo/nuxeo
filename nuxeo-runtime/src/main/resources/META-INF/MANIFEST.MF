@@ -5,6 +5,7 @@ Bundle-SymbolicName: org.nuxeo.runtime;singleton:=true
 Bundle-Activator: org.nuxeo.runtime.osgi.OSGiRuntimeActivator
 Bundle-Vendor: Nuxeo
 Bundle-Localization: bundle
+Bundle-Category: runtime
 Export-Package: org.nuxeo.runtime,
  org.nuxeo.runtime.api,
  org.nuxeo.runtime.api.login,
