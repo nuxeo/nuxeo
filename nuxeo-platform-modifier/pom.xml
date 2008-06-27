@@ -59,6 +59,11 @@
       <artifactId>nuxeo-platform-transform-plugins</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.artofsolving</groupId>
+      <artifactId>jodconverter</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
