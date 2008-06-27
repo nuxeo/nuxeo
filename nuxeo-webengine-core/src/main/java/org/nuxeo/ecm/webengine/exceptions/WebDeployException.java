@@ -27,7 +27,7 @@ import org.nuxeo.ecm.webengine.WebException;
  */
 public class WebDeployException extends WebException {
 
-    public final static String ID="deploy";
+    public static final String ID = "deploy";
 
     private static final long serialVersionUID = 1L;
 
@@ -40,6 +40,7 @@ public class WebDeployException extends WebException {
         super (message, cause);
     }
 
+    @Override
     public String getId() {
         return ID;
     }

@@ -113,7 +113,7 @@ public class Attributes implements Cloneable {
             return true;
         }
         if (obj instanceof Attributes) {
-            Attributes attrs = (Attributes)obj;
+            Attributes attrs = (Attributes) obj;
             if (attrs.size != size) {
                 return false;
             }

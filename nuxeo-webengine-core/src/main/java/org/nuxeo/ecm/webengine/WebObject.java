@@ -35,7 +35,7 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
  */
 public class WebObject {
 
-    protected final static Log log = LogFactory.getLog(WebObject.class);
+    protected static final Log log = LogFactory.getLog(WebObject.class);
 
     protected String urlPath;
 
@@ -112,7 +112,6 @@ public class WebObject {
         }
         return null;
     }
-
 
     /**
      * @return the request.

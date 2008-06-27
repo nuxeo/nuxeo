@@ -50,7 +50,8 @@ public class AddFileActionHandler implements ActionHandler {
             } else if (doc.hasSchema("files")) {
                 xpath = "files:files";
             } else {
-                throw new IllegalArgumentException("Missing request parameter named 'property' that specify the blob property xpath to fetch");
+                throw new IllegalArgumentException(
+                        "Missing request parameter named 'property' that specifies the blob property xpath to fetch");
             }
         }
         Blob blob = form.getFirstBlob();

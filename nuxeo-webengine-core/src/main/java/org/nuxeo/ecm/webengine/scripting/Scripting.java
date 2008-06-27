@@ -54,16 +54,14 @@ import org.python.core.PyTuple;
  */
 public class Scripting {
 
-    private final static Log log = LogFactory.getLog(Scripting.class);
+    private static final Log log = LogFactory.getLog(Scripting.class);
 
     private final ConcurrentMap<File, Entry> cache = new ConcurrentHashMap<File, Entry>();
 
     protected ScriptEngineManager scriptMgr = new ScriptEngineManager();
 
-
     public Scripting() {
     }
-
 
     public static CompiledScript compileScript(ScriptEngine engine, File file) throws ScriptException {
         if (engine instanceof Compilable) {
@@ -172,4 +170,5 @@ public class Scripting {
             this.script = script;
         }
     }
+
 }

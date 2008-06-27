@@ -107,7 +107,7 @@ public class FormData {
             try {
                 items = new HashMap<String, List<FileItem>>();
                 ServletRequestContext ctx = new ServletRequestContext(request);
-                List<FileItem> fileItems = (List<FileItem>)new ServletFileUpload(new DiskFileItemFactory()).parseRequest(ctx);
+                List<FileItem> fileItems = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(ctx);
                 for (FileItem item : fileItems) {
                     String key = item.getFieldName();
                     List<FileItem> list = items.get(key);
@@ -299,7 +299,7 @@ public class FormData {
     }
 
     public void fillDocumentFromForm(DocumentModel doc) throws PropertyException, WebException {
-        Map<String, String[]> map = (Map<String, String[]>) request.getParameterMap();
+        Map<String, String[]> map = request.getParameterMap();
         for (Map.Entry<String,String[]> entry : map.entrySet()) {
             String key = entry.getKey();
             if (key.indexOf(':') > -1) { // an XPATH property
@@ -377,7 +377,8 @@ public class FormData {
                 }
                 p.setValue(blob);
             } else {
-                throw new WebException("Cannot set complext properties from HTML forms. You need to set each sub-scalar property explicitelly");
+                throw new WebException(
+                        "Cannot set complext properties from HTML forms. You need to set each sub-scalar property explicitely");
             }
         }
     }

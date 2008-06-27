@@ -44,7 +44,7 @@ import org.osgi.framework.Bundle;
 @XObject("install")
 public class Installer {
 
-    private final static Log log = LogFactory.getLog(Installer.class);
+    private static final Log log = LogFactory.getLog(Installer.class);
 
     @XNode("@guard")
     public String guard;

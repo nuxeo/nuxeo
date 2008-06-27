@@ -38,9 +38,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Fake WebDAV Request for tests.

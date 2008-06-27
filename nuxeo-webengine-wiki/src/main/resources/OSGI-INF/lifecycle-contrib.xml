@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.webengine.core.lifecycles">
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="lifecycle">
+
     <lifecycle name="BlogPost" lifecyclemanager="jcrlifecyclemanager" initial="draft">
       <transitions>
         <transition name="publish" destinationState="published">
@@ -36,13 +37,16 @@
         </state>
       </states>
     </lifecycle>
+
     <lifecycle name="SpaceDefault" lifecyclemanager="jcrlifecyclemanager" initial="available">
-      <transition name="close" destinationState="closed">
-        <description>Close the space</description>
-      </transition>
-      <transition name="reopen" destinationState="available">
-        <description>Make the space available</description>
-      </transition>
+      <transitions>
+        <transition name="close" destinationState="closed">
+          <description>Close the space</description>
+        </transition>
+        <transition name="reopen" destinationState="available">
+          <description>Make the space available</description>
+        </transition>
+      </transitions>
       <states>
         <state name="available" description="Available">
           <transitions>
@@ -56,13 +60,16 @@
         </state>
       </states>
     </lifecycle>
+
     <lifecycle name="WikiPage" lifecyclemanager="jcrlifecyclemanager" initial="published">
-      <transition name="delete" destinationState="deleted">
-        <description>Delete the page</description>
-      </transition>
-      <transition name="restore" destinationState="published">
-        <description>Restore the page</description>
-      </transition>
+      <transitions>
+        <transition name="delete" destinationState="deleted">
+          <description>Delete the page</description>
+        </transition>
+        <transition name="restore" destinationState="published">
+          <description>Restore the page</description>
+        </transition>
+      </transitions>
       <states>
         <state name="published" description="Available">
           <transitions>
@@ -77,6 +84,7 @@
       </states>
     </lifecycle>
   </extension>
+
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="types">
     <types>
       <type name="Blog">SpaceDefault</type>
@@ -85,4 +93,5 @@
       <type name="WikiPage">WikiPage</type>
     </types>
   </extension>
+
 </component>
