@@ -21,7 +21,7 @@ import javax.ejb.Local;
 import javax.ejb.Remove;
 import javax.faces.model.SelectItem;
 
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 
 @Local
 public interface ManagerLocal {

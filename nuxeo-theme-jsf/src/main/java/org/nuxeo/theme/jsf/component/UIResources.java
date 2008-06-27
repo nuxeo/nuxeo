@@ -21,15 +21,23 @@ import javax.faces.component.UIOutput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.resources.ResourceManager;
+import org.nuxeo.theme.resources.ResourceType;
+import org.nuxeo.theme.types.TypeRegistry;
+import org.nuxeo.theme.types.TypeFamily;
 
 public class UIResources extends UIOutput {
+
+    private static final Log log = LogFactory.getLog(UIResources.class);
 
     @Override
     public void encodeAll(final FacesContext context) throws IOException {
         final ResponseWriter writer = context.getResponseWriter();
         final String resourcePath = "/nuxeo/nxthemes-lib/";
+        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
 
         final URL themeUrl = (URL) context.getExternalContext().getRequestMap().get(
                 "nxthemesThemeUrl");
@@ -46,12 +54,35 @@ public class UIResources extends UIOutput {
         boolean hasStyles = false;
 
         for (String resourceName : resourceManager.getResourcesFor(themeUrl)) {
+            ResourceType resource = (ResourceType) typeRegistry.lookup(
+                    TypeFamily.RESOURCE, resourceName);
+                    if (resource == null) {
+                        log.error(String.format("Resource '%s' not registered.",resourceName));
+                        continue;
+                    }
+            String url = resource.getUrl();
             if (resourceName.endsWith(".css")) {
-                combinedStyles.append(resourceName).append(",");
-                hasStyles = true;
+                if (url == null) {
+                    combinedStyles.append(resourceName).append(",");
+                    hasStyles = true;
+                    } else {
+                    writer.startElement("link", this);
+                    writer.writeAttribute("type", "text/css", null);
+                    writer.writeAttribute("rel", "stylesheet", null);
+                    writer.writeAttribute("media", "all", null);
+                    writer.writeAttribute("href", url, null);
+                    writer.endElement("link");
+                    }
             } else if (resourceName.endsWith(".js")) {
-                combinedScripts.append(resourceName).append(",");
-                hasScripts = true;
+                if (url == null) {
+                    combinedScripts.append(resourceName).append(",");
+                    hasScripts = true;
+                    } else {
+                    writer.startElement("script", this);
+                    writer.writeAttribute("type", "text/javascript", null);
+                    writer.writeAttribute("src", url, null);
+                    writer.endElement("script");
+                    }
             }
         }
 
