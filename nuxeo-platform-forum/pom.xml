@@ -88,7 +88,7 @@
       <artifactId>jboss-j2ee</artifactId>
     </dependency>
     <dependency>
-      <groupId>jboss</groupId>
+      <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
     </dependency>
     <dependency>

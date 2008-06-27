@@ -6,6 +6,7 @@
         <property name="debug">false</property>
         <property name="myFacesLifecycleBug">false</property>
         <property name="jndiPattern">nuxeo/#{ejbName}/local</property>
+        <property name="transactionManagementEnabled">true</property>
     </component>
 
     <!-- 30 min conversation timeout -->

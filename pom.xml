@@ -99,6 +99,7 @@
     <module>nuxeo-platform-types-facade</module>
     <module>nuxeo-platform-uidgen-core</module>
     <module>nuxeo-platform-ui-api</module>
+    <module>nuxeo-platform-ui-web-compat</module>
     <module>nuxeo-platform-ui-web</module>
     <module>nuxeo-platform-url-core</module>
     <module>nuxeo-platform-url-facade</module>
@@ -583,6 +584,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-ui-api</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-ui-web-compat</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>

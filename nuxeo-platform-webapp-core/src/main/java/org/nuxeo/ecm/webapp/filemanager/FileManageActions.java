@@ -21,10 +21,10 @@ package org.nuxeo.ecm.webapp.filemanager;
 
 import javax.ejb.Remote;
 
-import org.apache.myfaces.trinidad.model.UploadedFile;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ui.web.api.SimpleFileManager;
+import org.nuxeo.ecm.platform.ui.web.file.UploadedFile;
 
 @Remote
 public interface FileManageActions extends SimpleFileManager{
