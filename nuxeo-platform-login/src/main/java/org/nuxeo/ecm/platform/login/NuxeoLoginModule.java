@@ -46,7 +46,6 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
-
 import sun.security.acl.GroupImpl;
 import sun.security.acl.PrincipalImpl;
 
@@ -103,7 +102,6 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         } catch (Throwable t) {
             log.error("Unable to load Plugin Registry : " + t.getMessage());
         }
-
     }
 
     /**

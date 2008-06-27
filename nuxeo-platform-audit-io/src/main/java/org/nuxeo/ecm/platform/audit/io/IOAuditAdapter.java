@@ -64,7 +64,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
     Map<String, Serializable> properties;
 
     /**
-     * Should be overridden if IOLogEntryBase is subclassed
+     * Should be overridden if IOLogEntryBase is subclassed.
      *
      * @return IOLogEntryBase instance that will know how to write and read log entries
      */
