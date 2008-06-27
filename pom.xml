@@ -283,13 +283,19 @@
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-seam</artifactId>
-        <version>1.1.5.NX3</version>
+        <version>2.0.3.CR1-NX</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam</artifactId>
-        <version>1.1.5.NX3</version>
+        <version>2.0.3.CR1-NX</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam</groupId>
+        <artifactId>jboss-seam-remoting</artifactId>
+        <version>2.0.3.CR1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -403,6 +409,12 @@
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
+        <version>3.2.0.ga</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate</artifactId>
         <version>3.2.0.ga</version>
         <scope>provided</scope>
       </dependency>
@@ -575,6 +587,11 @@
         <artifactId>commons-jexl</artifactId>
         <version>1.1</version>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.richfaces.framework</groupId>
+        <artifactId>richfaces-api</artifactId>
+        <version>3.2.1.GA</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -1119,6 +1136,7 @@
         </pluginManagement>
       </build>
     </profile>
+
     <!-- activating the build number generation in plugins manifest for apogee -->
     <profile>
       <id>svn-rev-in-mf</id>
