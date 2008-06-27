@@ -23,6 +23,7 @@ import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
@@ -49,7 +50,9 @@ import org.restlet.resource.Representation;
 
 @Name("uploadRestlet")
 @Scope(EVENT)
-public class UploadRestlet extends BaseNuxeoRestlet {
+public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
+
+    private static final long serialVersionUID = -7858792615823015193L;
 
     @In(create = true)
     protected NavigationContext navigationContext;

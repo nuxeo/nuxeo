@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.model;
 
+import java.util.EventListener;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
 
@@ -28,7 +30,7 @@ import org.nuxeo.ecm.platform.ui.web.model.impl.SelectDataModelRowEvent;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
  */
-public interface SelectDataModelListener extends java.util.EventListener {
+public interface SelectDataModelListener extends EventListener {
 
     void processSelectRowEvent(SelectDataModelRowEvent event) throws ClientException;
 
