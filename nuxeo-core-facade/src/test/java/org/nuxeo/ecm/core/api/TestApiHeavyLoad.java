@@ -19,38 +19,60 @@
 
 package org.nuxeo.ecm.core.api;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
-import junit.framework.TestCase;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
  *
  * @author <a href="mailto:dms@nuxeo.com">Dragos Mihalache</a>
  */
-public abstract class TestApiHeavyLoad extends TestCase {
+public class TestApiHeavyLoad extends TestConnection {
 
     private static final Log log = LogFactory.getLog(TestApiHeavyLoad.class);
 
-    protected abstract CoreSession getCoreSession();
+    protected void doDeployments() throws Exception {
+        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+                "OSGI-INF/CoreService.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+                "OSGI-INF/SecurityService.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "TypeService.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "permissions-contrib.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "RepositoryService.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "test-CoreExtensions.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "CoreTestExtensions.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "DemoRepository.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "LifeCycleService.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "LifeCycleServiceExtensions.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "CoreEventListenerService.xml");
+        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+                "DocumentAdapterService.xml");
+    }
 
-    protected CoreSession remote;
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        doDeployments();
+        openSession();
+    }
 
-    /**
-     * Overwrite stupid base test case - TODO: this should be refactored.
-     */
-    public void openSession() throws ClientException {
-        Map<String, Serializable> ctx = new HashMap<String, Serializable>();
-        ctx.put("username", SecurityConstants.ADMINISTRATOR);
-        remote = CoreInstance.getInstance().open("default", ctx);
+    @Override
+    protected void tearDown() throws Exception {
+        closeSession();
+        super.tearDown();
+    }
 
-        assertNotNull(remote);
+    protected CoreSession getCoreSession() {
+        return remote;
     }
 
     protected void createChildDocuments(DocumentModel folder, int childrenCount)
