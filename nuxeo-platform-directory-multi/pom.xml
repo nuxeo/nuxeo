@@ -31,11 +31,13 @@
       <artifactId>nuxeo-platform-directory-core</artifactId>
     </dependency>
 
+<!-- unused
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-osgi</artifactId>
       <scope>test</scope>
     </dependency>
+ -->
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>

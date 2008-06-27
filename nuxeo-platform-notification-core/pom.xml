@@ -32,10 +32,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-events-api</artifactId>
     </dependency>
     <dependency>
@@ -48,27 +44,17 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-placeful-facade</artifactId>
-      <type>ejb</type>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-usermanager-api</artifactId>
     </dependency>
+
     <dependency>
       <groupId>freemarker</groupId>
       <artifactId>freemarker</artifactId>
       <version>2.3.8</version>
     </dependency>
-
     <dependency>
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.ejb</groupId>
-      <artifactId>ejb</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.persistence</groupId>
@@ -79,6 +65,11 @@
       <artifactId>mail</artifactId>
     </dependency>
 
+<!--  unused
+    <dependency>
+      <groupId>javax.ejb</groupId>
+      <artifactId>ejb</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-osgi</artifactId>
@@ -89,6 +80,7 @@
       <artifactId>log4j</artifactId>
       <scope>test</scope>
     </dependency>
+ -->
   </dependencies>
 
   <build>

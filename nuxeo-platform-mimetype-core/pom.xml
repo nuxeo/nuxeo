@@ -36,11 +36,6 @@
       <artifactId>poi-scratchpad</artifactId>
       <version>3.0.2-FINAL</version>
     </dependency>
-    <dependency>
-      <groupId>javax.ejb</groupId>
-      <artifactId>ejb</artifactId>
-      <scope>provided</scope>
-    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>

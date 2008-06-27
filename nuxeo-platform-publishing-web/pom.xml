@@ -60,18 +60,6 @@
     </dependency>
 
     <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-annotations-ejb3</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>ejb3</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-j2ee</artifactId>
-    </dependency>
-    <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>
     </dependency>
@@ -82,10 +70,6 @@
     <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-annotations</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.persistence</groupId>

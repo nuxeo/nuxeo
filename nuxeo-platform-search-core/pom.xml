@@ -30,31 +30,10 @@
       <artifactId>nuxeo-platform-transform-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-transform-core</artifactId>
-      <type>ejb</type>
-    </dependency>
-    <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
-      <version>1.0.1B</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-osgi</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jnp-client</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jcr-connector-test</artifactId>
@@ -63,6 +42,22 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-query</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jnp-client</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- unused
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -78,6 +73,13 @@
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jbosssx</artifactId>
+      <scope>test</scope>
+    </dependency>
+     -->
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
+      <version>1.0.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

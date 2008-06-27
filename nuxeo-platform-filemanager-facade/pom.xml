@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>nuxeo-platform-filemanager-facade</artifactId>
-  <name>Nuxeo Platform File Manager</name>
+  <name>Nuxeo Platform File Manager Facade</name>
   <packaging>ejb</packaging>
   <description>Nuxeo Enterprise Platform: File Manager Facade.</description>
 
@@ -28,14 +28,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-mimetype-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-types-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-events-api</artifactId>
     </dependency>
     <dependency>
@@ -43,14 +35,16 @@
       <artifactId>ejb-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>jsr250-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>javax.jms</groupId>
       <artifactId>jms</artifactId>
     </dependency>
 
+<!-- unused
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>jsr250-api</artifactId>
+    </dependency>
+ -->
   </dependencies>
 
   <build>

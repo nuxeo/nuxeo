@@ -38,16 +38,7 @@
       <type>ejb</type>
     </dependency>
 
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-osgi</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-jcr-connector-test</artifactId>
-      <scope>test</scope>
-    </dependency>
+    <!-- unused
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-facade</artifactId>
@@ -55,10 +46,20 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-jcr-connector-test</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-transform-plugins</artifactId>
       <scope>test</scope>
     </dependency>
+     -->
   </dependencies>
 
   <build>

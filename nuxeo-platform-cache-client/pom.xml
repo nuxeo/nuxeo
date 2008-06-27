@@ -34,21 +34,13 @@
       <artifactId>jboss-aop-jdk50</artifactId>
     </dependency>
 
+    <!-- tests dependencies -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-api-test</artifactId>
-      <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jbosssx</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jnp-client</artifactId>
-      <scope>test</scope>
-    </dependency>
+
+    <!-- unused
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>ejb3</artifactId>
@@ -63,16 +55,27 @@
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
+      <artifactId>jboss-transaction-client</artifactId>
+      <version>4.0.4.GA</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jnp-client</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
       <artifactId>jboss-client</artifactId>
       <version>4.0.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
-      <artifactId>jboss-transaction-client</artifactId>
-      <version>4.0.4.GA</version>
+      <artifactId>jbosssx</artifactId>
       <scope>test</scope>
     </dependency>
+     -->
   </dependencies>
 
   <build>

@@ -29,6 +29,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-actions-core</artifactId>
       <type>ejb</type>
     </dependency>
@@ -43,10 +47,6 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.ejb</groupId>
-      <artifactId>ejb</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
     </dependency>
@@ -58,11 +58,6 @@
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
       <version>0.8</version>
-    </dependency>
-    <dependency>
-      <groupId>jdom</groupId>
-      <artifactId>jdom</artifactId>
-      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -94,6 +89,7 @@
                 <artifactItem>
                   <groupId>jdom</groupId>
                   <artifactId>jdom</artifactId>
+                  <version>1.0</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>rome</groupId>

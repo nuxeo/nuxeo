@@ -55,10 +55,7 @@
       <groupId>javax.ejb</groupId>
       <artifactId>ejb</artifactId>
     </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-annotations-ejb3</artifactId>
-    </dependency>
+    <!-- unused
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>ejb3</artifactId>
@@ -67,6 +64,7 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-annotations</artifactId>
     </dependency>
+     -->
   </dependencies>
 
 </project>
