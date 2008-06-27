@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 
@@ -14,20 +13,17 @@ public class WikiPageDocResourceLocator implements ResourceLocator {
     protected DocumentModel wikiPage;
     protected File wikiFile;
 
-
-    public void cleanup()
-    {
-        if (wikiFile!=null && wikiFile.exists())
+    public void cleanup() {
+        if (wikiFile != null && wikiFile.exists()) {
             wikiFile.delete();
+        }
     }
 
-    public WikiPageDocResourceLocator(DocumentModel wikiPage)
-    {
-        this.wikiPage=wikiPage;
+    public WikiPageDocResourceLocator(DocumentModel wikiPage) {
+        this.wikiPage = wikiPage;
     }
 
-    private File getTempFileFromWikiPage() throws IOException
-    {
+    private File getTempFileFromWikiPage() throws IOException {
         String wikiContent = (String) wikiPage.getProperty("wikiPage", "content");
 
         wikiFile = File.createTempFile("wikiContent", wikiPage.getId());
