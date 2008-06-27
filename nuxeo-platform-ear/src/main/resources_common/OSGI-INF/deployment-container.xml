@@ -24,9 +24,6 @@
     installPath="nuxeo.war/WEB-INF/sun-jaxws.xml" required="false" />
 
   <directory>system</directory>
-  <directory>core</directory>
-  <directory>platform</directory>
-  <directory>themes</directory>
   <directory>.</directory>
   <directory>plugins</directory>
 
