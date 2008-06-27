@@ -99,6 +99,13 @@
         <version>1.1</version>
         <scope>provided</scope>
       </dependency>
+      <!-- be careful using this dependency as it breaks unit tests logging -->
+      <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging-api</artifactId>
+        <version>1.1</version>
+        <scope>provided</scope>
+      </dependency>
       <dependency>
         <groupId>org.freemarker</groupId>
         <artifactId>freemarker</artifactId>
