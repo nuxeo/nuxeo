@@ -81,7 +81,7 @@ public class ManagedComponent extends DefaultComponent {
                 Contribution c = (Contribution)contrib;
                 c.setExtension(extension);
                 ContributionManager mgr = contributionManagers.get(c.getExtensionPoint());
-                if (mgr != null) {unregisterContribution(contrib, extension.getExtensionPoint(), extension.getComponent());
+                if (mgr != null) {
                     mgr.unregisterContribution(c);
                 } else {
                     log.warn("Unable to unregister contribution: "+c.getContributionId()+" for extension point "+c.getExtensionPoint()+". No manager registered.");
