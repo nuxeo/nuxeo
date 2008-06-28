@@ -50,9 +50,9 @@ public interface DocumentModelCache {
 
     DocumentModelList  getCachedChildren(DocumentRef parent) throws ClientException;
 
-    public void cacheChild(DocumentRef parent, DocumentRef child);
+    void cacheChild(DocumentRef parent, DocumentRef child);
 
-    public void uncacheChild(DocumentRef parent, DocumentRef child);
+    void uncacheChild(DocumentRef parent, DocumentRef child);
 
     /**
      * This can be used to refresh the children cache
@@ -60,6 +60,6 @@ public interface DocumentModelCache {
      * @return
      * @throws ClientException
      */
-    public DocumentModelList fetchAndCacheChildren(DocumentRef parent) throws ClientException;
+    DocumentModelList fetchAndCacheChildren(DocumentRef parent) throws ClientException;
 
 }

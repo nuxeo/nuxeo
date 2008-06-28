@@ -35,7 +35,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public final class DocumentModelUtils {
-    
+
     private static final Log log = LogFactory.getLog(DocumentModelUtils.class);
 
     // Utility class.
