@@ -41,7 +41,6 @@ import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
@@ -199,7 +198,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
     @Create
     public void init()
     {
-    	Events.instance().raiseEvent(EventNames.WF_INIT);
+        Events.instance().raiseEvent(EventNames.WF_INIT);
     }
 
     public Map<String, String> getMessages() {

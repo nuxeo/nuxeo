@@ -21,15 +21,8 @@ package org.nuxeo.ecm.platform.workflow.web.listener.ejb;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
@@ -46,8 +39,6 @@ import org.nuxeo.ecm.platform.workflow.web.api.DocumentWorkflowActions;
 import org.nuxeo.ecm.platform.workflow.web.api.ReviewEventObserver;
 import org.nuxeo.ecm.platform.workflow.web.api.WorkItemsListsActions;
 import org.nuxeo.ecm.platform.workflow.web.api.WorkflowBeansDelegate;
-import org.nuxeo.ecm.platform.workflow.web.api.ejb.remote.ReviewEventObserverRemote;
-import org.nuxeo.ecm.platform.workflow.web.listener.ejb.local.ReviewEventObserverLocal;
 import org.nuxeo.ecm.webapp.dashboard.DashboardActions;
 
 /**
@@ -95,7 +86,7 @@ public class ReviewEventObserverBean implements ReviewEventObserver {
     @Observer( value={ EventNames.WF_INIT }, create=true, inject=false)
     public void init()
     {
-    	log.debug("WF Seam Event Observer created");
+        log.debug("WF Seam Event Observer created");
     }
 
     @Observer( value={ EventNames.DOCUMENT_CHANGED }, create=false)

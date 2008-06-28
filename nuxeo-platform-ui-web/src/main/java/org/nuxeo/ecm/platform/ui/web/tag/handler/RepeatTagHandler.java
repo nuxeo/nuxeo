@@ -69,8 +69,6 @@ public class RepeatTagHandler extends TagHandler {
 
     protected final TagAttribute index;
 
-    private transient DataModel model;
-
     // TODO: add size and offset
 
     public RepeatTagHandler(TagConfig config) {
@@ -91,24 +89,23 @@ public class RepeatTagHandler extends TagHandler {
 
     @SuppressWarnings("unchecked")
     private DataModel getDataModel(FaceletContext ctx) {
-        if (model == null) {
-            if (value == null) {
+        DataModel model;
+        if (value == null) {
+            model = EMPTY_MODEL;
+        } else {
+            Object val = value.getObject(ctx);
+            if (val == null) {
                 model = EMPTY_MODEL;
+            } else if (val instanceof DataModel) {
+                model = (DataModel) val;
+            } else if (val instanceof List) {
+                model = new ListDataModel((List) val);
+            } else if (Object[].class.isAssignableFrom(val.getClass())) {
+                model = new ArrayDataModel((Object[]) val);
+            } else if (val instanceof ResultSet) {
+                model = new ResultSetDataModel((ResultSet) val);
             } else {
-                Object val = value.getObject(ctx);
-                if (val == null) {
-                    model = EMPTY_MODEL;
-                } else if (val instanceof DataModel) {
-                    model = (DataModel) val;
-                } else if (val instanceof List) {
-                    model = new ListDataModel((List) val);
-                } else if (Object[].class.isAssignableFrom(val.getClass())) {
-                    model = new ArrayDataModel((Object[]) val);
-                } else if (val instanceof ResultSet) {
-                    model = new ResultSetDataModel((ResultSet) val);
-                } else {
-                    model = new ScalarDataModel(val);
-                }
+                model = new ScalarDataModel(val);
             }
         }
         return model;
