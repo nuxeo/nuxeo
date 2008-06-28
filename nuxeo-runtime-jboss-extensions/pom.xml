@@ -19,6 +19,7 @@
       <groupId>org.nuxeo.common</groupId>
       <artifactId>nuxeo-common</artifactId>
     </dependency>
+
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss</artifactId>

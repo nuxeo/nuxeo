@@ -23,7 +23,6 @@
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>
     </dependency>
-
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-system</artifactId>
