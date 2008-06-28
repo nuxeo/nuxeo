@@ -30,6 +30,7 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-events-api</artifactId>
     </dependency>
+
     <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb-api</artifactId>
@@ -38,13 +39,6 @@
       <groupId>javax.jms</groupId>
       <artifactId>jms</artifactId>
     </dependency>
-
-<!-- unused
-    <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>jsr250-api</artifactId>
-    </dependency>
- -->
   </dependencies>
 
   <build>

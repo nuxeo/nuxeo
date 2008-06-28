@@ -34,6 +34,11 @@
       <artifactId>nuxeo-platform-ui-web</artifactId>
     </dependency>
 
+    <!--  dep on tomahawk for html tag -->
+    <dependency>
+      <groupId>org.apache.myfaces.tomahawk</groupId>
+      <artifactId>tomahawk</artifactId>
+    </dependency>
     <!-- EL + JSF + facelets deps -->
     <dependency>
       <groupId>javax.el</groupId>
@@ -48,6 +53,7 @@
       <artifactId>jsf-facelets</artifactId>
     </dependency>
 
+    <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-osgi</artifactId>

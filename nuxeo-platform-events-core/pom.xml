@@ -29,13 +29,8 @@
       <groupId>javax.jms</groupId>
       <artifactId>jms</artifactId>
     </dependency>
-<!-- unused
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-osgi</artifactId>
-      <scope>test</scope>
-    </dependency>
- -->
+
+    <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jcr-connector-test</artifactId>

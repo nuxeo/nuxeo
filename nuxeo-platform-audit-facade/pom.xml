@@ -52,18 +52,6 @@
       <groupId>jmock</groupId>
       <artifactId>jmock</artifactId>
     </dependency>
-
-    <!-- unused
-    <dependency>
-      <groupId>javax.jms</groupId>
-      <artifactId>jms</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-osgi</artifactId>
-      <scope>test</scope>
-    </dependency>
-     -->
   </dependencies>
 
 </project>

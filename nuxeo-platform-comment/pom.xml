@@ -54,12 +54,6 @@
       <groupId>jboss</groupId>
       <artifactId>jboss-j2ee</artifactId>
     </dependency>
-    <!-- unused
-    <dependency>
-      <groupId>org.jboss.seam</groupId>
-      <artifactId>jboss-seam</artifactId>
-    </dependency>
-     -->
   </dependencies>
 
 </project>

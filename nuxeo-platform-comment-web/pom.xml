@@ -42,20 +42,6 @@
       <type>ejb</type>
     </dependency>
 
-    <!-- unused
-    <dependency>
-      <groupId>javax.ejb</groupId>
-      <artifactId>ejb</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-annotations-ejb3</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-j2ee</artifactId>
-    </dependency>
-     -->
     <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>

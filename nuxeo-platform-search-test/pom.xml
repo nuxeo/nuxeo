@@ -36,19 +36,12 @@
       <scope>compile</scope>
     </dependency>
 
+    <!-- Use of compile scope for external dependencies because this module must only be used
+      with a test scope (except in [module]-test where you may use compile scope)-->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>compile</scope>
     </dependency>
-    <!-- Use of compile scope for external dependencies because this module must only be used
-      with a test scope (except in tests modules such as this one) -->
-      <!-- unused
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jnp-client</artifactId>
-      <scope>compile</scope>
-    </dependency>
-       -->
   </dependencies>
 </project>

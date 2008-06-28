@@ -35,6 +35,7 @@
       <artifactId>nuxeo-platform-relations-jena-plugin</artifactId>
     </dependency>
 
+    <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core</artifactId>
@@ -48,6 +49,11 @@
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-schema</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-io-core</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

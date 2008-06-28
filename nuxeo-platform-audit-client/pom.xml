@@ -61,6 +61,7 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
 
+    <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-actions-core</artifactId>
@@ -77,13 +78,6 @@
       <artifactId>log4j</artifactId>
       <scope>test</scope>
     </dependency>
-
-    <!-- unused
-    <dependency>
-      <groupId>javax.faces</groupId>
-      <artifactId>jsf-api</artifactId>
-    </dependency>
-     -->
   </dependencies>
 
 </project>

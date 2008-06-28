@@ -90,17 +90,6 @@
       <version>1.0.1</version>
       <scope>test</scope>
     </dependency>
-    <!-- unused
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-schema</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>opensymphony</groupId>
-      <artifactId>compass-gps</artifactId>
-      <version>${compass.version}</version>
-    </dependency>
-     -->
   </dependencies>
 
   <build>
