@@ -29,4 +29,7 @@
     </site>
   </distributionManagement>
 
+  <dependencies>
+  </dependencies>
+
 </project>
