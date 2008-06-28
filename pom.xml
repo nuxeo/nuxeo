@@ -570,24 +570,42 @@
         <version>1.1</version>
         <scope>provided</scope>
       </dependency>
+      <dependency>
+        <groupId>xml-apis</groupId>
+        <artifactId>xml-apis</artifactId>
+        <scope>provided</scope>
+        <version>1.0.b2</version>
+      </dependency>
+      <dependency>
+        <groupId>xerces</groupId>
+        <artifactId>xmlParserAPIs</artifactId>
+        <scope>provided</scope>
+        <version>2.6.2</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
+    <dependency>
+      <groupId>com.intellij</groupId>
+      <artifactId>annotations</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+    </dependency>
+
+    <!-- test scope -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.intellij</groupId>
-      <artifactId>annotations</artifactId>
-      <scope>provided</scope>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -784,13 +802,6 @@
           <artifactId>maven-eclipse-plugin</artifactId>
           <version>2.4</version>
         </plugin>
-        <!--
-          <plugin>
-          <groupId>org.nuxeo.maven.plugins</groupId>
-          <artifactId>maven-nuxeo-installer-plugin</artifactId>
-          <version>1.0-SNAPSHOT</version>
-          </plugin>
-        -->
       </plugins>
     </pluginManagement>
     <!--finalName>${pom.artifactId}-${pom.version}-r${buildNumber}</finalName-->
