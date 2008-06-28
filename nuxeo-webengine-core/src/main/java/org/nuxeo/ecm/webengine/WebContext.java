@@ -233,7 +233,7 @@ public interface WebContext {
 
     /**
      * Gets the path path corresponding to the target object of the request.
-     * 
+     *
      * @return the target object path. Will never return null. If the target
      *         object is null returns "/".
      */
@@ -250,14 +250,14 @@ public interface WebContext {
 
     /**
      * Gets the actions that are available on the target object.
-     * 
+     *
      * @return the target object actions or null if no target object exists
      */
     Collection<ActionDescriptor> getActions() throws WebException;
 
     /**
      * Gets the actions that are available on the target object and that are part of the given category.
-     * 
+     *
      * @param category the category to filter actions
      * @return the target object actions or null if no target object exists
      */
@@ -265,14 +265,14 @@ public interface WebContext {
 
     /**
      * Gets the actions that are available on the target object grouped by categories.
-     * 
+     *
      * @return a map of category -> actions or null if no target object exists
      */
     Map<String, Collection<ActionDescriptor>> getActionsByCategory() throws WebException;
 
     /**
      * Gets the current web application.
-     * 
+     *
      * @return the web root. Cannot return null.
      */
     WebApplication getApplication();
