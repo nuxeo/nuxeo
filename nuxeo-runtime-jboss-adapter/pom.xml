@@ -15,13 +15,21 @@
   <description>Nuxeo Runtime: JBoss Adapter.</description>
 
   <dependencies>
+    <!-- use provided scope to avoid these dependencies beeing included in this SAR -->
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-osgi</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
