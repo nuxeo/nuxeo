@@ -33,7 +33,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class ServiceDescriptor implements Serializable {
 
     private static final long serialVersionUID = 2732085252068872368L;
-    
+
     // TODO: it should be an error in XMap -> normally you should specify node
     // paths relative to the current object element,
     // so you should have serviceFactory instead of service@serviceFactory - but

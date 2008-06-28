@@ -76,6 +76,6 @@ public interface ComponentInstance extends ComponentContext, Extensible, Adaptab
      * Get the list of provided services or null if no service is provided
      * @return an array containing the service class names or null if no service are provided
      */
-    public String[] getProvidedServiceNames();
+    String[] getProvidedServiceNames();
 
 }
