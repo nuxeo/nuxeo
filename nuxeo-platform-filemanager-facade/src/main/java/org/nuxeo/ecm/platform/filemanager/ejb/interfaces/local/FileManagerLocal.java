@@ -16,6 +16,7 @@
 package org.nuxeo.ecm.platform.filemanager.ejb.interfaces.local;
 
 import javax.ejb.Local;
+
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 /**
  * FileManager local interface.

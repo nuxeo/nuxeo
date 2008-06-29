@@ -1,10 +1,10 @@
 package org.nuxeo.ecm.platform.events;
 
+import junit.framework.TestCase;
+
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.platform.events.mock.MockJMSEventListener;
 import org.nuxeo.ecm.platform.events.mock.MockMessageProducer;
-
-import junit.framework.TestCase;
 
 public class TestMessageBuffering extends TestCase {
 

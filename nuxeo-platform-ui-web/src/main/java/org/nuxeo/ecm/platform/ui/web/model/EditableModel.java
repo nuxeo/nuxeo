@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.model;
 
+import javax.faces.model.DataModel;
+
 import org.nuxeo.ecm.core.api.ListDiff;
 
 /**

@@ -22,9 +22,9 @@ package org.nuxeo.ecm.platform.relations.api.impl;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.nuxeo.ecm.platform.relations.api.Literal;
-
 import junit.framework.TestCase;
+
+import org.nuxeo.ecm.platform.relations.api.Literal;
 
 /**
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>

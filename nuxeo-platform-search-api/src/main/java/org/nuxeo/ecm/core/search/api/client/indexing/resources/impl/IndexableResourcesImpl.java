@@ -21,8 +21,8 @@ package org.nuxeo.ecm.core.search.api.client.indexing.resources.impl;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResources;
 import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResource;
+import org.nuxeo.ecm.core.search.api.client.indexing.resources.IndexableResources;
 
 /**
  * Indexable resources impl.

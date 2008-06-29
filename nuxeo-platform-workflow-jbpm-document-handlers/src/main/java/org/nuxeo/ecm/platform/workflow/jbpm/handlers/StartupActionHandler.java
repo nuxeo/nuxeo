@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.workflow.jbpm.handlers;
 
 import org.jbpm.graph.exe.ExecutionContext;
-import org.nuxeo.ecm.platform.workflow.api.common.WorkflowEventTypes;
 import org.nuxeo.ecm.platform.workflow.jbpm.handlers.api.client.AbstractWorkflowDocumentActionHandler;
 
 /**

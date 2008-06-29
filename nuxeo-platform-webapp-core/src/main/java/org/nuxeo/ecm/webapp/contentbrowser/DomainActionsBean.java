@@ -21,8 +21,8 @@ package org.nuxeo.ecm.webapp.contentbrowser;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
-import java.util.List;
 import java.io.Serializable;
+import java.util.List;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.PostActivate;

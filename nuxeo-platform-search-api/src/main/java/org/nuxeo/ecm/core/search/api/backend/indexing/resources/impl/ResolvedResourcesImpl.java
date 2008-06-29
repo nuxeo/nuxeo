@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResources;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedData;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResource;
+import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResources;
 
 /**
  * Resolved resources.

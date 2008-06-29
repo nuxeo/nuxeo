@@ -21,6 +21,7 @@ package org.nuxeo.ecm.directory.sql;
 
 import java.sql.Connection;
 import java.util.Properties;
+
 import javax.sql.DataSource;
 
 import org.nuxeo.ecm.core.api.ClientException;

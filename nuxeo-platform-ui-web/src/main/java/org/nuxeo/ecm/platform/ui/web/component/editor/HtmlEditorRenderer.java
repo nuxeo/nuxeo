@@ -25,16 +25,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-import com.sun.faces.renderkit.html_basic.HtmlBasicInputRenderer;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.nuxeo.ecm.platform.ui.web.htmleditor.api.HtmlEditorPluginService;
 import org.nuxeo.runtime.api.Framework;
+
+import com.sun.faces.renderkit.html_basic.HtmlBasicInputRenderer;
 
 /**
  * Renderer for html editor component.

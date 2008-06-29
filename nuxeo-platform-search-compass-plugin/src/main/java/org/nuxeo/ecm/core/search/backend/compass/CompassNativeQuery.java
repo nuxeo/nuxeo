@@ -23,8 +23,8 @@ import java.io.Serializable;
 
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.search.api.client.query.AbstractQuery;
-import org.nuxeo.ecm.core.search.api.client.query.SearchPrincipal;
 import org.nuxeo.ecm.core.search.api.client.query.NativeQuery;
+import org.nuxeo.ecm.core.search.api.client.query.SearchPrincipal;
 
 /**
  * Serializable wrapper for CompassQuery
