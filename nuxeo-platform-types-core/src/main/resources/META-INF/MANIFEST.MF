@@ -4,6 +4,7 @@ Bundle-Name: Nuxeo ECM Type Manager
 Bundle-SymbolicName: org.nuxeo.ecm.platform.types.core;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Localization: bundle
+Bundle-Category: web
 Eclipse-LazyStart: true
 Nuxeo-Component: OSGI-INF/nxtypes-framework.xml
 Require-Bundle: org.nuxeo.ecm.platform,
