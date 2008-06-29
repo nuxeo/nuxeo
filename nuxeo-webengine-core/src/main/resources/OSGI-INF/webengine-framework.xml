@@ -24,7 +24,7 @@
     Expose the registration of freemarker templates (directives, methods or global shared variables)
     This way custom tremplates can be registered into the freemarker engine from outside
     <code>
-      <template name="myExtension" class="org.nuxeo.ecm.platform.my.MyExtension"/>
+      <rendering-extension name="myExtension" class="org.nuxeo.ecm.platform.my.MyExtension"/>
     </code>
   </documentation>
 
