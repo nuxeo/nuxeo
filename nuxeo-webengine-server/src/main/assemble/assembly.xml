@@ -44,11 +44,14 @@
       <artifact name="derby" />
       <artifact name="xercesImpl"/>
       <artifact name="osgi_R4_core" />
-      <artifact name="hibernate" />
       <artifact group="org.mortbay.jetty" />
       <artifact group="dom4j" />      
       <artifact group="org.slf4j" />
       <artifact group="org.apache.lucene" />
+      <artifact name="hibernate" />
+      <artifact group="org.hibernate" />
+      <artifact name="hibernate-annotations" />
+      <artifact group="org.hibernate" name="hibernate"/>
     </includes>
     <excludes>
       <artifact group="org.mortbay.jetty" name="servlet-api-2.5" />
