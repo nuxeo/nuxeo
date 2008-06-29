@@ -21,6 +21,7 @@ import java.net.URLStreamHandlerFactory;
 import java.util.Map;
 import java.util.Properties;
 
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.events.EventManager;
 import org.nuxeo.theme.models.InfoPool;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
@@ -31,7 +32,6 @@ import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeRegistry;
 import org.nuxeo.theme.uids.UidManager;
-import org.nuxeo.runtime.api.Framework;
 
 public final class Manager {
 
