@@ -19,10 +19,10 @@
 
 package org.nuxeo.ecm.core.api;
 
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 
 public class Attachment {

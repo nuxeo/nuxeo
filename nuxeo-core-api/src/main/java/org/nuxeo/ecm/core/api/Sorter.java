@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.core.api;
 
-import java.util.Comparator;
 import java.io.Serializable;
+import java.util.Comparator;
 
 /**
  * A sorting function for data models.

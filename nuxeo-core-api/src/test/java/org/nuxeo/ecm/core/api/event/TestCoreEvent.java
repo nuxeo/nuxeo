@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.api.event;
 
 import junit.framework.TestCase;
+
 import org.nuxeo.ecm.core.api.event.impl.CoreEventImpl;
 
 

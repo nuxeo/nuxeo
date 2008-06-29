@@ -22,9 +22,9 @@ package org.nuxeo.ecm.core.schema.types;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.ecm.core.schema.TypeRef;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeProvider;
+import org.nuxeo.ecm.core.schema.TypeRef;
 import org.nuxeo.runtime.api.Framework;
 
 /**

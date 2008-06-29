@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.repository.jcr;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
