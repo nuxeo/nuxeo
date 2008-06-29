@@ -19,9 +19,9 @@
 
 package org.nuxeo.jboss.deployment;
 
-import junit.framework.TestCase;
-
 import java.net.URL;
+
+import junit.framework.TestCase;
 
 public class TestNuxeoDeploymentSorter extends TestCase {
 
