@@ -52,7 +52,7 @@ public class TestRendering extends NXRuntimeTestCase {
         WebEngine web = Framework.getService(WebEngine.class);
         WebApplication app = web.getApplication("test");
         if (app == null) {
-            fail("Application nuxeo-web was not defined");
+            fail("Application test was not defined");
         }
         FreemarkerEngine rendering = (FreemarkerEngine)app.getRendering();
         TemplateMethodModelEx tm = (TemplateMethodModelEx)rendering.getConfiguration().getSharedVariable("ext1");

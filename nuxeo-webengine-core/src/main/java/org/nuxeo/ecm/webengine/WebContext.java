@@ -224,7 +224,8 @@ public interface WebContext {
     String getUrlPath();
 
     /**
-     * Get the path segments that identify the current web application.
+     * Get the path prefix that identify the current web application.
+     * The application path will include the base path (context + servlet path)
      * @return the application path. Cannot be null
      */
     String getApplicationPath();

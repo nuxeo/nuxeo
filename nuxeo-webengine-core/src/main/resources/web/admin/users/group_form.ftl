@@ -2,7 +2,7 @@
 <h1>Group creation</h1>
 
 <br/>
-<form method="POST" action="${Context.basePath}/users/save_group" accept-charset="utf-8">
+<form method="POST" action="${appPath}/users/save_group" accept-charset="utf-8">
 <table>
     <tbody>
         <tr>

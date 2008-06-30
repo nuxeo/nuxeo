@@ -187,7 +187,8 @@ public class DefaultWebContext implements WebContext {
 
     public String getApplicationPath() {
         if (applicationPath == null) {
-            applicationPath = pathInfo.getApplicationPath().toString();
+            applicationPath = new StringBuilder(256).append(getBasePath())
+                .append(pathInfo.getApplicationPath().toString()).toString();
         }
         return applicationPath;
     }
@@ -196,7 +197,6 @@ public class DefaultWebContext implements WebContext {
         if (head != null) {
             String appPath = getApplicationPath();
             StringBuilder buf = new StringBuilder(512);
-            buf.append(getBasePath());
             // resolve the document relative to the root
             Path docPath = document.getPath().makeAbsolute();
             Path path = null;
@@ -204,6 +204,7 @@ public class DefaultWebContext implements WebContext {
             if (path != null) {
                 buf.append(appPath);
             } else {
+                buf.append(getBasePath());
                 path = engine.getUrlPath(docPath);
             }
             if (path == null) {
@@ -395,7 +396,12 @@ public class DefaultWebContext implements WebContext {
             if (path == null) {
                 path = "/nuxeo/site"; // for testing
             }
-            basePath = buf.append(path).append(request.getServletPath()).toString();
+            buf.append(path).append(request.getServletPath());
+            int len = buf.length();
+            if (len > 0 && buf.charAt(len-1) == '/') {
+                buf.setLength(len-1);
+            }
+            basePath = buf.toString();
         }
         return basePath;
     }

@@ -4,8 +4,8 @@
 
 <br/>
 
-<a href="${Context.basePath}/users/create_user">Add a user</a>
-<a href="${Context.basePath}/users/create_group">Add a group</a>
+<a href="${appPath}/users/create_user">Add a user</a>
+<a href="${appPath}/users/create_group">Add a group</a>
 
 <br/>
 <br/>
@@ -29,7 +29,7 @@
 <tbody>
 <#list users as user>
 	<tr>
-		<td><a href="${Context.basePath}/users/user/${user}">${user}<a/></td>
+		<td><a href="${appPath}/users/user/${user}">${user}<a/></td>
 		<td>${user.firstName}</td>
 		<td>${user.lastName}</td>
 	</tr>

@@ -2,7 +2,7 @@
 <h1><#if user>User Details<#else>User creation</#if></h1>
 
 <br/>
-<form method="POST" action="${Context.basePath}/users/save_user" accept-charset="utf-8">
+<form method="POST" action="${appPath}/users/save_user" accept-charset="utf-8">
 <table>
     <tbody>
         <tr>
