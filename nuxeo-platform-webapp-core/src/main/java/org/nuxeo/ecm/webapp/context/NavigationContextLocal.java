@@ -21,10 +21,10 @@ package org.nuxeo.ecm.webapp.context;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.Local;
+import javax.ejb.Remove;
+
 import org.jboss.seam.annotations.Destroy;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-
-import javax.ejb.Remove;
 
 @Local
 public interface NavigationContextLocal extends NavigationContext {

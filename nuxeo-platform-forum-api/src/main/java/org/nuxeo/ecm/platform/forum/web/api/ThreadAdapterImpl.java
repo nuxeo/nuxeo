@@ -111,7 +111,6 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
         if (commentDoc != null) {
             List<DocumentModel> childComments = commentDoc.getComments();
 
-
             for (DocumentModel childComment : childComments) {
                 allSubPosts.add(childComment);
                 allSubPosts.addAll(getSubComments(childComment));

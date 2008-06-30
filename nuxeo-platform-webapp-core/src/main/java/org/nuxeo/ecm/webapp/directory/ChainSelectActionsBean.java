@@ -21,12 +21,12 @@ package org.nuxeo.ecm.webapp.directory;
 
 import static org.jboss.seam.ScopeType.SESSION;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.io.Serializable;
 
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;

@@ -25,8 +25,10 @@ import javax.ejb.Remove;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
+import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
 /**
  * Domain-specific operations. Usually one can obtain workspaces using it.

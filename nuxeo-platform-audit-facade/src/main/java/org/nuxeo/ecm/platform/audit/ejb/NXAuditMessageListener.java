@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.audit.ejb;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -28,8 +27,6 @@ import javax.ejb.EJBException;
 import javax.ejb.MessageDriven;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;

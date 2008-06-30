@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.pagination;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
 
 /**
  * Registration unit to bind a {@link} PagedDocumentsProvider name

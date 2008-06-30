@@ -16,10 +16,11 @@
     @author Olivier Grisel (og@nuxeo.com)
   </documentation>
 
+  <!-- XXX JC : see why this requirement
   <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
+ -->
   <implementation
     class="org.nuxeo.ecm.webapp.directory.DirectoryTreeService" />
-
   <extension-point name="trees">
     <object
       class="org.nuxeo.ecm.webapp.directory.DirectoryTreeDescriptor" />

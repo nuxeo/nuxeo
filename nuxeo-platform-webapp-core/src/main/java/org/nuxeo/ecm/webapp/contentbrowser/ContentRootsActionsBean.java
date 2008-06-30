@@ -21,13 +21,13 @@ package org.nuxeo.ecm.webapp.contentbrowser;
 
 import static org.jboss.seam.ScopeType.SESSION;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.io.Serializable;
 
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;

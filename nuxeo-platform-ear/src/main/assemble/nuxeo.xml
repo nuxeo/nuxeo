@@ -50,7 +50,7 @@
     <outputFile>/</outputFile>
     <set>root-artifacts</set>
   </assemble>
-  <artifactSet extends="root-artifacts">
+  <artifactSet id="root-artifacts">
     <import>**</import>
     <includes>
       <artifact name="nuxeo-platform-webapp" />

@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.platform.versioning.listeners;
 
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
+
 import java.util.Map;
 
 import org.apache.commons.logging.Log;

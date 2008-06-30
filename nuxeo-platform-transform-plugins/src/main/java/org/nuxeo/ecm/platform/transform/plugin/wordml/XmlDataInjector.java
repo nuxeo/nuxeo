@@ -27,8 +27,8 @@ import java.io.Serializable;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webapp.filemanager;
 
 import javax.ejb.Local;
+
 import org.jboss.seam.annotations.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 

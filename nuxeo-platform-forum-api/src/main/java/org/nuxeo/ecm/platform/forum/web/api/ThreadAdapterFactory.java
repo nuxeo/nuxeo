@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.forum.web.api;
 
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 

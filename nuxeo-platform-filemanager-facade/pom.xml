@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>nuxeo-platform-filemanager-facade</artifactId>
-  <name>Nuxeo Platform File Manager</name>
+  <name>Nuxeo Platform File Manager Facade</name>
   <packaging>ejb</packaging>
   <description>Nuxeo Enterprise Platform: File Manager Facade.</description>
 
@@ -36,14 +36,9 @@
       <artifactId>ejb-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>jsr250-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>javax.jms</groupId>
       <artifactId>jms</artifactId>
     </dependency>
-
   </dependencies>
 
   <build>

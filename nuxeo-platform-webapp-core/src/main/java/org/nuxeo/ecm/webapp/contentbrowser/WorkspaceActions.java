@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.contentbrowser;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.Remove;
+
 import org.jboss.seam.annotations.Destroy;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;

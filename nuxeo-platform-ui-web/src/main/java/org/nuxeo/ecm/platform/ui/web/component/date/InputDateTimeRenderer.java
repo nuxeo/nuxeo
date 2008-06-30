@@ -25,13 +25,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-import com.sun.faces.renderkit.html_basic.HtmlBasicInputRenderer;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
+
+import com.sun.faces.renderkit.html_basic.HtmlBasicInputRenderer;
 
 /**
  * Renderer for input date time component.

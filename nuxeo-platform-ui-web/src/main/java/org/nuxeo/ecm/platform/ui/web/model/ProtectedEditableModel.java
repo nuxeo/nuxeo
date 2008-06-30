@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.model;
 
+import javax.faces.model.DataModel;
+
 /**
  * Interface for protected editable data model.
  * <p>

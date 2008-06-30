@@ -24,11 +24,10 @@ import java.util.Map;
 
 import javax.naming.directory.SearchControls;
 
+import junit.framework.TestCase;
+
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.directory.DirectoryException;
-
-
-import junit.framework.TestCase;
 
 public class TestLDAPDescriptors extends TestCase {
 
