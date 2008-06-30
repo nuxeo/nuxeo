@@ -48,6 +48,7 @@
       <artifactId>jboss-annotations-ejb3</artifactId>
     </dependency>
 
+    <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
