@@ -48,7 +48,7 @@
     <div id="main-wrapper">
       <div id="main">
         <div class="main-content">
-          <div id="message"><@block name="message" /></div>
+          <div id="message"><@block name="message">${Request.getParameter('msg')}</@block></div>
           <div id="content"><@block name="content" /></div>
         </div>
       </div>

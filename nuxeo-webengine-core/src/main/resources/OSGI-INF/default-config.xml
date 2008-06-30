@@ -32,7 +32,22 @@
       <actions>
         <action id="view" enabled="true">
           <permission  expression="Read"/>
-          <category>VIEW</category>
+        </action>
+        <action id="content_page" enabled="true">
+          <permission  expression="Read"/>
+          <category>TABVIEW</category>
+        </action>
+        <action id="versions_page" enabled="true">
+          <permission expression="Read"/>
+          <category>TABVIEW</category>
+        </action>
+        <action id="edit_page" enabled="true">
+          <permission expression="Write" />
+          <category>TABVIEW</category>
+        </action>
+        <action id="permissions_page" enabled="true">
+          <permission expression="Write" />
+          <category>TABVIEW</category>
         </action>
         <action id="print" enabled="true">
           <permission expression="Read" />
@@ -42,13 +57,14 @@
           <permission expression="Write" />
           <category>TOOLBOX</category>
         </action>
-        <action id="update" enabled="true" handler="org.nuxeo.ecm.webengine.actions.UpateActionHandler">
-          <permission expression="Write" />
-        </action>
-        <action id="edit" enabled="true">
-          <permission expression="Write" />
+        <action id="create_page" enabled="true">
+          <permission expression="Write AND facet=Folderish" />
+          <category>TOOLBOX</category>
         </action>
         <action id="create" enabled="true" handler="org.nuxeo.ecm.webengine.actions.CreateActionHandler">
+          <permission expression="Write" />
+        </action>
+        <action id="update" enabled="true" handler="org.nuxeo.ecm.webengine.actions.UpateActionHandler">
           <permission expression="Write" />
         </action>
         <action id="getfile" enabled="true" handler="org.nuxeo.ecm.webengine.actions.GetFileActionHandler">

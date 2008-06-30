@@ -26,7 +26,6 @@ import java.util.Comparator;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.osgi.framework.Bundle;
