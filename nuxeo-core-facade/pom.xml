@@ -77,11 +77,6 @@
       <artifactId>log4j</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency><!-- TO BE REMOVED; if not present, tests are running in spite of exclude tags -->
       <groupId>jboss</groupId>
       <artifactId>jbosssx</artifactId>
