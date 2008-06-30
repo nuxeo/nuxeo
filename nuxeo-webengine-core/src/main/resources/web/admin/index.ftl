@@ -4,9 +4,9 @@
 </head>
 <body>
 <h1>Nuxeo WebEngine Administration</h1>
-<p>
+<!--p>
 <h3><a href="${basePath}/admin/webapps">Web Application Management</a></h3>
-</p>
+</p-->
 <p>
 <h3><a href="${basePath}/admin/repository">Repository Management</a></h3>
 </p>
