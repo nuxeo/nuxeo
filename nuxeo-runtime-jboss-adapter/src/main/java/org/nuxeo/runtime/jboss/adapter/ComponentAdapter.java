@@ -36,7 +36,7 @@ import org.nuxeo.runtime.NXRuntime;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.jboss.osgi.JBossOSGiAdapter;
+import org.nuxeo.osgi.jboss.JBossOSGiAdapter;
 import org.nuxeo.runtime.jboss.util.DeploymentHelper;
 import org.nuxeo.runtime.jboss.util.ServiceLocator;
 import org.nuxeo.runtime.model.ComponentName;

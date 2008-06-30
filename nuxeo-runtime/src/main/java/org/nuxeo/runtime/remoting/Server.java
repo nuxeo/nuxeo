@@ -40,7 +40,7 @@ import org.nuxeo.runtime.model.RegistrationInfo;
  */
 public interface  Server {
 
-    ServerConfiguration  getConfiguration(InvokerLocator locator, Version version) throws ConfigurationException, UnsupportedServerVersion;
+    ServerConfiguration  getConfiguration(InvokerLocator locator, Version version) throws ConfigurationException;
 
     String getName();
 
@@ -76,7 +76,7 @@ public interface  Server {
      * [group, serviceInterface, name, locator], [group, serviceInterface, name, locator], ...
      * </pre>
      *
-     * So each service binding takes 4 consecutive entries in the array
+     * So each service binding takes 4 consecutive entries in the array.
      *
      * @return the service bindings
      */
@@ -84,12 +84,12 @@ public interface  Server {
 
     /**
      * Returns the service locators as an array of service locator properties.
-     *  <p>
-     *  There are 4 special properties that can be used:
-     *  <li><code>@class</code> - the service locator class name (a String)
-     *  <li><code>@host</code> - the server host (a String)
-     *  <li><code>@port</code> - the server port (an Integer)
-     *  <li><code>@groups</code> - the server service groups (a String array)
+     * <p>
+     * There are 4 special properties that can be used:
+     * <li><code>@class</code> - the service locator class name (a String)
+     * <li><code>@host</code> - the server host (a String)
+     * <li><code>@port</code> - the server port (an Integer)
+     * <li><code>@groups</code> - the server service groups (a String array)
      *
      * @return an array containing the service locators descriptor properties
      */
@@ -126,7 +126,7 @@ public interface  Server {
      *
      * @return
      */
-    java.util.Properties getProperties();
+    Properties getProperties();
 
     // ---- remote resource loading ---------
 

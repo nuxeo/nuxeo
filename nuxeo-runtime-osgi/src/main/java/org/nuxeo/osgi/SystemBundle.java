@@ -19,7 +19,6 @@
 
 package org.nuxeo.osgi;
 
-import org.nuxeo.runtime.launcher.BundleFile;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

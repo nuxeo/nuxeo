@@ -31,7 +31,6 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject(value = "service", order = { "serviceClass", "name" })
 public class ServiceDescriptor implements Serializable{
 
-
     private static final long serialVersionUID = 5490362136607217161L;
 
     @XNode("@name")
@@ -204,6 +203,15 @@ public class ServiceDescriptor implements Serializable{
             return true;
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (serviceClassName != null ? serviceClassName.hashCode() : 0);
+        result = 31 * result + (group != null ? group.hashCode() : 0);
+        return result;
     }
 
 }

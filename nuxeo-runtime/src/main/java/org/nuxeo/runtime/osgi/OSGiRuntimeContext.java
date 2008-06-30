@@ -25,6 +25,7 @@ import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -33,7 +34,8 @@ import org.osgi.framework.Bundle;
 public class OSGiRuntimeContext extends DefaultRuntimeContext {
 
     protected final Bundle bundle;
-
+    protected String hostBundleId;
+    protected Bundle hostBundle;
 
     public OSGiRuntimeContext(Bundle bundle) {
         this(Framework.getRuntime(), bundle);
@@ -42,6 +44,14 @@ public class OSGiRuntimeContext extends DefaultRuntimeContext {
     public OSGiRuntimeContext(RuntimeService runtime, Bundle bundle) {
         super(runtime);
         this.bundle = bundle;
+        // hack to correctly handle fragment class loaders
+        hostBundleId = (String)bundle.getHeaders().get(Constants.FRAGMENT_HOST);
+        if (hostBundleId != null) {
+            int p = hostBundleId.indexOf(';');
+            if (p > -1) { // remove version or other extra information if any
+                hostBundleId = hostBundleId.substring(0, p);
+            }
+        }
     }
 
     @Override
@@ -51,16 +61,35 @@ public class OSGiRuntimeContext extends DefaultRuntimeContext {
 
     @Override
     public URL getResource(String name) {
+        if (hostBundleId != null) {
+            return getHostBundle().getResource(name);
+        }
         return bundle.getResource(name);
     }
 
     @Override
     public URL getLocalResource(String name) {
+        if (hostBundleId != null) {
+            return getHostBundle().getEntry(name);
+        }
         return bundle.getEntry(name);
     }
 
     @Override
     public Class<?> loadClass(String className) throws ClassNotFoundException {
+        if (hostBundleId != null) { // hack to handle fragment bundles that doesn't have class loaders
+            return getHostBundle().loadClass(className);
+        }
         return bundle.loadClass(className);
     }
+
+    public Bundle getHostBundle() {
+        if (hostBundleId != null) {
+            if (hostBundle == null && runtime instanceof OSGiRuntimeService) {
+                hostBundle = ((OSGiRuntimeService)runtime).findHostBundle(bundle);
+            }
+        }
+        return hostBundle;
+    }
+
 }
