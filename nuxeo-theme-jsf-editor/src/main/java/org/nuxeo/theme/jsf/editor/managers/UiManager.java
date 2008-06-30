@@ -58,7 +58,7 @@ import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.formats.widgets.Widget;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentType;
-import org.nuxeo.theme.jsf.Utils;
+import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.jsf.editor.previews.Preview;
 import org.nuxeo.theme.jsf.editor.states.UiStatesLocal;
 import org.nuxeo.theme.jsf.negotiation.CookieManager;
@@ -119,7 +119,7 @@ public class UiManager implements UiManagerLocal {
         }
         return pagePath;
     }
-    
+
     public String getCurrentThemeName() {
         return getCurrentPagePath().split("/")[0];
     }
