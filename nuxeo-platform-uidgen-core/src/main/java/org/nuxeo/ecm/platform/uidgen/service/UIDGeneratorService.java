@@ -112,7 +112,7 @@ public class UIDGeneratorService extends DefaultComponent {
 
             // set sequencerFactory as field to be invoked lazy
             // TODO handle nicely invokation exceptions below
-            this.sequencerFactory = (UIDSequencerFactory) extension.getContext().loadClass(
+            sequencerFactory = (UIDSequencerFactory) extension.getContext().loadClass(
                     className).newInstance();
         } else {
             log.warn("extension not handled: " + extPoint);
@@ -124,7 +124,7 @@ public class UIDGeneratorService extends DefaultComponent {
             return sequencer;
         }
 
-        this.sequencer = sequencerFactory.createUIDSequencer();
+        sequencer = sequencerFactory.createUIDSequencer();
         log.info("Sequencer instantiated successfully: " + sequencer);
 
         return sequencer;
@@ -142,13 +142,13 @@ public class UIDGeneratorService extends DefaultComponent {
             final UIDGenerator generator = (UIDGenerator) extension.getContext().loadClass(
                     generatorDescriptor.getClassName()).newInstance();
 
-            final String propName = generatorDescriptor.getPropertyName();
-            if (propName == null) {
+            final String[] propNames = generatorDescriptor.getPropertyNames();
+            if (propNames.length == 0) {
                 log.error("no property name defined on generator "
                         + generatorName);
             }
             // set the property name on generator
-            generator.setPropertyName(propName);
+            generator.setPropertyNames(propNames);
 
             // Register Generator for DocTypes and property name
             final String[] docTypes = generatorDescriptor.getDocTypes();
@@ -159,7 +159,7 @@ public class UIDGeneratorService extends DefaultComponent {
     }
 
     /**
-     * Register given UIDGenerator for the given document types. If there is
+     * Registers given UIDGenerator for the given document types. If there is
      * already a generator registered for one of document type it will be
      * discarded (and replaced with the new generator)
      *
@@ -221,8 +221,7 @@ public class UIDGeneratorService extends DefaultComponent {
      * @throws DocumentException
      * @throws NamingException
      */
-    public void setUID(DocumentModel doc) throws DocumentException,
-            NamingException {
+    public void setUID(DocumentModel doc) throws DocumentException {
         final UIDGenerator generator = getUIDGeneratorFor(doc);
         if (generator != null) {
             generator.setUID(doc);

@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.IndexableR
  * Indexable resources used as proxy in testing data.
  *
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
- *
  */
 @SuppressWarnings("serial")
 public class FakeIndexableResource implements IndexableResource {
@@ -51,17 +50,14 @@ public class FakeIndexableResource implements IndexableResource {
 
     public Serializable getValueFor(String indexableDataName)
             throws IndexingException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public String computeId() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public ACP computeAcp() {
-        // TODO Auto-generated method stub
         return null;
     }
 
