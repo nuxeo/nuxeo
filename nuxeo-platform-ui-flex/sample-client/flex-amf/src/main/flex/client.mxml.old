@@ -1,0 +1,29 @@
+<!--
+  ~ Copyright (C) 2008 Exadel, Inc.
+  ~
+  ~ The GNU Lesser General Public License, Version 3
+  -->
+
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:word="*">
+
+    <mx:RemoteObject id="service" destination="helloAction"/>
+
+    <mx:Panel
+        title="Seam-Flex AMF Hello World"
+        paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10">
+
+        <mx:HBox>
+            <mx:Label text='Whom do you want to say "Hello" to?'/>
+
+            <mx:TextInput
+                id="who"
+                maxChars="20"
+                enter="service.hello(who.text)"/>
+
+            <mx:Button label="Say Hello" click="service.hello(who.text)"/>
+        </mx:HBox>
+
+        <mx:Label text='The server said: "{service.hello.lastResult}"'/>
+
+    </mx:Panel>
+</mx:Application>

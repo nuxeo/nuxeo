@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<fragment>
+
+
+  <extension target="application#MODULE">
+
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+
+  </extension>
+
+
+  <!-- comment that to disable filter based auth -->
+  <extension target="web#STD-AUTH-FILTER">
+
+    <!--<filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/seam/resource/amf*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>-->
+
+  </extension>
+
+  <extension target="web#CONTEXT-PARAM">
+   <!-- uncomment to restric flamingo usage
+   <context-param>
+      <param-name>flamingoConfig.webRemoteEnabled</param-name>
+      <param-value>true</param-value>
+    </context-param>
+   -->
+  </extension>
+
+  <extension target="web#SERVLET">
+
+
+  </extension>
+
+
+  <install>
+
+    <!--  create a temp dir -->
+    <!--  be sure no directory with that name exists -->
+    <delete path="nxflexplatform.tmp" />
+    <mkdir path="nxflexplatform.tmp" />
+
+    <unzip from="${bundle.fileName}" to="nxflexplatform.tmp">
+      <include>OSGI-INF/**</include>
+      <include>WEB/**</include>
+    </unzip>
+
+    <copy from="nxflexplatform.tmp/WEB/" to="nuxeo.war/WEB-INF/" />
+
+    <delete path="nxflexplatform.tmp" />
+
+  </install>
+
+</fragment>
+
+

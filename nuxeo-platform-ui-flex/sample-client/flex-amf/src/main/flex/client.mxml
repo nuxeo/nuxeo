@@ -1,0 +1,33 @@
+<!--
+  ~ Copyright (C) 2008 Exadel, Inc.
+  ~
+  ~ The GNU Lesser General Public License, Version 3
+  -->
+
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:word="*">
+
+    <mx:RemoteObject id="service" destination="flexStatelessPingTestBean"/>
+
+    <mx:Panel
+        title="Nuxeo-Flex AMF Ping test"
+        paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10">
+
+        <mx:HBox>
+            <mx:Button label="Ping Nuxeo Server" click="service.ping()"/>
+        </mx:HBox>
+
+        <mx:Label text='The server said: "{service.ping.lastResult}"'/>
+    </mx:Panel>
+
+    <mx:Panel
+        title="Nuxeo-Flex AMF Ping and gest User"
+        paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10">
+
+        <mx:HBox>
+            <mx:Button label="Ping User" click="service.pingUser()"/>
+        </mx:HBox>
+
+        <mx:Label text='The server said: "{service.pingUser.lastResult}"'/>
+
+    </mx:Panel>
+</mx:Application>
