@@ -6,6 +6,13 @@
 
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:word="*">
 
+   <mx:Script>
+		<![CDATA[
+			import org.nuxeo.ecm.flex.dto.DummyBean;			
+			
+	]]>
+	</mx:Script>
+
     <mx:RemoteObject id="service" destination="flexStatelessPingTestBean"/>
 
     <mx:Panel
@@ -30,4 +37,17 @@
         <mx:Label text='The server said: "{service.pingUser.lastResult}"'/>
 
     </mx:Panel>
+
+    <mx:Panel
+        title="Nuxeo-Flex AMF test serialization"
+        paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10">
+
+        <mx:HBox>
+            <mx:Button label="test Serialization" click="service.testSerialization()"/>
+        </mx:HBox>
+
+        <mx:Label text='The server said: "{service.testSerialization.lastResult.myField}"'/>
+
+    </mx:Panel>
+
 </mx:Application>

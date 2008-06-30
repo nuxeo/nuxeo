@@ -37,6 +37,16 @@ public class FlexStatelessPingTestBean implements Serializable {
             return "Stateless Nuxeo Seam bean saye Hello to " + flexUser.getName();
     }
 
+    @WebRemote
+    public DummyBean testSerialization() {
+
+        DummyBean test = new DummyBean();
+        test.setMyField("this field was set from Seam");
+
+        return test;
+    }
+
+
     public void getFirstChildren(String path)
     {
 
