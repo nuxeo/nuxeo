@@ -1,3 +1,22 @@
+/*
+ * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ * $Id$
+ */
+
 package org.nuxeo.ecm.platform.transform.jr;
 
 import java.io.File;
@@ -15,17 +34,6 @@ import org.nuxeo.ecm.platform.transform.plugin.xml.Xml2TextPluginImpl;
 import org.nuxeo.ecm.platform.transform.timer.SimpleTimer;
 
 public class TestJRTextPlugin extends AbstractPluginTestCase {
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
 
     public void testSmallXL2textConversion() throws Exception {
         String path = "test-data/hello.xls";
@@ -56,19 +64,20 @@ public class TestJRTextPlugin extends AbstractPluginTestCase {
         extList.add("sxi");
         extList.add("sxw");
 
-        for (String ext : extList)
-        {
-        OOoSimpleTextExtractor plugin = (OOoSimpleTextExtractor) service.getPluginByName("oo2text_jr");
-        SimpleTimer timer = new SimpleTimer();
-        timer.start();
-        List<TransformDocument> results = plugin.transform(null,
-                new TransformDocumentImpl(getBlobFromPath(path+ext)));
-        timer.stop();
-        System.out.println(timer);
+        for (String ext : extList) {
+            OOoSimpleTextExtractor plugin = (OOoSimpleTextExtractor) service.getPluginByName(
+                    "oo2text_jr");
+            SimpleTimer timer = new SimpleTimer();
+            timer.start();
+            List<TransformDocument> results = plugin.transform(null,
+                    new TransformDocumentImpl(getBlobFromPath(path + ext)));
+            timer.stop();
+            System.out.println(timer);
 
-        File textFile = getFileFromInputStream(
-                results.get(0).getBlob().getStream(), "txt");
-        assertTrue("text content on " + ext , DocumentTestUtils.readContent(textFile).startsWith("Hello from"));
+            File textFile = getFileFromInputStream(
+                    results.get(0).getBlob().getStream(), "txt");
+            assertTrue("text content on " + ext,
+                    DocumentTestUtils.readContent(textFile).startsWith("Hello from"));
         }
     }
 
@@ -85,10 +94,9 @@ public class TestJRTextPlugin extends AbstractPluginTestCase {
 
         File textFile = getFileFromInputStream(
                 results.get(0).getBlob().getStream(), "txt");
-        assertEquals("text content", "Hello from a xml  document  !",
+        assertEquals("text content", "Hello from a xml  document !",
                 DocumentTestUtils.readContent(textFile));
     }
-
 
     public void testSmallHTML2textConversion() throws Exception {
         String path = "test-data/hello2.html";
@@ -100,8 +108,6 @@ public class TestJRTextPlugin extends AbstractPluginTestCase {
                 new TransformDocumentImpl(getBlobFromPath(path)));
         timer.stop();
         System.out.println(timer);
-
-
 
         File textFile = getFileFromInputStream(
                 results.get(0).getBlob().getStream(), "txt");

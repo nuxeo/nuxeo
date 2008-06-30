@@ -102,6 +102,6 @@ public class JMSDocumentMessageProducerBean implements DocumentMessageProducer {
             log.error("Impossible to lookup DocumentMessageProducer service."
                     + "Cannot forward messages on JMS topic.");
         }
-
     }
+
 }

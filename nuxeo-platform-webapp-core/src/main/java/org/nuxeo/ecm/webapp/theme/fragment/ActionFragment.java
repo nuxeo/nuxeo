@@ -64,8 +64,8 @@ public final class ActionFragment extends AbstractFragment {
         if (documentManager != null) {
             ctx.setCurrentPrincipal((NuxeoPrincipal) documentManager.getPrincipal());
         }
-        NavigationContext navigationContext = null;
-        navigationContext = (NavigationContext) Component.getInstance("navigationContext");
+        NavigationContext navigationContext = (NavigationContext) Component.getInstance(
+                "navigationContext");
         if (navigationContext != null) {
             ctx.setCurrentDocument(navigationContext.getCurrentDocument());
         }

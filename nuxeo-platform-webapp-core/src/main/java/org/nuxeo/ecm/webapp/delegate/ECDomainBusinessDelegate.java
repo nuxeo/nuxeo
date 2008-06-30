@@ -85,7 +85,7 @@ public class ECDomainBusinessDelegate implements Serializable {
 
     @Destroy
     @PermitAll
-    public void destroy() throws ClientException {
+    public void destroy() {
         if (null != ecDomain) {
             ecDomain.remove();
             ecDomain = null;
