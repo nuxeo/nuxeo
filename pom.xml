@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
-  <version>5.1.6-SNAPSHOT</version>
+  <version>5.2-SNAPSHOT</version>
   <!-- IMPORTANT: change this file version when it's modified -->
 
   <packaging>pom</packaging>
@@ -104,6 +104,12 @@
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging-api</artifactId>
         <version>1.1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.freemarker</groupId>
+        <artifactId>freemarker</artifactId>
+        <version>2.3.11</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -593,6 +599,21 @@
   </dependencyManagement>
 
   <dependencies>
+    <!-- needed by APT for annotation processing -->
+    <dependency>
+      <groupId>org.nuxeo.build</groupId>
+      <artifactId>nuxeo-apt-extensions</artifactId>
+      <version>1.0</version>
+      <scope>compile</scope>
+      <!-- workaround for Mac OS X -->
+      <exclusions>
+        <exclusion>
+          <groupId>sun.jdk</groupId>
+          <artifactId>tools</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
     <dependency>
       <groupId>com.intellij</groupId>
       <artifactId>annotations</artifactId>
@@ -635,6 +656,26 @@
           <target>1.5</target>
         </configuration>
       </plugin>
+      <!-- APT plugin for annotation preprocessing -->
+      <plugin>
+        <groupId>org.apache.myfaces.tobago</groupId>
+        <artifactId>maven-apt-plugin</artifactId>
+        <version>1.0.12</version>
+        <configuration>
+          <generated>/target/generated/</generated>
+          <nocompile>true</nocompile>
+          <target>1.5</target>
+        </configuration>
+        <executions>
+          <execution>
+            <id>generate-bindings</id>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- end APT plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -884,12 +925,12 @@
                 ${basedir}/src/site/resources/css/jdstyle.css
                 </stylesheetfile-->
               <windowtitle>
-                Nuxeo Enterprise Platform 5.1 API Documentation
+                Nuxeo Enterprise Platform 5.2 API Documentation
               </windowtitle>
               <doctitle>
-                Nuxeo Enterprise Platform 5.1 API Documentation
+                Nuxeo Enterprise Platform 5.2 API Documentation
               </doctitle>
-              <header>Nuxeo Enterprise Platform 5.1</header>
+              <header>Nuxeo Enterprise Platform 5.2</header>
               <links>
                 <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
                 <link>http://java.sun.com/javaee/5/docs/api/</link>
