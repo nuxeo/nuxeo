@@ -20,9 +20,8 @@
 </pre>
 <h2>Team:</h2>
 <ul>
-<li> Project Lead: <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
-<li> Contributors: <a href="eb@nuxeo.com">Eric Barroca</a>, <a href="mailto:tg@nuxeo.com">Thomas G</a>, <a href="eb@nuxeo.com">Thierry Delprath</a>
-<li> Web interface: <a href="mailto:tg@nuxeo.com">Tibo</a>
+<li> Main Developer: <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+<li> Contributors: <a href="eb@nuxeo.com">Eric Barroca</a>, <a href="mailto:troger@nuxeo.com">Thomas Roger</a>, <a href="td@nuxeo.com">Thierry Delprath</a>, <a href="mailto:tsoulcie@nuxeo.com">Thibaut Soulcie</a>
 </ul>
 <h2>Modules:</h2>
 <ul>
