@@ -6,13 +6,17 @@
     Default Objects
   </documentation>
 
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="application-mapping">
+    <mapping path="/admin" webapp="admin" />
+    <mapping path="/admin/repository" webapp="admin" document="/default-domain" />
+  </extension>
+
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="application">
 
-    <webapp id="admin" extends="repository">
-      <path>/admin</path>
-      <documentRoot/>
+    <webapp id="admin" extends="default">
       <roots>
         <root priority="1">admin</root>
       </roots>
@@ -38,13 +42,6 @@
       </mappings>
     </webapp>
 
-    <webapp id="repository-admin" extends="admin">
-      <path>/admin/repository</path>
-      <repository>default</repository>
-      <documentRoot>/default-domain</documentRoot>
-    </webapp>
-
   </extension>
-
 
 </component>

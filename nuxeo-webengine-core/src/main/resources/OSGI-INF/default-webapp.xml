@@ -9,25 +9,13 @@
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="application-mapping">
     <mapping path="/" webapp="default" />
-    <mapping path="/repository" webapp="repository" document="/default-domain" default="true" />
-    <mapping path="/admin" webapp="admin" />
-    <mapping path="/admin/repository" webapp="admin" document="/default-domain" />
+    <mapping path="/repository" webapp="default" document="/default-domain" default="true" />
   </extension>
 
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="application">
     <webapp id="default">
-    	<roots>
-    		<root priority="0">default</root>
-    	</roots>
-    </webapp>
-  </extension>
-
-
-  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
-    point="application">
-    <webapp id="repository">
       <repository>default</repository>
       <errorPage>error.groovy</errorPage>
       <roots>
@@ -42,32 +30,6 @@
         </mapping>
         <mapping pattern="/logout">
           <script>/common/logout.groovy</script>
-        </mapping>
-      </mappings>
-    </webapp>
-
-    <webapp id="admin" extends="repository">
-      <roots>
-        <root priority="1">admin</root>
-      </roots>
-      <mappings>
-        <mapping pattern="/users">
-          <script>/users/users.groovy</script>
-        </mapping>
-        <mapping pattern="/users/create_user">
-          <script>/users/user_form.groovy</script>
-        </mapping>
-        <mapping pattern="/users/save_user">
-          <script>/users/save_user.groovy</script>
-        </mapping>
-        <mapping pattern="/users/create_group">
-          <script>/users/group_form.ftl</script>
-        </mapping>
-        <mapping pattern="/users/save_group">
-          <script>/users/save_group.groovy</script>
-        </mapping>
-        <mapping pattern="/users/user/(?username:[a-zA-Z0-9]+)$">
-          <script>/users/user_form.groovy</script>
         </mapping>
       </mappings>
     </webapp>

@@ -13,7 +13,7 @@
   
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
              point="application">
-    <webapp id="wiki" extends="repository">
+    <webapp id="wiki" extends="default">
       <roots>
         <root priority="1">wiki</root>
       </roots>
