@@ -77,7 +77,9 @@ public interface NotificationManager {
      * @throws ClientException
      */
     void addSubscription(String username, String notification,
-            DocumentModel doc, Boolean sendConfirmationEmail, NuxeoPrincipal principal, String notificationName) throws ClientException;
+            DocumentModel doc, Boolean sendConfirmationEmail,
+            NuxeoPrincipal principal, String notificationName)
+            throws ClientException;
 
     /**
      * Called when a user cancels his notification.
@@ -107,31 +109,32 @@ public interface NotificationManager {
     /**
      * Directly sends a notification to the principal, using the data provided
      * in the map
+     * <p>
+     * The map should contain at least the userName of the user calling the
+     * method stored under the key "author".
+     * <p>
+     * infoMap should also contain all the variables that should be used to
+     * make-up the body of the notifications message.
      *
-     * The map should contain at least the userName of the user calling the method
-     * stored under the key "author".
-     *
-     * infoMap should also contain all the variables that should be used to make-up
-     * the body of the notifications message.
-     *
-     * @param notificationName - name of notification
-     * @param infoMap - data used to compose the notification body
-     * @param userPrincipal - recipient used to get the adress(es) to send
-     *            emails
+     * @param notificationName name of notification
+     * @param infoMap data used to compose the notification body
+     * @param userPrincipal recipient used to get the adress(es) to send emails
      */
     void sendNotification(String notificationName, Map<String, Object> infoMap,
             String userPrincipal) throws ClientException;
 
     /**
-     * Send an e-mail directly
+     * Sends an e-mail directly.
      *
      * @param doc
      * @param freemarkerTemplateName
-     * @param commentaire
+     * @param subject
+     * @param comment
      * @param sender
      * @param sendto
      */
     void sendDocumentByMail(DocumentModel doc,
             String freemarkerTemplateName, String subject, String comment,
             NuxeoPrincipal sender, List<String> sendto);
+
 }

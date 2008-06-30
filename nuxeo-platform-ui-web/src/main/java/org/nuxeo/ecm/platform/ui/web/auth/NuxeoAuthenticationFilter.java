@@ -719,3 +719,4 @@ public class NuxeoAuthenticationFilter implements Filter {
     }
 
 }
+

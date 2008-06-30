@@ -43,16 +43,12 @@ import org.nuxeo.ecm.webapp.dashboard.DashboardActions;
 
 /**
  * Review event observer.
- *
  * <p>
  * Seam component that deals with events which requires invalidations of review
  * related seam listeners variables.
- * </p>
- *
  * <p>
  * This Seam component do exist because Seam seems to have some problems when
  * the sender and recipient is the same stateful bean (not the case with POJO)
- * </p>
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
@@ -84,8 +80,7 @@ public class ReviewEventObserverBean implements ReviewEventObserver {
     protected transient DashboardActions dashboardActions;
 
     @Observer( value={ EventNames.WF_INIT }, create=true, inject=false)
-    public void init()
-    {
+    public void init() {
         log.debug("WF Seam Event Observer created");
     }
 
