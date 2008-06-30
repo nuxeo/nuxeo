@@ -58,7 +58,7 @@ public class LazyTreeWalker implements TreeWalker {
         this.checkState = checkState;
     }
 
-    private class NodeInfo {
+    private static class NodeInfo {
 
         final String nodeId;
         final int childCount;

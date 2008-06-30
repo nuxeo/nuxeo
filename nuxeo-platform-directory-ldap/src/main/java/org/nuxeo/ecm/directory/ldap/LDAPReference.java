@@ -171,7 +171,6 @@ public class LDAPReference extends AbstractReference {
         Directory sourceDir = super.getSourceDirectory();
         if (sourceDir instanceof LDAPDirectoryProxy) {
             return ((LDAPDirectoryProxy) sourceDir).getDirectory();
-
         } else {
             throw new DirectoryException(
                     sourceDirectoryName
@@ -185,7 +184,6 @@ public class LDAPReference extends AbstractReference {
         Directory targetDir = super.getTargetDirectory();
         if (targetDir instanceof LDAPDirectoryProxy) {
             return ((LDAPDirectoryProxy) targetDir).getDirectory();
-
         } else {
             throw new DirectoryException(
                     targetDirectoryName
@@ -213,8 +211,7 @@ public class LDAPReference extends AbstractReference {
     /**
      * Store new links using the LDAP staticAttributeId strategy.
      *
-     * @see org.nuxeo.ecm.directory.Reference#addLinks(java.lang.String,
-     *      java.util.List)
+     * @see org.nuxeo.ecm.directory.Reference#addLinks(String, List)
      */
     public void addLinks(String sourceId, List<String> targetIds)
             throws DirectoryException {
@@ -309,8 +306,7 @@ public class LDAPReference extends AbstractReference {
     /**
      * Store new links using the LDAP staticAttributeId strategy.
      *
-     * @see org.nuxeo.ecm.directory.Reference#addLinks(java.util.List,
-     *      java.lang.String)
+     * @see org.nuxeo.ecm.directory.Reference#addLinks(List, String)
      */
     public void addLinks(List<String> sourceIds, String targetId)
             throws DirectoryException {
@@ -391,7 +387,7 @@ public class LDAPReference extends AbstractReference {
      * Fetch both statically and dynamically defined references and merge the
      * results.
      *
-     * @see org.nuxeo.ecm.directory.Reference#getSourceIdsForTarget(java.lang.String)
+     * @see org.nuxeo.ecm.directory.Reference#getSourceIdsForTarget(String)
      */
     public List<String> getSourceIdsForTarget(String targetId)
             throws DirectoryException {
@@ -436,14 +432,12 @@ public class LDAPReference extends AbstractReference {
                 NamingEnumeration<SearchResult> results = sourceSession.dirContext.search(
                         searchBaseDn, filterExpr, filterArgs, sctls);
 
-                Attributes attributes;
-                Object value;
                 while (results.hasMore()) {
-                    attributes = results.next().getAttributes();
+                    Attributes attributes = results.next().getAttributes();
                     // NXP-2461: check that id field is filled
                     Attribute attr = attributes.get(sourceSession.idAttribute);
                     if (attr != null) {
-                        value = attr.get();
+                        Object value = attr.get();
                         if (value != null) {
                             sourceIds.add(value.toString());
                         }
@@ -526,7 +520,6 @@ public class LDAPReference extends AbstractReference {
                                     sourceSession.idAttribute).get().toString());
                         }
                     }
-
                 }
             } catch (Exception e) {
                 throw new DirectoryException(
@@ -543,7 +536,7 @@ public class LDAPReference extends AbstractReference {
      * Fetch both statically and dynamically defined references and merge the
      * results.
      *
-     * @see org.nuxeo.ecm.directory.Reference#getSourceIdsForTarget(java.lang.String)
+     * @see org.nuxeo.ecm.directory.Reference#getSourceIdsForTarget(String)
      */
     @SuppressWarnings("unchecked")
     public List<String> getTargetIdsForSource(String sourceId)
@@ -744,7 +737,7 @@ public class LDAPReference extends AbstractReference {
      * Remove existing statically defined links for the given source id (dynamic
      * references remain unaltered)
      *
-     * @see org.nuxeo.ecm.directory.Reference#removeLinksForSource(java.lang.String)
+     * @see org.nuxeo.ecm.directory.Reference#removeLinksForSource(String)
      */
     public void removeLinksForSource(String sourceId) throws DirectoryException {
         LDAPDirectory targetDirectory = (LDAPDirectory) getTargetDirectory();
@@ -775,7 +768,7 @@ public class LDAPReference extends AbstractReference {
             }
             Attribute attrToRemove = new BasicAttribute(attributeId);
 
-            NamingEnumeration<? extends Object> oldAttrs = oldAttr.getAll();
+            NamingEnumeration<?> oldAttrs = oldAttr.getAll();
             String targetBaseDn = pseudoNormalizeDn(targetDirectory.getConfig().getSearchBaseDn());
             while (oldAttrs.hasMore()) {
                 String dn = pseudoNormalizeDn(oldAttrs.next().toString());
@@ -823,7 +816,7 @@ public class LDAPReference extends AbstractReference {
      * Remove existing statically defined links for the given target id (dynamic
      * references remain unaltered)
      *
-     * @see org.nuxeo.ecm.directory.Reference#removeLinksForTarget(java.lang.String)
+     * @see org.nuxeo.ecm.directory.Reference#removeLinksForTarget(String)
      */
     public void removeLinksForTarget(String targetId) throws DirectoryException {
         LDAPDirectory targetDirectory = (LDAPDirectory) getTargetDirectory();
@@ -926,8 +919,8 @@ public class LDAPReference extends AbstractReference {
      * Edit the list of statically defined references for a given target
      * (dynamic references remain unaltered)
      *
-     * @see org.nuxeo.ecm.directory.Reference#setSourceIdsForTarget(java.lang.String,
-     *      java.util.List)
+     * @see org.nuxeo.ecm.directory.Reference#setSourceIdsForTarget(String,
+     *      List)
      */
     public void setSourceIdsForTarget(String targetId, List<String> sourceIds)
             throws DirectoryException {
@@ -939,8 +932,8 @@ public class LDAPReference extends AbstractReference {
      * Set the list of statically defined references for a given source (dynamic
      * references remain unaltered)
      *
-     * @see org.nuxeo.ecm.directory.Reference#setTargetIdsForSource(java.lang.String,
-     *      java.util.List)
+     * @see org.nuxeo.ecm.directory.Reference#setTargetIdsForSource(String,
+     *      List)
      */
     public void setTargetIdsForSource(String sourceId, List<String> targetIds)
             throws DirectoryException {

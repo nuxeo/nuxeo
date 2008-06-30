@@ -81,12 +81,12 @@ import org.nuxeo.runtime.api.Framework;
 public class PublishingActionsListenerBean extends InputController implements
         PublishingActionsListener {
 
-    private static final long serialVersionUID = 1L;
-
     private static final Log log = LogFactory.getLog(PublishingActionsListenerBean.class);
 
+    private static final long serialVersionUID = -8814124116585645286L;
+
     @In(create = true, required = false)
-    private CoreSession documentManager;
+    private transient CoreSession documentManager;
 
     @In(create = true)
     protected transient Principal currentUser;
@@ -101,7 +101,7 @@ public class PublishingActionsListenerBean extends InputController implements
     protected transient DashboardActions dashboardActions;
 
     @In(create = true)
-    protected PublishActions publishActions;
+    protected transient PublishActions publishActions;
 
     @In
     protected transient Context eventContext;
