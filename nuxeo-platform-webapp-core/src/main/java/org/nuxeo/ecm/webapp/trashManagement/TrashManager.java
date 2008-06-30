@@ -19,17 +19,6 @@
 
 package org.nuxeo.ecm.webapp.trashManagement;
 
-import java.util.List;
-
-import javax.annotation.security.PermitAll;
-import javax.ejb.Remove;
-
-import org.jboss.seam.annotations.Create;
-import org.jboss.seam.annotations.Destroy;
-import org.jboss.seam.annotations.Observer;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
  *

@@ -26,6 +26,7 @@ import java.util.Set;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.SizeLimitExceededException;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>

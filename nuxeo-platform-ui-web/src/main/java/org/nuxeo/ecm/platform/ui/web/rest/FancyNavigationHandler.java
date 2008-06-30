@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ui.web.rest;
 
 import java.io.IOException;
 import java.util.Map;
+
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;

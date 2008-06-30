@@ -32,14 +32,6 @@
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
-      <artifactId>jboss-aop-jdk50</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-serialization</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
       <artifactId>jgroups</artifactId>
     </dependency>
     <dependency>

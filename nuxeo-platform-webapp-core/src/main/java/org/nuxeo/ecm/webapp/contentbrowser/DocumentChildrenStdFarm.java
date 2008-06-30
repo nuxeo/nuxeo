@@ -18,9 +18,9 @@
  */
 package org.nuxeo.ecm.webapp.contentbrowser;
 
-import java.io.Serializable;
-
 import static org.jboss.seam.ScopeType.SESSION;
+
+import java.io.Serializable;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;

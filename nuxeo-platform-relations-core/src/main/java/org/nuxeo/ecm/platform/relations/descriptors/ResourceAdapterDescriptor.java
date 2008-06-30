@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.relations.descriptors;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.relations.api.QNameResource;
 
 /**
  * Adapter to transform a {@link DocumentModel} into a {@link QNameResource} and

@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.model.impl;
 
-import java.util.Comparator;
 import java.io.Serializable;
+import java.util.Comparator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -19,8 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.directory;
 
-import java.util.Comparator;
 import java.io.Serializable;
+import java.util.Comparator;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>

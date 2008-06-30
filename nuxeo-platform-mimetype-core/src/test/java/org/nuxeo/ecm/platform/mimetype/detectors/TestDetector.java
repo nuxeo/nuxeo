@@ -21,8 +21,8 @@ package org.nuxeo.ecm.platform.mimetype.detectors;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
 

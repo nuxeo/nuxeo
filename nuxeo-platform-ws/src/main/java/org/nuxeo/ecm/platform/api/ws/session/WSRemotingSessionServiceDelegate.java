@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.api.ws.session;
 
 import java.io.Serializable;
 
+import org.jboss.remoting.transport.web.WebServerInvoker;
 import org.nuxeo.ecm.platform.api.ws.WSException;
 import org.nuxeo.runtime.api.Framework;
 

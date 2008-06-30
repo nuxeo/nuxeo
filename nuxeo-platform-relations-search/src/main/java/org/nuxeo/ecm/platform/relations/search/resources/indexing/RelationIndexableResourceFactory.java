@@ -29,11 +29,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
-import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedData;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResource;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResources;

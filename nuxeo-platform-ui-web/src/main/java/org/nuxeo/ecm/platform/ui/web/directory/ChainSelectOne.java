@@ -23,15 +23,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.component.UIComponent;
-import javax.faces.component.UISelectItem;
-import javax.faces.component.html.HtmlSelectOneListbox;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>

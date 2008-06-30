@@ -56,8 +56,6 @@ import org.nuxeo.ecm.platform.workflow.document.api.ejb.delegate.WorkflowDocumen
 import org.nuxeo.ecm.platform.workflow.document.api.security.WorkflowDocumentSecurityManager;
 import org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicy;
 import org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicyManager;
-import org.nuxeo.ecm.platform.workflow.api.client.events.EventNames;
-import org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicyManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**

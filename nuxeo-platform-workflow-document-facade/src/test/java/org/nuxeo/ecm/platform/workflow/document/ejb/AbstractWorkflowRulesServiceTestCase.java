@@ -20,19 +20,6 @@
 package org.nuxeo.ecm.platform.workflow.document.ejb;
 
 import org.nuxeo.ecm.platform.workflow.document.api.rules.WorkflowRulesManager;
-/*
- * (C) Copyright 2006 Nuxeo SAS <http://nuxeo.com> and others
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: AbstractWorkflowRulesServiceTestCase.java 9688 2007-01-16 15:07:21Z janguenot $
- */
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**

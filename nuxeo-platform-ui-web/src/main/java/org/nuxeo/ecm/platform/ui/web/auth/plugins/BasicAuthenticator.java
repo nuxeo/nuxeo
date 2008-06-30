@@ -26,10 +26,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import sun.misc.BASE64Decoder;
 
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
+
+import sun.misc.BASE64Decoder;
 
 public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
 

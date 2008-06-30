@@ -25,12 +25,18 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.nuxeo.ecm.platform.workflow.api.client.delegate.WAPIBusinessDelegate;
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.*;
+import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WAPI;
+import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMActivityInstance;
+import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMProcessDefinition;
+import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemDefinition;
+import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance;
+import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemState;
+import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkflowException;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.impl.WMParticipantImpl;
 import org.nuxeo.ecm.platform.workflow.document.api.ejb.delegate.WorkItemsListsBusinessDelegate;
 import org.nuxeo.ecm.platform.workflow.document.api.workitem.WorkItemsListEntry;
-import org.nuxeo.ecm.platform.workflow.document.api.workitem.WorkItemsListsManager;
 import org.nuxeo.ecm.platform.workflow.document.api.workitem.WorkItemsListException;
+import org.nuxeo.ecm.platform.workflow.document.api.workitem.WorkItemsListsManager;
 
 /**
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>

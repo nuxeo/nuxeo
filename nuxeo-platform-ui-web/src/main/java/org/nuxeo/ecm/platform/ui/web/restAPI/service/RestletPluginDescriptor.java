@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ui.web.restAPI.service;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;

@@ -19,10 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.tag.handler;
 
-import javax.faces.component.ActionSource;
 import javax.faces.component.ValueHolder;
 
-import org.nuxeo.ecm.platform.ui.web.tag.jsf.MetaActionSourceRule;
 import org.nuxeo.ecm.platform.ui.web.tag.jsf.MetaValueHolderRule;
 
 import com.sun.facelets.tag.MetaRuleset;
