@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.runtime.services.streaming.ByteArraySource;
 import org.nuxeo.runtime.services.streaming.FileSource;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
-import org.nuxeo.runtime.services.streaming.StreamSource;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**

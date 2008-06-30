@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
+
 public class Attachment {
 
     final Map<String, Object> map = new HashMap<String, Object>();

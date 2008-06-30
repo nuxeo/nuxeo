@@ -15,8 +15,9 @@
  */
 package org.nuxeo.ecm.core.query.sql.parser;
 
-import java_cup.runtime.*;
-import org.nuxeo.ecm.core.query.*;
+import java_cup.runtime.Symbol;
+
+import org.nuxeo.ecm.core.query.QueryParseException;
 
 /**
  * Lexer for NXQL

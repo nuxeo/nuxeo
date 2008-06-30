@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.api;
 
 import junit.framework.TestCase;
+
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 
 public class TestNuxeoPrincipal extends TestCase {
