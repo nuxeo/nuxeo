@@ -37,4 +37,10 @@ public class FlexStatelessPingTestBean implements Serializable {
             return "Stateless Nuxeo Seam bean saye Hello to " + flexUser.getName();
     }
 
+    public void getFirstChildren(String path)
+    {
+
+
+    }
+
 }

@@ -13,6 +13,16 @@
     Nuxeo Enterprise Platform: Flex integration  based on JBoss SEAM
   </description>
 
+  <repositories>
+        <repository>
+            <id>repository.jboss.org</id>
+            <url>http://repository.jboss.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
   <dependencies>
     <dependency>
       <groupId>com.exadel.flamingo.flex</groupId>

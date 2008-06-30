@@ -51,7 +51,7 @@
       <include>WEB/**</include>
     </unzip>
 
-    <copy from="nxflexplatform.tmp/WEB/" to="nuxeo.war/WEB-INF/" />
+    <copy from="nxflexplatform.tmp/WEB/lib" to="lib/" />
 
     <delete path="nxflexplatform.tmp" />
 

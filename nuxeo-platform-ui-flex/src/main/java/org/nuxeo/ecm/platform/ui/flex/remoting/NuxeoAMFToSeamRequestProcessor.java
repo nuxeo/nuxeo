@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.exadel.flamingo.flex.amf.AMF0Message;
-import com.exadel.flamingo.flex.amf.process.AMF0MessageProcessor;
 import com.exadel.flamingo.flex.messaging.amf.io.AMF0Deserializer;
 import com.exadel.flamingo.flex.messaging.amf.io.AMF0Serializer;
 
@@ -33,12 +32,10 @@ public class NuxeoAMFToSeamRequestProcessor {
             final HttpServletResponse response) throws ServletException,
             IOException {
 
-        AMF0Deserializer deserializer = new AMF0Deserializer(
-                new DataInputStream(request.getInputStream()));
+        AMF0Deserializer deserializer = new AMF0Deserializer(new DataInputStream(request.getInputStream()));
         AMF0Message amf0Request = deserializer.getAMFMessage();
 
-        AMF0MessageProcessor amf0MessageProcessor = new AMF0MessageProcessor(
-                new NuxeoAMF3MessageProcessor(request));
+        NuxeoAMF0MessageProcessor amf0MessageProcessor = new NuxeoAMF0MessageProcessor(new NuxeoAMF3MessageProcessor(request));
         AMF0Message amf0Response = amf0MessageProcessor.process(amf0Request);
 
         response.setContentType("application/x-amf");
