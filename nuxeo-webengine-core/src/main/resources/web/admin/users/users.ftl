@@ -1,10 +1,10 @@
-
-
-<h1>User Administration</h1>
+<@extends src="base.ftl">
+<@block name="header"><h1><a href ="${basePath}">User Administration</a></h1></@block>
+<@block name="content">
 
 <br/>
 
-<a href="${appPath}/users/create_user">Add a user</a>
+<a href="${appPath}/users/create_user">Add a user</a> |
 <a href="${appPath}/users/create_group">Add a group</a>
 
 <br/>
@@ -37,3 +37,7 @@
 </tbody>
 </table>
 </#if>
+
+</@block>
+</@extends>
+

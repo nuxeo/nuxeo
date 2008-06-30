@@ -10,6 +10,7 @@
     <rendering-extension name="script" class="org.nuxeo.ecm.webengine.rendering.ScriptMethod"/>
     <rendering-extension name="render" class="org.nuxeo.ecm.webengine.rendering.RenderDirective"/>
     <rendering-extension name="wiki" class="org.nuxeo.ecm.platform.rendering.wiki.WikiTransformer"/>
+    <rendering-extension name="API" class="org.nuxeo.ecm.webengine.rendering.APIHelper"/>
   </extension>
   
   <extension target="org.nuxeo.ecm.webengine.rendering.wiki" point="rendering-extension">
@@ -35,9 +36,11 @@
         </action>
         <action id="print" enabled="true">
           <permission expression="Read" />
+          <category>TOOLBOX</category>
         </action>
         <action id="delete" enabled="true" handler="org.nuxeo.ecm.webengine.actions.DeleteActionHandler">
           <permission expression="Write" />
+          <category>TOOLBOX</category>
         </action>
         <action id="update" enabled="true" handler="org.nuxeo.ecm.webengine.actions.UpateActionHandler">
           <permission expression="Write" />

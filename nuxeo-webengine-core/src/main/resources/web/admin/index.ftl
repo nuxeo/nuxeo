@@ -1,9 +1,8 @@
-<html>
-<head>
-  <title>Nuxeo WebEngine Administration</title>
-</head>
-<body>
-<h1>Nuxeo WebEngine Administration</h1>
+
+<@extends src="base.ftl">
+<@block name="title">Nuxeo WebEngine - Repository</@block>
+<@block name="header"><h1><a href="${appPath}">Nuxeo WebEngine - Repository</a></h1></@block>
+<@block name="content">
 <!--p>
 <h3><a href="${basePath}/admin/webapps">Web Application Management</a></h3>
 </p-->
@@ -16,5 +15,5 @@
 <p>
 See the <a href="${basePath}/docs/index.ftl">manual</a> for more information.
 </p>
-</body>
-</html>
+</@block>
+</@extends>

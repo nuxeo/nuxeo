@@ -1,7 +1,7 @@
+<@extends src="base.ftl">
+<@block name="header"><h1><a href ="${basePath}"><#if user>User Details<#else>User creation</#if></a></h1></@block>
+<@block name="content">
 
-<h1><#if user>User Details<#else>User creation</#if></h1>
-
-<br/>
 <form method="POST" action="${appPath}/users/save_user" accept-charset="utf-8">
 <table>
     <tbody>
@@ -39,3 +39,6 @@
 </table>
   <input type="submit" value="Save"/>
 </form>
+
+</@block>
+</@extends>
