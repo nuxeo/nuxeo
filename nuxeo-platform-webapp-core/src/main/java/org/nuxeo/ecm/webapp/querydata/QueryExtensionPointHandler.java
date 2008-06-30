@@ -39,7 +39,6 @@ public class QueryExtensionPointHandler extends NXQueryDataExtensionPointHandler
                 e.printStackTrace();
             }
         }
-
     }
 
     public void registerExtension(Extension extension) {
