@@ -112,8 +112,11 @@ public class XMLDirectoryReader extends AbstractDocumentReader {
     /*NXP-1688 Rux: the path was somehow left over when migrated from
     core 1.3.4 to 1.4.0. Pull back.*/
     private Path computeRelativePath(File file) {
-        return new Path(
-                file.getAbsolutePath().substring(source.getAbsolutePath().length()));
+        /*NXP-2507 Rux: preserve directory structure with slashes instead OS name separator*/
+        String subPathS = 
+            file.getAbsolutePath().substring(source.getAbsolutePath().length());
+        subPathS = subPathS.replace(File.separatorChar, '/');
+        return new Path(subPathS);
     }
 
 
