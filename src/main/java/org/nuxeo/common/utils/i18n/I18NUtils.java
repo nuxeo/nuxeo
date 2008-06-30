@@ -33,7 +33,7 @@ public final class I18NUtils {
     private I18NUtils() {
     }
 
-    protected static ClassLoader getCurrentClassLoader(Object defaultObject) {
+    static ClassLoader getCurrentClassLoader(Object defaultObject) {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         if (loader == null) {
             loader = defaultObject.getClass().getClassLoader();

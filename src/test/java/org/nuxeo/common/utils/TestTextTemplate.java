@@ -19,10 +19,10 @@
 
 package org.nuxeo.common.utils;
 
-import junit.framework.TestCase;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import junit.framework.TestCase;
 
 /**
  * @author sfermigier
