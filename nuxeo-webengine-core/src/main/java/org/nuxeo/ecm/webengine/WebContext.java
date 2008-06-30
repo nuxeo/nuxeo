@@ -49,6 +49,13 @@ import org.nuxeo.ecm.webengine.util.FormData;
 public interface WebContext {
 
     /**
+     * Must be called before using the context
+     * @throws WebException
+     * @throws IllegalStateException if already initialized
+     */
+    void initialize() throws WebException, IllegalStateException;
+
+    /**
      * Gets the web engine instance.
      *
      * @return the web engine instance. Cannot return null
@@ -215,6 +222,12 @@ public interface WebContext {
      * @return the path portion of the request URL. Cannot return null.
      */
     String getUrlPath();
+
+    /**
+     * Get the path segments that identify the current web application.
+     * @return the application path. Cannot be null
+     */
+    String getApplicationPath();
 
     /**
      * Gets the path of the servlet. Same as servlet context path + servlet path

@@ -60,6 +60,8 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
     public static final String APPLICATION_XP = "application";
     public static final String INSTALL_XP = "install";
     public static final String CONFIG_XP = "configuration";
+    public static final String APP_MAPPING_XP = "application-mapping";
+
 
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
@@ -160,6 +162,8 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
         } else if (BINDING_XP.equals(extensionPoint)) {
             WebObjectBindingDescriptor binding = (WebObjectBindingDescriptor)contribution;
             engine.registerBinding(binding.type, binding.objectId);
+        } else if (APP_MAPPING_XP.equals(extensionPoint)) {
+            engine.addApplicationMapping((WebApplicationMapping)contribution);
         } else if (extensionPoint.equals(RENDERING_EXTENSION_XP)) {
             RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor)contribution;
             try {
@@ -194,6 +198,8 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
         } else if (BINDING_XP.equals(extensionPoint)) {
             WebObjectBindingDescriptor binding = (WebObjectBindingDescriptor)contribution;
             engine.unregisterBinding(binding.type);
+        } else if (APP_MAPPING_XP.equals(extensionPoint)) {
+            engine.removeApplicationMapping((WebApplicationMapping)contribution);
         } else if (extensionPoint.equals(RENDERING_EXTENSION_XP)) {
             RenderingExtensionDescriptor fed = (RenderingExtensionDescriptor)contribution;
             engine.unregisterRenderingExtension(fed.name);

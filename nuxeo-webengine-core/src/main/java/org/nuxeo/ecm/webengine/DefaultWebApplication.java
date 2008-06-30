@@ -29,16 +29,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.url.URLFactory;
@@ -63,8 +56,6 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
     protected WebEngine engine;
     protected FreemarkerEngine rendering;
     protected String id;
-    protected Path path;
-    protected String pathAsString;
     protected DirectoryStack dirStack;
     protected String errorPage;
     protected String indexPage;
@@ -72,8 +63,6 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
     protected Map<String, String> typeBindings;
     protected PathMapper mapper;
     protected String repositoryName;
-    protected DocumentRef documentRoot = null;
-    protected Path documentRootPath;
     protected WebApplicationDescriptor desc;
 
     // object binding cache
@@ -83,18 +72,6 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
     public DefaultWebApplication(WebEngine engine, WebApplicationDescriptor desc) throws WebException {
         this.engine = engine;
         id = desc.getId();
-        String path = desc.getPath();
-        if (path == null || path.length() == 0) {
-            pathAsString = "/";
-        } else {
-            pathAsString = path;
-        }
-        this.path = new Path(pathAsString).makeAbsolute();
-        String docRoot = desc.getDocumentRoot();
-        if (docRoot != null && docRoot.length() > 0) {
-            documentRoot = new PathRef(docRoot);
-            documentRootPath = new Path(docRoot).makeAbsolute().removeTrailingSeparator();
-        }
         defaultPage = desc.getDefaultPage("default.ftl");
         indexPage = desc.getIndexPage("index.ftl");
         errorPage = desc.getErrorPage("error.ftl");
@@ -190,42 +167,6 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
      */
     public String getId() {
         return id;
-    }
-
-    public Path getPath() {
-        return path;
-    }
-
-    public void setPath(Path path) {
-        this.path = path;
-        pathAsString = path.toString();
-    }
-
-    public String getPathAsString() {
-        return pathAsString;
-    }
-
-    public DocumentRef getDocumentRoot() {
-        return documentRoot;
-    }
-
-    public void setDocumentRoot(Path path) {
-        documentRoot = new PathRef(path.toString());
-        documentRootPath = path;
-    }
-
-    public Path getRelativeDocumentPath(Path docPath) {
-        if (documentRootPath != null) {
-            int cnt = documentRootPath.matchingFirstSegments(docPath);
-            if (cnt == documentRootPath.segmentCount()) {
-                return docPath.removeFirstSegments(cnt).makeAbsolute();
-            }
-        }
-        return null;
-    }
-
-    public boolean isDefaultRepositoryView() {
-        return desc.isDefaultRepositoryView;
     }
 
     public DirectoryStack getDirectoryStack() {
@@ -375,46 +316,6 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         return engine;
     }
 
-    public WebContext createContext(PathInfo pathInfo, HttpServletRequest req,
-            HttpServletResponse resp) throws WebException {
-        pathInfo.setApplicationPath(path);
-        mapper.rewrite(pathInfo);
-        DefaultWebContext context = new DefaultWebContext(this, pathInfo, req, resp);
-        // traverse documents if any
-        buildTraversalPath(context);
-        return context;
-    }
-
-    public void buildTraversalPath(DefaultWebContext context) throws WebException {
-        PathInfo pathInfo = context.getPathInfo();
-        if (documentRoot == null) {
-            pathInfo.setTrailingPath(pathInfo.getTraversalPath());
-            return;
-        }
-        CoreSession session = context.getCoreSession();
-        DocumentModel doc =  null;
-        try {
-            doc = session.getDocument(documentRoot);
-        } catch (Exception e) {
-            throw WebException.wrap(e);
-        }
-        context.addWebObject(doc.getName(), doc);
-        Path traversalPath = pathInfo.getTraversalPath();
-
-        for (int i=0, len=traversalPath.segmentCount(); i<len; i++) {
-            String name = traversalPath.segment(i);
-            doc = context.getLastObject().traverse(name); // get next object if any
-            if (doc != null) {
-                context.addWebObject(name, doc);
-            } else if (i == 0) {
-                pathInfo.setTrailingPath(traversalPath);
-                break;
-            } else {
-                pathInfo.setTrailingPath(traversalPath.removeFirstSegments(i));
-                break;
-            }
-        }
-    }
 
     public void registerRenderingExtension(String id, Object obj) {
         rendering.setSharedVariable(id, obj);

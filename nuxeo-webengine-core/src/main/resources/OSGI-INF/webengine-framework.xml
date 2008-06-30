@@ -80,6 +80,19 @@
       class="org.nuxeo.ecm.webengine.security.GuardDescriptor" />
   </extension-point>
 
+  <extension-point name="application-mapping">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Register application mappings
+    <code>
+      <mapping path="/wiki" webapp="wiki" document="/default-domain/workspaces/ws/wiki"/>
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.WebApplicationMapping" />
+  </extension-point>
+
   <extension-point name="application">
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)

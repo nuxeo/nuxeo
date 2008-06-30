@@ -23,13 +23,13 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
 import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.WebApplication;
+import org.nuxeo.ecm.webengine.WebApplicationMapping;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.servlet.WebServlet;
 import org.nuxeo.ecm.webengine.tests.fake.FakeRequest;
@@ -59,9 +59,10 @@ public abstract class BaseSiteRequestTestCase extends RepositoryOSGITestCase {
         engine = Framework.getLocalService(WebEngine.class);
         WebApplication app = engine.getApplication("default");
         app.setDefaultPage(null);
-        app.setDocumentRoot(new Path("/"));
-        app.setPath(new Path("/"));
         app.setRepositoryName("demo");
+
+        WebApplicationMapping mapping = new WebApplicationMapping("/", "default", "/");
+        engine.addApplicationMapping(mapping);
 
         // setup repo
         CoreSession session = getCoreSession();

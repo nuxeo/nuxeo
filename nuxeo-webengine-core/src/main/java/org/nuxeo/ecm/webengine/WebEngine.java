@@ -24,9 +24,14 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
+
+import freemarker.cache.WebappTemplateLoader;
 
 
 /**
@@ -34,6 +39,24 @@ import org.nuxeo.runtime.deploy.FileChangeNotifier;
  *
  */
 public interface WebEngine {
+
+    /**
+     * Create a request context
+     * @param req
+     * @param resp
+     * @return the context. Cannot return null
+     * @throws WebException
+     */
+    WebContext createContext(HttpServletRequest req, HttpServletResponse resp) throws WebException;
+
+    /**
+     * Get the URL path for the given document path
+     * @param docPath
+     * @return the url path or null if cannot be computed
+     */
+    Path getUrlPath(Path docPath);
+
+    WebApplication getDefaultApplication();
 
     ResourceBundle getMessageBundle();
 
@@ -51,6 +74,10 @@ public interface WebEngine {
 
     void unregisterBinding(String type);
 
+    void addApplicationMapping(WebApplicationMapping mapping);
+
+    void removeApplicationMapping(WebApplicationMapping mapping);
+
     Collection<WebObjectDescriptor> getObjects();
 
     WebObjectDescriptor getObject(String id);
@@ -62,12 +89,6 @@ public interface WebEngine {
     WebApplication getApplication(String name);
 
     WebApplication getApplicationByPath(Path path);
-
-    /**
-     * Get the application registered as the default repository view
-     * @return the default repository view application or null if none was registered
-     */
-    WebApplication getDefaultRepositoryView();
 
     void registerApplication(WebApplicationDescriptor desc) throws WebException;
 

@@ -19,7 +19,9 @@
 
 package org.nuxeo.ecm.webengine.servlet;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletConfig;
@@ -30,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.PathInfo;
 import org.nuxeo.ecm.webengine.RequestHandler;
@@ -80,27 +83,37 @@ public class WebServlet extends HttpServlet {
             resp = new NoBodyResponse(resp);
         }
 
-        PathInfo pathInfo = new PathInfo(req.getPathInfo());
-        // get the application that match that path
-        WebApplication app = engine.getApplicationByPath(pathInfo.getPath());
-        if (app == null) {
-            // don't have a context so send an error
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No web application found on that path");
-            return;
-        }
-
         WebContext context = null;
         try {
             // create the request context
-            context = app.createContext(pathInfo, req, resp);
+            context = engine.createContext(req, resp);
+            context.initialize();
             CONTEXT.set(context);
             service(context, req, resp);
         } catch (Throwable e) {
             WebException we = WebException.wrap(e);
             log.error("Site Servlet failed to handle request", e);
-            if (context == null) { // create an empty context
-                context = new DefaultWebContext(app, req, resp);
+            if (context == null) {
+                WebApplication app = engine.getDefaultApplication();
+                if (app == null) {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    PrintStream buf = new PrintStream(baos);
+                    buf.print("Failed to create request context. " +
+                            "<p>Cannot create pretty error message since a default application is not defined." +
+                            "<p>Error message is: "+e.getMessage()+
+                    "<p>The stack trace is:<hr><p><pre>");
+                    e.printStackTrace(buf);
+                    buf.print("</pre>");
+                    buf.close();
+                    resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, new String(baos.toByteArray()));
+                    return;
+                }
+                String p = req.getPathInfo();
+                context = new DefaultWebContext(app,
+                        new PathInfo(p == null ? PathInfo.ROOT_PATH : new Path(p)),
+                        req, resp);
             }
+            WebApplication app = context.getApplication();
             ScriptFile page = context.getFile(app.getErrorPage());
             if (page == null) {
                 displayError(resp, we, "ErrorPage not found: "+app.getErrorPage(),

@@ -43,6 +43,7 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.Repository;
@@ -90,12 +91,8 @@ public class DefaultWebContext implements WebContext {
     protected List<File> scriptExecutionStack;
 
     protected String basePath;
-
-
-    public DefaultWebContext(WebApplication app,
-            HttpServletRequest req, HttpServletResponse resp) {
-        this (app, new PathInfo(req.getPathInfo()), req, resp);
-    }
+    protected String applicationPath;
+    private boolean isInitialized;
 
     public DefaultWebContext(WebApplication app, PathInfo pathInfo,
             HttpServletRequest req, HttpServletResponse resp) {
@@ -107,6 +104,42 @@ public class DefaultWebContext implements WebContext {
         vars = new HashMap<String, Object>();
         scriptExecutionStack = new ArrayList<File>();
     }
+
+    public void initialize() throws WebException, IllegalStateException {
+        if (isInitialized) {
+            throw new IllegalStateException("Context already initialized");
+        }
+        isInitialized = true;
+        DocumentRef documentRoot = pathInfo.getDocument();
+        if (documentRoot == null) { //TODO XXX: here we can add a custom root resolver
+            pathInfo.setTrailingPath(pathInfo.getTraversalPath());
+            return;
+        }
+        CoreSession session = getCoreSession();
+        DocumentModel doc =  null;
+        try {
+            doc = session.getDocument(documentRoot);
+        } catch (Exception e) {
+            throw WebException.wrap(e);
+        }
+        addWebObject(doc.getName(), doc);
+        Path traversalPath = pathInfo.getTraversalPath();
+
+        for (int i=0, len=traversalPath.segmentCount(); i<len; i++) {
+            String name = traversalPath.segment(i);
+            doc = getLastObject().traverse(name); // get next object if any
+            if (doc != null) {
+                addWebObject(name, doc);
+            } else if (i == 0) {
+                pathInfo.setTrailingPath(traversalPath);
+                break;
+            } else {
+                pathInfo.setTrailingPath(traversalPath.removeFirstSegments(i));
+                break;
+            }
+        }
+    }
+
 
     public boolean isCanceled() {
         return isCanceled;
@@ -152,32 +185,36 @@ public class DefaultWebContext implements WebContext {
         return form;
     }
 
+    public String getApplicationPath() {
+        if (applicationPath == null) {
+            applicationPath = pathInfo.getApplicationPath().toString();
+        }
+        return applicationPath;
+    }
+
     public String getUrlPath(DocumentModel document) {
-        StringBuffer buf = new StringBuffer(512);
-        buf.append(getBasePath());
-        // resolve the document relative to the root
-        Path docPath = document.getPath().makeAbsolute();
-        Path path = null;
-        path = app.getRelativeDocumentPath(docPath);
-        if (path != null) {
-            buf.append(app.getPathAsString());
-        }
-        if (path == null) { // try the default repository view application
-            WebApplication app = engine.getDefaultRepositoryView();
-            if (app != null) {
-                path = app.getRelativeDocumentPath(docPath);
-                if (path != null) {
-                    buf.append(app.getPathAsString());
-                }
+        if (head != null) {
+            String appPath = getApplicationPath();
+            StringBuilder buf = new StringBuilder(512);
+            buf.append(getBasePath());
+            // resolve the document relative to the root
+            Path docPath = document.getPath().makeAbsolute();
+            Path path = null;
+            path = getRelativePath(head.getDocument().getPath().makeAbsolute(), docPath);
+            if (path != null) {
+                buf.append(appPath);
+            } else {
+                path = engine.getUrlPath(docPath);
             }
+            if (path == null) {
+                path = docPath;
+            }
+            if (path.segmentCount() > 0) {
+                buf.append(path.removeTrailingSeparator().toString());
+            }
+            return buf.toString();
         }
-        if (path == null) {
-            path = docPath;
-        }
-        if (path.segmentCount() > 0) {
-            buf.append(path.removeTrailingSeparator().toString());
-        }
-        return buf.toString();
+        return null;
     }
 
     public PathInfo getPathInfo() {
@@ -560,6 +597,7 @@ public class DefaultWebContext implements WebContext {
         bindings.put("Document", getTargetDocument());
         bindings.put("Engine", engine);
         bindings.put("basePath", getBasePath());
+        bindings.put("appPath", getApplicationPath());
         try {
             bindings.put("Session", getCoreSession());
         } catch (Exception e) {
@@ -675,4 +713,21 @@ public class DefaultWebContext implements WebContext {
         anonymousSession = null;
     }
 
+    /**
+     * Given an absolute path return its relative path to the given base path if any.
+     * <p>
+     * If the path cannot be made relative to the basePath then null is returned
+     * <br>
+     * The returned path is always starting with a '/'
+     * @param basePath the base path
+     * @param path the path
+     * @return the relative path or null if the relative path cannot be computed
+     */
+    public static Path getRelativePath(Path basePath, Path path) {
+        int cnt = basePath.matchingFirstSegments(path);
+        if (cnt == basePath.segmentCount()) {
+            return path.removeFirstSegments(cnt).makeAbsolute();
+        }
+        return null;
+    }
 }
