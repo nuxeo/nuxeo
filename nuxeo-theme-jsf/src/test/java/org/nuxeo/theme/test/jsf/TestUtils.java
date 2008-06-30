@@ -14,11 +14,6 @@
 
 package org.nuxeo.theme.test.jsf;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Properties;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
