@@ -32,7 +32,7 @@ import org.nuxeo.runtime.model.Adaptable;
  * <p>
  * The default one is to expose the rendering outcome as a stream.
  * <p>
- * Specialized results may be retrieved using {@link Adaptable#getAdapter()} method
+ * Specialized results may be retrieved using {@link Adaptable#getAdapter(Class)} method
  *
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
