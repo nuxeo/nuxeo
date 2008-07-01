@@ -103,12 +103,12 @@ th {
 #main-wrapper {
   width:100%;
   height:100%;
-  background:#fff url(/nuxeo/site/files/resources/image/wiki/background_main-wrapper.gif) top right repeat-y; 
+  background:#fff url(/nuxeo/site/files/resources/image/background_main-wrapper.gif) top right repeat-y; 
   border-top:1px solid #fff;
 }
 
 #main {
-    background:#fff url(/nuxeo/site/files/resources/image/wiki/background-main.gif) top left repeat-x;
+    background:#fff url(/nuxeo/site/files/resources/image/background-main.gif) top left repeat-x;
     float:left;
     width:760px;
 }
