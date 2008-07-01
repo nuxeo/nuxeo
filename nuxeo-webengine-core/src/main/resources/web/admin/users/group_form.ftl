@@ -8,7 +8,9 @@
       <ul>
         <li><a href="${appPath}/users/create_user">Create User</a></li>
         <li><a href="${appPath}/users/create_group">Create Group</a></li>
-        <li><a href="${appPath}/users/delete_user">Delete Group</a></li>
+         <#if group>        
+        <li><a href="${appPath}/users/delete_group.groovy?username=${group.name}">Delete Group</a></li>
+         </#if>
       </ul>
     </div>
   </div>
