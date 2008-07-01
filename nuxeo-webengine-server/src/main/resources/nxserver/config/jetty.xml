@@ -106,9 +106,9 @@
            <Item>
              <New id="Contexts" class="org.mortbay.jetty.handler.ContextHandlerCollection"/>
            </Item>
-           <Item>
+           <!--Item>
              <New id="DefaultHandler" class="org.mortbay.jetty.handler.DefaultHandler"/>
-           </Item>
+           </Item-->
            <Item>
              <New id="RequestLog" class="org.mortbay.jetty.handler.RequestLogHandler"/>
            </Item>

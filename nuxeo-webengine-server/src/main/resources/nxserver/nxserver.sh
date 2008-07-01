@@ -66,7 +66,7 @@
 ################################################
 
 JAVA_OPTS="-Djava.rmi.server.RMIClassLoaderSpi=org.nuxeo.runtime.loader.NuxeoRMIClassLoader -Dsun.lang.ClassLoader.allowArraySyntax=true"
-JAVA_OPTS="$JAVA_OPTS -Dderby.system.home=app/data/derby"
+JAVA_OPTS="$JAVA_OPTS -Dderby.system.home=data/derby"
 #JAVA_OPTS="$JAVA_OPTS -Dorg.nuxeo.runtime.1.3.3.streaming.port=3233"
 
 if [ "x$1" = "x-debug" ] ; then
@@ -74,6 +74,6 @@ if [ "x$1" = "x-debug" ] ; then
 fi 
 
 java $JAVA_OPTS -jar nuxeo-runtime-launcher-1.5-SNAPSHOT.jar \
-    app/bundles/nuxeo-runtime-osgi-1.5-SNAPSHOT.jar/org.nuxeo.osgi.application.Main \
-    app/bundles/.:app/lib/.:app/config \
-    -home app "$@"
+    bundles/nuxeo-runtime-osgi-1.5-SNAPSHOT.jar/org.nuxeo.osgi.application.Main \
+    bundles/.:lib/.:config \
+    -home . "$@"

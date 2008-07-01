@@ -73,12 +73,12 @@
 
   <assemble>
     <set>third-party-libs</set>
-    <outputFile>app/lib</outputFile>
+    <outputFile>lib</outputFile>
   </assemble>
 
   <assemble>
     <set>bundles</set>
-    <outputFile>app/bundles</outputFile>
+    <outputFile>bundles</outputFile>
   </assemble>
 
 </assembly>
