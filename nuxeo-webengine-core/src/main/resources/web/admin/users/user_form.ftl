@@ -7,9 +7,9 @@
     <h3>Toolbox</h3>
     <div class="sideblock-content">
       <ul>
-        <li><a href="${appPath}/users/create_user">Create an user</a></li>
-        <li><a href="${appPath}/users/create_group">Create a group</a></li>
-        <li><a href="${appPath}/users/delete_user">Delete user</a></li>
+        <li><a href="${appPath}/users/create_user">Create User</a></li>
+        <li><a href="${appPath}/users/create_group">Create Group</a></li>
+        <li><a href="${appPath}/users/delete_user">Delete User</a></li>
       </ul>
     </div>
   </div>

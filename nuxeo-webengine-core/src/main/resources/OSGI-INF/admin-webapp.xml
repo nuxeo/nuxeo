@@ -39,6 +39,9 @@
         <mapping pattern="/users/user/(?username:[a-zA-Z0-9]+)$">
           <script>/users/user_form.groovy</script>
         </mapping>
+        <mapping pattern="/users/group/(?username:[a-zA-Z0-9]+)$">
+          <script>/users/group_form.groovy</script>
+        </mapping>
       </mappings>
     </webapp>
 
