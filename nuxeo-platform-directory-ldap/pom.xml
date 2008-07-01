@@ -51,7 +51,7 @@
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_core</artifactId>
+      <artifactId>osgi-core</artifactId>
     </dependency>
 
     <!-- test scope -->
