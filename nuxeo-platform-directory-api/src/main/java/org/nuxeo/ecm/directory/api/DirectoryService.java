@@ -34,7 +34,7 @@ import org.nuxeo.runtime.model.ComponentName;
  */
 public interface DirectoryService {
 
-    public static final ComponentName NAME = new ComponentName(
+    ComponentName NAME = new ComponentName(
                 "org.nuxeo.ecm.directory.DirectoryServiceImpl");
 
     List<String> getDirectoryNames() throws ClientException;
@@ -56,12 +56,12 @@ public interface DirectoryService {
 
     void registerDirectory(String directoryName, DirectoryFactory factory);
 
-    public void unregisterDirectory(String directoryName,DirectoryFactory factory);
+    void unregisterDirectory(String directoryName,DirectoryFactory factory);
 
-    public String getDirectoryIdField(String directoryName)
+    String getDirectoryIdField(String directoryName)
     throws DirectoryException;
 
-    public String getDirectoryPasswordField(String directoryName)
+    String getDirectoryPasswordField(String directoryName)
     throws DirectoryException;
 
     /**
@@ -71,5 +71,6 @@ public interface DirectoryService {
      * @return the name, or null
      * @throws DirectoryException
      */
-    public String getParentDirectoryName(String directoryName) throws DirectoryException;
+    String getParentDirectoryName(String directoryName) throws DirectoryException;
+
 }
