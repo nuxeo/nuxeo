@@ -22,6 +22,7 @@
       <artifactId>nuxeo-runtime</artifactId>
     </dependency>
 
+    <!-- test scope -->
     <dependency>
       <groupId>net.sf.opencsv</groupId>
       <artifactId>opencsv</artifactId>

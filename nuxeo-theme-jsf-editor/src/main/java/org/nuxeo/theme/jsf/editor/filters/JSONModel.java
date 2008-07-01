@@ -30,7 +30,7 @@ import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.FormatType;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentType;
-import org.nuxeo.theme.jsf.Utils;
+import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.models.ModelType;
 import org.nuxeo.theme.rendering.RenderingInfo;
 import org.nuxeo.theme.rendering.StandaloneFilter;

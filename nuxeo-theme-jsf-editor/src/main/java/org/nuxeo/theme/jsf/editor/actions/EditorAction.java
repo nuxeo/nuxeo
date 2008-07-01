@@ -49,7 +49,7 @@ import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.formats.widgets.Widget;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentFactory;
-import org.nuxeo.theme.jsf.Utils;
+import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.jsf.editor.managers.UiManagerLocal;
 import org.nuxeo.theme.jsf.editor.states.UiStatesLocal;
 import org.nuxeo.theme.perspectives.PerspectiveManager;

@@ -26,6 +26,10 @@
       <groupId>org.nuxeo.theme</groupId>
       <artifactId>nuxeo-theme-jsf</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.theme</groupId>
+      <artifactId>nuxeo-theme-html</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -53,6 +57,7 @@
       <artifactId>jboss-annotations-ejb3</artifactId>
     </dependency>
 
+    <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
