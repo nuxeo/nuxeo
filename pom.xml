@@ -440,8 +440,8 @@
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
-        <artifactId>osgi_R4_core</artifactId>
-        <version>1.0</version>
+        <artifactId>osgi-core</artifactId>
+        <version>4.1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
