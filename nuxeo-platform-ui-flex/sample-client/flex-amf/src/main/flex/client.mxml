@@ -6,6 +6,7 @@
    <mx:Script>
 		<![CDATA[
 			import org.nuxeo.ecm.flex.dto.DummyBean;			
+			import org.nuxeo.ecm.flex.dto.FlexDocumentModel;			
 
 			import mx.controls.Alert;
 			import mx.rpc.events.FaultEvent;
@@ -22,6 +23,14 @@
 				dto.doSomething2();
 				Alert.show("Sucess",dto.myField);
 			}
+
+			private function checkDM():void {
+				Alert.show("DM Test","checkDM");
+				var doc:FlexDocumentModel = service.getTestDocumentModel.lastResult;				
+				Alert.show("Sucess",doc.name);
+				Alert.show("Sucess",doc.getTitle());
+			}
+
 
 	]]>
 	</mx:Script>
@@ -63,6 +72,22 @@
 
         <mx:HBox>
             <mx:Button label="test call on Bean" click="doSomething()"/>
+        </mx:HBox>
+
+    </mx:Panel>
+
+    <mx:Panel
+        title="Nuxeo-Flex AMF test custom serialization"
+        paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10">
+
+        <mx:HBox>
+            <mx:Button label="test Serialization" click="service.getTestDocumentModel()"/>
+        </mx:HBox>
+
+        <mx:Label text='returned Bean field value: "{service.getTestDocumentModel.lastResult.name}"'/>
+
+        <mx:HBox>
+            <mx:Button label="checkDM" click="checkDM()"/>
         </mx:HBox>
 
     </mx:Panel>

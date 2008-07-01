@@ -1,6 +1,8 @@
 package org.nuxeo.ecm.platform.ui.flex.samples;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
@@ -8,6 +10,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.flex.javadto.FlexDocumentModel;
 
 @Name("flexStatelessPingTestBean")
 @Scope(ScopeType.STATELESS)
@@ -47,10 +50,18 @@ public class FlexStatelessPingTestBean implements Serializable {
     }
 
 
-    public void getFirstChildren(String path)
+    @WebRemote
+    public FlexDocumentModel getTestDocumentModel()
     {
+        FlexDocumentModel doc = new FlexDocumentModel();
 
+        Map<String, Serializable> schemadata = new HashMap<String, Serializable>();
 
+        schemadata.put("title", "I am a test");
+
+        doc.feed("dublincore", schemadata);
+
+        return doc;
     }
 
 }
