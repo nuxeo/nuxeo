@@ -36,9 +36,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.servlet.WebConst;
