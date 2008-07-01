@@ -95,6 +95,13 @@
       </dependency>
       <dependency>
         <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>1.1</version>
+        <scope>provided</scope>
+      </dependency>
+      <!-- be careful using this dependency as it breaks unit tests logging -->
+      <dependency>
+        <groupId>commons-logging</groupId>
         <artifactId>commons-logging-api</artifactId>
         <version>1.1</version>
         <scope>provided</scope>
@@ -451,8 +458,8 @@
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
-        <artifactId>osgi_R4_core</artifactId>
-        <version>1.0</version>
+        <artifactId>osgi-core</artifactId>
+        <version>4.1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -589,6 +596,18 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>xml-apis</groupId>
+        <artifactId>xml-apis</artifactId>
+        <scope>provided</scope>
+        <version>1.0.b2</version>
+      </dependency>
+      <dependency>
+        <groupId>xerces</groupId>
+        <artifactId>xmlParserAPIs</artifactId>
+        <scope>provided</scope>
+        <version>2.6.2</version>
+      </dependency>
+      <dependency>
         <groupId>org.richfaces.framework</groupId>
         <artifactId>richfaces-api</artifactId>
         <version>3.2.1.GA</version>
@@ -613,19 +632,25 @@
     </dependency>
 
     <dependency>
+      <groupId>com.intellij</groupId>
+      <artifactId>annotations</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+    </dependency>
+
+    <!-- test scope -->
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.intellij</groupId>
-      <artifactId>annotations</artifactId>
-      <scope>provided</scope>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -842,13 +867,6 @@
           <artifactId>maven-eclipse-plugin</artifactId>
           <version>2.4</version>
         </plugin>
-        <!--
-          <plugin>
-          <groupId>org.nuxeo.maven.plugins</groupId>
-          <artifactId>maven-nuxeo-installer-plugin</artifactId>
-          <version>1.0-SNAPSHOT</version>
-          </plugin>
-        -->
       </plugins>
     </pluginManagement>
     <!--finalName>${pom.artifactId}-${pom.version}-r${buildNumber}</finalName-->
