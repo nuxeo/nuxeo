@@ -110,8 +110,7 @@ public final class JCAManagedConnectionFactory
     /**
      * Creates a Connection Factory instance.
      */
-    public Object createConnectionFactory()
-            throws ResourceException {
+    public Object createConnectionFactory() {
         return createConnectionFactory(new JCAConnectionManager());
     }
 

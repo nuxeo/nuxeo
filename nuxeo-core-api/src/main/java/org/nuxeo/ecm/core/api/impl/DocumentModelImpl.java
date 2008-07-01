@@ -277,11 +277,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         this.type = new TypeRef<DocumentType>(SchemaNames.DOCTYPES, type);
         this.id = id;
         this.path = path;
-        this.ref = docRef;
+        ref = docRef;
         this.parentRef = parentRef;
-        this.declaredSchemas = schemas;
-        this.declaredFacets = facets;
-        this.dataModels = new DataModelMapImpl();
+        declaredSchemas = schemas;
+        declaredFacets = facets;
+        dataModels = new DataModelMapImpl();
         this.lock = lock;
         contextData = new ScopedMap();
     }
@@ -309,11 +309,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         this.type = new TypeRef<DocumentType>(SchemaNames.DOCTYPES, type);
         this.id = id;
         this.path = path;
-        this.ref = docRef;
+        ref = docRef;
         this.parentRef = parentRef;
-        this.declaredSchemas = schemas;
-        this.declaredFacets = facets;
-        this.dataModels = new DataModelMapImpl();
+        declaredSchemas = schemas;
+        declaredFacets = facets;
+        dataModels = new DataModelMapImpl();
         this.lock = lock;
         contextData = new ScopedMap();
         this.repositoryName = repositoryName;
@@ -1146,7 +1146,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         dataModels = newDataModels;
     }
 
-    public Object cloneField(Field field, String key, Object value) {
+    public static Object cloneField(Field field, String key, Object value) {
         // key is unused
         Object clone;
         Type type = field.getType();
@@ -1392,22 +1392,22 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     public DocumentPart getPart(String schema) {
         DataModel dm = getDataModel(schema);
         if (dm != null) {
-            return ((DataModelImpl)dm).getDocumentPart();
+            return ((DataModelImpl) dm).getDocumentPart();
         }
         return null; // TODO thrown an exception?
     }
 
     public DocumentPart[] getParts() {
-        DocumentType type = null;
+        DocumentType type;
         try {
             type = Framework.getService(SchemaManager.class).getDocumentType(getType());
         } catch (Exception e) {
-            log.error(e);
+            throw new IllegalStateException(e);
         }
         Collection<Schema> schemas = type.getSchemas();
         int size = schemas.size();
         DocumentPart[] parts = new DocumentPart[size];
-        int i=0;
+        int i = 0;
         for (Schema schema : schemas) {
             DataModel dm = getDataModel(schema.getName());
             parts[i++] = ((DataModelImpl) dm).getDocumentPart();
@@ -1420,7 +1420,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (path.segmentCount() == 0) {
             throw new PropertyNotFoundException(xpath, "Schema not specified");
         }
-        String segment =path.segment(0);
+        String segment = path.segment(0);
         int p = segment.indexOf(':');
         if (p == -1) { // support also other schema paths? like schema.property
             // allow also unprefixed schemas -> make a search for the first matching schema having a property with same name as path segment 0
@@ -1466,8 +1466,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         getProperty(path).setValue(value);
     }
 
+    @Override
     public DocumentModel clone() throws CloneNotSupportedException {
-        DocumentModelImpl dm = (DocumentModelImpl)super.clone();
+        DocumentModelImpl dm = (DocumentModelImpl) super.clone();
 //        dm.id =id;
 //        dm.acp = acp;
 //        dm.currentLifeCycleState = currentLifeCycleState;
@@ -1500,12 +1501,62 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     public void reset() {
-        if (dataModels != null) dataModels.clear();
-        if (prefetch != null) prefetch.clear();
+        if (dataModels != null) {
+            dataModels.clear();
+        }
+        if (prefetch != null) {
+            prefetch.clear();
+        }
         isACPLoaded = false;
         acp = null;
         currentLifeCycleState = null;
         lifeCyclePolicy = null;
+    }
+
+    public void refresh() throws ClientException {
+        refresh(REFRESH_DEFAULT, null);
+    }
+
+    public void refresh(int refreshFlags, String[] schemas) throws ClientException {
+        if ((refreshFlags & REFRESH_ACP_IF_LOADED) != 0 && isACPLoaded) {
+            refreshFlags |= REFRESH_ACP;
+            // we must not clean the REFRESH_ACP_IF_LOADED flag since it is used below on the client
+        }
+
+        if ((refreshFlags & REFRESH_CONTENT_IF_LOADED) != 0) {
+            refreshFlags |= REFRESH_CONTENT;
+            Collection<String> keys = dataModels.keySet();
+            schemas = keys.toArray(new String[keys.size()]);
+        }
+
+        Object[] result = getClient().refreshDocument(ref, refreshFlags, schemas);
+
+        if ((refreshFlags & REFRESH_PREFETCH) != 0) {
+            prefetch = (HashMap<String, Serializable>) result[0];
+        }
+        if ((refreshFlags & REFRESH_LOCK) != 0) {
+            lock = (String)result[1];
+        }
+        if ((refreshFlags & REFRESH_LIFE_CYCLE) != 0) {
+            currentLifeCycleState = (String) result[2];
+            lifeCyclePolicy = (String) result[3];
+        }
+        acp = null;
+        isACPLoaded = false;
+        if ((refreshFlags & REFRESH_ACP) != 0) {
+            acp = (ACP) result[4];
+            isACPLoaded = true;
+        }
+        dataModels.clear();
+        if ((refreshFlags & REFRESH_CONTENT) != 0) {
+            DocumentPart[] parts = (DocumentPart[]) result[5];
+            if (parts != null) {
+                for (DocumentPart part : parts) {
+                    DataModelImpl dm = new DataModelImpl(part);
+                    dataModels.put(dm.getSchema(), dm);
+                }
+            }
+        }
     }
 
 }

@@ -60,33 +60,27 @@ public final class NuxeoClient {
     private InvokerLocator locator;
     private String serverName;
     private final AutoConfigurationService cfg;
-    private RepositoryManager repositoryMgr = null;
+    private RepositoryManager repositoryMgr;
 
     private boolean multiThreadedLogin = false;
 
     private static final NuxeoClient instance = new NuxeoClient();
 
     private NuxeoClient() {
-        this.connectionListeners = new ListenerList();
-        this.cfg = new AutoConfigurationService();
-        this.loginHandler = loginHandler == null ? new DefaultLoginHandler() : loginHandler;
-        this.repositoryInstances = new Vector<RepositoryInstance>();
+        connectionListeners = new ListenerList();
+        cfg = new AutoConfigurationService();
+        loginHandler = loginHandler == null ? new DefaultLoginHandler() : loginHandler;
+        repositoryInstances = new Vector<RepositoryInstance>();
     }
 
     public static NuxeoClient getInstance() {
         return instance;
     }
 
-    /**
-     * @param multiThreadedLogin the multiThreadedLogin to set.
-     */
     public void setMultiThreadedLogin(boolean useMultiThreadedLogin) {
-        this.multiThreadedLogin = useMultiThreadedLogin;
+        multiThreadedLogin = useMultiThreadedLogin;
     }
 
-    /**
-     * @return the multiThreadedLogin.
-     */
     public boolean getMultiThreadedLogin() {
         return multiThreadedLogin;
     }
@@ -107,7 +101,7 @@ public final class NuxeoClient {
     }
 
     public synchronized  void connect(String host, int port) throws Exception {
-        if (this.locator != null) {
+        if (locator != null) {
             throw new IllegalStateException("Client is already connected");
         }
         doConnect(AutoConfigurationService.createLocator(host, port));
@@ -128,21 +122,21 @@ public final class NuxeoClient {
     }
 
     public synchronized  void forceConnect(String host, int port) throws Exception {
-        if (this.locator != null) {
+        if (locator != null) {
             disconnect();
         }
         doConnect(AutoConfigurationService.createLocator(host, port));
     }
 
     public synchronized  void tryConnect(String host, int port) throws Exception {
-        if (this.locator != null) {
+        if (locator != null) {
             return; // do nothing
         }
         doConnect(AutoConfigurationService.createLocator(host, port));
     }
 
     public synchronized  void tryConnect(String url) throws Exception {
-        if (this.locator != null) {
+        if (locator != null) {
             return; // do nothing
         }
         doConnect(AutoConfigurationService.createLocator(url));
@@ -155,12 +149,11 @@ public final class NuxeoClient {
         doConnect(locator);
     }
 
-
     private void doConnect(InvokerLocator locator) throws Exception {
         this.locator = locator;
         try {
             cfg.load(locator);
-            // ------------------------------- FIXME TODO workarounf to work with nxruntime core 1.3.3 --------------
+            // FIXME TODO workaround to work with nxruntime core 1.3.3 --------------
             String newPort = Framework.getProperty("org.nuxeo.runtime.1.3.3.streaming.port");
             if (newPort != null) {
                 StreamingService streamingService = (StreamingService) Framework.getRuntime().getComponent(
@@ -198,7 +191,7 @@ public final class NuxeoClient {
         fireConnected(this);
     }
 
-    public void adaptClientSecurityDomain(SecurityDomain sd) {
+    public static void adaptClientSecurityDomain(SecurityDomain sd) {
         AppConfigurationEntry[] entries = sd.getAppConfigurationEntries();
         if (entries != null) {
             for (int i=0; i<entries.length; i++) {
@@ -219,7 +212,7 @@ public final class NuxeoClient {
      * TODO integrate this in core
      * FIXME integrate this in core
      */
-    private void schemaRemotingWorkaround(String host) throws Exception {
+    private static void schemaRemotingWorkaround(String host) throws Exception {
         ServiceManager serviceManager = Framework.getLocalService(ServiceManager.class);
         ServiceDescriptor sd = new ServiceDescriptor(TypeProvider.class, "core");
         sd.setLocator("%TypeProviderBean");
@@ -230,22 +223,22 @@ public final class NuxeoClient {
     }
 
     public synchronized void disconnect() throws Exception {
-        if (this.locator == null) {
+        if (locator == null) {
             throw new IllegalStateException("Client is not connected");
         }
         doDisconnect();
     }
 
     public synchronized void tryDisconnect() throws Exception {
-        if (this.locator == null) {
+        if (locator == null) {
             return; // do nothing
         }
         doDisconnect();
     }
 
     private void doDisconnect() throws Exception {
-        this.locator = null;
-        this.serverName = null;
+        locator = null;
+        serverName = null;
         // close repository sessions if any
         Iterator<RepositoryInstance> it = repositoryInstances.iterator();
         while (it.hasNext()) {
@@ -259,12 +252,12 @@ public final class NuxeoClient {
         }
         // logout
         logout();
-        this.repositoryMgr = null;
+        repositoryMgr = null;
         fireDisconnected(this);
     }
 
     public synchronized  void reconnect() throws Exception {
-        if (this.locator == null) {
+        if (locator == null) {
             throw new IllegalStateException("Client is not connected");
         }
         InvokerLocator locator = this.locator;
@@ -277,7 +270,7 @@ public final class NuxeoClient {
     }
 
     public synchronized String getServerName() {
-        if (this.locator == null) {
+        if (locator == null) {
             throw new IllegalStateException("Client is not connected");
         }
         if (serverName == null) {
@@ -290,50 +283,32 @@ public final class NuxeoClient {
         return serverName;
     }
 
-    /**
-     * @return the isStarted.
-     */
     public synchronized boolean isConnected() {
         return locator != null;
     }
 
-    /**
-     * @return the host.
-     */
     public String getServerHost() {
-        if (this.locator == null) {
+        if (locator == null) {
             throw new IllegalStateException("Client is not connected");
         }
         return locator.getHost();
     }
 
-    /**
-     * @return the port.
-     */
     public int getServerPort() {
-        if (this.locator == null) {
+        if (locator == null) {
             throw new IllegalStateException("Client is not connected");
         }
         return locator.getPort();
     }
 
-    /**
-     * @return the locator.
-     */
     public InvokerLocator getLocator() {
         return locator;
     }
 
-    /**
-     * @return the loginHandler.
-     */
     public synchronized LoginHandler getLoginHandler() {
         return loginHandler;
     }
 
-    /**
-     * @param loginHandler the loginHandler to set.
-     */
     public synchronized void setLoginHandler(LoginHandler loginHandler) {
         this.loginHandler = loginHandler;
     }
@@ -359,7 +334,8 @@ public final class NuxeoClient {
     }
 
     /**
-     * Get the repositories available on the connected server
+     * Gets the repositories available on the connected server.
+     *
      * @return the repositories
      */
     public Repository[] getRepositories() throws Exception {
@@ -389,7 +365,7 @@ public final class NuxeoClient {
         return repo;
     }
 
-    public void releaseRepository(RepositoryInstance repo) throws Exception {
+    public void releaseRepository(RepositoryInstance repo) {
         try {
             repo.close();
         } finally {
@@ -397,12 +373,11 @@ public final class NuxeoClient {
         }
     }
 
-
     public RepositoryInstance[] getRepositoryInstances() {
         return repositoryInstances.toArray(new RepositoryInstance[repositoryInstances.size()]);
     }
 
-    public final static RepositoryInstance newRepositoryInstance(Repository repository) {
+    public static RepositoryInstance newRepositoryInstance(Repository repository) {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         if (cl == null) {
             cl = NuxeoClient.class.getClassLoader();

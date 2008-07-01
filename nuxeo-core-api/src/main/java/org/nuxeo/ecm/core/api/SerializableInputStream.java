@@ -184,6 +184,7 @@ public class SerializableInputStream extends InputStream implements
         if (file != null) {
             file.delete();
         }
+        super.finalize();
     }
 
 }

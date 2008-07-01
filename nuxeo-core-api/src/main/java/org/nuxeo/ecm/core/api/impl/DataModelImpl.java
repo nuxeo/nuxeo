@@ -66,7 +66,7 @@ public class DataModelImpl implements DataModel {
         dp = DefaultPropertyFactory.newDocumentPart(schema);
         if (!data.isEmpty()) {
             try {
-                dp.init((Serializable)data);
+                dp.init((Serializable) data);
             } catch (PropertyException e) {
                 e.printStackTrace(); //TODO
             }
@@ -176,12 +176,11 @@ public class DataModelImpl implements DataModel {
 
     public void setDirty(String name) {
         try {
-            ((AbstractProperty)dp.get(name)).setIsModified();
+            ((AbstractProperty) dp.get(name)).setIsModified();
         } catch (Exception e) {
             e.printStackTrace(); //TODO
         }
     }
-
 
     public Object getValue(String path) throws ParseException {
         try {
