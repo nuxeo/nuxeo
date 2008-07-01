@@ -93,6 +93,27 @@
         <version>2.2</version>
         <scope>provided</scope>
       </dependency>
+      <!-- used in jboss patch -->
+      <dependency>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>1.6</version>
+        <scope>provided</scope>
+      </dependency>
+      <!-- used in jboss patch -->
+      <dependency>
+        <groupId>commons-digester</groupId>
+        <artifactId>commons-digester</artifactId>
+        <version>1.8</version>
+        <scope>provided</scope>
+      </dependency>
+      <!-- used in jboss patch -->
+      <dependency>
+        <groupId>commons-el</groupId>
+        <artifactId>commons-el</artifactId>
+        <version>1.0</version>
+        <scope>provided</scope>
+      </dependency>
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
