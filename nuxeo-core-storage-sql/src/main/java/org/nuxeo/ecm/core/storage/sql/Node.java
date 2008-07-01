@@ -42,10 +42,10 @@ public class Node {
     protected final Model model;
 
     /** The main row. */
-    protected final SingleRow mainFragment;
+    protected final SimpleFragment mainFragment;
 
     /** The hierarchy row, if applicable. */
-    protected final SingleRow hierFragment;
+    protected final SimpleFragment hierFragment;
 
     /** Fragment information for each additional mixin or inherited row. */
     protected final FragmentsMap fragments;
@@ -126,7 +126,7 @@ public class Node {
      * @throws IllegalArgumentException if the name is invalid
      * @throws StorageException
      */
-    public SingleProperty getSingleProperty(String name)
+    public SimpleProperty getSingleProperty(String name)
             throws IllegalArgumentException, StorageException {
         if (name == null || name.contains("/") || name.equals(".") ||
                 name.equals("..")) {
@@ -136,7 +136,7 @@ public class Node {
 
         // XXX namespace transformations
 
-        SingleProperty property = (SingleProperty) propertyCache.get(name);
+        SimpleProperty property = (SimpleProperty) propertyCache.get(name);
         if (property == null) {
             PropertyType propType;
             Fragment row;
@@ -164,8 +164,8 @@ public class Node {
                 }
                 readonly = false;
             }
-            property = new SingleProperty(name, propType, readonly,
-                    (SingleRow) row, fragmentKey);
+            property = new SimpleProperty(name, propType, readonly,
+                    (SimpleFragment) row, fragmentKey);
             propertyCache.put(name, property);
         }
         return property;
@@ -199,7 +199,7 @@ public class Node {
             // TODO cache collection fragments like we do normal fragments
             Fragment fragment = context.get(tableName, getId());
             property = new CollectionProperty(name, propType, false,
-                    (CollectionRows) fragment);
+                    (CollectionFragment) fragment);
             propertyCache.put(name, property);
         }
         return property;
@@ -207,7 +207,7 @@ public class Node {
 
     public void setSingleProperty(String name, Serializable value)
             throws StorageException {
-        SingleProperty property = (SingleProperty) getSingleProperty(name);
+        SimpleProperty property = (SimpleProperty) getSingleProperty(name);
         property.setValue(value);
     }
 

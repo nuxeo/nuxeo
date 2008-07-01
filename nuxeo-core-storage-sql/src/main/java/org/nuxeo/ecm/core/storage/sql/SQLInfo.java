@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -93,6 +94,12 @@ public class SQLInfo {
 
     private final Map<String, String> deleteSqlMap; // statement
 
+    private String selectChildrenSql;
+
+    private List<Column> selectChildrenWhereColumns;
+
+    private List<Column> selectChildrenWhatColumns;
+
     /**
      * Generates and holds the needed SQL statements given a {@link Model} and a
      * {@link Dialect}.
@@ -120,6 +127,9 @@ public class SQLInfo {
         selectByChildNameSqlMap = new HashMap<String, String>();
         selectByChildNameWhatColumnsMap = new HashMap<String, List<Column>>();
         selectByChildNameWhereColumnsMap = new HashMap<String, List<Column>>();
+        selectChildrenSql = null;
+        selectChildrenWhereColumns = null;
+        selectChildrenWhatColumns = null;
 
         insertSqlMap = new HashMap<String, String>();
         insertColumnsMap = new HashMap<String, List<Column>>();
@@ -191,6 +201,19 @@ public class SQLInfo {
 
     public List<Column> getSelectByChildNameWhereColumns() {
         return selectByChildNameWhereColumnsMap.get(model.HIER_TABLE_NAME);
+    }
+
+
+    public String getSelectChildrenSql() {
+        return selectChildrenSql;
+    }
+
+    public List<Column> getSelectChildrenWhereColumns() {
+        return selectChildrenWhereColumns;
+    }
+
+    public List<Column> getSelectChildrenWhatColumns() {
+        return selectChildrenWhatColumns;
     }
 
     // ----- insert -----
@@ -305,6 +328,7 @@ public class SQLInfo {
         maker.newColumn(model.HIER_CHILD_NAME_KEY, Types.VARCHAR); // text?
         maker.postProcess();
         maker.postProcessSelectByChildName();
+        maker.postProcessSelectChildren();
     }
 
     /**
@@ -455,7 +479,7 @@ public class SQLInfo {
             }
         }
 
-        // only called for hierarchy entity, so typeName is fixed
+        // only called for hierarchy entity, so tableName is fixed
         protected void postProcessSelectByChildName() {
             List<Column> whatColumns = new LinkedList<Column>();
             List<Column> whereColumns = new ArrayList<Column>(2);
@@ -479,6 +503,30 @@ public class SQLInfo {
             selectByChildNameSqlMap.put(tableName, select.getStatement());
             selectByChildNameWhatColumnsMap.put(tableName, whatColumns);
             selectByChildNameWhereColumnsMap.put(tableName, whereColumns);
+        }
+
+        protected void postProcessSelectChildren() {
+            List<Column> whatColumns = new LinkedList<Column>();
+            List<String> whats = new LinkedList<String>();
+            List<Column> whereColumns = null;
+            String where = null;
+            for (Column column : table.getColumns()) {
+                String name = column.getName();
+                if (name.equals(model.HIER_PARENT_KEY)) {
+                    where = column.getQuotedName(dialect) + " = ?";
+                    whereColumns = Collections.singletonList(column);
+                } else {
+                    whats.add(column.getQuotedName(dialect));
+                    whatColumns.add(column);
+                }
+            }
+            Select select = new Select(dialect);
+            select.setWhat(StringUtils.join(whats, ", "));
+            select.setFrom(table.getQuotedName(dialect));
+            select.setWhere(where);
+            selectChildrenSql = select.getStatement();
+            selectChildrenWhatColumns = whatColumns;
+            selectChildrenWhereColumns = whereColumns;
         }
 
         protected void postProcessInsert() {

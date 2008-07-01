@@ -23,20 +23,20 @@ import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
  * A {@link CollectionProperty} gives access to a collection value stored in an
- * underlying {@link CollectionRows}.
+ * underlying {@link CollectionFragment}.
  *
  * @author Florent Guillaume
  */
 public class CollectionProperty extends AbstractProperty {
 
-    /** The {@link CollectionRows} holding the information. */
-    private final CollectionRows fragment;
+    /** The {@link CollectionFragment} holding the information. */
+    private final CollectionFragment fragment;
 
     /**
      * Creates a {@link CollectionProperty}.
      */
     public CollectionProperty(String name, PropertyType type, boolean readonly,
-            CollectionRows fragment) {
+            CollectionFragment fragment) {
         super(name, type, readonly);
         this.fragment = fragment;
     }

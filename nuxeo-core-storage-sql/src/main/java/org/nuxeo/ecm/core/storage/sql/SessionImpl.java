@@ -19,7 +19,12 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.security.AccessControlException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.resource.ResourceException;
@@ -33,6 +38,7 @@ import javax.transaction.xa.Xid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -153,7 +159,7 @@ public class SessionImpl implements Session, XAResource {
         return model;
     }
 
-    public Node getRootNode() throws StorageException {
+    public Node getRootNode() {
         checkLive();
         return rootNode;
     }
@@ -163,13 +169,105 @@ public class SessionImpl implements Session, XAResource {
         context.save();
     }
 
+    public Node getNodeById(Serializable id) throws StorageException {
+        checkLive();
+        if (id == null) {
+            throw new IllegalArgumentException("Illegal null id");
+        }
+
+        // get main row
+        SimpleFragment childMain = (SimpleFragment) context.get(model.MAIN_TABLE_NAME, id);
+        if (childMain == null) {
+            // not found
+            return null;
+        }
+        String childTypeName = (String) childMain.get(model.MAIN_PRIMARY_TYPE_KEY);
+        DocumentType childType = schemaManager.getDocumentType(childTypeName);
+
+        // find hier row
+        SimpleFragment childHier = (SimpleFragment) context.get(model.HIER_TABLE_NAME, id);
+
+        // TODO get all non-cached fragments at once using join / union
+        FragmentsMap childFragments = new FragmentsMap();
+        for (Schema schema : childType.getSchemas()) {
+            String schemaName = schema.getName();
+            Fragment fragment = context.get(schemaName, id);
+            childFragments.put(schemaName, fragment);
+        }
+
+        FragmentGroup childGroup = new FragmentGroup(childMain, childHier,
+                childFragments);
+
+        return new Node(childType, this, context, childGroup);
+    }
+
+    public Node getParentNode(Node node) throws StorageException {
+        checkLive();
+        if (node == null) {
+            throw new IllegalArgumentException("Illegal null node");
+        }
+        Serializable id = node.hierFragment.get(model.HIER_PARENT_KEY);
+        if (id == null) {
+            // root
+            return null;
+        }
+        return getNodeById(id);
+    }
+
+    public String getPath(Node node) throws StorageException {
+        checkLive();
+        List<String> list = new LinkedList<String>();
+        while (node != null) {
+            list.add(node.getName());
+            node = getParentNode(node);
+        }
+        if (list.size() == 1) {
+            // root, special case
+            return "/";
+        }
+        Collections.reverse(list);
+        return StringUtils.join(list, "/");
+    }
+
+    public Node getNodeByPath(String path, Node node) throws StorageException {
+        // TODO optimize this to use a dedicated path-based table
+        checkLive();
+        if (path == null) {
+            throw new IllegalArgumentException("Illegal null path");
+        }
+        int i;
+        if (path.startsWith("/")) {
+            node = getRootNode();
+            i = 1;
+        } else {
+            if (node == null) {
+                throw new IllegalArgumentException(
+                        "Illegal relative path with null node: " + path);
+            }
+            i = 0;
+        }
+        String[] names = path.split("/", -1);
+        for (; i < names.length; i++) {
+            String name = names[i];
+            if (name.length() == 0) {
+                throw new IllegalArgumentException(
+                        "Illegal path with empty component: " + path);
+            }
+            node = getChildNode(node, name);
+            if (node == null) {
+                return null;
+            }
+        }
+        return node;
+    }
+
     public Node addChildNode(Node parent, String name, String typeName)
             throws StorageException {
         checkLive();
         if (name == null || name.contains("/") || name.equals(".") ||
                 name.equals("..")) {
             // XXX real parsing
-            throw new StorageException("Illegal name: " + name);
+            throw new IllegalArgumentException("Illegal name: " + name);
         }
         // XXX do namespace transformations
 
@@ -179,7 +277,7 @@ public class SessionImpl implements Session, XAResource {
         // create the underlying main row
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put(model.MAIN_PRIMARY_TYPE_KEY, typeName);
-        SingleRow mainRow = (SingleRow) context.createSingleRow(
+        SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
                 model.MAIN_TABLE_NAME, id, map);
 
         // find all schemas for this type and create fragment entities
@@ -190,7 +288,7 @@ public class SessionImpl implements Session, XAResource {
         for (Schema schema : type.getSchemas()) {
             String schemaName = schema.getName();
             // TODO fill data instead of null XXX or just have fragments empty
-            Fragment fragment = context.createSingleRow(schemaName, id, null);
+            Fragment fragment = context.createSimpleFragment(schemaName, id, null);
             fragments.put(schemaName, fragment);
         }
 
@@ -200,9 +298,9 @@ public class SessionImpl implements Session, XAResource {
         map.put(model.HIER_PARENT_KEY, parent.mainFragment.getId());
         map.put(model.HIER_CHILD_POS_KEY, null);
         map.put(model.HIER_CHILD_NAME_KEY, name);
-        SingleRow hierRow = (SingleRow) context.createSingleRow(
+        SimpleFragment hierRow = (SimpleFragment) context.createSimpleFragment(
                 model.HIER_TABLE_NAME, id, map);
-        // TODO put in in a collection context instead
+        // TODO put it in a collection context instead
 
         FragmentGroup rowGroup = new FragmentGroup(mainRow, hierRow, fragments);
 
@@ -214,14 +312,14 @@ public class SessionImpl implements Session, XAResource {
         if (name == null || name.contains("/") || name.equals(".") ||
                 name.equals("..")) {
             // XXX real parsing
-            throw new StorageException("Illegal name: " + name);
+            throw new IllegalArgumentException("Illegal name: " + name);
         }
 
         // XXX namespace transformations
 
         // find child hier row
         Serializable parentId = parent.getId();
-        SingleRow childHier = context.getByHier(parentId, name);
+        SimpleFragment childHier = context.getByHier(parentId, name);
         if (childHier == null) {
             // not found
             return null;
@@ -229,7 +327,7 @@ public class SessionImpl implements Session, XAResource {
         Serializable childId = childHier.getId();
 
         // get main row
-        SingleRow childMain = (SingleRow) context.get(model.MAIN_TABLE_NAME,
+        SimpleFragment childMain = (SimpleFragment) context.get(model.MAIN_TABLE_NAME,
                 childId);
         String childTypeName = (String) childMain.get(model.MAIN_PRIMARY_TYPE_KEY);
         DocumentType childType = schemaManager.getDocumentType(childTypeName);
@@ -246,6 +344,17 @@ public class SessionImpl implements Session, XAResource {
                 childFragments);
 
         return new Node(childType, this, context, childGroup);
+    }
+
+    public List<Node> getChildren(Node parent) throws StorageException {
+        checkLive();
+        Collection<SimpleFragment> fragments = context.getHierChildren(parent.getId());
+        List<Node> nodes = new ArrayList<Node>(fragments.size());
+        for (SimpleFragment fragment : fragments) {
+            Serializable id = fragment.getId();
+            nodes.add(getNodeById(id));
+        }
+        return nodes;
     }
 
     // TODO XXX remove recursively the children
@@ -266,14 +375,14 @@ public class SessionImpl implements Session, XAResource {
         return live;
     }
 
-    private void checkLive() throws StorageException {
+    private void checkLive() throws IllegalStateException {
         if (!live) {
-            throw new StorageException("Session is not live");
+            throw new IllegalStateException("Session is not live");
         }
     }
 
     private void computeRootNode() throws StorageException {
-        SingleRow repoInfo = (SingleRow) context.get(model.REPOINFO_TABLE_NAME,
+        SimpleFragment repoInfo = (SimpleFragment) context.get(model.REPOINFO_TABLE_NAME,
                 Long.valueOf(0));
         if (repoInfo == null) {
             log.debug("Creating root");
@@ -283,7 +392,7 @@ public class SessionImpl implements Session, XAResource {
             // record information about the root id
             Map<String, Serializable> map = new HashMap<String, Serializable>();
             map.put(model.REPOINFO_ROOTID_KEY, rootNode.getId());
-            repoInfo = (SingleRow) context.createSingleRow(
+            repoInfo = (SimpleFragment) context.createSimpleFragment(
                     model.REPOINFO_TABLE_NAME, Long.valueOf(0L), map);
             save();
         } else {
@@ -299,7 +408,7 @@ public class SessionImpl implements Session, XAResource {
         // create the underlying main row
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put(model.MAIN_PRIMARY_TYPE_KEY, model.ROOT_TYPE);
-        SingleRow mainRow = (SingleRow) context.createSingleRow(
+        SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
                 model.MAIN_TABLE_NAME, id, map);
 
         // add to hierarchy table
@@ -307,7 +416,7 @@ public class SessionImpl implements Session, XAResource {
         map.put(model.HIER_PARENT_KEY, null);
         map.put(model.HIER_CHILD_POS_KEY, null);
         map.put(model.HIER_CHILD_NAME_KEY, "");
-        SingleRow hierRow = (SingleRow) context.createSingleRow(
+        SimpleFragment hierRow = (SimpleFragment) context.createSimpleFragment(
                 model.HIER_TABLE_NAME, id, map);
 
         DocumentType type = schemaManager.getDocumentType(model.ROOT_TYPE);
@@ -322,63 +431,6 @@ public class SessionImpl implements Session, XAResource {
         checkLive();
         // TODO Auto-generated method stub
         throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Gets a node given its id.
-     *
-     * @param id
-     * @return
-     * @throws StorageException
-     */
-    public Node getNodeById(Serializable id) throws StorageException {
-        if (id == null) {
-            throw new StorageException("Illegal id: " + id);
-        }
-
-        // get main row
-        SingleRow childMain = (SingleRow) context.get(model.MAIN_TABLE_NAME, id);
-        if (childMain == null) {
-            // not found
-            return null;
-        }
-        String childTypeName = (String) childMain.get(model.MAIN_PRIMARY_TYPE_KEY);
-        DocumentType childType = schemaManager.getDocumentType(childTypeName);
-
-        // find hier row
-        SingleRow childHier = (SingleRow) context.get(model.HIER_TABLE_NAME, id);
-
-        // TODO get all non-cached fragments at once using join / union
-        FragmentsMap childFragments = new FragmentsMap();
-        for (Schema schema : childType.getSchemas()) {
-            String schemaName = schema.getName();
-            Fragment fragment = context.get(schemaName, id);
-            childFragments.put(schemaName, fragment);
-        }
-
-        FragmentGroup childGroup = new FragmentGroup(childMain, childHier,
-                childFragments);
-
-        return new Node(childType, this, context, childGroup);
-    }
-
-    // ----------
-
-    // ----------
-
-    // ----------
-
-    public Node getNode(String path) throws StorageException {
-        checkLive();
-        if (path == null || !path.startsWith("/")) {
-            throw new RuntimeException("Illegal path: " + path);
-        }
-        Node node = getRootNode();
-        path = path.substring(1);
-        while (path.length() > 0) {
-
-        }
-        return node;
     }
 
     public boolean hasNode(String absPath) throws StorageException {
@@ -407,7 +459,7 @@ public class SessionImpl implements Session, XAResource {
         throw new RuntimeException("Not implemented");
     }
 
-    public String copy(String srcAbsPath, String destAbsPath)
+    public String copy(Node sourceNode, String parentNode)
             throws StorageException {
         checkLive();
         // TODO Auto-generated method stub

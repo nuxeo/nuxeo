@@ -29,16 +29,19 @@ import java.util.Map;
  *
  * @author Florent Guillaume
  */
-public class SingleRow extends Fragment {
+public class SimpleFragment extends Fragment {
 
     private static final long serialVersionUID = 1L;
+
+    public static final SimpleFragment UNKNOWN = new SimpleFragment("", null,
+            null, false, null);
 
     /** The map actually holding the data. */
     private final Map<String, Serializable> map;
 
     /**
-     * Constructs an empty {@link SingleRow} of the given table with the given
-     * id (which may be a temporary one).
+     * Constructs an empty {@link SimpleFragment} of the given table with the
+     * given id (which may be a temporary one).
      *
      * @param tableName the table name
      * @param id the id
@@ -47,7 +50,7 @@ public class SingleRow extends Fragment {
      * @param creation {@code true} if this row has just been created
      * @param map the initial row data to use, or {@code null}
      */
-    public SingleRow(String tableName, Serializable id,
+    public SimpleFragment(String tableName, Serializable id,
             PersistenceContextByTable context, boolean creation,
             Map<String, Serializable> map) {
         super(tableName, id, context, creation);

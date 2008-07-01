@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.sound.midi.Sequence;
+
 /**
  * A collection of {@link Table}s and {@link Sequence}s.
  *

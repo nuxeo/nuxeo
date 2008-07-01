@@ -52,7 +52,7 @@ public class RepositoryImpl implements Repository {
 
     private static final Log log = LogFactory.getLog(RepositoryImpl.class);
 
-    private final SchemaManager schemaManager;
+    protected final SchemaManager schemaManager;
 
     private final RepositoryDescriptor repositoryDescriptor;
 
@@ -94,7 +94,7 @@ public class RepositoryImpl implements Repository {
      * @return the session
      * @throws StorageException
      */
-    public Session getConnection() throws StorageException {
+    public SessionImpl getConnection() throws StorageException {
         return getConnection(null);
     }
 

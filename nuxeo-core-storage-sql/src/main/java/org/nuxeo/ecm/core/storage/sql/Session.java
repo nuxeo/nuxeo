@@ -17,6 +17,9 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.Serializable;
+import java.util.List;
+
 import javax.resource.cci.Connection;
 
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -53,6 +56,47 @@ public interface Session extends Connection {
     Node getRootNode() throws StorageException;
 
     /**
+     * Gets a node given its id.
+     *
+     * @param id the id
+     * @return the node, or {@code null} if not found
+     * @throws StorageException
+     */
+    Node getNodeById(Serializable id) throws StorageException;
+
+    /**
+     * Gets a node given its absolute path, or given an existing node and a
+     * relative path.
+     *
+     * @param path the path
+     * @param node the node (ignored for absolute paths)
+     *
+     * @return the node, or {@code null} if not found
+     * @throws StorageException
+     */
+    Node getNodeByPath(String path, Node node) throws StorageException;
+
+    /**
+     * Gets the parent of a node.
+     * <p>
+     * The root has a {@code null} parent.
+     *
+     * @param node the node
+     * @return the parent node, or {@code null} for the root's parent
+     * @throws StorageException
+     */
+    Node getParentNode(Node node) throws StorageException;
+
+    /**
+     * Gets the absolute path of a node.
+     *
+     * @param node the node
+     * @return the path
+     * @throws StorageException
+     */
+    String getPath(Node node) throws StorageException;
+
+    /**
      * Gets a child node given its parent and name.
      *
      * @param parent the parent node
@@ -61,6 +105,15 @@ public interface Session extends Connection {
      * @throws StorageException
      */
     Node getChildNode(Node parent, String name) throws StorageException;
+
+    /**
+     * Gets the children of a node.
+     *
+     * @param parent the parent node
+     * @return the collection of children
+     * @throws StorageException
+     */
+    List<Node> getChildren(Node parent) throws StorageException;
 
     /**
      * Creates a new child node.

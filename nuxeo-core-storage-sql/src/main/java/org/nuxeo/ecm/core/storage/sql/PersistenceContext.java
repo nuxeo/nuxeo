@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +52,10 @@ public class PersistenceContext {
         this.mapper = mapper;
         model = mapper.getModel();
         contexts = new HashMap<String, PersistenceContextByTable>();
+
+        // avoid doing tests all the time for this known case
+        contexts.put(model.HIER_TABLE_NAME, new PersistenceContextByTable(
+                model.HIER_TABLE_NAME, mapper));
     }
 
     public void close() {
@@ -92,13 +97,14 @@ public class PersistenceContext {
      * Creates a new row in the context.
      *
      * @param tableName the table name
-     * @param id the id
+     * @param id the temporary id
      * @param map the fragments map, or {@code null}
      * @return the created row
      * @throws StorageException if the row is already in the context
      */
-    public Fragment createSingleRow(String tableName, Serializable id,
-            Map<String, Serializable> map) throws StorageException {
+    public SimpleFragment createSimpleFragment(String tableName,
+            Serializable id, Map<String, Serializable> map)
+            throws StorageException {
         PersistenceContextByTable context = contexts.get(tableName);
         if (context == null) {
             context = new PersistenceContextByTable(tableName, mapper);
@@ -129,7 +135,7 @@ public class PersistenceContext {
     }
 
     /**
-     * Find a row in the hierarchy table given its parent id and name. If the
+     * Finds a row in the hierarchy table given its parent id and name. If the
      * row is not in the context, fetch it from the mapper.
      *
      * @param parentId the parent id
@@ -137,15 +143,21 @@ public class PersistenceContext {
      * @return the row, or {@code null} if none is found
      * @throws StorageException
      */
-    public SingleRow getByHier(Serializable parentId, String name)
+    public SimpleFragment getByHier(Serializable parentId, String name)
             throws StorageException {
-        String tableName = model.HIER_TABLE_NAME;
-        PersistenceContextByTable context = contexts.get(tableName);
-        if (context == null) {
-            context = new PersistenceContextByTable(tableName, mapper);
-            contexts.put(tableName, context);
-        }
-        return context.getByHier(parentId, name);
+        return contexts.get(model.HIER_TABLE_NAME).getByHier(parentId, name);
+    }
+
+    /**
+     * Finds all the children given a parent id.
+     *
+     * @param parentId the parent id
+     * @return the collection of rows
+     * @throws StorageException
+     */
+    public Collection<SimpleFragment> getHierChildren(Serializable parentId)
+            throws StorageException {
+        return contexts.get(model.HIER_TABLE_NAME).getHierChildren(parentId);
     }
 
     /**

@@ -22,24 +22,24 @@ import java.io.Serializable;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
- * A {@link SingleProperty} gives access to a scalar value stored in an
- * underlying {@link SingleRow}.
+ * A {@link SimpleProperty} gives access to a scalar value stored in an
+ * underlying {@link SimpleFragment}.
  *
  * @author Florent Guillaume
  */
-public class SingleProperty extends AbstractProperty {
+public class SimpleProperty extends AbstractProperty {
 
-    /** The {@link SingleRow} holding the information. */
-    private final SingleRow row;
+    /** The {@link SimpleFragment} holding the information. */
+    private final SimpleFragment row;
 
     /** The key in the dataRow */
     private final String key;
 
     /**
-     * Creates a {@link SingleProperty}, with specific info about row and key.
+     * Creates a {@link SimpleProperty}, with specific info about row and key.
      */
-    public SingleProperty(String name, PropertyType type, boolean readonly,
-            SingleRow row, String key) {
+    public SimpleProperty(String name, PropertyType type, boolean readonly,
+            SimpleFragment row, String key) {
         super(name, type, readonly);
         this.row = row;
         this.key = key;

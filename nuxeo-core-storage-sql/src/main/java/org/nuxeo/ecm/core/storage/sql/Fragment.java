@@ -177,13 +177,14 @@ class FragmentsMap extends HashMap<String, Fragment> {
  */
 class FragmentGroup {
 
-    public final SingleRow hier;
+    public final SimpleFragment hier;
 
-    public final SingleRow main;
+    public final SimpleFragment main;
 
     public final FragmentsMap fragments;
 
-    public FragmentGroup(SingleRow main, SingleRow hier, FragmentsMap fragments) {
+    public FragmentGroup(SimpleFragment main, SimpleFragment hier,
+            FragmentsMap fragments) {
         this.main = main;
         this.hier = hier;
         this.fragments = fragments;

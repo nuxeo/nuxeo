@@ -25,7 +25,7 @@ import java.util.Arrays;
  *
  * @author Florent Guillaume
  */
-public class CollectionRows extends Fragment {
+public class CollectionFragment extends Fragment {
 
     private static final long serialVersionUID = 1L;
 
@@ -33,8 +33,8 @@ public class CollectionRows extends Fragment {
     private Serializable[] col;
 
     /**
-     * Constructs an empty {@link CollectionRows} of the given table with the
-     * given id (which may be a temporary one).
+     * Constructs an empty {@link CollectionFragment} of the given table with
+     * the given id (which may be a temporary one).
      *
      * @param tableName the table name
      * @param id the id
@@ -43,7 +43,7 @@ public class CollectionRows extends Fragment {
      * @param creation {@code true} if this fragment has just been created
      * @param col the initial collection data to use, or {@code null}
      */
-    public CollectionRows(String tableName, Serializable id,
+    public CollectionFragment(String tableName, Serializable id,
             PersistenceContextByTable context, boolean creation,
             Serializable[] col) {
         super(tableName, id, context, creation);

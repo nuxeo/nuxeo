@@ -18,8 +18,11 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.commons.collections.map.ReferenceMap;
@@ -34,10 +37,14 @@ import org.nuxeo.ecm.core.storage.StorageException;
  * sent to the database by the {@link Mapper}. The database will at some time
  * later be committed by the external transaction manager in effect.
  * <p>
- * Internally a row can be in at most one of the caches: pristine, created,
+ * Internally a fragment can be in at most one of the caches: pristine, created,
  * modified, deleted. The pristine cache survives a save(), and may be partially
  * invalidated after commit by other local or clustered contexts that committed
  * too.
+ * <p>
+ * Depending on the table, the context may hold {@link SimpleFragment}s, which
+ * represent one row, {@link CollectionFragment}s, which represent several rows,
+ * or {@link HierarchyFragment}s, which holds children information for a parent.
  * <p>
  * This class is not thread-safe, it should be tied to a single session and the
  * session itself should not be used concurrently.
@@ -51,6 +58,8 @@ public class PersistenceContextByTable {
     private final String tableName;
 
     private final Mapper mapper;
+
+    private final Model model;
 
     /**
      * The pristine fragments. All held data is identical to what is present in
@@ -80,13 +89,12 @@ public class PersistenceContextByTable {
     /** The deleted fragments. */
     private final Map<Serializable, Fragment> deleted;
 
-    private final Model model;
-
-    /* TODO collections too */
+    /** The children info, for the hierarchy table. */
+    private final Map<Serializable, Children> knownChildren;
 
     @SuppressWarnings("unchecked")
-    PersistenceContextByTable(String schemaName, Mapper mapper) {
-        this.tableName = schemaName;
+    PersistenceContextByTable(String tableName, Mapper mapper) {
+        this.tableName = tableName;
         this.mapper = mapper;
         model = mapper.getModel();
         pristine = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
@@ -94,6 +102,13 @@ public class PersistenceContextByTable {
         created = new LinkedHashMap<Serializable, Fragment>();
         modified = new HashMap<Serializable, Fragment>();
         deleted = new HashMap<Serializable, Fragment>();
+
+        // TODO use a dedicated subclass for the hierarchy table
+        if (tableName.equals(model.HIER_TABLE_NAME)) {
+            knownChildren = new HashMap<Serializable, Children>();
+        } else {
+            knownChildren = null;
+        }
     }
 
     /**
@@ -122,20 +137,27 @@ public class PersistenceContextByTable {
     /**
      * Creates a new row in the context.
      *
-     * @param id the id
+     * @param id the temporary id
      * @param map the fragments map, or {@code null}
      * @return the created row
      * @throws StorageException if the row is already in the context
      */
-    public Fragment create(Serializable id, Map<String, Serializable> map)
+    public SimpleFragment create(Serializable id, Map<String, Serializable> map)
             throws StorageException {
         if (pristine.containsKey(id) || created.containsKey(id) ||
                 modified.containsKey(id) || deleted.containsKey(id)) {
             throw new StorageException("Row already registered: " + id);
         }
-        Fragment row = new SingleRow(tableName, id, this, true, map);
-        created.put(id, row);
-        return row;
+        SimpleFragment fragment = new SimpleFragment(tableName, id, this, true,
+                map);
+        if (knownChildren != null) {
+            // add as a child of its parent
+            addChild(fragment);
+            // note that this new row doesn't have children
+            addNewParent(id);
+        }
+        created.put(id, fragment);
+        return fragment;
     }
 
     /**
@@ -148,30 +170,21 @@ public class PersistenceContextByTable {
      * @throws StorageException
      */
     public Fragment get(Serializable id) throws StorageException {
-        // TODO check the row state to find in which map it is
-        Fragment fragment;
-        fragment = modified.get(id);
-        if (fragment != null) {
-            return fragment;
-        }
-        fragment = created.get(id);
-        if (fragment != null) {
-            return fragment;
-        }
-        if (deleted.containsKey(id)) {
+        if (isDeleted(id)) {
             return null; // XXX
         }
-        fragment = pristine.get(id);
+        Fragment fragment = getIfPresent(id);
         if (fragment != null) {
             return fragment;
         }
+
         // read it through the mapper
         boolean isTemporaryId = id instanceof String &&
                 ((String) id).startsWith("T");
         boolean isCollection = tableName.startsWith("ARRAY_"); // XXX hack
         if (isTemporaryId) {
             if (isCollection) {
-                fragment = new CollectionRows(tableName, id, this, true,
+                fragment = new CollectionFragment(tableName, id, this, true,
                         new Serializable[] {});
                 created.put(id, fragment);
             } else {
@@ -184,6 +197,10 @@ public class PersistenceContextByTable {
                 fragment = mapper.readSingleRow(tableName, id, this);
             }
             if (fragment != null) {
+                if (knownChildren != null) {
+                    // add as a child of its parent
+                    addChild((SimpleFragment) fragment);
+                }
                 pristine.put(id, fragment);
             }
         }
@@ -191,88 +208,172 @@ public class PersistenceContextByTable {
     }
 
     /**
+     * Checks if a fragment is deleted.
+     */
+    protected boolean isDeleted(Serializable id) {
+        return deleted.containsKey(id);
+    }
+
+    /**
+     * Gets a fragment. If it's not in the context, returns {@code null}.
+     */
+    protected Fragment getIfPresent(Serializable id) throws StorageException {
+        // TODO check the row state to find in which map it is
+        Fragment fragment;
+        fragment = modified.get(id);
+        if (fragment != null) {
+            return fragment;
+        }
+        fragment = created.get(id);
+        if (fragment != null) {
+            return fragment;
+        }
+        return pristine.get(id);
+    }
+
+    /**
+     * Called by the mapper when a new pristine hierarchy fragment for a child
+     * is retrieved.
+     */
+    protected void newPristine(Fragment fragment) {
+        pristine.put(fragment.getId(), fragment);
+    }
+
+    /**
+     * Adds a row to the known children of its parent.
+     */
+    private void addChild(SimpleFragment row) throws StorageException {
+        Serializable parentId = row.get(model.HIER_PARENT_KEY);
+        Children children = knownChildren.get(parentId);
+        if (children == null) {
+            children = new Children(false);
+            knownChildren.put(parentId, children);
+        }
+        children.add(row, row.getString(model.HIER_CHILD_NAME_KEY),
+                (Long) row.get(model.HIER_CHILD_POS_KEY));
+    }
+
+    /**
+     * Notes the fact that a new row was created without children.
+     */
+    private void addNewParent(Serializable parentId) {
+        assert !knownChildren.containsKey(parentId);
+        Children children = new Children(true); // complete
+        knownChildren.put(parentId, children);
+    }
+
+    /**
+     * Removes a row from the known children of its parent.
+     */
+    private void removeChild(SimpleFragment row) throws StorageException {
+        Serializable parentId = row.get(model.HIER_PARENT_KEY);
+        Children children = knownChildren.get(parentId);
+        if (children != null) {
+            children.remove(row.getString(model.HIER_CHILD_NAME_KEY));
+        }
+    }
+
+    /**
      * Find a row in the hierarchy schema given its parent id and name. If the
      * row is not in the context, fetch it from the mapper.
-     * <p>
-     * TODO optimize this simplistic scanning implementation.
-     * <p>
-     * TODO check that this is coherent when (if) we rename nodes.
      *
      * @param parentId the parent id
      * @param name the name
      * @return the row, or {@code null} if none is found
      * @throws StorageException
      */
-    public SingleRow getByHier(Serializable parentId, String name)
+    public SimpleFragment getByHier(Serializable parentId, String name)
             throws StorageException {
-        SingleRow row;
-        row = getByHierInMap(modified, parentId, name);
-        if (row != null) {
-            return row;
-        }
-        row = getByHierInMap(created, parentId, name);
-        if (row != null) {
-            return row;
-        }
-        row = getByHierInMap(pristine, parentId, name);
-        if (row != null) {
-            return row;
-        }
-        // read it through the mapper
-        row = mapper.readChildHierRow(parentId, name, this);
-        if (row != null) {
-            pristine.put(row.getId(), row);
-        }
-        return row;
-    }
+        SimpleFragment fragment;
 
-    private static String PARENT = "parent"; // XXX hierarchyParentKey
-
-    private static String NAME = "name"; // XXX hierarchyChildNameKey
-
-    // TODO replace linear search with some kind of index
-    private SingleRow getByHierInMap(Map<Serializable, Fragment> map,
-            Serializable parentId, String name) {
-        for (Fragment fragment : map.values()) {
-            SingleRow row = (SingleRow) fragment;
-            if (parentId.equals(row.get(PARENT)) && name.equals(row.get(NAME))) {
-                return (SingleRow) row;
+        // check in the known children
+        Children children = knownChildren.get(parentId);
+        if (children != null) {
+            fragment = children.get(name);
+            if (fragment != SimpleFragment.UNKNOWN) {
+                return fragment;
             }
         }
-        return null;
+
+        // read it through the mapper
+        fragment = mapper.readChildHierRow(parentId, name, this);
+
+        // add as know child
+        if (fragment != null) {
+            addChild(fragment);
+        }
+
+        return fragment;
+    }
+
+    /**
+     * Gets the list of children for a given parent id.
+     *
+     * @param parentId the parent id
+     * @return the list of children.
+     * @throws StorageException
+     */
+    public Collection<SimpleFragment> getHierChildren(Serializable parentId)
+            throws StorageException {
+
+        // check in the known children
+        Children children = knownChildren.get(parentId);
+        if (children != null) {
+            if (children.isComplete()) {
+                return children.getFragments();
+            }
+        } else {
+            children = new Children(false);
+            knownChildren.put(parentId, children);
+        }
+
+        // ask the children to the mapper
+        Collection<SimpleFragment> fragments = mapper.readChildHierRows(
+                parentId, this);
+
+        // we now know the full children for this parent
+        children.addComplete(fragments, model);
+
+        // the children may include newly-created ones
+        return children.getFragments();
     }
 
     /**
      * Removes a row from the context.
      *
-     * @param row
+     * @param fragment
      * @throws StorageException
      */
-    public void remove(Fragment row) throws StorageException {
+    public void remove(Fragment fragment) throws StorageException {
+        if (knownChildren != null) {
+            // remove from parent
+            removeChild((SimpleFragment) fragment);
+        }
+
         // TODO check the row state to find in which map it is
-        Serializable id = row.getId();
+        Serializable id = fragment.getId();
         Fragment oldRow;
         oldRow = pristine.remove(id);
         if (oldRow != null) {
-            deleted.put(id, row);
-            row.markDeleted();
+            deleted.put(id, fragment);
+            fragment.markDeleted();
             return;
         }
         oldRow = modified.remove(id);
         if (oldRow != null) {
-            deleted.put(id, row);
-            row.markDeleted();
+            deleted.put(id, fragment);
+            fragment.markDeleted();
             return;
         }
         oldRow = created.remove(id);
         if (oldRow != null) {
-            row.markDeleted(); // also detached
+            fragment.markDeleted(); // also detached
             return;
         }
         if (deleted.containsKey(id)) {
-            throw new StorageException("Already deleted: " + row);
+            throw new StorageException("Already deleted: " + fragment);
         } else {
-            throw new StorageException("Already detached: " + row);
+            throw new StorageException("Already detached: " + fragment);
         }
     }
 
@@ -284,10 +385,11 @@ public class PersistenceContextByTable {
      * @throws StorageException
      */
     public Map<Serializable, Serializable> saveMain() throws StorageException {
+        assert tableName.equals(model.MAIN_TABLE_NAME);
         Map<Serializable, Serializable> idMap = new HashMap<Serializable, Serializable>();
         for (Fragment fragment : created.values()) {
             Serializable id = fragment.getId();
-            Serializable newId = mapper.insertSingleRow((SingleRow) fragment);
+            Serializable newId = mapper.insertSingleRow((SimpleFragment) fragment);
             if (pristine.containsKey(id)) {
                 throw new StorageException("Row already in cache: " + fragment);
             }
@@ -311,10 +413,10 @@ public class PersistenceContextByTable {
     public void save(Map<Serializable, Serializable> idMap)
             throws StorageException {
         if (!tableName.equals(model.MAIN_TABLE_NAME)) {
+            /*
+             * Map temporary to persistent ids.
+             */
             for (Fragment fragment : created.values()) {
-                /*
-                 * Map temporary to persistent ids.
-                 */
                 Serializable id = fragment.getId();
                 Serializable newId = idMap.get(id);
                 if (newId != null) {
@@ -322,18 +424,20 @@ public class PersistenceContextByTable {
                     id = newId;
                 }
                 if (tableName.equals(model.HIER_TABLE_NAME)) {
-                    // The hierarchy table stores a foreign key to id in the
-                    // parent column, it has to be mapped too.
-                    SingleRow row = (SingleRow) fragment;
+                    /*
+                     * The hierarchy table stores a foreign key to id in the
+                     * parent column, it has to be mapped too.
+                     */
+                    SimpleFragment row = (SimpleFragment) fragment;
                     Serializable newParentId = idMap.get(row.get(model.HIER_PARENT_KEY));
                     if (newParentId != null) {
                         row.put(model.HIER_PARENT_KEY, newParentId);
                     }
                 }
-                if (fragment instanceof SingleRow) {
-                    mapper.insertSingleRow((SingleRow) fragment);
+                if (fragment instanceof SimpleFragment) {
+                    mapper.insertSingleRow((SimpleFragment) fragment);
                 } else {
-                    mapper.insertCollectionRows((CollectionRows) fragment);
+                    mapper.insertCollectionRows((CollectionFragment) fragment);
                 }
                 if (pristine.containsKey(id)) {
                     throw new StorageException("Row already in cache: " +
@@ -345,10 +449,10 @@ public class PersistenceContextByTable {
             created.clear();
         }
         for (Fragment fragment : modified.values()) {
-            if (fragment instanceof SingleRow) {
-                mapper.updateSingleRow((SingleRow) fragment);
+            if (fragment instanceof SimpleFragment) {
+                mapper.updateSingleRow((SimpleFragment) fragment);
             } else {
-                mapper.updateCollectionRows((CollectionRows) fragment);
+                mapper.updateCollectionRows((CollectionFragment) fragment);
             }
             fragment.markPristine();
         }
@@ -358,6 +462,31 @@ public class PersistenceContextByTable {
             fragment.detach();
         }
         deleted.clear();
+
+        /*
+         * Map temporary parent ids for created parents.
+         */
+        if (knownChildren != null) {
+            Iterator<Serializable> it = knownChildren.keySet().iterator();
+            Map<Serializable, Children> mappedChildren = null;
+            for (; it.hasNext();) {
+                Serializable parentId = it.next();
+                Serializable newParentId = idMap.get(parentId);
+                if (newParentId != null) {
+                    if (mappedChildren == null) {
+                        mappedChildren = new HashMap<Serializable, Children>();
+                    }
+                    mappedChildren.put(newParentId, knownChildren.get(parentId));
+                    // remove temporary id
+                    it.remove();
+                }
+            }
+            if (mappedChildren != null) {
+                // put back with mapped ids
+                knownChildren.putAll(mappedChildren);
+                mappedChildren = null;
+            }
+        }
     }
 
     /**
