@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.core.storage.sql.ra;
 
+import java.io.Serializable;
+
 import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionFactory;
 import javax.resource.cci.ConnectionMetaData;
@@ -100,7 +102,7 @@ public class ConnectionImpl implements Session {
     }
 
     /*
-     * ----- Session -----
+     * ----- org.nuxeo.ecm.core.storage.sql.Session -----
      */
 
     public void save() throws StorageException {
@@ -126,6 +128,22 @@ public class ConnectionImpl implements Session {
 
     public void removeNode(Node node) throws StorageException {
         session.removeNode(node);
+    }
+
+    public Node getNodeById(Serializable id) throws StorageException {
+        return session.getNodeById(id);
+    }
+
+    public Node getNodeByPath(String path, Node node) throws StorageException {
+        return session.getNodeByPath(path, node);
+    }
+
+    public Node getParentNode(Node node) throws StorageException {
+        return session.getParentNode(node);
+    }
+
+    public String getPath(Node node) throws StorageException {
+        return session.getPath(node);
     }
 
 }
