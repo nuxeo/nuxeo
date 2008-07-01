@@ -3,17 +3,19 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl
 
 def main () {
-    username = Context.mapping.getValue("username")
+    username = Context.getProperty("username")
     userManager = Framework.getService(UserManager.class)
     if (username) {
-        user = userManager.getPrincipal(username)
-        userGroups = user.getGroups()
+        user = userManager.getGroup(username)
+        if (user != null) {
+          usersGroup = user.getMemberUsers()
+        }
     } else {
         user = null
-        userGroups = null
+        usersGroup = null
     }
     allGroups = userManager.getAvailableGroups()
-    Context.render("/users/user_form.ftl", ['user': user, 'allGroups': allGroups, 'userGroups': userGroups])
+    Context.render("/users/group_form.ftl", ['group': user, 'allGroups': allGroups, 'usersGroup': usersGroup])
 }
 
 main()

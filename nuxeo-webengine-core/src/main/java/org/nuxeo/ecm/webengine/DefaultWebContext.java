@@ -416,7 +416,14 @@ public class DefaultWebContext implements WebContext {
     }
 
     public Object getProperty(String key) {
-        return vars.get(key);
+        Object value = pathInfo.getAttributes().getValue(key);
+        if (value == null) {
+            value = request.getParameter(key);
+            if (value == null) {
+                value =  vars.get(key);
+            }
+        }
+        return value;
     }
 
     public Object getProperty(String key, Object defaultValue) {

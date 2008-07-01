@@ -63,8 +63,9 @@
 </div>
 
 <!-- toolbox -->
+<@block name="toolbox">
 <#if This??>
-  <div class="sideblock contextual">
+  <div class="sideblock contextual">    
     <h3>Toolbox</h3>
     <div class="sideblock-content">
       <ul>
@@ -72,9 +73,10 @@
         <li><a href="${This.urlPath}@@${action.id}">${message('action.' + action.id)}</a></li>
         </#list>
       </ul>
-    </div>  
+    </div>
   </div>
 </#if>
+</@block>
 
 <!-- content -->
 <div class="sideblock general">

@@ -1,5 +1,5 @@
 <@extends src="base.ftl">
-<@block name="header"><h1><a href ="${appPath}">Group creation</a></h1></@block>
+<@block name="header"><h1><a href ="${appPath}/users">Group creation</a></h1></@block>
 <@block name="content">
 
 <br/>

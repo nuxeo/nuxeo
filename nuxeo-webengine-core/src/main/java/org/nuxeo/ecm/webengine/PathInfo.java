@@ -59,6 +59,7 @@ public class PathInfo {
         } else {
             traversalPath = this.path;
         }
+        setAttributes(attrs);
     }
 
     /**
