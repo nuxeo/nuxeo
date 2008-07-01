@@ -1,7 +1,9 @@
 package org.nuxeo.ecm.platform.ui.flex.samples;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.jboss.seam.ScopeType;
@@ -9,8 +11,16 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.remoting.WebRemote;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.flex.javadto.FlexDocumentModel;
+import org.nuxeo.ecm.platform.ui.flex.mapping.DocumentModelTranslator;
+import org.nuxeo.runtime.api.Framework;
 
 @Name("flexStatelessPingTestBean")
 @Scope(ScopeType.STATELESS)
@@ -58,10 +68,32 @@ public class FlexStatelessPingTestBean implements Serializable {
         Map<String, Serializable> schemadata = new HashMap<String, Serializable>();
 
         schemadata.put("title", "I am a test");
+        List<String> list = new ArrayList<String>();
+        list.add("1");
+        list.add("2");
+        schemadata.put("list", (Serializable)list);
 
         doc.feed("dublincore", schemadata);
 
         return doc;
     }
+
+    @WebRemote
+    public FlexDocumentModel getSomeDocumentModel(String path) throws Exception
+    {
+
+        RepositoryManager repositoryMgr = Framework.getService(RepositoryManager.class);
+        Repository repository = repositoryMgr.getDefaultRepository();
+        CoreSession session = repository.open();
+
+        DocumentModel doc = session.getDocument(new PathRef(path));
+
+        FlexDocumentModel flexDoc = DocumentModelTranslator.toFlexType(doc);
+
+        CoreInstance.getInstance().close(session);
+
+        return flexDoc;
+    }
+
 
 }

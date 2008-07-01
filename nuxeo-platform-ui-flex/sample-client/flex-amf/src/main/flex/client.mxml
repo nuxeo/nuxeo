@@ -27,10 +27,23 @@
 			private function checkDM():void {
 				Alert.show("DM Test","checkDM");
 				var doc:FlexDocumentModel = service.getTestDocumentModel.lastResult;				
-				Alert.show("Sucess",doc.name);
-				Alert.show("Sucess",doc.getTitle());
+				Alert.show(doc.name, "doc name");
+				Alert.show(doc.getTitle(), "doc title");
 			}
 
+			private function checkDM2():void {
+				var doc:FlexDocumentModel = service.getSomeDocumentModel.lastResult;				
+				Alert.show(doc.name,"doc name");
+				Alert.show(doc.getTitle(),"doc title");
+				doc.setTitle("New Title from flex");
+				Alert.show(doc.getTitle(), "updated title");
+			}
+
+			private function displayProperty(doc:FlexDocumentModel, schemaName:String, fieldName:String):void
+			{
+				var val:String= doc.getProperty(schemaName,fieldName);
+				propertyValue.text=val;
+			}
 
 	]]>
 	</mx:Script>
@@ -91,5 +104,46 @@
         </mx:HBox>
 
     </mx:Panel>
+
+    <mx:Panel
+        title="Nuxeo-Flex AMF test DocumentModel retrieval"
+        paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10">
+
+
+        <mx:HBox>
+		<mx:TextInput
+                id="docPath"
+                maxChars="100"
+                text="/default-domain"/>
+            <mx:Button label="get document by path" click="service.getSomeDocumentModel(docPath.text)"/>
+        </mx:HBox>
+
+        <mx:Label text='returned doc id: "{service.getSomeDocumentModel.lastResult.id}"'/>
+
+        <mx:HBox>
+		<mx:TextInput
+                id="schemaName"
+                maxChars="20"
+                text="dublincore"/>
+		<mx:TextInput
+                id="fieldName"
+                maxChars="20"
+                text="title"/>
+
+            <mx:Button label="get property" click="displayProperty(service.getSomeDocumentModel.lastResult,schemaName.text,fieldName.text)"/>
+
+		<mx:TextInput
+                id="propertyValue"
+                maxChars="20"                text=""/>
+
+        </mx:HBox>
+
+
+        <mx:HBox>
+            <mx:Button label="checkDM2" click="checkDM2()"/>
+        </mx:HBox>
+
+    </mx:Panel>
+
 
 </mx:Application>

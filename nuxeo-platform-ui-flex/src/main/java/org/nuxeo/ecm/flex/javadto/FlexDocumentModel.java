@@ -8,25 +8,40 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.DocumentRef;
+
 public class FlexDocumentModel implements Externalizable {
 
 
     private String docRef;
     private String name;
-    private String parentPath;
+    private String path;
     private String lifeCycleState;
 
     private transient Map<String, Map<String,Serializable>> data = new HashMap<String, Map<String,Serializable>>();
-
+    private Map<String,Serializable> dirtyFields =  new HashMap<String, Serializable>();
 
     public FlexDocumentModel()
     {
         docRef="docRef";
         name="docName";
-        parentPath="/default/folder";
+        path="/default/folder"+name;
         lifeCycleState="work";
     }
 
+    public FlexDocumentModel(DocumentRef ref, String name, String path, String lcState)
+    {
+        docRef=ref.toString();
+        this.name=name;
+        this.path=path;
+        lifeCycleState=lcState;
+    }
+
+
+    public Map<String,Serializable> getDirtyFields()
+    {
+        return dirtyFields;
+    }
 
     public void feed(String schemaName, Map<String,Serializable> map)
     {
@@ -39,9 +54,11 @@ public class FlexDocumentModel implements Externalizable {
 
         docRef=in.readUTF();
         name=in.readUTF();
-        parentPath=in.readUTF();
+        path=in.readUTF();
         lifeCycleState=in.readUTF();
-
+        //only ready dirty fields
+        dirtyFields=(Map<String,Serializable>) in.readObject();
+        // don't read all data
         //data = (Map<String, Map<String,Serializable>>) in.readObject();
 
     }
@@ -50,9 +67,10 @@ public class FlexDocumentModel implements Externalizable {
 
         out.writeUTF(docRef);
         out.writeUTF(name);
-        out.writeUTF(parentPath);
+        out.writeUTF(path);
         out.writeUTF(lifeCycleState);
-        //out.writeObject(data);
+        // only sends data : nothing is dirty for now
+        out.writeObject(data);
     }
 
 }
