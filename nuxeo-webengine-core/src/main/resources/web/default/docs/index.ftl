@@ -1,8 +1,7 @@
-<html>
-<head>
- <title>Nuxeo Web Engine Documentation</title>
-</head>
-<body>
+<@extends src="base.ftl">
+<@block name="title">Nuxeo WebEngine Documentation</@block>
+<@block name="header"><h1><a href="${appPath}">Nuxeo WebEngine Documentation</a></@block>
+<@block name="content">
 
 <blockquote>
 <font size="-2">
@@ -15,5 +14,5 @@ It is only provided for convenience. To access the full documentation please vis
 
 <@wiki src="docs/nuxeo-webengine-doc.wiki"/>
 
-</body>
-</html>
+</@block>
+</@extends>

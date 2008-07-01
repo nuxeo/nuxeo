@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webengine.tests.fake;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -33,10 +32,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 /**
  * Fake WebDAV Response for tests.
@@ -67,18 +62,6 @@ public class FakeResponse implements HttpServletResponse {
             output = (out).toString("UTF-8");
         }
         return output;
-    }
-
-    public Element getXMLOutput() throws DocumentException, IOException {
-        SAXReader saxReader = new SAXReader();
-        saxReader.setMergeAdjacentText(true);
-        saxReader.setEncoding("UTF-8");
-        saxReader.setValidation(false);
-        saxReader.setIncludeExternalDTDDeclarations(false);
-        saxReader.setIncludeInternalDTDDeclarations(false);
-        String xml = getOutput();
-        InputStream in = new StringBlob(xml).getStream();
-        return saxReader.read(in).getRootElement();
     }
 
     public void addCookie(Cookie cookie) {

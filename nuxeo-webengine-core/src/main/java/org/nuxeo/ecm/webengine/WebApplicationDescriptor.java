@@ -45,15 +45,6 @@ public class WebApplicationDescriptor extends ExtensibleContribution {
     @Override
     public void setBaseContributionId(String id) { this.baseContributionId = id; }
 
-    @XNode("path")
-    protected String path;
-
-    @XNode("documentRoot")
-    protected String documentRoot;
-
-    @XNode("defaultRepositoryView")
-    protected boolean isDefaultRepositoryView;
-
     @XNodeList(value="roots/root", type=ArrayList.class, componentType=RootDescriptor.class, nullByDefault=true)
     protected List<RootDescriptor> roots;
 
@@ -75,22 +66,9 @@ public class WebApplicationDescriptor extends ExtensibleContribution {
     @XNodeList(value="bindings/binding", type=ArrayList.class, componentType=WebObjectBindingDescriptor.class, nullByDefault=true)
     protected List<WebObjectBindingDescriptor> bindings;
 
+
     public String getId() {
         return contributionId;
-    }
-
-    /**
-     * @return the path.
-     */
-    public String getPath() {
-        return path;
-    }
-
-    /**
-     * @param path the path to set.
-     */
-    public void setPath(String path) {
-        this.path = path;
     }
 
     /**
@@ -105,20 +83,6 @@ public class WebApplicationDescriptor extends ExtensibleContribution {
      */
     public void setRepositoryName(String repositoryName) {
         this.repositoryName = repositoryName;
-    }
-
-    /**
-     * @return the documentRoot.
-     */
-    public String getDocumentRoot() {
-        return documentRoot;
-    }
-
-    /**
-     * @param documentRoot the documentRoot to set.
-     */
-    public void setDocumentRoot(String documentRoot) {
-        this.documentRoot = documentRoot;
     }
 
     public String getIndexPage() {
@@ -183,7 +147,6 @@ public class WebApplicationDescriptor extends ExtensibleContribution {
 
     public void copyOver(ExtensibleContribution contrib) {
         WebApplicationDescriptor desc = (WebApplicationDescriptor)contrib;
-        desc.isDefaultRepositoryView = isDefaultRepositoryView;
         if (defaultPage != null) {
             desc.defaultPage = defaultPage;
         }
@@ -195,12 +158,6 @@ public class WebApplicationDescriptor extends ExtensibleContribution {
         }
         if (repositoryName != null) {
             desc.repositoryName = repositoryName;
-        }
-        if (path != null){
-            desc.path = path;
-        }
-        if (documentRoot != null) {
-            desc.documentRoot = documentRoot;
         }
         if (roots != null && !roots.isEmpty()) {
             if (desc.roots == null) {

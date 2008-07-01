@@ -6,12 +6,14 @@
     Default Wiki Objects
   </documentation>
 
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+             point="application-mapping">
+    <mapping path="/wiki" webapp="wiki" document="/default-domain/workspaces/ws/wiki" />
+  </extension>
   
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
              point="application">
-    <webapp id="wiki" extends="repository">
-      <path>/wiki</path>
-      <documentRoot>/default-domain/workspaces/ws/wiki</documentRoot>
+    <webapp id="wiki" extends="default">
       <roots>
         <root priority="1">wiki</root>
       </roots>

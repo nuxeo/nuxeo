@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webengine;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.webengine.servlet.WebConst;
 import org.nuxeo.ecm.webengine.util.Attributes;
 
 /**
@@ -33,46 +32,34 @@ public class PathInfo {
     public static final Path EMPTY_PATH = new Path("");
     public static final Path ROOT_PATH = new Path("/");
 
+    protected DocumentRef document; // the root document if any
     protected Path path; // original path (without action)
     protected Path applicationPath; // the application path
     protected Path traversalPath; // original path - application path
     protected Path trailingPath = EMPTY_PATH; // trailing segments that were not traversed
     protected String action;
-    protected DocumentRef document;
     protected String script;
     protected Attributes attrs;
 
-    public PathInfo(String path) {
-        this (path, Attributes.EMPTY_ATTRS);
+    public PathInfo(Path path) {
+        this (path, ROOT_PATH, Attributes.EMPTY_ATTRS);
     }
 
-    public PathInfo(String path, Attributes attrs) {
-        if (path == null || path.length() == 0
-                || (path.length() == 1 && path.charAt(0) == '/')) {
-            this.path = ROOT_PATH;
-        } else {
-            int p = path.lastIndexOf(WebConst.ACTION_SEPARATOR);
-            if (p > -1) {
-                action = path.substring(p+WebConst.ACTION_SEPARATOR.length());
-                path = path.substring(0, p);
-            }
-            this.path = new Path(path).makeAbsolute().removeTrailingSeparator();
-        }
-         traversalPath = this.path;
-         setAttributes(attrs);
+    public PathInfo(Path path, Path applicationPath) {
+        this (path, applicationPath, Attributes.EMPTY_ATTRS);
     }
 
-    public void setApplicationPath(Path appPath) {
-        if (applicationPath != null) {
-            throw new IllegalStateException("Application path already set");
-        }
-        applicationPath = appPath;
-        int cnt = appPath.segmentCount();
+    public PathInfo(Path path, Path applicationPath, Attributes attrs) {
+        this.path = path;
+        this.applicationPath = applicationPath;
+        traversalPath = this.path;
+        int cnt = applicationPath.segmentCount();
         if (cnt > 0) {
-            traversalPath = path.removeFirstSegments(cnt).makeAbsolute();
+            traversalPath = this.path.removeFirstSegments(cnt).makeAbsolute();
         } else {
-            traversalPath = path;
+            traversalPath = this.path;
         }
+        setAttributes(attrs);
     }
 
     /**

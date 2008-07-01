@@ -9,7 +9,7 @@ def main () {
         group = new NuxeoGroupImpl(groupName)
         userManager.createGroup(group)
     }
-    Context.redirect(Context.basePath + "/users")
+    Context.redirect(appPath + "/users")
 }
 
 main()

@@ -1,4 +1,4 @@
-/* Base CSS for both Wiki & Blog. © 2008 Nuxeo
+/* Base CSS for both Wiki & Blog. ï¿½ 2008 Nuxeo
    
  Structure :
   
@@ -32,6 +32,16 @@ body {
     font:normal 12px Verdana, sans-serif;
     text-align:center;
     background:#fff url(/nuxeo/site/files/resources/image/background_page.gif) top left repeat-x;
+}
+
+td {
+    font:normal 12px Verdana, sans-serif;
+    padding:4px;    
+}
+
+th {
+  font: bold 12px Verdana, sans-serif;
+  padding:4px;    
 }
 
 #wrap {

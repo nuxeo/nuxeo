@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine.tests.mapping;
 
 import junit.framework.TestCase;
 
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.webengine.PathInfo;
 import org.nuxeo.ecm.webengine.mapping.MappingDescriptor;
 import org.nuxeo.ecm.webengine.mapping.PathMapper;
@@ -34,7 +35,7 @@ public class TestPathMapper extends TestCase {
         mdef.setPattern("(?name1:.*)/demo/(?name2:[^/]+)");
         mdef.setScript("$1 $2 $path");
         mapper.addMapping(mdef);
-        PathInfo mapping = mapper.rewrite(new PathInfo("/wiki/a/b/c/demo/index.view"));
+        PathInfo mapping = mapper.rewrite(new PathInfo(new Path("/wiki/a/b/c/demo/index.view")));
         //System.out.println(mapping.getScript());
         assertEquals("/wiki/a/b/c index.view /wiki/a/b/c/demo/index.view", mapping.getScript());
 
@@ -45,7 +46,7 @@ public class TestPathMapper extends TestCase {
         mdef.setPattern("(?name1:.*)/demo/(?name2:[^/]+)");
         mdef.setScript("$name1 $name2 $path");
         mapper.addMapping(mdef);
-        mapping = mapper.rewrite(new PathInfo("/wiki/a/b/c/demo/index.view"));
+        mapping = mapper.rewrite(new PathInfo(new Path("/wiki/a/b/c/demo/index.view")));
         //System.out.println(mapping.getScript());
         assertEquals("/wiki/a/b/c index.view /wiki/a/b/c/demo/index.view", mapping.getScript());
     }

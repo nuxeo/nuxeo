@@ -27,14 +27,26 @@ import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.locks.ReentrantLock;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
+import org.nuxeo.ecm.webengine.servlet.WebConst;
 import org.nuxeo.ecm.webengine.util.PathMap;
 import org.nuxeo.runtime.deploy.FileChangeListener;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
 import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -47,9 +59,12 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
     protected final Map<String,WebObjectDescriptor> registry;
     protected final Map<String, String> bindings;
 
-    protected Map<String, WebApplication> apps;
-    protected PathMap<WebApplication> pathMap;
-    protected WebApplication defaultRepositoryView;
+    protected ConcurrentMap<String, WebApplication> apps;
+    protected PathMap<WebApplicationMapping> pathMap;
+    protected WebApplicationMapping defaultMapping;
+    protected final ReentrantLock mappingLock = new ReentrantLock();
+
+    protected WebApplication defaultApplication;
 
     protected final Map<String,Object> env;
     protected ResourceBundle messages;
@@ -59,7 +74,6 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
     protected ListenerList listeners = new ListenerList();
     protected FileChangeNotifier notifier;
     protected long lastMessagesUpdate = 0;
-
     protected Scripting scripting;
 
 
@@ -69,17 +83,76 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         if (notifier != null) {
             notifier.addListener(this);
         }
-        registry = new Hashtable<String, WebObjectDescriptor>();
+        registry = new ConcurrentHashMap<String, WebObjectDescriptor>();
         bindings = new HashMap<String, String>();
         env = new HashMap<String, Object>();
-        apps = new HashMap<String, WebApplication>();
-        this.pathMap =new PathMap<WebApplication>();
+        apps = new ConcurrentHashMap<String, WebApplication>();
+        this.pathMap =new PathMap<WebApplicationMapping>();
         env.put("installDir", root);
         env.put("engine", "Nuxeo Web Engine");
         env.put("version", "1.0.0");
         renderingExtensions = new Hashtable<String, Object>();
         loadMessageBundle(true);
         scripting = new Scripting();
+    }
+
+    public WebApplication getDefaultApplication() {
+        if (defaultApplication == null) {
+            defaultApplication = apps.get("default");
+        }
+        return defaultApplication;
+    }
+
+    public Path getUrlPath(Path docPath) {
+        if (defaultMapping != null) {
+            Path basePath = defaultMapping.getRootPath();
+            if (basePath != null) {
+                Path path = DefaultWebContext.getRelativePath(basePath, docPath);
+                if (path != null) {
+                    return defaultMapping.getPath().append(path);
+                }
+            }
+        }
+        return null;
+    }
+
+    public WebContext createContext(HttpServletRequest req, HttpServletResponse resp) throws WebException {
+        // normalize the path and remove the action from the path if any
+        Path path = null;
+        String action = null;
+        String reqPath = req.getPathInfo();
+        if (reqPath == null) {
+            path = PathInfo.ROOT_PATH;
+        } else {
+            // remove the action
+            int p = reqPath.lastIndexOf(WebConst.ACTION_SEPARATOR);
+            if (p > -1) {
+                action = reqPath.substring(p+WebConst.ACTION_SEPARATOR.length());
+                reqPath = reqPath.substring(0, p);
+            }
+            path = new Path(reqPath).makeAbsolute().removeTrailingSeparator();
+        }
+        // resolve application
+        WebApplicationMapping mapping = getApplicationMapping(path);
+        WebApplication app = null;
+        if (mapping != null) {
+            // get the application
+            app = getApplication(mapping.webApp);
+            if (app == null) {
+                throw new WebResourceNotFoundException("Application is not registered: "+mapping.webApp);
+            }
+        } else {
+            app = getDefaultApplication(); //use the default app
+        }
+        // construct the path info
+        PathInfo pif = new PathInfo(path, mapping.getPath());
+        pif.setAction(action);
+        pif.setDocument(mapping.getDocRoot());
+        // apply rewrite rules on the path info
+        app.getPathMapper().rewrite(pif);
+        DefaultWebContext context = new DefaultWebContext(app, pif, req, resp);
+        // traverse documents if any
+        return context;
     }
 
     public Scripting getScripting() {
@@ -125,6 +198,7 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
 
 
     public void reset() {
+        defaultApplication = null;
         for (WebApplication app : apps.values()) {
             app.flushCache();
         }
@@ -159,6 +233,49 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         bindings.remove(type);
     }
 
+    public WebApplicationMapping getApplicationMapping(Path path) {
+        mappingLock.lock();
+        try {
+            return pathMap.match(path);
+        } finally {
+            mappingLock.unlock();
+        }
+    }
+
+    public void addApplicationMapping(WebApplicationMapping mapping) {
+        mappingLock.lock();
+        try {
+            pathMap.put(mapping.getPath(), mapping);
+            if (mapping.isDefault()) {
+                defaultMapping = mapping;
+            }
+        } finally {
+            mappingLock.unlock();
+        }
+        try {
+            fireConfigurationChanged();
+        } catch (WebException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removeApplicationMapping(WebApplicationMapping mapping) {
+        mappingLock.lock();
+        try {
+            pathMap.remove(mapping.getPath());
+            if (mapping.isDefault()) { //TODO: stack default mappings so we can revert them back
+                defaultMapping = mapping;
+            }
+        } finally {
+            mappingLock.unlock();
+        }
+        try {
+            fireConfigurationChanged();
+        } catch (WebException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Map<String, Object> getEnvironment() {
         return env;
     }
@@ -168,31 +285,21 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
     }
 
     public WebApplication getApplicationByPath(Path path) {
-        return pathMap.match(path);
-    }
-
-    public WebApplication getDefaultRepositoryView() {
-        return defaultRepositoryView;
+        WebApplicationMapping mapping = pathMap.match(path);
+        if (mapping != null) {
+            return apps.get(mapping.webApp);
+        }
+        return null;
     }
 
     public synchronized void registerApplication(WebApplicationDescriptor desc) throws WebException {
         WebApplication app =  new DefaultWebApplication(this, desc);
         apps.put(desc.getId(), app);
-        pathMap.put(app.getPath(), app);
-        if (desc.isDefaultRepositoryView) {
-            defaultRepositoryView = app;
-        }
         fireConfigurationChanged();
     }
 
     public synchronized void unregisterApplication(String id) {
-        WebApplication app = apps.remove(id);
-        if (app != null) {
-            pathMap.remove(app.getPath());
-            if (app == defaultRepositoryView) {
-                defaultRepositoryView = null;
-            }
-        }
+        apps.remove(id);
     }
 
     public WebApplication[]  getApplications() {
@@ -256,5 +363,7 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         lastMessagesUpdate = now;
         loadMessageBundle(false);
     }
+
+
 
 }

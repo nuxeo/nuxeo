@@ -4,7 +4,7 @@
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="application">
-    <webapp id="test" extends="repository">
+    <webapp id="test" extends="default">
       <roots>
         <root priority="0">default</root>
       </roots>

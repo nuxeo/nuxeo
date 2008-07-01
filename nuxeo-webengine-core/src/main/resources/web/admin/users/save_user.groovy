@@ -33,7 +33,7 @@ def main () {
         }
     }
 
-    Context.redirect(Context.basePath + "/users")
+    Context.redirect(appPath + "/users")
 }
 
 main()

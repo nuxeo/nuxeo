@@ -6,13 +6,17 @@
     Default Objects
   </documentation>
 
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="application-mapping">
+    <mapping path="/admin" webapp="admin" />
+    <mapping path="/admin/repository" webapp="admin" document="/default-domain" />
+  </extension>
+
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="application">
 
-    <webapp id="admin" extends="repository">
-      <path>/admin</path>
-      <documentRoot/>
+    <webapp id="admin" extends="default">
       <roots>
         <root priority="1">admin</root>
       </roots>
@@ -35,16 +39,12 @@
         <mapping pattern="/users/user/(?username:[a-zA-Z0-9]+)$">
           <script>/users/user_form.groovy</script>
         </mapping>
+        <mapping pattern="/users/group/(?username:[a-zA-Z0-9]+)$">
+          <script>/users/group_form.groovy</script>
+        </mapping>
       </mappings>
     </webapp>
 
-    <webapp id="repository-admin" extends="admin">
-      <path>/admin/repository</path>
-      <repository>default</repository>
-      <documentRoot>/default-domain</documentRoot>
-    </webapp>
-
   </extension>
-
 
 </component>

@@ -7,13 +7,6 @@
     </module>
   </extension>
 
-  <extension target="web#CONTEXT-PARAM">
-    <context-param>
-      <param-name>org.jboss.seam.core.init.debug</param-name>
-      <param-value>false</param-value>
-    </context-param>
-  </extension>
-
   <install>
     <!-- Unzip the war template -->
     <unzip from="${bundle.fileName}" to="/">

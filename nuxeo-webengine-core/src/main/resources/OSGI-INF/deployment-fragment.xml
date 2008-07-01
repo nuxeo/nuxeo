@@ -6,18 +6,16 @@
     </module>
   </extension>
 
-  <!-- Enable authentication for Site requests -->
-  <extension target="web#STD-AUTH-FILTER">
+
+  <!-- Site Servlet mapping -->
+  <extension target="web#SERVLET">
     <filter-mapping>
       <filter-name>NuxeoAuthenticationFilter</filter-name>
       <url-pattern>/site/*</url-pattern>
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
-  </extension>
 
-  <!-- Site Servlet mapping -->
-  <extension target="web#SERVLET">
     <servlet>
       <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
       <servlet-class>

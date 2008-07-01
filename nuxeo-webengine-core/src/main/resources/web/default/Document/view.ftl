@@ -1,27 +1,20 @@
 <@extends src="base.ftl">
 <@block name="content">
-<p>
-<b>Name:</b> ${Document.name}
-<br/>
-<b>Type:</b> ${Document.type}
-<br/>
-<b>Id:</b> ${Document.id}
-</p>
-<p>
-${Document.description}
-</p>
-<hr/>
-<A href="${This.urlPath}@@edit">Edit</A><BR/>
-<hr/>
+<script>
+$(document).ready(function(){
+  $("#entry-actions > ul").tabs();
+  //$("#entry-actions > ul").tabs("select", '#view_content');
+});
+</script>
 
-<#if Document.facets?seq_contains("Folderish")>
-  <ul>
-  <#list Document.children as child>
-    <li><a href="${This.urlPath}/${child.name}">${child.name}</a> - ${child.title}</li>
+<div id="entry-actions">
+<ul>
+  <#list Context.getActions("TABVIEW")?sort as action>
+    <li><a href="${This.urlPath}@@${action.id}"><span>${message('action.' + action.id)}</span></a></li>
   </#list>
-  </ul>
-  <hr/>
-</#if>
+</ul>
+
+</div>
 
 </@block>
 </@extends>

@@ -26,11 +26,15 @@ ${Document.description}
   <hr/>
   <form action="${This.urlPath}/@@create">
     Create a new child named <input type="text" name="name" value="">
-    of type <input type="text" name="doctype" value="">
+    of type
+<select name="doctype">
+  <#list API.getSortedDocumentTypes() as type>
+    <option value="${type.name}">${type.name}</option>
+  </#list>
+</select>
     <input type="submit" value="Create">
   </form>
 </#if>
-
 
 <hr />
 
