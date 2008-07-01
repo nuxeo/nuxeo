@@ -28,7 +28,7 @@
   <artifactSet id="third-party-libs">
     <import>**</import>
     <includes>
-      <artifact group="org.osgi" />
+      <artifact name="osgi-core" />
       <artifact name="commons-collections" />
       <artifact name="commons-io" />
       <artifact name="commons-logging" />      
@@ -44,7 +44,6 @@
       <artifact name="opencsv" />
       <artifact name="derby" />
       <artifact name="xercesImpl"/>
-      <artifact name="osgi_R4_core" />
       <artifact group="org.mortbay.jetty" />
       <artifact group="dom4j" />      
       <artifact group="org.slf4j" />
