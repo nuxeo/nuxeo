@@ -1,7 +1,4 @@
 <!--
-  ~ Copyright (C) 2008 Exadel, Inc.
-  ~
-  ~ The GNU Lesser General Public License, Version 3
   -->
 
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:word="*">
@@ -9,11 +6,27 @@
    <mx:Script>
 		<![CDATA[
 			import org.nuxeo.ecm.flex.dto.DummyBean;			
-			
+
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+
+			private function faultHandler(event:FaultEvent):void {
+				 Alert.show(event.fault.faultString, event.fault.faultCode.toString());
+			}			
+
+			private function doSomething():void {
+				Alert.show(service.testSerialization.lastResult.myField,"bean Value");
+				var dto:DummyBean = service.testSerialization.lastResult;				
+				dto.doSomething();
+				Alert.show("Sucess",dto.myField);
+				dto.doSomething2();
+				Alert.show("Sucess",dto.myField);
+			}
+
 	]]>
 	</mx:Script>
 
-    <mx:RemoteObject id="service" destination="flexStatelessPingTestBean"/>
+    <mx:RemoteObject id="service" destination="flexStatelessPingTestBean" fault="faultHandler(event)"/>
 
     <mx:Panel
         title="Nuxeo-Flex AMF Ping test"
@@ -46,7 +59,11 @@
             <mx:Button label="test Serialization" click="service.testSerialization()"/>
         </mx:HBox>
 
-        <mx:Label text='The server said: "{service.testSerialization.lastResult.myField}"'/>
+        <mx:Label text='returned Bean field value: "{service.testSerialization.lastResult.myField}"'/>
+
+        <mx:HBox>
+            <mx:Button label="test call on Bean" click="doSomething()"/>
+        </mx:HBox>
 
     </mx:Panel>
 

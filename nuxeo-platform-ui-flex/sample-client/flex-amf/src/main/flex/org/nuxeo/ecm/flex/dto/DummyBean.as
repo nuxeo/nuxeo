@@ -2,11 +2,10 @@
 package org.nuxeo.ecm.flex.dto
 {
 	import mx.collections.ArrayCollection;
-	
+
 	[RemoteClass(alias="org.nuxeo.ecm.platform.ui.flex.samples.DummyBean")]
-	public class DummyBean
+	public class DummyBean extends BaseDummyBean
 	{
-		private var _myField:String;
 		
 		public function DummyBean()
 		{
@@ -22,5 +21,11 @@ package org.nuxeo.ecm.flex.dto
 		{
 			_myField = value;
 		}
+
+		public function doSomething2():void
+		{
+			_myField = "value changed by local method of DummyBean class";
+		}
+		
 	}
 }

@@ -25,4 +25,8 @@ public class DummyBean implements Serializable {
         this.myField = myField;
     }
 
+    public void doSomething()
+    {
+        // not impl on the server side
+    }
 }
