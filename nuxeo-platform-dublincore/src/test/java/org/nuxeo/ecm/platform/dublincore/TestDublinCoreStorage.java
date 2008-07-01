@@ -19,6 +19,13 @@
 
 package org.nuxeo.ecm.platform.dublincore;
 
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
@@ -38,13 +45,6 @@ import org.nuxeo.ecm.core.listener.EventListener;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
-
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * DublinCoreStorage Test Case.

@@ -53,11 +53,6 @@
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
-      <artifactId>jnp-client</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
       <artifactId>jboss-common</artifactId>
       <scope>test</scope>
     </dependency>

@@ -239,7 +239,9 @@ public class JOOoConvertPluginImpl extends AbstractPlugin implements
                     sourceFile = File.createTempFile(
                             "NXJOOoConverterDocumentIn", ".bin");
                     InputStream stream = sources[0].getBlob().getStream();
-                    stream.reset(); // works on a JCRBlobInputStream
+                    if (stream.markSupported()) {
+                        stream.reset(); // works on a JCRBlobInputStream
+                    }
                     FileUtils.copyToFile(stream, sourceFile);
                     DocumentFormat sourceFormat = null;
 
@@ -329,27 +331,32 @@ public class JOOoConvertPluginImpl extends AbstractPlugin implements
         super.finalize();
     }
 
-    private Boolean adaptFilterNameForHTML2PDF(DocumentFormat sourceFormat, DocumentFormat destinationFormat){
+    private Boolean adaptFilterNameForHTML2PDF(DocumentFormat sourceFormat,
+            DocumentFormat destinationFormat) {
 
         // TODO: solve this
         // due to a random bug, we have to be strict regarding otuput FilterName
-        // html file have to use "writer_web_pdf_Export" instead of JODConverter simplification "writer_pdf_Export"
+        // html file have to use "writer_web_pdf_Export" instead of JODConverter
+        // simplification "writer_pdf_Export"
         // patch dynamically
-        //if (sourceFormat.getMimeType().equals("text/html") && destinationFormat.getMimeType().equals("application/pdf")) {
-        if ("text/html".equals(sourceFormat.getMimeType()) && "application/pdf".equals(destinationFormat.getMimeType())) {
+        // if (sourceFormat.getMimeType().equals("text/html") &&
+        // destinationFormat.getMimeType().equals("application/pdf")) {
+        if ("text/html".equals(sourceFormat.getMimeType())
+                && "application/pdf".equals(destinationFormat.getMimeType())) {
             // change the FilterName
-                DocumentFamily family = sourceFormat.getFamily();
-             //   Map<String, Serializable> exportOptions = destinationFormat.getExportOptions();
-             //   exportOptions.put("FilterName", "writer_web_pdf_Export");
+            DocumentFamily family = sourceFormat.getFamily();
+            // Map<String, Serializable> exportOptions =
+            // destinationFormat.getExportOptions();
+            // exportOptions.put("FilterName", "writer_web_pdf_Export");
 
-          //      destinationFormat.setExportOption("FilterName", "writer_web_pdf_Export");
+            // destinationFormat.setExportOption("FilterName",
+            // "writer_web_pdf_Export");
 
-           //     String exportFilter = destinationFormat.getExportFilter(family);
+            // String exportFilter = destinationFormat.getExportFilter(family);
 
-                destinationFormat.setExportFilter(family, "writer_web_pdf_Export");
+            destinationFormat.setExportFilter(family, "writer_web_pdf_Export");
 
-
-                return true;
+            return true;
         }
 
         return false;

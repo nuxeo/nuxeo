@@ -19,9 +19,9 @@
 
 package org.nuxeo.ecm.platform.relations.web;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
-import java.io.Serializable;
 
 /**
  * Statement info comparator to sort relations.

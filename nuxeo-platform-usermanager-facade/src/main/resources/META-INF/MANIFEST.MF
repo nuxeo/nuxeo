@@ -4,7 +4,7 @@ Bundle-Name: Nuxeo User Manager Facade
 Bundle-SymbolicName: org.nuxeo.ecm.platform.usermanager.facade
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
-Bundle-Category: stateful
+Bundle-Category: web,stateful
 Require-Bundle: org.nuxeo.ecm.platform.usermanager
 Export-Package: org.nuxeo.ecm.platform.usermanager.ejb
 Nuxeo-Component: OSGI-INF/UserManager-platform-contrib.xml

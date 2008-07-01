@@ -25,6 +25,7 @@ import javax.naming.NamingException;
 
 import org.nuxeo.runtime.api.ServiceManagement;
 
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @deprecated use new service API {@link ServiceManagement}

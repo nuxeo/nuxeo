@@ -5,7 +5,6 @@
 <component name="org.nuxeo.ecm.platform.comment.types">
 
   <require>org.nuxeo.ecm.platform.types.TypeService</require>
-  <require>org.nuxeo.ecm.platform.types</require>
 
   <extension target="org.nuxeo.ecm.platform.types.TypeService"
     point="types">

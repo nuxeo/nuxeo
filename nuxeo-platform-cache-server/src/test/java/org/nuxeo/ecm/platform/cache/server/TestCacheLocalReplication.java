@@ -21,13 +21,13 @@ package org.nuxeo.ecm.platform.cache.server;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.cache.CacheConfiguration.Config;
-import org.nuxeo.ecm.platform.cache.CacheService;
-import org.nuxeo.ecm.platform.cache.CacheServiceException;
-import org.nuxeo.ecm.platform.cache.CacheServiceFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.platform.cache.CacheService;
+import org.nuxeo.ecm.platform.cache.CacheServiceException;
+import org.nuxeo.ecm.platform.cache.CacheServiceFactory;
+import org.nuxeo.ecm.platform.cache.CacheConfiguration.Config;
 
 /**
  * These tests are using 2 caches seeking to replicate DocumentModel objects

@@ -19,11 +19,13 @@
 
 package org.nuxeo.ecm.webapp.helpers;
 
+import static org.jboss.seam.ScopeType.SESSION;
+
 import java.io.Serializable;
 import java.util.Map;
+
 import javax.faces.context.FacesContext;
 
-import static org.jboss.seam.ScopeType.SESSION;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;

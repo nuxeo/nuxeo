@@ -21,9 +21,9 @@ package org.nuxeo.ecm.platform.rendering.template;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.DocumentPart;

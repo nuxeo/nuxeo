@@ -23,6 +23,7 @@ import java.security.Principal;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 
 /**

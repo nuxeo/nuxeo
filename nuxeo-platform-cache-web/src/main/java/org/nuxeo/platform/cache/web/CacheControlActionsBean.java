@@ -18,9 +18,9 @@
  */
 package org.nuxeo.platform.cache.web;
 
-import java.io.Serializable;
-
 import static org.jboss.seam.ScopeType.SESSION;
+
+import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

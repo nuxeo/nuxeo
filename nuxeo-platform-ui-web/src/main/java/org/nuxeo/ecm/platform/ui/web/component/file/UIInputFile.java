@@ -15,13 +15,11 @@
  */
 package org.nuxeo.ecm.platform.ui.web.component.file;
 
-import com.sun.faces.util.MessageFactory;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.myfaces.trinidad.component.core.input.CoreInputFile;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import javax.el.ELException;
 import javax.el.ValueExpression;
@@ -38,11 +36,15 @@ import javax.faces.convert.ConverterException;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.myfaces.trinidad.component.core.input.CoreInputFile;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+
+import com.sun.faces.util.MessageFactory;
 
 /**
  * UIInput file that handles complex validation.

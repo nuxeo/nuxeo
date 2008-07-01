@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo ECM Workflow Document EJB
 Bundle-SymbolicName: org.nuxeo.ecm.platform.workflow.document.api.ejb;singleton:=true
 Bundle-Vendor: Nuxeo
-Bundle-Category: stateful
+Bundle-Category: web,stateful
 Eclipse-LazyStart: false
 Require-Bundle: org.nuxeo.ecm.platform.workflow.document
 Export-Package: org.nuxeo.ecm.platform.workflow.document.ejb

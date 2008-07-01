@@ -123,9 +123,6 @@
       group="platform/directory">
       <locator>%DirectoryManagerBean</locator>
     </service>
-    <service class="org.nuxeo.ecm.core.schema.TypeProvider" group="core">
-      <locator>%TypeProviderBean</locator>
-    </service>
     <service class="org.nuxeo.ecm.platform.workflow.api.client.wfmc.WAPI"
       group="platform">
       <locator>%WAPIBean</locator>

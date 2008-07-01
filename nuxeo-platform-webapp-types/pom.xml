@@ -13,10 +13,6 @@
   <description>Nuxeo Enterprise Platform: WebApp types contributions</description>
 
   <dependencies>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-api</artifactId>
-    </dependency>
   </dependencies>
 
 </project>

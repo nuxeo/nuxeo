@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.ec.placeful;
 
 import java.util.Map;
+
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 

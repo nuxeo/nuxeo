@@ -21,9 +21,10 @@ package org.nuxeo.ecm.platform.ec.notification.email;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import freemarker.template.TemplateMethodModel;
 import freemarker.template.TemplateModelException;
-import org.apache.commons.lang.StringEscapeUtils;
 
 /**
  * @author <a href="mailto:tmartins@nuxeo.com">Thierry Martins</a>

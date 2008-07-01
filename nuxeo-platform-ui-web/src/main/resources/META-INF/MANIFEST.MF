@@ -8,7 +8,6 @@ Require-Bundle: org.nuxeo.ecm.platform.ui.api,
  org.nuxeo.ecm.platform.url.api
 Nuxeo-Component: OSGI-INF/authentication-framework.xml,
  OSGI-INF/authentication-contrib.xml,
- OSGI-INF/authentication-audit-contrib.xml,
  OSGI-INF/restAPI-framework.xml,
  OSGI-INF/restAPI-contrib.xml,
  OSGI-INF/urlservice-framework.xml,

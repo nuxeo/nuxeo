@@ -160,7 +160,7 @@ public class ThreadActionBean extends InputController implements ThreadAction {
     public List<String> getModerators() {
         DocumentModel currentThread = navigationContext.getCurrentDocument();
 
-        return (List<String>) currentThread.getProperty("thread","moderators");
+        return (List<String>) currentThread.getProperty("thread", "moderators");
     }
 
     public boolean isPrincipalModerator() {
@@ -335,7 +335,8 @@ public class ThreadActionBean extends InputController implements ThreadAction {
         return lastPost;
     }
 
-    public String getModerationAsString(DocumentModel thread) throws ClientException{
+    public String getModerationAsString(DocumentModel thread)
+            throws ClientException {
         if (isThreadModerated(thread)) {
             return resourcesAccessor.getMessages().get(
                     "label.forum.thread.moderated.yes");
@@ -344,7 +345,8 @@ public class ThreadActionBean extends InputController implements ThreadAction {
                 "label.forum.thread.moderated.no");
     }
 
-    public boolean isThreadModerated(DocumentModel thread) throws ClientException{
+    public boolean isThreadModerated(DocumentModel thread)
+            throws ClientException {
         thread = getDocumentThreadModel(thread.getRef());
         if (thread != null) {
             Boolean moderation = (Boolean) thread.getProperty("thread",
@@ -365,33 +367,35 @@ public class ThreadActionBean extends InputController implements ThreadAction {
         if (post > 0 && post <= posts.size()) {
             ThreadEntry parent = posts.get(post - 1);
             ThreadEntry currentPost = posts.get(post);
-            if (currentPost.getDepth() == parent.getDepth()+1) {
+            if (currentPost.getDepth() == parent.getDepth() + 1) {
                 parentPost = parent.getComment();
             }
         }
         return parentPost;
     }
+
     public boolean isParentPostPublished(int post) throws ClientException {
 
-       DocumentModel parent = getParentPost(post);
-       if (parent == null) {
-           return true;
+        DocumentModel parent = getParentPost(post);
+        if (parent == null) {
+            return true;
 
-       }
-       else if(ForumConstants.PUBLISHED_STATE.equals(parent.getCurrentLifeCycleState())) {
-           return true;
+        } else if (ForumConstants.PUBLISHED_STATE.equals(parent.getCurrentLifeCycleState())) {
+            return true;
         }
-       return false;
+        return false;
     }
 
     /**
      * Get the thread for a given document reference
+     *
      * @param threadRef
      * @return
      */
-    private DocumentModel getDocumentThreadModel(DocumentRef threadRef) throws ClientException{
+    private DocumentModel getDocumentThreadModel(DocumentRef threadRef)
+            throws ClientException {
         DocumentModel thread = null;
-        if (threadRef != null){
+        if (threadRef != null) {
             thread = documentManager.getDocument(threadRef);
         }
         return thread;

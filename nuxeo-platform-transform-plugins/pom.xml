@@ -56,30 +56,6 @@
       <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.openoffice</groupId>
-      <artifactId>juh</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.openoffice</groupId>
-      <artifactId>jurt</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.openoffice</groupId>
-      <artifactId>ridl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.openoffice</groupId>
-      <artifactId>unoil</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.thoughtworks.xstream</groupId>
-      <artifactId>xstream</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.poi</groupId>
-      <artifactId>poi</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-scratchpad</artifactId>
     </dependency>
@@ -93,14 +69,16 @@
       <artifactId>dom4j</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-osgi</artifactId>
-      <scope>test</scope>
-    </dependency>
+    <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-mimetype-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -109,8 +87,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jbosssx</artifactId>
+      <groupId>com.thoughtworks.xstream</groupId>
+      <artifactId>xstream</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -150,6 +128,7 @@
                   <artifactId>
                     commons-logging-api
                   </artifactId>
+                  <version>1.1</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>commons-io</groupId>
