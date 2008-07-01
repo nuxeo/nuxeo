@@ -37,7 +37,7 @@
        <#if Root??>
         <div class="searchBox">
          <form action="${Root.urlPath}@@search" method="get" accept-charset="utf-8">
-           <input type="search" name="q" id="q" autosave="${Request.localName}" results="5" value="Search">
+           <input type="search" name="q" id="q" results="5" value="Search">
            <input type="hidden" name="p" value="${Root.repositoryPath}">
          </form>
         </div>
@@ -65,7 +65,7 @@
 <!-- toolbox -->
 <@block name="toolbox">
 <#if This??>
-  <div class="sideblock contextual">    
+  <div class="sideblock contextual">
     <h3>Toolbox</h3>
     <div class="sideblock-content">
       <ul>
@@ -83,7 +83,7 @@
   <@block name="sidebar-content">
     <#if Context.principal.isAdministrator()>
     <h3>Administration</h3>
-    <ul>      
+    <ul>
       <li><a href="${basePath}/admin/users">User Management</a></li>
     </ul>
     </#if>
@@ -93,7 +93,7 @@
 <div class="sideblock general">
   <@block name="sidebar-footer">
     <h3>Help</h3>
-    <ul>      
+    <ul>
       <li><a href="${basePath}/docs/about.ftl">About</a></li>
       <li><a href="${basePath}/docs/index.ftl">Documentation</a></li>
     </ul>
@@ -107,7 +107,7 @@
        <p>&copy; 2000-2008 <a href="http://www.nuxeo.com/en/">Nuxeo</a>.</p>
        </@block>
     </div>
-    
+
 </div>
 
 </body>
