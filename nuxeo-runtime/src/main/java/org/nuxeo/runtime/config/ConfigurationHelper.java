@@ -25,11 +25,17 @@ package org.nuxeo.runtime.config;
  */
 public class ConfigurationHelper {
 
+    // Utility class.
+    private ConfigurationHelper() {
+    }
+
     /**
-     * Return the normalized host if not already normalized otherwise
-     * return null
-     * The normalization is replacing special hosts like 0.0.0.0, 127.0.0.1, localhost
-     * with the given newHost
+     * Returns the normalized host if not already normalized otherwise
+     * return null.
+     * <p>
+     * The normalization replaces special hosts like 0.0.0.0, 127.0.0.1, localhost
+     * with the given newHost.
+     *
      * @param uri
      * @param newHost
      * @return

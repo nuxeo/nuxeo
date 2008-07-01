@@ -228,6 +228,17 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         // activate component
         component.activate();
 
+        state = ACTIVATED;
+        manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_ACTIVATED, this));
+
+        // register contributed extensions if any
+        if (extensions != null) {
+            for (Extension xt : extensions) {
+                xt.setComponent(component);
+                manager.registerExtension(xt);
+            }
+        }
+
         // register pending extensions if any
         ComponentManagerImpl mgr = manager;
         Set<Extension> pendingExt = mgr.pendingExtensions.remove(name);
@@ -242,16 +253,6 @@ public class RegistrationInfoImpl implements RegistrationInfo {
             }
         }
 
-        // register contributed extensions if any
-        if (extensions != null) {
-            for (Extension xt : extensions) {
-                xt.setComponent(component);
-                manager.registerExtension(xt);
-            }
-        }
-
-        state = ACTIVATED;
-        manager.sendEvent(new ComponentEvent(ComponentEvent.COMPONENT_ACTIVATED, this));
     }
 
     synchronized void deactivate() throws Exception {
@@ -318,4 +319,10 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         return state == RESOLVED;
     }
 
+    public String[] getProvidedServiceNames() {
+        if (serviceDescriptor != null) {
+            return serviceDescriptor.services;
+        }
+        return null;
+    }
 }

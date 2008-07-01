@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.naming.NameNotFoundException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,11 +40,11 @@ public final class ServiceManager {
 
     private static final ServiceManager instance = new ServiceManager();
 
-    protected final Map<String, ServiceDescriptor> services = new HashMap<String, ServiceDescriptor>();
+    private final Map<String, ServiceDescriptor> services = new HashMap<String, ServiceDescriptor>();
 
-    protected final List<ServiceHost> servers = new Vector<ServiceHost>();
+    private final List<ServiceHost> servers = new Vector<ServiceHost>();
 
-    protected final Map<String, ServiceGroup> groups = new HashMap<String, ServiceGroup>();
+    private final Map<String, ServiceGroup> groups = new HashMap<String, ServiceGroup>();
 
     // Singleton.
     private ServiceManager() {
@@ -107,10 +109,18 @@ public final class ServiceManager {
     @SuppressWarnings("unchecked")
     public <T> T getService(Class<T> serviceClass) throws Exception {
         ServiceDescriptor sd = services.get(serviceClass.getName());
-        if (sd == null) {
-            return Framework.getLocalService(serviceClass);
+        T svc = null;
+        if (sd != null) {
+            try {
+            svc =  (T) sd.getGroup().getServer().lookup(sd);
+            if (svc != null) {
+                return svc;
+            }
+            } catch (NameNotFoundException e) {
+                // fall-back
+            }
         }
-        return (T) sd.getGroup().getServer().lookup(sd);
+        return Framework.getLocalService(serviceClass);
     }
 
     @SuppressWarnings("unchecked")
