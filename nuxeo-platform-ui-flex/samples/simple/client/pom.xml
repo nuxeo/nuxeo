@@ -2,17 +2,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
                
-<!--   <parent>
+   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>>nuxeo-platform-ui-flex</artifactId>
+    <artifactId>nuxeo-platform-ui-flex-samples-simple-parent</artifactId>
     <version>5.2-SNAPSHOT</version>
   </parent>
- -->
+ 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-platform-ui-flex-samples-amf</artifactId>
+    <artifactId>nuxeo-platform-ui-flex-samples-simple-swf</artifactId>
     <packaging>swf</packaging>
-    <name>Nuxeo Flex sample using AMF</name>
+    <name>Nuxeo Flex simple sample SWF</name>
     <version>5.2-SNAPSHOT</version>
     <properties>
         <flex.home>${env.FLEX_HOME}</flex.home>

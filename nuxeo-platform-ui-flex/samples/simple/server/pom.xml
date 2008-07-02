@@ -3,7 +3,7 @@
 
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-platform-parent</artifactId>
+    <artifactId>nuxeo-platform-ui-flex-samples-simple-parent</artifactId>
     <version>5.2-SNAPSHOT</version>
   </parent>
 
@@ -24,6 +24,12 @@
     </repositories>
 
   <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-ui-flex-samples-simple-swf</artifactId>
+      <version>5.2-SNAPSHOT</version>
+      <type>swf</type>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
@@ -76,5 +82,30 @@
       <version>1.0.1B</version>
     </dependency>
   </dependencies>
+
+ <build>        
+        <plugins>
+            <plugin>
+                <groupId>net.israfil.mojo</groupId>
+                <artifactId>maven-flex2-plugin</artifactId>
+                <executions><execution>
+                        <id>copy-flex</id>
+                        <phase>process-classes</phase>
+                        <goals><goal>copy-flex-applications</goal></goals>
+                        <configuration>
+                            <modules>
+                                <swfModule>
+                                    <groupId>org.nuxeo.ecm.platform</groupId>
+                                    <artifactId>nuxeo-platform-ui-flex-samples-simple-swf</artifactId>
+                                    <targetPath>${project.build.directory}/classes/nuxeo.war/flexsamples</targetPath>
+                                    <targetFilename>simple.swf</targetFilename>
+                                </swfModule>
+                            </modules>
+                        </configuration>
+                </execution></executions>
+            </plugin>
+	</plugins>
+</build>
+   
 
 </project>
