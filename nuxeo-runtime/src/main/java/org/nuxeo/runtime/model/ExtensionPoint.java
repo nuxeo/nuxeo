@@ -57,4 +57,15 @@ public interface ExtensionPoint {
      * @return the comment
      */
     String getDocumentation();
+
+    /**
+     * Get the component owning the base extension which this one extend.
+     * <b>
+     * If this method returns nn null it means the courrent extension point is extending another extension point
+     * and sould forward any contribution to the base extension.
+     * The base extension have the same name as this one  but it is declared in another component
+     * @return the base extension point if this extension point is extending another extension point or null if none
+     */
+    String getSuperComponent();
+
 }

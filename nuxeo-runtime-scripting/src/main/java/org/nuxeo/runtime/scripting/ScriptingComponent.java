@@ -43,8 +43,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.remoting.RemotingService;
-import org.nuxeo.runtime.remoting.transporter.TransporterServer;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -76,12 +74,13 @@ public class ScriptingComponent extends DefaultComponent implements ScriptingSer
 
         // start remote scripting service
         Boolean isServer = (Boolean) context.getPropertyValue("isServer", Boolean.TRUE);
-        if (isServer) {
-            server = new ScriptingServerImpl(this);
-            RemotingService remoting = (RemotingService) Framework.getRuntime().getComponent(RemotingService.NAME);
-            TransporterServer transporterServer = remoting.getTransporterServer();
-            transporterServer.addHandler(server, ScriptingServer.class.getName());
-        }
+//TODO: server functionality should be removed
+//        if (isServer) {
+//            server = new ScriptingServerImpl(this);
+//            RemotingService remoting = (RemotingService) Framework.getRuntime().getComponent(RemotingService.NAME);
+//            TransporterServer transporterServer = remoting.getTransporterServer();
+//            transporterServer.addHandler(server, ScriptingServer.class.getName());
+//        }
     }
 
     @Override

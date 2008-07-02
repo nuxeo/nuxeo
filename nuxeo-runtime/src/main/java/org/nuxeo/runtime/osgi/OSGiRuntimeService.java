@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,15 +32,19 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.Version;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
 
@@ -52,6 +57,8 @@ import org.osgi.framework.FrameworkListener;
 public class OSGiRuntimeService extends AbstractRuntimeService implements
         FrameworkListener {
 
+    /** Can be used to change the runtime home directory */
+    public static final String PROP_HOME_DIR = "org.nuxeo.runtime.home";
     /** The OSGi application install directory. */
     public static final String PROP_INSTALL_DIR = "INSTALL_DIR";
 
@@ -71,17 +78,24 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     private final BundleContext bundleContext;
 
-    private final Map<Bundle, RuntimeContext> contexts;
+    private final Map<String, RuntimeContext> contexts;
+
 
     public OSGiRuntimeService(BundleContext context) {
         super(new OSGiRuntimeContext(context.getBundle()));
         bundleContext = context;
-        contexts = new HashMap<Bundle, RuntimeContext>();
-        workingDir = bundleContext.getDataFile("/");
+        contexts = new ConcurrentHashMap<String, RuntimeContext>();
         String bindAddress = context.getProperty(PROP_NUXEO_BIND_ADDRESS);
         if (bindAddress != null) {
             properties.put(PROP_NUXEO_BIND_ADDRESS, bindAddress);
         }
+        String homeDir = getProperty(PROP_HOME_DIR);
+        if (homeDir != null) {
+            workingDir = new File(homeDir);
+        } else {
+            workingDir = bundleContext.getDataFile("/");
+        }
+        workingDir.mkdirs();
     }
 
     public String getName() {
@@ -100,8 +114,9 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
             throws Exception {
         RuntimeContext ctx = contexts.get(bundle);
         if (ctx == null) {
+            // hack to handle fragment bundles
             ctx = new OSGiRuntimeContext(bundle);
-            contexts.put(bundle, ctx);
+            contexts.put(bundle.getSymbolicName(), ctx);
             loadComponents(bundle, ctx);
         }
         return ctx;
@@ -166,6 +181,33 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     protected void loadConfig() throws Exception {
+        Environment env = Environment.getDefault();
+        if (env != null) {
+            File dir = env.getConfig() ;
+            if (dir != null) {
+                System.out.println(dir.getAbsolutePath());
+                if (dir.isDirectory()) {
+                    for (String name : dir.list()) {
+                        if (name.endsWith("-config.xml") || name.endsWith("-bundle.xml")) {
+                            //TODO
+                            // because of somen dep bugs (regarding the depoyment of demo-ds.xml)
+                            // we cannot let the runtime deploy config dir at begining...
+                            // until fixing this we deploy config dir from
+                            // NuxeoDeployer
+                            File file = new File(dir, name);
+                            context.deploy(file.toURL());
+                        } else if (name.endsWith(".config")
+                                || name.endsWith(".ini")
+                                || name.endsWith(".properties")) {
+                            File file = new File(dir, name);
+                            loadProperties(file);
+                        }
+                    }
+                    return;
+                }
+            }
+        }
+
         String configDir = bundleContext.getProperty(PROP_CONFIG_DIR);
         if (configDir == null) {
             return;
@@ -210,9 +252,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         try {
             loadProperties(in);
         } finally {
-            if (in != null) {
-                in.close();
-            }
+            in.close();
         }
     }
 
@@ -233,6 +273,21 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         for (Map.Entry<Object, Object> prop : props.entrySet()) {
             properties.put(prop.getKey().toString(), prop.getValue().toString());
         }
+    }
+
+    /**
+     * Overrides the default method to be able to inculde OSGi properties
+     */
+    @Override
+    public String getProperty(String name, String defValue) {
+        String value = properties.getProperty(name);
+        if (value == null) {
+            value = bundleContext.getProperty(name);
+            if (value == null) {
+                return defValue == null ? null : expandVars(defValue);
+            }
+        }
+        return expandVars(value);
     }
 
     /* --------------- FrameworkListener API ------------------ */
@@ -275,6 +330,54 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         } else {
             log.error(msg);
         }
+    }
+
+    public Bundle findHostBundle(Bundle bundle) {
+        String hostId = (String)bundle.getHeaders().get(Constants.FRAGMENT_HOST);
+        if (hostId != null) {
+            int p = hostId.indexOf(';');
+            if (p > -1) { // remove version or other extra information if any
+                hostId = hostId.substring(0, p);
+            }
+            RuntimeContext ctx = contexts.get(hostId);
+            if (ctx != null) {
+                return ctx.getBundle();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public File getBundleFile(Bundle bundle) {
+        File file = null;
+        String location = bundle.getLocation();
+        String vendor = Framework.getProperty(Constants.FRAMEWORK_VENDOR);
+        if ("Eclipse".equals(vendor)) { // equinox framework
+            //update@plugins/org.eclipse.equinox.launcher_1.0.0.v20070606.jar
+            //initial@reference:file:plugins/org.eclipse.update.configurator_3.2.100.v20070615.jar/
+            if (location.endsWith("/")) {
+                location = location.substring(0, location.length()-1);
+            }
+            if (location.startsWith("update@")) {
+                location = location.substring("update@".length());
+            } else if (location.startsWith("initial@reference:file:")) {
+                location = location.substring("initial@reference:file:".length());
+            }
+            file = new File(location);
+        } else if (location.startsWith("file:")) { // nuxeo osgi adapter
+            try {
+                file = new File(new URI(location));
+            }catch (Exception e) {
+                return null;
+            }
+        } else { // may be a file path - this happens when using JarFileBundle (for ex. in nxshell)
+            try {
+                file = new File(location);
+            }catch (Exception e) {
+                return null;
+            }
+        }
+        return file != null && file.exists() ?  file : null;
     }
 
 }

@@ -19,6 +19,7 @@
 
 package org.nuxeo.runtime.remoting;
 
+import java.util.Iterator;
 import java.util.Properties;
 
 import javax.management.MBeanServer;
@@ -29,6 +30,7 @@ import org.jboss.remoting.InvokerLocator;
 import org.jboss.remoting.marshal.MarshalFactory;
 import org.jboss.remoting.marshal.serializable.SerializableMarshaller;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.binding.ServiceBindings;
 import org.nuxeo.runtime.config.AutoConfigurationService;
 import org.nuxeo.runtime.config.ConfigurationFactory;
 import org.nuxeo.runtime.config.v1.ConfigurationFactory1;
@@ -45,7 +47,7 @@ import org.nuxeo.runtime.remoting.transporter.TransporterServer;
  */
 public class RemotingService extends DefaultComponent {
 
-    public final static String INVOKER_NAME = "nx:service=invoker,name=remoting";
+    public static final String INVOKER_NAME = "nx:service=invoker,name=remoting";
 
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.runtime.remoting.RemotingService");
@@ -60,7 +62,10 @@ public class RemotingService extends DefaultComponent {
 
     private InvokerLocator serverLocator;
 
-    public static final Server connect(String locatorURI) throws Exception {
+    private ServiceBindings serviceBindings;
+
+
+    public static Server connect(String locatorURI) throws Exception {
         return (Server) TransporterClient.createTransporterClient(new InvokerLocator(locatorURI), Server.class);
     }
 
@@ -71,7 +76,7 @@ public class RemotingService extends DefaultComponent {
      * @param port the remote port
      * @return the server object
      */
-    public static final Server connect(String host, int port) throws Exception {
+    public static Server connect(String host, int port) throws Exception {
         return connect(getServerURI(host, port));
     }
 
@@ -80,7 +85,7 @@ public class RemotingService extends DefaultComponent {
      *
      * @param server
      */
-    public static final void disconnect(Server server) {
+    public static void disconnect(Server server) {
         TransporterClient.destroyTransporterClient(server);
     }
 
@@ -92,8 +97,9 @@ public class RemotingService extends DefaultComponent {
      *
      * @deprecated must be removed since from runtime 1.5.1 the invoker protocol may be configurable
      */
-    public static final String getServerURI(String host, int port) {
-        return "socket://" + host + ":" + port+"/?datatype=nuxeo";
+    @Deprecated
+    public static String getServerURI(String host, int port) {
+        return "socket://" + host + ':' + port+"/?datatype=nuxeo";
     }
 
     /**
@@ -102,6 +108,7 @@ public class RemotingService extends DefaultComponent {
      * @return the product info if successful, null otherwise
      * @deprecated should no more be used - use instead {@link AutoConfigurationService}
      */
+    @Deprecated
     public static String ping(String host, int port) {
         try {
             Server server = connect(host, port);
@@ -135,12 +142,17 @@ public class RemotingService extends DefaultComponent {
             // locatorUrl on the servlet impl. - see docs
             // when this will be supported ignore regitsering the mbean and use locatorUrl to retrieve the invoker
             // (this aproach is more portable)
-            MBeanServer mb = (MBeanServer)MBeanServerFactory.findMBeanServer(null).iterator().next();
-            if (mb != null) {
-                mb.registerMBean(transporterServer.getConnector().getServerInvoker(),
-                        new ObjectName(INVOKER_NAME));
+            Iterator<?> it = MBeanServerFactory.findMBeanServer(null).iterator();
+            if (it.hasNext()) {
+                MBeanServer mb = (MBeanServer)it.next();
+                if (mb != null) {
+                    mb.registerMBean(transporterServer.getConnector().getServerInvoker(),
+                            new ObjectName(INVOKER_NAME));
+                }
             }
         }
+
+        serviceBindings = new ServiceBindings(context.getRuntimeContext().getBundle().getBundleContext());
     }
 
     public InvokerLocator getServerLocator() {
@@ -156,6 +168,10 @@ public class RemotingService extends DefaultComponent {
         if (transporterServer != null) {
             transporterServer.stop();
             transporterServer = null;
+        }
+        if (serviceBindings != null) {
+            serviceBindings.destroy();
+            serviceBindings = null;
         }
         serverLocator = null;
         isServer = false;

@@ -79,16 +79,10 @@ public class DefaultServiceProvider implements ServiceProvider {
             this.type = type;
         }
 
-        /**
-         * @return the type.
-         */
         public Class<?> getType() {
             return type;
         }
 
-        /**
-         * @return the service.
-         */
         public Object getService() {
             if (service == null) {
                 try {
