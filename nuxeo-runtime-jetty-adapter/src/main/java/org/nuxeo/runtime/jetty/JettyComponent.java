@@ -108,7 +108,8 @@ public class JettyComponent extends DefaultComponent {
             File logFile = new File(logDir, "jetty.log");
             NCSARequestLog requestLog = new NCSARequestLog(logFile.getAbsolutePath());
             requestLogHandler.setRequestLog(requestLog);
-            handlers = new Handler[] {contexts, new DefaultHandler(), requestLogHandler};
+            //handlers = new Handler[] {contexts, new DefaultHandler(), requestLogHandler};
+            handlers = new Handler[] {contexts, requestLogHandler};
             server.setHandlers(handlers);
             server.setSendServerVersion(true);
             server.setStopAtShutdown(true);
