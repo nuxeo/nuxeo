@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -422,6 +423,15 @@ public class WAPIImpl implements WAPI {
         WorkflowEngine workflowEngine = getDefaultEngine();
         if (workflowEngine != null) {
             return workflowEngine.listWorkItems(filter);
+        }
+        return null;
+    }
+
+    public Collection<WMProcessInstance> getProcessInstanceForGroup(
+            List<String> groupNames) {
+        WorkflowEngine workflowEngine = getDefaultEngine();
+        if (workflowEngine != null) {
+            return workflowEngine.listProcessInstanceForGroup(groupNames);
         }
         return null;
     }
