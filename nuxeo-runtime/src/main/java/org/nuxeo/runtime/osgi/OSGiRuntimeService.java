@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -48,17 +49,22 @@ import org.osgi.framework.FrameworkListener;
  * @author Bogdan Stefanescu
  * @author Florent Guillaume
  */
-public class OSGiRuntimeService extends AbstractRuntimeService implements FrameworkListener {
+public class OSGiRuntimeService extends AbstractRuntimeService implements
+        FrameworkListener {
 
     /** The OSGi application install directory. */
     public static final String PROP_INSTALL_DIR = "INSTALL_DIR";
+
     /** The osgi application config directory. */
     public static final String PROP_CONFIG_DIR = "CONFIG_DIR";
+
     /** The host adapter. */
     public static final String PROP_HOST_ADAPTER = "HOST_ADAPTER";
+
     public static final String PROP_NUXEO_BIND_ADDRESS = "nuxeo.bind.address";
 
     public static final String NAME = "OSGi NXRuntime";
+
     public static final Version VERSION = Version.parseString("1.4.0");
 
     private static final Log log = LogFactory.getLog(OSGiRuntimeService.class);
@@ -66,8 +72,6 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
     private final BundleContext bundleContext;
 
     private final Map<Bundle, RuntimeContext> contexts;
-
-
 
     public OSGiRuntimeService(BundleContext context) {
         super(new OSGiRuntimeContext(context.getBundle()));
@@ -92,7 +96,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         return bundleContext;
     }
 
-    public synchronized RuntimeContext createContext(Bundle bundle) throws Exception {
+    public synchronized RuntimeContext createContext(Bundle bundle)
+            throws Exception {
         RuntimeContext ctx = contexts.get(bundle);
         if (ctx == null) {
             ctx = new OSGiRuntimeContext(bundle);
@@ -127,7 +132,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         context.destroy();
     }
 
-    protected void loadComponents(Bundle bundle, RuntimeContext ctx) throws Exception {
+    protected void loadComponents(Bundle bundle, RuntimeContext ctx)
+            throws Exception {
         String list = getComponentsList(bundle);
         if (list == null) {
             return;
@@ -140,14 +146,15 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
                 try {
                     ctx.deploy(url);
                 } catch (Exception e) {
-                    // just log error to know where is the cause of the exception
+                    // just log error to know where is the cause of the
+                    // exception
                     log.error("Error deploying resource: " + url);
                     throw e;
                 }
             } else {
-                String message = "Unknown component '" + desc +
-                        "' referenced by bundle '" + bundle.getSymbolicName() +
-                        "'";
+                String message = "Unknown component '" + desc
+                        + "' referenced by bundle '" + bundle.getSymbolicName()
+                        + "'";
                 log.error(message + ". Check the MANIFEST.MF");
                 warnings.add(message);
             }
@@ -173,17 +180,19 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         File dir = new File(configDir);
         if (dir.isDirectory()) {
             for (String name : dir.list()) {
-                if (name.endsWith("-config.xml") || name.endsWith("-bundle.xml")) {
-                    //TODO
-                    // because of somen dep bugs (regarding the depoyment of demo-ds.xml)
-                    // we cannot let the runtime deploy config dir at begining...
+                if (name.endsWith("-config.xml")
+                        || name.endsWith("-bundle.xml")) {
+                    // TODO
+                    // because of somen dep bugs (regarding the depoyment of
+                    // demo-ds.xml)
+                    // we cannot let the runtime deploy config dir at
+                    // begining...
                     // until fixing this we deploy config dir from
                     // NuxeoDeployer
 
-//                    File file = new File(dir, name);
-//                    context.deploy(file.toURL());
-                } else if (name.endsWith(".config")
-                        || name.endsWith(".ini")
+                    // File file = new File(dir, name);
+                    // context.deploy(file.toURL());
+                } else if (name.endsWith(".config") || name.endsWith(".ini")
                         || name.endsWith(".properties")) {
                     File file = new File(dir, name);
                     loadProperties(file);
@@ -193,9 +202,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
             File file = new File(configDir);
             loadProperties(file);
         }
-        //context.getLocalResource("OSGI-INF/RuntimeService.xml");
+        // context.getLocalResource("OSGI-INF/RuntimeService.xml");
     }
-
 
     public void loadProperties(File file) throws IOException {
         InputStream in = new BufferedInputStream(new FileInputStream(file));
@@ -236,7 +244,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
     }
 
     private void printStatusMessage() {
-        String hr = "===========================================================";
+        String hr = "======================================================================";
         StringBuilder msg = new StringBuilder("Nuxeo EP Started\n"); // greppable
         msg.append(hr).append("\n= Nuxeo EP Started\n");
         if (!warnings.isEmpty()) {
@@ -246,16 +254,23 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
             }
         }
 
-        Map<ComponentName, Set<ComponentName>> pending = manager.getPendingRegistrations();
+        Map<ComponentName, Set<ComponentName>> pendingRegistrations = manager.getPendingRegistrations();
+        Collection<ComponentName> activatingRegistrations = manager.getActivatingRegistrations();
         msg.append(hr).append("\n= Component Loading Status: Pending: ").append(
-                pending.size()).append(" / Total: ").append(
+                pendingRegistrations.size()).append(" / Unstarted: ").append(
+                activatingRegistrations.size()).append(" / Total: ").append(
                 manager.getRegistrations().size()).append('\n');
-        for (Entry<ComponentName, Set<ComponentName>> e : pending.entrySet()) {
+        for (Entry<ComponentName, Set<ComponentName>> e : pendingRegistrations.entrySet()) {
             msg.append("  * ").append(e.getKey()).append(" requires ").append(
                     e.getValue()).append('\n');
         }
+        for (ComponentName componentName : activatingRegistrations) {
+            msg.append("  - ").append(componentName).append('\n');
+        }
         msg.append(hr);
-        if (warnings.isEmpty() && pending.isEmpty()) {
+
+        if (warnings.isEmpty() && pendingRegistrations.isEmpty()
+                && activatingRegistrations.isEmpty()) {
             log.info(msg);
         } else {
             log.error(msg);

@@ -125,9 +125,16 @@ public interface ComponentManager {
     Map<ComponentName, Set<ComponentName>> getPendingRegistrations();
 
     /**
+     * Gets the pending extensions by component.
+     *
+     * @return the pending extensions
+     */
+    Collection<ComponentName> getActivatingRegistrations();
+
+    /**
      * Gets the number of registered objects in this registry.
      *
-     * @return the number fo registered objects
+     * @return the number of registered objects
      */
     int size();
 

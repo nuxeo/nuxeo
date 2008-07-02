@@ -450,4 +450,14 @@ public class ComponentManagerImpl implements ComponentManager {
         return null;
     }
 
+    public Collection<ComponentName> getActivatingRegistrations() {
+        Collection<ComponentName> activating = new ArrayList<ComponentName>();
+        for (RegistrationInfo ri : registry.values()) {
+            if (ri.getState() == RegistrationInfo.ACTIVATING) {
+                activating.add(ri.getName());
+            }
+        }
+        return activating;
+    }
+
 }
