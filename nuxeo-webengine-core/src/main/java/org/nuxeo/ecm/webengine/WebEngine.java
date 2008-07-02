@@ -31,8 +31,6 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
 
-import freemarker.cache.WebappTemplateLoader;
-
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

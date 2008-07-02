@@ -31,6 +31,7 @@ import java.util.Map;
 
 import javax.script.Bindings;
 import javax.script.SimpleBindings;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -328,6 +329,13 @@ public class DefaultWebContext implements WebContext {
                 log.warn("Relative path used but there is any running script");
                 path = new Path(path).makeAbsolute().toString();
             }
+        }  else if (c == '@' && tail != null && path.length() > 2 && path.charAt(1) == '@') {
+            // workaround to support action references
+            // an action shortcut
+            ScriptFile script = tail.getActionScript(path.substring(2));
+            if (script != null) {
+                return script;
+            }
         }
         return app.getFile(path);
     }
@@ -427,8 +435,27 @@ public class DefaultWebContext implements WebContext {
     }
 
     public Object getProperty(String key, Object defaultValue) {
-        Object value = vars.get(key);
+        Object value = getProperty(key);
         return value == null ? defaultValue : value;
+    }
+
+    public String getCookie(String name) {
+        Cookie[] cookies = request.getCookies();
+        for (int i=0; i<cookies.length; i++) {
+            if (name.equals(cookies[i].getName())) {
+                return cookies[i].getValue();
+            }
+        }
+        return null;
+    }
+
+    public String getCookie(String name, String defaultValue) {
+        String value = getCookie(name);
+        return value == null ? defaultValue : value;
+    }
+
+    public void setCookie(String name, String value) {
+        response.addCookie(new Cookie(name, value));
     }
 
     public WebEngine getWebEngine() {

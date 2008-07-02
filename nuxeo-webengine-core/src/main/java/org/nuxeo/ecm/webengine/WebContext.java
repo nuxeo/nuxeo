@@ -318,6 +318,28 @@ public interface WebContext {
     Object getProperty(String key, Object defaultValue);
 
     /**
+     * Convenience method to get a cookie value
+     * @param name the cookie name
+     * @return the cookie value if any null otherwise
+     */
+    String getCookie(String name);
+
+    /**
+     * Convenience method to get a cookie value using a default value
+     * @param name the cookie name
+     * @param defaultValue the value to return when cookie is not set
+     * @return the cookie value if any or the default if none
+     */
+    String getCookie(String name, String defaultValue);
+
+    /**
+     * Convenience method to set a cookie
+     * @param name the cookie name
+     * @param value the cookie value
+     */
+    void setCookie(String name, String value);
+
+    /**
      * Sets a context variable.
      *
      * @param key the variable key

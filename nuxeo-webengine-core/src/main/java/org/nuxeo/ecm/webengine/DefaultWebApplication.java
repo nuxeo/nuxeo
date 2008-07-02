@@ -41,6 +41,7 @@ import org.nuxeo.ecm.webengine.exceptions.WebDeployException;
 import org.nuxeo.ecm.webengine.mapping.MappingDescriptor;
 import org.nuxeo.ecm.webengine.mapping.PathMapper;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
+import org.nuxeo.ecm.webengine.servlet.WebServlet;
 import org.nuxeo.ecm.webengine.util.DirectoryStack;
 import org.nuxeo.runtime.deploy.FileChangeListener;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
@@ -335,6 +336,18 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
 
     public File getResourceFile(String key) {
         try {
+            // -------- workaround to support action references (any string starting ith @@)
+            if (key.length() > 2 && key.charAt(0) == '@' && key.charAt(1) == '@') {
+                WebContext ctx = WebServlet.getContext();
+                WebObject obj = ctx.getTargetObject();
+                if (obj != null) {
+                    ScriptFile file = obj.getActionScript(key.substring(2));
+                    if (file != null) {
+                        return file.getFile();
+                    }
+                }
+            }
+            // -------- end workaround
             ScriptFile file = getFile(key);
             if (file != null) {
                 return file.getFile();

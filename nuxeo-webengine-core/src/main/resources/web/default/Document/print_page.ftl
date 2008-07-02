@@ -1,0 +1,1 @@
+<#include "@@content_page"/>

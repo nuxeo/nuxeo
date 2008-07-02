@@ -1,5 +1,5 @@
 <h2>${Document.title}</h2>
-<h3>${Document.type}</h3>
+<blockquote>${Document.description}</blockquote>
 
 <#if Document.facets?seq_contains("Folderish")>
   <div id="tree">
