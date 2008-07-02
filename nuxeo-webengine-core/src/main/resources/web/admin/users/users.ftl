@@ -15,26 +15,31 @@
 
 <@block name="content">
 
-<p>
-<div>Search users:</div>
-</p>
-<form method="POST" action="${Context.URL}" accept-charset="utf-8">
-  <input type="text" name="query" value=""/>
-  <input type="submit" value="Search"/>
-</form>
 
-<p>
-<div>Search groups:</div>
-</p>
-<form method="POST" action="${Context.URL}" accept-charset="utf-8">
-  <input type="text" name="gquery" value=""/>
-  <input type="submit" value="Search"/>
-</form>
 
-<br/>
+<div id="entry-actions">
+<div class="ui-tabs-panel">
+
+<h1>Search</h1>
+
+<div class="userSearch">
+  <h2>Users</h2>
+  <form method="POST" action="${Context.URL}" accept-charset="utf-8">
+    <input type="text" name="query" value=""/>
+    <input type="submit" value="Search"/>
+  </form>
+</div>
+
+<div class="groupSearch">
+  <h2>Groups</h2>
+  <form method="POST" action="${Context.URL}" accept-charset="utf-8">
+    <input type="text" name="gquery" value=""/>
+    <input type="submit" value="Search"/>
+  </form>
+</div>
 
 <#if users>
-<table>
+<table class="directory_list">
 <thead>
 	<tr>
 		<th>User Name</th>
@@ -56,7 +61,7 @@
 
 
 <#if groups>
-<table>
+<table class="directory_list">
 <thead>
   <tr>
     <th>Group Name</th>
@@ -71,6 +76,10 @@
 </tbody>
 </table>
 </#if>
+
+
+</div>
+</div>
 
 </@block>
 </@extends>

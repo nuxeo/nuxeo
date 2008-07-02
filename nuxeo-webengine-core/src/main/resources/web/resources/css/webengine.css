@@ -157,7 +157,7 @@ th {
   width:226px;
   background:url(/nuxeo/site/files/resources/image/background_box_box.gif) top left repeat-y;
   padding:0;
-  margin-bottom:0;
+  margin-bottom:10px;
   color:#333;
 }
 
@@ -609,6 +609,12 @@ background-position: top right;
 padding-left: 5px;
 }
 
+/* For forms */
+.formFill td.formLabel {
+  background-color: #ffffcc;
+}
+
+
 /* Tabs (overrides jquerys flora) */
 
 #entry-actions .ui-tabs-nav li {
@@ -625,7 +631,16 @@ padding-left: 5px;
 
 #entry-actions .ui-tabs-panel {
   border-color:#000;
+  min-height: 100px;
   }
+/* or use this when no tabs */
+
+#mainContentBox {
+  border: 1px solid #000;
+  min-height: 100px;
+  padding:10px;
+  }
+}  
   
 #main .ui-tabs-nav, #main .ui-tabs-panel {
  font-family: Verdana, sans-serif;
@@ -654,6 +669,44 @@ padding-left: 5px;
   border:1px solid #666;
   border-width: 1px 0;
   text-align: center;
+}
+
+/* Admin : users */
+
+#main .userSearch {
+ float:left;
+ width:49%;
+}
+
+#main .groupSearch {
+ float:right;
+ width:49%;
+}
+
+#main .userSearch h2, #main .groupSearch h2 {
+  margin-top:0;
+}
+
+#main .directory_list {
+  padding:5px;
+  font-size:10px;
+  width:100%;
+  border-collapse: collapse;
+  border:1px solid #666;
+  
+}
+
+#main .directory_list th {
+  padding:3px;
+  background-color: #666;
+  color:#fff;
+  text-align: left;
+}
+
+#main .directory_list td {
+  padding:3px;
+  border:1px solid #666;
+  border-width: 1px 0;
 }
 
 /* Comment box */

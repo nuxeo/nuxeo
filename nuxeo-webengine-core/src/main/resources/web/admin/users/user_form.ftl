@@ -19,10 +19,12 @@
 
 <@block name="content">
 
+<div id="mainContentBox">
+
 <#if user><h1>${user.name}</h1></#if>
 <div>
 <form method="POST" action="${appPath}/users/save_user" accept-charset="utf-8">
-<table>
+<table class="formFill">
     <tbody>
         <#if user><input type="hidden" name="username" value="${user.name}"/><#else>
         <tr>
@@ -31,20 +33,20 @@
         </tr>
         </#if>
         <tr>
-            <td>Password</td>
-            <td><input type="password" name="password" value="<#if user>${user.password}</#if>"/></td>
+            <td class="formLabel">Password</td>
+            <td class="formValue"><input type="password" name="password" value="<#if user>${user.password}</#if>"/></td>
         </tr>
         <tr>
-            <td>First name</td>
-            <td><input type="text" name="firstName" value="<#if user>${user.firstName}</#if>"/></td>
+            <td class="formLabel">First name</td>
+            <td class="formValue"><input type="text" name="firstName" value="<#if user>${user.firstName}</#if>"/></td>
         </tr>
         <tr>
-            <td>Last name</td>
-            <td><input type="text" name="lastName" value="<#if user>${user.lastName}</#if>"/></td>
+            <td class="formLabel">Last name</td>
+            <td class="formValue"><input type="text" name="lastName" value="<#if user>${user.lastName}</#if>"/></td>
         </tr>
         <tr>
-            <td>Groups</td>
-            <td>
+            <td class="formLabel">Groups</td>
+            <td class="formValue">
                 <select multiple="multiple" name="groups" size="8">
                 <#list allGroups as group>
                     <#if user>
@@ -56,12 +58,12 @@
                 </select>
             </td>
         </tr>
-        <tr><td colspan="2"><input type="submit" value="Save"/></td></tr>
+        <tr><td/><td><input type="submit" value="Save"/></td></tr>
     </tbody>
 </table>  
 </form>
 
 </div>
-
+</div>
 </@block>
 </@extends>

@@ -1,7 +1,7 @@
 
 <@extends src="base.ftl">
-<@block name="title">Nuxeo WebEngine - Repository</@block>
-<@block name="header"><h1><a href="${appPath}">Nuxeo WebEngine - Repository</a></h1></@block>
+<@block name="title">Nuxeo WebEngine - Admin board</@block>
+<@block name="header"><h1><a href="${appPath}">Nuxeo WebEngine - Admin board</a></h1></@block>
 <@block name="content">
 <!--p>
 <h3><a href="${basePath}/admin/webapps">Web Application Management</a></h3>
