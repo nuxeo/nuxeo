@@ -3,17 +3,17 @@
 <@block name="title">Nuxeo WebEngine - Admin board</@block>
 <@block name="header"><h1><a href="${appPath}">Nuxeo WebEngine - Admin board</a></h1></@block>
 <@block name="content">
-<!--p>
-<h3><a href="${basePath}/admin/webapps">Web Application Management</a></h3>
-</p-->
-<p>
-<h3><a href="${basePath}/admin/repository">Repository Management</a></h3>
-</p>
-<p>
-<h3><a href="${basePath}/admin/users">User Management</a></h3>
-</p>
-<p>
+
+<div id="mainContentBox">
+
+<div class="adminBoardSettings">
+  <h3><a href="${basePath}/admin/users"><img src="${basePath}/nuxeo/site/files/resources/image/admin_users.png" width="98" height="98" alt="User management"><br>User Management</a></h3>
+</div>
+
+</div>
+
+<div class="tip">
 See the <a href="${basePath}/docs/index.ftl">manual</a> for more information.
-</p>
+</div>
 </@block>
 </@extends>

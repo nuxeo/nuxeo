@@ -447,6 +447,12 @@ blockquote {
     display: none;
 }
 
+.tip {
+  background: #ddeeff url(/nuxeo/site/files/resources/image/tip.gif) 10px 10px no-repeat;
+  padding:10px 10px 10px 40px;
+  margin-top:10px;
+}
+
 /* Table of contents */
 
 #main .toc {
@@ -670,6 +676,21 @@ padding-left: 5px;
   border-width: 1px 0;
   text-align: center;
 }
+
+/* Admin */
+
+.adminBoardSettings {
+  width:156px;
+  height:156px;
+  overflow:hidden;
+  text-align: center;
+  border:1px solid #ccc;
+}
+
+.adminBoardSettings h3 a img{
+  border-width: 0px;
+  }
+
 
 /* Admin : users */
 

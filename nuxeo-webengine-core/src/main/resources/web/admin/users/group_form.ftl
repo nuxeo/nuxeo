@@ -18,10 +18,15 @@
 
 
 <@block name="content">
+
 <#if group>
+
+<div id="mainContentBox">
 <h1>${group.name}</h1>
 </#if>
-<br/>
+
+<h2>Members</h2>
+
 <form method="POST" action="${appPath}/users/save_group" accept-charset="utf-8">
         <#if group>
           <input type="hidden" name="groupName" value="${group.name}"/>
@@ -42,6 +47,7 @@
 </table>
 </#if>
 </form>
+</div>
 
 </@block>
 </@extends>
