@@ -3,7 +3,7 @@
 <component name="org.nuxeo.ecm.webengine.deployment">
 
   <extension target="org.nuxeo.runtime.server" point="webapp">
-    <webapp name="nuxeo" path="/nuxeo">
+    <webapp name="nuxeo" path="/">
       <root>web</root>
     </webapp>
   </extension>
