@@ -14,7 +14,7 @@ $(document).ready(function(){
 <div id="entry-actions">
 <ul>
   <#list Context.getActions("TABVIEW")?sort as action>
-    <li><a href="${This.urlPath}@@${action.id}?cctx=tab" title="${action.id}"><span>${message('action.' + action.id)}</span></a></li>
+    <li><a href="${This.urlPath}@@${action.id}?context=tab" title="${action.id}"><span>${message('action.' + action.id)}</span></a></li>
   </#list>
 </ul>
 

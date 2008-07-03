@@ -190,16 +190,15 @@ public class WebServlet extends HttpServlet {
             return;
         }
 
+        resp.setStatus(code);
+
         writer.write("\nError occured during Site rendering");
         writer.write("\nSite Error message : " + message);
         if (t != null) {
-            writer.write("\nException message : " + t.getMessage());
-            for (StackTraceElement element : t.getStackTrace()) {
-                writer.write("\n" + element.toString() );
-            }
+            t.printStackTrace(writer);
         }
 
-        resp.setStatus(code);
+        t.printStackTrace(); // output on console for debug
     }
 
     protected void displayError(HttpServletResponse resp, Throwable t,

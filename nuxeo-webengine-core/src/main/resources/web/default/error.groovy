@@ -1,22 +1,31 @@
 import org.nuxeo.ecm.webengine.exceptions.*
+import java.io.*
 
-def error = Context.getProperty("error");
+// build args and stacktrace
+def error = Context.getProperty("error")
+def buf = new StringWriter()
+def pw = new PrintWriter(buf)
+error.printStackTrace(pw)
+pw.close()
+def stacktrace = buf.toString()
+def args = ['error' : error, 'stacktrace' : stacktrace]
 
-if (error instanceof WebSecurityException) {
-  Context.print("<h1>Error Page</h1>");
-  Context.print("<h3>You don't have privileges to access this page</h3><hr/>");
-  Context.print("You are currently running as <i>${Context.principal.name}</i>. To log-in under a different account please fill the following log-in form:");
-  Context.print("<p><table width=\"100%\"><tr><td align=\"center\">");
-  Context.render("/common/login.ftl");
-  Context.print("</td></tr></table></p>");
-} else if (error instanceof WebResourceNotFoundException) {
-  Response.setStatus(404);
-  Context.print("<h1>Error Page</h1>");
-  Context.print("<h3>404 - Resource not found: ${Request.pathInfo}</h3><hr/>");
-  error.printStackTrace(Response.writer);
+// locate template directory
+def prefix
+if (Context.getClientContext() != null) {
+  prefix = "include/page"
 } else {
-  Response.setStatus(500);
-  Context.print("<h1>Error Page</h1>");
-  error.printStackTrace(Response.writer);
+  prefix = "include"
 }
 
+// dispatch template rendering
+if (error instanceof WebSecurityException) {
+  Response.setStatus(401)
+  Context.render("${prefix}/error_401.ftl", args)
+} else if (error instanceof WebResourceNotFoundException) {
+  Response.setStatus(404)
+  Context.render("${prefix}/error_404.ftl", args)
+} else {
+  Response.setStatus(500);
+  Context.render("${prefix}/error_500.ftl", args)
+}

@@ -26,7 +26,7 @@ import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.servlet.WebConst;
 
-public class WebException extends ClientException {
+public class WebException extends Exception {
 
     public static final String ID = "generic";
 
