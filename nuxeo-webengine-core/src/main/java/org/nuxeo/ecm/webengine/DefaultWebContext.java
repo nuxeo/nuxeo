@@ -474,6 +474,13 @@ public class DefaultWebContext implements WebContext {
         response.getWriter().write(text);
     }
 
+    /**
+     * @return the log.
+     */
+    public Log getLog() {
+        return DefaultWebContext.log;
+    }
+
     public void redirect(String url) throws IOException {
         response.sendRedirect(url);
         isCanceled = true;

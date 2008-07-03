@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.logging.Log;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
@@ -490,6 +491,12 @@ public interface WebContext {
      * @param text
      */
     void print(String text) throws IOException;
+
+    /**
+     * Get a logger to be used by scripts for logging
+     * @return a logger
+     */
+    Log getLog();
 
     /**
      * Converts the given document to a JSON String
