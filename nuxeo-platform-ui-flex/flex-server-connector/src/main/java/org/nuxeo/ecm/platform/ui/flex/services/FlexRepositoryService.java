@@ -1,12 +1,17 @@
 package org.nuxeo.ecm.platform.ui.flex.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.remoting.WebRemote;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -21,17 +26,27 @@ public class FlexRepositoryService {
     private transient CoreSession flexDocumentManager;
 
 
-    @WebRemote
-    public FlexDocumentModel getDocumentByPath(String path) throws Exception
+    private DocumentRef getRefFromString(String refAsString)
     {
-        return getDocumentByRef(new PathRef(path));
+        if (refAsString==null)
+            return null;
+
+        if (refAsString.startsWith("/"))
+            return new PathRef(refAsString);
+        else
+            return new IdRef(refAsString);
     }
 
     @WebRemote
-    public FlexDocumentModel getDocumentById(String id) throws Exception
+    public FlexDocumentModel getDocument(String refAsString) throws Exception
     {
-        return getDocumentByRef(new IdRef(id));
+        DocumentRef ref = getRefFromString(refAsString);
+        if (ref==null)
+            return null;
+        else
+            return getDocumentByRef(ref);
     }
+
 
     protected FlexDocumentModel getDocumentByRef(DocumentRef docRef) throws Exception
     {
@@ -50,6 +65,44 @@ public class FlexRepositoryService {
         return DocumentModelTranslator.toFlexType(doc);
     }
 
+    @WebRemote
+    public FlexDocumentModel createDocumentModel(String parentPath, String type, String name)
+    {
+        FlexDocumentModel fdm = new FlexDocumentModel();
+        fdm.setType(type);
+        fdm.setPath(parentPath+"/" + name);
+        fdm.setName(name);
+        return fdm;
+    }
 
+
+    @WebRemote
+    public void deleteDocument(String refAsString) throws ClientException
+    {
+        DocumentRef docRef = getRefFromString(refAsString);
+        if (docRef!=null)
+            flexDocumentManager.removeDocument(docRef);
+    }
+
+
+    @WebRemote
+    public List<FlexDocumentModel> getChildren(String refAsString) throws Exception
+    {
+        DocumentRef docRef = getRefFromString(refAsString);
+        if (docRef==null)
+            return null;
+
+        DocumentModelList children = flexDocumentManager.getChildren(docRef);
+
+
+        List<FlexDocumentModel> flexChildren = new ArrayList<FlexDocumentModel>();
+
+        for (DocumentModel child : children)
+        {
+            FlexDocumentModel fdm = DocumentModelTranslator.toFlexTypeFromPrefetch(child);
+            flexChildren.add(fdm);
+        }
+        return flexChildren;
+    }
 
 }

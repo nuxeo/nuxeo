@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -12,16 +14,79 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.flex.javadto.FlexDocumentModel;
+import org.nuxeo.runtime.api.Framework;
 
 public class DocumentModelTranslator {
 
+    private static SchemaManager sm;
+    private static Map<String,String> schemaCache = new ConcurrentHashMap<String, String>();
+
+    private static String getSchemaFromPrefix(String prefix) throws Exception
+    {
+
+        String schemaName=schemaCache.get(prefix);
+
+        if (schemaName!=null)
+            return schemaName;
+
+        if (sm==null)
+            sm = Framework.getService(SchemaManager.class);
+
+        Schema schema = sm.getSchemaFromPrefix(prefix);
+
+        schemaName = schema.getSchemaName();
+
+        if (schemaName==null)
+        {
+            schemaName=prefix;
+        }
+        schemaCache.put(prefix, schemaName);
+        return schemaName;
+    }
+
+    public static FlexDocumentModel toFlexTypeFromPrefetch(DocumentModel doc) throws Exception
+    {
+        FlexDocumentModel fdm = new FlexDocumentModel(doc.getRef(),doc.getName(),doc.getPathAsString(), doc.getCurrentLifeCycleState(), doc.getType());
+
+        Map<String,Serializable> prefetch = doc.getPrefetch();
+        String[] schemas = doc.getDeclaredSchemas();
+
+        for (int i=0; i<schemas.length; i++)
+        {
+            Map<String,Serializable> map = new HashMap<String, Serializable>();
+
+            fdm.feed(schemas[i], map);
+        }
+
+        for (String prefetchKey : prefetch.keySet())
+        {
+            String schemaName;
+            String fieldName;
+
+            if (prefetchKey.contains(":"))
+            {
+                schemaName=prefetchKey.split(":")[0];
+                fieldName=prefetchKey.split(":")[1];
+                schemaName = getSchemaFromPrefix(schemaName);
+            }
+            else
+            {
+                schemaName=prefetchKey.split("\\.")[0];
+                fieldName=prefetchKey.split("\\.")[1];
+            }
+
+            fdm.setProperty(schemaName, fieldName, prefetch.get(prefetchKey));
+        }
+        return fdm;
+    }
 
     public static FlexDocumentModel toFlexType(DocumentModel doc) throws Exception
     {
 
-        FlexDocumentModel fdm = new FlexDocumentModel(doc.getRef(),doc.getName(),doc.getPathAsString(), doc.getCurrentLifeCycleState());
-
+        FlexDocumentModel fdm = new FlexDocumentModel(doc.getRef(),doc.getName(),doc.getPathAsString(), doc.getCurrentLifeCycleState(), doc.getType());
 
         DocumentPart[] parts = doc.getParts();
 
@@ -59,9 +124,22 @@ public class DocumentModelTranslator {
     public static DocumentModel toDocumentModel(FlexDocumentModel fdoc, CoreSession session) throws Exception
     {
 
-        DocumentRef docRef = new IdRef(fdoc.getDocRef());
-
-        DocumentModel doc = session.getDocument(docRef);
+        String refAsString = fdoc.getDocRef();
+        DocumentModel doc=null;
+        if (refAsString==null || "".equals(refAsString))
+        {
+            String docType = fdoc.getType();
+            String name=fdoc.getName();
+            String docPath = fdoc.getPath();
+            String parentPath = new Path(docPath).removeLastSegments(1).toString();
+            doc=session.createDocumentModel(parentPath, name, docType);
+            doc = session.createDocument(doc);
+        }
+        else
+        {
+            DocumentRef docRef = new IdRef(refAsString);
+            doc = session.getDocument(docRef);
+        }
 
         Map<String, Serializable> dirtyFields = fdoc.getDirtyFields();
 
@@ -72,6 +150,5 @@ public class DocumentModelTranslator {
 
         return doc;
     }
-
 
 }

@@ -17,6 +17,7 @@ public class FlexDocumentModel implements Externalizable {
     private String name;
     private String path;
     private String lifeCycleState;
+    private String type;
 
     private transient Map<String, Map<String,Serializable>> data = new HashMap<String, Map<String,Serializable>>();
     private Map<String,Serializable> dirtyFields =  new HashMap<String, Serializable>();
@@ -27,14 +28,16 @@ public class FlexDocumentModel implements Externalizable {
         name="docName";
         path="/default/folder"+name;
         lifeCycleState="work";
+        type=null;
     }
 
-    public FlexDocumentModel(DocumentRef ref, String name, String path, String lcState)
+    public FlexDocumentModel(DocumentRef ref, String name, String path, String lcState,String type)
     {
         docRef=ref.toString();
         this.name=name;
         this.path=path;
         lifeCycleState=lcState;
+        this.type=type;
     }
 
 
@@ -48,6 +51,16 @@ public class FlexDocumentModel implements Externalizable {
         data.put(schemaName, map);
     }
 
+    public void setProperty(String schemaName, String fieldName, Serializable value)
+    {
+        data.get(schemaName).put(fieldName, value);
+    }
+
+    public Serializable getProperty(String schemaName, String fieldName)
+    {
+        return data.get(schemaName).get(fieldName);
+    }
+
 
     public void readExternal(ObjectInput in) throws IOException,
             ClassNotFoundException {
@@ -56,6 +69,7 @@ public class FlexDocumentModel implements Externalizable {
         name=in.readUTF();
         path=in.readUTF();
         lifeCycleState=in.readUTF();
+        type=in.readUTF();
         //only ready dirty fields
         dirtyFields=(Map<String,Serializable>) in.readObject();
         // don't read all data
@@ -69,6 +83,7 @@ public class FlexDocumentModel implements Externalizable {
         out.writeUTF(name);
         out.writeUTF(path);
         out.writeUTF(lifeCycleState);
+        out.writeUTF(type);
         // only sends data : nothing is dirty for now
         out.writeObject(data);
     }
@@ -103,6 +118,14 @@ public class FlexDocumentModel implements Externalizable {
 
     public void setLifeCycleState(String lifeCycleState) {
         this.lifeCycleState = lifeCycleState;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
 }
