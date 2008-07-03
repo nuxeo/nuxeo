@@ -66,6 +66,14 @@ th {
     float: left;
 }
 
+#header .webEngineRoot {
+  float:left;
+  padding:19px 13px 0 0;
+}
+
+#header .webEngineRoot a img {
+  border:0;
+}
 
 #header .searchBox {
  padding-top: 10px;
