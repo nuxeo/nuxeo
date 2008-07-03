@@ -639,14 +639,14 @@ padding-left: 5px;
   border-color:#000;
   min-height: 100px;
   }
+  
 /* or use this when no tabs */
 
 #mainContentBox {
   border: 1px solid #000;
-  min-height: 100px;
+  min-height: 160px;
   padding:10px;
-  }
-}  
+  } 
   
 #main .ui-tabs-nav, #main .ui-tabs-panel {
  font-family: Verdana, sans-serif;
@@ -685,6 +685,8 @@ padding-left: 5px;
   overflow:hidden;
   text-align: center;
   border:1px solid #ccc;
+  float:left;
+  margin-right: 10px;
 }
 
 .adminBoardSettings h3 a img{
