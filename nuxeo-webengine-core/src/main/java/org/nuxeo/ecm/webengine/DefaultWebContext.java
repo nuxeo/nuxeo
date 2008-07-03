@@ -54,6 +54,7 @@ import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
+import org.nuxeo.ecm.webengine.util.ClientContext;
 import org.nuxeo.ecm.webengine.util.FormData;
 import org.nuxeo.ecm.webengine.util.JSonHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -617,6 +618,13 @@ public class DefaultWebContext implements WebContext {
         return null;
     }
 
+    public ClientContext getClientContext() {
+        return ClientContext.getActiveContext(this);
+    }
+
+       public ClientContext getClientContext(String name) {
+        return ClientContext.getContext(this, name);
+    }
     //--------------------------------------------------------------------------- TODO internal API
 
     public Bindings createBindings(Map<String, Object> vars) {
@@ -668,6 +676,8 @@ public class DefaultWebContext implements WebContext {
        tail = object;
        return object;
    }
+
+
 
 
    @Override

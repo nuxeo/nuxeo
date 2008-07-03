@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
+import org.nuxeo.ecm.webengine.util.ClientContext;
 import org.nuxeo.ecm.webengine.util.FormData;
 
 /**
@@ -530,5 +531,18 @@ public interface WebContext {
      * @return the first unresolved segment or null if none
      */
     String getFirstUnresolvedSegment();
+
+    /**
+     * Experimental feature - get the current client comtext
+     * @return
+     */
+    ClientContext getClientContext();
+
+    /**
+     * Experimental feature - get a client context by name
+     * @param name
+     * @return
+     */
+    ClientContext getClientContext(String name);
 
 }

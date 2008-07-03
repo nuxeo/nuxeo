@@ -15,6 +15,8 @@
     <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.base.js"></script>
     <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.tabs.js"></script>
     <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/cookie.js"></script>
+    <script type="text/javascript" src="/nuxeo/site/files/resources/script/json.js"></script>
+    <script type="text/javascript" src="/nuxeo/site/files/resources/script/webengine.js"></script>
     <#if Root??> <#-- we are in a document context: search is enabled -->
           <script>
            $(document).ready(function(){
@@ -70,7 +72,11 @@
     <div class="sideblock-content">
       <ul>
         <#list This.getActions("TOOLBOX") as action>
-        <li><a href="${This.urlPath}@@${action.id}">${message('action.' + action.id)}</a></li>
+        <#if action.id == "print">
+          <li><a href="${This.urlPath}@@${action.id}" target="_blank">${message('action.' + action.id)}</a></li>
+        <#else>
+          <li><a href="${This.urlPath}@@${action.id}">${message('action.' + action.id)}</a></li>
+        </#if>
         </#list>
       </ul>
     </div>
@@ -84,7 +90,6 @@
     <#if Context.principal.isAdministrator()>
     <h3>Administration</h3>
     <ul>
-      <li><a href="${basePath}/admin/">Admin board</a></li>
       <li><a href="${basePath}/admin/users">User Management</a></li>
     </ul>
     </#if>
