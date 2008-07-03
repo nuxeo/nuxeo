@@ -1,0 +1,182 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.core</groupId>
+    <artifactId>nuxeo-core-parent</artifactId>
+    <version>1.4.3-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-core-storage-sql-ra${artifactSuffix}</artifactId>
+  <packaging>rar</packaging>
+  <name>Nuxeo Core SQL Storage Resource Adapter</name>
+  <description>Nuxeo Core: SQL Storage Resource Adapter.</description>
+
+  <!--repositories>
+    <repository>
+      <id>jboss</id>
+      <name>JBoss Repository</name>
+      <url>http://repository.jboss.org/maven2</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories-->
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>jboss</groupId>
+          <artifactId>jboss-common</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jboss</groupId>
+          <artifactId>jboss-remoting</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql</artifactId>
+      <version>${version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- TODO: Use the dep from the central repo -->
+    <dependency>
+      <groupId>javax.ressource</groupId>
+      <artifactId>jca-api</artifactId>
+      <version>1.5</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate</artifactId>
+      <version>3.2.4.ga</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+      <version>10.2.2.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- JBoss Embedded -->
+    <dependency>
+      <groupId>org.jboss.embedded</groupId>
+      <artifactId>jboss-embedded-all</artifactId>
+      <version>beta3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.embedded</groupId>
+      <artifactId>thirdparty-all</artifactId>
+      <version>beta3</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <profiles>
+    <profile>
+      <id>jboss4</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <raDir>ra-jboss4</raDir>
+        <artifactSuffix></artifactSuffix>
+      </properties>
+    </profile>
+    <profile>
+      <id>javaee</id>
+      <properties>
+        <raDir>ra-javaee</raDir>
+        <!--artifactSuffix>-jee</artifactSuffix-->
+      </properties>
+    </profile>
+  </profiles>
+
+  <build>
+    <finalName>${pom.artifactId}-${pom.version}</finalName>
+
+    <resources>
+      <resource>
+        <directory>src/main/resources/${raDir}</directory>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <excludes>
+          <exclude>ra-*/**</exclude>
+        </excludes>
+      </resource>
+    </resources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.4.3</version>
+        <configuration>
+          <!-- This is so that java.net.URL can load the handler for JBoss's vfs -->
+          <useSystemClassLoader>true</useSystemClassLoader>
+          <!-- Surefire 2.4.3: don't keep the single bootstrap jar on the classpath 
+               otherwise NXRuntimeTestCase bundle lookup fails -->
+          <useManifestOnlyJar>false</useManifestOnlyJar>
+          <systemProperties>
+            <!-- This is because JBoss 5 doesn't use classloaders correctly -->
+            <!-- DOESN'T SEEM TO WORK, mvn test has to be run with Java 5 still -->
+            <property>
+              <name>sun.lang.ClassLoader.allowArraySyntax</name>
+              <value>true</value>
+            </property>
+          </systemProperties>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-rar-plugin</artifactId>
+        <version>2.2</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>rar</goal>
+            </goals>
+            <configuration>
+              <rarSourceDirectory>${project.build.outputDirectory}</rarSourceDirectory> <!-- include class files -->
+              <raXmlFile>src/main/resources/${raDir}/META-INF/ra.xml</raXmlFile>
+              <manifestFile>${project.build.directory}/classes/META-INF/MANIFEST.MF</manifestFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
