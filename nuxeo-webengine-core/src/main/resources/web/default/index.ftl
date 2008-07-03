@@ -8,11 +8,11 @@ Hello <strong>${Context.principal.name}</strong>! This is the root of your web s
 <div id="mainContentBox">
 
 <div class="adminBoardSettings">
-  <h3> <a href="${basePath}/repository"><img src="${basePath}/nuxeo/site/files/resources/image/repository.png" width="98" height="98" alt="Repository"><br>Browse Repository</a></h3>
+  <h3> <a href="${basePath}/repository"><img src="/nuxeo/site/files/resources/image/repository.png" width="98" height="98" alt="Repository"><br>Browse Repository</a></h3>
 </div>
 
 <div class="adminBoardSettings">
-  <h3> <a href="${basePath}/docs/index.ftl"><img src="${basePath}/nuxeo/site/files/resources/image/documentation.png" width="98" height="98" alt="Repository"><br>Documentation</a></h3>
+  <h3> <a href="${basePath}/docs/index.ftl"><img src="/nuxeo/site/files/resources/image/documentation.png" width="98" height="98" alt="Repository"><br>Documentation</a></h3>
 </div>
 
 </div>
