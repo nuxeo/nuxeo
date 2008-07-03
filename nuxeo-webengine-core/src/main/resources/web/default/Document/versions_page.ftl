@@ -1,5 +1,4 @@
 <#import "common/util.ftl" as base/>
-<h1>${This.title}</h1>
 <h2>Versions</h2>
 
 <form id="version_list" action="${This.urlPath}@@compare_versions" method="get" accept-charset="utf-8">
