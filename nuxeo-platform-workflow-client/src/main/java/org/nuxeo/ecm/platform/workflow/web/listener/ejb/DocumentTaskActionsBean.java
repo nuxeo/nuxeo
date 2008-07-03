@@ -87,6 +87,7 @@ import org.nuxeo.ecm.platform.workflow.web.api.WorkflowBeansDelegate;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.ecm.webapp.security.PrincipalListManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Document task actions bean.
@@ -105,6 +106,8 @@ public class DocumentTaskActionsBean extends InputController implements
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(DocumentTaskActionsBean.class);
+
+    private static final String WORKFLOW_CREATOR = "workflowCreator";
 
     @In
     protected transient Context eventContext;
@@ -411,8 +414,11 @@ public class DocumentTaskActionsBean extends InputController implements
         String comment = "=> " + currentUser.getName() + " ( "
                 + taskActionComment + " )";
 
+        Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
+        eventInfo.put(WorkflowConstants.WORKFLOW_CREATOR,
+                wapi.getWorkItemById(taskId).getProcessInstance().getAuthorName());
         notifyEvent(WorkflowEventTypes.WORKFLOW_TASK_ENDED, comment,
-                reviewModel.getProcessInstanceName(), null);
+                reviewModel.getProcessInstanceName(), eventInfo);
 
         WMWorkItemInstance wi = wapi.endWorkItem(taskId, transition);
 
@@ -532,7 +538,7 @@ public class DocumentTaskActionsBean extends InputController implements
         return documentTasks;
     }
 
-    public void removeTask(String taskId) throws WMWorkflowException {
+    public void removeTask(String taskId) throws WMWorkflowException, Exception {
 
         if (taskId == null) {
             log.error("taskId is null. Cancelling....");
@@ -612,9 +618,15 @@ public class DocumentTaskActionsBean extends InputController implements
 
         String comment = "=> " + currentUser.getName() + " ( "
                 + taskActionComment + " )";
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        String initiator = workflowTaskInstance.getProcessInstance().getAuthorName();
+        NuxeoPrincipal principal = Framework.getService(UserManager.class).getPrincipal(initiator);
+        props.put(WorkflowConstants.WORKFLOW_PARTICIPANT, workflowTaskInstance.getParticipantName());
+        props.put(WorkflowConstants.WORKFLOW_CREATOR, initiator);
+        props.put(WORKFLOW_CREATOR, principal);
 
         notifyEvent(WorkflowEventTypes.WORKFLOW_TASK_REMOVED, comment,
-                reviewModel.getProcessInstanceName(), null);
+                reviewModel.getProcessInstanceName(), props);
         Events.instance().raiseEvent(EventNames.WORKFLOW_TASK_REMOVED);
         Events.instance().raiseEvent(AuditEventTypes.HISTORY_CHANGED);
         Events.instance().raiseEvent(EventNames.DOCUMENT_SELECTION_CHANGED);
@@ -630,8 +642,9 @@ public class DocumentTaskActionsBean extends InputController implements
                 cleanContext();
                 invalidateContextVariables();
             } catch (WMWorkflowException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error(e);
+            } catch (Exception e) {
+                log.error(e);
             }
         }
         rebuildTabsList();
@@ -782,8 +795,13 @@ public class DocumentTaskActionsBean extends InputController implements
         String comment = "=> " + currentUser.getName() + " ( "
                 + taskActionComment + " )";
 
+        WMWorkItemInstance workflowTaskInstance = wapi.getWorkItemById(taskId);
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(WorkflowConstants.WORKFLOW_PARTICIPANT, workflowTaskInstance.getParticipantName());
+        props.put(WorkflowConstants.WORKFLOW_CREATOR, workflowTaskInstance.getProcessInstance().getAuthorName());
+
         notifyEvent(WorkflowEventTypes.WORKFLOW_TASK_REJECTED, comment,
-                reviewModel.getProcessInstanceName(), null);
+                reviewModel.getProcessInstanceName(), props);
         Events.instance().raiseEvent(
                 EventNames.WORKFLOW_USER_ASSIGNMENT_CHANGED);
         Events.instance().raiseEvent(EventNames.WORKFLOW_TASK_REJECTED);

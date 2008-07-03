@@ -206,8 +206,10 @@ public abstract class AbstractWorkflowDocumentHandler {
                 WorkflowConstants.WORKFLOW_INSTANCE_STATUS_ACTIVE);
 
         String category = "";
+        String initiator = null;
         if (wi != null) {
             category = wi.getName();
+            initiator = wi.getAuthorName();
         }
 
         String state = getDocumentCurrentLifeCycle(ec);
@@ -217,6 +219,7 @@ public abstract class AbstractWorkflowDocumentHandler {
 
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreEventConstants.DOC_LIFE_CYCLE, state);
+        props.put(WorkflowConstants.WORKFLOW_CREATOR, initiator);
 
         String evtId = (eventId == null) ? WorkflowEventTypes.WORKFLOW_ENDED
                 : eventId;
