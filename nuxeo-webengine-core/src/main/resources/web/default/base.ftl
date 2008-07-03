@@ -90,6 +90,7 @@
     <#if Context.principal.isAdministrator()>
     <h3>Administration</h3>
     <ul>
+      <li><a href="${basePath}/admin">Admin board</a></li>    
       <li><a href="${basePath}/admin/users">User Management</a></li>
     </ul>
     </#if>
