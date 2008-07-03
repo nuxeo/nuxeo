@@ -28,6 +28,7 @@ PORT=8080
 # The directory containing directories log, bin, conf, etc.
 HERE=`dirname $0`
 JBOSS_HOME=`cd $HERE/..; pwd -P`
+export JBOSS_HOME
 
 # Read an optional running configuration file
 if [ -r "$JBOSS_HOME/bin/jbossctl.conf" ]; then
