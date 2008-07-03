@@ -4,7 +4,7 @@ Bundle-Name: nxnotificationservice-facade
 Bundle-SymbolicName: org.nuxeo.ecm.platform.notification.facade
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
-Bundle-Category: web
+Bundle-Category: web,stateful
 Nuxeo-Component: OSGI-INF/PlatformBindings.xml
 Export-Package: org.nuxeo.ecm.platform.ec.notification,
  org.nuxeo.ecm.platform.ec.notification.ejb,

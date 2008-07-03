@@ -94,11 +94,9 @@ public class WorkItemsListsActionsBean extends InputController implements
     public String workItemsListsEntrySelectionName;
 
     @Create
-    public void init()
-    {
-    	Events.instance().raiseEvent(EventNames.WF_INIT);
+    public void init() {
+        Events.instance().raiseEvent(EventNames.WF_INIT);
     }
-
 
     @Factory(value = "userWorkItemsListsItems", scope = EVENT)
     public List<SelectItem> computeWorkItemsListsMap()

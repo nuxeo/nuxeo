@@ -20,6 +20,10 @@
     </description>
 
   <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-placeful-api</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

@@ -1,38 +1,38 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.platform.forum.DefaultWorkflowSecurityPolicyContributions">
+<component
+  name="org.nuxeo.ecm.platform.forum.DefaultWorkflowSecurityPolicyContributions">
 
   <documentation>
 
-      TODO
+    TODO
 
-      @version 1.0
-      @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+    @version 1.0 @author
+    <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
   </documentation>
 
-  <extension target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService"
-         point="workflowDocumentSecurityPolicy">
+  <extension
+    target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService"
+    point="workflowDocumentSecurityPolicy">
 
     <documentation>
 
-     TODO
+      TODO
 
     </documentation>
 
-    <workflowDocumentSecurityPolicy
-      name="forum_review_moderation"
-      class="org.nuxeo.ecm.platform.forum.workflow.security.policy.PostModerationWorkflowSecurityPolicy"
-      />
+    <workflowDocumentSecurityPolicy name="forum_review_moderation"
+      class="org.nuxeo.ecm.platform.forum.workflow.security.policy.PostModerationWorkflowSecurityPolicy" />
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService"
-         point="workflowDocumentSecurityPolicyRelation">
+  <extension
+    target="org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService"
+    point="workflowDocumentSecurityPolicyRelation">
 
     <documentation>
 
-      Contribute security policies to workflow definitions associations for
-      NXP.
+      Contribute security policies to workflow definitions associations for NXP.
 
     </documentation>
 
@@ -40,6 +40,6 @@
       <workflowName>forum_review_moderation</workflowName>
     </workflowDocumentSecurityPolicyRelation>
 
- </extension>
+  </extension>
 
 </component>
