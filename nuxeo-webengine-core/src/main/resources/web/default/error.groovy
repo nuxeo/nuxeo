@@ -11,21 +11,24 @@ def stacktrace = buf.toString()
 def args = ['error' : error, 'stacktrace' : stacktrace]
 
 // locate template directory
+def setErrorStatus = false // do not send error status when in client sub contexts  it may break ajax calls like for example for jquery tabs
 def prefix
 if (Context.getClientContext() != null) {
   prefix = "include/page"
 } else {
   prefix = "include"
+  setErrorStatus = true
 }
 
 // dispatch template rendering
 if (error instanceof WebSecurityException) {
-  Response.setStatus(401)
+  if (setErrorStatus) { Response.setStatus(401) }
   Context.render("${prefix}/error_401.ftl", args)
 } else if (error instanceof WebResourceNotFoundException) {
-  Response.setStatus(404)
+  if (setErrorStatus) { Response.setStatus(404) }
   Context.render("${prefix}/error_404.ftl", args)
 } else {
-  Response.setStatus(500);
+  if (setErrorStatus) { Response.setStatus(500) }
   Context.render("${prefix}/error_500.ftl", args)
 }
+

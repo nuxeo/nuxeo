@@ -116,6 +116,9 @@ public class DefaultWebContext implements WebContext {
             throw new IllegalStateException("Context already initialized");
         }
         isInitialized = true;
+        if (request.getParameter("context") == null) { // if in top level context initialize client URL path
+            setClientUrlPath(pathInfo.path.toString());
+        }
         DocumentRef documentRoot = pathInfo.getDocument();
         if (documentRoot == null) { //TODO XXX: here we can add a custom root resolver
             pathInfo.setTrailingPath(pathInfo.getTraversalPath());
@@ -622,9 +625,21 @@ public class DefaultWebContext implements WebContext {
         return null;
     }
 
+    public void setClientUrlPath(String path) {
+        request.getSession(true).setAttribute("clientUrlPath", path);
+    }
+
+    public String getClientUrlPath() {
+        String path = (String)request.getSession(true).getAttribute("clientUrlPath");
+        if (path == null) {
+            path = pathInfo.path.toString();
+        }
+        return path;
+    }
+
     public String getClientContext() {
         try {
-            return getForm().getString("context");
+            return request.getParameter("context");
         } catch (Exception e) {
             // do nothing
         }

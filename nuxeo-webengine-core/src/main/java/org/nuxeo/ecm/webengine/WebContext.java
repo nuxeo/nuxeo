@@ -538,6 +538,22 @@ public interface WebContext {
     /** --------- Experimental methods - these may change in future ------------ */
 
     /**
+     * Get the URL path used by the client to load the main page.
+     * <p>
+     * This is useful when the client is using sub-contexts to load dynamically (via ajax)
+     * sub sections from the main page. In that case on the server side you may want to know
+     * what is the current client context - whether the client requested a page in the default context (e.g. the main page)
+     * or it is requesting a page from a sub-context of the main page. The current client context can be retrieved
+     * using {@link #getClientContext()}.
+     * <p>
+     * Also you may want to know, when in a sub-context request, what is the URL of the main page.
+     * This is useful to correctly generate links on server side scripts.
+     * <p>
+     * Thus this method returns the URL path requested by the client for the main page.
+     */
+    String getClientUrlPath();
+
+    /**
      * Get the current client context
      * @return the current context or null if the default context
      */
