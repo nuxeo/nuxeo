@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql.ra;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionFactory;
@@ -105,29 +106,16 @@ public class ConnectionImpl implements Session {
      * ----- org.nuxeo.ecm.core.storage.sql.Session -----
      */
 
-    public void save() throws StorageException {
-        session.save();
-    }
-
-    public Node addChildNode(Node parent, String name, String typeName)
-            throws StorageException {
-        return session.addChildNode(parent, name, typeName);
-    }
-
     public Model getModel() {
         return session.getModel();
     }
 
-    public Node getChildNode(Node parent, String name) throws StorageException {
-        return session.getChildNode(parent, name);
+    public void save() throws StorageException {
+        session.save();
     }
 
     public Node getRootNode() throws StorageException {
         return session.getRootNode();
-    }
-
-    public void removeNode(Node node) throws StorageException {
-        session.removeNode(node);
     }
 
     public Node getNodeById(Serializable id) throws StorageException {
@@ -136,6 +124,32 @@ public class ConnectionImpl implements Session {
 
     public Node getNodeByPath(String path, Node node) throws StorageException {
         return session.getNodeByPath(path, node);
+    }
+
+    public boolean hasChildNode(Node parent, String name)
+            throws StorageException {
+        return session.hasChildNode(parent, name);
+    }
+
+    public Node getChildNode(Node parent, String name) throws StorageException {
+        return session.getChildNode(parent, name);
+    }
+
+    public boolean hasChildren(Node parent) throws StorageException {
+        return session.hasChildren(parent);
+    }
+
+    public List<Node> getChildren(Node parent) throws StorageException {
+        return session.getChildren(parent);
+    }
+
+    public Node addChildNode(Node parent, String name, String typeName)
+            throws StorageException {
+        return session.addChildNode(parent, name, typeName);
+    }
+
+    public void removeNode(Node node) throws StorageException {
+        session.removeNode(node);
     }
 
     public Node getParentNode(Node node) throws StorageException {

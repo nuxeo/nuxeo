@@ -19,16 +19,15 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.resource.ResourceException;
 import javax.transaction.xa.XAResource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
@@ -45,8 +44,6 @@ import org.nuxeo.ecm.core.storage.StorageException;
  * @author Florent Guillaume
  */
 public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
-
-    private static final Log log = LogFactory.getLog(SQLModelSession.class);
 
     private final SQLModelRepository repository;
 
@@ -204,8 +201,9 @@ public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
 
     public Document createProxyForVersion(Document parent, Document document,
             String versionLabel) throws DocumentException {
-        Document frozenDoc = document.getVersion(versionLabel);
-        String name = document.getName() + '_' + System.currentTimeMillis(); // TODO
+        // Document frozenDoc = document.getVersion(versionLabel);
+        // String name = document.getName() + '_' + System.currentTimeMillis();
+        // // TODO
         // Node node = pnode.addNode(ModelAdapter.getChildPath(name),
         // NodeConstants.ECM_NT_DOCUMENT_PROXY.rawname);
         // node.setProperty(NodeConstants.ECM_REF_FROZEN_NODE.rawname,
@@ -235,7 +233,7 @@ public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
     }
 
     /*
-     * ----- -----
+     * ----- Called by SQLModelDocument -----
      */
 
     private SQLModelDocument newDocument(Node node) throws StorageException {
@@ -275,7 +273,8 @@ public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
         }
     }
 
-    protected Document getChild(Node node, String name) throws DocumentException {
+    protected Document getChild(Node node, String name)
+            throws DocumentException {
         Document doc;
         try {
             doc = newDocument(session.getChildNode(node, name));
@@ -288,16 +287,53 @@ public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
         return doc;
     }
 
-    protected Iterator<Document> getChildren(Node node) throws DocumentException {
-        Document doc;
+    // XXX change to iterator?
+    protected List<Document> getChildren(Node node) throws DocumentException {
+        List<Node> nodes;
         try {
-            doc = newDocument(session.getChildNode(node, name));
+            nodes = session.getChildren(node);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
-        if (doc == null) {
-            throw new NoSuchDocumentException("No such document: " + name);
+        List<Document> children = new ArrayList<Document>(nodes.size());
+        for (Node n : nodes) {
+            Document doc;
+            try {
+                doc = newDocument(n);
+            } catch (StorageException e) {
+                throw new DocumentException(e);
+            }
+            children.add(doc);
         }
-        return doc;
+        return children;
+    }
+
+    protected boolean hasChild(Node node, String name) throws DocumentException {
+        try {
+            return session.hasChildNode(node, name);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected boolean hasChildren(Node node) throws DocumentException {
+        try {
+            return session.hasChildren(node);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected Document addChild(Node parent, String name, String typeName)
+            throws DocumentException {
+        try {
+            return newDocument(session.addChildNode(parent, name, typeName));
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected void removeNode(Node node) throws DocumentException {
+
     }
 }

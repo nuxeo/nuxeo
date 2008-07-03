@@ -176,7 +176,8 @@ public class SessionImpl implements Session, XAResource {
         }
 
         // get main row
-        SimpleFragment childMain = (SimpleFragment) context.get(model.MAIN_TABLE_NAME, id);
+        SimpleFragment childMain = (SimpleFragment) context.get(
+                model.MAIN_TABLE_NAME, id);
         if (childMain == null) {
             // not found
             return null;
@@ -185,7 +186,8 @@ public class SessionImpl implements Session, XAResource {
         DocumentType childType = schemaManager.getDocumentType(childTypeName);
 
         // find hier row
-        SimpleFragment childHier = (SimpleFragment) context.get(model.HIER_TABLE_NAME, id);
+        SimpleFragment childHier = (SimpleFragment) context.get(
+                model.HIER_TABLE_NAME, id);
 
         // TODO get all non-cached fragments at once using join / union
         FragmentsMap childFragments = new FragmentsMap();
@@ -287,8 +289,10 @@ public class SessionImpl implements Session, XAResource {
         DocumentType type = schemaManager.getDocumentType(typeName);
         for (Schema schema : type.getSchemas()) {
             String schemaName = schema.getName();
+            // TODO XXX fill in default values
             // TODO fill data instead of null XXX or just have fragments empty
-            Fragment fragment = context.createSimpleFragment(schemaName, id, null);
+            Fragment fragment = context.createSimpleFragment(schemaName, id,
+                    null);
             fragments.put(schemaName, fragment);
         }
 
@@ -305,6 +309,13 @@ public class SessionImpl implements Session, XAResource {
         FragmentGroup rowGroup = new FragmentGroup(mainRow, hierRow, fragments);
 
         return new Node(type, this, context, rowGroup);
+    }
+
+    public boolean hasChildNode(Node parent, String name)
+            throws StorageException {
+        checkLive();
+        // TODO could optimize further by not fetching the fragment at all
+        return context.getByHier(parent.getId(), name) != null;
     }
 
     public Node getChildNode(Node parent, String name) throws StorageException {
@@ -327,8 +338,8 @@ public class SessionImpl implements Session, XAResource {
         Serializable childId = childHier.getId();
 
         // get main row
-        SimpleFragment childMain = (SimpleFragment) context.get(model.MAIN_TABLE_NAME,
-                childId);
+        SimpleFragment childMain = (SimpleFragment) context.get(
+                model.MAIN_TABLE_NAME, childId);
         String childTypeName = (String) childMain.get(model.MAIN_PRIMARY_TYPE_KEY);
         DocumentType childType = schemaManager.getDocumentType(childTypeName);
 
@@ -344,6 +355,12 @@ public class SessionImpl implements Session, XAResource {
                 childFragments);
 
         return new Node(childType, this, context, childGroup);
+    }
+
+    // TODO optimize with dedicated backend call
+    public boolean hasChildren(Node parent) throws StorageException {
+        checkLive();
+        return context.getHierChildren(parent.getId()).size() > 0;
     }
 
     public List<Node> getChildren(Node parent) throws StorageException {
@@ -382,8 +399,8 @@ public class SessionImpl implements Session, XAResource {
     }
 
     private void computeRootNode() throws StorageException {
-        SimpleFragment repoInfo = (SimpleFragment) context.get(model.REPOINFO_TABLE_NAME,
-                Long.valueOf(0));
+        SimpleFragment repoInfo = (SimpleFragment) context.get(
+                model.REPOINFO_TABLE_NAME, Long.valueOf(0));
         if (repoInfo == null) {
             log.debug("Creating root");
             rootNode = addRootNode();
@@ -426,18 +443,6 @@ public class SessionImpl implements Session, XAResource {
     }
 
     // public Node newNodeInstance() needed ?
-
-    public boolean hasNode(Node parent, String name) throws StorageException {
-        checkLive();
-        // TODO Auto-generated method stub
-        throw new RuntimeException("Not implemented");
-    }
-
-    public boolean hasNode(String absPath) throws StorageException {
-        checkLive();
-        // TODO Auto-generated method stub
-        throw new RuntimeException("Not implemented");
-    }
 
     public void checkPermission(String absPath, String actions)
             throws AccessControlException, StorageException {

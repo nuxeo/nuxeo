@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -25,7 +27,8 @@ import org.nuxeo.ecm.core.storage.StorageException;
  *
  * @author Florent Guillaume
  */
-public abstract class AbstractProperty {
+public abstract class AbstractProperty implements
+        org.nuxeo.ecm.core.model.Property {
 
     /** The property name. */
     private final String name;
@@ -54,21 +57,30 @@ public abstract class AbstractProperty {
     // ----- modification -----
 
     public void refresh(boolean keepChanges) throws StorageException {
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException();
     }
 
     public void remove() throws StorageException {
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException();
     }
 
     public void save() throws StorageException {
-        throw new RuntimeException("Not implemented");
+        throw new UnsupportedOperationException();
     }
 
     protected void checkWritable() throws StorageException {
         if (readonly) {
             throw new StorageException("Cannot write property: " + name);
         }
+    }
+
+    /*
+     * ----- org.nuxeo.ecm.core.model.Property -----
+     */
+
+    public Type getType() throws DocumentException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
 }

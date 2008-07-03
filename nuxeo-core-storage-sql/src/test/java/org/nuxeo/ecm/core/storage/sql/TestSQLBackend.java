@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * @author Florent Guillaume
  */
-public class TestBasics extends SQLStorageTestCase {
+public class TestSQLBackend extends SQLBackendTestCase {
 
     @Override
     public void setUp() throws Exception {
@@ -39,7 +39,7 @@ public class TestBasics extends SQLStorageTestCase {
         assertEquals("", root.getName());
         assertEquals("/", session.getPath(root));
         assertEquals("Root",
-                root.getSingleProperty("ecm:primaryType").getString());
+                root.getSimpleProperty("ecm:primaryType").getString());
         session.close();
     }
 
@@ -98,7 +98,7 @@ public class TestBasics extends SQLStorageTestCase {
         assertEquals("", root.getName());
         assertEquals("/", session.getPath(root));
         assertEquals("Root",
-                root.getSingleProperty("ecm:primaryType").getString());
+                root.getSimpleProperty("ecm:primaryType").getString());
 
         Node nodea = session.addChildNode(root, "foo", "TestDoc");
         assertEquals(root.getId(), session.getParentNode(nodea).getId());
@@ -107,7 +107,7 @@ public class TestBasics extends SQLStorageTestCase {
         nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
                 "c" });
         assertEquals("hello world",
-                nodea.getSingleProperty("tst:title").getString());
+                nodea.getSimpleProperty("tst:title").getString());
         String[] subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
         assertEquals(Arrays.asList("a", "b", "c"), Arrays.asList(subjects));
 
@@ -133,7 +133,7 @@ public class TestBasics extends SQLStorageTestCase {
         Node root2 = session2.getRootNode();
         Node nodea2 = session2.getChildNode(root2, "foo");
         assertEquals("another",
-                nodea2.getSingleProperty("tst:title").getString());
+                nodea2.getSimpleProperty("tst:title").getString());
         subjects = nodea2.getCollectionProperty("tst:subjects").getStrings();
         assertEquals(Arrays.asList("z", "c"), Arrays.asList(subjects));
         // delete the node

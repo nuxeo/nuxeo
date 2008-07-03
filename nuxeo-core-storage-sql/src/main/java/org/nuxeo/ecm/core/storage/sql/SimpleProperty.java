@@ -18,7 +18,11 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Iterator;
 
+import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -60,10 +64,15 @@ public class SimpleProperty extends AbstractProperty {
 
     public void setValue(Serializable value) throws StorageException {
         checkWritable();
+        if (value == null) {
+            row.put(key, null);
+            // mark dataRow as dirty!
+            return;
+        }
         switch (type) {
         case STRING:
             if (!(value instanceof String)) {
-                throw new RuntimeException("Value is not a string: " + value);
+                throw new RuntimeException("Value is not a String: " + value);
             }
             row.put(key, value);
             // mark dataRow as dirty!
@@ -71,6 +80,49 @@ public class SimpleProperty extends AbstractProperty {
         default:
             throw new RuntimeException("Not implemented: " + type);
         }
+    }
+
+    /*
+     * ----- org.nuxeo.ecm.core.model.Property -----
+     */
+
+    public boolean isNull() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setNull() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public Serializable getValue() throws DocumentException {
+        return row.get(key);
+    }
+
+    public void setValue(Object value) throws DocumentException {
+        if (value != null && !(value instanceof Serializable)) {
+            throw new DocumentException("Value is not Serializable: " + value);
+        }
+        try {
+            setValue((Serializable) value);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    public boolean isPropertySet(String name) throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public Property getProperty(String name) throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public Collection<Property> getProperties() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public Iterator<Property> getPropertyIterator() throws DocumentException {
+        throw new UnsupportedOperationException();
     }
 
 }

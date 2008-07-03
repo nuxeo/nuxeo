@@ -74,21 +74,25 @@ public class Model {
     public static final String COLL_TABLE_VALUE_KEY = "item";
 
     /** Maps table name to a map of properties to their basic type. */
-    public Map<String, Map<String, PropertyType>> fragmentsKeysType;
+    protected final Map<String, Map<String, PropertyType>> fragmentsKeysType;
 
     /** Maps collection table names to their type. */
-    public Map<String, PropertyType> collectionTables;
+    protected final Map<String, PropertyType> collectionTables;
 
     /** Maps property name to fragment name. */
-    private Map<String, String> propertyFragment;
+    private final Map<String, String> propertyFragment;
 
     /** Maps property name to fragment key (single-valued). */
-    private Map<String, String> propertyFragmentKey;
+    private final Map<String, String> propertyFragmentKey;
+
+    /** Maps of properties to their nuxeo core type. */
+    public final Map<String, Type> propertyCoreType;
 
     /** Maps of properties to their basic type. */
-    public Map<String, PropertyType> propertyType;
+    public final Map<String, PropertyType> propertyType;
 
     public Model(SchemaManager schemaManager) {
+        propertyCoreType = new HashMap<String, Type>();
         propertyType = new HashMap<String, PropertyType>();
         fragmentsKeysType = new HashMap<String, Map<String, PropertyType>>();
         collectionTables = new HashMap<String, PropertyType>();
@@ -97,6 +101,10 @@ public class Model {
 
         initMainModel();
         initModels(schemaManager);
+    }
+
+    public Type getPropertyCoreType(String propertyName) {
+        return propertyCoreType.get(propertyName);
     }
 
     public PropertyType getPropertyType(String propertyName) {
@@ -164,6 +172,7 @@ public class Model {
                         /*
                          * Array: use a collection table.
                          */
+                        propertyCoreType.put(propertyName, fieldType);
                         PropertyType type = PropertyType.fromFieldType(
                                 listFieldType, true);
                         propertyType.put(propertyName, type);
@@ -182,9 +191,9 @@ public class Model {
                     /*
                      * Primitive type.
                      */
+                    propertyCoreType.put(propertyName, fieldType);
                     PropertyType type = PropertyType.fromFieldType(fieldType,
                             false);
-
                     propertyType.put(propertyName, type);
                     String tableName = typeName; // TODO use policy config
                     propertyFragment.put(propertyName, tableName);

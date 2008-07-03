@@ -97,6 +97,16 @@ public interface Session extends Connection {
     String getPath(Node node) throws StorageException;
 
     /**
+     * Cheks if a child node with the given name exists.
+     *
+     * @param parent the parent node
+     * @param name the child name
+     * @return {@code true} if a child node with that name exists
+     * @throws StorageException
+     */
+    boolean hasChildNode(Node parent, String name) throws StorageException;
+
+    /**
      * Gets a child node given its parent and name.
      *
      * @param parent the parent node
@@ -105,6 +115,15 @@ public interface Session extends Connection {
      * @throws StorageException
      */
     Node getChildNode(Node parent, String name) throws StorageException;
+
+    /**
+     * Checks it a node has children.
+     *
+     * @param parent the parent node
+     * @return {@code true} if the parent has children
+     * @throws StorageException
+     */
+    boolean hasChildren(Node parent) throws StorageException;
 
     /**
      * Gets the children of a node.

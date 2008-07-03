@@ -22,15 +22,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.engine.Versioning;
-import org.nuxeo.common.utils.Constants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -38,15 +35,9 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
-import org.nuxeo.ecm.core.model.NoSuchPropertyException;
 import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.schema.types.ComplexType;
-import org.nuxeo.ecm.core.schema.types.Field;
-import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.types.TypeException;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;
 import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
@@ -58,18 +49,15 @@ public class SQLModelDocument implements Document {
 
     private static final Log log = LogFactory.getLog(SQLModelDocument.class);
 
-    // the session
+    /** The session. */
     private SQLModelSession session;
 
-    // underlying SQL node
+    /** The underlying SQL node. */
     private Node node;
-
-    // the document type
-    private DocumentType type;
 
     // we store lock state on the document because it is frequently used
     // (on each permission check)
-    private String lock;
+    //private String lock;
 
     /**
      * Constructs a document that wraps the given JCR node.
@@ -85,7 +73,6 @@ public class SQLModelDocument implements Document {
             throws StorageException {
         this.node = node;
         this.session = session;
-        type = session.getDocumentType(node); // TODO lazy load
     }
 
     /*
@@ -97,14 +84,14 @@ public class SQLModelDocument implements Document {
     }
 
     public boolean isFolder() {
-        return type.isFolder();
+        return node.getType().isFolder();
     }
 
-    public String getName() throws DocumentException {
+    public String getName() {
         return node.getName();
     }
 
-    public String getUUID() throws DocumentException {
+    public String getUUID() {
         return node.getId().toString();
     }
 
@@ -121,664 +108,54 @@ public class SQLModelDocument implements Document {
     }
 
     public DocumentType getType() {
-        return type;
-    }
-
-    public Document resolvePath(String path) throws DocumentException {
-        if (path == null) {
-            throw new IllegalArgumentException();
-        }
-        if (path.length() == 0) {
-            return this;
-        }
-        // this API doesn't take absolute paths
-        if (path.startsWith("/")) {
-            // TODO log warning
-            path = path.substring(1);
-        }
-        return session.resolvePath(node, path);
-    }
-
-    public Document getChild(String name) throws DocumentException {
-        return session.getChild(node, name);
-    }
-
-    public Iterator<Document> getChildren() throws DocumentException {
-        if (!isFolder()) {
-            return EmptyDocumentIterator.INSTANCE;
-        }
-        try {
-            assertIsFolder();
-            return new JCRDocumentIterator(session, node);
-        } catch (Exception e) {
-            throw new DocumentException(e);
-        }
-    }
-
-    public DocumentIterator getChildren(int start) throws DocumentException {
-        if (!isFolder()) {
-            return EmptyDocumentIterator.INSTANCE;
-        }
-        try {
-            assertIsFolder();
-            return new JCRDocumentIterator(session, node, start);
-        } catch (Exception e) {
-            throw new DocumentException(e);
-        }
-    }
-
-    public List<String> getChildrenIds() throws DocumentException {
-        if (!isFolder()) {
-            return Collections.emptyList();
-        }
-        try {
-            NodeIterator it = ModelAdapter.getContainerNode(node).getNodes();
-            List<String> ids = new ArrayList<String>((int) it.getSize());
-            while (it.hasNext()) {
-                ids.add(it.nextNode().getUUID());
-            }
-            return ids;
-        } catch (Exception e) {
-            throw new DocumentException(e);
-        }
-    }
-
-    public boolean hasChild(String name) throws DocumentException {
-        if (!isFolder()) {
-            return false;
-        }
-        try {
-            return ModelAdapter.hasChild(node, name);
-        } catch (StorageException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public boolean hasChildren() throws DocumentException {
-        if (!isFolder()) {
-            return false;
-        }
-        try {
-            return ModelAdapter.hasChildren(node);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public Document addChild(String name, String typeName)
-            throws DocumentException {
-        try {
-            assertIsFolder();
-            Node child = ModelAdapter.addChild(node, name, typeName);
-            Document doc = session.newDocument(child);
-            if (doc.getType().isUnstructured()) { // unstructured document ->
-                // add unstructured mixin
-                // type
-                ModelAdapter.setUnstructured(child);
-            }
-            return doc;
-        } catch (Exception e) {
-            throw new DocumentException("Failed to create document " + name, e);
-        }
-    }
-
-    public void removeChild(String name) throws DocumentException {
-        if (!isFolder()) {
-            return; // ignore non folder documents
-        }
-        Document doc = getChild(name);
-        doc.remove();
-    }
-
-    public void orderBefore(String src, String dest) throws DocumentException {
-        assertIsFolder();
-        try {
-            ModelAdapter.getContainerNode(node).orderBefore(src, dest);
-        } catch (StorageException e) {
-            throw new DocumentException("Failed to reorder documents", e);
-        }
-    }
-
-    public boolean isDirty() throws DocumentException {
-        try {
-            try {
-                javax.jcr.Property prop = node.getProperty(NodeConstants.ECM_DIRTY.rawname);
-                return prop.getBoolean();
-            } catch (PathNotFoundException e) {
-                // if dirty flag is not set it means the doc is
-                // new so it is dirty
-                return true;
-            }
-        } catch (StorageException e) {
-            throw new DocumentException("Failed to retrieve document flags", e);
-        }
-    }
-
-    public void setDirty(boolean value) throws DocumentException {
-        try {
-            node.setProperty(NodeConstants.ECM_DIRTY.rawname, value);
-        } catch (StorageException e) {
-            throw new DocumentException("Failed to retrieve document flags", e);
-        }
-    }
-
-    public void remove() throws DocumentException {
-        if (log.isDebugEnabled()) {
-            log.debug("removing doc " + getPath());
-        }
-        try {
-            // version removal is done at the AbstractSession level
-            node.remove();
-        } catch (StorageException e) {
-            throw new DocumentException(e);
-        }
-    }
-
-    public void save() throws DocumentException {
-        try {
-            node.save();
-        } catch (StorageException e) {
-            throw new DocumentException(e);
-        }
-    }
-
-    @Override
-    public String toString() {
-        try {
-            return getName();
-        } catch (DocumentException e) {
-            return super.toString();
-        }
-    }
-
-    // Version-related functions
-
-    public void checkIn(String label) throws DocumentException {
-        // be sure document is not dirty otherwise checkin will fail (conf. to
-        // jcr specs)
-        JCRHelper.saveNode(node);
-        Versioning.getService().checkin(this, label);
-    }
-
-    public void checkIn(String label, String description)
-            throws DocumentException {
-        // be sure document is not dirty otherwise checkin will fail (conf. to
-        // jcr specs)
-        JCRHelper.saveNode(node);
-        Versioning.getService().checkin(this, label, description);
-    }
-
-    public void checkOut() throws DocumentException {
-        Versioning.getService().checkout(this);
-    }
-
-    public boolean isCheckedOut() throws DocumentException {
-        return Versioning.getService().isCheckedOut(this);
-    }
-
-    public void restore(String label) throws DocumentException {
-        Versioning.getService().restore(this, label);
-    }
-
-    public List<String> getVersionsIds() throws DocumentException {
-        return Versioning.getService().getVersionsIds(this);
-    }
-
-    public Document getVersion(String label) throws DocumentException {
-        return Versioning.getService().getVersion(this, label);
-    }
-
-    public DocumentVersionIterator getVersions() throws DocumentException {
-        /*
-         * try { return new JCRDocumentVersionIterator(session,
-         * node.getVersionHistory() .getAllVersions()); } catch
-         * (UnsupportedRepositoryOperationException e) { throw new
-         * DocumentException(e); } catch (StorageException e) { throw new
-         * DocumentException(e); }
-         */
-        return Versioning.getService().getVersions(this);
-    }
-
-    public DocumentVersion getLastVersion() throws DocumentException {
-        return Versioning.getService().getLastVersion(this);
-    }
-
-    // END - Version-related function
-
-    // ------------- property management -------------------
-
-    public boolean getBoolean(String name) throws DocumentException {
-        Field field = getField(name);
-        if (field == null) {
-            throw new NoSuchPropertyException(name);
-        }
-        return PropertyContainerAdapter.getBoolean(type, node,
-                field.getName().getPrefixedName());
-    }
-
-    public Blob getContent(String name) throws DocumentException {
-        Field field = getField(name);
-        if (field == null) {
-            throw new NoSuchPropertyException(name);
-        }
-        return PropertyContainerAdapter.getContent(type, node,
-                field.getName().getPrefixedName());
-    }
-
-    public Calendar getDate(String name) throws DocumentException {
-        Field field = getField(name);
-        if (field == null) {
-            throw new NoSuchPropertyException(name);
-        }
-        return PropertyContainerAdapter.getDate(type, node,
-                field.getName().getPrefixedName());
-    }
-
-    public double getDouble(String name) throws DocumentException {
-        Field field = getField(name);
-        if (field == null) {
-            throw new NoSuchPropertyException(name);
-        }
-        return PropertyContainerAdapter.getDouble(type, node,
-                field.getName().getPrefixedName());
-    }
-
-    public long getLong(String name) throws DocumentException {
-        Field field = getField(name);
-        if (field == null) {
-            throw new NoSuchPropertyException(name);
-        }
-        return PropertyContainerAdapter.getLong(type, node,
-                field.getName().getPrefixedName());
-    }
-
-    public String getString(String name) throws DocumentException {
-        Field field = getField(name);
-        if (field == null) {
-            throw new NoSuchPropertyException(name);
-        }
-        return PropertyContainerAdapter.getString(type, node,
-                field.getName().getPrefixedName());
-    }
-
-    public Property getProperty(String name) throws DocumentException {
-        return PropertyFactory.getProperty(this, name);
-    }
-
-    public void setPropertyValue(String name, Object value)
-            throws DocumentException {
-        // we log a debugging message here as it is a point where the
-        // property name is known
-        try {
-            getProperty(name).setValue(value);
-            // TODO mark dirty fields
-        } catch (RuntimeException e) {
-            log.error("RuntimeException setting value: " + value +
-                    " on property: " + name);
-            throw e;
-        } catch (DocumentException e) {
-            log.error("Error setting value: " + value + " on property: " + name);
-            throw e;
-        }
-    }
-
-    public <T extends Serializable> void setSystemProp(String name, T value)
-            throws DocumentException {
-
-        try {
-            Node n = node.getNodeByPath(NodeConstants.ECM_SYSTEM_ANY.rawname);
-            if (null == value) {
-                n.setProperty(name, (Value) null);
-                return;
-            }
-
-            if (value.getClass() == String.class) {
-                n.setProperty(name, (String) value);
-            } else if (value.getClass() == Long.class) {
-                n.setProperty(name, (Long) value);
-            } else if (value.getClass() == Integer.class) {
-                // this is ok as long as data is not truncated
-                n.setProperty(name, (Integer) value);
-            } else if (value.getClass() == Boolean.class) {
-                // this is ok as long as data is not truncated
-                n.setProperty(name, (Boolean) value);
-            } else {
-                throw new DocumentException("unsupported type: " +
-                        value.getClass());
-            }
-        } catch (StorageException e) {
-            throw new DocumentException("failed to set system property: " +
-                    name, e);
-        }
-    }
-
-    public <T extends Serializable> T getSystemProp(String name, Class<T> type)
-            throws DocumentException {
-        try {
-            Node n = node.getNodeByPath(NodeConstants.ECM_SYSTEM_ANY.rawname);
-            javax.jcr.Property p = n.getProperty(name);
-            Value v = p.getValue();
-
-            if (type == String.class) {
-                return (T) v.getString();
-            } else if (type == Long.class) {
-                return (T) Long.valueOf(v.getLong());
-            } else if (type == Boolean.class) {
-                return (T) Boolean.valueOf(v.getBoolean());
-            } else {
-                throw new DocumentException("unsupported specified type: " +
-                        type);
-            }
-
-        } catch (StorageException e) {
-            throw new DocumentException("failed to get system property: " +
-                    name, e);
-        }
-    }
-
-    public Object getPropertyValue(String name) throws DocumentException {
-        return getProperty(name).getValue();
-    }
-
-    public Collection<Property> getProperties() throws DocumentException {
-        return PropertyContainerAdapter.getProperties(this);
-    }
-
-    public List<String> getDirtyFields() {
-        throw new UnsupportedOperationException("unused");
-    }
-
-    public Iterator<Property> getPropertyIterator() throws DocumentException {
-        return PropertyContainerAdapter.getPropertyIterator(this);
-    }
-
-    public Map<String, Map<String, Object>> exportMap(String[] schemas)
-            throws DocumentException {
-        Map<String, Map<String, Object>> map = new HashMap<String, Map<String, Object>>();
-        if (schemas != null) {
-            for (String schemaName : schemas) {
-                Schema schema = type.getSchema(schemaName);
-                if (schema != null) {
-                    Map<String, Object> subMap = new HashMap<String, Object>();
-                    for (Field field : schema.getFields()) {
-                        Property property = PropertyFactory.getProperty(this,
-                                field);
-                        subMap.put(field.getName().getLocalName(),
-                                property.getValue());
-                    }
-                    map.put(schema.getName(), subMap);
-                }
-            }
-        } else {
-            Collection<Schema> allSchemas = type.getSchemas();
-            for (Schema schema : allSchemas) {
-                Map<String, Object> subMap = new HashMap<String, Object>();
-                for (Field field : schema.getFields()) {
-                    Property property = PropertyFactory.getProperty(this, field);
-                    subMap.put(field.getName().getLocalName(),
-                            property.getValue());
-                }
-                map.put(schema.getName(), subMap);
-            }
-        }
-        return map;
-    }
-
-    public Map<String, Object> exportMap(String schemaName)
-            throws DocumentException {
-        Schema schema = type.getSchema(schemaName);
-        Map<String, Object> map = new HashMap<String, Object>();
-        for (Field field : schema.getFields()) {
-            Property property = PropertyFactory.getProperty(this, field);
-            map.put(field.getName().getLocalName(), property.getValue());
-        }
-        return map;
-    }
-
-    public Map<String, Object> exportFlatMap(String[] schemas)
-            throws DocumentException {
-        Map<String, Object> map = new HashMap<String, Object>();
-        if (schemas != null) {
-            for (String schemaName : schemas) {
-                Schema schema = type.getSchema(schemaName);
-                if (schema != null) {
-                    for (Field field : schema.getFields()) {
-                        Property property = PropertyFactory.getProperty(this,
-                                field);
-                        map.put(field.getName().getPrefixedName(),
-                                property.getValue());
-                    }
-                }
-            }
-        } else {
-            Collection<Schema> allSchemas = type.getSchemas();
-            for (Schema schema : allSchemas) {
-                for (Field field : schema.getFields()) {
-                    Property property = PropertyFactory.getProperty(this, field);
-                    map.put(field.getName().getPrefixedName(),
-                            property.getValue());
-                }
-            }
-        }
-        return map;
-    }
-
-    public void importMap(Map<String, Map<String, Object>> map)
-            throws DocumentException {
-        StringBuilder buf = new StringBuilder();
-        for (Map.Entry<String, Map<String, Object>> entry : map.entrySet()) {
-            String schemaName = entry.getKey();
-            Schema schema = type.getSchema(schemaName);
-            if (schema != null) {
-                String prefix = schema.getNamespace().prefix;
-                int len = prefix.length();
-                if (len != 0) {
-                    buf.append(prefix).append(':');
-                    len++;
-                }
-                for (Map.Entry<String, Object> subEntry : entry.getValue().entrySet()) {
-                    buf.append(subEntry.getKey());
-                    setPropertyValue(buf.toString(), entry.getValue());
-                    buf.setLength(len);
-                }
-            }
-        }
-    }
-
-    public void importFlatMap(Map<String, Object> map) throws DocumentException {
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            setPropertyValue(entry.getKey(), entry.getValue());
-        }
-    }
-
-    public boolean isPropertySet(String path) throws DocumentException {
-        return PropertyContainerAdapter.hasProperty(node, path);
-    }
-
-    public void removeProperty(String name) throws DocumentException {
-        Field field = getField(name);
-        if (field == null) {
-            throw new NoSuchPropertyException(name);
-        }
-        PropertyContainerAdapter.removeProperty(node,
-                field.getName().getPrefixedName());
-    }
-
-    public void setBoolean(String name, boolean value) throws DocumentException {
-        Field field = getField(name);
-        if (field == null) {
-            throw new NoSuchPropertyException(name);
-        }
-        // TODO check constraints
-        // checkValue(field, value));
-        PropertyContainerAdapter.setBoolean(node,
-                field.getName().getPrefixedName(), value);
-    }
-
-    public void setContent(String name, Blob value) throws DocumentException {
-        Field field = getField(name);
-        if (field == null) {
-            throw new NoSuchPropertyException(name);
-        }
-        // TODO check constraints
-        // checkValue(field, value));
-        PropertyContainerAdapter.setContent(node,
-                field.getName().getPrefixedName(), value);
-    }
-
-    public void setDate(String name, Calendar value) throws DocumentException {
-        Field field = getField(name);
-        if (field == null) {
-            throw new NoSuchPropertyException(name);
-        }
-        // TODO check constraints
-        // checkValue(field, value));
-        PropertyContainerAdapter.setDate(node,
-                field.getName().getPrefixedName(), value);
-    }
-
-    public void setDouble(String name, double value) throws DocumentException {
-        Field field = getField(name);
-        if (field == null) {
-            throw new NoSuchPropertyException(name);
-        }
-        // TODO check constraints
-        // checkValue(field, value));
-        PropertyContainerAdapter.setDouble(node,
-                field.getName().getPrefixedName(), value);
-    }
-
-    public void setLong(String name, long value) throws DocumentException {
-        Field field = getField(name);
-        if (field == null) {
-            throw new NoSuchPropertyException(name);
-        }
-        // TODO check constraints
-        // checkValue(field, value));
-        PropertyContainerAdapter.setLong(node,
-                field.getName().getPrefixedName(), value);
-    }
-
-    public void setString(String name, String value) throws DocumentException {
-        Field field = getField(name);
-        if (field == null) {
-            throw new NoSuchPropertyException(name);
-        }
-        // TODO check constraints
-        // checkValue(field, value));
-        PropertyContainerAdapter.setString(node,
-                field.getName().getPrefixedName(), value);
-    }
-
-    public boolean hasVersions() throws DocumentException {
-        // there will always be a root version - work around that by skipping
-        // one version, for the moment at least.
-        DocumentVersionIterator versionIterator = getVersions();
-        versionIterator.nextDocumentVersion();
-
-        return versionIterator.hasNext();
-    }
-
-    // TODO: optimize this since it is used in permission checks
-    public boolean isLocked() throws DocumentException {
-        return getLock() != null;
-    }
-
-    public String getLock() throws DocumentException {
-        if (lock != null) {
-            return (lock == Constants.EMPTY_STRING) ? null : lock;
-        }
-        try {
-            javax.jcr.Property lock = node.getProperty(NodeConstants.ECM_LOCK.rawname);
-            this.lock = lock.getString();
-        } catch (PathNotFoundException e) {
-            // no lock on that document - return null
-            lock = Constants.EMPTY_STRING;
-        } catch (StorageException e) {
-            throw new DocumentException("Cannot get lock information for " +
-                    getName(), e);
-        }
-        return lock == Constants.EMPTY_STRING ? null : lock;
-    }
-
-    public void setLock(String key) throws DocumentException {
-        if (key == null) {
-            throw new IllegalArgumentException("The lock key canot be null");
-        }
-        if (isLocked()) {
-            throw new DocumentException("Document is already locked: " +
-                    getName());
-        }
-        try {
-            node.setProperty(NodeConstants.ECM_LOCK.rawname, key);
-            lock = key;
-            session.documentLocked(this);
-        } catch (StorageException e) {
-            throw new DocumentException("Failed to set lock on " + getName(), e);
-        }
-    }
-
-    public String unlock() throws DocumentException {
-        try {
-            javax.jcr.Property lock = node.getProperty(NodeConstants.ECM_LOCK.rawname);
-            String key = lock.getString();
-            if (key == null) {
-                return null;
-            }
-            lock.remove();
-            this.lock = Constants.EMPTY_STRING;
-            session.documentUnlocked(this);
-            return key;
-        } catch (PathNotFoundException e) {
-            // no lock on that document - return null
-        } catch (StorageException e) {
-            throw new DocumentException("Cannot get lock information for " +
-                    getName(), e);
-        }
-        return null;
+        return node.getType();
     }
 
     public boolean isProxy() {
         return false;
     }
 
-    public boolean isVersion() {
-        return false;
-    }
-
-    public Document getSourceDocument() throws DocumentException {
-        return this;
-    }
-
     public Repository getRepository() {
         return session.getRepository();
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (obj instanceof JCRDocument) {
-            return node == ((JCRDocument) obj).node;
-        }
-        return false;
+    public void remove() throws DocumentException {
+        session.removeNode(node);
     }
 
-    @Override
-    public int hashCode() {
-        return node.hashCode();
+    public void save() throws DocumentException {
+        session.save();
+    }
+
+    public boolean isDirty() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setDirty(boolean value) throws DocumentException {
+        throw new UnsupportedOperationException();
     }
 
     public void readDocumentPart(DocumentPart dp) throws Exception {
-        DocumentPartReader.readDocumentPart(this, dp);
+        throw new UnsupportedOperationException();
     }
 
     public void writeDocumentPart(DocumentPart dp) throws Exception {
-        DocumentPartWriter.writeDocumentPart(this, dp);
+        throw new UnsupportedOperationException();
     }
+
+    public <T extends Serializable> void setSystemProp(String name, T value)
+            throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public <T extends Serializable> T getSystemProp(String name, Class<T> type)
+            throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    /*
+     * ----- Lifecycle -----
+     */
 
     public boolean followTransition(String transition)
             throws LifeCycleException {
@@ -803,53 +180,354 @@ public class SQLModelDocument implements Document {
     }
 
     /*
-     * ----- -----
+     * ----- org.nuxeo.ecm.core.model.DocumentContainer -----
      */
 
-    private void assertIsFolder() {
-        if (!type.isFolder()) {
-            throw new UnsupportedOperationException(
-                    "This document is not a folder");
+    public Document resolvePath(String path) throws DocumentException {
+        if (path == null) {
+            throw new IllegalArgumentException();
+        }
+        if (path.length() == 0) {
+            return this;
+        }
+        // this API doesn't take absolute paths
+        if (path.startsWith("/")) {
+            // TODO log warning
+            path = path.substring(1);
+        }
+        return session.resolvePath(node, path);
+    }
+
+    public Document getChild(String name) throws DocumentException {
+        return session.getChild(node, name);
+    }
+
+    public Iterator<Document> getChildren() throws DocumentException {
+        return getChildren(0);
+    }
+
+    public DocumentIterator getChildren(int start) throws DocumentException {
+        if (!isFolder()) {
+            return EmptyDocumentIterator.INSTANCE;
+        }
+        List<Document> children = session.getChildren(node);
+        if (start < 0) {
+            throw new IllegalArgumentException(String.valueOf(start));
+        }
+        if (start >= children.size()) {
+            return EmptyDocumentIterator.INSTANCE;
+        }
+        return new DocumentListIterator(
+                children.subList(start, children.size()));
+    }
+
+    public List<String> getChildrenIds() throws DocumentException {
+        if (!isFolder()) {
+            return Collections.emptyList();
+        }
+        // not optimized as this method doesn't seem to be used
+        List<Document> children = session.getChildren(node);
+        List<String> ids = new ArrayList<String>(children.size());
+        for (Document child : children) {
+            ids.add(child.getUUID());
+        }
+        return ids;
+    }
+
+    public boolean hasChild(String name) throws DocumentException {
+        if (!isFolder()) {
+            return false;
+        }
+        return session.hasChild(node, name);
+    }
+
+    public boolean hasChildren() throws DocumentException {
+        if (!isFolder()) {
+            return false;
+        }
+        return session.hasChildren(node);
+    }
+
+    public Document addChild(String name, String typeName)
+            throws DocumentException {
+        if (!isFolder()) {
+            throw new IllegalArgumentException("Not a folder");
+        }
+        return session.addChild(node, name, typeName);
+    }
+
+    public void orderBefore(String src, String dest) throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public void removeChild(String name) throws DocumentException {
+        if (!isFolder()) {
+            return; // ignore non folder documents XXX urgh
+        }
+        Document doc = getChild(name);
+        doc.remove();
+    }
+
+    /*
+     * ----- org.nuxeo.ecm.core.model.PropertyContainer -----
+     */
+
+    public Property getProperty(String name) throws DocumentException {
+        try {
+            return node.getProperty(name);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
         }
     }
 
-    private Field getField(String name) {
-        return type.getField(name);
+    public String getString(String name) throws DocumentException {
+        return (String) getProperty(name).getValue();
     }
 
-    private ComplexType getSchema(String schema) {
-        return type.getSchema(schema);
+    public boolean getBoolean(String name) throws DocumentException {
+        Boolean value = (Boolean) getProperty(name).getValue();
+        return value == null ? false : value.booleanValue();
     }
 
-    private Node connect() throws DocumentException {
-        return node;
+    public Blob getContent(String name) throws DocumentException {
+        throw new UnsupportedOperationException();
     }
 
-    private boolean isConnected() {
-        return node != null;
+    public Calendar getDate(String name) throws DocumentException {
+        return (Calendar) getProperty(name).getValue();
     }
 
-    private Node getNode() {
-        return node;
+    public double getDouble(String name) throws DocumentException {
+        Double value = (Double) getProperty(name).getValue();
+        return value == null ? 0 : value.doubleValue();
     }
 
-    private JCRDocument getDocument() {
+    public long getLong(String name) throws DocumentException {
+        Long value = (Long) getProperty(name).getValue();
+        return value == null ? 0 : value.longValue();
+    }
+
+    public Object getPropertyValue(String name) throws DocumentException {
+        return getProperty(name).getValue();
+    }
+
+    public Collection<Property> getProperties() throws DocumentException {
+        throw new UnsupportedOperationException("unused");
+    }
+
+    public List<String> getDirtyFields() {
+        throw new UnsupportedOperationException("unused");
+    }
+
+    public Iterator<Property> getPropertyIterator() throws DocumentException {
+        throw new UnsupportedOperationException("unused");
+    }
+
+    public Map<String, Map<String, Object>> exportMap(String[] schemas)
+            throws DocumentException {
+        throw new UnsupportedOperationException("unused");
+    }
+
+    public Map<String, Object> exportMap(String schemaName)
+            throws DocumentException {
+        throw new UnsupportedOperationException("unused");
+    }
+
+    public Map<String, Object> exportFlatMap(String[] schemas)
+            throws DocumentException {
+        throw new UnsupportedOperationException("unused");
+    }
+
+    public void importMap(Map<String, Map<String, Object>> map)
+            throws DocumentException {
+        throw new UnsupportedOperationException("unused");
+    }
+
+    public void importFlatMap(Map<String, Object> map) throws DocumentException {
+        throw new UnsupportedOperationException("unused");
+    }
+
+    public boolean isPropertySet(String path) throws DocumentException {
+        throw new UnsupportedOperationException("unused");
+    }
+
+    public void removeProperty(String name) throws DocumentException {
+        throw new UnsupportedOperationException("unused");
+    }
+
+    public void setPropertyValue(String name, Object value)
+            throws DocumentException {
+        // TODO check constraints
+        try {
+            getProperty(name).setValue(value);
+            // TODO mark dirty fields
+        } catch (RuntimeException e) {
+            log.error("RuntimeException setting value: " + value +
+                    " on property: " + name);
+            throw e;
+        } catch (DocumentException e) {
+            // we log a debugging message here as it is a point where the
+            // property name is known
+            log.error("Error setting value: " + value + " on property: " + name);
+            throw e;
+        }
+    }
+
+    public void setBoolean(String name, boolean value) throws DocumentException {
+        setPropertyValue(name, Boolean.valueOf(value));
+    }
+
+    public void setContent(String name, Blob value) throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setDate(String name, Calendar value) throws DocumentException {
+        setPropertyValue(name, value);
+    }
+
+    public void setDouble(String name, double value) throws DocumentException {
+        setPropertyValue(name, Double.valueOf(value));
+    }
+
+    public void setLong(String name, long value) throws DocumentException {
+        setPropertyValue(name, Long.valueOf(value));
+    }
+
+    public void setString(String name, String value) throws DocumentException {
+        setPropertyValue(name, value);
+    }
+
+    /*
+     * ----- org.nuxeo.ecm.core.versioning.VersionableDocument -----
+     */
+
+    public boolean isVersion() {
+        return false;
+    }
+
+    public Document getSourceDocument() {
         return this;
     }
 
-    private Collection<Field> getFields() {
-        return type.getFields();
+    public void checkIn(String label) throws DocumentException {
+        throw new UnsupportedOperationException();
     }
 
-    private static void checkValue(Field field, Object value)
+    public void checkIn(String label, String description)
             throws DocumentException {
-        try {
-            if (!field.getType().validate(value)) {
-                throw new DocumentException("constraints validation failed");
-            }
-        } catch (TypeException e) {
-            throw new DocumentException("constraints validation failed", e);
+        throw new UnsupportedOperationException();
+    }
+
+    public void checkOut() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean isCheckedOut() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public void restore(String label) throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<String> getVersionsIds() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public Document getVersion(String label) throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public DocumentVersionIterator getVersions() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public DocumentVersion getLastVersion() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean hasVersions() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    /*
+     * ----- org.nuxeo.ecm.core.model.Lockable -----
+     */
+
+    // TODO: optimize this since it is used in permission checks
+    public boolean isLocked() throws DocumentException {
+        return getLock() != null;
+    }
+
+    public String getLock() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setLock(String key) throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public String unlock() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    /*
+     * ----- -----
+     */
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + getName() + ',' + getUUID() +
+                ')';
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
         }
+        if (other instanceof SQLModelDocument) {
+            return equals((SQLModelDocument) other);
+        }
+        return false;
+    }
+
+    private boolean equals(SQLModelDocument other) {
+        return node.getId() == other.node.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return node.getId().hashCode();
+    }
+
+}
+
+class DocumentListIterator implements DocumentIterator {
+
+    private final int size;
+
+    private final Iterator<Document> iterator;
+
+    public DocumentListIterator(List<Document> list) {
+        size = list.size();
+        iterator = list.iterator();
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public boolean hasNext() {
+        return iterator.hasNext();
+    }
+
+    public Document next() {
+        return iterator.next();
+    }
+
+    public void remove() {
+        throw new UnsupportedOperationException();
     }
 
 }

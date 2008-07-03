@@ -310,7 +310,7 @@ public class PersistenceContextByTable {
      * Gets the list of children for a given parent id.
      *
      * @param parentId the parent id
-     * @return the list of children.
+     * @return the list of children
      * @throws StorageException
      */
     public Collection<SimpleFragment> getHierChildren(Serializable parentId)

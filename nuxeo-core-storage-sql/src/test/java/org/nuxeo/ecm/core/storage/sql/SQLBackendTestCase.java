@@ -28,7 +28,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 /**
  * @author Florent Guillaume
  */
-public abstract class SQLStorageTestCase extends NXRuntimeTestCase {
+public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
 
     public Repository repository;
 

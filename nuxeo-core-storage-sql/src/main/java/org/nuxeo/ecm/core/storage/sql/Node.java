@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -33,8 +32,9 @@ import org.nuxeo.ecm.core.storage.StorageException;
  */
 public class Node {
 
+    // XXX TODO make type transient
     /** The node type. */
-    protected final Type type;
+    protected final DocumentType type;
 
     /** The persistence context used. */
     protected final PersistenceContext context;
@@ -119,15 +119,15 @@ public class Node {
     // ----- properties -----
 
     /**
-     * Gets a single property from the node, given its name.
+     * Gets a simple property from the node, given its name.
      *
      * @param name the property name
      * @return the property
      * @throws IllegalArgumentException if the name is invalid
      * @throws StorageException
      */
-    public SimpleProperty getSingleProperty(String name)
-            throws IllegalArgumentException, StorageException {
+    public SimpleProperty getSimpleProperty(String name)
+            throws StorageException {
         if (name == null || name.contains("/") || name.equals(".") ||
                 name.equals("..")) {
             // XXX real parsing
@@ -180,7 +180,7 @@ public class Node {
      * @throws StorageException
      */
     public CollectionProperty getCollectionProperty(String name)
-            throws IllegalArgumentException, StorageException {
+            throws StorageException {
         if (name == null || name.contains("/") || name.equals(".") ||
                 name.equals("..")) {
             // XXX real parsing
@@ -205,9 +205,25 @@ public class Node {
         return property;
     }
 
+    public AbstractProperty getProperty(String name) throws StorageException {
+        AbstractProperty property = propertyCache.get(name);
+        if (property != null) {
+            return property;
+        }
+        PropertyType propType = model.getPropertyType(name);
+        if (propType == null) {
+            throw new IllegalArgumentException("Unknown field: " + name);
+        }
+        if (propType.isArray()) {
+            return getCollectionProperty(name);
+        } else {
+            return getSimpleProperty(name);
+        }
+    }
+
     public void setSingleProperty(String name, Serializable value)
             throws StorageException {
-        SimpleProperty property = (SimpleProperty) getSingleProperty(name);
+        SimpleProperty property = (SimpleProperty) getSimpleProperty(name);
         property.setValue(value);
     }
 
@@ -219,7 +235,7 @@ public class Node {
 
     // ----- node type -----
 
-    public Type getType() {
+    public DocumentType getType() {
         return type;
     }
 
