@@ -152,6 +152,7 @@ public class PublishingListener implements MessageListener {
                 msg.getRepositoryName());
         vars.put(PublishingConstants.WORKFLOW_REVIEWERS, getReviewers(msg));
         vars.put(PublishingConstants.SUBMITTED_BY, msg.getPrincipalName());
+        vars.put(WorkflowConstants.WORKFLOW_CREATOR, msg.getPrincipalName());
 
         // Start the process
         WMActivityInstance activity = wapi.startProcess(pd.getId(), vars, null);
