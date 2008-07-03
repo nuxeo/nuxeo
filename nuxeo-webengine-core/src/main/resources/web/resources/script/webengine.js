@@ -1,7 +1,7 @@
 //Requires jQuery and the Cookies plugin for jQuery
 
 function getContextData(context) {
-  var data = $.cookie("cctx."+context)
+  var data = $.cookie("vars."+context)
   if (data) {
     if (data.charAt(0) == '{' || data.charAt(0) == '[') {
       return JSON.parse(data)
@@ -15,13 +15,13 @@ function getContextData(context) {
 function setContextData(context, data) {  
   if (data) {
     if (typeof data == "string" || typeof data == number || typeof number == boolean) {
-      $.cookie("cctx."+context, data)
+      $.cookie("vars."+context, data)
     } else {
 alert ("not a string "+(typeof data))
-      $.cookie("cctx."+context, JSON.stringify(data))
+      $.cookie("vars."+context, JSON.stringify(data))
     }    
   } else {
-    $.cookie("cctx."+context, null)
+    $.cookie("vars."+context, null)
   }
 }
 

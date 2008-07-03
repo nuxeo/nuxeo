@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
-import org.nuxeo.ecm.webengine.util.ClientContext;
 import org.nuxeo.ecm.webengine.util.FormData;
 
 /**
@@ -197,6 +196,8 @@ public interface WebContext {
      * document
      *
      * @return the path info. Cannot return null.
+     *
+     * @deprecated this method will be removed in future versions and PathInfo merged with WebContext
      */
     PathInfo getPathInfo();
 
@@ -532,17 +533,36 @@ public interface WebContext {
      */
     String getFirstUnresolvedSegment();
 
-    /**
-     * Experimental feature - get the current client comtext
-     * @return
-     */
-    ClientContext getClientContext();
+
+
+    /** --------- Experimental methods - these may change in future ------------ */
 
     /**
-     * Experimental feature - get a client context by name
-     * @param name
+     * Get the current client context
+     * @return the current context or null if the default context
+     */
+    String getClientContext();
+
+    /**
+     * Get a client variable or null if it doesn't exists
+     * @param key
      * @return
      */
-    ClientContext getClientContext(String name);
+    Object getClientVariable(String key);
+
+    /**
+     * Get a client variable or a default value if the variable doesn't exists
+     * @param key
+     * @param defaultValue
+     * @return
+     */
+    Object getClientVariable(String key, Object defaultValue);
+
+    /**
+     * Set a client variable. Use null to remove it
+     * @param key
+     * @param value
+     */
+    void setClientVariable(String key, Object value);
 
 }

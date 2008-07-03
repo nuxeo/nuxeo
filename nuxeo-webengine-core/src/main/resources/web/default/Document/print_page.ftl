@@ -1,5 +1,5 @@
 
-<#assign tab = Context.getClientContext("tab").getValue() />
+<#assign tab = Context.getClientVariable("tab") />
 
 <#if tab>
   <#include "@@${tab}"/>

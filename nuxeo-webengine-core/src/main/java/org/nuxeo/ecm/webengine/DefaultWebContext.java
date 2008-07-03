@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,7 +55,6 @@ import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
-import org.nuxeo.ecm.webengine.util.ClientContext;
 import org.nuxeo.ecm.webengine.util.FormData;
 import org.nuxeo.ecm.webengine.util.JSonHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -95,6 +95,10 @@ public class DefaultWebContext implements WebContext {
     protected String basePath;
     protected String applicationPath;
     private boolean isInitialized;
+
+    // used to pass vars between client and server
+    protected HashMap<String, Object> clientVars;
+
 
     public DefaultWebContext(WebApplication app, PathInfo pathInfo,
             HttpServletRequest req, HttpServletResponse resp) {
@@ -618,13 +622,61 @@ public class DefaultWebContext implements WebContext {
         return null;
     }
 
-    public ClientContext getClientContext() {
-        return ClientContext.getActiveContext(this);
+    public String getClientContext() {
+        try {
+            return getForm().getString("context");
+        } catch (Exception e) {
+            // do nothing
+        }
+        return null;
     }
 
-       public ClientContext getClientContext(String name) {
-        return ClientContext.getContext(this, name);
+    public Object getClientVariable(String key) {
+        Object value = null;
+        if (clientVars != null) {
+          value = clientVars.get(key);
+        } else {
+            clientVars = new HashMap<String,Object>();
+        }
+        if (value == null) {
+            String str = getCookie("vars."+key);
+            if (str == null) {
+                return null;
+            } else if (str.length() > 1) {
+                char c = str.charAt(0);
+                if (c == '{' || c == '[') {
+                    value = JSONSerializer.toJSON(str);
+                } else {
+                    value = str;
+                }
+            }
+            clientVars.put(key, value);
+        }
+        return value;
     }
+
+    public Object getClientVariable(String key, Object defaultValue) {
+        Object value = getClientVariable(key);
+        return value == null ? defaultValue : value;
+    }
+
+    public void setClientVariable(String key, Object value) {
+        if (clientVars == null) {
+            clientVars = new HashMap<String, Object>();
+        }
+        clientVars.put(key, value);
+        // TODO set cookie lazy when response is sent to the client
+        if (value == null) {
+            setCookie("vars."+key, null);
+        } else if (value.getClass() == String.class) {
+            setCookie("vars."+key, (String)value);
+        } else if (value instanceof Number || value instanceof Boolean || value instanceof CharSequence) {
+            setCookie("vars."+key, value.toString());
+        } else {
+            setCookie("vars."+key, JSONSerializer.toJSON(value).toString());
+        }
+    }
+
     //--------------------------------------------------------------------------- TODO internal API
 
     public Bindings createBindings(Map<String, Object> vars) {
