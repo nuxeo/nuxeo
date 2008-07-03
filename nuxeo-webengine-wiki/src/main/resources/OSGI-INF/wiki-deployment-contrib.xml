@@ -6,21 +6,21 @@
 		target="org.nuxeo.ecm.webengine.WebEngineComponent"
 		point="install">
 
-	    <install guard="/WEB-INF/wiki-config.xml">
-	      <copy path="OSGI-INF/wiki-config.xml" target="/WEB-INF/wiki-config.xml" />
-	      <copy path="web/wiki" target="/" />	      
+	    <install guard="/WEB-INF/wiki-webapp.xml">
+	      <copy path="OSGI-INF/wiki-webapp.xml" target="/WEB-INF/wiki-webapp.xml" />
+	      <copy path="web/wiki" target="/" />
 	      <copy path="web/resources" target="/" />
 	      <append path="web/i18n/messages.properties" target="/i18n/messages.properties"/>
 	    </install>
-	    
+
 	</extension>
 
   <extension
             target="org.nuxeo.ecm.webengine.WebEngineComponent"
             point="configuration">
-    
-    <configuration path="/WEB-INF/wiki-config.xml" />
-    
+
+    <configuration path="/WEB-INF/wiki-webapp.xml" />
+
   </extension>
 
 </component>

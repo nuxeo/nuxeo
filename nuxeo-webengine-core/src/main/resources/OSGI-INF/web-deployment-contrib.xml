@@ -13,8 +13,7 @@
 		target="org.nuxeo.ecm.webengine.WebEngineComponent"
 		point="install">
 
-	    <install guard="/WEB-INF/default-config.xml">
-	      <copy path="OSGI-INF/default-config.xml" target="/WEB-INF/default-config.xml" />
+	    <install guard="/WEB-INF/default-webapp.xml">
 	      <copy path="OSGI-INF/default-webapp.xml" target="/WEB-INF/default-webapp.xml" />
 	      <copy path="OSGI-INF/admin-webapp.xml" target="/WEB-INF/admin-webapp.xml" />
 	      <!-- do not copy the web directory it will be copied in the activate method
@@ -30,7 +29,6 @@
             target="org.nuxeo.ecm.webengine.WebEngineComponent"
             point="configuration">
 
-    <configuration path="/WEB-INF/default-config.xml" />
     <configuration path="/WEB-INF/default-webapp.xml" />
     <configuration path="/WEB-INF/admin-webapp.xml" />
 
