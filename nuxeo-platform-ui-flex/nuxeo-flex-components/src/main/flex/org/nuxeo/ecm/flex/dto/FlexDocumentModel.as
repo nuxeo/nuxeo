@@ -5,9 +5,11 @@ package org.nuxeo.ecm.flex.dto
   import flash.utils.IExternalizable;
   import flash.utils.IDataInput;
   import flash.utils.IDataOutput;
+  import mx.core.IUID;
 
   [RemoteClass(alias="org.nuxeo.ecm.flex.javadto.FlexDocumentModel")]
-  public class FlexDocumentModel implements IExternalizable
+  public class FlexDocumentModel implements IExternalizable, IUID
+
   {
     private var _docRef:String;
     private var _name:String;
@@ -29,6 +31,16 @@ package org.nuxeo.ecm.flex.dto
       _path=parentPath+_name;
       _dirty = new Object();
       _data = new Object();
+    }
+
+    public function get uid(): String 
+    {
+            return _docRef;
+    }
+
+    public function set uid(uid:String): void
+    {
+
     }
 
     public function readExternal(input:IDataInput):void {
@@ -59,6 +71,11 @@ package org.nuxeo.ecm.flex.dto
     public function get name():String
     {
       return _name;
+    }
+
+    public function get contentdata():Object
+    {
+      return _data;
     }
 
     public function set name(value:String):void

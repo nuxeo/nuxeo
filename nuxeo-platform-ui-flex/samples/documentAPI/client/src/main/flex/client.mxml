@@ -5,8 +5,9 @@
 
    <mx:Script>
 		<![CDATA[
-			import org.nuxeo.ecm.flex.dto.FlexDocumentModel;			
-
+			import org.nuxeo.ecm.flex.dto.FlexDocumentModel;
+			
+                        import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.controls.Alert;
 			import mx.rpc.events.FaultEvent;
 
@@ -25,6 +26,20 @@
 				doc.setProperty(schemaName,fieldName,fieldValue);
 				Alert.show("doc property has been updated locally", "info");
 			}
+
+			private function displayMeta(obj:Object):void
+			{
+				var doc:FlexDocumentModel = FlexDocumentModel(obj);
+				Alert.show("created:" + doc.getProperty("dublincore","created") + "\ncreator:" + doc.getProperty("dublincore","creator"), "info");
+				Alert.show("accessing contentdata:" + doc.contentdata.dublincore.title, "info");
+
+			}
+			private function displayTitle( row:Object, column:DataGridColumn ):String {
+			         return row.getTitle();
+		        }
+                        private function displayCreator( row:Object, column:DataGridColumn ):String {
+			         return row.getProperty("dublincore","creator");
+		        }
 
 	]]>
 	</mx:Script>
@@ -87,7 +102,46 @@
             <mx:Button label="save back document" click="flexDocumentManager.saveDocument(flexDocumentManager.getDocument.lastResult)"/>
         </mx:HBox>
 
-    </mx:Panel>
 
+        <mx:HBox>
+            <mx:Button label="get Children" click="flexDocumentManager.getChildren(flexDocumentManager.getDocument.lastResult.id)"/>
+        </mx:HBox>
+
+
+        <mx:DataGrid id="dg" width="100%" height="100%" rowCount="5" dataProvider="{flexDocumentManager.getChildren.lastResult}">
+            <mx:columns>
+                <mx:DataGridColumn dataField="name" headerText="Name"/>
+                <mx:DataGridColumn dataField="id" headerText="docId"/>
+                <mx:DataGridColumn dataField="contentdata.dublincore.title" labelFunction="displayTitle" headerText="Title"/>
+                <mx:DataGridColumn dataField="contentdata.dublincore.creator" labelFunction="displayCreator" headerText="Creator"/>
+            </mx:columns>
+        </mx:DataGrid>
+
+        <mx:Form width="100%" height="100%">
+            <mx:FormItem label="Name">
+                <mx:Label text="{dg.selectedItem.name}"/>
+            </mx:FormItem>
+            <mx:FormItem label="DocId">
+                <mx:Label text="{dg.selectedItem.id}"/>
+            </mx:FormItem>
+            <mx:FormItem label="Title">
+                <mx:Label text="{dg.selectedItem.getTitle()}"/>
+            </mx:FormItem>
+            <mx:FormItem label="Creator">
+                <mx:Label text="{dg.selectedItem.getProperty('dublincore','creator')}"/>
+            </mx:FormItem>
+
+        </mx:Form>
+
+        <mx:HBox>
+            <mx:Button label="navigate to" click="flexDocumentManager.getChildren(dg.selectedItem.id)"/>
+        </mx:HBox>        <mx:HBox>
+            <mx:Button label="get additionnal meta-data" click="displayMeta(dg.selectedItem)"/>
+        </mx:HBox>
+        <mx:HBox>
+            <mx:Button label="delete doc" click="flexDocumentManager.saveDocument(flexDocumentManager.getDocument.lastResult)"/>
+        </mx:HBox>
+
+</mx:Panel>
 
 </mx:Application>
