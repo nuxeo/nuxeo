@@ -13,6 +13,7 @@
   <artifactId>nuxeo-webengine-core</artifactId>
   <version>5.2-SNAPSHOT</version>
 
+
   <build>
     <plugins>
       <plugin>
@@ -34,31 +35,6 @@
           </excludes>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>net.sf.json-lib</groupId>
-                  <artifactId>json-lib</artifactId>
-		  <classifier>jdk15</classifier>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>
-                ${project.build.directory}/classes/lib
-              </outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 
@@ -79,6 +55,12 @@
         <version>2.2.1</version>
         <classifier>jdk15</classifier>
     </dependency>
+    <dependency>
+        <groupId>net.sf.ezmorph</groupId>
+        <artifactId>ezmorph</artifactId>
+        <scope>provided</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi-core</artifactId>

@@ -193,6 +193,7 @@
         <version>${nuxeo.platform.version}</version>
       </dependency>
 
+
       <!-- jboss client -->
       <dependency>
         <groupId>jboss</groupId>
@@ -268,6 +269,19 @@
 
     <!-- ######### -->
 
+
+    <!-- json -->
+    <dependency>
+        <groupId>net.sf.json-lib</groupId>
+        <artifactId>json-lib</artifactId>
+        <version>2.2.1</version>
+	<classifier>jdk15</classifier>
+    </dependency>
+    <dependency>
+        <groupId>net.sf.ezmorph</groupId>
+        <artifactId>ezmorph</artifactId>
+	<version>0.9</version>
+    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.common</groupId>
