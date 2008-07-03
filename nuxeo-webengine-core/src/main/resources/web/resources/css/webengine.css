@@ -653,9 +653,35 @@ padding-left: 5px;
  list-style-image: none;
 }  
 
+/* List of items (common for many tables) */
+
+#main .itemListing {
+ padding:5px;
+  font-size:10px;
+  width:100%;
+  border-collapse: collapse;
+  border:1px solid #666;
+  margin-bottom: 10px;
+}
+
+#main .itemListing th {
+  padding:3px;
+  background-color: #666;
+  color:#fff;
+  text-align: left;
+}
+
+#main .itemListing td {
+  padding:3px;
+  border:1px solid #666;
+  border-width: 1px 0;
+  text-align: left;
+}
+
+
 /* History */
 
-#main .version_list {
+#main .history {
   padding:5px;
   font-size:10px;
   width:100%;
@@ -664,16 +690,11 @@ padding-left: 5px;
   
 }
 
-#main .version_list th {
-  padding:3px;
-  background-color: #666;
-  color:#fff;
+#main .history th {
+  text-align: center;
 }
 
-#main .version_list td {
-  padding:3px;
-  border:1px solid #666;
-  border-width: 1px 0;
+#main .history td {
   text-align: center;
 }
 
@@ -710,26 +731,15 @@ padding-left: 5px;
   margin-top:0;
 }
 
-#main .directory_list {
-  padding:5px;
-  font-size:10px;
-  width:100%;
-  border-collapse: collapse;
-  border:1px solid #666;
-  
+#main .directories{
 }
 
-#main .directory_list th {
-  padding:3px;
-  background-color: #666;
-  color:#fff;
-  text-align: left;
+#main .directories th {
+
 }
 
-#main .directory_list td {
-  padding:3px;
-  border:1px solid #666;
-  border-width: 1px 0;
+#main .directories td {
+
 }
 
 /* Comment box */

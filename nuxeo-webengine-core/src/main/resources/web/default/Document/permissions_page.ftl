@@ -1,7 +1,7 @@
 <#assign perms = script("common/listpermissions.groovy") />
-<h4>Access Rights</h4>
+
 <#if perms>
-<table>
+<table class="itemListing permissions">
     <thead>
         <tr>
             <th>User or group</th>

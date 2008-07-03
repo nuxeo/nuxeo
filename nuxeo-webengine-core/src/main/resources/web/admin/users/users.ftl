@@ -39,7 +39,7 @@
 </div>
 
 <#if users>
-<table class="directory_list">
+<table class="itemListing directories">
 <thead>
 	<tr>
 		<th>User Name</th>
@@ -61,7 +61,7 @@
 
 
 <#if groups>
-<table class="directory_list">
+<table class="itemListing directories">
 <thead>
   <tr>
     <th>Group Name</th>
