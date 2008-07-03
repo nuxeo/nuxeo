@@ -44,7 +44,7 @@ import sun.misc.BASE64Decoder;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class NuxeoAuthenticationFilter implements Filter {
+public class WebEngineAuthenticationFilter implements Filter {
 
     protected UserManager mgr;
 
@@ -108,7 +108,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                 currentPrincipal = principal;
             }
             if (currentPrincipal != null) { // if a current principal is defined wrap the request
-                request = new NuxeoSecuredRequestWrapper(req, currentPrincipal);
+                request = new WebEngineRequestWrapper(req, currentPrincipal);
             }
         } catch (ClientException e) {
             throw new ServletException("Failed to perform authentication", e);

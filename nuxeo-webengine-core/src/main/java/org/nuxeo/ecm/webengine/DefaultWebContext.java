@@ -117,7 +117,7 @@ public class DefaultWebContext implements WebContext {
         }
         isInitialized = true;
         if (request.getParameter("context") == null) { // if in top level context initialize client URL path
-            setClientUrlPath(pathInfo.path.toString());
+            setClientUrlPath(getUrlPath());
         }
         DocumentRef documentRoot = pathInfo.getDocument();
         if (documentRoot == null) { //TODO XXX: here we can add a custom root resolver

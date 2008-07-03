@@ -9,8 +9,16 @@
 
   <!-- Site Servlet mapping -->
   <extension target="web#SERVLET">
+   <filter>
+      <display-name>WebEngineAuthenticationFilter</display-name>
+      <filter-name>WebEngineAuthenticationFilter</filter-name>
+      <filter-class>
+        org.nuxeo.ecm.webengine.login.WebEngineAuthenticationFilter
+      </filter-class>
+    </filter>
+
     <filter-mapping>
-      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <filter-name>WebEngineAuthenticationFilter</filter-name>
       <url-pattern>/site/*</url-pattern>
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>

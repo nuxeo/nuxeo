@@ -30,11 +30,11 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class NuxeoSecuredRequestWrapper extends HttpServletRequestWrapper {
+public class WebEngineRequestWrapper extends HttpServletRequestWrapper {
 
     NuxeoPrincipal principal;
 
-    public NuxeoSecuredRequestWrapper(HttpServletRequest request, NuxeoPrincipal principal) {
+    public WebEngineRequestWrapper(HttpServletRequest request, NuxeoPrincipal principal) {
         super (request);
         this.principal = principal;
     }

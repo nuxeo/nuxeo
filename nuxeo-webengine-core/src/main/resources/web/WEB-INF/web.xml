@@ -5,14 +5,14 @@
   version="2.4">
 
   <filter>
-    <display-name>Nuxeo Authentication Filter</display-name>
-    <filter-name>NuxeoAuthenticationFilter</filter-name>
+    <display-name>WebEngine Authentication Filter</display-name>
+    <filter-name>WebEngineAuthenticationFilter</filter-name>
     <filter-class>
-      org.nuxeo.ecm.webengine.login.NuxeoAuthenticationFilter
+      org.nuxeo.ecm.webengine.login.WebEngineAuthenticationFilter
     </filter-class>
   </filter>
   <filter-mapping>
-    <filter-name>NuxeoAuthenticationFilter</filter-name>
+    <filter-name>WebEngineAuthenticationFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
