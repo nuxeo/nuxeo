@@ -31,6 +31,7 @@ import javax.faces.application.FacesMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.myfaces.trinidad.model.UploadedFile;
 import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -51,7 +52,6 @@ import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.publishing.api.PublishActions;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
-import org.nuxeo.ecm.platform.ui.web.file.UploadedFile;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.clipboard.ClipboardActions;

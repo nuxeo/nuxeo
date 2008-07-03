@@ -23,11 +23,11 @@ import javax.faces.convert.ConverterException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.myfaces.trinidad.model.UploadedFile;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
-import org.nuxeo.ecm.platform.ui.web.file.UploadedFile;
 import org.nuxeo.ecm.platform.ui.web.resolver.TrinidadUploadedFileStreamSource;
 import org.nuxeo.runtime.api.Framework;
 

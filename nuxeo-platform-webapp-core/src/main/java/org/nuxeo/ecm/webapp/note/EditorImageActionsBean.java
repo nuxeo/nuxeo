@@ -33,6 +33,7 @@ import javax.faces.application.FacesMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.myfaces.trinidad.model.UploadedFile;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -56,7 +57,6 @@ import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.core.search.api.client.search.results.document.SearchPageProvider;
 import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
-import org.nuxeo.ecm.platform.ui.web.file.UploadedFile;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.webapp.base.InputController;
 
