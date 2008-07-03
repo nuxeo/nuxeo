@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
@@ -34,9 +33,6 @@ import org.nuxeo.runtime.model.Extension;
  * @author <a href="mailto:rspivak@nuxeo.com">Ruslan Spivak</a>
  */
 public class PlacefulServiceImpl extends DefaultComponent implements PlacefulService {
-
-    public static final ComponentName ID = new ComponentName(
-            "org.nuxeo.ecm.platform.ec.placeful.PlacefulService");
 
     private static final Log log = LogFactory.getLog(PlacefulServiceImpl.class);
 

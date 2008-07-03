@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.notification.core
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/NotificationService.xml,
- OSGI-INF/notification-contrib.xml,
+ OSGI-INF/notification-config-contrib.xml,
  OSGI-INF/nxplacefulservice-configs-contrib.xml,
  OSGI-INF/rendering-service.xml
 Export-Package: org.nuxeo.ecm.platform.ec.notification,
@@ -15,4 +15,5 @@ Export-Package: org.nuxeo.ecm.platform.ec.notification,
 Require-Bundle: org.nuxeo.ecm.platform.placeful.core,
  org.nuxeo.ecm.platform.usermanager,
  org.nuxeo.ecm.platform.notification.api
-Nuxeo-RequiredBy: org.nuxeo.ecm.platform.placeful.facade
+Nuxeo-RequiredBy: org.nuxeo.ecm.platform.placeful.facade,
+ org.nuxeo.ecm.platform.notification.facade
