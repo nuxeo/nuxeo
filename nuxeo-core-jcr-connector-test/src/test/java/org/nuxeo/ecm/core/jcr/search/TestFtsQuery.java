@@ -375,7 +375,7 @@ public class TestFtsQuery extends RepositoryTestCase {
         printResults(qr, logPrefix);
         assertEquals(1, qr.count());
 
-        final Document doc = (JCRDocument) qr.getObject();
+        final Document doc = (Document) qr.getObject();
         // need to do the test for document with attached content
         final BlobProperty blob = (BlobProperty) doc.getProperty("content");
         assertNotNull(blob);
@@ -393,7 +393,6 @@ public class TestFtsQuery extends RepositoryTestCase {
         printResults(qr2, logPrefix);
         assertEquals(1, qr2.count());
     }
-
 
     /* -- these won't work any more :
      * TODO enable them when CONTAINS is added to NXQL
@@ -465,7 +464,7 @@ public class TestFtsQuery extends RepositoryTestCase {
      * @throws RepositoryException
      * @throws QueryException
      */
-    private void printResults(final QueryResult qr, final String logPrefix)
+    private static void printResults(final QueryResult qr, final String logPrefix)
             throws RepositoryException, QueryException {
         while (qr.next()) {
 
