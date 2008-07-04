@@ -115,7 +115,7 @@ public class DashBoardActionsBean extends InputController implements
     @In
     protected transient Context eventContext;
 
-    @In(required = true)
+    @In(create = true)
     protected transient CoreSession documentManager;
 
     @In(create = true)
@@ -370,7 +370,6 @@ public class DashBoardActionsBean extends InputController implements
     @Remove
     @PermitAll
     public void destroy() {
-        log.debug("Removing Seam component...");
     }
 
     protected DocumentRef getDocumentRefForItem(String itemId) {
@@ -459,12 +458,10 @@ public class DashBoardActionsBean extends InputController implements
     }
 
     public DocumentModelList getUserDocuments() throws ClientException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public DocumentModelList getUserWorkspaces() throws ClientException {
-        // TODO Auto-generated method stub
         return null;
     }
 
