@@ -38,7 +38,11 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jbpm.JbpmContext;
 import org.jbpm.JbpmException;
+import org.jbpm.bytes.ByteArray;
 import org.jbpm.context.exe.ContextInstance;
+import org.jbpm.context.exe.VariableInstance;
+import org.jbpm.context.exe.variableinstance.ByteArrayInstance;
+import org.jbpm.context.exe.variableinstance.StringInstance;
 import org.jbpm.db.GraphSession;
 import org.jbpm.db.TaskMgmtSession;
 import org.jbpm.graph.def.Node;
@@ -383,38 +387,42 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         return activities;
     }
 
+    /**
+     * warning: if 2 variables from 2 different token have the same key one will be overridden.
+     */
+    @SuppressWarnings("unchecked")
     public Map<String, Serializable> listProcessInstanceAttributes(String pid) {
 
         Map<String, Serializable> props = new HashMap<String, Serializable>();
 
         JbpmWorkflowExecutionContext ctx = getExecutionContext();
-        GraphSession graphSession = ctx.getGraphSession();
 
-        ProcessInstance pi = null;
+        JbpmContext jctx = ctx.getContext();
+        Session session = jctx.getSession();
+        List<VariableInstance> vis = null;
         try {
-            pi = graphSession.getProcessInstance(IDConverter.getJbpmIdentifier(pid));
-        } catch (JbpmException jbpme) {
-            log.error("Cannot find workflow instance...", jbpme);
+            Query query = session.getNamedQuery("Nuxeo.findAllVariablesForPid");
+            query.setString("pid", pid);
+            vis = query.list();
+        } catch (Exception e) {
+            log.error(e);
         }
-
-        if (pi != null) {
-            ContextInstance ctxInstance = pi.getContextInstance();
-            List tokenObjects = pi.findAllTokens();
-
-            for (Object tokenObject : tokenObjects) {
-                Token token = (Token) tokenObject;
-                Map objectMaps = ctxInstance.getVariables(token);
-                if (objectMaps != null) {
-                    for (Object object : objectMaps.keySet()) {
-                        String key = (String) object;
-                        Serializable value = (Serializable) objectMaps.get(key);
-                        props.put(key, value);
-                    }
-                }
+        for(VariableInstance vi : vis) {
+            if(!(vi instanceof ByteArrayInstance)) {//don't load, it would mean 1 requete to the db by isntance.
+                props.put(vi.getName(), (Serializable) vi.getValue());
             }
-
         }
-
+        List<ByteArrayInstance> bais = null;
+        try {
+            Query query = session.getNamedQuery("Nuxeo.findAllByteArrayForPid");
+            query.setString("pid", pid);
+            bais = query.list();
+        } catch (Exception e) {
+            log.error(e);
+        }
+        for(ByteArrayInstance bai : bais) {
+            props.put(bai.getName(), (Serializable) bai.getValue());
+        }
         ctx.closeContext();
         return props;
     }
@@ -605,20 +613,21 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
 
         JbpmContext jctx = ctx.getContext();
         Session session = jctx.getSession();
-        List objects = null;
+        List<Object[]> objects = null;
         try {
-            Query query = session.getNamedQuery("TaskMgmtSession.findAllTaskInstancesByActorId");
+            Query query = session.getNamedQuery("TaskMgmtSession.findAllTaskInstancesProcessInstanceByActorId");
             query.setString("actorId", participant.getName());
             objects = query.list();
         } catch (Exception e) {
             log.error(e);
         }
-
         if (objects != null) {
-            for (Object object : objects) {
-                TaskInstance taskInstance = (TaskInstance) object;
+            for (Object[] object : objects) {
+                TaskInstance taskInstance = (TaskInstance) object[0];
+                ProcessInstance processInstance = (ProcessInstance) object[1];
+                StringInstance creator = (StringInstance) object[2];
                 if (isStateCandidate(taskInstance, state)) {
-                    workItems.add(WAPIGenerator.createWorkItemInstance(taskInstance));
+                    workItems.add(WAPIGenerator.createWorkItemInstance(taskInstance, processInstance, (String) creator.getValue()));
                 }
             }
         }
