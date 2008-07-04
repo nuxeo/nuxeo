@@ -3,11 +3,11 @@
 
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-platform-ui-flex-samples-vocabulary-parent</artifactId>
+    <artifactId>nuxeo-platform-ui-flex-samples-vocabularies-parent</artifactId>
     <version>5.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-platform-ui-flex-samples-vocabulary</artifactId>
+  <artifactId>nuxeo-platform-ui-flex-samples-vocabularies</artifactId>
   <name>Nuxeo vocabularies Flex Sample Server side</name>
   <description>
     Nuxeo Enterprise Platform: Flex vocabulary sample server side components
