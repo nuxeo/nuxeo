@@ -1,0 +1,90 @@
+<!--
+  -->
+
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:word="*" creationComplete="init()">
+
+   <mx:Script>
+		<![CDATA[
+			import org.nuxeo.ecm.flex.dto.FlexDocumentModel;
+			
+                        import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;	
+
+			[Bindable]
+            		public var selectedPredicate:Object;
+
+			[Bindable]
+            		public var selectedTopic:Object;
+
+			[Bindable]
+			public var topics:Object;
+
+			[Bindable]
+			public var predicates:Object;
+
+			private function faultHandler(event:FaultEvent):void {
+				 Alert.show(event.fault.faultString, event.fault.faultCode.toString());
+			}	
+			
+			private function fetchPredicatesVoc():void
+			{
+				predicates = flexVocManager.getVocabularyEntries("predicates");				
+				//predicates = flexVocManager.getVocabularyEntries.lastResult;				
+			}	
+
+			private function fetchTopicsVoc():void
+			{
+				topics = flexVocManager.getVocabularyEntries("topic");
+				//topics = flexVocManager.getVocabularyEntries.lastResult;								
+			}				
+
+			private function init():void
+			{
+				fetchPredicatesVoc();
+				fetchTopicsVoc();
+			}	
+			private function getVocabularyEntriesHandler(event:ResultEvent):void
+			{
+				Alert.show(event.resultfault.faultString, event.result.toString());
+			}
+	]]>
+	</mx:Script>
+
+    <mx:RemoteObject id="flexVocManager" destination="flexVocabularyService" fault="faultHandler(event)" showBusyCursor="true">
+	<mx:method name="getVocabularyEntries" result="getVocabularyEntriesHandler(event)" />
+    </mx:RemoteObject>
+
+    <mx:Panel
+        title="Nuxeo-Flex AMF Vocabulary test"
+        paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10">
+
+
+        <mx:Button label="refresh simple voc" click="fetchPredicatesVoc()"/>
+	<mx:List id="predicateList" width="100%" color="blue"
+            dataProvider="{predicates}"
+	    change="this.selectedPredicate=List(event.target).selectedItem"/>
+	
+
+	 <mx:VBox width="100%">
+            <mx:Label text="Selected Entry Label: {selectedPredicate.label}"/>
+            <mx:Label text="Selected Entry Key {selectedPredicate.data}"/>
+        </mx:VBox>
+
+        <mx:HRule width="100%" strokeWidth="1" strokeColor="white"/>
+
+        <mx:Button label="refresh hierachical voc" click="fetchTopicsVoc()"/>
+	<mx:List id="topicList" width="100%" color="blue"
+            dataProvider="{topics}"
+	    change="this.selectedTopic=List(event.target).selectedItem"/>
+	
+
+	 <mx:VBox width="100%">
+            <mx:Label text="Selected Topic Label: {selectedTopic.label}"/>
+            <mx:Label text="Selected Topic Key {selectedTopic.data}"/>
+        </mx:VBox>
+
+</mx:Panel>
+
+</mx:Application>
