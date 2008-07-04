@@ -226,7 +226,20 @@ public class WAPIImpl implements WAPI {
 
         return workItems;
     }
+    public Collection<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participant, String state) throws WMWorkflowException {
 
+        Collection<WMWorkItemInstance> workItems;
+
+        WorkflowEngine workflowEngine = getDefaultEngine();
+        if (workflowEngine != null) {
+            workItems = workflowEngine.getWorkItemsFor(participant, state);
+        } else {
+            workItems = new ArrayList<WMWorkItemInstance>();
+        }
+
+        return workItems;
+    }
     public Collection<WMWorkItemInstance> getWorkItemsFor(String pid,
             String state, WMParticipant participant) throws WMWorkflowException {
 

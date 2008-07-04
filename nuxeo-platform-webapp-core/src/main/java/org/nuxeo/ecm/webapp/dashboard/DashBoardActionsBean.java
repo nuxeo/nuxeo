@@ -284,21 +284,16 @@ public class DashBoardActionsBean extends InputController implements
                 groupNames = ((NuxeoPrincipal) principal).getAllGroups();
             }
 
+            List<WMParticipant> participants = new ArrayList<WMParticipant>();
+            for(String name : groupNames) {
+                participants.add(new WMParticipantImpl(name));
+            }
+            participants.add(new WMParticipantImpl(principal.getName()));
             // Tasks assigned directly to the principal
             WMParticipant participant = new WMParticipantImpl(
                     principal.getName());
             Collection<WMWorkItemInstance> workItems = wapi.getWorkItemsFor(
-                    participant, WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
-
-            // Tasks assigned to one of its group.
-            for (String groupName : groupNames) {
-                participant = new WMParticipantImpl(groupName);
-                Collection<WMWorkItemInstance> groupWorkitems = wapi.getWorkItemsFor(
-                        participant, WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
-                if (groupWorkitems != null) {
-                    workItems.addAll(groupWorkitems);
-                }
-            }
+                    participants, WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
 
             // To avoid duplicated workitem if part of several assigned groups
             // and / or assigned directly. The ones assigned directly to the

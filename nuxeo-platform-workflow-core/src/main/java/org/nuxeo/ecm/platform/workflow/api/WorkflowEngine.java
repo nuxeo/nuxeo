@@ -273,6 +273,8 @@ public interface WorkflowEngine {
      */
     Collection<WMWorkItemInstance> getWorkItemsFor(WMParticipant participant,
             String state);
+    Collection<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participants, String state);
 
     /**
      * Returns the work items for a given process instance in a given state.

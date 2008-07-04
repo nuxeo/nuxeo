@@ -635,7 +635,46 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         ctx.closeContext();
         return workItems;
     }
+    public Collection<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participants, String state) {
 
+        Collection<WMWorkItemInstance> workItems = new ArrayList<WMWorkItemInstance>();
+
+        JbpmWorkflowExecutionContext ctx = getExecutionContext();
+
+        JbpmContext jctx = ctx.getContext();
+        Session session = jctx.getSession();
+        List<Object[]> objects = null;
+        StringBuilder actorIds = new StringBuilder();
+        for(WMParticipant participant : participants) {
+            actorIds.append("'" + participant.getName() + "',");
+        }
+        actorIds.deleteCharAt(actorIds.length() - 1);
+        String query = "select ti, ti.taskMgmtInstance.processInstance, si " +
+                       "from org.jbpm.taskmgmt.exe.TaskInstance as ti, " +
+                       "org.jbpm.context.exe.variableinstance.StringInstance si " +
+                       "where ti.actorId in (" + actorIds + ") " +
+                       "and ti.taskMgmtInstance.processInstance = si.processInstance " +
+                       "and si.name = 'author'";
+        try {
+            objects = session.createQuery(query).list();
+        } catch (Exception e) {
+            log.error(e);
+        }
+        if (objects != null) {
+            for (Object[] object : objects) {
+                TaskInstance taskInstance = (TaskInstance) object[0];
+                ProcessInstance processInstance = (ProcessInstance) object[1];
+                StringInstance creator = (StringInstance) object[2];
+                if (isStateCandidate(taskInstance, state)) {
+                    workItems.add(WAPIGenerator.createWorkItemInstance(taskInstance, processInstance, (String) creator.getValue()));
+                }
+            }
+        }
+
+        ctx.closeContext();
+        return workItems;
+    }
     public Collection<WMWorkItemInstance> getWorkItemsFor(
             String workflowInstanceId, String state, WMParticipant participant) {
 
