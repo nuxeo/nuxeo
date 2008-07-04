@@ -336,6 +336,6 @@ public interface WAPI extends Serializable {
      * @param groupNames a list of group.
      * @return
      */
-    Collection<WMProcessInstance> getProcessInstanceForGroup(List<String> groupNames);
+    Collection<WMProcessInstance> getProcessInstanceForCreators(List<String> groupNames);
 
 }

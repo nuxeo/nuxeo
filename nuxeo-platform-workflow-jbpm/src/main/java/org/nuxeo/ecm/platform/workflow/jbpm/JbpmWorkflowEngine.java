@@ -1391,7 +1391,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
     }
 
     @SuppressWarnings("unchecked")
-    public Collection<WMProcessInstance> listProcessInstanceForGroup(
+    public Collection<WMProcessInstance> listProcessInstanceForCreators(
             List<String> groupNames) {
         JbpmWorkflowExecutionContext ctx = getExecutionContext();
         Session session = ctx.getContext().getSession();

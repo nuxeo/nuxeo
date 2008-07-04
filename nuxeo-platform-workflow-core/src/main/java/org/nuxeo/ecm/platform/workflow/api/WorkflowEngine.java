@@ -399,10 +399,10 @@ public interface WorkflowEngine {
             throws WMWorkflowException;
 
     /**
-     * Return a list of process instance having one of the group has creator.
+     * Return a list of process instance having created by one of those users.
      *
-     * @param groupNames a list of group.
+     * @param groupNames the creators.
      * @return
      */
-    Collection<WMProcessInstance> listProcessInstanceForGroup(List<String> groupNames);
+    Collection<WMProcessInstance> listProcessInstanceForCreators(List<String> creators);
 }

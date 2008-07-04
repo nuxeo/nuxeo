@@ -427,11 +427,11 @@ public class WAPIImpl implements WAPI {
         return null;
     }
 
-    public Collection<WMProcessInstance> getProcessInstanceForGroup(
+    public Collection<WMProcessInstance> getProcessInstanceForCreators(
             List<String> groupNames) {
         WorkflowEngine workflowEngine = getDefaultEngine();
         if (workflowEngine != null) {
-            return workflowEngine.listProcessInstanceForGroup(groupNames);
+            return workflowEngine.listProcessInstanceForCreators(groupNames);
         }
         return null;
     }
