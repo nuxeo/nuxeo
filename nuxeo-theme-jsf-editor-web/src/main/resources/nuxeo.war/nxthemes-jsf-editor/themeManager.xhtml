@@ -25,37 +25,37 @@ window.scrollTo(0,0);
     <tr>
       <td>
         <h:outputLink value="/nuxeo/nxthemes-xml-export?theme=#{theme.name}"
-           rendered="#{theme.lastLoaded != null}" >#{theme.name}
+           rendered="#{theme.exportable}">#{theme.name}
         </h:outputLink>
         <h:outputText styleClass="nxthemesEmphasize"
-                             rendered="#{theme.lastLoaded == null}"
+                             rendered="#{theme.loadingFailed}"
                              value="LOADING FAILED" />
       </td>
       <td>#{theme.src}</td>
       <td class="action">
         <a href="javascript:void(0)" onclick="NXThemesEditor.loadTheme('#{theme.src}')">
           <h:graphicImage value="/nxthemes-jsf-editor/img/theme-reload.png" width="16" height="16"
-                                    rendered="#{theme.lastLoaded != null}" />
-          <h:outputText rendered="#{theme.lastLoaded != null}" value="reload" />
+                                    rendered="#{theme.reloadable}" />
+          <h:outputText rendered="#{theme.reloadable}" value="reload" />
 
           <h:graphicImage value="/nxthemes-jsf-editor/img/theme-load.png" width="16" height="16"
-                                    rendered="#{theme.lastLoaded == null}" />
-          <h:outputText rendered="#{theme.lastLoaded == null}" value="load" />
+                                    rendered="#{theme.loadable}" />
+          <h:outputText rendered="#{theme.loadable}" value="load" />
         </a>
       </td>
       <td class="action">
         <h:outputLink value="javascript:void(0)"
-            onclick="NXThemesEditor.saveTheme('#{theme.src}')"
-            rendered="#{(theme.writable and theme.lastLoaded != null)}">
+            onclick="NXThemesEditor.saveTheme('#{theme.src}', 2)"
+            rendered="#{theme.saveable}">
               <h:graphicImage value="/nxthemes-jsf-editor/img/theme-save.png" width="16" height="16" />
               <h:outputText value="save" />
         </h:outputLink>
       </td>
       <td class="action">
         <a href="/nuxeo/nxthemes-xml-export?theme=#{theme.name}&amp;download=1&amp;indent=2">
-          <h:graphicImage rendered="#{theme.lastLoaded != null}"
+          <h:graphicImage rendered="#{theme.exportable}"
            value="/nxthemes-jsf-editor/img/theme-download.png" width="16" height="16" />
-          <h:outputText rendered="#{theme.lastLoaded != null}" value="download" />
+          <h:outputText rendered="#{theme.exportable}" value="download" />
         </a>
       </td>
       <td class="action">

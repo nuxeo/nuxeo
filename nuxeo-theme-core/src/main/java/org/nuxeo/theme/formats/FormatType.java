@@ -33,7 +33,7 @@ public final class FormatType implements Type {
     @XNode("predicate")
     public String predicateName;
 
-    private Predicate predicate = null;
+    private Predicate predicate;
 
     public FormatType() {
     }

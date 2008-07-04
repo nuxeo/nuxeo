@@ -27,6 +27,7 @@ import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.rendering.RenderingInfo;
 import org.nuxeo.theme.rendering.StandaloneFilter;
+import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeFamily;
 
 public class FragmentVisibility extends StandaloneFilter {
@@ -44,17 +45,18 @@ public class FragmentVisibility extends StandaloneFilter {
             }
 
             final Fragment fragment = (Fragment) element;
-            final PerspectiveType perspective = Manager.getThemeManager().getPerspectiveByUrl(
+            final PerspectiveType perspective = ThemeManager.getPerspectiveByUrl(
                     info.getThemeUrl());
 
             final FormatType widgetType = (FormatType) Manager.getTypeRegistry().lookup(
                     TypeFamily.FORMAT, "widget");
-            final Format format = ElementFormatter.getFormatByType(fragment, widgetType);
+            final Format format = ElementFormatter.getFormatByType(fragment,
+                    widgetType);
             if (format == null) {
                 return info;
             }
 
-            if (viewMode.equals("fragment") || viewMode.equals("layout")) {
+            if ("fragment".equals(viewMode) || "layout".equals(viewMode)) {
                 StringBuilder content = new StringBuilder();
                 content.append("<div class=\"nxthemesFragment\">");
                 content.append(String.format("%s / %s",
@@ -73,9 +75,9 @@ public class FragmentVisibility extends StandaloneFilter {
                             fragment.getFragmentType().getTypeName(),
                             format.getName()));
                     content.append(" (only visible in: ");
-                    final Iterator it = fragment.getVisibilityPerspectives().iterator();
+                    final Iterator<PerspectiveType> it = fragment.getVisibilityPerspectives().iterator();
                     while (it.hasNext()) {
-                        final PerspectiveType p = (PerspectiveType) it.next();
+                        final PerspectiveType p = it.next();
                         content.append(p.getTitle());
                         if (it.hasNext()) {
                             content.append(", ");

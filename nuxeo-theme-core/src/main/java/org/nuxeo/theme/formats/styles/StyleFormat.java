@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.formats.styles;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -27,6 +28,7 @@ import org.nuxeo.theme.formats.Format;
 public class StyleFormat extends DefaultFormat implements Style {
 
     private final Map<String, Map<String, Properties>> styleProperties = new TreeMap<String, Map<String, Properties>>();
+    private final Map<String, String> selectorDescriptions = new HashMap<String, String>();
 
     public Properties getPropertiesFor(String viewName, String path) {
         Map<String, Properties> propertiesMap = styleProperties.get(viewName);
@@ -82,6 +84,22 @@ public class StyleFormat extends DefaultFormat implements Style {
 
     public Set<String> getSelectorViewNames() {
         return styleProperties.keySet();
+    }
+
+    public String getSelectorDescription(String path, String viewName) {
+        if (viewName == null) {
+            viewName = "*";
+        }
+        final String key = String.format("%s/%s", path, viewName);
+        return selectorDescriptions.get(key);
+    }
+
+    public void setSelectorDescription(String path, String viewName, String description) {
+        if (viewName == null) {
+            viewName = "*";
+        }
+        final String key = String.format("%s/%s", path, viewName);
+        selectorDescriptions.put(key, description);
     }
 
     @Override

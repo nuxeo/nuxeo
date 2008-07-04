@@ -26,7 +26,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
 import org.nuxeo.theme.Manager;
-import org.nuxeo.theme.jsf.Utils;
+import org.nuxeo.theme.html.Utils;
 import org.nuxeo.theme.resources.ResourceType;
 import org.nuxeo.theme.types.TypeFamily;
 
@@ -46,7 +46,7 @@ public abstract class UIBaseMVC extends UIOutput {
     public void encodeBegin(final FacesContext context) throws IOException {
         final ResponseWriter writer = context.getResponseWriter();
 
-        final Map attributes = getAttributes();
+        final Map<String, Object> attributes = getAttributes();
         resource = (String) attributes.get("resource");
         url = (String) attributes.get("url");
         binding = attributes.get("binding");

@@ -230,4 +230,8 @@
     <object class="org.nuxeo.theme.presets.PaletteType" />
   </extension-point>
 
+  <extension-point name="vocabularies">
+    <object class="org.nuxeo.theme.vocabularies.VocabularyType" />
+  </extension-point>
+
 </component>

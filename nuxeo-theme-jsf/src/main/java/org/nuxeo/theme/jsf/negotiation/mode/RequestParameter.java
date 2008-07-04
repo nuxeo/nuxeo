@@ -23,8 +23,8 @@ import org.nuxeo.theme.negotiation.Scheme;
 public final class RequestParameter implements Scheme {
 
     public String getOutcome(final Object context) {
-        final Map parameters = ((FacesContext) context).getExternalContext().getRequestParameterMap();
-        return (String) parameters.get("mode");
+        final Map<String, String> parameters = ((FacesContext) context).getExternalContext().getRequestParameterMap();
+        return parameters.get("mode");
     }
 
 }

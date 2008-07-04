@@ -45,7 +45,7 @@ public class UIFragment extends UIOutput {
 
     @Override
     public void encodeAll(final FacesContext context) throws IOException {
-        Map attributes = getAttributes();
+        Map<String, Object> attributes = getAttributes();
         uid = (String) attributes.get("uid");
         engine = (String) attributes.get("engine");
         mode = (String) attributes.get("mode");
@@ -90,7 +90,7 @@ public class UIFragment extends UIOutput {
 
     private static void renderChildren(FacesContext context,
             UIComponent component) throws IOException {
-        List children = component.getChildren();
+        List<UIComponent> children = component.getChildren();
         for (Object child : children) {
             renderChild(context, (UIComponent) child);
         }

@@ -38,8 +38,8 @@ public class TestThemeParser extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "fragment-config.xml");
 
         URL url = getClass().getClassLoader().getResource("theme.xml");
@@ -53,6 +53,9 @@ public class TestThemeParser extends NXRuntimeTestCase {
     @Override
     public void tearDown() throws Exception {
         Manager.getRelationStorage().clear();
+        Manager.getPerspectiveManager().clear();
+        Manager.getTypeRegistry().clear();
+        Manager.getUidManager().clear();
         themeManager = null;
         theme1 = null;
         page1 = null;
@@ -101,7 +104,7 @@ public class TestThemeParser extends NXRuntimeTestCase {
                 1).getChildren().get(1);
         Style fragmentStyle = (Style) ElementFormatter.getFormatByType(
                 fragment, style1.getFormatType());
-        assertTrue(themeManager.listAncestorFormatsOf(fragmentStyle).contains(
+        assertTrue(ThemeManager.listAncestorFormatsOf(fragmentStyle).contains(
                 style1));
     }
 
@@ -119,7 +122,7 @@ public class TestThemeParser extends NXRuntimeTestCase {
 
     public void testCommonStylesWithInheritance() {
         // if the style already inherits make it inherit from a common style
-        // while preversing inheritance
+        // while preserving inheritance
         Style common2 = (Style) themeManager.getNamedObject(theme1.getName(),
                 "style", "common style 2");
         assertNotNull(common2);
@@ -130,7 +133,7 @@ public class TestThemeParser extends NXRuntimeTestCase {
                 common2.getPropertiesFor("*", "table").getProperty(
                         "border-color"));
 
-        Style ancestor = (Style) themeManager.getAncestorFormatOf(common2);
+        Style ancestor = (Style) ThemeManager.getAncestorFormatOf(common2);
         assertEquals("default colors", ancestor.getName());
     }
 

@@ -24,7 +24,7 @@ import javax.faces.component.UIOutput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-import org.nuxeo.theme.jsf.Utils;
+import org.nuxeo.theme.html.Utils;
 
 public class UITabs extends UIOutput {
 
@@ -38,7 +38,7 @@ public class UITabs extends UIOutput {
     public void encodeBegin(final FacesContext context) throws IOException {
         final ResponseWriter writer = context.getResponseWriter();
 
-        final Map attributes = getAttributes();
+        final Map<String, Object> attributes = getAttributes();
         identifier = (String) attributes.get("identifier");
         styleClass = (String) attributes.get("styleClass");
         controlledBy = (String) attributes.get("controlledBy");
@@ -55,11 +55,11 @@ public class UITabs extends UIOutput {
             view.put("controllers", controlledBy.split(","));
         }
 
-        final List<Map> items = new ArrayList<Map>();
-        for (Object child : this.getChildren()) {
+        final List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+        for (Object child : getChildren()) {
             if (child instanceof UITab) {
                 UITab tab = (UITab) child;
-                Map tabAttributes = tab.getAttributes();
+                Map<String, Object> tabAttributes = tab.getAttributes();
                 Map<String, Object> itemMap = new HashMap<String, Object>();
                 itemMap.put("label", tabAttributes.get("label"));
 
