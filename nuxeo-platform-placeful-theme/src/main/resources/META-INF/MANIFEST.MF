@@ -3,7 +3,5 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo ECM PlacefulService Theme config
 Bundle-SymbolicName: org.nuxeo.ecm.platform.placeful.theme;singleton:=true
 Bundle-Vendor: Nuxeo
-Bundle-Category: stateless
 Require-Bundle: org.nuxeo.ecm.platform.placeful.api
-Nuxeo-Component: OSGI-INF/nxplacefulservice-configs-contrib.xml
 Nuxeo-RequiredBy: org.nuxeo.ecm.platform.placeful.facade

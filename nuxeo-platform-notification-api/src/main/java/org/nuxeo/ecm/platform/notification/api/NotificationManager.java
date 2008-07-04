@@ -95,8 +95,10 @@ public interface NotificationManager {
     /**
      * Returns the notification manager.
      *
+     * @deprecated should never have to return the registry : use delegation
      * @return
      */
+    @Deprecated
     NotificationRegistry getNotificationRegistry();
 
     /**
@@ -137,4 +139,10 @@ public interface NotificationManager {
             String freemarkerTemplateName, String subject, String comment,
             NuxeoPrincipal sender, List<String> sendto);
 
+    /**
+     *
+     * @param parentType
+     * @return
+     */
+    List<Notification> getNotificationsForSubscriptions(String parentType);
 }

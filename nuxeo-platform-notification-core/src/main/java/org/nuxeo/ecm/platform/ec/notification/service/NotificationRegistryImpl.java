@@ -38,6 +38,8 @@ import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
  */
 public class NotificationRegistryImpl implements NotificationRegistry {
 
+    private static final long serialVersionUID = 1L;
+
     private static final Log log = LogFactory
             .getLog(NotificationRegistryImpl.class);
 

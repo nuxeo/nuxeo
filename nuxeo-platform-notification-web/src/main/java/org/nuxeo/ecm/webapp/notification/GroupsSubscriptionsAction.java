@@ -101,8 +101,7 @@ public class GroupsSubscriptionsAction extends InputController implements
 
         String parentType = documentManager.getSuperParentType(
                 navigationContext.getCurrentDocument());
-        List<Notification> notifs = notificationManager.getNotificationRegistry()
-                .getNotificationsForSubscriptions(parentType);
+        List<Notification> notifs = notificationManager.getNotificationsForSubscriptions(parentType);
         List<SelectItem> notifsResult = new ArrayList<SelectItem>();
         for (Notification notification : notifs) {
             String notifName = notification.getName();
@@ -236,8 +235,7 @@ public class GroupsSubscriptionsAction extends InputController implements
 
         String superParentType = documentManager.getSuperParentType(
                 navigationContext.getCurrentDocument());
-        List<Notification> notifications = notificationManager.getNotificationRegistry()
-                .getNotificationsForSubscriptions(superParentType);
+        List<Notification> notifications = notificationManager.getNotificationsForSubscriptions(superParentType);
         for (Notification notification : notifications) {
             List<String> userGroups = getSubscribedUsersForNotification(notification.getName());
             List<String> principals = new ArrayList<String>();

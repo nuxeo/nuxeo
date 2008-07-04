@@ -29,7 +29,7 @@
 
       <service class="org.nuxeo.ecm.core.api.CoreSession"
         jndiName="${org.nuxeo.ecm.platform.coresession.facade}" private="true" />
-      <service class="org.nuxeo.ecm.platform.types.ejb.TypeManager"
+      <service class="org.nuxeo.ecm.platform.types.TypeManager"
         jndiName="%TypeManagerBean" />
 
       <repository name="default" class="org.nuxeo.ecm.core.api.CoreSession"

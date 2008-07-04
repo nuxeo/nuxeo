@@ -39,7 +39,7 @@ public class TestRegisterPlacefulService extends NXRuntimeTestCase {
                 "nxplacefulservice-framework.xml");
         deployContrib("org.nuxeo.ecm.platform.placeful.core.tests",
                 "nxplacefulservice-configs-contrib.xml");
-        placefulService = (PlacefulService) runtime.getComponent(PlacefulServiceImpl.ID);
+        placefulService = (PlacefulService) runtime.getComponent(PlacefulService.ID);
     }
 
     public void testRegistration() {

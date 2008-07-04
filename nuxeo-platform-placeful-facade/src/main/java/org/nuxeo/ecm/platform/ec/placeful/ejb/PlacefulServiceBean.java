@@ -30,7 +30,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.nuxeo.ecm.platform.ec.placeful.Annotation;
-import org.nuxeo.ecm.platform.ec.placeful.PlacefulServiceImpl;
 import org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces.PlacefulServiceLocal;
 import org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces.PlacefulServiceRemote;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
@@ -52,7 +51,7 @@ public class PlacefulServiceBean implements PlacefulServiceLocal, PlacefulServic
 
     @PostConstruct
     public void initialize() {
-        service = (PlacefulService) Framework.getRuntime().getComponent(PlacefulServiceImpl.ID);
+        service = (PlacefulService) Framework.getRuntime().getComponent(PlacefulService.ID);
     }
 
     public Annotation getAnnotation(String id, String name) throws ClassNotFoundException {

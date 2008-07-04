@@ -14,5 +14,7 @@ Export-Package: org.nuxeo.ecm.platform.ec.notification,
  org.nuxeo.ecm.platform.ec.notification.service
 Require-Bundle: org.nuxeo.ecm.platform.placeful.core,
  org.nuxeo.ecm.platform.usermanager,
- org.nuxeo.ecm.platform.notification.api
-Nuxeo-RequiredBy: org.nuxeo.ecm.platform.placeful.facade
+ org.nuxeo.ecm.platform.notification.api,
+ org.nuxeo.ecm.platform.url.api
+Nuxeo-RequiredBy: org.nuxeo.ecm.platform.placeful.facade,
+ org.nuxeo.ecm.platform.notification.facade

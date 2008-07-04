@@ -1,0 +1,17 @@
+<!-- deprecated -->
+<assembly>
+
+  <include>include/commands.xml</include>
+  <include>include/commands-core.xml</include>
+  <include>include/nuxeo-all.xml</include>
+  <include>include/core.xml</include>
+
+  <!-- exclusions -->
+  <!-- need nuxeo-platform-transform-core because of nuxeo-platform-modifier,
+  so cannot use exclude-indexing
+  <include>include/exclude-indexing.xml</include>
+   -->
+  <include>include/exclude-indexing-include-transform-core.xml</include>
+  <include>include/exclude-web.xml</include>
+
+</assembly>

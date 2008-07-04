@@ -110,7 +110,7 @@ public final class EmailHelper {
             msg.setSubject(out.toString(), "UTF8");
         } else {
             rs.registerEngine(new NotificationsRenderingEngine(
-                    (String) customSubjectTemplate));
+                    customSubjectTemplate));
 
             LoginContext lc = Framework.login();
 
@@ -120,8 +120,8 @@ public final class EmailHelper {
             for (RenderingResult result : results) {
                 subjectMail = (String) result.getOutcome();
             }
-            subjectMail = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix() +
-                    subjectMail;
+            subjectMail = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix()
+                    + subjectMail;
             msg.setSubject(subjectMail, "UTF8");
 
             lc.logout();

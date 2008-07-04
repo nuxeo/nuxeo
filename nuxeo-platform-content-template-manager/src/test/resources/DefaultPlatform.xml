@@ -15,8 +15,7 @@
       deployed on the same host (localhost)
     </li>
 
-    @author
-    <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+    @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
   </documentation>
 
   <extension target="org.nuxeo.ecm.platform.api.PlatformService"
@@ -24,9 +23,11 @@
     <documentation>The default platform layout</documentation>
 
     <server name="default" host="localhost">
-      <service class="org.nuxeo.ecm.platform.types.ejb.TypeManager" jndiName="%TypeManagerBean"/>
-      <repository name="demo" class="org.nuxeo.ecm.core.api.CoreSession"
-                  description="Demo Repository"/>
+
+      <service class="org.nuxeo.ecm.platform.types.TypeManager" jndiName="%TypeManagerBean"/>
+
+      <repository name="demo" class="org.nuxeo.ecm.core.api.CoreSession" description="Demo Repository"/>
+
     </server>
 
   </extension>
@@ -55,9 +56,9 @@
   <!--extension target="org.nuxeo.runtime.api.ServiceManagement" point="services">
 
 
-  	<service class="org.nuxeo.ecm.core.api.CoreSession" name="demo" group="core">
-  		<locator>%DocumentManagerBean</locator>
-  	</service>
+    <service class="org.nuxeo.ecm.core.api.CoreSession" name="demo" group="core">
+      <locator>%DocumentManagerBean</locator>
+    </service>
 
 
   </extension-->

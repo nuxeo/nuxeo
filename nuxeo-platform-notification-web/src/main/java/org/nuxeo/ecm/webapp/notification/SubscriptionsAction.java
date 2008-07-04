@@ -90,8 +90,7 @@ public class SubscriptionsAction extends InputController implements
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String superParentType = documentManager.getSuperParentType(currentDocument);
 
-        List<Notification> notifs = notificationManager.getNotificationRegistry()
-                .getNotificationsForSubscriptions(superParentType);
+        List<Notification> notifs = notificationManager.getNotificationsForSubscriptions(superParentType);
 
         List<String> subscriptions = getSelectedNotifications();
         log.debug("Selected notifications : " + subscriptions);

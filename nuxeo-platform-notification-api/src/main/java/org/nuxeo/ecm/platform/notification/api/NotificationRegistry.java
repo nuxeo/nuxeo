@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.notification.api;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -27,7 +28,7 @@ import java.util.List;
  * @author <a href="mailto:npaslaru@nuxeo.com">Narcis Paslaru</a>
  *
  */
-public interface NotificationRegistry {
+public interface NotificationRegistry extends Serializable {
 
     void clear();
 
