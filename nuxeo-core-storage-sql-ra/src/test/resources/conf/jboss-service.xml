@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<server>
+
+   <!-- ==================================================================== -->
+   <!-- Main Deployer                                                        -->
+   <!-- ==================================================================== -->
+   <mbean code="org.jboss.deployment.MainDeployer"
+          name="jboss.system:service=MainDeployer">
+   	<!-- This is used to delegate the deployment handling -->
+      <attribute name="KernelMainDeployer"><inject bean="MainDeployer" /></attribute>
+   </mbean>
+
+   <!-- ==================================================================== -->
+   <!-- SAR Deployer                                                        -->
+   <!-- ==================================================================== -->
+   <mbean code="org.jboss.deployment.SARDeployer"
+          name="jboss.system:service=ServiceDeployer">
+      <depends>jboss.system:service=MainDeployer</depends>
+   </mbean>
+
+   <!-- ==================================================================== -->
+   <!-- Security                                                             -->
+   <!-- ==================================================================== -->
+
+   <mbean code="org.jboss.security.plugins.SecurityConfig"
+      name="jboss.security:service=SecurityConfig">
+      <attribute name="LoginConfig">jboss.security:service=XMLLoginConfig</attribute>
+      <depends>jboss.security:service=XMLLoginConfig</depends>
+   </mbean>
+   <mbean code="org.jboss.security.auth.login.XMLLoginConfig"
+      name="jboss.security:service=XMLLoginConfig">
+      <attribute name="ConfigResource">${jboss.embedded.bootstrap.resource.path}conf/login-config.xml</attribute>
+   </mbean>
+
+   <!-- JAAS security manager and realm mapping -->
+   <mbean code="org.jboss.security.plugins.JaasSecurityManagerService"
+      name="jboss.security:service=JaasSecurityManager">
+      <!-- A flag which indicates whether the SecurityAssociation server mode
+      is set on service creation. This is true by default since the
+      SecurityAssociation should be thread local for multi-threaded server
+      operation.
+      -->
+      <attribute name="ServerMode">true</attribute>
+      <attribute name="SecurityManagerClassName">org.jboss.security.plugins.JaasSecurityManager</attribute>
+      <attribute name="DefaultUnauthenticatedPrincipal">anonymous</attribute> 
+      <!-- DefaultCacheTimeout: Specifies the default timed cache policy timeout
+      in seconds.
+      If you want to disable caching of security credentials, set this to 0 to
+      force authentication to occur every time. This has no affect if the
+      AuthenticationCacheJndiName has been changed from the default value.
+      -->
+       <attribute name="DefaultCacheTimeout">1800</attribute>
+      <!-- DefaultCacheResolution: Specifies the default timed cache policy
+      resolution in seconds. This controls the interval at which the cache
+      current timestamp is updated and should be less than the DefaultCacheTimeout
+      in order for the timeout to be meaningful. This has no affect if the
+      AuthenticationCacheJndiName has been changed from the default value.
+      -->
+      <attribute name="DefaultCacheResolution">60</attribute>
+      <!-- DeepCopySubjectMode: This set the copy mode of subjects done by the
+      security managers to be deep copies that makes copies of the subject
+      principals and credentials if they are cloneable. It should be set to
+      true if subject include mutable content that can be corrupted when
+      multiple threads have the same identity and cache flushes/logout clearing
+      the subject in one thread results in subject references affecting other
+      threads.
+      -->
+      <attribute name="DeepCopySubjectMode">false</attribute>
+   </mbean> 
+
+   <!-- Authorization manager-->
+   <mbean code="org.jboss.security.plugins.AuthorizationManagerService"
+      name="jboss.security:service=AuthorizationManager"> 
+      <attribute name="AuthorizationManagerClassName">org.jboss.security.plugins.JBossAuthorizationManager</attribute>
+   </mbean>
+
+   <!-- ==================================================================== -->
+   <!-- Transactions                                                         -->
+   <!-- ==================================================================== -->
+   
+   <!-- JBossTS JTA -->
+   <mbean code="com.arjuna.ats.jbossatx.jta.TransactionManagerService"
+      name="jboss:service=TransactionManager">
+      <attribute name="TransactionTimeout">300</attribute>
+      <attribute name="ObjectStoreDir">${jboss.server.data.dir}/tx-object-store</attribute>      
+   </mbean>
+
+   <mbean code="org.jboss.util.threadpool.BasicThreadPool"
+          name="jboss.jca:service=WorkManagerThreadPool">
+      <!-- The name that appears in thread names -->
+      <attribute name="Name">WorkManager</attribute>
+      <!-- The maximum amount of work in the queue -->
+      <attribute name="MaximumQueueSize">1024</attribute>
+      <!-- The maximum number of active threads -->
+      <attribute name="MaximumPoolSize">100</attribute>
+      <!-- How long to keep threads alive after their last work (default one minute) -->
+      <attribute name="KeepAliveTime">60000</attribute>
+   </mbean>
+
+   <mbean code="org.jboss.resource.work.JBossWorkManager"
+          name="jboss.jca:service=WorkManager">
+      <depends optional-attribute-name="ThreadPoolName">jboss.jca:service=WorkManagerThreadPool</depends>
+      <depends optional-attribute-name="XATerminatorName">jboss:service=TransactionManager</depends>
+   </mbean>
+
+   <!--
+      | The CachedConnectionManager is used partly to relay started UserTransactions to 
+      | open connections so they may be enrolled in the new tx.
+    -->
+   <mbean code="org.jboss.resource.connectionmanager.CachedConnectionManager"
+          name="jboss.jca:service=CachedConnectionManager">
+     <depends optional-attribute-name="TransactionManagerServiceName">jboss:service=TransactionManager</depends>
+
+     <!-- Enable connection close debug monitoring -->
+     <attribute name="Debug">true</attribute>
+
+   </mbean>
+
+   <mbean code="org.jboss.naming.JNDIView"
+   	name="jboss:service=JNDIView">
+   	<!-- The HANamingService service name -->
+   	<attribute name="HANamingService">jboss:service=HAJNDI</attribute>
+   </mbean>
+
+</server>

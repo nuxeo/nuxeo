@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<fragment>
+  <extension target="application#MODULE">
+    <module>
+      <connector>${bundle.fileName}</connector>
+    </module>
+  </extension>
+</fragment>
