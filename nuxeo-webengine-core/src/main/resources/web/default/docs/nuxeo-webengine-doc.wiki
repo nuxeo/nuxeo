@@ -35,27 +35,26 @@ Context.print("My name is ${Context.principal.name}")!
 
 === Bridging with Nuxeo ECM
 
-The WebEngine was created to work over a Nuxeo ECM server. Using it outside Nuxeo ECM is possible,
-but is very limiting and you will loose many of the cool features of the WebEngine.
+The WebEngine was created to work over a Nuxeo ECM server. Using it outside Nuxeo ECM is possible, but is very limiting and you will loose many of the cool features of the WebEngine.
 
-If you don't plan to use a Nuxeo ECM as the content backend for your web site then I suggest you to look on 
-other products that may fit better your needs:
+If you don't plan to use a Nuxeo ECM server as the content backend for your web site or Web 2.0 application, we suggest you to look at other products that may better fit your needs:
 * Django
-* etc
+* Ruby on Rails
+* etc.
 
 In this section we will assume you have some knowledge about the Nuxeo ECM platform.
 
-Nuxeo ECM, as its name suggests, is an Enterprise Content Management platform that provides a powerful way to manage and store your documents. In a more simpler approach (TODO: To simplify) you can see Nuxeo ECM as a repository of documents. To be able to use this repository to query, update or store new documents you need first to connect to it and create an authenticated session based on your login information. Using that repository session you can start querying, updating and sorting documents.
+Nuxeo ECM, as its name suggests, is an Enterprise Content Management platform that provides a powerful way to manage and store your documents. In a more simpler approach (TODO: To simplify) you can see Nuxeo ECM as a repository of documents. To be able to use this repository to query, update or store new documents, you need first to connect to it and create an authenticated session based on your login information. Using that repository session you can then start querying, updating and sorting documents.
 
-So, for a client point of view, the main concepts of a Nuxeo Repository are the Session and the Document.
+So, from a client point of view, the main concepts of a Nuxeo Repository are the Session and the Document.
 
-The idea behind the WebEngine is to map HTTP requests to real documents from the repository when possible, to be able that way to query, update, store or create new documents by using a traditional Web approach.
+The idea behind the WebEngine is to map HTTP requests to documents stored in the repository when possible and to be able that way to query, update, store or create new documents by using a traditional Web approach.
 
-To correctly understand how this bridging over Nuxeo ECM is done and what you can do by using the WebEngine, you should first understand how the HTTP request is dispatched, processed and mapped to documents.
+To correctly understand how this bridging over Nuxeo ECM is done and what you can do by using the WebEngine, you should first understand how HTTP requests are dispatched, processed and mapped to documents.
 
 === Request Dispatch
 
-I will start using a simple example. Let say the web browser is requesting the following URL: 
+We will start using a simple example. Let's say the web browser is requesting the following URL: 
 `http://www.nuxeo.org/nuxeo/site/blogs/bstefanescu/MyBlog@@view`
 
 First the URL will be split as following:
@@ -64,9 +63,9 @@ First the URL will be split as following:
 * `/blogs/bstefanescu/MyBlog` - the request path.
 * `@@view` - the optional action to take on the target object.
 
-The first 2 URL components are not in the scope of this document. They are used to locate the servlet bound to a the WebEngine application. (Note that if you define several WebEngine applications you need to use different servlets for each of them)
+The first 2 URL components are not in the scope of this document. They are used to locate the servlet bound to a the WebEngine application. (Note that if you define several WebEngine applications, you will need to use different servlets for each of them).
 
-We will concentrate on the last two URL parts:
+We will focus on the last two URL parts:
 
 + Request path
 + Action
@@ -74,8 +73,11 @@ We will concentrate on the last two URL parts:
 ==== Request Path
 
 The request path of the path info represent the actual path that should be processed and dispatched by the selected web application.
+
 The WebEngine will transform the request path into a sequence of objects named the *traversal path* by doing a mapping between path segments and documents in repository tree.
-The mapping is done by a *DocumentResolver* a Java class that can be customized when the default mapping mechanism is not enough.\
+
+The mapping is done by a *DocumentResolver* a Java class that can be customized when the default mapping mechanism is not enough.
+
 See the Web Application Configuration for more details on how to register a custom resolver.
 
 The default resolver will map the first segment in the path to a document called the *traversal path root* and then any subsequent path segment will be mapped to corresponding child document. This mapping ends when the path is consumed or when the first segment that doesn't match any document is found. The trailing path segments that was not matched is named the *trailing path* or *script path* and can be used by the request handler in various ways. 
@@ -84,9 +86,10 @@ The last mapped document in the traversal path will be the target document of th
 
 Let's get an example:
 
-Given the request path: `/blogs/bstefanescu/MyBlog/common.ftl@view`\
-Let's say the `blogs` segment is mapped to a document which path is `/default-domain/blogs`\
-and MyBlog to a Blog document `/default-domain/blogs/MyBlog`. The common.ftl will not match any child document of the MyBlog document so it will be put in the trailing path and the MyBlog document will be the target document of the request.\
+Given the request path: `/blogs/bstefanescu/MyBlog/common.ftl@view`
+
+Let's say the `blogs` segment is mapped to a document which path is `/default-domain/blogs` and MyBlog to a Blog document `/default-domain/blogs/MyBlog`. The common.ftl will not match any child document of the MyBlog document so it will be put in the trailing path and the MyBlog document will be the target document of the request.
+
 So finally we will have:
 + a traversal path: `/blogs/bstefanescu/MyBlog` which is mapped to `/default-domain/workspaces/blogs/bstefanescu/MyBlog`.
 + a trailing path: `commons.ftl`
@@ -132,12 +135,14 @@ In the examples above we've seen how a request path was split into a traversal p
 
 Mappings can be used to declaratively describe how request paths should be processed to obtain a traversal path, a trailing path and additional properties computed from the path segments configuration. Mappings are described using regular expression patterns. The regular expression syntax is the Java one plus one additional feature to be able to define named groups. (In Java only indexed groups are supported).
 
-In order to understand how you can use patterns to describe the path mapping we will start with another example.\
+In order to understand how you can use patterns to describe the path mapping we will start with another example.
+
 Let say we want to use the following request path:
 
 `/blogs/archive/2004/05/bstefanescu`
 
-to display a list of the blogs of user `bstefanescu` created in May 2004. Let's say in the repository the blogs of `bstefanescu` are stored in the folder: `/default-domain/blogs/bstefanescu`. \
+to display a list of the blogs of user `bstefanescu` created in May 2004. Let's say in the repository the blogs of `bstefanescu` are stored in the folder: `/default-domain/blogs/bstefanescu`.
+
 So, first we need to map the request to a traversal path of the form: `/blogs/bstefanescu` to set up the target document on `bstefanescu`. Then we need a custom script that is using the date info (e.g. year=2004 and month=05) from the request path and that it is performing a search into the target document for all blog entries created in that month.
 
 To do this we will define a mapping pattern like:
@@ -147,10 +152,11 @@ To do this we will define a mapping pattern like:
 Then we specify that if this pattern is matching on a request path then the following should be done:
 + the traversal path should be set to `/blogs/${username}`
 + the target script should be set to `/myscripts/search_blogs.py`
-Also this mapping will automatically inject in the request context the variables: `year`, `month` and `username` so your mapping configuration or your scritps can access them.
 
+Also this mapping will automatically inject in the request context the variables: `year`, `month` and `username` so your mapping configuration or your scripts can access them.
 
 You can see the usage of the variable `${username}` which is the value matched by the group flagged as `username`.
+
 The syntax (?label: ... ) for regular expression groups is an extension to the Java regular expressions that are supporting only indexed groups. You can still use the indexed groups if you prefer:
 
 `/blogs/archive/([0-9]{4}?)/([0-9]{2}?)/([^/]+)`
@@ -160,7 +166,6 @@ In this case the generated mapping variables will be $1 for the year, $2 for the
 There are also 2 special mapping variables that will be always generated: `url` (or $0) the request path that matched and `type` the document type of the target document (that is available only after the traversal path is build).
 
 You may note that using mappings or using a resolver that avoid mapping path segments on documents you may create web application that doesn't use any Nuxeo repository.
-
 
 === Directory Layout - Resolving Scripts and Templates 
 
@@ -183,7 +188,6 @@ Example of relative paths:
 * ./myscript.groovy
 
 Note that using relative paths is less efficient since the path lookup cannot be cached because of the directory base which is dictated by the current script context, context that may change during the request. Also when a relative path points outside the web root directory then it will be truncated (i.e. trailing ../ removed) and resolved as an absolute path.
-
 
 ==== Resolving Action Scripts
 
@@ -214,9 +218,9 @@ Note that when you have multiple web application roots this mechanism will searc
 
 == Web Applications
 
-Now that we've seen the main concepts used to build a web application we can learn how to configure and assemble them to obtain a working application.
+Now that we've seen the main concepts used to build a web application, we can learn how to configure and assemble them to obtain a working application.
  
-A Web  Application is a collection of configuration, scripts and template and other resources that is accessible from remote through a servlet. The WebEngine is allowing the definition of multiple applications. All these application data is residing inside the root `web` directory. As we've seen earlier, on JBoss this root directory is located at:
+A Web  Application is a collection of configuration files, scripts, templates and other resources that is accessible remotely through a servlet. The WebEngine allows the definition of multiple applications. All these application data reside inside the root `web` directory. As we've seen earlier, on JBoss this root directory is located at:
 
 `${jboss_install_dir}/server/default/data/NXRuntime/web`
 
@@ -316,13 +320,16 @@ An action should be identified using a meaningful verb like 'doSomething' and ca
 Any of these action properties are optional - but the action will be useless if you do not specify one of them.
 
 The first 2 properties the *action handler* and the *script* should be used to specify how the action will be executed.
-As you seen you have two options: either using java code (if you want faster or advanced processing) either using a script (possibly a template) that will carry on the action execution.
+
+As you seen you have two options: either using java code (if you want faster or advanced processing) either using a script (possibly a template) that will carry on the action execution. 
+
 You can either use both properties to install a Java action execution handler and a template to be used to show the result of the execution. Or, more, you can install a handler and a groovy script then in the groovy script you may do some post processing and then call a template to show the result.
 
 The action category can be used to filter or to group actions. For example you may want to show only a set of actions that are enabled on a document filtered by a category.
 
 Finally, the guards can be installed to restrict actions to be available only for some users. Guards are very flexible. To define a guard you can use complex logical expressions on other guards. We will name any guard that it is not a logical expression an atomic guard.
-This is a list of all supported atomic guards:
+
+Here is a list of all supported atomic guards:
 
 + Permission Guard - restrict access by testing native Nuxeo ECM document permissions.
 + User Guard - restrict access by testing the current user name
@@ -330,7 +337,7 @@ This is a list of all supported atomic guards:
 + Type Guard - restrict access by testing the current document type
 + Schema Guard - restrict access by testing the presence of a schema in the current document type
 + Facet Guard - restrict access by testing the presence of a facet in the current document type
-+ Script Guard - restricit access using random scripts. Any java scripting engine is supported
++ Script Guard - restrict access using random scripts. Any java scripting engine is supported
 
 Example of a logical expression guard: `Write OR (user = titi OR group = toto )`. This means give permission on all users that have the `Write` permission on the document OR to user named `titi` or all user from group `toto`.  
 
