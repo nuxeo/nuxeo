@@ -128,8 +128,7 @@ public class WebEngineAuthenticationFilter implements Filter {
     protected void propagate(UserSession userSession) {
         // if any propagator was registered propagate now the authentication
         if (propagator != null) {
-            propagator.propagate(userSession.getSubject(),
-                    userSession.getPrincipal(), userSession.getCredentials());
+            propagator.propagate(userSession);
         }
     }
 

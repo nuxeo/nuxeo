@@ -23,8 +23,11 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.Principal;
 import java.security.PrivilegedAction;
+import java.util.HashMap;
 
 import javax.security.auth.Subject;
+
+import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -32,9 +35,11 @@ import javax.security.auth.Subject;
  */
 public class JBossAuthenticationPropagator implements AuthenticationPropagator {
 
+    protected static HashMap<String,String> NULL_PARAMS = new HashMap<String, String>();
+
     private Method method = null;
 
-    public void propagate(Subject subject, Principal principal, Object credentials) {
+    public void propagate(UserSession userSession) {
         // the following call is made through reflection API:
         // SecurityAssociation.pushSubjectContext(subject, principal, credentials);
         try {
@@ -44,11 +49,25 @@ public class JBossAuthenticationPropagator implements AuthenticationPropagator {
                         new Class<?>[] {Subject.class, Principal.class, Object.class});
             }
             //method.invoke(null, new Object[] {subject, principal, credentials});
+            Subject subject = userSession.getSubject();
+            Principal principal = userSession.getPrincipal();
+            Object credentials = userSession.isAnonymous() ?
+                    createAnonymousCredentials(userSession)
+                    : userSession.getCredentials();
             doPropagate(method, subject, principal, credentials);
         } catch (Exception e) {
             e.printStackTrace();
             return; // do nothing
         }
+    }
+
+    protected Object createAnonymousCredentials(UserSession userSession) {
+        String name = userSession.getPrincipal().getName();
+        UserIdentificationInfo uid = new UserIdentificationInfo(name, name);
+        uid.setAuthPluginName("ANONYMOUS_AUTH");
+        uid.setLoginPluginName("Trusting_LM");
+        uid.setLoginParameters(NULL_PARAMS);
+        return uid;
     }
 
     private final void doPropagate(final Method method, final Subject subject, final Principal principal, final Object credentials) {

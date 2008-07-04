@@ -60,7 +60,11 @@ public class UserSession implements Serializable, HttpSessionBindingListener {
 
     public static UserSession getAnonymousSession(UserManager mgr) throws ClientException {
         if (anonymous == null) {
-            anonymous = new UserSession(mgr.getPrincipal(mgr.getAnonymousUserId()));
+            String userId = mgr.getAnonymousUserId();
+            if (userId == null) {
+                throw new IllegalStateException("User anonymous cannot be created");
+            }
+            anonymous = new UserSession(mgr.getPrincipal(userId), userId);
         }
         return anonymous;
     }

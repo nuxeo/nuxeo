@@ -19,9 +19,6 @@
 
 package org.nuxeo.ecm.webengine.login;
 
-import java.security.Principal;
-
-import javax.security.auth.Subject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -37,6 +34,6 @@ public interface AuthenticationPropagator {
      * @param principal the principal to propagate
      * @credentials the credentials to propagate
      */
-    public void propagate(Subject subject, Principal principal, Object credentials);
+    public void propagate(UserSession userSession);
 
 }
