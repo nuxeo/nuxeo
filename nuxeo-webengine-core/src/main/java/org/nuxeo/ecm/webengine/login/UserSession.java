@@ -136,14 +136,15 @@ public class UserSession implements Serializable, HttpSessionBindingListener {
     public void valueBound(HttpSessionBindingEvent event) {
         // the user session was bound to the HTTP session
         //install(event.getSession());
-        System.out.println("bound : "+event.getName() + " = " +event.getValue());
+        //System.out.println("bound : "+event.getName() + " = " +event.getValue());
     }
 
     public void valueUnbound(HttpSessionBindingEvent event) {
         // the user session was removed from the HTTP session
         //uninstall(event.getSession());
-        System.out.println("unbound: "+event.getName() + " = " +event.getValue());
-//        CoreSession cs = (CoreSessi   on)session.getAttribute(DefaultWebContext.CORESESSION_KEY);
+       // System.out.println("unbound: "+event.getName() + " = " +event.getValue());
+        //HttpSess
+//        CoreSession cs = (CoreSession)session.getAttribute(DefaultWebContext.CORESESSION_KEY);
 //        if (cs != null) {
 //            if (!DefaultWebContext.isAnonymousSession(cs)) {
 //                propagate(currentIdentity);

@@ -7,6 +7,7 @@
             <th>User or group</th>
             <th>Granted permissions</th>
             <th>Denied permissions</th>
+            <th>&nbsp;</th>
         </tr>
     </thead>
     <#list perms as perm>
@@ -19,6 +20,7 @@
             <td></td>
             <td>${perm.permission}</td>
         </#if>
+        <td align="right"><a href="${This.urlPath}@@remove_permission?permission=${perm.permission}&user=${perm.name}">Remove</a></td>
     </tr>
     </#list>
 </table>

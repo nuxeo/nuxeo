@@ -1,17 +1,27 @@
 <script>
 
 function doLogout() {
-  //jQuery.cookie("JSESSIONID", null, {path: "/"});
-  jQuery.post(document.location.pathname, {nuxeo_login : "true"})
+  jQuery.cookie("JSESSIONID", null, {path: "/"});
+  jQuery.post(document.location.pathname, {caller: "login", nuxeo_login : "true"})
 }
 
 function doLogin(username, password) {
   //jQuery.cookie("JSESSIONID", null, {path: "/"});
-  req = jQuery.post(document.location.pathname, {nuxeo_login : "true", userid : username, password : password});
-  if (req.status == 200) {
-    return true;
-  }
-  return false;
+  //req = jQuery.post(document.location.pathname, {nuxeo_login : "true", userid : username, password : password});
+  var result = false;
+  var req = jQuery.ajax({
+    type: "POST",
+    async: false,
+    url: document.location.pathname,
+    data: {caller: "login", nuxeo_login : "true", userid : username, password : password},
+    success: function(html, status) {
+      result = true;
+    },    
+    error: function(html, status) {
+      result = false;
+    }
+  });
+  return result;
 }
 
 function showLoginError(errtext) {
@@ -43,6 +53,27 @@ function showLoginError(errtext) {
       }
     })
 
+    $('#login_form').submit(function() {
+
+      username = $('#username')[0].value;
+      password = $('#password')[0].value;
+
+      if (username == null || password == null) {
+        showLoginError("Username and Password fields have to be filled in.");
+        return false;
+      }
+      
+      loggedin = doLogin(username, password);
+      if (loggedin) {
+        //login success      
+        document.location.reload();
+      } else {
+        //login failed
+        showLoginError("Username or password incorrect.")
+      }
+      return false;
+    })
+
   })
 </script>
 
@@ -51,7 +82,7 @@ function showLoginError(errtext) {
   <div id="logstate">Hi Guest! You are not logged in.</div>
   
   <div id="login">
-  <form id="login_form" method="post" action="">
+  <form id="login_form" method="post" action="#">
     <input type="text" name="userid" id="username" value="Username" class="username">
     <input type="password" name="password" id="password" value="password" class="password">
     <input type="submit" name="nuxeo_login" value="Log In" id="login" class="button">

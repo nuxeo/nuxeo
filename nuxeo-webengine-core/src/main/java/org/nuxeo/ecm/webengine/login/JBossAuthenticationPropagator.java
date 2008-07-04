@@ -42,15 +42,17 @@ public class JBossAuthenticationPropagator implements AuthenticationPropagator {
     public void propagate(UserSession userSession) {
         // the following call is made through reflection API:
         // SecurityAssociation.pushSubjectContext(subject, principal, credentials);
+        //TODO: we may use in future the JBoss AltClientLoginModule to perform the
+        // propagation - this way we avoid using explicitly reflection or jboss code
         try {
             if (method == null) {
                 Class<?> klass = Class.forName("org.jboss.security.SecurityAssociation");
                 method = klass.getDeclaredMethod("pushSubjectContext",
                         new Class<?>[] {Subject.class, Principal.class, Object.class});
             }
-            //method.invoke(null, new Object[] {subject, principal, credentials});
             Subject subject = userSession.getSubject();
             Principal principal = userSession.getPrincipal();
+            // for anonymous user
             Object credentials = userSession.isAnonymous() ?
                     createAnonymousCredentials(userSession)
                     : userSession.getCredentials();

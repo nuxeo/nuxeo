@@ -145,9 +145,13 @@ public class WebEngineAuthenticationFilter implements Filter {
     }
 
     public void clientAuthenticationError(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        //response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.sendRedirect(request.getRequestURL().toString()+"?failed=true");
+        // ajax request
+        if (request.getParameter("caller") != null) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed");
+        } else { // normal request
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.sendRedirect(request.getRequestURL().toString()+"?failed=true");
+        }
     }
 
     public void basicAuthenticationError(HttpServletRequest request, HttpServletResponse response) throws IOException {

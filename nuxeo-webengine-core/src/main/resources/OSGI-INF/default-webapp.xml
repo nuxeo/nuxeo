@@ -79,6 +79,9 @@
         <action id="addpermission" enabled="true" script="/Document/addpermission.groovy">
           <permission expression="Write" />
         </action>
+        <action id="remove_permission" enabled="true" script="/Document/remove_permission.groovy">
+          <permission expression="Write" />
+        </action>
         <action id="search" enabled="true" script="/common/search.ftl">
           <permission expression="Browse" />
         </action>
