@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine.login;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.Principal;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -33,9 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.runtime.api.Framework;
 
 import sun.misc.BASE64Decoder;
@@ -47,6 +46,9 @@ import sun.misc.BASE64Decoder;
 public class WebEngineAuthenticationFilter implements Filter {
 
     protected UserManager mgr;
+    //used to propagate login info on server applications
+    protected AuthenticationPropagator propagator;
+    protected String exclude; // exclude this path from filtering - can be used to optimize static resource requests
 
     public void destroy() {
         mgr = null;
@@ -54,32 +56,28 @@ public class WebEngineAuthenticationFilter implements Filter {
 
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest req = (HttpServletRequest)request;
+        HttpServletResponse resp = (HttpServletResponse)response;
+        if (exclude != null && req.getServletPath().startsWith(exclude)) { // avoid authentication on static resources
+            chain.doFilter(request, response);
+            return;
+        }
         if (mgr == null) {
             mgr = Framework.getLocalService(UserManager.class);
             if (mgr == null) {
                 throw new ServletException("Could not find the UserManager service");
             }
         }
-        HttpServletRequest req = (HttpServletRequest)request;
-        HttpServletResponse resp = (HttpServletResponse)response;
         HttpSession session = req.getSession(true);
-        NuxeoPrincipal currentPrincipal = (NuxeoPrincipal)session.getAttribute("nuxeo.principal");
-        NuxeoPrincipal principal = null;
+        UserSession userSession = null; // the new identity after  a login / logout
         String[] auth = getClientAuthorizationTokens(req);
         try {
             if (auth != null) { // a login/logout request
                 if (auth[0] == null) { // a logout request
-                    session.setAttribute("nuxeo.principal", null);
-                    String userId = mgr.getAnonymousUserId();
-                    // reset user to anonymous
-                    if (userId != null) {
-                        currentPrincipal = mgr.getPrincipal(userId);
-                    }
+                    userSession = UserSession.getAnonymousSession(mgr);
                 } else {
-                    if (mgr.checkUsernamePassword(auth[0], auth[1])) {
-                        principal = mgr.getPrincipal(auth[0]);
-                    }
-                    if (principal == null) {
+                    userSession = authenticate(auth[0], auth[1]);
+                    if (userSession == null) {
                         clientAuthenticationError(req, resp);
                         return;
                     }
@@ -87,36 +85,64 @@ public class WebEngineAuthenticationFilter implements Filter {
             } else {
                 auth = getBasicAuthorizationTokens(req);
                 if (auth != null) { // Basic HTTP login
-                    if (mgr.checkUsernamePassword(auth[0], auth[1])) {
-                        principal = mgr.getPrincipal(auth[0]);
-                    }
-                    if (principal == null) {
+                    userSession = authenticate(auth[0], auth[1]);
+                    if (userSession == null) {
                         basicAuthenticationError(req, resp);
                         return;
                     }
-                } else if (currentPrincipal == null) { // anonymous login
-                    String userId = mgr.getAnonymousUserId();
-                    if (userId != null) {
-                        principal = mgr.getPrincipal(userId);
-                    }
                 }
             }
-            if (principal != null) {
-                // remove the existing core session if any to force a new session creation based on the new principal
-                session.removeAttribute(DefaultWebContext.CORESESSION_KEY);
-                session.setAttribute("nuxeo.principal", principal);
-                currentPrincipal = principal;
+            if (userSession != null) { // was a login or logout - switch to the new user
+                session.invalidate(); // this will dispose current user session
+                session = req.getSession(true);
+                UserSession.setCurrentSession(session, userSession);
+            } else { // not a login / logout request
+                userSession = UserSession.getCurrentSession(session);
+                if (userSession == null) {
+                    userSession = UserSession.getAnonymousSession(mgr);
+                    UserSession.setCurrentSession(session, userSession);
+                }
             }
-            if (currentPrincipal != null) { // if a current principal is defined wrap the request
-                request = new WebEngineRequestWrapper(req, currentPrincipal);
-            }
-        } catch (ClientException e) {
-            throw new ServletException("Failed to perform authentication", e);
+            propagate(userSession); // propagate session if needed - this can be used to initialize an application server EJB context
+            WebEngineRequestWrapper reqw = new WebEngineRequestWrapper(req, userSession);
+            chain.doFilter(reqw, response);
+        } catch (Exception e) {
+//            throw new ServletException("Failed to perform authentication", e);
+            e.printStackTrace();
+            // do nothing
         }
-        chain.doFilter(request, response);
+
+    }
+
+    protected UserSession authenticate(String username, String password) throws ClientException {
+        if (mgr.checkUsernamePassword(username, password)) {
+            Principal principal = mgr.getPrincipal(username);
+            if (principal != null) {
+                return  new UserSession(principal, password);
+            }
+        }
+        return null;
+    }
+
+
+    protected void propagate(UserSession userSession) {
+        // if any propagator was registered propagate now the authentication
+        if (propagator != null) {
+            propagator.propagate(userSession.getSubject(),
+                    userSession.getPrincipal(), userSession.getCredentials());
+        }
     }
 
     public void init(FilterConfig filterConfig) throws ServletException {
+        String klass = filterConfig.getInitParameter("propagator");
+        exclude = filterConfig.getInitParameter("exclude");
+        if (klass != null) {
+           try {
+               propagator = (AuthenticationPropagator)Class.forName(klass).newInstance();
+           } catch (Exception e) {
+               throw new ServletException("Failed to initialize authentication propagator: "+klass, e);
+           }
+        }
     }
 
     public void clientAuthenticationError(HttpServletRequest request, HttpServletResponse response) throws IOException {

@@ -46,13 +46,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
-import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.util.FormData;
@@ -255,12 +253,8 @@ public class DefaultWebContext implements WebContext {
         if (session == null) {
             try {
                 session = getCoreSession(request);
-            } catch (WebException e) {
-                throw e;
-            } catch (DocumentSecurityException e) {
-                throw new WebSecurityException("Failed to get a session to the core repository", e);
             } catch (Exception e) {
-                throw new WebException("Failed to get core session", e);
+                throw WebException.wrap(e);
             }
         }
         return session;
@@ -814,6 +808,10 @@ public class DefaultWebContext implements WebContext {
         } else {
             return repo.open();
         }
+    }
+
+    public static boolean isAnonymousSession(CoreSession session) {
+        return anonymousSession == session;
     }
 
     /**

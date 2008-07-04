@@ -15,7 +15,15 @@
       <filter-class>
         org.nuxeo.ecm.webengine.login.WebEngineAuthenticationFilter
       </filter-class>
-    </filter>
+      <init-param>
+      	<param-name>propagator</param-name>
+      	<param-value>org.nuxeo.ecm.webengine.login.JBossAuthenticationPropagator</param-value>
+      </init-param>
+    <init-param>
+      <param-name>exclude</param-name>
+      <param-value>/site/files</param-value>
+    </init-param>
+   </filter>
 
     <filter-mapping>
       <filter-name>WebEngineAuthenticationFilter</filter-name>

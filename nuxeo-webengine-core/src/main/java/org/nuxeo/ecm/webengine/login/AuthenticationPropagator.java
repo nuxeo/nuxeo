@@ -21,25 +21,22 @@ package org.nuxeo.ecm.webengine.login;
 
 import java.security.Principal;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
+import javax.security.auth.Subject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebEngineRequestWrapper extends HttpServletRequestWrapper {
+public interface AuthenticationPropagator {
 
-    UserSession userSession;
-
-    public WebEngineRequestWrapper(HttpServletRequest request, UserSession userSession) {
-        super (request);
-        this.userSession = userSession;
-    }
-
-    @Override
-    public Principal getUserPrincipal() {
-        return userSession.getPrincipal();
-    }
+    /**
+     * Propagate the given principal into the host system
+     * (as for example to initialize a JEE application server context)
+     *
+     * @param subject
+     * @param principal the principal to propagate
+     * @credentials the credentials to propagate
+     */
+    public void propagate(Subject subject, Principal principal, Object credentials);
 
 }
