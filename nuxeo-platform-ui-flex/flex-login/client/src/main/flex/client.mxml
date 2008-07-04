@@ -1,0 +1,46 @@
+<!--
+  -->
+
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:word="*" >
+
+   <mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+
+			private function doLogin():void {
+				 //Alert.show(login.text + " : " + password.text, "info");
+				authRequest.send();
+			}	
+			
+	]]>
+	</mx:Script>
+
+    <mx:Panel
+        title="Nuxeo-Flex Login Screen"
+        paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10">
+
+			<mx:Form width="100%" backgroundColor="#ffffff" borderStyle="solid" height="100%">
+				<mx:FormHeading label="Authentication" />
+				<mx:FormItem label="Login :" width="100%">
+					 <mx:TextInput id="login" width="200"/>
+				</mx:FormItem>
+				<mx:FormItem label="Password:" width="100%">
+					 <mx:TextInput id="password" width="200" displayAsPassword="true"/>
+				</mx:FormItem>
+				<mx:Button label="Login" click="doLogin()"/>
+
+			</mx:Form>
+
+
+   <mx:Label text='return: "{authRequest.lastResult}"'/>
+
+</mx:Panel>
+
+  <mx:HTTPService id="authRequest" url="/nuxeo/flexlogin/" useProxy="false" method="POST">
+        <mx:request xmlns="">
+            <user_name>{login.text}</user_name>
+            <user_password>{password.text}</user_password>
+        </mx:request>
+    </mx:HTTPService>
+
+</mx:Application>

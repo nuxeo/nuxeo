@@ -5,5 +5,5 @@ Bundle-SymbolicName: org.nuxeo.ecm.platform.ui.flex;singleton:=true
 Require-Bundle: org.nuxeo.ecm.platform.ui.api,
  org.nuxeo.ecm.webapp.ui,
  org.nuxeo.ecm.platform.url.api
-Nuxeo-Component: 
+Nuxeo-Component: OSGI-INF/authentication-contrib.xml
 Nuxeo-RequiredBy: org.nuxeo.ecm.war
