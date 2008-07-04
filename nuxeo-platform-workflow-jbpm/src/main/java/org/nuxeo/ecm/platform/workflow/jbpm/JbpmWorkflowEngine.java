@@ -655,6 +655,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
                        "org.jbpm.context.exe.variableinstance.StringInstance si " +
                        "where ti.actorId in (" + actorIds + ") " +
                        "and ti.taskMgmtInstance.processInstance = si.processInstance " +
+                       "and ti.end is null " +
                        "and si.name = 'author'";
         try {
             objects = session.createQuery(query).list();
@@ -1439,15 +1440,15 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
             values.append("'" + group + "',");
         }
         values.deleteCharAt(values.length() - 1);
-        String query = "select si.processInstance " +
+        String query = "select si.processInstance, si.value " +
         		"from org.jbpm.context.exe.variableinstance.StringInstance si " +
         		"where si.name = '" + WorkflowConstants.WORKFLOW_CREATOR + "' " +
         	    "and si.value in (" + values + ") " +
         	    "and si.processInstance.end is null ";
-        List<ProcessInstance> list = session.createQuery(query).list();
+        List<Object[]> list = session.createQuery(query).list();
         List<WMProcessInstance> processes = new ArrayList<WMProcessInstance>();
-        for(ProcessInstance pi : list) {
-            processes.add(WAPIGenerator.createProcessInstance(pi));
+        for(Object[] objects : list) {
+            processes.add(WAPIGenerator.createProcessInstance((ProcessInstance) objects[0], (String) objects[1]));
         }
         ctx.closeContext();
         return processes;

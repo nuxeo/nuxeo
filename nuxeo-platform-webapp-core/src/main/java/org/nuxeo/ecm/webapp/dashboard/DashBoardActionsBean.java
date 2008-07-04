@@ -289,9 +289,6 @@ public class DashBoardActionsBean extends InputController implements
                 participants.add(new WMParticipantImpl(name));
             }
             participants.add(new WMParticipantImpl(principal.getName()));
-            // Tasks assigned directly to the principal
-            WMParticipant participant = new WMParticipantImpl(
-                    principal.getName());
             Collection<WMWorkItemInstance> workItems = wapi.getWorkItemsFor(
                     participants, WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
 
