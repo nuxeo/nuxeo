@@ -1,0 +1,13 @@
+<!-- deprecated -->
+<assembly>
+
+  <include>include/commands.xml</include>
+  <include>include/commands-search.xml</include>
+  <include>include/nuxeo-all.xml</include>
+  <include>include/indexing.xml</include>
+
+  <!-- exclusions -->
+  <include>include/exclude-core.xml</include>
+  <include>include/exclude-web.xml</include>
+
+</assembly>

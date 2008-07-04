@@ -15,7 +15,7 @@
     point="servers">
 
     <server name="default">
-      <service class="org.nuxeo.ecm.platform.types.ejb.TypeManager"
+      <service class="org.nuxeo.ecm.platform.types.TypeManager"
         jndiName="%TypeManagerBean" />
     </server>
 
