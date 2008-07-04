@@ -33,5 +33,15 @@
       </plugin>
     </plugins>
   </reporting>
+    
+  <repositories>
+    <repository>
+      <id>nuxeo_release</id>
+      <url>http://archiva.nuxeo.org/archiva/repository/nuxeo_release</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
 </project>
