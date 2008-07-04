@@ -69,6 +69,8 @@ public final class WorkflowConstants {
     // Process variables
     public static final String WORKFLOW_CREATOR = "author";
 
+    public static final String WORKFLOW_PARTICIPANT = "participant";
+
     public static final String WORKFLOW_REVIEWER = "reviewer";
 
     public static final String WORKFLOW_TASK_ASSIGNEE = "taskAssignee";
