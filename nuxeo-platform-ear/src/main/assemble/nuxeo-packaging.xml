@@ -2,7 +2,7 @@
 <packaging>
   <serverSet id="nuxeo-mono">
     <includes>
-      <artifacts group="org.nuxeo.*" category="runtime" includeDependsOn="false"/>
+      <artifacts group="org.nuxeo.*" category="runtime,jboss4" includeDependsOn="false"/>
       <artifacts group="org.nuxeo.*" category="core,search,web" />
     </includes>
     <excludes>
@@ -31,7 +31,7 @@
   <!-- Nuxeo 3 parts -->
   <serverSet id="nuxeo-core">
     <includes>
-      <artifacts group="org.nuxeo.*" category="runtime" includeDependsOn="false"/>
+      <artifacts group="org.nuxeo.*" category="runtime,jboss4" includeDependsOn="false"/>
       <artifacts group="org.nuxeo.*" category="core" />
     </includes>
     <excludes>
@@ -51,7 +51,7 @@
   </serverSet>
   <serverSet id="nuxeo-search">
     <includes>
-      <artifacts group="org.nuxeo.*" category="runtime" includeDependsOn="false"/>
+      <artifacts group="org.nuxeo.*" category="runtime,jboss4" includeDependsOn="false"/>
       <artifacts group="org.nuxeo.*" category="search" />
     </includes>
     <excludes>
@@ -72,7 +72,7 @@
   </serverSet>
   <serverSet id="nuxeo-web">
     <includes>
-      <artifacts group="org.nuxeo.*" category="runtime" includeDependsOn="false"/>
+      <artifacts group="org.nuxeo.*" category="runtime,jboss4" includeDependsOn="false"/>
       <artifacts group="org.nuxeo.*" category="web" />
     </includes>
     <excludes>

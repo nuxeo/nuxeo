@@ -450,7 +450,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     }
 
     /**
-     * Set incrementation option for the givent document.
+     * Set incrementation option for the given document.
      *
      * @param docModel
      * @param option
