@@ -18,27 +18,31 @@
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  Lesser General Public License for more details.
 </pre>
+
 <h2>Team:</h2>
 <ul>
 <li> Main Developer: <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
-<li> Contributors: <a href="eb@nuxeo.com">Eric Barroca</a>, <a href="mailto:troger@nuxeo.com">Thomas Roger</a>, <a href="td@nuxeo.com">Thierry Delprath</a>, <a href="mailto:tsoulcie@nuxeo.com">Thibaut Soulcie</a>
+<li> Contributors: <a href="mailto:eb@nuxeo.com">Eric Barroca</a>, <a href="mailto:troger@nuxeo.com">Thomas Roger</a>, <a href="mailto:td@nuxeo.com">Thierry Delprat</a>, <a href="mailto:tsoulcie@nuxeo.com">Thibaut Soulcie</a>, <a href="mailto:sf@nuxeo.com">Stefane Fermigier</a>
 </ul>
+
 <h2>Modules:</h2>
 <ul>
 <#list API.getBundles() as bundle>
-  <li> ${bundle.symbolicName}
+  <li> ${bundle.symbolicName}</li>
 </#list>
 </ul>
+
 <h2>Components:</h2>
 <ul>
 <#list API.getComponents() as component>
-  <li> ${component.name}
+  <li> ${component.name}</li>
 </#list>
 </ul>
+
 <h2>Pending Components:</h2>
 <ul>
 <#list API.getPendingComponents() as component>
-  <li> ${component.name}
+  <li> ${component.name} </li>
 </#list>
 </ul>
 </@block>
