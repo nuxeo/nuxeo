@@ -19,10 +19,19 @@
             		public var selectedTopic:Object;
 
 			[Bindable]
+            		public var selectedSubTopic:Object;
+
+			[Bindable]
 			public var topics:Object;
 
 			[Bindable]
+			public var subtopics:Object;
+
+			[Bindable]
 			public var predicates:Object;
+
+			[Bindable]
+			private var _callstack:Array
 
 			private function faultHandler(event:FaultEvent):void {
 				 Alert.show(event.fault.faultString, event.fault.faultCode.toString());
@@ -30,24 +39,45 @@
 			
 			private function fetchPredicatesVoc():void
 			{
-				predicates = flexVocManager.getVocabularyEntries("predicates");				
-				//predicates = flexVocManager.getVocabularyEntries.lastResult;				
+				flexVocManager.getVocabularyEntries("predicates");				
+				_callstack.splice(_callstack.length-1,0,"predicate");
 			}	
 
 			private function fetchTopicsVoc():void
 			{
-				topics = flexVocManager.getVocabularyEntries("topic");
-				//topics = flexVocManager.getVocabularyEntries.lastResult;								
+				flexVocManager.getVocabularyEntries("topic");
+				_callstack.splice(_callstack.length-1,0,"topic");
+			}				
+
+			private function fetchSubTopicsVoc(topicKey:String):void
+			{
+				flexVocManager.getVocabularyEntries("subtopic",topicKey);
+				_callstack.splice(_callstack.length-1,0,"subtopic");
 			}				
 
 			private function init():void
 			{
+				_callstack=new Array();
 				fetchPredicatesVoc();
 				fetchTopicsVoc();
 			}	
 			private function getVocabularyEntriesHandler(event:ResultEvent):void
 			{
-				Alert.show(event.resultfault.faultString, event.result.toString());
+				var calltype:String = _callstack.pop();
+				//Alert.show(calltype,"return from server");
+				if (calltype=="topic")
+					topics = flexVocManager.getVocabularyEntries.lastResult
+				else if (calltype=="predicate")
+					predicates = flexVocManager.getVocabularyEntries.lastResult
+				else if (calltype=="subtopic")
+					subtopics = flexVocManager.getVocabularyEntries.lastResult
+			}
+			private function selectTopic(topicItem:Object):void
+			{
+				this.selectedTopic=topicItem;
+				var topicKey:String = selectedTopic.data as String;
+				fetchSubTopicsVoc(topicKey);
+			
 			}
 	]]>
 	</mx:Script>
@@ -75,15 +105,22 @@
         <mx:HRule width="100%" strokeWidth="1" strokeColor="white"/>
 
         <mx:Button label="refresh hierachical voc" click="fetchTopicsVoc()"/>
+        	
+	<mx:HBox width="100%">
 	<mx:List id="topicList" width="100%" color="blue"
             dataProvider="{topics}"
-	    change="this.selectedTopic=List(event.target).selectedItem"/>
-	
+	    change="selectTopic(List(event.target).selectedItem)"/>
+	<mx:List id="subTopicList" width="100%" color="blue"
+            dataProvider="{subtopics}"
+	    change="this.selectedSubTopic=List(event.target).selectedItem"/>
+	</mx:HBox>
 
 	 <mx:VBox width="100%">
             <mx:Label text="Selected Topic Label: {selectedTopic.label}"/>
             <mx:Label text="Selected Topic Key {selectedTopic.data}"/>
         </mx:VBox>
+
+	
 
 </mx:Panel>
 
