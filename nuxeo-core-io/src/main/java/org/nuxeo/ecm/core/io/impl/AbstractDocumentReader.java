@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.io.ExportedDocument;
  *
  */
 public abstract class AbstractDocumentReader implements DocumentReader {
-    
+
     private static final Log log = LogFactory.getLog(AbstractDocumentReader.class);
 
     // this abstract method is needed

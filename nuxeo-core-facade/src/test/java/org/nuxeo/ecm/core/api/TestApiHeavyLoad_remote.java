@@ -66,6 +66,11 @@ public class TestApiHeavyLoad_remote extends TestApiHeavyLoad {
         super.tearDown();
     }
 
+    @Override
+    protected CoreSession getCoreSession() {
+        return remote;
+    }
+
     protected void _loadTestingConfiguration() {
         URL url = getClass().getResource("/org/nuxeo/ecm/core/api/nuxeo_jaas.config");
         System.setProperty("java.security.auth.login.config", url.toString());
@@ -99,7 +104,7 @@ public class TestApiHeavyLoad_remote extends TestApiHeavyLoad {
                 new CoreFacadeBusinessDelegate(""));
     }
 
-    protected void _uninitializeServerInstance() throws ClientException {
+    protected void _uninitializeServerInstance() {
         CoreInstance.getInstance().close(remote);
     }
 
