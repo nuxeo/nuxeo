@@ -131,6 +131,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // delete the node
         session2.removeNode(nodea2);
         session2.save();
-
     }
+
 }
