@@ -7,6 +7,7 @@
       <repository name="test">
         <xa-datasource>org.apache.derby.jdbc.EmbeddedXADataSource</xa-datasource>
         <property name="createDatabase">create</property>
+        <!-- Directory name mentioned in SQLRepositoryTestCase -->
         <property name="databaseName">target/test/repository</property>
         <property name="user">sa</property>
         <property name="password"></property>

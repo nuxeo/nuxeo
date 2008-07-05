@@ -31,11 +31,15 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
  */
 public enum PropertyType {
     STRING, //
-    DATETIME, //
     LONG, //
+    BOOLEAN, //
+    DATETIME, //
+    BINARY, //
     ARRAY_STRING(STRING), //
+    ARRAY_LONG(LONG), //
+    ARRAY_BOOLEAN(BOOLEAN), //
     ARRAY_DATETIME(DATETIME), //
-    ARRAY_LONG(LONG);
+    ARRAY_BINARY(BINARY);
 
     private final PropertyType arrayBaseType;
 
@@ -63,11 +67,9 @@ public enum PropertyType {
         } else if (fieldType instanceof DateType) {
             return array ? ARRAY_DATETIME : DATETIME;
         } else if (fieldType instanceof BinaryType) {
-            throw new RuntimeException("Unimplemented primitive type: " +
-                    fieldType.getClass().getName());
+            return array ? ARRAY_BINARY : BINARY;
         } else if (fieldType instanceof BooleanType) {
-            throw new RuntimeException("Unimplemented primitive type: " +
-                    fieldType.getClass().getName());
+            return array ? ARRAY_BOOLEAN : BOOLEAN;
         } else if (fieldType instanceof DoubleType) {
             throw new RuntimeException("Unimplemented primitive type: " +
                     fieldType.getClass().getName());

@@ -38,15 +38,14 @@ public class CollectionFragment extends Fragment {
      *
      * @param tableName the table name
      * @param id the id
+     * @param state the initial state for the fragment
      * @param context the persistence context to which the row is tied, or
      *            {@code null}
-     * @param creation {@code true} if this fragment has just been created
      * @param col the initial collection data to use, or {@code null}
      */
-    public CollectionFragment(String tableName, Serializable id,
-            PersistenceContextByTable context, boolean creation,
-            Serializable[] col) {
-        super(tableName, id, context, creation);
+    public CollectionFragment(String tableName, Serializable id, State state,
+            PersistenceContextByTable context, Serializable[] col) {
+        super(tableName, id, state, context);
         assert col != null; // for now
         this.col = col;
     }

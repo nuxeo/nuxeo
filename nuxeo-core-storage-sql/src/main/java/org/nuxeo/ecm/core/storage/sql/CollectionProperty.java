@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
  */
 public class CollectionProperty extends AbstractProperty {
 
-    private final static Serializable[] NULL_ARRAY = new Serializable[] {};
+    private final static Serializable[] NULL_ARRAY = new Serializable[0];
 
     /** The {@link CollectionFragment} holding the information. */
     private final CollectionFragment fragment;

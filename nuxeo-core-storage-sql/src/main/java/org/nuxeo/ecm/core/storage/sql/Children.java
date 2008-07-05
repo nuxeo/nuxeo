@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,8 +24,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.storage.StorageException;
-
-import sun.tools.tree.AddExpression;
 
 /**
  * Holds information about the children of a given parent node.

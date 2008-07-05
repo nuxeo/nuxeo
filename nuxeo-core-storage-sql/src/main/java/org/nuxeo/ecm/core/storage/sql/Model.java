@@ -31,11 +31,11 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 
 /**
- * The {@link Model} is the link between high-level types and SQL-level
- * objects (entity tables, collections). It defines all policies relating to the
- * choice of structure (what schema are grouped together in for optimization)
- * and names in the SQL database (table names, column names), and to what entity
- * names (type name, field name) they correspond.
+ * The {@link Model} is the link between high-level types and SQL-level objects
+ * (entity tables, collections). It defines all policies relating to the choice
+ * of structure (what schema are grouped together in for optimization) and names
+ * in the SQL database (table names, column names), and to what entity names
+ * (type name, field name) they correspond.
  * <p>
  * A Nuxeo schema or type is mapped to a SQL-level table. Several types can be
  * aggregated in the same table. In theory, a type could even be split into
@@ -73,6 +73,16 @@ public class Model {
 
     public static final String COLL_TABLE_VALUE_KEY = "item";
 
+    public static final String SYSTEM_TABLE_NAME = "system";
+
+    public static final String SYSTEM_LIFECYCLE_POLICY_PROP = "ecm:lifeCyclePolicy";
+
+    public static final String SYSTEM_LIFECYCLE_POLICY_KEY = "lifecyclepolicy";
+
+    public static final String SYSTEM_LIFECYCLE_STATE_PROP = "ecm:lifeCycleState";
+
+    public static final String SYSTEM_LIFECYCLE_STATE_KEY = "lifecyclestate";
+
     /** Maps table name to a map of properties to their basic type. */
     protected final Map<String, Map<String, PropertyType>> fragmentsKeysType;
 
@@ -100,6 +110,7 @@ public class Model {
         propertyFragmentKey = new HashMap<String, String>();
 
         initMainModel();
+        initSystemModel();
         initModels(schemaManager);
     }
 
@@ -123,13 +134,11 @@ public class Model {
      * Creates all the models.
      */
     private void initModels(SchemaManager schemaManager) {
-
         for (DocumentType documentType : schemaManager.getDocumentTypes()) {
             for (Schema schema : documentType.getSchemas()) {
                 initTypeModel(schema);
             }
         }
-
     }
 
     /**
@@ -140,6 +149,7 @@ public class Model {
         String tableName = MAIN_TABLE_NAME;
         String propertyName = MAIN_PRIMARY_TYPE_PROP;
         PropertyType type = PropertyType.STRING;
+        // XXX propertyCoreType ?
         propertyType.put(propertyName, type);
         propertyFragment.put(propertyName, tableName);
         propertyFragmentKey.put(propertyName, MAIN_PRIMARY_TYPE_KEY);
@@ -150,6 +160,36 @@ public class Model {
             fragmentsKeysType.put(tableName, fragmentKeysType);
         }
         fragmentKeysType.put(MAIN_PRIMARY_TYPE_KEY, type);
+    }
+
+    /**
+     * Special model for the system table (lifecycle, etc.).
+     */
+    private void initSystemModel() {
+        String tableName = SYSTEM_TABLE_NAME;
+        Map<String, PropertyType> fragmentKeysType = fragmentsKeysType.get(tableName);
+        if (fragmentKeysType == null) {
+            fragmentKeysType = new HashMap<String, PropertyType>();
+            fragmentsKeysType.put(tableName, fragmentKeysType);
+        }
+
+        String propertyName = SYSTEM_LIFECYCLE_POLICY_PROP;
+        String key = SYSTEM_LIFECYCLE_POLICY_KEY;
+        PropertyType type = PropertyType.STRING;
+        // XXX propertyCoreType needed ?
+        propertyType.put(propertyName, type);
+        propertyFragment.put(propertyName, tableName);
+        propertyFragmentKey.put(propertyName, key);
+        fragmentKeysType.put(key, type);
+
+        propertyName = SYSTEM_LIFECYCLE_STATE_PROP;
+        key = SYSTEM_LIFECYCLE_STATE_KEY;
+        type = PropertyType.STRING;
+        // XXX propertyCoreType needed ?
+        propertyType.put(propertyName, type);
+        propertyFragment.put(propertyName, tableName);
+        propertyFragmentKey.put(propertyName, key);
+        fragmentKeysType.put(key, type);
     }
 
     /**

@@ -177,7 +177,7 @@ public class SessionImpl implements Session, XAResource {
 
         // get main row
         SimpleFragment childMain = (SimpleFragment) context.get(
-                model.MAIN_TABLE_NAME, id);
+                model.MAIN_TABLE_NAME, id, false);
         if (childMain == null) {
             // not found
             return null;
@@ -187,13 +187,13 @@ public class SessionImpl implements Session, XAResource {
 
         // find hier row
         SimpleFragment childHier = (SimpleFragment) context.get(
-                model.HIER_TABLE_NAME, id);
+                model.HIER_TABLE_NAME, id, false);
 
         // TODO get all non-cached fragments at once using join / union
         FragmentsMap childFragments = new FragmentsMap();
         for (Schema schema : childType.getSchemas()) {
             String schemaName = schema.getName();
-            Fragment fragment = context.get(schemaName, id);
+            Fragment fragment = context.get(schemaName, id, true);
             childFragments.put(schemaName, fragment);
         }
 
@@ -240,6 +240,9 @@ public class SessionImpl implements Session, XAResource {
         int i;
         if (path.startsWith("/")) {
             node = getRootNode();
+            if (path.equals("/")) {
+                return node;
+            }
             i = 1;
         } else {
             if (node == null) {
@@ -284,16 +287,19 @@ public class SessionImpl implements Session, XAResource {
 
         // find all schemas for this type and create fragment entities
         FragmentsMap fragments = new FragmentsMap();
-        // TODO typeName could be a document type or a complex type
-        // XXX don't use schema, ask the model
         DocumentType type = schemaManager.getDocumentType(typeName);
-        for (Schema schema : type.getSchemas()) {
-            String schemaName = schema.getName();
-            // TODO XXX fill in default values
-            // TODO fill data instead of null XXX or just have fragments empty
-            Fragment fragment = context.createSimpleFragment(schemaName, id,
-                    null);
-            fragments.put(schemaName, fragment);
+        if (false) {
+            // TODO typeName could be a document type or a complex type
+            // XXX don't use schema, ask the model
+            for (Schema schema : type.getSchemas()) {
+                String schemaName = schema.getName();
+                // TODO XXX fill in default values
+                // TODO fill data instead of null XXX or just have fragments
+                // empty
+                Fragment fragment = context.createSimpleFragment(schemaName,
+                        id, null);
+                fragments.put(schemaName, fragment);
+            }
         }
 
         // add to hierarchy table
@@ -339,7 +345,7 @@ public class SessionImpl implements Session, XAResource {
 
         // get main row
         SimpleFragment childMain = (SimpleFragment) context.get(
-                model.MAIN_TABLE_NAME, childId);
+                model.MAIN_TABLE_NAME, childId, false);
         String childTypeName = (String) childMain.get(model.MAIN_PRIMARY_TYPE_KEY);
         DocumentType childType = schemaManager.getDocumentType(childTypeName);
 
@@ -347,7 +353,7 @@ public class SessionImpl implements Session, XAResource {
         FragmentsMap childFragments = new FragmentsMap();
         for (Schema schema : childType.getSchemas()) {
             String schemaName = schema.getName();
-            Fragment fragment = context.get(schemaName, childId);
+            Fragment fragment = context.get(schemaName, childId, true);
             childFragments.put(schemaName, fragment);
         }
 
@@ -400,7 +406,7 @@ public class SessionImpl implements Session, XAResource {
 
     private void computeRootNode() throws StorageException {
         SimpleFragment repoInfo = (SimpleFragment) context.get(
-                model.REPOINFO_TABLE_NAME, Long.valueOf(0));
+                model.REPOINFO_TABLE_NAME, Long.valueOf(0), false);
         if (repoInfo == null) {
             log.debug("Creating root");
             rootNode = addRootNode();

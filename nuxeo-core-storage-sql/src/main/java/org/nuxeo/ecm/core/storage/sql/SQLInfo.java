@@ -401,8 +401,14 @@ public class SQLInfo {
             case LONG:
                 sqlType = Types.INTEGER;
                 break;
+            case BOOLEAN:
+                sqlType = Types.BIT;
+                break;
             case DATETIME:
                 sqlType = Types.TIMESTAMP;
+                break;
+            case BINARY:
+                sqlType = Types.BLOB;
                 break;
             default:
                 throw new RuntimeException("Bad type: " + type);

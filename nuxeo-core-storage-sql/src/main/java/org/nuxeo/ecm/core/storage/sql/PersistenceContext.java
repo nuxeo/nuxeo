@@ -114,24 +114,27 @@ public class PersistenceContext {
     }
 
     /**
-     * Gets a row given a table name and an id. If the row is not in the
-     * context, fetch it from the mapper.
+     * Gets a fragment given a table name and an id.
      * <p>
-     * XXX differentiate unknown vs deleted
+     * If the fragment is not in the context, fetch it from the mapper. If it's
+     * not in the database, returns {@code null} or an absent fragment.
      *
-     * @param tableName the row table name
-     * @param id the row id
-     * @return the row, or {@code null} if none is found
+     * @param tableName the fragment table name
+     * @param id the fragment id
+     * @param createAbsent {@code true} to return an absent fragment as an
+     *            object instead of {@code null}
+     * @return the fragment, or {@code null} if none is found and {@value
+     *         createAbsent} was {@code false}
      * @throws StorageException
      */
-    public Fragment get(String tableName, Serializable id)
+    public Fragment get(String tableName, Serializable id, boolean createAbsent)
             throws StorageException {
         PersistenceContextByTable context = contexts.get(tableName);
         if (context == null) {
             context = new PersistenceContextByTable(tableName, mapper);
             contexts.put(tableName, context);
         }
-        return context.get(id);
+        return context.get(id, createAbsent);
     }
 
     /**
