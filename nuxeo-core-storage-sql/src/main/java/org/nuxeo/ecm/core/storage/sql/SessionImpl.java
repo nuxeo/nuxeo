@@ -87,6 +87,7 @@ public class SessionImpl implements Session, XAResource {
      */
 
     public void close() throws ResourceException {
+        // this closes the mapper and therefore the connection
         context.close();
         live = false;
     }

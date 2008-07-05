@@ -57,11 +57,14 @@ public class Mapper {
 
     private static final Log log = LogFactory.getLog(Mapper.class);
 
+    /** The model used to do the mapping. */
+    private final Model model;
+
     /** The SQL information. */
     private final SQLInfo sqlInfo;
 
-    /** The model used to do the mapping. */
-    private final Model model;
+    /** The xa pooled connection. */
+    private final XAConnection xaconnection;
 
     /** The actual connection. */
     private final Connection connection;
@@ -79,6 +82,7 @@ public class Mapper {
             throws StorageException {
         this.model = model;
         this.sqlInfo = sqlInfo;
+        this.xaconnection = xaconnection;
         try {
             connection = xaconnection.getConnection();
             xaresource = xaconnection.getXAResource();
@@ -90,6 +94,7 @@ public class Mapper {
     public void close() {
         try {
             connection.close();
+            xaconnection.close();
         } catch (SQLException e) {
             // nothing much we can do...
             log.error("Cannot close connection", e);

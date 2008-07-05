@@ -18,9 +18,12 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.File;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -29,6 +32,8 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  * @author Florent Guillaume
  */
 public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
+
+    private static final String DATABASE_DIRECTORY = "target/test/repository";
 
     public Repository repository;
 
@@ -50,13 +55,22 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         if (repository != null) {
             repository.close();
         }
+        try {
+            DriverManager.getConnection("jdbc:derby:;shutdown=true");
+            fail("Expected Derby shutdown exception");
+        } catch (SQLException e) {
+            assertEquals("Derby system shutdown.", e.getMessage());
+        }
         super.tearDown();
     }
 
-    protected RepositoryDescriptor prepareDescriptor() {
-        File dbdir = new File("target/test/repository");
-        deleteRecursive(dbdir);
+    protected File prepareDBDirectory() {
+        File dbdir = new File(DATABASE_DIRECTORY);
+        FileUtils.deleteTree(dbdir);
+        return dbdir;
+    }
 
+    protected RepositoryDescriptor prepareDescriptor() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
 
         String className = org.apache.derby.jdbc.EmbeddedXADataSource.class.getName();
@@ -64,21 +78,12 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
 
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("createDatabase", "create");
-        properties.put("databaseName", dbdir.getAbsolutePath());
+        properties.put("databaseName", prepareDBDirectory().getAbsolutePath());
         properties.put("user", "sa");
         properties.put("password", "");
         descriptor.properties = properties;
 
         return descriptor;
-    }
-
-    protected static void deleteRecursive(File file) {
-        if (file.isDirectory()) {
-            for (String child : file.list()) {
-                deleteRecursive(new File(file, child));
-            }
-        }
-        file.delete();
     }
 
 }
