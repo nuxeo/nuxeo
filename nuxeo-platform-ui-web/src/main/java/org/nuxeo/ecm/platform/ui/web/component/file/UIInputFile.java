@@ -295,7 +295,6 @@ public class UIInputFile extends UIInput implements NamingContainer {
                 queueEvent(new ValueChangeEvent(this, previous, submitted));
             }
         }
-
     }
 
     public void validateFilename(FacesContext context, InputFileInfo submitted) {

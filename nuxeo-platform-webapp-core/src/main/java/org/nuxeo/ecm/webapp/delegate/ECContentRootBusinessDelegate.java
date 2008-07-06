@@ -87,7 +87,7 @@ public class ECContentRootBusinessDelegate implements Serializable {
 
     @Destroy
     @PermitAll
-    public void destroy() throws ClientException {
+    public void destroy() {
         if (null != ecContentRoot) {
             ecContentRoot.remove();
             ecContentRoot = null;

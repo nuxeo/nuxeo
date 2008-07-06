@@ -104,7 +104,7 @@ public abstract class AbstractWorkflowDocumentHandler {
         if (repositoryUri != null) {
             return lifecycleBD.getWorkflowDocumentLifeCycleManager(repositoryUri);
         } else {
-            throw new Exception("No repository URI.... Cancelling...");
+            throw new IllegalStateException("No repository URI.... Cancelling...");
         }
     }
 
@@ -121,7 +121,7 @@ public abstract class AbstractWorkflowDocumentHandler {
         if (repositoryUri != null) {
             return coreDocBD.getDocumentManager(repositoryUri, null);
         } else {
-            throw new Exception("No repository URI.... Cancelling...");
+            throw new IllegalStateException("No repository URI.... Cancelling...");
         }
     }
 
@@ -129,7 +129,7 @@ public abstract class AbstractWorkflowDocumentHandler {
      * Returns the document message producer bean.
      *
      * @return an EJB proxy
-     * @throws NamingException
+     * @throws Exception
      */
     protected DocumentMessageProducer getDocumentMessageProducer()
             throws Exception {
@@ -139,7 +139,7 @@ public abstract class AbstractWorkflowDocumentHandler {
     /**
      * Returns the workflow api bean.
      *
-     * @return en EJB proxy
+     * @return an EJB proxy
      * @throws Exception
      */
     protected WAPI getWAPI() throws Exception {
@@ -150,17 +150,16 @@ public abstract class AbstractWorkflowDocumentHandler {
      * Returns the workflow document security manager bean.
      *
      * @param ec the jbpm execution context
-     * @return en EJB proxy
+     * @return an EJB proxy
      * @throws Exception
      */
     protected WorkflowDocumentSecurityManager getSecuManager(ExecutionContext ec)
             throws Exception {
         String repositoryUri = getDocumentRepositoryLocationURI(ec);
         if (repositoryUri != null) {
-            WorkflowDocumentSecurityManager manager = secuBD.getWorkflowSecurityManager(repositoryUri);
-            return manager;
+            return secuBD.getWorkflowSecurityManager(repositoryUri);
         } else {
-            throw new Exception("No repository URI... Cancelling....");
+            throw new IllegalStateException("No repository URI... Cancelling....");
         }
     }
 
@@ -249,8 +248,7 @@ public abstract class AbstractWorkflowDocumentHandler {
      * @return the principal name
      * @throws Exception
      */
-    protected String getProcessInstanceCreator(ExecutionContext ec)
-            throws Exception {
+    protected String getProcessInstanceCreator(ExecutionContext ec) {
         return (String) getProcessInstance(ec).getContextInstance().getVariable(
                 WorkflowConstants.WORKFLOW_CREATOR);
     }
@@ -263,7 +261,7 @@ public abstract class AbstractWorkflowDocumentHandler {
      * @throws Exception
      */
     protected String getProcessInstanceDocumentModificationPolicy(
-            ExecutionContext ec) throws Exception {
+            ExecutionContext ec) {
         return (String) getProcessInstance(ec).getContextInstance().getVariable(
                 WorkflowConstants.DOCUMENT_MODIFICATION_POLICY);
     }
@@ -276,7 +274,7 @@ public abstract class AbstractWorkflowDocumentHandler {
      * @throws Exception
      */
     protected String getProcessInstanceDocumentVersioningPolicy(
-            ExecutionContext ec) throws Exception {
+            ExecutionContext ec) {
         return (String) getProcessInstance(ec).getContextInstance().getVariable(
                 WorkflowConstants.DOCUMENT_VERSIONING_POLICY);
     }
@@ -288,8 +286,7 @@ public abstract class AbstractWorkflowDocumentHandler {
      * @return the current review level. Default is 0 if not found.
      * @throws Exception
      */
-    protected int getProcessInstanceCurrentReviewLevel(ExecutionContext ec)
-            throws Exception {
+    protected int getProcessInstanceCurrentReviewLevel(ExecutionContext ec) {
         Object value = getProcessInstance(ec).getContextInstance().getVariable(
                 WorkflowConstants.WORKFLOW_REVIEW_LEVEL);
         if (value != null) {
@@ -344,8 +341,7 @@ public abstract class AbstractWorkflowDocumentHandler {
      */
     protected String getLifeCycleTransitionToDestinationState(
             ExecutionContext ec) {
-        String transition = (String) ec.getVariable(WorkflowConstants.LIFE_CYCLE_TRANSITION_TO_DESTINATION_STATE);
-        return transition;
+        return (String) ec.getVariable(WorkflowConstants.LIFE_CYCLE_TRANSITION_TO_DESTINATION_STATE);
     }
 
     /**
@@ -358,11 +354,9 @@ public abstract class AbstractWorkflowDocumentHandler {
      */
     protected Collection<String> getDocumentAllowedStateTransitions(
             ExecutionContext ec) throws Exception {
-        Collection<String> ats;
         WorkflowDocumentLifeCycleManager wfLifeCycleManager = getLifeCycleManager(ec);
         DocumentRef docRef = getDocumentRef(ec);
-        ats = wfLifeCycleManager.getAllowedStateTransitions(docRef);
-        return ats;
+        return wfLifeCycleManager.getAllowedStateTransitions(docRef);
     }
 
     /**
@@ -404,8 +398,7 @@ public abstract class AbstractWorkflowDocumentHandler {
             throws Exception {
         DocumentRef docRef = getDocumentRef(ec);
         WorkflowDocumentLifeCycleManager manager = getLifeCycleManager(ec);
-        String state = manager.getCurrentLifeCycleState(docRef);
-        return state;
+        return manager.getCurrentLifeCycleState(docRef);
     }
 
     /**
@@ -465,8 +458,7 @@ public abstract class AbstractWorkflowDocumentHandler {
      * @return the process instance name
      * @throws Exception
      */
-    protected String getProcessInstanceName(ExecutionContext ec)
-            throws Exception {
+    protected String getProcessInstanceName(ExecutionContext ec) {
         return getProcessInstance(ec).getProcessDefinition().getName();
     }
 
@@ -517,8 +509,7 @@ public abstract class AbstractWorkflowDocumentHandler {
      * @return a process info map.
      * @throws Exception
      */
-    protected Map<String, Serializable> getInfoMap(ExecutionContext ec)
-            throws Exception {
+    protected Map<String, Serializable> getInfoMap(ExecutionContext ec) {
         Map<String, Serializable> infos = new HashMap<String, Serializable>();
         infos.put(WorkflowConstants.WORKFLOW_CREATOR,
                 getProcessInstanceCreator(ec));
