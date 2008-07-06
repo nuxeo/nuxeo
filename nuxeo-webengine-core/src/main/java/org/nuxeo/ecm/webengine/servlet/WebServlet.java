@@ -182,6 +182,7 @@ public class WebServlet extends HttpServlet {
     protected static void displayError(HttpServletResponse resp, Throwable t,
             String message, int code) {
         PrintWriter writer;
+        resp.setContentType("text/plain");
         try {
             writer = resp.getWriter();
         } catch (IOException e) {

@@ -5,6 +5,7 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl
 def main () {
     username = Context.getProperty("username")
     userManager = Framework.getService(UserManager.class)
+    def userGroups = null
     if (username) {
         user = userManager.getPrincipal(username)
         if (user != null) {
