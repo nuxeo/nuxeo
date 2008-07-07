@@ -11,6 +11,20 @@
 
   </extension>
 
+  <extension target="web#SERVLET">
+    <servlet>
+      <servlet-name>Nuxeo Flex Login Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.platform.ui.flex.auth.FlexLoginServlet
+      </servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+      <servlet-name>Nuxeo Flex Login Servlet</servlet-name>
+      <url-pattern>/flexlogin/*</url-pattern>
+    </servlet-mapping>
+  </extension>
+
   <install>
 
     <!--  unzip the swf in the war -->

@@ -16,31 +16,4 @@
     </authenticationPlugin>
    </extension>
 
-  <extension
-    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-    point="chain">
-
-    <authenticationChain>
-      <plugins>
-        <plugin>BASIC_AUTH</plugin>
-        <plugin>FLEX_AUTH</plugin>
-        <plugin>FORM_AUTH</plugin>
-        <plugin>WEBSERVICES_AUTH</plugin>
-      </plugins>
-    </authenticationChain>
-
-  </extension>
-
-  <extension
-    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-    point="startURL">
-
-    <startURLPattern>
-      <patterns>
-        <pattern>flexsamples/</pattern>
-      </patterns>
-    </startURLPattern>
-
-  </extension>
-
 </component>

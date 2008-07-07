@@ -6,14 +6,22 @@
    <mx:Script>
 		<![CDATA[
 			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;	
 
 			private function doLogin():void {
 				 //Alert.show(login.text + " : " + password.text, "info");
 				authRequest.send();
 			}	
+
+			private function faultHandler(event:FaultEvent):void {
+				 Alert.show(event.fault.faultString, event.fault.faultCode.toString());
+			}	
 			
 	]]>
 	</mx:Script>
+
+    <mx:RemoteObject id="authPingTester" destination="authPingTester" fault="faultHandler(event)"/>
 
     <mx:Panel
         title="Nuxeo-Flex Login Screen"
@@ -32,7 +40,10 @@
 			</mx:Form>
 
 
-   <mx:Label text='return: "{authRequest.lastResult}"'/>
+   <mx:Label text='return: "{authRequest.lastResult.response.status}"'/>
+
+   <mx:Button label="ping server" click="authPingTester.ping()"/>
+   <mx:Label text='server ping reply: "{authPingTester.ping.lastResult}"'/>
 
 </mx:Panel>
 

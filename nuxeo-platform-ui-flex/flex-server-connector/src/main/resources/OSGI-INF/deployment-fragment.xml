@@ -15,12 +15,12 @@
   <!-- comment that to disable filter based auth -->
   <extension target="web#STD-AUTH-FILTER">
 
-    <!--<filter-mapping>
+    <filter-mapping>
       <filter-name>NuxeoAuthenticationFilter</filter-name>
-      <url-pattern>/seam/resource/amf*</url-pattern>
+      <url-pattern>/flexlogin/*</url-pattern>
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>-->
+    </filter-mapping>
 
   </extension>
 
@@ -33,19 +33,7 @@
    -->
   </extension>
 
-  <extension target="web#SERVLET">
-    <servlet>
-      <servlet-name>Nuxeo Flex Login Servlet</servlet-name>
-      <servlet-class>
-        org.nuxeo.ecm.platform.ui.flex.auth.FlexLoginServlet
-      </servlet-class>
-    </servlet>
 
-    <servlet-mapping>
-      <servlet-name>Nuxeo Flex Login Servlet</servlet-name>
-      <url-pattern>/flexlogin/*</url-pattern>
-    </servlet-mapping>
-  </extension>
 
 
   <install>

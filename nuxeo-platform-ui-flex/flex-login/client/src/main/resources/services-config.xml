@@ -3,7 +3,7 @@
 <services-config>
     <services>
         <service
-            id="voc-service"
+            id="authPingTester"
             class="flex.messaging.services.RemotingService"
             messageTypes="flex.messaging.messages.RemotingMessage">
 
@@ -12,7 +12,7 @@
             this value is used on client and server side.
             this is a Seam component name.
             -->
-            <destination id="flexVocabularyService"/>
+            <destination id="authPingTester"/>
             <default-channels>
                 <!--
                 Note:
