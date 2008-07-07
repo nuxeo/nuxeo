@@ -5,4 +5,18 @@ set JAVA_OPTS=%JAVA_OPTS% -Dderby.system.home=data/derby
 
 if "%1" == "-debug" set JAVA_OPTS=%JAVA_OPTS% -Xdebug -Xrunjdwp:transport=dt_socket,address=127.0.0.1:8788,server=y,suspend=y
 
-java %JAVA_OPTS% -jar nuxeo-runtime-launcher-1.5-SNAPSHOT.jar bundles/nuxeo-runtime-osgi-1.5-SNAPSHOT.jar/org.nuxeo.osgi.application.Main bundles/.:lib/.:config -home . %*
+if not "%JAVA_HOME%" == "" goto SET_JAVA
+
+set JAVA=java
+
+echo JAVA_HOME is not set.  Unexpected results may occur.
+echo Set JAVA_HOME to the directory of your local JDK to avoid this message.
+goto SKIP_SET_JAVA
+
+:SET_JAVA
+
+set JAVA=%JAVA_HOME%\bin\java
+
+:SKIP_SET_JAVA
+
+"%JAVA%" java %JAVA_OPTS% -jar nuxeo-runtime-launcher-1.5-SNAPSHOT.jar bundles/nuxeo-runtime-osgi-1.5-SNAPSHOT.jar/org.nuxeo.osgi.application.Main bundles/.:lib/.:config -home . %*
