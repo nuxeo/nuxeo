@@ -1,8 +1,10 @@
 package org.nuxeo.ecm.platform.ui.flex.mapping;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,6 +15,9 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
+import org.nuxeo.ecm.core.api.model.impl.ListProperty;
+import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -118,6 +123,23 @@ public class DocumentModelTranslator {
                     if (prop instanceof BlobProperty) {
                         BlobProperty blobProp = (BlobProperty) prop;
                         map.put(fieldName,"someurl");
+                    }
+                    else if (prop instanceof MapProperty) {
+                        MapProperty mapProp = (MapProperty) prop;
+                        map.put(fieldName,mapProp.getValue());
+                    }
+                }
+                else if (prop.getType().isListType())
+                {
+                    if (prop instanceof ListProperty) {
+                        ListProperty listProp = (ListProperty) prop;
+                        List<Serializable> lstProp = new ArrayList<Serializable>();
+                        lstProp.addAll(listProp.getChildren());
+                        map.put(fieldName,(Serializable)lstProp);
+                    }
+                    else if (prop instanceof ArrayProperty) {
+                        ArrayProperty arrayProp = (ArrayProperty) prop;
+                        map.put(fieldName,arrayProp.getValue());
                     }
                 }
             }
