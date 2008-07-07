@@ -159,7 +159,7 @@ public class Node {
                 row = fragments.get(tableName);
                 if (row == null) {
                     // lazy fragment, fetch from context
-                    row = context.get(tableName, getId());
+                    row = context.get(tableName, getId(), true);
                     fragments.put(tableName, row);
                 }
                 readonly = false;
@@ -197,7 +197,7 @@ public class Node {
             }
             String tableName = model.getFragmentName(name);
             // TODO cache collection fragments like we do normal fragments
-            Fragment fragment = context.get(tableName, getId());
+            Fragment fragment = context.get(tableName, getId(), true);
             property = new CollectionProperty(name, propType, false,
                     (CollectionFragment) fragment);
             propertyCache.put(name, property);

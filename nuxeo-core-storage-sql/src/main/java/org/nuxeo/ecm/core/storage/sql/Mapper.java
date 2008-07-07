@@ -41,9 +41,8 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.exception.JDBCExceptionHelper;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
-
-import quicktime.streaming.NewPresentationParams;
 
 /**
  * A {@link Mapper} maps objects to and from the database. It is specific to a
@@ -58,11 +57,14 @@ public class Mapper {
 
     private static final Log log = LogFactory.getLog(Mapper.class);
 
+    /** The model used to do the mapping. */
+    private final Model model;
+
     /** The SQL information. */
     private final SQLInfo sqlInfo;
 
-    /** The model used to do the mapping. */
-    private final Model model;
+    /** The xa pooled connection. */
+    private final XAConnection xaconnection;
 
     /** The actual connection. */
     private final Connection connection;
@@ -80,6 +82,7 @@ public class Mapper {
             throws StorageException {
         this.model = model;
         this.sqlInfo = sqlInfo;
+        this.xaconnection = xaconnection;
         try {
             connection = xaconnection.getConnection();
             xaresource = xaconnection.getXAResource();
@@ -91,6 +94,7 @@ public class Mapper {
     public void close() {
         try {
             connection.close();
+            xaconnection.close();
         } catch (SQLException e) {
             // nothing much we can do...
             log.error("Cannot close connection", e);
@@ -212,6 +216,7 @@ public class Mapper {
                         ps.setNull(i, column.getSqlType());
                     } else {
                         ps.setObject(i, v);
+                        // TODO setBoolean for booleans
                     }
                 }
                 ps.execute();
@@ -320,15 +325,17 @@ public class Mapper {
 
     /**
      * Gets a {@link SimpleFragment} from the database, given its table name and
-     * id. If the row doesn't exist, {@code null} is returned.
+     * id. If the row doesn't exist, an absent row or {@code null} is returned.
      *
      * @param tableName the type name
      * @param id the id
+     * @param createAbsent {@code true} if an absent row may be created
      * @param context the persistence context to which the read row is tied
-     * @return the row, or {@code null}
+     * @return the row, or an absent row, or {@code null}
      */
     public SimpleFragment readSingleRow(String tableName, Serializable id,
-            PersistenceContextByTable context) throws StorageException {
+            boolean createAbsent, PersistenceContextByTable context)
+            throws StorageException {
         String sql = sqlInfo.getSelectByIdSql(tableName);
         try {
             // XXX statement should be already prepared
@@ -343,7 +350,19 @@ public class Mapper {
                 ResultSet rs = ps.executeQuery();
                 if (!rs.next()) {
                     // no match, row doesn't exist
-                    return null;
+                    if (createAbsent) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("SQL:   -> (absent)");
+                        }
+                        SimpleFragment row = new SimpleFragment(tableName, id,
+                                State.ABSENT, context, null);
+                        return row;
+                    } else {
+                        if (log.isDebugEnabled()) {
+                            log.debug("SQL:   -> (none)");
+                        }
+                        return null;
+                    }
                 }
                 // construct the row
                 Map<String, Serializable> map = new HashMap<String, Serializable>();
@@ -353,8 +372,8 @@ public class Mapper {
                     i++;
                     map.put(column.getKey(), column.getFromResultSet(rs, i));
                 }
-                SimpleFragment row = new SimpleFragment(tableName, id, context,
-                        false, map);
+                SimpleFragment row = new SimpleFragment(tableName, id,
+                        State.PRISTINE, context, map);
                 if (log.isDebugEnabled()) {
                     log.debug("SQL:   -> " + resultsToString(rs, columns));
                 }
@@ -435,7 +454,7 @@ public class Mapper {
                 map.put(model.HIER_PARENT_KEY, parentId);
                 map.put(model.HIER_CHILD_NAME_KEY, childName);
                 SimpleFragment row = new SimpleFragment(model.HIER_TABLE_NAME,
-                        id, context, false, map);
+                        id, State.PRISTINE, context, map);
                 if (log.isDebugEnabled()) {
                     log.debug("SQL:   -> " + resultsToString(rs, columns));
                 }
@@ -445,7 +464,6 @@ public class Mapper {
                             " child " + childName + " returned several rows: " +
                             sql);
                 }
-                context.newPristine(row);
                 return row;
             } finally {
                 ps.close();
@@ -516,19 +534,19 @@ public class Mapper {
                         }
                         continue;
                     }
+                    // TODO what if row is "absent" in context?
                     SimpleFragment row = (SimpleFragment) context.getIfPresent(id);
                     if (row == null) {
                         map.put(model.HIER_PARENT_KEY, parentId);
                         row = new SimpleFragment(model.HIER_TABLE_NAME, id,
-                                context, false, map);
-                        context.newPristine(row);
+                                State.PRISTINE, context, map);
                         if (log.isDebugEnabled()) {
                             log.debug("SQL:   -> " +
                                     resultsToString(rs, columns));
                         }
                     } else {
-                        // row is already known in the persistent context, use
-                        // it
+                        // row is already known in the persistent context,
+                        // use it
                         if (log.isDebugEnabled()) {
                             log.debug("SQL:   -> known id=" + id);
                         }
@@ -589,7 +607,7 @@ public class Mapper {
                 // XXX deal with different types
                 String[] array = new String[list.size()];
                 CollectionFragment fragment = new CollectionFragment(tableName,
-                        id, context, false, list.toArray(array));
+                        id, State.PRISTINE, context, list.toArray(array));
                 return fragment;
             } finally {
                 ps.close();

@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 /**
- * A rich value corresponding to one or more rows in a table.
+ * A rich value corresponding to one row or a collection of rows in a table.
  * <p>
  * The table is identified by its table name, which the {@link Mapper} knows
  * about.
@@ -45,22 +45,48 @@ public abstract class Fragment implements Serializable {
      */
     private Serializable id;
 
-    /** The fragment is not attached to a persistence context. */
-    protected static final int STATE_DETACHED = 0;
+    /**
+     * The possible states of a fragment.
+     */
+    public static enum State {
+        /**
+         * The fragment is not attached to a persistence context.
+         */
+        DETACHED, // first is default
 
-    /** The fragment is in the created map in the persistence context. */
-    protected static final int STATE_CREATED = 1;
+        /**
+         * The fragment has been read and found to be absent in the database. It
+         * contains default information. Upon modification, it will change to
+         * {@link #CREATED}.
+         */
+        ABSENT,
 
-    /** The fragment is in the pristine map in the persistence context. */
-    protected static final int STATE_PRISTINE = 2;
+        /**
+         * The fragment does not exist in the database and will be inserted upon
+         * save.
+         */
+        CREATED,
 
-    /** The fragment is in the modified map in the persistence context. */
-    protected static final int STATE_MODIFIED = 3;
+        /**
+         * The fragment exists in the database but hasn't been changed yet. Upon
+         * modification, it will change to {@link #MODIFIED}.
+         */
+        PRISTINE,
 
-    /** The fragment is in the deleted map in the persistence context. */
-    protected static final int STATE_DELETED = 4;
+        /**
+         * The fragment has been modified. Upon save the database will be
+         * updated.
+         */
+        MODIFIED,
 
-    private transient int state; // defaults to STATE_DETACHED = 0
+        /**
+         * The fragment has been deleted. Upon save it will be deleted from the
+         * database.
+         */
+        DELETED;
+    }
+
+    private transient State state; // default is State.DETACHED;
 
     private transient PersistenceContextByTable context;
 
@@ -70,22 +96,32 @@ public abstract class Fragment implements Serializable {
      *
      * @param tableName the table name
      * @param id the id
+     * @param state the initial state for the fragment
      * @param context the persistence context to which the fragment is tied, or
      *            {@code null}
-     * @param creation {@code true} if this fragment has just been created
      */
-    public Fragment(String tableName, Serializable id,
-            PersistenceContextByTable context, boolean creation) {
-        assert tableName != null;
+    public Fragment(String tableName, Serializable id, State state,
+            PersistenceContextByTable context) {
         this.tableName = tableName;
         this.id = id;
+        this.state = state;
         this.context = context;
-        if (context == null) {
-            state = STATE_DETACHED;
-        } else if (creation) {
-            state = STATE_CREATED;
-        } else {
-            state = STATE_PRISTINE;
+        switch (state) {
+        case DETACHED:
+            assert context == null;
+            break;
+        case ABSENT:
+            context.newAbsent(this);
+            break;
+        case CREATED:
+            context.newCreated(this);
+            break;
+        case PRISTINE:
+            context.newPristine(this);
+            break;
+        case MODIFIED:
+        case DELETED:
+            throw new IllegalArgumentException(state.toString());
         }
     }
 
@@ -105,7 +141,7 @@ public abstract class Fragment implements Serializable {
      * @param id the new persistent id
      */
     public void setId(Serializable id) {
-        assert state == STATE_CREATED;
+        assert state == State.CREATED;
         assert id != null;
         this.id = id;
     }
@@ -123,38 +159,64 @@ public abstract class Fragment implements Serializable {
      * Detaches the fragment from its persistence context.
      */
     protected void detach() {
-        state = STATE_DETACHED;
+        state = State.DETACHED;
         context = null;
     }
 
     /**
-     * Marks the fragment pristine, called after a save.
+     * Marks the fragment pristine. Called after a save.
      */
     protected void markPristine() {
-        assert state == STATE_CREATED || state == STATE_MODIFIED;
-        state = STATE_PRISTINE;
+        switch (state) {
+        case CREATED:
+        case MODIFIED:
+            state = State.PRISTINE;
+            break;
+        case ABSENT:
+        case PRISTINE:
+        case DELETED:
+        case DETACHED:
+            throw new IllegalStateException(this.toString());
+        }
     }
 
     /**
-     * Marks the fragment deleted, called after a delete.
+     * Marks the fragment deleted. Called after a delete.
      */
     protected void markDeleted() {
-        if (state == STATE_PRISTINE || state == STATE_MODIFIED) {
-            state = STATE_DELETED;
-        } else if (state == STATE_CREATED) {
-            state = STATE_DETACHED;
-            context = null;
+        switch (state) {
+        case ABSENT:
+        case CREATED:
+            state = State.DETACHED;
+            break;
+        case PRISTINE:
+        case MODIFIED:
+            state = State.DELETED;
+            break;
+        case DELETED:
+        case DETACHED:
+            throw new IllegalStateException(this.toString());
         }
-        // it may be possible to delete detached fragments, so don't fail
     }
 
     /**
-     * Marks the fragment modified, called internally after a put.
+     * Marks the fragment modified. Called internally after a put/set.
      */
     protected void markModified() {
-        if (state == STATE_PRISTINE) {
-            state = STATE_MODIFIED;
-            context.markModified(this);
+        switch (state) {
+        case PRISTINE:
+            state = State.MODIFIED;
+            context.markPristineModified(this);
+            break;
+        case ABSENT:
+            state = State.CREATED;
+            context.markAbsentCreated(this);
+            break;
+        case CREATED:
+        case MODIFIED:
+        case DELETED:
+        case DETACHED:
+            break;
         }
     }
 

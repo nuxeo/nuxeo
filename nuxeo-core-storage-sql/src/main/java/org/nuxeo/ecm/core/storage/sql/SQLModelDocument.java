@@ -57,7 +57,7 @@ public class SQLModelDocument implements Document {
 
     // we store lock state on the document because it is frequently used
     // (on each permission check)
-    //private String lock;
+    // private String lock;
 
     /**
      * Constructs a document that wraps the given JCR node.
@@ -136,7 +136,15 @@ public class SQLModelDocument implements Document {
     }
 
     public void readDocumentPart(DocumentPart dp) throws Exception {
-        throw new UnsupportedOperationException();
+
+        // proxy document is forwarding props to refered doc
+        // Node parent = isProxy() ? ((JCRDocumentProxy)doc).getTargetNode() :
+        // getNode();
+
+        String schemaName = dp.getSchema().getName();
+        for (org.nuxeo.ecm.core.api.model.Property property : dp) {
+            property.init((Serializable) getPropertyValue(property.getName()));
+        }
     }
 
     public void writeDocumentPart(DocumentPart dp) throws Exception {
@@ -159,24 +167,28 @@ public class SQLModelDocument implements Document {
 
     public boolean followTransition(String transition)
             throws LifeCycleException {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public Collection<String> getAllowedStateTransitions()
             throws LifeCycleException {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     public String getCurrentLifeCycleState() throws LifeCycleException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        try {
+            return getString(Model.SYSTEM_LIFECYCLE_STATE_PROP);
+        } catch (DocumentException e) {
+            throw new LifeCycleException(e.getMessage(), e);
+        }
     }
 
     public String getLifeCyclePolicy() throws LifeCycleException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        try {
+            return getString(Model.SYSTEM_LIFECYCLE_POLICY_PROP);
+        } catch (DocumentException e) {
+            throw new LifeCycleException(e.getMessage(), e);
+        }
     }
 
     /*
@@ -460,7 +472,8 @@ public class SQLModelDocument implements Document {
     }
 
     public String getLock() throws DocumentException {
-        throw new UnsupportedOperationException();
+        return null;
+        // throw new UnsupportedOperationException();
     }
 
     public void setLock(String key) throws DocumentException {

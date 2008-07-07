@@ -237,7 +237,10 @@ public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
      */
 
     private SQLModelDocument newDocument(Node node) throws StorageException {
-        // XXX TODO special case root ?
+        if (node == null) {
+            // root's parent
+            return null;
+        }
 
         // TODO proxies / versions
 

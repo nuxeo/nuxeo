@@ -168,10 +168,13 @@ public class Column implements Serializable {
         case Types.TIMESTAMP:
             result = rs.getTimestamp(columnIndex);
             break;
+        case Types.BIT:
+            result = rs.getBoolean(columnIndex);
+            break;
         default:
             throw new SQLException("Unhandled SQL type: " + sqlType);
         }
-        if (rs.wasNull()) { // stupid JDBC API
+        if (rs.wasNull()) {
             result = null;
         }
         return result;

@@ -32,7 +32,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 "OSGI-INF/test-core-types-contrib.xml");
     }
 
-    public void testGetRootNode() throws Exception {
+    public void testRootNode() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         assertNotNull(root);
@@ -40,6 +40,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("/", session.getPath(root));
         assertEquals("Root",
                 root.getSimpleProperty("ecm:primaryType").getString());
+
+        SimpleProperty titleProp = root.getSimpleProperty("tst:title");
+        assertNull(titleProp.getValue());
+        titleProp.setValue("the root");
+
+        session.save();
         session.close();
     }
 
@@ -94,37 +100,22 @@ public class TestSQLBackend extends SQLBackendTestCase {
     public void testBasics() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
-        assertNotNull(root);
-        assertEquals("", root.getName());
-        assertEquals("/", session.getPath(root));
-        assertEquals("Root",
-                root.getSimpleProperty("ecm:primaryType").getString());
-
         Node nodea = session.addChildNode(root, "foo", "TestDoc");
-        assertEquals(root.getId(), session.getParentNode(nodea).getId());
-        assertEquals("TestDoc", nodea.getType().getName());
         nodea.setSingleProperty("tst:title", "hello world");
         nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
                 "c" });
+
         assertEquals("hello world",
                 nodea.getSimpleProperty("tst:title").getString());
         String[] subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
         assertEquals(Arrays.asList("a", "b", "c"), Arrays.asList(subjects));
-
-        Node nodeabis = session.getChildNode(root, "foo");
-        assertEquals(nodea.getId(), nodeabis.getId());
-
-        Node nodeb = session.addChildNode(nodea, "bar", "TestDoc");
-        assertEquals("/foo/bar", session.getPath(nodeb));
-        assertEquals(nodea.getId(), session.getParentNode(nodeb).getId());
-        assertEquals(nodeb.getId(),
-                session.getNodeByPath("/foo/bar", null).getId());
 
         session.save();
 
         // now modify a property and re-save
         nodea.setSingleProperty("tst:title", "another");
         nodea.setCollectionProperty("tst:subjects", new String[] { "z", "c" });
+
         session.save();
         session.close();
 
@@ -136,9 +127,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 nodea2.getSimpleProperty("tst:title").getString());
         subjects = nodea2.getCollectionProperty("tst:subjects").getStrings();
         assertEquals(Arrays.asList("z", "c"), Arrays.asList(subjects));
+
         // delete the node
         session2.removeNode(nodea2);
         session2.save();
-
     }
+
 }

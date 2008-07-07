@@ -33,8 +33,8 @@ public class SimpleFragment extends Fragment {
 
     private static final long serialVersionUID = 1L;
 
-    public static final SimpleFragment UNKNOWN = new SimpleFragment("", null,
-            null, false, null);
+    public static final SimpleFragment UNKNOWN = new SimpleFragment(null, null,
+            State.DETACHED, null, null);
 
     /** The map actually holding the data. */
     private final Map<String, Serializable> map;
@@ -45,15 +45,14 @@ public class SimpleFragment extends Fragment {
      *
      * @param tableName the table name
      * @param id the id
+     * @param state the initial state for the fragment
      * @param context the persistence context to which the row is tied, or
      *            {@code null}
-     * @param creation {@code true} if this row has just been created
      * @param map the initial row data to use, or {@code null}
      */
-    public SimpleFragment(String tableName, Serializable id,
-            PersistenceContextByTable context, boolean creation,
-            Map<String, Serializable> map) {
-        super(tableName, id, context, creation);
+    public SimpleFragment(String tableName, Serializable id, State state,
+            PersistenceContextByTable context, Map<String, Serializable> map) {
+        super(tableName, id, state, context);
         if (map == null) {
             map = new HashMap<String, Serializable>();
         }
