@@ -75,6 +75,11 @@ package org.nuxeo.ecm.flex.dto
       return _name;
     }
 
+    public function get doctype():String
+    {
+      return _type;
+    }
+
     public function get contentdata():Object
     {
       return _data;
@@ -111,6 +116,33 @@ package org.nuxeo.ecm.flex.dto
     public function isFolder():Boolean
     {
       return _isFolder;
+    }
+
+    public function getSchemas():Array
+    {
+      var schemas:Array = new Array();
+      var schemaName:Object;
+      for (schemaName in _data)
+      {
+      schemas.push(schemaName);
+      }
+      return schemas;
+    }
+
+    public function getSchema(schemaName:String):Object
+    {
+      return _data[schemaName];
+    }
+
+    public function getFieldNames(schemaName:String):Array
+    {
+      var fieldNames:Array = new Array();
+      var fieldName:Object;
+      for (fieldName in _data[schemaName])
+      {
+      fieldNames.push(fieldName);
+      }
+      return fieldNames;
     }
 
 
