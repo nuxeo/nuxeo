@@ -10,6 +10,10 @@
     <filter-class>
       org.nuxeo.ecm.webengine.login.WebEngineAuthenticationFilter
     </filter-class>
+    <init-param>
+      <param-name>exclude</param-name>
+      <param-value>/files</param-value>
+    </init-param>
   </filter>
   <filter-mapping>
     <filter-name>WebEngineAuthenticationFilter</filter-name>

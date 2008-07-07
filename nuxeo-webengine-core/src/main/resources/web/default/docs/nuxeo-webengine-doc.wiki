@@ -3,7 +3,7 @@
 
 {toc}{/toc}
 
-The WebEngine is a framework to build web applications on top of the Nuxeo ECM platform.
+The WebEngine is a framework to build web applications on top of the Nuxeo EP platform.
 
 == Overview
 
@@ -36,24 +36,24 @@ Context.print("My name is ${Context.principal.name}")!
 
 
 
-=== Bridging with Nuxeo ECM
+=== Bridging with Nuxeo EP
 
-The WebEngine was created to work over a Nuxeo ECM server. Using it outside Nuxeo ECM is possible, but is very limiting and you will loose many of the cool features of the WebEngine.
+The WebEngine was created to work over a Nuxeo EP server. Using it outside Nuxeo EP is possible, but is very limiting and you will loose many of the cool features of the WebEngine.
 
-If you don't plan to use a Nuxeo ECM server as the content backend for your web site or Web 2.0 application, we suggest you to look at other products that may better fit your needs:
+If you don't plan to use a Nuxeo EP server as the content backend for your web site or Web 2.0 application, we suggest you to look at other products that may better fit your needs:
 * Django
 * Ruby on Rails
 * etc.
 
-In this section we will assume you have some knowledge about the Nuxeo ECM platform.
+In this section we will assume you have some knowledge about the Nuxeo EP platform.
 
-Nuxeo ECM, as its name suggests, is an Enterprise Content Management platform that provides a powerful way to manage and store your documents. For simplicity you can see Nuxeo ECM as a document repository. To use access the repository, to update, query or to store new documents, you need first to connect to it and create an authenticated session based on your login information. Using that repository session you can then start querying, updating and sorting documents.
+Nuxeo EP, as its name suggests, is an Enterprise Content Management platform that provides a powerful way to manage and store your documents. For simplicity you can see Nuxeo EP as a document repository. To use access the repository, to update, query or to store new documents, you need first to connect to it and create an authenticated session based on your login information. Using that repository session you can then start querying, updating and sorting documents.
 
 So, from a client point of view, the main concepts of a Nuxeo Repository are the Session (the user connection to the repository) and the Document (the units of information that are mananged by the repository).
 
 The idea behind the WebEngine is to map HTTP requests to documents stored in the repository and to be able that way to query, update, store or create new documents by using a traditional Web approach.
 
-To correctly understand how this bridging over Nuxeo ECM is done and what you can do by using WebEngine, you should first understand how HTTP requests are dispatched, processed and mapped to documents.
+To correctly understand how this bridging over Nuxeo EP is done and what you can do by using WebEngine, you should first understand how HTTP requests are dispatched, processed and mapped to documents.
 
 
 
@@ -89,7 +89,7 @@ More details about this in the WebEngine Application section.
 ==== Request Path
 
 The request path (aka traversal path) represent the path that should be processed and resolved by the selected web application. If the application path used to select the application defined a Document root then the application will try to map the request path to a Document or a chain of Documents in the repository. If the application path is not bound to a Document root then the application will try to resolve the path to a script or template on the file system. If neither of these methods succeeds an error page (along with a 404 error code) is sent to the client.\
-*Note* that in future it will be possible to bound an application path to an arbritrary root Object that is not necesarly a Document in the repository but that will know how to resolve the request path into a chain of arbitrary objects (not necesarly Documents). This is usefull for example to map a request path on an User, Group or other objects managed by Nuxeo ECM.
+*Note* that in future it will be possible to bound an application path to an arbritrary root Object that is not necesarly a Document in the repository but that will know how to resolve the request path into a chain of arbitrary objects (not necesarly Documents). This is usefull for example to map a request path on an User, Group or other objects managed by Nuxeo EP.
 
 The default technique to resolve request paths into a chain of Documents is using a direct mapping beetween the request path and a repository path starting from the root Document. The mapping technique is configurable and can be changed by implementing the `org.nuxeo.ecm.webengine.RequestHandler` interface.
 
@@ -125,13 +125,13 @@ The action string represent an action to be taken on the last resolved document 
 An action can be bound to a Java class (an action handler) or to a script in order to perform the wanted operation on the document.
 If no action is specified in the request URL then a default action `@@view` will be used.
 
-*Note* that in future the `action` concept will be extended. For now actions are used when requesting Documents. They are ignored when the request is not resolved to a document but to a script or template. (e.g. if you are using pure scripting that are not resolved to Nuxeo ECM Documents). In future the action mechanism will be extended to be used on any type of resource. For example in the case of scripts an `action` may be mapped on a script function.
+*Note* that in future the `action` concept will be extended. For now actions are used when requesting Documents. They are ignored when the request is not resolved to a document but to a script or template. (e.g. if you are using pure scripting that are not resolved to Nuxeo EP Documents). In future the action mechanism will be extended to be used on any type of resource. For example in the case of scripts an `action` may be mapped on a script function.
 
 You can find more details on actions in Web Application : Actions section
 
 
 
-=== Document Mapping
+=== Path Mapping
 
 We already seen how the request URL is transformed into these components:
 + host server
@@ -230,11 +230,13 @@ Let say you want to call the script bound to the `@@view` action of a `Wiki` doc
 
 WebEngine is shipped in two flavours:
 * a standalone server
-* a Nuxeo ECM module, that runs in a JBoss application server
+* a Nuxeo EP module, that runs in a JBoss application server
 
 Both of these versions provides the same functionalities and the same JARs are used on both platforms.
 This is possible since WebEngine is build over the Nuxeo Runtime layer that works over any OSGi platform.
 In both standalone and JBoss versions the OSGi framework is emulated by a Nuxeo component: `nuxeo-runtime-osgi`.
+
+WebEngine is working on any platform supported by Nuxeo EP (UNIX-like systems, MAC OS X, Windows). Anyway in the case of MAC OS X there is a known problem and to be able to start WebEngine you need to remove the file `System/Library/Java/Extensions/AppleScriptEngine.jar` file.
 
 
 
@@ -266,16 +268,16 @@ For more information on the launcher look into `nxserver.sh`
 
 
 
-=== Nuxeo ECM module
+=== Nuxeo EP module
 
-WebEngine can be deployed as a Nuxeo ECM module on a running Nuxeo server (that currently supports JBoss as application server).\
+WebEngine can be deployed as a Nuxeo EP module on a running Nuxeo server (that currently supports JBoss as application server).\
 In this version, WebEgnine is bound by default to the `/nuxeo/site` context path.
 
-When deployed as a Nuxeo ECM module, WebEngine will run in an application server so all required Nuxeo services will be exposed as session beans.
+When deployed as a Nuxeo EP module, WebEngine will run in an application server so all required Nuxeo services will be exposed as session beans.
 
 ==== Installation
 
-Install a Nuxeo ECM product. Download the webengine components from http://www.nuxeo.org/projects/webengine:
+Install a Nuxeo EP product. Download the webengine components from http://www.nuxeo.org/projects/webengine:
 * nuxeo-platform-rendering
 * nuxeo-webengine-core
 * nuxeo-webengine-wiki (optional)
@@ -290,6 +292,7 @@ Make sure you have the following JARs in yout `nuxeo.ear/libs`:
 
 If they are not there, download them and copy into the `libs` folder (overwriting older versions if any)
 
+In order to use Anonymous login you also need to deploy the optional Nuxeo EP module: `nuxeo-platform-anonymous-login`. In the standalone version this feature comes by default.
 
 ==== Requirements
 * JBoss 4.0.5 GA
@@ -302,34 +305,11 @@ If they are not there, download them and copy into the `libs` folder (overwritin
 
 Now that we've seen the main concepts used to build a web application, we can learn how to configure and assemble them to obtain a working application.
  
-A Web  Application is a collection of configuration files, scripts, templates and other resources that is accessible remotely through a servlet. The WebEngine allows the definition of multiple applications. All these application data reside inside the root `web` directory. As we've seen earlier, on JBoss this root directory is located at:
-
-`${jboss_install_dir}/server/default/data/NXRuntime/web`
+A Web  Application is a collection of configuration files, scripts, templates and other resources that are accessible remotely through a servlet. The WebEngine allows the definition of multiple applications. All these application data reside inside the root `web` directory.
 
 An application may access any resources within the root `web` directory, but none outside it. This means that several applications may share data and reuse scripts.
 
-Anyway in the term of configuration these application must be isolated to avoid propagating some custom configurations that was done for a given web application to all other existing applications.
-
-Also, to be able to easily select the target application when a request is made, each application will be bound to a different servlet. This way the servlet invocation will automatically select the correct application.
-
-This binding is done at server configuration level in the `web.xml` configuration file by specifying an init-parameter with the name "webapp" and that points to the name of the application to bind to. If no such parameter is defined the following is implied:
-
-{{{
-  <init-param>
-    <param-name>webapp</param-name>
-    <param-value>nuxeo-web</param-value>
-  </init-param>
-}}}
-
-So, we've seen that a web application should be isolated at configuration level from other applications. This is to avoid propagate customization to other applications. But this doesn't means that application cannot shared some basic and immutable configuration. This can be very useful to avoid redefining some generic configuration for each application.
-
-These requirements, impose a configuration mechanism split in two layers:
-+ A generic configuration layer shared between all applications. The configuration from this layer cannot be modified by applications. We will name this layer the *Global Configuration*.
-+ An application specific configuration layer that can be used to define specific customizations over the global configuration. This configuration layer will be named *Application Configuration* and should be used to customize applications.
-
-For more details about what can be configured in both configuration layers see the Configuration chapter.
-
-A web application is responsible for:
+An application is responsible for:
 + Resolving script or templates paths
 + Managing the custom configuration
 + Resolving path segments to documents
@@ -339,19 +319,154 @@ Web application data may be contributed by separate OSGi modules (JARs). Usually
 
 It is recommended that modules should contribute files by creating a new directory into the `web` root and not by replacing existing files. The directory stacking mechanism can be used to override existing files if this is wanted. 
 
+Applications are usefull when you need to deploy multiple sites on the same server or when you want to customize an existing application but don't want your changes to modify the existing application. For example you need to override the document type `File` is handled vut only in your application scope.\
+When hosting multiple sites using WebEngine it is better to separate these sites in applications rather than using a single application that will correctly dispatch request for each site by using mappings or other techniques. This ensure a better scalability since each application configuration is isolated from the others and each application will use its own cache.
+
+Even if isolated at configuration level, applications may share script, template or static files.
+
+
+=== Web Engine Servlet
+
+All applications are served by a single servlet - the one that is bound in the web.xml file to the WebEngine. To create a WebEngine servlet you should define it as following (see `web/WEB-INF/web.xml` file):
+
+{{{
+  <servlet>
+    <servlet-name>Nuxeo WebEngine Servlet</servlet-name>
+    <servlet-class>
+    org.nuxeo.ecm.webengine.servlet.WebServlet
+    </servlet-class>
+  </servlet>
+}}}
+
+To be able to use the Nuxeo EP repository from WebEngine you should also declare an authentication filter as following (see `web/WEB-INF/web.xml`)
+
+{{{
+  <filter>
+    <display-name>WebEngine Authentication Filter</display-name>
+    <filter-name>WebEngineAuthenticationFilter</filter-name>
+    <filter-class>
+      org.nuxeo.ecm.webengine.login.WebEngineAuthenticationFilter
+    </filter-class>
+    <init-param>
+      <param-name>exclude</param-name>
+      <param-value>/files</param-value>
+    </init-param>
+  </filter>
+}}}
+
+The `exclude` parameter is used to avoid filtering request having paths starting with the `/files` prefix since this prefix is used by WebEngine to locate static files as CSS, script and image files.
+
+
+=== Application Configuration
+
+Before talking about configuration format you should know that WebEngine is using the Nuxeo extension point mechanism to contribute configuration files.
+A Nuxeo component may delcare several extension points to let other components contributing custom configuration. Tese extension poitns are declared using XML files. Extensions contributed by other modules are also declared as XML files. For more information on how this works see te documentation of Nuxeo EP.
+
+To define a new application you need to contribute a new application extension. This extension can live anywhere where accessible from `nuxeo-webengine-core` bundle (even in a JAR) but we recommend to place configuration files in `web/WEB-INF` directory.
+
+As new applications are usually contributed by new modules (that are installed as JARs) this section will explain how to create a new application from a nuxeo module.
+A WebEngine module, apart the configuration files may also deploy script and other resource files in the `web` directory. Here is a a complete example on how to create a new application and deploye new web resources and it is taken from the `nuxeo-webengine-wiki` module. In your module you need to deploy an XML component having a content similar with the following (see `nuxeo-webegine-wiki/OSGI-INF/wiki-deployment-contrib.xml`):
+
+{{{
+  <extension
+    target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="install">
+      <install guard="/WEB-INF/wiki-webapp.xml">
+        <copy path="OSGI-INF/wiki-webapp.xml" target="/WEB-INF/wiki-webapp.xml" />
+        <copy path="web/wiki" target="/" />
+        <copy path="web/resources" target="/" />
+        <append path="web/i18n/messages.properties" target="/i18n/messages.properties"/>
+    </install>
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="configuration">
+      <configuration path="/WEB-INF/wiki-webapp.xml" />
+  </extension>
+}}}
+
+The first extension point is delcarin all the files you want to copy from the JAR in the `web` directory the first time your module is loaded.
+The `copy`directive is doing a directory or file copy by overwriting any existing file; the append directive is appending some file on an existing file.
+
+The special `guard` attribute is specifying a file that will act as a guard to prevent re-deploying your web files each time you restart the server.
+That is,if the `guard` file already exists, then the file deployment is skiped. This way, the startup time is improved and also you avoid overwriting your manual changes on the already deployed files.
+
+The second extension is declaring the `/WEB-INF/wiki-webapp.xml` as a configration file. This is also enabling the hot redeployment on that file.
+If you don't want hot redeployment on your configuration file you need to add an extra attribute: *trackChanges="false"*
+
+*Note* that it is also possible to deploy new applications without having to install a new JAR. To do this you need to edit an existing configuration file and add your application contribution there or to add a new configuration contribution (that declares your new configuration file). In future this will be improved and we plan to make possible to install and remove applications simply by adding / removing XML files into `web/WEB-INF`.
+
+Now that you deployed you know how to deploy a new application we can look into the application extension point to see how an application can be configured.
+
+Here is an example of an application configurtaion:
+
+{{{
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="application">
+    <webapp id="myapp" extends="default">
+      <repository>default</repository>
+      <errorPage>error.groovy</errorPage>
+      <roots>
+        <root priority="0">default</root>
+      </roots>
+      <mappings>
+        <mapping pattern="/search">
+          <script>/common/search.ftl</script>
+        </mapping>
+      </mappings>
+    </webapp>
+
+  </extension>
+}}}
+
+* `extends` attribute is optional and means that the current application extends the configuration defined for the `default` application.\
+* `repository` element is used to specify what repository this application will use (if any is used). It defaults to "default"
+* `errorPage` element specify a script or template to be used to handle errors. It defaults to "error.ftl". There are also more default pages that you can configure using the elements:
+** `indexPage` - called when a root request `/` is made in that application. Defaults to "index.ftl"
+** `defaultPage` - called when a resource is not found and the application didn't triggered any error. Defaults to "default.ftl"
+* `roots` used to declare the directory roots in that application. See Directory Stacking section for more information.
+* `mappings` used to bypass the default mapping mechanism as discussed Path Mapping section. In our example the traversal path that exactly match `/search` will be redirected to the script `/common/searech.ftl`
+
+*Note* that the configuration syntax may change in future.
+
+=== Application Selection
+
+We've seen how to define a new application. But how this application becomes selected for an incoming request?\
+This is done by defining rules to map request paths to applications.\
+*Note* that a single application can be mapped to multiple paths.\
+Here is an example fo such a mapping rule:
+
+{{{
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="application-mapping">
+    <mapping path="/" webapp="default" />
+    <mapping path="/repository" webapp="default" document="/default-domain" default="true" />
+  </extension>
+}}}
+
+The mapping is done on path prefixes and the longest match win.
+
+The first mapping rule is mapping the __default__ application to any path that starts with `/` path. This means any requests that is not matched to an application will be handled by the default application.\
+The second mapping rule is mapping the __default__ application to any path that starts with `/repository`.
+Also the `document` attribute specify that when this rule matches the Document root should be set to `/default-domain`.
+The `default` attribute is a little bit special. It tells that this mapping rule is the default one when trying to compute document paths.
+Imagine in you display on a page the result of a search in the repository. Within the result you may have documents that are outside the scope of your application context. In order to be able to display such documents you need an URL (that your application is not aware of). In that case the `default` mapping rule will be used to compute the document URL.
+
+For more details about what can be configured in both configuration layers see the Configuration chapter.
+
+
 === Directory Stacking
 
-As we've seen earlier in the Overview chapter an application may define several roots inside the web root directory.
+As we've seen earlier an application may define several roots inside the web root directory.
 
 These roots are known as the application directory stack and are used to resolve scripts and templates.
 
 Root directories are stacked given a priority so that the resolver will try each root in a the right priority order until a resource is found.
 
-Directory Roots are mainly used to override resources deployed by other modules or to define additional skins for an application. By using the right priority for the root directories in the stack you may obtain the desired effect - override some existing resources but avoid overriding some other ones.
+Directory Roots are mainly used to override templates and scripts or add new ones from external modules. By using the right priority for the root directories in the stack you may obtain the desired effect - overriding some existing resources without overriding some other ones.
 
-The stack defined at the global level is containing only the `default` directory. This directory comes with scripts and templates that deals with common types in Nuxeo like `File`, `Folder`, `Note`, `Workspace` etc. 
-
-Applications may add new directories to the stack but these will be visible only for the application that defined them. So stacking is not shared between applications.
+Stacking is inherited when an application extends another application.
 
 ==== Example
 
@@ -365,13 +480,16 @@ Using the same mechanism you may change or hide only .css or .gif files creating
 
 === Web Objects
 
-Before talking about Web Objects we will recapitulate some things about traversal paths. We've seen that *request paths* are transformed into a *traversal path* and an *trailing path* (and possibly some matching attributes in the case of a path pattern match).
+Before talking about Web Objects we will recapitulate some things about traversal paths. We've seen that *request paths* are split into:
+* an *application path*
+* a *traversal path*
+* and optionally a *trailing path*
 
-The generated `traversal path` is a sequence of documents that should be traversed before executing the request. The last document that is traversed (the last in the traversal path) will be set as the target document of the request and the request will be executed in the context of that document.
+The `traversal path` if any defines a sequence of documents that should be traversed before executing the request. The last document that is traversed (the last in the traversal object chain) is considered the target document of the request (this may be the root document itself) and the request will be executed in the context of that document.
 
 We've also seen that you may have requests that doesn't generate any traversal path. In this case pure web scripting will be done (outside any document context). Also you should note that the documents in the traversal path are not necessarily the children of each other like in a repository path. The mechanism used to create the traversal path is up to the registered document resolver.
 
-The documents in the traversal path will not be exposed as is in the request context but they will be wrapped inside a high level object web oriented that is called WebOject. THis is needed because the Nuxeo documents are repository oriented, they doesn't have any knowledge about the web context in which they are used. They doesn't know for example what is the URL  used to access them, or what are the web actions that are enabled in the current web context.
+The documents in the traversal path will not be exposed as is in the request context but they will be wrapped inside a high level object - web oriented that is called WebOject. THis is needed because the Nuxeo documents are repository oriented, they doesn't have any knowledge about the web context in which they are used. They doesn't know for example what is the URL  used to access them, or what are the web actions that are enabled in the current web context.
 
 For this reason before being exposed in the web context they are wrapped in a web sensitive object.
 
@@ -413,7 +531,7 @@ Finally, the guards can be installed to restrict actions to be available only fo
 
 Here is a list of all supported atomic guards:
 
-+ Permission Guard - restrict access by testing native Nuxeo ECM document permissions.
++ Permission Guard - restrict access by testing native Nuxeo EP document permissions.
 + User Guard - restrict access by testing the current user name
 + Group Guard - restrict access by testing the current group name
 + Type Guard - restrict access by testing the current document type
