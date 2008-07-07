@@ -313,8 +313,7 @@ public class DashBoardActionsBean extends InputController implements
                 String pid = workItem.getProcessInstance().getId();
                 WorkflowDocumentSecurityPolicy policy = wDocSecuPolicy.getWorkflowDocumentSecurityPolicyFor(workItem.getProcessInstance().getName());
                 if (policy != null) {
-                    boolean canManage = policy.hasParticipantImmediateAction(
-                            pid, workItem.getParticipant());
+                    boolean canManage = policy.selectThisItem(workItem);
                     if (!canManage) {
                         continue;
                     }
