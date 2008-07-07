@@ -1,6 +1,8 @@
 
 = Nuxeo WebEngine
 
+{toc}{/toc}
+
 The WebEngine is a framework to build web applications on top of the Nuxeo ECM platform.
 
 == Overview
@@ -166,7 +168,7 @@ The syntax (?label: ... ) for regular expression groups is an extension to the J
 
 `/blogs/archive/([0-9]{4}?)/([0-9]{2}?)`
 
-In this case the generated mapping variables will be $1 for the year and $2 for the month.
+In this case the generated mapping variables will be `$1` for the year and `$2` for the month.
 
 You may note that using mappings or using a custom request handler that avoid mapping path segments on documents you may create web application that doesn't use any Nuxeo repository.
 
@@ -174,9 +176,9 @@ You may note that using mappings or using a custom request handler that avoid ma
 
 === Directory Layout - Resolving Scripts and Templates 
 
-All Web Application files are residing under a common root folder named the web folder. On JBoss this is root folder is located in `${jboss_install_dir}/server/default/data/NXRuntime/web`.
+All WebEngine application files are residing under a common root folder named the web folder. This folder is located in `${nxserver}/web` folder in the standalone version. On JBoss the web root folder is located in `${jboss_install_dir}/server/default/data/NXRuntime/web`.
 
-A Web Application may have multiple roots folders where scripts and other files are residing. When resolving scripts from paths each of these folders are consulted in turn until a matching file is found. 
+An application may have multiple roots folders where scripts and other files are residing. When resolving scripts from paths each of these folders are consulted in turn until a matching file is found.
 
 Example: Let say you have an web application that contains two roots: `wiki` and `default` (in that order). So inside the `web` directory we will have `web/wiki` and `web/default`.
 
@@ -192,7 +194,8 @@ Example of relative paths:
 * ../../myscript.py
 * ./myscript.groovy
 
-Note that using relative paths is less efficient since the path lookup cannot be cached because of the directory base which is dictated by the current script context, context that may change during the request. Also when a relative path points outside the web root directory then it will be truncated (i.e. trailing ../ removed) and resolved as an absolute path.
+Note that using relative paths is less efficient since the path lookup cannot be cached because the current directory used to resolve scripts depends on the current request context, context that is changing on each request or more may change during the same request.\
+Also when a relative path points outside the web root directory then it will be truncated (i.e. trailing ../ removed) and resolved as an absolute path.
 
 ==== Resolving Action Scripts
 
@@ -210,7 +213,7 @@ This way each time an action script is resolved the resolver will look in the fo
 
 As the `Document` type is the base types of all Nuxeo document types you may put in that folder the default files for every document action.
 
-If no file matches then a default file (a fallback file) will be used to display a custom message. This default file is configurable via Web Application properties. If the default file cannot be find or was not defined then a 404 is send to the client.
+If no file matches then a default file (a fallback file) will be used to display a custom message. This default file is configurable at the application level. If the default file cannot be fond or was not defined then a 404 is send to the client.
 
 Example: In the `default` application root you may have three folders:
 * Document
@@ -219,9 +222,83 @@ Example: In the `default` application root you may have three folders:
 
 Let say you want to call the script bound to the `@@view` action of a `Wiki` document. Then the script resolver will first look into `Wiki` folder then if nothing is found and because `Wiki` is extending `Folder` it will look into `Folder` folder and then if nothing is found as `Folder` is extending `Document` it will look into Document folder. Finally if nothing is found the registered default script if any is used.
 
-Note that when you have multiple web application roots this mechanism will searching the script in each root in turn until something is found.
+*Note* that when you have multiple web application roots this mechanism will searching the script in each root in turn until something is found.
 
-== Web Applications
+
+
+== Getting Started
+
+WebEngine is shipped in two flavours:
+* a standalone server
+* a Nuxeo ECM module, that runs in a JBoss application server
+
+Both of these versions provides the same functionalities and the same JARs are used on both platforms.
+This is possible since WebEngine is build over the Nuxeo Runtime layer that works over any OSGi platform.
+In both standalone and JBoss versions the OSGi framework is emulated by a Nuxeo component: `nuxeo-runtime-osgi`.
+
+
+
+=== Standalone server
+
+The standalone server is the *light* version of WebEngine and doesn't requires an application server to work.
+This means that Nuxeo services requried by WebEngine are not exposed as session beans. Anyway, all of the functionalities present in the JBoss version are available in the standalone server.
+The light version is embedding a Jetty HTTP server and by default binds the WebEngine instance to the root web context: `/`.\
+In the future, we plan to also provide a light version of WebEngine that will embed a GlassFish3 server.
+
+The light version is very usefull for developing since the startup time is very fast (e.g. 2-3 seconds on my laptop using Java6) - but can be also used in production.
+
+==== Installation
+To install the light version download it from http://nuxeo.org/projects/webengine, unzip the content into a folder of your choice.
+and run `nxserver.sh` to launch the application.
+
+==== Launcher
+To start WebEngine simply run `./nxserver.sh` on linux or `nxserver.cmd` on windows.
+
+The common options are:
+
+* `-debug` - to start in debug mode. In this mode the launcher will wait for a Java debuger to connect.
+* `-clear` - to cleanup cache before starting. This is needed if you add a JAR into `bundles` or `lib` directories - since the launcher is caching the classpath at the first start of the server.
+
+For more information on the launcher look into `nxserver.sh`
+
+==== Requirements
+* Java 5 or later - WebEngine is working fine on both Java 5 and 6.
+
+
+
+=== Nuxeo ECM module
+
+WebEngine can be deployed as a Nuxeo ECM module on a running Nuxeo server (that currently supports JBoss as application server).\
+In this version, WebEgnine is bound by default to the `/nuxeo/site` context path.
+
+When deployed as a Nuxeo ECM module, WebEngine will run in an application server so all required Nuxeo services will be exposed as session beans.
+
+==== Installation
+
+Install a Nuxeo ECM product. Download the webengine components from http://www.nuxeo.org/projects/webengine:
+* nuxeo-platform-rendering
+* nuxeo-webengine-core
+* nuxeo-webengine-wiki (optional)
+
+Copy these JARs inside nuxeo.ear/plugins
+
+Make sure you have nuxeo-runtime-scripting in your nuxeo.ear/system folder if not download and copy it into this folder.
+Make sure you have the following JARs in yout `nuxeo.ear/libs`:
+* freemarker-2.3.11.jar
+* json-lib-2.2.1-jdk15.jar
+* ezmorph-0.9.jar
+
+If they are not there, download them and copy into the `libs` folder (overwriting older versions if any)
+
+
+==== Requirements
+* JBoss 4.0.5 GA
+* Nuxeo EP 5.2 - WebEngine is not working with older versions
+* Java 5 - WebEngine is also working with Java 6 but other modules in JBoss may not work properly.
+
+
+
+== Applications
 
 Now that we've seen the main concepts used to build a web application, we can learn how to configure and assemble them to obtain a working application.
  
@@ -350,26 +427,13 @@ You can define actions as you want: you can map them to scripts or to Java code 
 
 For how to retrieve available actions on the target document from a script refer to the Script Context chapter.
 
-=== Configuration
 
-=== Hot Deployment
 
-=== Example
+== Configuration
 
-== Scripting Interface
+The configuration files are located in `web/WEB-INF` directory.
 
-=== The Context
+The configuration files are hot deployable - this means you can modify configuration and have your modifications visible without restarting the server. The same is true for any script and template files. The only exception is the web.xml file which declares the servlet used by WebEngine when deployed as a standalone servlet.
 
-=== The Current Document
+*Note* that the configuration files syntax may change in future versions.
 
-=== The HTTP Request
-
-=== Example
-
-== Templates
-
-=== Blocks
-
-=== Extensions
-
-=== Example
