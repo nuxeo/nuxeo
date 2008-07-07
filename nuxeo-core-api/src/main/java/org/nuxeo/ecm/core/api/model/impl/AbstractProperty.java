@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.api.model.impl;
 import java.io.Serializable;
 import java.util.Iterator;
 
+import org.jetbrains.annotations.Nullable;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
@@ -95,12 +96,11 @@ public abstract class AbstractProperty implements Property {
     public  void removePhantomFlag() {
         flags &= ~IS_PHANTOM;
         if (parent != null) {
-            ((AbstractProperty)parent).removePhantomFlag();
+            ((AbstractProperty) parent).removePhantomFlag();
         }
     }
 
-    public Property set(int index, Object value)
-            throws PropertyException, UnsupportedOperationException{
+    public Property set(int index, Object value) throws PropertyException{
         Property property = get(index);
         property.setValue(value);
         return property;
@@ -118,7 +118,7 @@ public abstract class AbstractProperty implements Property {
     public Serializable remove() throws PropertyException {
         Serializable value = getValue();
         if (parent != null && parent.isList()) { // remove from list is handled separatelly
-            ListProperty list = (ListProperty)parent;
+            ListProperty list = (ListProperty) parent;
             list.remove(this);
         } else if (!isPhantom()) { // remove from map is easier -> mark the field as removed and remove the value
             init(null);
@@ -144,7 +144,7 @@ public abstract class AbstractProperty implements Property {
                 int i = ((ListProperty) parent).children.indexOf(this);
                 name = name + '[' + i + ']';
             }
-          path = ((AbstractProperty)parent).collectPath(path);
+            path = ((AbstractProperty) parent).collectPath(path);
         }
         return path.append(name);
     }
@@ -257,7 +257,7 @@ public abstract class AbstractProperty implements Property {
             flags |= IS_MODIFIED; // set the modified flag
             flags &= ~IS_PHANTOM; // remove phantom flag if any
             if (parent != null) {
-                ((AbstractProperty)parent).setIsModified();
+                ((AbstractProperty) parent).setIsModified();
             }
         }
     }
@@ -269,7 +269,7 @@ public abstract class AbstractProperty implements Property {
         // clear dirty + phatom flag if any
         setDirtyFlags(IS_NEW); // this clear any dirty flag and set the new flag
         if (parent != null) {
-            ((AbstractProperty)parent).setIsModified();
+            ((AbstractProperty) parent).setIsModified();
         }
     }
 
@@ -296,6 +296,7 @@ public abstract class AbstractProperty implements Property {
         }
     }
 
+    @Nullable
     public <T> T getValue(Class<T> type) throws PropertyException {
         return convertTo(getValue(), type);
     }
@@ -342,11 +343,10 @@ public abstract class AbstractProperty implements Property {
     }
 
     protected Serializable getDefaultValue() {
-        return (Serializable)getField().getDefaultValue();
+        return (Serializable) getField().getDefaultValue();
     }
 
-    public void moveTo(int index)
-            throws UnsupportedOperationException {
+    public void moveTo(int index) {
         if (parent == null || !parent.isList()) {
             throw new UnsupportedOperationException("Not a list item property");
         }
@@ -357,7 +357,7 @@ public abstract class AbstractProperty implements Property {
     }
 
     public DocumentPart getRoot() {
-        return parent == null ? (DocumentPart)this : parent.getRoot();
+        return parent == null ? (DocumentPart) this : parent.getRoot();
     }
 
     public Property resolvePath(String path) throws PropertyNotFoundException {
@@ -412,12 +412,12 @@ public abstract class AbstractProperty implements Property {
         return property;
     }
 
-    public Serializable normalize(Object value)
-            throws PropertyConversionException {
+    public Serializable normalize(Object value) throws PropertyConversionException {
         if (isNormalized(value)) {
-            return (Serializable)value;
+            return (Serializable) value;
         }
-        throw new PropertyConversionException(value.getClass(), Serializable.class, getPath());
+        throw new PropertyConversionException(
+                value.getClass(), Serializable.class, getPath());
     }
 
     public boolean isNormalized(Object value) {
@@ -438,8 +438,7 @@ public abstract class AbstractProperty implements Property {
         return true; // TODO XXX FIXME
     }
 
-    public Object newInstance() throws InstantiationException,
-            IllegalAccessException {
+    public Object newInstance() {
         return null; // TODO XXX FIXME
     }
 

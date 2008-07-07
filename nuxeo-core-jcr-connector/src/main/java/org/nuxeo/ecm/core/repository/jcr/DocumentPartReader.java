@@ -32,6 +32,7 @@ import javax.jcr.Value;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.AbstractProperty;
 
 /**
@@ -51,8 +52,8 @@ public class DocumentPartReader {
         dp.setData(
                 doc.getRepository().getName() + ':' + doc.getSession().getUserSessionId());
 
-        // proxy document is forwarding props to refered doc
-        Node parent = doc.isProxy() ? ((JCRDocumentProxy)doc).getTargetNode()
+        // proxy document is forwarding props to referred doc
+        Node parent = doc.isProxy() ? ((JCRDocumentProxy) doc).getTargetNode()
                 : doc.getNode();
         for (Property prop : dp) {
             readProperty(parent, prop);
@@ -108,7 +109,8 @@ public class DocumentPartReader {
         }
     }
 
-    public static void readPrimitiveProperty(Node parent, Property property) throws Exception {
+    public static void readPrimitiveProperty(Node parent, Property property)
+            throws PathNotFoundException, RepositoryException, PropertyException {
         javax.jcr.Property p = parent.getProperty(property.getName());
         switch (p.getType()) {
         case PropertyType.STRING:
@@ -127,7 +129,7 @@ public class DocumentPartReader {
             property.init(p.getBoolean());
             break;
         case PropertyType.BINARY:
-            property.init((Serializable)p.getStream());
+            property.init((Serializable) p.getStream());
             //TODO XXX FIXME: how to handle streams?
             break;
         default:

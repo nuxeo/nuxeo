@@ -58,6 +58,9 @@ public class DateProperty extends ScalarProperty {
             cal.setTime((Date)value);
             return cal;
         }
+        if (value instanceof CharSequence) {
+            return (Calendar)field.getType().decode(value.toString());
+        }
         throw new PropertyConversionException(value.getClass(), Calendar.class);
     }
 
@@ -65,17 +68,16 @@ public class DateProperty extends ScalarProperty {
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {
         if (value == null || toType == Calendar.class) {
-            return (T)value;
+            return (T) value;
         }
         if (toType == Date.class) {
-            return (T)((Calendar)value).getTime();
+            return (T) ((Calendar) value).getTime();
         }
         throw new PropertyConversionException(value.getClass(), toType);
     }
 
     @Override
-    public Object newInstance() throws InstantiationException,
-            IllegalAccessException {
+    public Object newInstance() {
         return Calendar.getInstance();
     }
 

@@ -57,9 +57,7 @@ public class PostgreSQLPersistenceManager extends BundleDbPersistenceManager {
     private static final Logger log =
         LoggerFactory.getLogger(PostgreSQLPersistenceManager.class);
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void init(PMContext context) throws Exception {
         // init default values
         if (getDriver() == null) {
@@ -74,20 +72,24 @@ public class PostgreSQLPersistenceManager extends BundleDbPersistenceManager {
     /**
      * Returns a new instance of a DbNameIndex.
      * @return a new instance of a DbNameIndex.
-     * @throws java.sql.SQLException if an SQL error occurs.
+     * @throws SQLException if an SQL error occurs.
      */
+    @Override
     protected DbNameIndex createDbNameIndex() throws SQLException {
         return new PostgreSQLNameIndex(con, schemaObjectPrefix);
     }
 
     /**
-     * returns the storage model
+     * Returns the storage model.
+     *
      * @return the storage model
      */
+    @Override
     public int getStorageModel() {
         return SM_LONGLONG_KEYS;
     }
 
+    @Override
     protected synchronized NodePropBundle loadBundle(NodeId id)
             throws ItemStateException {
         try {

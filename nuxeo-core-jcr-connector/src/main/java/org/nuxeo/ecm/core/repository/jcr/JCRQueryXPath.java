@@ -91,7 +91,7 @@ public class JCRQueryXPath implements Query {
                 log.warn("NULL parameter for nxql query");
                 encParam = "null";
             } else {
-                encParam = org.apache.jackrabbit.util.ISO9075.encode(param);
+                encParam = ISO9075.encode(param);
             }
             fullQuery = fullQuery.replaceFirst("\\?", encParam);
         }
