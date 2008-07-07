@@ -226,7 +226,6 @@ public class QuerySplitter {
             }
             predicate = next;
         }
-
     }
 
     /**

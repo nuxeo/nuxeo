@@ -79,7 +79,6 @@ public class DublinCoreStorageService extends DefaultComponent {
                 // First time only => creator
                 doc.setProperty("dublincore", "creator", principalName);
             }
-
         }
 
         if (!contributorsList.contains(principalName)) {

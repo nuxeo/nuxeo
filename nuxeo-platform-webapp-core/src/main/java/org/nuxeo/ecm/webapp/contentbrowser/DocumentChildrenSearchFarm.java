@@ -135,9 +135,7 @@ public class DocumentChildrenSearchFarm extends InputController implements
             resultsProvidersCache.invalidate(queryModelName);
         }
 
-        final PagedDocumentsProvider resultsProvider = resultsProvidersCache.get(queryModelName);
-
-        return resultsProvider;
+        return resultsProvidersCache.get(queryModelName);
     }
 
 }
