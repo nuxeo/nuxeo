@@ -40,7 +40,7 @@
 			</mx:Form>
 
 
-   <mx:Label text='return: "{authRequest.lastResult.response.status}"'/>
+   <mx:Label text='return: "{authRequest.lastResult.reponse.status}"'/>
 
    <mx:Button label="ping server" click="authPingTester.ping()"/>
    <mx:Label text='server ping reply: "{authPingTester.ping.lastResult}"'/>

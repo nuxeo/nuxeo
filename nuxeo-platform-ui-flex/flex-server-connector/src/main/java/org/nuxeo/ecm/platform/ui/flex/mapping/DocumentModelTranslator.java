@@ -51,6 +51,8 @@ public class DocumentModelTranslator {
     {
         FlexDocumentModel fdm = new FlexDocumentModel(doc.getRef(),doc.getName(),doc.getPathAsString(), doc.getCurrentLifeCycleState(), doc.getType());
 
+        fdm.setIsFolder(doc.isFolder());
+
         Map<String,Serializable> prefetch = doc.getPrefetch();
         String[] schemas = doc.getDeclaredSchemas();
 
@@ -86,7 +88,10 @@ public class DocumentModelTranslator {
     public static FlexDocumentModel toFlexType(DocumentModel doc) throws Exception
     {
 
+
         FlexDocumentModel fdm = new FlexDocumentModel(doc.getRef(),doc.getName(),doc.getPathAsString(), doc.getCurrentLifeCycleState(), doc.getType());
+
+        fdm.setIsFolder(doc.isFolder());
 
         DocumentPart[] parts = doc.getParts();
 

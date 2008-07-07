@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -18,6 +20,8 @@ public class FlexDocumentModel implements Externalizable {
     private String path;
     private String lifeCycleState;
     private String type;
+    private Boolean isFolder=false;
+
 
     private transient Map<String, Map<String,Serializable>> data = new HashMap<String, Map<String,Serializable>>();
     private Map<String,Serializable> dirtyFields =  new HashMap<String, Serializable>();
@@ -40,6 +44,12 @@ public class FlexDocumentModel implements Externalizable {
         this.type=type;
     }
 
+
+
+    public void setIsFolder(Boolean isFolder)
+    {
+        this.isFolder=isFolder;
+    }
 
     public Map<String,Serializable> getDirtyFields()
     {
@@ -80,10 +90,17 @@ public class FlexDocumentModel implements Externalizable {
     public void writeExternal(ObjectOutput out) throws IOException {
 
         out.writeUTF(docRef);
-        out.writeUTF(name);
+        if (name==null)
+            out.writeUTF("");
+        else
+            out.writeUTF(name);
         out.writeUTF(path);
-        out.writeUTF(lifeCycleState);
+        if (lifeCycleState==null)
+            out.writeUTF("");
+        else
+            out.writeUTF(lifeCycleState);
         out.writeUTF(type);
+        out.writeBoolean(isFolder);
         // only sends data : nothing is dirty for now
         out.writeObject(data);
     }

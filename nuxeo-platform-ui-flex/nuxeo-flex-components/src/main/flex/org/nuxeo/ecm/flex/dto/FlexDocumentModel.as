@@ -18,6 +18,7 @@ package org.nuxeo.ecm.flex.dto
     private var _data:Object;
     private var _dirty:Object;
     private var _type:String;
+  private var _isFolder:Boolean;
 
     public function FlexDocumentModel()
     {
@@ -33,7 +34,7 @@ package org.nuxeo.ecm.flex.dto
       _data = new Object();
     }
 
-    public function get uid(): String 
+    public function get uid(): String
     {
             return _docRef;
     }
@@ -49,6 +50,7 @@ package org.nuxeo.ecm.flex.dto
       _path = input.readUTF();
       _lifeCycleState = input.readUTF();
       _type=input.readUTF();
+      _isFolder=input.readBoolean();
       _data = input.readObject();
       _dirty = new Object();
         }
@@ -104,6 +106,11 @@ package org.nuxeo.ecm.flex.dto
     {
       _data[schemaName][fieldName]=value;
       _dirty[schemaName+":"+fieldName]=value;
+    }
+
+    public function isFolder():Boolean
+    {
+      return _isFolder;
     }
 
 

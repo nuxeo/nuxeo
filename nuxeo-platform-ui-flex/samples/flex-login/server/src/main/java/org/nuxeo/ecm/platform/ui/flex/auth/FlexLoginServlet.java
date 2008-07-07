@@ -33,7 +33,8 @@ public class FlexLoginServlet extends HttpServlet {
     private void sendLoginResponse(HttpServletRequest req,HttpServletResponse resp) throws IOException
     {
 
-        String xmlResponse="<response><status>OK</status></response>";
+        resp.setContentType("test/xml");
+        String xmlResponse="<?xml version=\"1.0\" encoding=\"UTF-8\"?><response><status>OK</status></response>";
         resp.getWriter().write(xmlResponse);
     }
 }
