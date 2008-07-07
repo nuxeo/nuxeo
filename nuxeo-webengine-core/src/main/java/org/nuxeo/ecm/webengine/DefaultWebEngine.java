@@ -87,7 +87,7 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         this.pathMap =new PathMap<WebApplicationMapping>();
         env.put("installDir", root);
         env.put("engine", "Nuxeo Web Engine");
-        env.put("version", "1.0.0");
+        env.put("version", "1.0.0.b1"); //TODO this should be put in the MANIFEST
         renderingExtensions = new Hashtable<String, Object>();
         loadMessageBundle(true);
         scripting = new Scripting();
