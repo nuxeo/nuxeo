@@ -674,6 +674,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
                     }
                     eventInfo.put("recipients", recips.substring(0,
                             recips.length() - 1));
+                    eventInfo.put("proxy", proxy);
+                    eventInfo.put("sectionPath", section.getPathAsString());
 
                     notifyEvent(
                             org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_SUBMITED_FOR_PUBLICATION,
