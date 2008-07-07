@@ -588,7 +588,7 @@ Seam.Remoting.sendAjaxRequest = function(envelope, path, callback, silent)
     asyncReq = new ActiveXObject("Microsoft.XMLHTTP");
 
   asyncReq.onreadystatechange = function() {Seam.Remoting.requestCallback(asyncReq, callback); }
-  asyncReq.open("POST", Seam.Remoting.contextPath + "/seam/resource/remoting" + path, true);
+  asyncReq.open("POST", Seam.Remoting.contextPath + "/seam/remoting" + path, true);
   asyncReq.send(envelope);
   return asyncReq;
 }
