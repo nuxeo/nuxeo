@@ -13,6 +13,7 @@
 			import mx.rpc.events.ResultEvent;	
 			import mx.utils.ObjectProxy;
    	                import mx.events.TreeEvent;
+			import flash.events.Event;
 
 			[Bindable]
 			public var itemToOpen:Object;
@@ -26,7 +27,17 @@
 				flexDocumentManager.getDocument("/default-domain");
 			}
 
-	
+
+			private function getActionsHandler(event:ResultEvent):void
+			{
+				var actions:ArrayCollection = flexActionsManager.getActionsList.lastResult;
+				//var disp:String="";
+			        //for(var i:int = 0; i < actions.length; i++) {
+				//	disp=disp+actions[i].categories + "-" + actions[i].label +";" 
+				//}				
+				//Alert.show(disp, "debug-actions");
+
+			}	
 			private function getDocumentHandler(event:ResultEvent):void
 			{
 				var doc:FlexDocumentModel = flexDocumentManager.getDocument.lastResult;
@@ -76,7 +87,18 @@
 				   _itemToOpen=item;
 				   flexDocumentManager.getChildren(docId);
 		               }
-           		}			
+           		}
+	
+			private function selectContainer(event:Event):void {
+				var docId:String = event.currentTarget.selectedItem.docId;
+				
+				//Alert.show(event.currentTarget.selectedItem.docId,"debug");
+
+				var categories:ArrayCollection=new ArrayCollection();
+				categories.addItem("FLEX_ACTIONS_ON_CONTAINER");
+				categories.addItem("FLEX_TABS");
+				flexActionsManager.getActionsList(categories,docId);
+           		}
 		
 	]]>
 	</mx:Script>
@@ -86,6 +108,10 @@
       <mx:method name="getChildren" result="getChildrenHandler(event)" />
     </mx:RemoteObject>
 
+    <mx:RemoteObject id="flexActionsManager" destination="flexActionsService" fault="faultHandler(event)">
+      <mx:method name="getActionsList" result="getActionsHandler(event)" />
+    </mx:RemoteObject>
+
     <mx:Panel
         title="Nuxeo-Flex AMF Tree test"
         paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10">
@@ -93,7 +119,15 @@
 
 	<mx:Tree id="docTree" width="100%" height="78%"
 	dataProvider="{docTreeList}" 
-	itemOpen="setView(event)"/>
+	itemOpen="setView(event)" change="selectContainer(event)"/>
+
+
+	<mx:DataGrid id="actionsGrid" width="100%" height="100%" rowCount="5" dataProvider="{flexActionsManager.getActionsList.lastResult}">
+            <mx:columns>
+                <mx:DataGridColumn dataField="categories" headerText="Category"/>
+                <mx:DataGridColumn dataField="label" headerText="Label"/>
+            </mx:columns>
+        </mx:DataGrid>	
 
      </mx:Panel>
 
