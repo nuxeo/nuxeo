@@ -69,6 +69,10 @@ public class ResourceServlet extends HttpServlet {
         }
         File file = new File(root, path);
         if (file.isFile()) {
+            long lastModified = file.lastModified();
+            resp.setDateHeader("Last-Modified:", lastModified);
+            resp.addHeader("Cache-Control", "public");
+            resp.addHeader("Server", "Nuxeo/WebEngine-1.0");
             String mimeType = getServletConfig().getServletContext().getMimeType(file.getName());
             if (mimeType == null) {
                 mimeType = "text/plain";
