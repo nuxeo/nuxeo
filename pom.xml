@@ -13,6 +13,10 @@
   <artifactId>nuxeo-webengine-parent</artifactId>
   <version>5.2-SNAPSHOT</version>
   <packaging>pom</packaging>
+  <name>Nuxeo WebEngine</name>
+  <description>Nuxeo WebEngine is the lightweight content-centric web framework.</description>
+  <version>5.2-SNAPSHOT</version>
+  
 
   <modules>
     <module>nuxeo-platform-rendering</module>

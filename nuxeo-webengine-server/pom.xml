@@ -10,7 +10,7 @@
   <artifactId>nuxeo-webengine-server</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo WebEngine Server</name>
-  <description>Nuxeo WebEngine Embedded Server</description>
+  <description>Nuxeo WebEngine standalone server.</description>
 
   <properties>
     <nuxeo.wiki.version>1.0-SNAPSHOT</nuxeo.wiki.version>
