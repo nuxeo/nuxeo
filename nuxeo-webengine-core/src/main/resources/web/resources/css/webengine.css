@@ -60,10 +60,10 @@ th {
     padding:0px;
     text-align: middle;
     height:50px;
-    }
+}
 
 #header img {
-    float: left;
+  float: left;
 }
 
 #header .webEngineRoot {
@@ -76,10 +76,10 @@ th {
 }
 
 #header .searchBox {
- padding-top: 10px;
- float:right;
- margin-right:15px;
- }
+  padding-top: 10px;
+  float:right;
+  margin-right:15px;
+}
 
 #header .searchBox input {
   width:200px;  
@@ -104,7 +104,6 @@ th {
     background:url(/nuxeo/site/files/resources/image/nuxeo_web_engine.gif) top right no-repeat;
     padding-right:80px;
 }
-
 
 /* Structure */
 
@@ -133,7 +132,7 @@ th {
 #sidebar h3, #sidebar p {
     padding:0 10px 0 0;
     margin:0;
-    }
+}
     
 #sidebar h3 {
   color:#fff;
@@ -200,7 +199,7 @@ th {
 #sidebar .contextual ul {
   list-style-image: url(/nuxeo/site/files/resources/image/bullet.gif);
   margin-top:0;
-  }
+}
 
 #sidebar .sideblock-content {
   background:url(/nuxeo/site/files/resources/image/background_box_content.gif) top left no-repeat;
@@ -227,7 +226,7 @@ th {
  margin-top:10px;
  padding-left: 8px;
  background-color:transparent;
- }
+}
  
  #sidebar .createButton a {
  color:#fff;
@@ -235,22 +234,22 @@ th {
  display:block; 
  width:192px;
  height:40px;
- }
+}
  
 #sidebar .createButton a:visited {
  color:#fff;
- }
+}
  
 #sidebar .createButton a:hover {
  color:#fff;
  background-position: bottom left;
  text-decoration:none;
- } 
+} 
 
  #sidebar .createButton a span {
  display:block;
  padding-top:5px;
- }
+}
  
 #sidebar #logstate {
   background: url(/nuxeo/site/files/resources/image/login_bubble.gif) top left no-repeat;
@@ -340,30 +339,27 @@ th {
 }
 
 #entry-content {
-  padding:0 10px;
-
+  padding: 0 10px;
 }
 
-
 .main-content p {
-  margin:5px 0 2px 0;
+  margin: 5px 0 2px 0;
   line-height: 150%;
-  text-align: justify;
 }
 
 #main h2, #main h3, #main h4, #main p {
-    padding:0 10px;
+    padding: 2px 10px;
 }
 
 .main-content ul {
   list-style-image: url(/nuxeo/site/files/resources/image/bullet.gif);
-  margin-top:1px;
+  margin-top: 1px;
 }
 
 .main-content #entry-content ul li {
   line-height: 150%;
   text-align: justify;
-  padding-right:40px;
+  padding-right: 40px;
 }
 
 .main-content input.button {
@@ -475,7 +471,7 @@ blockquote {
   color:#666;
   font: normal normal bold 14px "Century Gothic","Trebuchet MS", Verdana, sans-serif;
   padding:2px 10px;
-  }
+}
 
 #main .toc .contentToc {
   padding:10px;
@@ -488,18 +484,17 @@ blockquote {
 
 /* CSS 2 Toc : 1, 1.1, etc. */
 
-.toc OL {
+.toc ol {
   counter-reset: item;
 }
-.toc LI {
+.toc li {
   display: block;
   padding:2px 0;
 }
-.toc LI:before {
-content: counters(item, ".") " ";
-counter-increment: item;
+.toc li:before {
+  content: counters(item, ".") " ";
+  counter-increment: item;
 }
-
 
 /* Attachments */
 
@@ -535,7 +530,7 @@ counter-increment: item;
 
 body {
   counter-reset: chapter;
-  }
+}
 
 .main-content .doc h2:before { 
   content: counter(chapter) " ";
@@ -544,13 +539,12 @@ body {
 
 .main-content .doc h2 {
   counter-reset: section;
-  }
+}
 
 .main-content .doc h3:before { 
   content: counter(chapter) "." counter(section) " ";
   counter-increment: section;
 }
-
 
 /* Summary (list of blog entries on blog view) */
 
@@ -570,7 +564,6 @@ body {
     border-bottom:1px solid #ccc;    
 }
 
-
 .summary-byline {
     /* Byline */
     font: italic normal normal .8em Verdana, sans-serif;
@@ -583,7 +576,6 @@ body {
 .summary-content h2 {
     background-color:transparent;
 }
-
 
 /* Buttons */
 
@@ -646,7 +638,7 @@ padding-left: 5px;
 #entry-actions .ui-tabs-panel {
   border-color:#000;
   min-height: 100px;
-  }
+}
   
 /* or use this when no tabs */
 
@@ -654,7 +646,7 @@ padding-left: 5px;
   border: 1px solid #000;
   min-height: 160px;
   padding:10px;
-  } 
+} 
   
 #main .ui-tabs-nav, #main .ui-tabs-panel {
  font-family: Verdana, sans-serif;
@@ -720,8 +712,7 @@ padding-left: 5px;
 
 .adminBoardSettings h3 a img{
   border-width: 0px;
-  }
-
+}
 
 /* Admin : users */
 
@@ -743,11 +734,9 @@ padding-left: 5px;
 }
 
 #main .directories th {
-
 }
 
 #main .directories td {
-
 }
 
 /* Comment box */
@@ -760,12 +749,11 @@ padding-left: 5px;
 
 #entry-comments h1 {
  font-size: 190%;
- }
+}
  
 .commentsList #comments {
   font: normal normal bold 133% "Century Gothic","Trebuchet MS", Verdana, sans-serif;
   color:#666;
-  
 }  
  
 .commentsList #comments li {
