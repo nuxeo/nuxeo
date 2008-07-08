@@ -19,4 +19,4 @@ set JAVA=%JAVA_HOME%\bin\java
 
 :SKIP_SET_JAVA
 
-"%JAVA%" java %JAVA_OPTS% -jar nuxeo-runtime-launcher-1.5-SNAPSHOT.jar bundles/nuxeo-runtime-osgi-1.5-SNAPSHOT.jar/org.nuxeo.osgi.application.Main bundles/.:lib/.:config -home . %*
+"%JAVA%" %JAVA_OPTS% -jar nuxeo-runtime-launcher-1.5-SNAPSHOT.jar bundles/nuxeo-runtime-osgi-1.5-SNAPSHOT.jar/org.nuxeo.osgi.application.Main bundles/.:lib/.:config -home . %*

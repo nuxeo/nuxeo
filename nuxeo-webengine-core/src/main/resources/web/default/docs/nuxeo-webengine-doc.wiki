@@ -67,17 +67,18 @@ First the URL will be split as following:
 * `/nuxeo/site` - the servlet context path. This corresponds to the Java context path + servlet path. As we are in Java world, we are obviosuly using Java servlets under the hoods. The WebEngine is bound on an unique servlet in a Web Application. You cannot have multiple WebEngines in the same Web Application. If you want to partition your WebEngine sites into different applications you need to use the WebEngine Application concept as we will see later.
 In the standalone packaging of WebEngine 9based on Jetty) the servlet context path is the root one: "/".
 * `/repository` - the WebEngine application path. This path is used to select te WebEgnine application you want.
-* `/blogs/bstefanescu/MyBlog` - the request path. This path is used to select the document or script you want to call.
+* `/blogs/bstefanescu/MyBlog` - the traversal path. This path is used to select the document or script you want to call.
 * `@@view` - the action to take on the selected object. The action is optional and, if ommited when requesting Documents, the implicit action is `@@view`.
 
 The first 2 URL components are not in the scope of this document. They are used to locate the servlet bound to the WebEngine application.
 
-We will focus on the last two URL parts:
+We will focus on the last three URL parts:
 
 + Application path
-+ Request path
++ Traversal path
 + Action
 
+The path formed by the concatenation of the Application path and the Traversal path will be named the *Request Path*.
 
 
 ==== Application Path
@@ -86,12 +87,13 @@ The application path is used to select which WebEngine application to use. WebEn
 More details about this in the WebEngine Application section.
 
 
-==== Request Path
+==== Traversal Path
 
-The request path (aka traversal path) represent the path that should be processed and resolved by the selected web application. If the application path used to select the application defined a Document root then the application will try to map the request path to a Document or a chain of Documents in the repository. If the application path is not bound to a Document root then the application will try to resolve the path to a script or template on the file system. If neither of these methods succeeds an error page (along with a 404 error code) is sent to the client.\
-*Note* that in future it will be possible to bound an application path to an arbritrary root Object that is not necesarly a Document in the repository but that will know how to resolve the request path into a chain of arbitrary objects (not necesarly Documents). This is usefull for example to map a request path on an User, Group or other objects managed by Nuxeo EP.
+The traversal path represent the path that should be processed and resolved by the selected web application. If the application path used to select the application defined a Document root then the application will try to map the traversal path to a Document or a chain of Documents in the repository. If the application path is not bound to a Document root then the application will try to resolve the traversal path to a script or template on the file system. If neither of these methods succeeds an error page (along with a 404 error code) is sent to the client.\
 
-The default technique to resolve request paths into a chain of Documents is using a direct mapping beetween the request path and a repository path starting from the root Document. The mapping technique is configurable and can be changed by implementing the `org.nuxeo.ecm.webengine.RequestHandler` interface.
+*Note* that in future it will be possible to bound an application path to an arbritrary root Object that is not necesarly a Document in the repository but that will know how to resolve the traversal path into a chain of arbitrary objects (not necesarly Documents). This is usefull for example to map a traversal path on an User, Group or other objects managed by Nuxeo EP.
+
+The default technique to resolve traversal paths into a chain of Documents is using a direct mapping beetween this path and a repository path starting from the root Document. The mapping technique is configurable and can be changed by implementing the `org.nuxeo.ecm.webengine.RequestHandler` interface.
 
 Lets give an example on how the default mapping works.
 
@@ -100,7 +102,7 @@ Lets say you defined an application bound to an application path of `/repository
 + `http://localhost:8080` - host server
 + `/nuxeo/site` - WebEngine context path (the root context)
 + `/repository` - the application path
-+ `/foo/bar` - the request path
++ `/foo/bar` - the traversal path
 
 Lets say your application path `repository` defines a root document that points to `/default-domain/workspaces/MyWorkspace` (this is a repository path).
 Then the application will try to resolve the `/foo/bar` path as a repository path starting from te root Document. So the selected document (the target document of the request) will be one of:
@@ -109,11 +111,11 @@ Then the application will try to resolve the `/foo/bar` path as a repository pat
 * `/default-domain/workspaces/MyWorkspace/foo` - if `foo` is resolved as a child document of the root but `bar` is not resolved as a child document of `foo`
 * `/default-domain/workspaces/MyWorkspace/foo/bar` - if both `foo` and `bar` are resolved as child documents
 
-Let say `foo` is a child of `/default-domain/workspaces/MyWorkspace` and `bar` could not be resolved as a child document of `foo`. Then the request path will be resolved to `/default-domain/workspaces/MyWorkspace/foo` that will be called the *Target Document* (or Context Document) and the remaining segments (the unresolved segments) will define the *trailing path* - in our case `/bar`. The chain of Documents that were obtained by mapping the request path is known as the *traversal objects*.
+Let say `foo` is a child of `/default-domain/workspaces/MyWorkspace` and `bar` could not be resolved as a child document of `foo`. Then the traversal path will be resolved to `/default-domain/workspaces/MyWorkspace/foo` that will point to a document called the *Target Document* (or Context Document) and the remaining segments (the unresolved segments) will define the *trailing path* - in our case `/bar`. The chain of Documents that were obtained by mapping the traversal path is known as the *traversal objects*.
 
 
 ==== Trailing Path
-As we've seen the trailing path contains the `residual` segments after a mapping on a Document is done. Obviously it will be empty if all segments from the request path are mapped to documents. Anyway, such 'residual' path segments are not garbage but they may give some extra information on how to perform the request. How the trailing path is used by the server is depending on the action or script that will be executed on the Target Document. There isn't any default behavior in handling such a trailing path. It is up to the developer how this path is used.
+As we've seen the trailing path contains the `residual` segments after a mapping on a Document is done. Obviously it will be empty if all segments from the traversal path are mapped to documents. Anyway, such 'residual' path segments are not garbage but they may give some extra information on how to perform the request. How the trailing path is used by the server is depending on the action or script that will be executed on the Target Document. There isn't any default behavior in handling such a trailing path. It is up to the developer how this path is used.
 For example a possible usage is to map the trailing path on an XPATH that point to a Document property. So in our previous example the trailing path `/bar` will point to a property `bar` in the document `foo`. This can be used to create paths to set or get properties on documents. Example:
 `/default-domain/workspaces/MyWorkspace/foo/bar@@set?value=test` 
 
@@ -137,13 +139,13 @@ We already seen how the request URL is transformed into these components:
 + host server
 + servlet context
 + application path
-+ request path
++ traversal path
 + an optional trailing path
 + an optional action
 
-In the examples above we've seen how a request path was mapped on documents. But what if we need more control on the mapping mechanism? As we said one solution (but harder) is to write a custom request handler that is doing the job. Another solution that doesn't requires any additional Java code is to use path mappings.
+In the examples above we've seen how a traversal path was mapped on documents. But what if we need more control on the mapping mechanism? As we said one solution (but harder) is to write a custom request handler that is doing the job. Another solution that doesn't requires any additional Java code is to use path mappings.
 
-Mappings can be used to declaratively describe how request paths should be processed to obtain a document chain, a trailing path and additional properties computed from the path segments configuration. Mappings are described using regular expression patterns. The regular expression syntax is the Java one with an additional feature to be able to define named groups. (In Java only indexed groups are supported).
+Mappings can be used to declaratively describe how traversal paths should be processed to obtain a document chain, a trailing path and additional properties computed from the path segments configuration. Mappings are described using regular expression patterns. The regular expression syntax is the Java one with an additional feature to be able to define named groups. (In Java only indexed groups are supported).
 
 In order to understand how you can use patterns to describe the path mapping we will start with another example.
 
@@ -489,12 +491,74 @@ The `traversal path` if any defines a sequence of documents that should be trave
 
 We've also seen that you may have requests that doesn't generate any traversal path. In this case pure web scripting will be done (outside any document context). Also you should note that the documents in the traversal path are not necessarily the children of each other like in a repository path. The mechanism used to create the traversal path is up to the registered document resolver.
 
-The documents in the traversal path will not be exposed as is in the request context but they will be wrapped inside a high level object - web oriented that is called WebOject. THis is needed because the Nuxeo documents are repository oriented, they doesn't have any knowledge about the web context in which they are used. They doesn't know for example what is the URL  used to access them, or what are the web actions that are enabled in the current web context.
+The documents in the traversal path will not be exposed as is in the request context but they will be wrapped inside a high level object - web oriented that is called WebOject. This is needed because the Nuxeo documents are repository oriented, they doesn't have any knowledge about the web context in which they are used. They doesn't know for example what is the URL used to access them, or what are the web actions that are enabled in the current web context.
 
 For this reason before being exposed in the web context they are wrapped in a web sensitive object.
 
 This means we need to map documents to a high level object that can hold web specific configuration like enabled web actions. 
-This mapping can be done either at the global level XXX. 
+
+A WebObject is primarly defining a set of actions that are available on the corresponding Document type. Here is an example:
+
+{{{
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="webObject">
+    <requestHandler>org.nuxeo.ecm.webengine.DefaultRequestHandler</requestHandler>
+    <object id="MyObject" extends="WebObject">
+      <actions>
+        <action id="view" enabled="true">
+          <permission  expression="Read"/>
+        </action>
+        <action id="edit_page" enabled="true">
+          <permission expression="Write" />
+          <category>TABVIEW</category>
+        </action>
+        <action id="permissions_page" enabled="true">
+          <permission expression="Write" />
+          <category>TABVIEW</category>
+        </action>
+        <action id="print" enabled="true">
+          <permission expression="Read" />
+          <category>TOOLBOX</category>
+        </action>
+        <action id="delete" enabled="true" handler="org.nuxeo.ecm.webengine.actions.DeleteActionHandler">
+          <permission expression="Write" />
+          <category>TOOLBOX</category>
+        </action>
+        <action id="search" enabled="true" script="/common/search.ftl">
+          <permission expression="Browse" />
+        </action>
+      </actions>
+    </object>
+  </extension>
+}}}
+
+You can see a that a web object can inherit from another object by using the `extends` attribute. This is usefull if you want to avoid redefining generic actions or properties. By extending an existing object you create a new web object definition - you cannot modify the extended object.
+
+You can controil the way the request il processed (and the default document mapping method) by using the element: `requestHandler`.
+This element is optional and defaults to `org.nuxeo.ecm.webengine.DefaultRequestHandler`.
+
+As you can see the main usage of an Web Object is to define actions. For example the action `delete` has a guard that enable the action only if the current user has the `Write` permission on the target document. And the Java action handler is specified by the `handler` attribute.\
+Each action has a default handler so usually you don;'t need to define a handler only if you want to set your custom handler. Usually you will want to handle actions using scripts as in the last action defined below: the `search` action will invoke the script `/common.search.ftl` on the target document.
+
+You can learn more about actions in the next section.
+
+To bind a declared Web Object to a document type you need to use the `binding` extension point:
+
+{{{
+  <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
+    point="binding">
+    <binding type="Document" objectId="WebObject" />
+    <binding type="MyDocument" objectId="MyObject" />
+  </extension>
+}}}
+
+This will bind the `WebObject` object to the `Document` docuemnt type. This is the root of all types in Nuxeo EP - so this binding will be used as a fallback for every document type that is not explicitly bound.\
+The second declaration will bound the MyDocument type to an obejct named MyObject.
+
+If you are declaring these bindings inside an application extension (as part of the application configuration) the bindings will be visible only to that application otherwise they are visible to all applications.
+
+*Note* that Web Objects configuration syntax may change in future.
+
 
 === Actions
 
