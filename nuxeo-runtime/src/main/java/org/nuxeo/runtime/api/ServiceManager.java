@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.naming.NameNotFoundException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -107,10 +109,21 @@ public final class ServiceManager {
     @SuppressWarnings("unchecked")
     public <T> T getService(Class<T> serviceClass) throws Exception {
         ServiceDescriptor sd = services.get(serviceClass.getName());
-        if (sd == null) {
-            return Framework.getLocalService(serviceClass);
+        T svc = null;
+        if (sd != null) {
+            try {
+                svc = (T) sd.getGroup().getServer().lookup(sd);
+                if (svc != null) {
+                    return svc;
+                }
+            } catch (NameNotFoundException e) {
+                log.warn("Existing but unreachable binding on "
+                        + serviceClass.getName()
+                        + " ! Fallback on local service...");
+                log.debug("Check binding declaration: " + sd, e);
+            }
         }
-        return (T) sd.getGroup().getServer().lookup(sd);
+        return Framework.getLocalService(serviceClass);
     }
 
     @SuppressWarnings("unchecked")
@@ -150,7 +163,8 @@ public final class ServiceManager {
         ServiceLocatorFactory factory = ServiceLocatorFactory.getFactory(uri.getScheme());
         if (factory != null) {
             ServiceLocator locator = factory.createLocator(uri);
-            return locator.lookup(uri.getPath().substring(1)); // avoid leading /
+            return locator.lookup(uri.getPath().substring(1)); // avoid leading
+            // /
         }
         return null;
     }

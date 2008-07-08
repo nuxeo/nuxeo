@@ -29,8 +29,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  *
  */
 @XObject(value = "service", order = { "serviceClass", "name" })
-public class ServiceDescriptor implements Serializable{
-
+public class ServiceDescriptor implements Serializable {
 
     private static final long serialVersionUID = 5490362136607217161L;
 
@@ -39,11 +38,12 @@ public class ServiceDescriptor implements Serializable{
 
     private String serviceClassName;
 
-    // this should not be loaded when sending service descriptors to a client because
-    // the class may not exists on the client. the class should be loaded only if the client explicitelly
+    // this should not be loaded when sending service descriptors to a client
+    // because
+    // the class may not exists on the client. the class should be loaded only
+    // if the client explicitelly
     // lookup the service
     private transient Class<?> serviceClass;
-
 
     @XNode("@class")
     void setServiceClass(Class<?> serviceClass) {
@@ -57,13 +57,18 @@ public class ServiceDescriptor implements Serializable{
     private ServiceAdapter adapter;
 
     @XNode("locator")
-    private String locatorPattern; // the locator pattern used to compute the final locator
-    private transient String locator; // this will be re-computed on the client side
+    private String locatorPattern; // the locator pattern used to compute the
+
+    // final locator
+
+    private transient String locator; // this will be re-computed on the
+
+    // client side
 
     private ServiceGroup group;
 
     /**
-     *  To be used by XMap.
+     * To be used by XMap.
      */
     public ServiceDescriptor() {
     }
@@ -143,17 +148,18 @@ public class ServiceDescriptor implements Serializable{
         return serviceClassName.substring(p + 1);
     }
 
-    // this should be called only for service lookup to avoid class loader problems (classnotfound)
+    // this should be called only for service lookup to avoid class loader
+    // problems (ClassNotFoundException)
     Class<?> getServiceClass() throws ClassNotFoundException {
         if (serviceClass == null) {
-            serviceClass = Thread.currentThread().getContextClassLoader().loadClass(serviceClassName);
+            serviceClass = Thread.currentThread().getContextClassLoader().loadClass(
+                    serviceClassName);
         }
         return serviceClass;
     }
 
     public String getInstanceName() {
-        return name != null ? serviceClassName + '#' + name
-                : serviceClassName;
+        return name != null ? serviceClassName + '#' + name : serviceClassName;
     }
 
     /**
@@ -204,6 +210,15 @@ public class ServiceDescriptor implements Serializable{
             return true;
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer toString = new StringBuffer();
+        toString.append("[name=" + getName() + ", group=" + getGroup()
+                + ", instanceName=" + getInstanceName() + " locator: "
+                + getLocator() + "]");
+        return super.toString();
     }
 
 }
