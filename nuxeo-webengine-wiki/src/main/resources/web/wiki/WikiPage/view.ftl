@@ -4,7 +4,7 @@
 <script>
 $(document).ready(function(){
   $("#entry-actions > ul").tabs();
-  //$("#entry-actions > ul").tabs("select", '#view_content');
+  $("#entry-actions > ul").tabs("select", '#content_page');
 });
 </script>
 
@@ -12,13 +12,13 @@ $(document).ready(function(){
 
 <div id="entry-actions">
 <ul>
-  <#list Context.getActions("tabview")?sort?reverse as action>
+  <#list Context.getActions("TABVIEW")?sort as action>
     <li><a href="${This.urlPath}@@${action.id}"  title="${action.id}"><span>${message('action.' + action.id)}</span></a></li>
   </#list>
 </ul>
 
-<div id="view_content">
-  <#include "WikiPage/view_content.ftl"/>
+<div id="content_page">
+  <#include "WikiPage/content_page.ftl"/>
 </div>
 
 </div>
