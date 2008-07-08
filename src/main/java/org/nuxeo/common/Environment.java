@@ -62,6 +62,7 @@ public class Environment {
     protected File web;
     protected File temp;
     protected Properties properties;
+    protected String[] args;
 
     public Environment(File home) {
         this (home, null);
@@ -164,6 +165,14 @@ public class Environment {
      */
     public void setWeb(File web) {
         this.web = web;
+    }
+
+    public String[] getCommandLineArguments() {
+        return args;
+    }
+
+    public void setCommandLineArguments(String[] args) {
+        this.args = args;
     }
 
     public String getProperty(String key) {
