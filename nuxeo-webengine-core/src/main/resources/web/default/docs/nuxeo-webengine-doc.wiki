@@ -34,8 +34,6 @@ The same can be done from a script (in this example a groovy script):
 Context.print("My name is ${Context.principal.name}")!
 }}}
 
-
-
 === Bridging with Nuxeo EP
 
 The WebEngine was created to work over a Nuxeo EP server. Using it outside Nuxeo EP is possible, but is very limiting and you will loose many of the cool features of the WebEngine.
@@ -49,13 +47,11 @@ In this section we will assume you have some knowledge about the Nuxeo EP platfo
 
 Nuxeo EP, as its name suggests, is an Enterprise Content Management platform that provides a powerful way to manage and store your documents. For simplicity you can see Nuxeo EP as a document repository. To use access the repository, to update, query or to store new documents, you need first to connect to it and create an authenticated session based on your login information. Using that repository session you can then start querying, updating and sorting documents.
 
-So, from a client point of view, the main concepts of a Nuxeo Repository are the Session (the user connection to the repository) and the Document (the units of information that are mananged by the repository).
+So, from a client point of view, the main concepts of a Nuxeo Repository are the Session (the user connection to the repository) and the Document (the units of information that are managed by the repository).
 
 The idea behind the WebEngine is to map HTTP requests to documents stored in the repository and to be able that way to query, update, store or create new documents by using a traditional Web approach.
 
 To correctly understand how this bridging over Nuxeo EP is done and what you can do by using WebEngine, you should first understand how HTTP requests are dispatched, processed and mapped to documents.
-
-
 
 === Request Dispatch
 
@@ -64,11 +60,12 @@ We will start using a simple example. Let's say the client is requesting the fol
 
 First the URL will be split as following:
 * `http://www.nuxeo.org` - the server host information
-* `/nuxeo/site` - the servlet context path. This corresponds to the Java context path + servlet path. As we are in Java world, we are obviosuly using Java servlets under the hoods. The WebEngine is bound on an unique servlet in a Web Application. You cannot have multiple WebEngines in the same Web Application. If you want to partition your WebEngine sites into different applications you need to use the WebEngine Application concept as we will see later.
-In the standalone packaging of WebEngine 9based on Jetty) the servlet context path is the root one: "/".
-* `/repository` - the WebEngine application path. This path is used to select te WebEgnine application you want.
+* `/nuxeo/site` - the servlet context path. This corresponds to the Java context path + servlet path. As we are in Java world, we are obviously using Java servlets under the hoods. The WebEngine is bound on an unique servlet in a Web Application. You cannot have multiple WebEngines in the same Web Application. If you want to partition your WebEngine sites into different applications you need to use the WebEngine Application concept as we will see later.
+
+In the standalone packaging of WebEngine (based on Jetty) the servlet context path is the root one: "/".
+* `/repository` - the WebEngine application path. This path is used to select the WebEgnine application you want.
 * `/blogs/bstefanescu/MyBlog` - the traversal path. This path is used to select the document or script you want to call.
-* `@@view` - the action to take on the selected object. The action is optional and, if ommited when requesting Documents, the implicit action is `@@view`.
+* `@@view` - the action to take on the selected object. The action is optional and, if omited when requesting Documents, the implicit action is `@@view`.
 
 The first 2 URL components are not in the scope of this document. They are used to locate the servlet bound to the WebEngine application.
 
@@ -80,20 +77,18 @@ We will focus on the last three URL parts:
 
 The path formed by the concatenation of the Application path and the Traversal path will be named the *Request Path*.
 
-
 ==== Application Path
 
-The application path is used to select which WebEngine application to use. WebEngine applications are usefull to isolate the different sites you want to host. A single application may define several application paths. When defining an application path you can optionally specify a repository Document that will be selected as the root document when an application is selected.\
+The application path is used to select which WebEngine application to use. WebEngine applications are useful to isolate the different sites you want to host. A single application may define several application paths. When defining an application path you can optionally specify a repository Document that will be selected as the root document when an application is selected.\
 More details about this in the WebEngine Application section.
-
 
 ==== Traversal Path
 
-The traversal path represent the path that should be processed and resolved by the selected web application. If the application path used to select the application defined a Document root then the application will try to map the traversal path to a Document or a chain of Documents in the repository. If the application path is not bound to a Document root then the application will try to resolve the traversal path to a script or template on the file system. If neither of these methods succeeds an error page (along with a 404 error code) is sent to the client.\
+The traversal path represent the path that should be processed and resolved by the selected web application. If the application path used to select the application defined a Document root then the application will try to map the traversal path to a Document or a chain of Documents in the repository. If the application path is not bound to a Document root then the application will try to resolve the traversal path to a script or template on the file system. If neither of these methods succeeds an error page (along with a 404 error code) is sent to the client.
 
-*Note* that in future it will be possible to bound an application path to an arbritrary root Object that is not necesarly a Document in the repository but that will know how to resolve the traversal path into a chain of arbitrary objects (not necesarly Documents). This is usefull for example to map a traversal path on an User, Group or other objects managed by Nuxeo EP.
+*Note* that in future it will be possible to bound an application path to an arbitrary root Object that is not necessarily a Document in the repository but that will know how to resolve the traversal path into a chain of arbitrary objects (not necessarily Documents). This is useful for example to map a traversal path on an User, Group or other objects managed by Nuxeo EP.
 
-The default technique to resolve traversal paths into a chain of Documents is using a direct mapping beetween this path and a repository path starting from the root Document. The mapping technique is configurable and can be changed by implementing the `org.nuxeo.ecm.webengine.RequestHandler` interface.
+The default technique to resolve traversal paths into a chain of Documents is using a direct mapping between this path and a repository path starting from the root Document. The mapping technique is configurable and can be changed by implementing the `org.nuxeo.ecm.webengine.RequestHandler` interface.
 
 Lets give an example on how the default mapping works.
 
@@ -113,12 +108,12 @@ Then the application will try to resolve the `/foo/bar` path as a repository pat
 
 Let say `foo` is a child of `/default-domain/workspaces/MyWorkspace` and `bar` could not be resolved as a child document of `foo`. Then the traversal path will be resolved to `/default-domain/workspaces/MyWorkspace/foo` that will point to a document called the *Target Document* (or Context Document) and the remaining segments (the unresolved segments) will define the *trailing path* - in our case `/bar`. The chain of Documents that were obtained by mapping the traversal path is known as the *traversal objects*.
 
-
 ==== Trailing Path
-As we've seen the trailing path contains the `residual` segments after a mapping on a Document is done. Obviously it will be empty if all segments from the traversal path are mapped to documents. Anyway, such 'residual' path segments are not garbage but they may give some extra information on how to perform the request. How the trailing path is used by the server is depending on the action or script that will be executed on the Target Document. There isn't any default behavior in handling such a trailing path. It is up to the developer how this path is used.
-For example a possible usage is to map the trailing path on an XPATH that point to a Document property. So in our previous example the trailing path `/bar` will point to a property `bar` in the document `foo`. This can be used to create paths to set or get properties on documents. Example:
-`/default-domain/workspaces/MyWorkspace/foo/bar@@set?value=test` 
 
+As we've seen the trailing path contains the `residual` segments after a mapping on a Document is done. Obviously it will be empty if all segments from the traversal path are mapped to documents. Anyway, such 'residual' path segments are not garbage but they may give some extra information on how to perform the request. How the trailing path is used by the server is depending on the action or script that will be executed on the Target Document. There isn't any default behavior in handling such a trailing path. It is up to the developer how this path is used.
+
+For example, a possible usage is to map the trailing path on an XPATH that point to a Document property. So in our previous example the trailing path `/bar` will point to a property `bar` in the document `foo`. This can be used to create paths to set or get properties on documents. Example:
+`/default-domain/workspaces/MyWorkspace/foo/bar@@set?value=test` 
 
 ==== Actions
 
@@ -130,8 +125,6 @@ If no action is specified in the request URL then a default action `@@view` will
 *Note* that in future the `action` concept will be extended. For now actions are used when requesting Documents. They are ignored when the request is not resolved to a document but to a script or template. (e.g. if you are using pure scripting that are not resolved to Nuxeo EP Documents). In future the action mechanism will be extended to be used on any type of resource. For example in the case of scripts an `action` may be mapped on a script function.
 
 You can find more details on actions in Web Application : Actions section
-
-
 
 === Path Mapping
 
@@ -173,8 +166,6 @@ The syntax (?label: ... ) for regular expression groups is an extension to the J
 In this case the generated mapping variables will be `$1` for the year and `$2` for the month.
 
 You may note that using mappings or using a custom request handler that avoid mapping path segments on documents you may create web application that doesn't use any Nuxeo repository.
-
-
 
 === Directory Layout - Resolving Scripts and Templates 
 
@@ -226,11 +217,9 @@ Let say you want to call the script bound to the `@@view` action of a `Wiki` doc
 
 *Note* that when you have multiple web application roots this mechanism will searching the script in each root in turn until something is found.
 
-
-
 == Getting Started
 
-WebEngine is shipped in two flavours:
+WebEngine is shipped in two flavors:
 * a standalone server
 * a Nuxeo EP module, that runs in a JBoss application server
 
@@ -240,23 +229,25 @@ In both standalone and JBoss versions the OSGi framework is emulated by a Nuxeo 
 
 WebEngine is working on any platform supported by Nuxeo EP (UNIX-like systems, MAC OS X, Windows). Anyway in the case of MAC OS X there is a known problem and to be able to start WebEngine you need to remove the file `System/Library/Java/Extensions/AppleScriptEngine.jar` file.
 
-
-
 === Standalone server
 
 The standalone server is the *light* version of WebEngine and doesn't requires an application server to work.
-This means that Nuxeo services requried by WebEngine are not exposed as session beans. Anyway, all of the functionalities present in the JBoss version are available in the standalone server.
-The light version is embedding a Jetty HTTP server and by default binds the WebEngine instance to the root web context: `/`.\
-In the future, we plan to also provide a light version of WebEngine that will embed a GlassFish3 server.
 
-The light version is very usefull for developing since the startup time is very fast (e.g. 2-3 seconds on my laptop using Java6) - but can be also used in production.
+This means that Nuxeo services required by WebEngine are not exposed as session beans. Anyway, all of the functionalities present in the JBoss version are available in the standalone server.
+
+The light version is embedding a Jetty HTTP server and by default binds the WebEngine instance to the root web context: `/`.
+
+In the future, we plan to also provide a light version of WebEngine that will embed a GlassFish v3 server.
+
+The light version is very useful for developing since the startup time is very fast (e.g. 2-3 seconds on my laptop using Java 6) - but can be also used in production.
 
 ==== Installation
-To install the light version download it from http://nuxeo.org/projects/webengine, unzip the content into a folder of your choice.
-and run `nxserver.sh` to launch the application.
+
+To install the light version, download it from http://nuxeo.org/projects/webengine, unzip the content into a folder of your choice, and run `nxserver.sh` to launch the application.
 
 ==== Launcher
-To start WebEngine simply run `./nxserver.sh` on linux or `nxserver.cmd` on windows.
+
+To start WebEngine, simply run `./nxserver.sh` on linux or `nxserver.cmd` on windows.
 
 The common options are:
 
@@ -266,13 +257,13 @@ The common options are:
 For more information on the launcher look into `nxserver.sh`
 
 ==== Requirements
+
 * Java 5 or later - WebEngine is working fine on both Java 5 and 6.
-
-
 
 === Nuxeo EP module
 
-WebEngine can be deployed as a Nuxeo EP module on a running Nuxeo server (that currently supports JBoss as application server).\
+WebEngine can be deployed as a Nuxeo EP module on a running Nuxeo server (that currently supports JBoss as application server).
+
 In this version, WebEgnine is bound by default to the `/nuxeo/site` context path.
 
 When deployed as a Nuxeo EP module, WebEngine will run in an application server so all required Nuxeo services will be exposed as session beans.
@@ -287,7 +278,7 @@ Install a Nuxeo EP product. Download the webengine components from http://www.nu
 Copy these JARs inside nuxeo.ear/plugins
 
 Make sure you have nuxeo-runtime-scripting in your nuxeo.ear/system folder if not download and copy it into this folder.
-Make sure you have the following JARs in yout `nuxeo.ear/libs`:
+Make sure you have the following JARs in your `nuxeo.ear/libs`:
 * freemarker-2.3.11.jar
 * json-lib-2.2.1-jdk15.jar
 * ezmorph-0.9.jar
@@ -297,11 +288,10 @@ If they are not there, download them and copy into the `libs` folder (overwritin
 In order to use Anonymous login you also need to deploy the optional Nuxeo EP module: `nuxeo-platform-anonymous-login`. In the standalone version this feature comes by default.
 
 ==== Requirements
+
 * JBoss 4.0.5 GA
 * Nuxeo EP 5.2 - WebEngine is not working with older versions
 * Java 5 - WebEngine is also working with Java 6 but other modules in JBoss may not work properly.
-
-
 
 == Applications
 
@@ -321,11 +311,10 @@ Web application data may be contributed by separate OSGi modules (JARs). Usually
 
 It is recommended that modules should contribute files by creating a new directory into the `web` root and not by replacing existing files. The directory stacking mechanism can be used to override existing files if this is wanted. 
 
-Applications are usefull when you need to deploy multiple sites on the same server or when you want to customize an existing application but don't want your changes to modify the existing application. For example you need to override the document type `File` is handled vut only in your application scope.\
+Applications are useful when you need to deploy multiple sites on the same server or when you want to customize an existing application but don't want your changes to modify the existing application. For example you need to override the document type `File` is handled vut only in your application scope.\
 When hosting multiple sites using WebEngine it is better to separate these sites in applications rather than using a single application that will correctly dispatch request for each site by using mappings or other techniques. This ensure a better scalability since each application configuration is isolated from the others and each application will use its own cache.
 
 Even if isolated at configuration level, applications may share script, template or static files.
-
 
 === Web Engine Servlet
 
@@ -358,16 +347,16 @@ To be able to use the Nuxeo EP repository from WebEngine you should also declare
 
 The `exclude` parameter is used to avoid filtering request having paths starting with the `/files` prefix since this prefix is used by WebEngine to locate static files as CSS, script and image files.
 
-
 === Application Configuration
 
 Before talking about configuration format you should know that WebEngine is using the Nuxeo extension point mechanism to contribute configuration files.
-A Nuxeo component may delcare several extension points to let other components contributing custom configuration. Tese extension poitns are declared using XML files. Extensions contributed by other modules are also declared as XML files. For more information on how this works see te documentation of Nuxeo EP.
+A Nuxeo component may declare several extension points to let other components contributing custom configuration. These extension points are declared using XML files. Extensions contributed by other modules are also declared as XML files. For more information on how this works see the documentation of Nuxeo EP.
 
 To define a new application you need to contribute a new application extension. This extension can live anywhere where accessible from `nuxeo-webengine-core` bundle (even in a JAR) but we recommend to place configuration files in `web/WEB-INF` directory.
 
 As new applications are usually contributed by new modules (that are installed as JARs) this section will explain how to create a new application from a nuxeo module.
-A WebEngine module, apart the configuration files may also deploy script and other resource files in the `web` directory. Here is a a complete example on how to create a new application and deploye new web resources and it is taken from the `nuxeo-webengine-wiki` module. In your module you need to deploy an XML component having a content similar with the following (see `nuxeo-webegine-wiki/OSGI-INF/wiki-deployment-contrib.xml`):
+
+A WebEngine module, apart the configuration files may also deploy script and other resource files in the `web` directory. Here is a a complete example on how to create a new application and deploy new web resources and it is taken from the `nuxeo-webengine-wiki` module. In your module you need to deploy an XML component having a content similar with the following (see `nuxeo-webegine-wiki/OSGI-INF/wiki-deployment-contrib.xml`):
 
 {{{
   <extension
@@ -388,13 +377,13 @@ A WebEngine module, apart the configuration files may also deploy script and oth
   </extension>
 }}}
 
-The first extension point is delcarin all the files you want to copy from the JAR in the `web` directory the first time your module is loaded.
-The `copy`directive is doing a directory or file copy by overwriting any existing file; the append directive is appending some file on an existing file.
+The first extension point is delcaring all the files you want to copy from the JAR in the `web` directory the first time your module is loaded.
+The `copy` directive is doing a directory or file copy by overwriting any existing file; the append directive is appending some file on an existing file.
 
 The special `guard` attribute is specifying a file that will act as a guard to prevent re-deploying your web files each time you restart the server.
-That is,if the `guard` file already exists, then the file deployment is skiped. This way, the startup time is improved and also you avoid overwriting your manual changes on the already deployed files.
+That is,if the `guard` file already exists, then the file deployment is skipped. This way, the startup time is improved and also you avoid overwriting your manual changes on the already deployed files.
 
-The second extension is declaring the `/WEB-INF/wiki-webapp.xml` as a configration file. This is also enabling the hot redeployment on that file.
+The second extension is declaring the `/WEB-INF/wiki-webapp.xml` as a configuration file. This is also enabling the hot redeployment on that file.
 If you don't want hot redeployment on your configuration file you need to add an extra attribute: *trackChanges="false"*
 
 *Note* that it is also possible to deploy new applications without having to install a new JAR. To do this you need to edit an existing configuration file and add your application contribution there or to add a new configuration contribution (that declares your new configuration file). In future this will be improved and we plan to make possible to install and remove applications simply by adding / removing XML files into `web/WEB-INF`.
@@ -434,9 +423,12 @@ Here is an example of an application configurtaion:
 
 === Application Selection
 
-We've seen how to define a new application. But how this application becomes selected for an incoming request?\
-This is done by defining rules to map request paths to applications.\
-*Note* that a single application can be mapped to multiple paths.\
+We've seen how to define a new application. But how this application becomes selected for an incoming request?
+
+This is done by defining rules to map request paths to applications.
+
+*Note* that a single application can be mapped to multiple paths.
+
 Here is an example fo such a mapping rule:
 
 {{{
@@ -449,14 +441,17 @@ Here is an example fo such a mapping rule:
 
 The mapping is done on path prefixes and the longest match win.
 
-The first mapping rule is mapping the __default__ application to any path that starts with `/` path. This means any requests that is not matched to an application will be handled by the default application.\
+The first mapping rule is mapping the __default__ application to any path that starts with `/` path. This means any requests that is not matched to an application will be handled by the default application.
+
 The second mapping rule is mapping the __default__ application to any path that starts with `/repository`.
+
 Also the `document` attribute specify that when this rule matches the Document root should be set to `/default-domain`.
+
 The `default` attribute is a little bit special. It tells that this mapping rule is the default one when trying to compute document paths.
+
 Imagine in you display on a page the result of a search in the repository. Within the result you may have documents that are outside the scope of your application context. In order to be able to display such documents you need an URL (that your application is not aware of). In that case the `default` mapping rule will be used to compute the document URL.
 
-For more details about what can be configured in both configuration layers see the Configuration chapter.
-
+For more details about what can be configured in both configuration layers, please see the Configuration chapter.
 
 === Directory Stacking
 
@@ -497,7 +492,7 @@ For this reason before being exposed in the web context they are wrapped in a we
 
 This means we need to map documents to a high level object that can hold web specific configuration like enabled web actions. 
 
-A WebObject is primarly defining a set of actions that are available on the corresponding Document type. Here is an example:
+A WebObject is primarily defining a set of actions that are available on the corresponding Document type. Here is an example:
 
 {{{
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
@@ -532,12 +527,13 @@ A WebObject is primarly defining a set of actions that are available on the corr
   </extension>
 }}}
 
-You can see a that a web object can inherit from another object by using the `extends` attribute. This is usefull if you want to avoid redefining generic actions or properties. By extending an existing object you create a new web object definition - you cannot modify the extended object.
+You can see a that a web object can inherit from another object by using the `extends` attribute. This is useful if you want to avoid redefining generic actions or properties. By extending an existing object you create a new web object definition - you cannot modify the extended object.
 
-You can controil the way the request il processed (and the default document mapping method) by using the element: `requestHandler`.
+You can control the way the request is processed (and the default document mapping method) by using the element: `requestHandler`.
 This element is optional and defaults to `org.nuxeo.ecm.webengine.DefaultRequestHandler`.
 
-As you can see the main usage of an Web Object is to define actions. For example the action `delete` has a guard that enable the action only if the current user has the `Write` permission on the target document. And the Java action handler is specified by the `handler` attribute.\
+As you can see the main usage of an Web Object is to define actions. For example the action `delete` has a guard that enable the action only if the current user has the `Write` permission on the target document. And the Java action handler is specified by the `handler` attribute.
+
 Each action has a default handler so usually you don;'t need to define a handler only if you want to set your custom handler. Usually you will want to handle actions using scripts as in the last action defined below: the `search` action will invoke the script `/common.search.ftl` on the target document.
 
 You can learn more about actions in the next section.
@@ -552,13 +548,13 @@ To bind a declared Web Object to a document type you need to use the `binding` e
   </extension>
 }}}
 
-This will bind the `WebObject` object to the `Document` docuemnt type. This is the root of all types in Nuxeo EP - so this binding will be used as a fallback for every document type that is not explicitly bound.\
-The second declaration will bound the MyDocument type to an obejct named MyObject.
+This will bind the `WebObject` object to the `Document` docuemnt type. This is the root of all types in Nuxeo EP - so this binding will be used as a fallback for every document type that is not explicitly bound.
+
+The second declaration will bound the MyDocument type to an object named MyObject.
 
 If you are declaring these bindings inside an application extension (as part of the application configuration) the bindings will be visible only to that application otherwise they are visible to all applications.
 
 *Note* that Web Objects configuration syntax may change in future.
-
 
 === Actions
 
@@ -589,7 +585,7 @@ As you seen you have two options: either using java code (if you want faster or 
 
 You can either use both properties to install a Java action execution handler and a template to be used to show the result of the execution. Or, more, you can install a handler and a groovy script then in the groovy script you may do some post processing and then call a template to show the result.
 
-The action category can be used to filter or to group actions. For example you may want to show only a set of actions that are enabled on a document filtered by a category.
+The action category can be used to filter or to group actions. For example, you may want to show only a set of actions that are enabled on a document filtered by a category.
 
 Finally, the guards can be installed to restrict actions to be available only for some users. Guards are very flexible. To define a guard you can use complex logical expressions on other guards. We will name any guard that it is not a logical expression an atomic guard.
 
@@ -603,19 +599,16 @@ Here is a list of all supported atomic guards:
 + Facet Guard - restrict access by testing the presence of a facet in the current document type
 + Script Guard - restrict access using random scripts. Any java scripting engine is supported
 
-Example of a logical expression guard: `Write OR (user = titi OR group = toto )`. This means give permission on all users that have the `Write` permission on the document OR to user named `titi` or all user from group `toto`.  
+Example of a logical expression guard: `Write OR (user = foo OR group = bar )`. This means give permission on all users that have the `Write` permission on the document OR to a user named `foo` or all users from group `bar`.  
 
 You can define actions as you want: you can map them to scripts or to Java code - it is up to you how you will use that action.
 
-For how to retrieve available actions on the target document from a script refer to the Script Context chapter.
-
-
+For how to retrieve available actions on the target document from a script, please refer to the Script Context chapter.
 
 == Configuration
 
-The configuration files are located in `web/WEB-INF` directory.
+The configuration files are located in the `web/WEB-INF` directory.
 
-The configuration files are hot deployable - this means you can modify configuration and have your modifications visible without restarting the server. The same is true for any script and template files. The only exception is the web.xml file which declares the servlet used by WebEngine when deployed as a standalone servlet.
+The configuration files are hot deployable - this means you can modify the configuration and have your modifications visible without restarting the server. The same is true for any script and template files. The only exception is the `web.xml` file which declares the servlet used by WebEngine when deployed as a standalone servlet.
 
 *Note* that the configuration files syntax may change in future versions.
-
