@@ -117,7 +117,7 @@ public final class ServiceManager {
                     return svc;
                 }
             } catch (NameNotFoundException e) {
-                log.warn("Existing but unreachable binding on "
+                log.warn("Existing binding but unreachable service for "
                         + serviceClass.getName()
                         + " ! Fallback on local service...");
                 log.debug("Check binding declaration: " + sd.toString(), e);
