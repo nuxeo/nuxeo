@@ -10,7 +10,7 @@
   <artifactId>nuxeo-webengine-server</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo WebEngine Server</name>
-  <description>Nuxeo WebEngine Embedded Server</description>
+  <description>Nuxeo WebEngine standalone server.</description>
 
   <properties>
     <nuxeo.wiki.version>1.0-SNAPSHOT</nuxeo.wiki.version>
@@ -75,6 +75,17 @@
         <artifactId>nuxeo-core-jcr-connector</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-client</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-shell-commands-base</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      
 
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -431,8 +442,18 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-versioning-core</artifactId>
     </dependency>
+
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-client</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-shell-commands-base</artifactId>
+      </dependency>
     
     <!-- jboss client -->
+
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>ejb3</artifactId>

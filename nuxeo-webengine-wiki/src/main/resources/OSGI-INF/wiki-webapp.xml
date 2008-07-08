@@ -2,20 +2,22 @@
 <component name="org.nuxeo.ecm.wiki.config">
   <documentation>
     @author Bogdan Stefanescu (bs@nuxeo.com)
-    @author Eric Barroce (eb@nuxeo.com)
+    @author Eric Barroca (eb@nuxeo.com)
     Default Wiki Objects
   </documentation>
 
+
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
              point="application-mapping">
-    <mapping path="/wiki" webapp="wiki" document="/default-domain/workspaces/ws/wiki" />
+    <mapping path="/wikis" webapp="wiki" document="/default-domain/workspaces/wikis" />
   </extension>
   
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
              point="application">
     <webapp id="wiki" extends="default">
       <roots>
-        <root priority="1">wiki</root>
+        <root priority="1">default</root>
+        <root priority="10">wiki</root>
       </roots>
       <mappings>
         <mapping pattern="^(.+)/archives/(?year:[0-9]{4})/?(?month:[0-9]{2})?">
@@ -70,19 +72,18 @@
     </object>
     <object id="WikiPage" extends="WikiObject">
       <actions>
-        <action id="view_content" enabled="true">
+        <action id="content_page" enabled="true">
           <permission expression="Read"/>
-          <category>tabview</category>
+          <category>TABVIEW</category>
         </action>
-        <action id="edit" enabled="true">
+        <action id="edit_page" enabled="true">
           <permission expression="Write"/>
-          <category>tabview</category>
+          <category>TABVIEW</category>
         </action>
-        <action id="show_versions" enabled="true">
+        <action id="versions_page" enabled="true">
           <permission expression="Read"/>
-          <category>tabview</category>
+          <category>TABVIEW</category>
         </action>
-        <action id="youpi" enabled="true" script="WikiPage/youpi.groovy"/>
         <action id="show_comments_py" enabled="true" script="comments/getComments.py">
           <permission expression="Read"/>
         </action>
@@ -124,13 +125,13 @@
     
     <object id="BlogPost" extends="WikiObject">
       <actions>
-        <action id="view_content" enabled="true">
+        <action id="content_page" enabled="true">
           <permission expression="Read"/>
-          <category>tabview</category>
+          <category>TABVIEW</category>
         </action>
         <action id="edit" enabled="true">
           <permission expression="Write"/>
-          <category>tabview</category>
+          <category>TABVIEW</category>
         </action>
       </actions>
     </object>

@@ -11,7 +11,10 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-webengine-wiki-jsf</artifactId>
+  <name>Nuxeo Wiki for JSF</name>
+  <description>JSF WebApp integration for Nuxeo Wiki.</description>
   <version>5.2-SNAPSHOT</version>
+  
 
   <build>
     <plugins>

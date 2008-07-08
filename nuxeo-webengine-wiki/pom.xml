@@ -10,10 +10,10 @@
 
   <groupId>org.nuxeo.ecm.webengine.wiki</groupId>
   <artifactId>nuxeo-webengine-wiki</artifactId>
-  <name>nuxeo-webengine-wiki project</name>
-  <description>nuxeo-webengine-wiki project description</description>
-  <version>1.0-SNAPSHOT</version>
-
+  <name>Nuxeo Wiki</name>
+  <description>Enteprise Wiki based on Nuxeo WebEngine.</description>
+  <version>5.2-SNAPSHOT</version>
+  
   <build>
     <plugins>
       <plugin>
