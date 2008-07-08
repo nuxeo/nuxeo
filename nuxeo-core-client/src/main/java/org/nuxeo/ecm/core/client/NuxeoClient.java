@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.core.client;
 
-import java.lang.reflect.Proxy;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -384,9 +383,7 @@ public final class NuxeoClient {
         if (cl == null) {
             cl = NuxeoClient.class.getClassLoader();
         }
-        return (RepositoryInstance)Proxy.newProxyInstance(cl,
-                new Class[] { RepositoryInstance.class },
-                new RepositoryInstanceHandler(repository));
+        return new RepositoryInstanceHandler(repository).getProxy();
     }
 
     public void addConnectionListener(ConnectionListener listener) {
