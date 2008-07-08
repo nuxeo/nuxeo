@@ -23,10 +23,10 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * An ACL (Acces Control List) is a list of ACEs (Access Control Entry).
+ * An ACL (Access Control List) is a list of ACEs (Access Control Entry).
  * <p>
  * An ACP may contain several ACL identified by a name.
- * This is to let external mocules add security rules. There are 2 default
+ * This is to let external modules add security rules. There are 2 default
  * ACLs:
  * <ul>
  * <li> the <code>local</code> ACL - this is the default type of ACL that may
@@ -72,8 +72,8 @@ public interface ACL extends List<ACE>, Serializable, Cloneable {
     void setACEs(ACE[] aces);
 
     /**
-     * Return a recursive copy of the ACL sharing no mutable substructure with
-     * the original
+     * Returns a recursive copy of the ACL sharing no mutable substructure with
+     * the original.
      *
      * @return a copy
      */
