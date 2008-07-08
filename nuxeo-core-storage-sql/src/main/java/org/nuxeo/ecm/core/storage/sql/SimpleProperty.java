@@ -18,7 +18,9 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -66,17 +68,37 @@ public class SimpleProperty extends AbstractProperty {
         checkWritable();
         if (value == null) {
             row.put(key, null);
-            // mark dataRow as dirty!
+            // mark fragment dirty!
             return;
         }
         switch (type) {
         case STRING:
-            if (!(value instanceof String)) {
-                throw new RuntimeException("Value is not a String: " + value);
+            if (value instanceof String) {
+                row.put(key, value);
+                // mark fragment dirty!
+                return;
             }
-            row.put(key, value);
-            // mark dataRow as dirty!
-            break;
+            throw new RuntimeException("Value is not a String: " + value);
+        case BOOLEAN:
+            if (value instanceof Boolean) {
+                row.put(key, value);
+                // mark fragment dirty!
+                return;
+            }
+            throw new RuntimeException("Value is not a Boolean: " + value);
+        case DATETIME:
+            if (value instanceof Date) {
+                row.put(key, new java.sql.Timestamp(((Date) value).getTime()));
+                // mark fragment dirty!
+                return;
+            }
+            if (value instanceof Calendar) {
+                row.put(key, new java.sql.Timestamp(
+                        ((Calendar) value).getTimeInMillis()));
+                // mark fragment dirty!
+                return;
+            }
+            throw new RuntimeException("Value is not a Calendar: " + value);
         default:
             throw new RuntimeException("Not implemented: " + type);
         }

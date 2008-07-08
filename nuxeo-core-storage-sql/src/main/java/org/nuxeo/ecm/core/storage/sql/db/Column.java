@@ -22,7 +22,10 @@ package org.nuxeo.ecm.core.storage.sql.db;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import org.hibernate.dialect.Dialect;
 
@@ -166,7 +169,13 @@ public class Column implements Serializable {
             result = rs.getString(columnIndex);
             break;
         case Types.TIMESTAMP:
-            result = rs.getTimestamp(columnIndex);
+            Timestamp timestamp = rs.getTimestamp(columnIndex);
+            if (timestamp == null) {
+                result = null;
+            } else {
+                result = new GregorianCalendar(); // XXX timezone
+                ((Calendar) result).setTimeInMillis(timestamp.getTime());
+            }
             break;
         case Types.BIT:
             result = rs.getBoolean(columnIndex);

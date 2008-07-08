@@ -180,8 +180,16 @@ public class SessionImpl implements Session, XAResource {
         SimpleFragment childMain = (SimpleFragment) context.get(
                 model.MAIN_TABLE_NAME, id, false);
         if (childMain == null) {
-            // not found
-            return null;
+            // HACK try old id
+            id = context.getOldId(id);
+            if (id == null) {
+                return null;
+            }
+            childMain = (SimpleFragment) context.get(model.MAIN_TABLE_NAME, id,
+                    false);
+            if (childMain == null) {
+                return null;
+            }
         }
         String childTypeName = (String) childMain.get(model.MAIN_PRIMARY_TYPE_KEY);
         DocumentType childType = schemaManager.getDocumentType(childTypeName);

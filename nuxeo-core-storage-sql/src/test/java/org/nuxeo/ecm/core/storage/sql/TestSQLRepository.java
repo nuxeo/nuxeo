@@ -17,6 +17,9 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 
@@ -44,6 +47,27 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
                 name, "Domain");
         child = session.createDocument(child);
         session.save();
+
+        child.setProperty("dublincore", "title", "The title");
+        Calendar cal = new GregorianCalendar(2008, 7, 14, 12, 34, 0);
+        child.setProperty("dublincore", "modified", cal);
+        session.saveDocument(child);
+        session.save();
+        closeSession();
+
+        // ----- new session -----
+        openSession();
+        root = session.getRootDocument();
+        child = session.getChild(root.getRef(), name);
+
+        String title = (String) child.getProperty("dublincore", "title");
+        assertEquals("The title", title);
+        String description = (String) child.getProperty("dublincore",
+                "description");
+        assertNull(description);
+        Calendar modified = (Calendar) child.getProperty("dublincore",
+                "modified");
+        assertEquals(cal, modified);
     }
 
 }

@@ -83,6 +83,10 @@ public class Model {
 
     public static final String SYSTEM_LIFECYCLE_STATE_KEY = "lifecyclestate";
 
+    public static final String SYSTEM_DIRTY_PROP = "ecm:dirty";
+
+    public static final String SYSTEM_DIRTY_KEY = "dirty";
+
     /** Maps table name to a map of properties to their basic type. */
     protected final Map<String, Map<String, PropertyType>> fragmentsKeysType;
 
@@ -190,7 +194,16 @@ public class Model {
         propertyFragment.put(propertyName, tableName);
         propertyFragmentKey.put(propertyName, key);
         fragmentKeysType.put(key, type);
-    }
+
+        propertyName = SYSTEM_DIRTY_PROP;
+        key = SYSTEM_DIRTY_KEY;
+        type = PropertyType.BOOLEAN;
+        // XXX propertyCoreType needed ?
+        propertyType.put(propertyName, type);
+        propertyFragment.put(propertyName, tableName);
+        propertyFragmentKey.put(propertyName, key);
+        fragmentKeysType.put(key, type);
+}
 
     /**
      * Creates the model for one schema or complex type.
@@ -217,8 +230,7 @@ public class Model {
                                 listFieldType, true);
                         propertyType.put(propertyName, type);
 
-                        // XXX collection table name
-                        String tableName = String.valueOf(type);
+                        String tableName = propertyName;
                         propertyFragment.put(propertyName, tableName);
                         collectionTables.put(tableName, type);
                     } else {

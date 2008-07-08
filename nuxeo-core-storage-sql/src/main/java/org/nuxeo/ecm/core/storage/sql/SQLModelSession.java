@@ -162,7 +162,16 @@ public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
 
     public Document getDocumentByUUID(String uuid) throws DocumentException {
         try {
-            Node node = session.getNodeById(uuid);
+            Serializable id;
+            if (uuid.startsWith("T")) { // temporary id
+                id = uuid;
+            } else {
+                // HACK document ids coming from higher level have been turned
+                // into strings (by SQLModelDocument.getUUID) but are really
+                // longs for the backend
+                id = Long.valueOf(uuid);
+            }
+            Node node = session.getNodeById(id);
             return newDocument(node);
         } catch (StorageException e) {
             throw new DocumentException("Failed to get document by UUID", e);

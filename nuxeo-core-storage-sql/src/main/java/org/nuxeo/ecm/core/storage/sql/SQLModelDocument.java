@@ -127,12 +127,20 @@ public class SQLModelDocument implements Document {
         session.save();
     }
 
+    /**
+     * Checks if the document is "dirty", which means that a change on it was
+     * made since the last time a snapshot of it was done (for publishing).
+     */
     public boolean isDirty() throws DocumentException {
-        throw new UnsupportedOperationException();
+        return getBoolean(Model.SYSTEM_DIRTY_PROP);
     }
 
+    /**
+     * Marks the document "dirty", which means that a change on it was made
+     * since the last time a snapshot of it was done (for publishing).
+     */
     public void setDirty(boolean value) throws DocumentException {
-        throw new UnsupportedOperationException();
+        setBoolean(Model.SYSTEM_DIRTY_PROP, value);
     }
 
     public void readDocumentPart(DocumentPart dp) throws Exception {
@@ -148,7 +156,10 @@ public class SQLModelDocument implements Document {
     }
 
     public void writeDocumentPart(DocumentPart dp) throws Exception {
-        throw new UnsupportedOperationException();
+        for (org.nuxeo.ecm.core.api.model.Property property : dp) {
+            setPropertyValue(property.getName(), property.getValue());
+        }
+        dp.clearDirtyFlags();
     }
 
     public <T extends Serializable> void setSystemProp(String name, T value)

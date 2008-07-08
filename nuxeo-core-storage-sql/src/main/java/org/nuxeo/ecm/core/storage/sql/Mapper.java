@@ -26,6 +26,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -112,22 +113,6 @@ public class Mapper {
     }
 
     // for debug
-    private String paramsToString(SimpleFragment row, List<Column> columns) {
-        List<String> res = new LinkedList<String>();
-        for (Column column : columns) {
-            String key = column.getKey();
-            Serializable v;
-            if (key.equals(model.MAIN_KEY)) {
-                v = row.getId();
-            } else {
-                v = row.get(key);
-            }
-            res.add(key + "=" + String.valueOf(v));
-        }
-        return StringUtils.join(res, ", ");
-    }
-
-    // for debug
     private String resultsToString(ResultSet rs, List<Column> columns)
             throws SQLException {
         List<String> res = new LinkedList<String>();
@@ -140,6 +125,43 @@ public class Mapper {
         return StringUtils.join(res, ", ");
     }
 
+    // for debug
+    private void logSQL(String sql, List<Column> columns, SimpleFragment row) {
+        for (Column column : columns) {
+            String key = column.getKey();
+            Serializable v;
+            if (key.equals(model.MAIN_KEY)) {
+                v = row.getId();
+            } else {
+                v = row.get(key);
+            }
+            String value;
+            if (v == null) {
+                value = "NULL";
+            } else if (v instanceof String) {
+                value = "'" + ((String) v).replace("'", "''") + "'";
+            } else {
+                value = v.toString();
+            }
+            sql = sql.replaceFirst("\\?", value);
+        }
+        log.debug("SQL: " + sql);
+    }
+
+    private void logSQL(String sql, List<Serializable> values) {
+        for (Serializable v : values) {
+            String value;
+            if (v == null) {
+                value = "NULL";
+            } else if (v instanceof String) {
+                value = "'" + ((String) v).replace("'", "''") + "'";
+            } else {
+                value = v.toString();
+            }
+            sql = sql.replaceFirst("\\?", value);
+        }
+        log.debug("SQL: " + sql);
+    }
     // ---------- low-level JDBC methods ----------
 
     /**
@@ -198,8 +220,7 @@ public class Mapper {
             List<Column> columns = sqlInfo.getInsertColumns(tableName);
             try {
                 if (log.isDebugEnabled()) {
-                    log.debug("SQL: " + sql);
-                    log.debug("SQL:   " + paramsToString(row, columns));
+                    logSQL(sql, columns, row);
                 }
                 ps = connection.prepareStatement(sql);
                 int i = 0;
@@ -275,11 +296,9 @@ public class Mapper {
             List<Column> columns = sqlInfo.getCollectionInsertColumns(tableName);
             try {
                 Serializable id = fragment.getId();
+                List<Serializable> debugValues = null;
                 if (log.isDebugEnabled()) {
-                    log.debug("SQL: " + sql);
-                    log.debug("SQL:   " + model.MAIN_KEY + '=' + id + ", " +
-                            model.COLL_TABLE_VALUE_KEY + "=" +
-                            Arrays.asList(fragment.get()));
+                    debugValues = new ArrayList<Serializable>(3);
                 }
                 ps = connection.prepareStatement(sql);
                 int pos = -1;
@@ -305,6 +324,13 @@ public class Mapper {
                         } else {
                             ps.setObject(i, v);
                         }
+                        if (debugValues != null) {
+                            debugValues.add(v);
+                        }
+                    }
+                    if (debugValues != null) {
+                        logSQL(sql, debugValues);
+                        debugValues.clear();
                     }
                     ps.execute();
                 }
@@ -340,8 +366,7 @@ public class Mapper {
         try {
             // XXX statement should be already prepared
             if (log.isDebugEnabled()) {
-                log.debug("SQL: " + sql);
-                log.debug("SQL:   " + model.MAIN_KEY + '=' + id);
+                logSQL(sql, Collections.singletonList(id));
             }
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
@@ -406,10 +431,9 @@ public class Mapper {
         String sql = sqlInfo.getSelectByChildNameSql();
         try {
             // XXX statement should be already prepared
+            List<Serializable> debugValues = null;
             if (log.isDebugEnabled()) {
-                log.debug("SQL: " + sql);
-                log.debug("SQL:   " + model.HIER_PARENT_KEY + '=' + parentId +
-                        ", " + model.HIER_CHILD_NAME_KEY + '=' + childName);
+                debugValues = new ArrayList<Serializable>(2);
             }
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
@@ -430,6 +454,12 @@ public class Mapper {
                         throw new RuntimeException("Null value for key: " + key);
                     }
                     ps.setObject(i, v);
+                    if (debugValues != null) {
+                        debugValues.add(v);
+                    }
+                }
+                if (debugValues != null) {
+                    logSQL(sql, debugValues);
                 }
                 ResultSet rs = ps.executeQuery();
                 if (!rs.next()) {
@@ -493,8 +523,7 @@ public class Mapper {
         try {
             // XXX statement should be already prepared
             if (log.isDebugEnabled()) {
-                log.debug("SQL: " + sql);
-                log.debug("SQL:   " + model.HIER_PARENT_KEY + '=' + parentId);
+                logSQL(sql, Collections.singletonList(parentId));
             }
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
@@ -580,8 +609,7 @@ public class Mapper {
         try {
             // XXX statement should be already prepared
             if (log.isDebugEnabled()) {
-                log.debug("SQL: " + sql);
-                log.debug("SQL:   " + model.MAIN_KEY + '=' + id);
+                logSQL(sql, Collections.singletonList(id));
             }
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
@@ -634,8 +662,7 @@ public class Mapper {
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
                 if (log.isDebugEnabled()) {
-                    log.debug("SQL: " + sql);
-                    log.debug("SQL:   " + paramsToString(row, columns));
+                    logSQL(sql, columns, row);
                 }
                 int i = 0;
                 for (Column column : columns) {
@@ -693,8 +720,7 @@ public class Mapper {
         Serializable id = fragment.getId();
         try {
             if (log.isDebugEnabled()) {
-                log.debug("SQL: " + sql);
-                log.debug("SQL:   " + model.MAIN_KEY + '=' + id);
+                logSQL(sql, Collections.singletonList(id));
             }
             // XXX statement should be already prepared
             PreparedStatement ps = connection.prepareStatement(sql);

@@ -104,33 +104,38 @@ public class TestSQLBackend extends SQLBackendTestCase {
         nodea.setSingleProperty("tst:title", "hello world");
         nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
                 "c" });
+        nodea.setCollectionProperty("tst:tags", new String[] { "1", "2" });
 
         assertEquals("hello world",
                 nodea.getSimpleProperty("tst:title").getString());
         String[] subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
-        assertEquals(Arrays.asList("a", "b", "c"), Arrays.asList(subjects));
+        String[] tags = nodea.getCollectionProperty("tst:tags").getStrings();
+        assertEquals(Arrays.asList("1", "2"), Arrays.asList(tags));
 
         session.save();
 
         // now modify a property and re-save
         nodea.setSingleProperty("tst:title", "another");
         nodea.setCollectionProperty("tst:subjects", new String[] { "z", "c" });
+        nodea.setCollectionProperty("tst:tags", new String[] { "3" });
 
         session.save();
         session.close();
 
         // now read from another session
-        Session session2 = repository.getConnection();
-        Node root2 = session2.getRootNode();
-        Node nodea2 = session2.getChildNode(root2, "foo");
+        session = repository.getConnection();
+        root = session.getRootNode();
+        nodea = session.getChildNode(root, "foo");
         assertEquals("another",
-                nodea2.getSimpleProperty("tst:title").getString());
-        subjects = nodea2.getCollectionProperty("tst:subjects").getStrings();
+                nodea.getSimpleProperty("tst:title").getString());
+        subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
+        tags = nodea.getCollectionProperty("tst:tags").getStrings();
         assertEquals(Arrays.asList("z", "c"), Arrays.asList(subjects));
+        assertEquals(Arrays.asList("3"), Arrays.asList(tags));
 
         // delete the node
-        session2.removeNode(nodea2);
-        session2.save();
+        session.removeNode(nodea);
+        session.save();
     }
 
 }

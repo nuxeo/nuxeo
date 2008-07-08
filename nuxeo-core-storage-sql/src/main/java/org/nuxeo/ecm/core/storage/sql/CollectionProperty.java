@@ -74,7 +74,7 @@ public class CollectionProperty extends AbstractProperty {
         }
         switch (type) {
         case ARRAY_STRING:
-            if (!(value instanceof String[])) {
+            if (value.length > 0 && !(value instanceof String[])) {
                 throw new RuntimeException("Value is not a string array: " +
                         value);
             }

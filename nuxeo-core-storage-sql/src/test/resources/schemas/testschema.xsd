@@ -26,6 +26,7 @@
   <xs:element name="created" type="xs:date"/>
 <!-- <xs:element name="blob" type="xs:base64Binary"/> -->
   <xs:element name="subjects" type="nxs:stringArray"/>
+  <xs:element name="tags" type="nxs:stringArray"/>
   <xs:element name="owner" type="nxs:person"/>
   <xs:element name="friends" type="nxs:personList"/>
 

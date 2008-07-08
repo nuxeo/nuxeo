@@ -48,6 +48,15 @@ public class PersistenceContext {
 
     private final Model model;
 
+    /**
+     * HACK: if some application code illegally recorded temporary ids (which
+     * Nuxeo does), then it's useful to keep around the map to avoid crashing
+     * the application.
+     * <p>
+     * TODO IMPORTANT don't keep it around forever, use some LRU.
+     */
+    private final HashMap<Serializable, Serializable> oldIdMap;
+
     PersistenceContext(Mapper mapper) {
         this.mapper = mapper;
         model = mapper.getModel();
@@ -56,6 +65,7 @@ public class PersistenceContext {
         // avoid doing tests all the time for this known case
         contexts.put(model.HIER_TABLE_NAME, new PersistenceContextByTable(
                 model.HIER_TABLE_NAME, mapper));
+        oldIdMap = new HashMap<Serializable, Serializable>();
     }
 
     public void close() {
@@ -91,6 +101,17 @@ public class PersistenceContext {
         }
         // no need to clear the contexts, they'd get reallocate soon anyway
         log.debug("End of save");
+        // HACK: remember the idMap
+        oldIdMap.putAll(idMap);
+    }
+
+    /**
+     * Find out if this old temporary id has been mapped to something permanent.
+     * <p>
+     * This is a workaround for incorrect application code.
+     */
+    protected Serializable getOldId(Serializable id) {
+        return oldIdMap.get(id);
     }
 
     /**

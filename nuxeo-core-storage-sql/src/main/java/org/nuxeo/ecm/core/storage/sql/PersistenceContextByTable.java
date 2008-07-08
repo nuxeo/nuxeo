@@ -113,6 +113,8 @@ public class PersistenceContextByTable {
      */
     private final Map<Serializable, Children> knownChildren;
 
+    private final boolean isCollection;
+
     @SuppressWarnings("unchecked")
     PersistenceContextByTable(String tableName, Mapper mapper) {
         this.tableName = tableName;
@@ -131,6 +133,7 @@ public class PersistenceContextByTable {
         } else {
             knownChildren = null;
         }
+        isCollection = model.collectionTables.containsKey(tableName);
     }
 
     /**
@@ -213,7 +216,6 @@ public class PersistenceContextByTable {
         // read it through the mapper
         boolean isTemporaryId = id instanceof String &&
                 ((String) id).startsWith("T");
-        boolean isCollection = tableName.startsWith("ARRAY_"); // XXX hack
         if (isTemporaryId) {
             if (isCollection) {
                 fragment = new CollectionFragment(tableName, id, State.CREATED,
