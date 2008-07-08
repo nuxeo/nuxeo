@@ -34,6 +34,6 @@ public interface AuthenticationPropagator {
      * @param principal the principal to propagate
      * @credentials the credentials to propagate
      */
-    public void propagate(UserSession userSession);
+    void propagate(UserSession userSession);
 
 }
