@@ -78,7 +78,7 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
         return new Class[] { RepositoryInstance.class };
     }
 
-    private static void rethrowException(Throwable t) throws Exception {
+    protected static void rethrowException(Throwable t) throws Exception {
         if (t instanceof Exception) {
             throw (Exception) t;
         } else if (t instanceof Error) {
@@ -111,7 +111,7 @@ public class RepositoryInstanceHandler implements InvocationHandler, RepositoryC
         return session;
     }
 
-    private void open(Repository repository) throws Exception {
+    protected void open(Repository repository) throws Exception {
         session = Framework.getService(CoreSession.class, repository.getName());
         String repositoryUri = repository.getRepositoryUri();
         if (repositoryUri == null) {

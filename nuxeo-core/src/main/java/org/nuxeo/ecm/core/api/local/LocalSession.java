@@ -57,9 +57,6 @@ public class LocalSession extends AbstractSession {
             } else {
                 sessionContext = new HashMap<String, Serializable>();
             }
-            if (principal == null) {
-                principal = ADMINISTRATOR;
-            }
             // store the principal in the core session context so that other core tools may retrieve it
             sessionContext.put("principal", principal);
 
