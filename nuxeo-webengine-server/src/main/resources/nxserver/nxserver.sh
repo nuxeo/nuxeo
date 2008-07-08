@@ -74,5 +74,6 @@ fi
 
 java $JAVA_OPTS -jar nuxeo-runtime-launcher-1.5-SNAPSHOT.jar \
     bundles/nuxeo-runtime-osgi-1.5-SNAPSHOT.jar/org.nuxeo.osgi.application.Main \
-    bundles/.:lib/.:config \
+    bundles/.:lib/.:config -bundles:\
+    -bundles=bundles/nuxeo-shell-commands-base.jar@3\
     -home . "$@"

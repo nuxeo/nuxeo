@@ -15,7 +15,6 @@
   <packaging>pom</packaging>
   <name>Nuxeo WebEngine</name>
   <description>Nuxeo WebEngine is the lightweight content-centric web framework.</description>
-  <version>5.2-SNAPSHOT</version>
   
 
   <modules>
