@@ -65,7 +65,7 @@
 #
 ################################################
 
-JAVA_OPTS="-Djava.rmi.server.RMIClassLoaderSpi=org.nuxeo.runtime.loader.NuxeoRMIClassLoader -Dsun.lang.ClassLoader.allowArraySyntax=true"
+JAVA_OPTS="-Djava.rmi.server.RMIClassLoaderSpi=org.nuxeo.runtime.launcher.NuxeoRMIClassLoader -Dsun.lang.ClassLoader.allowArraySyntax=true"
 JAVA_OPTS="$JAVA_OPTS -Dderby.system.home=data/derby"
 
 if [ "x$1" = "x-debug" ] ; then

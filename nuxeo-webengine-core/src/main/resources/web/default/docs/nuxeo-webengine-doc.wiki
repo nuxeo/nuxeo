@@ -1,4 +1,4 @@
-
+﻿
 = Nuxeo WebEngine
 
 {toc}{/toc}
@@ -243,7 +243,7 @@ The light version is very useful for developing since the startup time is very f
 
 ==== Installation
 
-To install the light version, download it from http://nuxeo.org/projects/webengine, unzip the content into a folder of your choice, and run `nxserver.sh` to launch the application.
+To install the light version, download it from http://nuxeo.org/projects/webengine, unzip the content into a folder of your choice, and run `nxserver.sh` to launch the application. Then go to http://localhost:8080.
 
 ==== Launcher
 
@@ -253,6 +253,7 @@ The common options are:
 
 * `-debug` - to start in debug mode. In this mode the launcher will wait for a Java debuger to connect.
 * `-clear` - to cleanup cache before starting. This is needed if you add a JAR into `bundles` or `lib` directories - since the launcher is caching the classpath at the first start of the server.
+* `-console` - to activate the server administration console
 
 For more information on the launcher look into `nxserver.sh`
 
@@ -286,6 +287,8 @@ Make sure you have the following JARs in your `nuxeo.ear/libs`:
 If they are not there, download them and copy into the `libs` folder (overwriting older versions if any)
 
 In order to use Anonymous login you also need to deploy the optional Nuxeo EP module: `nuxeo-platform-anonymous-login`. In the standalone version this feature comes by default.
+
+After JBoss is started go to http://localhost:8080/nuxeo/site.
 
 ==== Requirements
 
