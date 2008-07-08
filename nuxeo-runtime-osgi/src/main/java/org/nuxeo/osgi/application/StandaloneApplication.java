@@ -43,8 +43,12 @@ import org.osgi.framework.FrameworkEvent;
  */
 public class StandaloneApplication extends OSGiAdapter {
 
+    public final static String MAIN_TASK = "org.nuxeo.osgi.application.main.task";
+
     private static StandaloneApplication instance;
-    private static CommandLineOptions options;
+    private static CommandLineOptions options; // TODO should be remove
+    private static String[] args;
+    private static Runnable mainTask;
 
     public static StandaloneApplication getInstance() {
         return instance;
@@ -229,6 +233,7 @@ public class StandaloneApplication extends OSGiAdapter {
             File home = new File(val);
             home = home.getCanonicalFile();
             Environment env = new Environment(home);
+            env.setCommandLineArguments(args);
             val = options.getOption("data");
             if (val != null) {
                 env.setData(new File(val).getCanonicalFile());
@@ -262,10 +267,15 @@ public class StandaloneApplication extends OSGiAdapter {
         }
     }
 
+    public static void setMainTask(Runnable mainTask) {
+        StandaloneApplication.mainTask = mainTask;
+    }
+
     public static void main(URL systemBundle, List<File> classPath, String[] args) {
         SharedClassLoader classLoader = (SharedClassLoader)Thread.currentThread().getContextClassLoader();
         long startTime = System.currentTimeMillis();
         // parse command line args
+        StandaloneApplication.args = args;
         options = new CommandLineOptions(args);
         // start framework
         StandaloneApplication app = null;
@@ -277,6 +287,9 @@ public class StandaloneApplication extends OSGiAdapter {
             // start level 1
             app.start();
             System.out.println("Framework started in "+((System.currentTimeMillis()-startTime)/1000)+" sec.");
+            if (mainTask != null) {
+                mainTask.run();
+            }
         } catch (Throwable  e) {
             e.printStackTrace();
             System.exit(13);
