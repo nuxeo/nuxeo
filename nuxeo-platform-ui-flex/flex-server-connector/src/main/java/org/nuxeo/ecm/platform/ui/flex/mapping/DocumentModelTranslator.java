@@ -22,12 +22,21 @@ import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.flex.javadto.FlexDocumentModel;
+import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.runtime.api.Framework;
 
 public class DocumentModelTranslator {
 
     private static SchemaManager sm;
     private static Map<String,String> schemaCache = new ConcurrentHashMap<String, String>();
+
+
+    private static FlexDocumentModel addIconURL(FlexDocumentModel fdm,  DocumentModel doc)
+    {
+        String iconURL = DocumentModelFunctions.iconPath(doc);
+        fdm.setProperty("common", "icon", iconURL);
+        return fdm;
+    }
 
     private static String getSchemaFromPrefix(String prefix) throws Exception
     {
@@ -121,8 +130,9 @@ public class DocumentModelTranslator {
                 else if (prop.getType().isComplexType())
                 {
                     if (prop instanceof BlobProperty) {
+                        String dwURL = DocumentModelFunctions.fileUrl("downloadFile", doc, prop.getName(), null);
                         BlobProperty blobProp = (BlobProperty) prop;
-                        map.put(fieldName,"someurl");
+                        map.put(fieldName,dwURL);
                     }
                     else if (prop instanceof MapProperty) {
                         MapProperty mapProp = (MapProperty) prop;
