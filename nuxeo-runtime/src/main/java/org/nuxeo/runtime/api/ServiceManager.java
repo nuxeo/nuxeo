@@ -120,7 +120,7 @@ public final class ServiceManager {
                 log.warn("Existing but unreachable binding on "
                         + serviceClass.getName()
                         + " ! Fallback on local service...");
-                log.debug("Check binding declaration: " + sd, e);
+                log.debug("Check binding declaration: " + sd.toString(), e);
             }
         }
         return Framework.getLocalService(serviceClass);
