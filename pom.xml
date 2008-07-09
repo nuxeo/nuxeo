@@ -633,6 +633,16 @@
         <artifactId>richfaces-api</artifactId>
         <version>3.2.1.GA</version>
       </dependency>
+      <dependency>
+        <groupId>org.richfaces.framework</groupId>
+        <artifactId>richfaces-impl</artifactId>
+        <version>3.2.1.GA</version>
+      </dependency>
+      <dependency>
+        <groupId>org.richfaces.ui</groupId>
+        <artifactId>richfaces-ui</artifactId>
+        <version>3.2.1.GA</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
