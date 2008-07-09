@@ -4,6 +4,7 @@
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
@@ -14,7 +15,7 @@
 </ui:define>
 
 <ui:define name="body">
-  <h:form id="searchForm">
+  <a4j:outputPanel ajaxRendered="true"><a4j:form ajaxSubmit="true" id="searchForm">
 
     <div class="foldableBox">
       <h3 class="unfolded">
@@ -39,7 +40,7 @@
     </div>
 
     <ui:include src="/search/search_buttons.xhtml" />
-  </h:form>
+  </a4j:form></a4j:outputPanel>
 
   <f:subview rendered="#{currentNuxeoPrincipal.administrator}">
     <div class="foldableBox">

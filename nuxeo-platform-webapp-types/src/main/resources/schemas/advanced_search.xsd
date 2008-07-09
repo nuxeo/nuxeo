@@ -24,6 +24,7 @@
   <xs:element name="format" type="xs:string"/>
   <xs:element name="language" type="xs:string"/>
   <xs:element name="isCheckedInVersion" type="xs:boolean" default="false"/>
+  <xs:element name="searchpath" type="xs:string" />
   <!--
   <xs:element name="subjects" type="nxs:subjectList"/>
   <xs:element name="contributors" type="nxs:contributorList"/>
