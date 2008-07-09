@@ -270,6 +270,9 @@
       <view id="/editor_image_upload.xhtml">
         <theme>default/popup</theme>
       </view>
+      <view id="/search/choose_searchscope_popup.xhtml">
+        <theme>default/popup</theme>
+      </view>
     </application>
   </extension>
 
