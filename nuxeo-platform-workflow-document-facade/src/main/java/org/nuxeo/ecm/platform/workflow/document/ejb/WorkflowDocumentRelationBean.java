@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.platform.workflow.document.ejb;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.ejb.Local;
@@ -26,8 +30,12 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.SqlResultSetMapping;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance;
 import org.nuxeo.ecm.platform.workflow.document.api.ejb.local.WorkflowDocumentRelationLocal;
 import org.nuxeo.ecm.platform.workflow.document.api.ejb.remote.WorkflowDocumentRelationRemote;
 import org.nuxeo.ecm.platform.workflow.document.api.relation.WorkflowDocumentRelationException;
@@ -41,6 +49,7 @@ import org.nuxeo.ecm.platform.workflow.document.api.relation.WorkflowDocumentRel
 @Stateless
 @Local(WorkflowDocumentRelationLocal.class)
 @Remote(WorkflowDocumentRelationRemote.class)
+@SqlResultSetMapping(name = "worflowDocRefResult")
 public class WorkflowDocumentRelationBean implements
         WorkflowDocumentRelationManager, WorkflowDocumentRelationLocal, WorkflowDocumentRelationRemote {
 
@@ -69,6 +78,30 @@ public class WorkflowDocumentRelationBean implements
         }
 
         return coreDocumentRefs;
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public Map<String, List<String>> getDocumentModelsPids(
+            Set<String> pids) {
+        StringBuilder query = new StringBuilder("select wi from WorkflowInstanceRefEntry as wi ");
+        query.append(" left join fetch wi.documentRefs ");
+        query.append("where wi.workflowInstanceId in (");
+        for(String pid : pids) {
+            query.append("'" + pid + "',");
+        }
+        query.deleteCharAt(query.length() - 1);
+        query.append(")");
+        List<WorkflowInstanceRefEntry> list = em.createQuery(query.toString()).getResultList();
+        Map<String, List<String>> result = new HashMap<String, List<String>>();
+        for(WorkflowInstanceRefEntry entry : list) {
+            List<String> docIds = new ArrayList<String>();
+            result.put(entry.getWorkflowInstanceId(), docIds);
+            for(DocumentRefEntry idRef : entry.getDocumentRefs()) {
+                docIds.add(((IdRef)idRef.getDocRef()).value);
+            }
+        }
+        return result;
     }
 
     public String[] getWorkflowInstanceIdsFor(DocumentRef docRef) {

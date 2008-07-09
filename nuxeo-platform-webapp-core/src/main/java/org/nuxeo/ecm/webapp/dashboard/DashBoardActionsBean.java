@@ -20,7 +20,11 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.PostActivate;
@@ -292,25 +296,15 @@ public class DashBoardActionsBean extends InputController implements
             Collection<WMWorkItemInstance> workItems = wapi.getWorkItemsFor(
                     participants, WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
 
-            // To avoid duplicated workitem if part of several assigned groups
-            // and / or assigned directly. The ones assigned directly to the
-            // principal get precedence.
-            /* Rux NXP-1706: actually it doesn't work. Different work items on same
-             * document have differnt ids, but the document is only one. So redundant
-             * links displayed. Instead of searching for WM items Ids, just avoid
-             * document duplication.
-             */
             List<DocumentRef> alreadyIn = new ArrayList<DocumentRef>();
-            for (WMWorkItemInstance workItem : workItems) {
-
-                /* Rux NXP-1706: can't use it here
-                // Already in the list : do not duplicate
-                if (alreadyIn.contains(workItem.getId())) {
-                    continue;
-                }*/
-
+            Set<String> pids = new HashSet<String>();
+            for(WMWorkItemInstance workItem : workItems) {
+                pids.add(workItem.getProcessInstance().getId());
+            }
+            Map<String, List<DocumentModel>> pidDmMap = getDocumentModelsForPids(
+                    wDoc, pids);
+            for(WMWorkItemInstance workItem : workItems) {
                 // Check if the user has an action to perform.
-                String pid = workItem.getProcessInstance().getId();
                 WorkflowDocumentSecurityPolicy policy = wDocSecuPolicy.getWorkflowDocumentSecurityPolicyFor(workItem.getProcessInstance().getName());
                 if (policy != null) {
                     boolean canManage = policy.selectThisItem(workItem);
@@ -322,20 +316,8 @@ public class DashBoardActionsBean extends InputController implements
                 String authorName = workItem.getProcessInstance().getAuthorName();
                 String workflowType = workItem.getProcessInstance().getName();
 
-                DocumentRef[] docRefs = wDoc.getDocumentRefsFor(pid);
-                for (DocumentRef docRef : docRefs) {
-                    DocumentModel dm;
-                    try {
-                        dm = documentManager.getDocument(docRef);
-                    } catch (ClientException ce) {
-                        log.error("Associated document doesn't exist anymore... Skipping work item");
-                        continue;
-                    }
-
-                    // :XXX: Maybe show the task in the future even if no
-                    // document associated here.
-
-                    /* Rux NXP-1706: but in here is the right place*/
+                for (DocumentModel dm : pidDmMap.get(workItem.getProcessInstance().getId())) {
+                    DocumentRef docRef = dm.getRef();
                     if (alreadyIn.contains(docRef)) {
                         continue;
                     }
@@ -353,7 +335,6 @@ public class DashBoardActionsBean extends InputController implements
                     dashboardItems.add(dashBoardItem);
 
                     // Do not duplicate in the future.
-                    /* Rux NXP-1706: agree*/
                     alreadyIn.add(docRef);
                 }
             }
@@ -363,6 +344,46 @@ public class DashBoardActionsBean extends InputController implements
             throw EJBExceptionHandler.wrapException(ce);
         }
         return dashboardItems;
+    }
+
+    private Map<String, List<DocumentModel>> getDocumentModelsForPids(
+            WorkflowDocumentRelationManager wDoc, Set<String> pids)
+            throws ClientException {
+        Map<String, List<String>> pidUuidsList = wDoc.getDocumentModelsPids(pids);
+        Set<String> uuids = new HashSet<String>();
+        for(Map.Entry<String, List<String>> entry : pidUuidsList.entrySet()) {
+            for(String s: entry.getValue()) {
+                uuids.add(s);
+            }
+        }
+        DocumentModelList documentModelList = getDocumentModelListForIds(uuids);
+        Map<String, DocumentModel> dmMap = new HashMap<String, DocumentModel>();
+        for(DocumentModel dm : documentModelList) {
+            dmMap.put(dm.getId(), dm);
+        }
+        Map<String, List<DocumentModel>> pidDmMap = new HashMap<String, List<DocumentModel>>();
+        for(String pid : pidUuidsList.keySet()) {
+            List<String> dmIds = pidUuidsList.get(pid);
+            List<DocumentModel> dms = new ArrayList<DocumentModel>();
+            for(String id : dmIds) {
+                dms.add(dmMap.get(id));
+            }
+            pidDmMap.put(pid, dms);
+        }
+        return pidDmMap;
+    }
+
+    private DocumentModelList getDocumentModelListForIds(Set<String> uuids)
+            throws ClientException {
+        StringBuilder coreQuery = new StringBuilder("select * from document ");
+        // in is not implemented yet.
+        for(String id : uuids) {
+            coreQuery.append(" or jcr:uuid = '" + id + "' ");
+        }
+        int or = coreQuery.indexOf("or");
+        coreQuery.replace(or,  or + 2, "where");
+        DocumentModelList documentModelList = documentManager.query(coreQuery.toString());
+        return documentModelList;
     }
 
     @Destroy
@@ -483,5 +504,4 @@ public class DashBoardActionsBean extends InputController implements
     public SortInfo getSortInfo() {
         return sortInfo;
     }
-
 }
