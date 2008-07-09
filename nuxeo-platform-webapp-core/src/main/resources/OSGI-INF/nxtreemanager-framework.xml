@@ -5,7 +5,8 @@
   <documentation>
     TreeManager component and service declaration.
 
-    @version 1.0 @author Anahide Tchertchian (at@nuxeo.com)
+    @version 1.0
+    @author Anahide Tchertchian (at@nuxeo.com)
   </documentation>
 
   <implementation class="org.nuxeo.ecm.webapp.tree.TreeManagerImpl" />
