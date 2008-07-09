@@ -93,6 +93,27 @@
         <version>2.2</version>
         <scope>provided</scope>
       </dependency>
+      <!-- used in jboss patch -->
+      <dependency>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>1.6</version>
+        <scope>provided</scope>
+      </dependency>
+      <!-- used in jboss patch -->
+      <dependency>
+        <groupId>commons-digester</groupId>
+        <artifactId>commons-digester</artifactId>
+        <version>1.8</version>
+        <scope>provided</scope>
+      </dependency>
+      <!-- used in jboss patch -->
+      <dependency>
+        <groupId>commons-el</groupId>
+        <artifactId>commons-el</artifactId>
+        <version>1.0</version>
+        <scope>provided</scope>
+      </dependency>
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
@@ -290,13 +311,19 @@
       <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-seam</artifactId>
-        <version>1.1.5.NX3</version>
+        <version>2.0.3.CR1-NX</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam</artifactId>
-        <version>1.1.5.NX3</version>
+        <version>2.0.3.CR1-NX</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam</groupId>
+        <artifactId>jboss-seam-remoting</artifactId>
+        <version>2.0.3.CR1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -410,6 +437,12 @@
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
+        <version>3.2.0.ga</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate</artifactId>
         <version>3.2.0.ga</version>
         <scope>provided</scope>
       </dependency>
@@ -594,6 +627,21 @@
         <artifactId>xmlParserAPIs</artifactId>
         <scope>provided</scope>
         <version>2.6.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.richfaces.framework</groupId>
+        <artifactId>richfaces-api</artifactId>
+        <version>3.2.1.GA</version>
+      </dependency>
+      <dependency>
+        <groupId>org.richfaces.framework</groupId>
+        <artifactId>richfaces-impl</artifactId>
+        <version>3.2.1.GA</version>
+      </dependency>
+      <dependency>
+        <groupId>org.richfaces.ui</groupId>
+        <artifactId>richfaces-ui</artifactId>
+        <version>3.2.1.GA</version>
       </dependency>
       <dependency>
         <groupId>jsr170</groupId>
@@ -1149,6 +1197,7 @@
         </pluginManagement>
       </build>
     </profile>
+
     <!-- activating the build number generation in plugins manifest for apogee -->
     <profile>
       <id>svn-rev-in-mf</id>
