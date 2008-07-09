@@ -183,17 +183,6 @@
 
     <!-- TODO : comps for tomahawk tags compat -->
 
-    <!--  new tree2 renderer -->
-    <renderer>
-      <component-family>org.apache.myfaces.HtmlTree2</component-family>
-      <renderer-type>
-        org.nuxeo.ecm.platform.ui.web.tree.HtmlLazyTreeRenderer
-      </renderer-type>
-      <renderer-class>
-        org.nuxeo.ecm.platform.ui.web.tree.HtmlLazyTreeRenderer
-      </renderer-class>
-    </renderer>
-
   </extension>
 
 

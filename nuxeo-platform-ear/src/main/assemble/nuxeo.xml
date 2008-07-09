@@ -66,7 +66,8 @@
     <import>**</import>
     <includeDependencies>true</includeDependencies>
     <includes>
-      <artifact group="org.nuxeo.*" category="runtime" includeDependsOnCategory="false"/>
+      <artifact group="org.nuxeo.*" category="runtime"
+        includeDependsOnCategory="false" />
       <artifact group="org.nuxeo.*" category="core" />
       <artifact group="org.nuxeo.*" category="search" />
       <artifact group="org.nuxeo.*" category="web" />
@@ -127,6 +128,9 @@
       <artifact group="org.jboss.el" name="jboss-el" version="2.0.1.GA" />
       <artifact group="org.richfaces.framework" name="richfaces-api"
         version="3.2.1.GA" />
+      <artifact group="org.richfaces.framework" name="richfaces-impl"
+        version="3.2.1.GA" />
+      <artifact group="org.richfaces.ui" name="richfaces-ui" version="3.2.1.GA" />
       <artifact group="jboss" name="jbpm" version="3.1.2" />
       <artifact group="jboss" name="jgroups" version="2.2.9" />
       <artifact group="net.sf.json-lib" name="json-lib" version="0.9" />
@@ -153,19 +157,19 @@
   </artifactSet>
 
   <!-- third party libraries based on dependencies
-  <assemble>
+    <assemble>
     <outputFile>lib2</outputFile>
     <set>nuxeo-libs-via-dependency-tree</set>
-  </assemble>
-  <artifactSet id="nuxeo-libs-via-dependency-tree">
+    </assemble>
+    <artifactSet id="nuxeo-libs-via-dependency-tree">
     <import>**</import>
     <includeDependencies>true</includeDependencies>
     <includes>
-      <artifact scope="compile" />
+    <artifact scope="compile" />
     </includes>
     <excludes>
-      <artifact group="org.nuxeo.*" />
+    <artifact group="org.nuxeo.*" />
     </excludes>
-  </artifactSet>
+    </artifactSet>
   -->
 </assembly>

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,14 +14,15 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: DirectoryTreeManager.java 28950 2008-01-11 13:35:06Z tdelprat $
+ * $Id$
  */
-package org.nuxeo.ecm.webapp.directory;
+package org.nuxeo.ecm.webapp.tree;
 
-import java.io.Serializable;
 import java.util.List;
 
 import javax.annotation.security.PermitAll;
+import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.ejb.Remove;
 
 import org.jboss.seam.annotations.Destroy;
@@ -29,21 +30,22 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.richfaces.component.UITree;
 import org.richfaces.event.NodeExpandedEvent;
 
-public interface DirectoryTreeManager extends Serializable {
+/**
+ * Local interface for the Seam component that manages the tree.
+ *
+ * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
+ * @author Anahide Tchertchian
+ */
+@Local
+@Remote
+public interface TreeActions {
 
-    DirectoryTreeNode get(String treeName);
+    public static final String DEFAULT_TREE_PLUGIN_NAME = "navigation";
 
-    DirectoryTreeNode getSelectedTree();
-
-    List<DirectoryTreeNode> getDirectoryTrees();
-
-    List<String> getDirectoryTreeNames();
-
-    String getSelectedTreeName();
-
-    void setSelectedTreeName(String treeName);
-
-    boolean isInitialized();
+    /**
+     * Returns tree roots according to current document first accessible parent.
+     */
+    List<DocumentTreeNode> getTreeRoots() throws ClientException;
 
     /**
      * Listener for node opening/closing events.
@@ -54,9 +56,13 @@ public interface DirectoryTreeManager extends Serializable {
     void changeExpandListener(NodeExpandedEvent event) throws ClientException;
 
     /**
-     * Returns true if node should be opened according to last selection.
+     * Returns true if node should be opened according to current document.
      */
     Boolean adviseNodeOpened(UITree tree) throws ClientException;
+
+    void resetCurrentDocumentData();
+
+    void reset();
 
     @Remove
     @Destroy
