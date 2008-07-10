@@ -1,0 +1,13 @@
+SQL Storage TODO
+
+- hierarchy management, children optimizations
+
+- refactor core document apis
+
+- implement core sql adapter
+
+- transactional file storage
+
+- table aggregation and optimization
+
+- search apis and implementation

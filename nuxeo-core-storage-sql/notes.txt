@@ -1,0 +1,92 @@
+direct run:
+
+DEBUG [RepositoryImpl] Initializing
+DEBUG [Model] Making model for type testschema
+DEBUG [Model] Making model for type person
+DEBUG [SQLInfo] Init repository information
+DEBUG [SQLInfo] Init hierarchy information
+DEBUG [Mapper] Creating database
+DEBUG [Mapper] SQL: (batch) create table "repositoryinfo" ("id" bigint, "rootid" bigint)
+DEBUG [Mapper] SQL: (batch) create table "hierarchy" ("id" bigint, "parent" bigint, "pos" integer, "name" varchar(255))
+DEBUG [Mapper] SQL: (batch) create table "types" ("id" bigint not null generated always as identity, "primaryType" clob(255))
+DEBUG [Mapper] SQL: (batch) create table "testschema" ("id" bigint, "created" timestamp, "title" clob(255))
+DEBUG [Mapper] SQL: (batch) create table "person" ("id" bigint, "lastname" clob(255), "firstname" clob(255))
+DEBUG [Mapper] SQL: (batch) create table "ARRAY_STRING" ("id" bigint, "pos" integer, "item" clob(255))
+DEBUG [Mapper] SQL: (batch execution)
+DEBUG [Mapper] SQL: SELECT "rootid" FROM "repositoryinfo" WHERE "id" = ?
+DEBUG [Mapper] SQL:   id=0
+DEBUG [SessionImpl] Creating root
+DEBUG [PersistenceContext] Saving persistence context
+DEBUG [Mapper] SQL: INSERT INTO "types" ("primaryType") VALUES (?)
+DEBUG [Mapper] SQL:   primaryType=Root
+DEBUG [Mapper] SQL: values identity_val_local()
+DEBUG [Mapper] SQL:   -> id=1
+DEBUG [Mapper] SQL: INSERT INTO "hierarchy" ("id", "parent", "pos", "name") VALUES (?, ?, ?, ?)
+DEBUG [Mapper] SQL:   id=1, parent=null, pos=null, name=
+DEBUG [PersistenceContext] End of save
+DEBUG [PersistenceContext] Saving persistence context
+DEBUG [Mapper] SQL: INSERT INTO "repositoryinfo" ("id", "rootid") VALUES (?, ?)
+DEBUG [Mapper] SQL:   id=0, rootid=1
+DEBUG [PersistenceContext] End of save
+DEBUG [PersistenceContext] Saving persistence context
+DEBUG [Mapper] SQL: INSERT INTO "types" ("primaryType") VALUES (?)
+DEBUG [Mapper] SQL:   primaryType=TestDoc
+DEBUG [Mapper] SQL: values identity_val_local()
+DEBUG [Mapper] SQL:   -> id=2
+DEBUG [Mapper] SQL: INSERT INTO "types" ("primaryType") VALUES (?)
+DEBUG [Mapper] SQL:   primaryType=TestDoc
+DEBUG [Mapper] SQL: values identity_val_local()
+DEBUG [Mapper] SQL:   -> id=3
+DEBUG [Mapper] SQL: INSERT INTO "hierarchy" ("id", "parent", "pos", "name") VALUES (?, ?, ?, ?)
+DEBUG [Mapper] SQL:   id=2, parent=1, pos=null, name=foo
+DEBUG [Mapper] SQL: INSERT INTO "hierarchy" ("id", "parent", "pos", "name") VALUES (?, ?, ?, ?)
+DEBUG [Mapper] SQL:   id=3, parent=2, pos=null, name=bar
+DEBUG [Mapper] SQL: INSERT INTO "testschema" ("id", "created", "title") VALUES (?, ?, ?)
+DEBUG [Mapper] SQL:   id=2, created=null, title=hello world
+DEBUG [Mapper] SQL: INSERT INTO "testschema" ("id", "created", "title") VALUES (?, ?, ?)
+DEBUG [Mapper] SQL:   id=3, created=null, title=null
+DEBUG [Mapper] SQL: INSERT INTO "ARRAY_STRING" ("id", "pos", "item") VALUES (?, ?, ?)
+DEBUG [Mapper] SQL:   id=2, item=[a, b, c]
+DEBUG [PersistenceContext] End of save
+DEBUG [PersistenceContext] Saving persistence context
+DEBUG [Mapper] SQL: UPDATE "testschema" SET "created" = ?, "title" = ? WHERE "id" = ?
+DEBUG [Mapper] SQL:   created=null, title=another, id=2
+DEBUG [Mapper] SQL:   -> 1 rows
+DEBUG [Mapper] SQL: DELETE FROM "ARRAY_STRING" WHERE "id" = ?
+DEBUG [Mapper] SQL:   id=2
+DEBUG [Mapper] SQL:   -> 3 rows
+DEBUG [Mapper] SQL: INSERT INTO "ARRAY_STRING" ("id", "pos", "item") VALUES (?, ?, ?)
+DEBUG [Mapper] SQL:   id=2, item=[z, c]
+DEBUG [PersistenceContext] End of save
+DEBUG [Mapper] SQL: SELECT "rootid" FROM "repositoryinfo" WHERE "id" = ?
+DEBUG [Mapper] SQL:   id=0
+DEBUG [Mapper] SQL:   -> rootid=1
+DEBUG [Mapper] SQL: SELECT "primaryType" FROM "types" WHERE "id" = ?
+DEBUG [Mapper] SQL:   id=1
+DEBUG [Mapper] SQL:   -> primaryType=Root
+DEBUG [Mapper] SQL: SELECT "parent", "pos", "name" FROM "hierarchy" WHERE "id" = ?
+DEBUG [Mapper] SQL:   id=1
+DEBUG [Mapper] SQL:   -> parent=null, pos=null, name=
+DEBUG [Mapper] SQL: SELECT "id", "pos" FROM "hierarchy" WHERE "parent" = ? AND "name" = ?
+DEBUG [Mapper] SQL:   parent=1, name=foo
+DEBUG [Mapper] SQL:   -> id=2, pos=null
+DEBUG [Mapper] SQL: SELECT "primaryType" FROM "types" WHERE "id" = ?
+DEBUG [Mapper] SQL:   id=2
+DEBUG [Mapper] SQL:   -> primaryType=TestDoc
+DEBUG [Mapper] SQL: SELECT "created", "title" FROM "testschema" WHERE "id" = ?
+DEBUG [Mapper] SQL:   id=2
+DEBUG [Mapper] SQL:   -> created=null, title=another
+DEBUG [Mapper] SQL: SELECT "pos", "item" FROM "ARRAY_STRING" WHERE "id" = ? ORDER BY "pos"
+DEBUG [Mapper] SQL:   id=2
+DEBUG [Mapper] SQL:   -> [z, c]
+DEBUG [PersistenceContext] Saving persistence context
+DEBUG [Mapper] SQL: DELETE FROM "hierarchy" WHERE "id" = ?
+DEBUG [Mapper] SQL:   id=2
+DEBUG [Mapper] SQL:   -> 1 rows
+DEBUG [Mapper] SQL: DELETE FROM "types" WHERE "id" = ?
+DEBUG [Mapper] SQL:   id=2
+DEBUG [Mapper] SQL:   -> 1 rows
+DEBUG [Mapper] SQL: DELETE FROM "testschema" WHERE "id" = ?
+DEBUG [Mapper] SQL:   id=2
+DEBUG [Mapper] SQL:   -> 1 rows
+DEBUG [PersistenceContext] End of save
