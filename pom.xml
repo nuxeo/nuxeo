@@ -112,6 +112,11 @@
       </url>
     </snapshotRepository>
   </distributionManagement>
-  
+
+  <scm>
+    <connection>scm:hg:http://hg.nuxeo.org/nuxeo-webengine#5.2</connection>
+    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo-webengine#5.2</developerConnection>
+    <url>http://hg.nuxeo.org/nuxeo-webengine#5.2/</url>
+  </scm>    
 
 </project>
