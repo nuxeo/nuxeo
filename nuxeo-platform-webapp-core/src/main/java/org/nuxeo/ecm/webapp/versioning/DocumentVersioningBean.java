@@ -205,7 +205,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
                     VersioningDocument docVer = tempDoc.getAdapter(VersioningDocument.class);
                     String minorVer = docVer.getMinorVersion().toString();
                     String majorVer = docVer.getMajorVersion().toString();
-                    model.setDescription(majorVer.concat(".").concat(minorVer));
+                    model.setDescription(majorVer + '.' + minorVer);
                 }
             }
 
@@ -464,8 +464,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     }
 
     public static void setVersioningOptionInstanceId(DocumentModel docModel,
-            VersioningActions option, boolean evaluateCreateSnapshot)
-            throws ClientException {
+            VersioningActions option, boolean evaluateCreateSnapshot) {
 
         // add version inc option to document context so it will be
         // taken into consideration on the server side
