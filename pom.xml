@@ -11,11 +11,10 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.ecm.webengine</groupId>
   <artifactId>nuxeo-webengine-parent</artifactId>
-  <version>5.2-SNAPSHOT</version>
+  <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Nuxeo WebEngine</name>
   <description>Nuxeo WebEngine is the lightweight content-centric web framework.</description>
-  
 
   <modules>
     <module>nuxeo-platform-rendering</module>
@@ -24,6 +23,42 @@
     <module>nuxeo-webengine-server</module>
     <module>nuxeo-webengine-wiki-jsf</module>
   </modules>
+
+  <properties>
+    <nuxeo.webengine.version>1.0-SNAPSHOT</nuxeo.webengine.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-rendering</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-webengine-core</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-webengine-wiki</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-webengine-wiki-jsf</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+
+      <!-- was missing in nuxeo-platform-parent:pom -->
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-scripting</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <reporting>
     <plugins>
@@ -76,7 +111,7 @@
       </plugin>
     </plugins>
   </reporting>
-    
+
   <repositories>
     <repository>
       <id>nuxeo_release</id>
@@ -93,7 +128,7 @@
       </releases>
     </repository>
   </repositories>
-  
+
   <distributionManagement>
     <site>
       <id>maven_website</id>
@@ -117,6 +152,6 @@
     <connection>scm:hg:http://hg.nuxeo.org/nuxeo-webengine#5.2</connection>
     <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo-webengine#5.2</developerConnection>
     <url>http://hg.nuxeo.org/nuxeo-webengine#5.2/</url>
-  </scm>    
+  </scm>
 
 </project>

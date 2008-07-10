@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.webengine</groupId>
     <artifactId>nuxeo-webengine-parent</artifactId>
-    <version>5.2-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -13,8 +13,7 @@
   <artifactId>nuxeo-webengine-wiki-jsf</artifactId>
   <name>Nuxeo Wiki for JSF</name>
   <description>JSF WebApp integration for Nuxeo Wiki.</description>
-  <version>5.2-SNAPSHOT</version>
-  
+
 
   <build>
     <plugins>
@@ -52,18 +51,15 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-rendering</artifactId>
-      <version>${nuxeo.platform.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
-      <version>${nuxeo.core.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-ui-web</artifactId>
-      <version>${nuxeo.platform.version}</version>
     </dependency>
 
     <dependency>
@@ -76,10 +72,11 @@
       <artifactId>jboss-seam</artifactId>
       <scope>provided</scope>
     </dependency>
+
+    <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jcr-connector-test</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -89,7 +86,6 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 
