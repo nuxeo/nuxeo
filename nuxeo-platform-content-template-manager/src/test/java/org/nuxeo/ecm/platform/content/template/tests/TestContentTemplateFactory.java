@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.content.template.tests;
 
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -69,7 +71,9 @@ public class TestContentTemplateFactory extends RepositoryTestCase {
         // Framework.login();
         RepositoryManager mgr = Framework.getService(RepositoryManager.class);
         assertNotNull(mgr);
-        session = mgr.getDefaultRepository().open();
+        Map<String, Serializable> ctx = new HashMap<String, Serializable>();
+        ctx.put("username", "Administrator");
+        session = mgr.getDefaultRepository().open(ctx);
         assertNotNull(session);
         service = Framework.getLocalService(ContentTemplateService.class);
         assertNotNull(service);
