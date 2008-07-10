@@ -32,9 +32,12 @@ import org.nuxeo.ecm.core.storage.StorageException;
  */
 public class Node {
 
-    // XXX TODO make type transient
-    /** The node type. */
-    protected final DocumentType type;
+    /**
+     * The "core" type. This is kept in the node so that when a SQLDocument or a
+     * complex property is created for it we are able to get proper core type
+     * information for the document and its properties.
+     */
+    protected final DocumentType documentType;
 
     /** The persistence context used. */
     protected final PersistenceContext context;
@@ -56,19 +59,19 @@ public class Node {
      *
      * TODO make this a memory-sensitive cache.
      */
-    protected transient final Map<String, AbstractProperty> propertyCache;
+    protected transient final Map<String, BaseProperty> propertyCache;
 
     /**
      * Creates a Node.
      *
-     * @param type the node type
+     * @param documentType the node type
      * @param session the session
      * @param context the persistence context
      * @param rowGroup the group of rows for the node
      */
-    protected Node(DocumentType type, Session session,
+    protected Node(DocumentType documentType, Session session,
             PersistenceContext context, FragmentGroup rowGroup) {
-        this.type = type;
+        this.documentType = documentType;
         this.context = context;
         model = session.getModel();
         mainFragment = rowGroup.main;
@@ -78,7 +81,7 @@ public class Node {
         } else {
             fragments = rowGroup.fragments;
         }
-        this.propertyCache = new HashMap<String, AbstractProperty>();
+        this.propertyCache = new HashMap<String, BaseProperty>();
     }
 
     // ----- basics -----
@@ -98,6 +101,10 @@ public class Node {
 
     public String getName() {
         return hierFragment.getString(model.HIER_CHILD_NAME_KEY);
+    }
+
+    public DocumentType getDocumentType() {
+        return documentType;
     }
 
     // ----- modification -----
@@ -205,8 +212,8 @@ public class Node {
         return property;
     }
 
-    public AbstractProperty getProperty(String name) throws StorageException {
-        AbstractProperty property = propertyCache.get(name);
+    public BaseProperty getProperty(String name) throws StorageException {
+        BaseProperty property = propertyCache.get(name);
         if (property != null) {
             return property;
         }
@@ -231,16 +238,6 @@ public class Node {
             throws StorageException {
         CollectionProperty property = (CollectionProperty) getCollectionProperty(name);
         property.setValue(value);
-    }
-
-    // ----- node type -----
-
-    public DocumentType getType() {
-        return type;
-    }
-
-    public String getPrimaryNodeType() throws StorageException {
-        return type.getName();
     }
 
     // ----- locking -----

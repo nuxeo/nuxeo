@@ -15,7 +15,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.InputStream;
 import java.io.Serializable;
@@ -31,11 +31,14 @@ import javax.transaction.xa.XAResource;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
+import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.security.SecurityManager;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Node;
+import org.nuxeo.ecm.core.storage.sql.SessionImpl;
 
 /**
  * This class is the bridge between the Nuxeo SPI Session and the actual
@@ -43,19 +46,19 @@ import org.nuxeo.ecm.core.storage.StorageException;
  *
  * @author Florent Guillaume
  */
-public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
+public class SQLSession implements Session {
 
-    private final SQLModelRepository repository;
+    private final SQLRepository repository;
 
     private final Map<String, Serializable> context;
 
     private final SessionImpl session;
 
-    private SQLModelDocument root;
+    private SQLDocument root;
 
     private String userSessionId;
 
-    public SQLModelSession(SQLModelRepository repository,
+    public SQLSession(SQLRepository repository,
             Map<String, Serializable> context) throws DocumentException {
         this.repository = repository;
         if (context == null) {
@@ -167,7 +170,7 @@ public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
                 id = uuid;
             } else {
                 // HACK document ids coming from higher level have been turned
-                // into strings (by SQLModelDocument.getUUID) but are really
+                // into strings (by SQLDocument.getUUID) but are really
                 // longs for the backend
                 id = Long.valueOf(uuid);
             }
@@ -193,17 +196,17 @@ public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
 
     public Document copy(Document source, Document parent, String name)
             throws DocumentException {
-        assert source instanceof SQLModelDocument;
-        assert parent instanceof SQLModelDocument;
+        assert source instanceof SQLDocument;
+        assert parent instanceof SQLDocument;
         // XXX TODO
         throw new UnsupportedOperationException();
-        // Versioning.getService().fixupAfterCopy((SQLModelDocument) child);
+        // Versioning.getService().fixupAfterCopy((SQLDocument) child);
     }
 
     public Document move(Document source, Document parent, String name)
             throws DocumentException {
-        assert source instanceof SQLModelDocument;
-        assert parent instanceof SQLModelDocument;
+        assert source instanceof SQLDocument;
+        assert parent instanceof SQLDocument;
         // XXX TODO
         throw new UnsupportedOperationException();
     }
@@ -216,7 +219,7 @@ public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
         // Node node = pnode.addNode(ModelAdapter.getChildPath(name),
         // NodeConstants.ECM_NT_DOCUMENT_PROXY.rawname);
         // node.setProperty(NodeConstants.ECM_REF_FROZEN_NODE.rawname,
-        // ((SQLModelDocument) frozenDoc).getNode());
+        // ((SQLDocument) frozenDoc).getNode());
         // node.setProperty(NodeConstants.ECM_REF_UUID.rawname,
         // document.getUUID());
         // return new NuxeoSQLDocumentProxy(this, node);
@@ -242,10 +245,10 @@ public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
     }
 
     /*
-     * ----- Called by SQLModelDocument -----
+     * ----- called by SQLDocument -----
      */
 
-    private SQLModelDocument newDocument(Node node) throws StorageException {
+    private SQLDocument newDocument(Node node) throws StorageException {
         if (node == null) {
             // root's parent
             return null;
@@ -253,7 +256,7 @@ public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
 
         // TODO proxies / versions
 
-        return new SQLModelDocument(node, this);
+        return new SQLDocument(node, this);
     }
 
     /**
@@ -347,5 +350,18 @@ public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
 
     protected void removeNode(Node node) throws DocumentException {
 
+    }
+
+    /*
+     * ----- called by SQLComplexProperty -----
+     */
+
+    protected Node getChildPropertyNode(Node node, String name)
+            throws DocumentException {
+        try {
+            return session.getChildNode(node, name, Boolean.TRUE);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
     }
 }

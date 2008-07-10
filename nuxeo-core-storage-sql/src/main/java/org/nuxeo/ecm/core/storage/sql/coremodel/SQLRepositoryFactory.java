@@ -15,7 +15,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryDescriptor;
@@ -34,7 +34,7 @@ public class SQLRepositoryFactory implements RepositoryFactory {
 
     public Repository createRepository(RepositoryDescriptor descriptor)
             throws Exception {
-        return new SQLModelRepository(descriptor);
+        return new SQLRepository(descriptor);
     }
 
 }

@@ -15,7 +15,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.FileInputStream;
 import java.io.Serializable;
@@ -23,22 +23,25 @@ import java.util.Map;
 
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.security.SecurityManager;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * This class is the bridge between the high-level Nuxeo view of the repository,
  * and the low-level SQL-specific implementation.
  * <p>
- * It is also the factory for {@link org.nuxeo.ecm.core.model.Session}s.
+ * It is also the factory for {@link Session}s.
  * <p>
  * This class knows about all open sessions, and can retrieve them by id.
  *
  * @author Florent Guillaume
  */
-public class SQLModelRepository extends RepositoryImpl implements
-        org.nuxeo.ecm.core.model.Repository {
+public class SQLRepository extends RepositoryImpl implements Repository {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,7 +51,7 @@ public class SQLModelRepository extends RepositoryImpl implements
 
     private boolean initialized;
 
-    public SQLModelRepository(
+    public SQLRepository(
             org.nuxeo.ecm.core.repository.RepositoryDescriptor descriptor)
             throws Exception {
         super(getDescriptor(descriptor), getSchemaManager());
@@ -99,7 +102,7 @@ public class SQLModelRepository extends RepositoryImpl implements
                 }
             }
         }
-        return new SQLModelSession(this, context);
+        return new SQLSession(this, context);
     }
 
     public SchemaManager getTypeManager() {
@@ -120,15 +123,15 @@ public class SQLModelRepository extends RepositoryImpl implements
      * @deprecated unused
      */
     @Deprecated
-    public org.nuxeo.ecm.core.model.Session getSession(long sessionId) {
+    public Session getSession(long sessionId) {
         throw new UnsupportedOperationException("unused");
     }
 
     /*
      * Used only by JCR MBean.
      */
-    public synchronized org.nuxeo.ecm.core.model.Session[] getOpenedSessions() {
-        return new org.nuxeo.ecm.core.model.Session[0];
+    public synchronized Session[] getOpenedSessions() {
+        return new Session[0];
     }
 
     public void shutdown() {

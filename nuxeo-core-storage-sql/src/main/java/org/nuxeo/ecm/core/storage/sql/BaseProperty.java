@@ -22,8 +22,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -34,8 +32,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
  *
  * @author Florent Guillaume
  */
-public abstract class AbstractProperty implements
-        org.nuxeo.ecm.core.model.Property {
+public abstract class BaseProperty {
 
     /** The property name. */
     private final String name;
@@ -49,7 +46,7 @@ public abstract class AbstractProperty implements
     /**
      * Creates a Property.
      */
-    public AbstractProperty(String name, PropertyType type, boolean readonly) {
+    public BaseProperty(String name, PropertyType type, boolean readonly) {
         this.name = name;
         this.type = type;
         this.readonly = readonly;
@@ -114,15 +111,6 @@ public abstract class AbstractProperty implements
         if (readonly) {
             throw new StorageException("Cannot write property: " + name);
         }
-    }
-
-    /*
-     * ----- org.nuxeo.ecm.core.model.Property -----
-     */
-
-    public Type getType() throws DocumentException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
     }
 
 }

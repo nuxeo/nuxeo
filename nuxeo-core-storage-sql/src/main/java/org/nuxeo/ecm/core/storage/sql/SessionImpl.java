@@ -335,6 +335,7 @@ public class SessionImpl implements Session, XAResource {
         return context.getByHier(parent.getId(), name, complexProp) != null;
     }
 
+    /* Only used with real children */
     public Node getChildNode(Node parent, String name, Boolean complexProp)
             throws StorageException {
         checkLive();

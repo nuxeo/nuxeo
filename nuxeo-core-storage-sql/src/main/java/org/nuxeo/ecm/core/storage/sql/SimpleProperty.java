@@ -18,13 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
 
-import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -33,7 +27,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
  *
  * @author Florent Guillaume
  */
-public class SimpleProperty extends AbstractProperty {
+public class SimpleProperty extends BaseProperty {
 
     /** The {@link SimpleFragment} holding the information. */
     private final SimpleFragment row;
@@ -53,12 +47,16 @@ public class SimpleProperty extends AbstractProperty {
 
     // ----- getters -----
 
+    public Serializable getValue() {
+        return row.get(key);
+    }
+
     public String getString() {
         switch (type) {
         case STRING:
             return (String) row.get(key);
         default:
-            throw new RuntimeException("Not implemented: " + type);
+            throw new RuntimeException("Not a String property: " + type);
         }
     }
 
@@ -68,49 +66,6 @@ public class SimpleProperty extends AbstractProperty {
         checkWritable();
         row.put(key, normalize(value));
         // mark fragment dirty!
-    }
-
-    /*
-     * ----- org.nuxeo.ecm.core.model.Property -----
-     */
-
-    public boolean isNull() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public void setNull() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public Serializable getValue() throws DocumentException {
-        return row.get(key);
-    }
-
-    public void setValue(Object value) throws DocumentException {
-        if (value != null && !(value instanceof Serializable)) {
-            throw new DocumentException("Value is not Serializable: " + value);
-        }
-        try {
-            setValue((Serializable) value);
-        } catch (StorageException e) {
-            throw new DocumentException(e);
-        }
-    }
-
-    public boolean isPropertySet(String name) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public Property getProperty(String name) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public Collection<Property> getProperties() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public Iterator<Property> getPropertyIterator() throws DocumentException {
-        throw new UnsupportedOperationException();
     }
 
 }

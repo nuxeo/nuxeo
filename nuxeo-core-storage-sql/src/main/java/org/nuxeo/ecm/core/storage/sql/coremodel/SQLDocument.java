@@ -15,7 +15,7 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -35,25 +35,35 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
+import org.nuxeo.ecm.core.model.NoSuchPropertyException;
 import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
+import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.Node;
+import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;
 import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
 
 /**
  * @author Florent Guillaume
  */
-public class SQLModelDocument implements Document {
+public class SQLDocument implements Document {
 
-    private static final Log log = LogFactory.getLog(SQLModelDocument.class);
+    private static final Log log = LogFactory.getLog(SQLDocument.class);
 
     /** The session. */
-    private SQLModelSession session;
+    private SQLSession session;
 
     /** The underlying SQL node. */
     private Node node;
+
+    private final DocumentType documentType;
 
     // we store lock state on the document because it is frequently used
     // (on each permission check)
@@ -69,10 +79,10 @@ public class SQLModelDocument implements Document {
      * @param node the JCR node to wrap
      * @throws StorageException if any JCR exception occurs
      */
-    SQLModelDocument(Node node, SQLModelSession session)
-            throws StorageException {
+    SQLDocument(Node node, SQLSession session) throws StorageException {
         this.node = node;
         this.session = session;
+        documentType = node.getDocumentType();
     }
 
     /*
@@ -84,7 +94,7 @@ public class SQLModelDocument implements Document {
     }
 
     public boolean isFolder() {
-        return node.getType().isFolder();
+        return documentType.isFolder();
     }
 
     public String getName() {
@@ -108,7 +118,7 @@ public class SQLModelDocument implements Document {
     }
 
     public DocumentType getType() {
-        return node.getType();
+        return documentType;
     }
 
     public boolean isProxy() {
@@ -296,11 +306,11 @@ public class SQLModelDocument implements Document {
      */
 
     public Property getProperty(String name) throws DocumentException {
-        try {
-            return node.getProperty(name);
-        } catch (StorageException e) {
-            throw new DocumentException(e);
+        Field field = documentType.getField(name);
+        if (field == null) {
+            throw new NoSuchPropertyException(name);
         }
+        return SQLPropertyHelper.getProperty(node, field);
     }
 
     public String getString(String name) throws DocumentException {
@@ -510,13 +520,13 @@ public class SQLModelDocument implements Document {
         if (other == this) {
             return true;
         }
-        if (other instanceof SQLModelDocument) {
-            return equals((SQLModelDocument) other);
+        if (other instanceof SQLDocument) {
+            return equals((SQLDocument) other);
         }
         return false;
     }
 
-    private boolean equals(SQLModelDocument other) {
+    private boolean equals(SQLDocument other) {
         return node.getId() == other.node.getId();
     }
 

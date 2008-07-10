@@ -3,7 +3,7 @@
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
     point="repository">
     <repository name="test"
-      factory="org.nuxeo.ecm.core.storage.sql.SQLRepositoryFactory">
+      factory="org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory">
       <repository name="test">
         <xa-datasource>org.apache.derby.jdbc.EmbeddedXADataSource</xa-datasource>
         <property name="createDatabase">create</property>

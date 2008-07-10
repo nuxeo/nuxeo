@@ -339,8 +339,8 @@ public class PersistenceContextByTable {
      *
      * @param parentId the parent id
      * @param name the name
-     * @param complexProp whether to get complex properties or real children, or
-     *            both
+     * @param complexProp whether to get complex properties, or real children,
+     *            or both
      * @return the row, or {@code null} if none is found
      * @throws StorageException
      */
@@ -368,21 +368,21 @@ public class PersistenceContextByTable {
         return fragmentIfSamePropertyFlag(fragment, complexProp);
     }
 
-    protected SimpleFragment fragmentIfSamePropertyFlag(SimpleFragment fragment,
-            Boolean properties) {
+    protected SimpleFragment fragmentIfSamePropertyFlag(
+            SimpleFragment fragment, Boolean properties) {
         if (properties == null) {
             return fragment;
         }
-        return properties.equals((Boolean) fragment.get(model.HIER_CHILD_ISPROPERTY_KEY)) ?
-                fragment : null;
+        return properties.equals((Boolean) fragment.get(model.HIER_CHILD_ISPROPERTY_KEY)) ? fragment
+                : null;
     }
 
     /**
      * Gets the list of children for a given parent id.
      *
      * @param parentId the parent id
-     * @param complexProp whether to get complex properties or real children, or
-     *            both
+     * @param complexProp whether to get complex properties, or real children,
+     *            or both
      * @return the list of children
      * @throws StorageException
      */
