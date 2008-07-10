@@ -30,7 +30,6 @@ import org.nuxeo.ecm.platform.ui.web.model.SelectDataModelListener;
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  *
  */
-
 public interface SearchResults extends SelectDataModelListener {
 
     /**
@@ -54,7 +53,9 @@ public interface SearchResults extends SelectDataModelListener {
     SelectDataModel getResultsSelectModel(String providerName) throws ClientException;
 
     SelectDataModel getResultsSelectModelAdvanced() throws ClientException;
+
     SelectDataModel getResultsSelectModelNxql() throws ClientException;
+
     SelectDataModel getResultsSelectModelSimple() throws ClientException;
 
     /**

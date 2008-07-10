@@ -71,7 +71,7 @@ import sun.misc.BASE64Decoder;
 @Local(FileManageActionsLocal.class)
 @Remote(FileManageActions.class)
 public class FileManageActionsBean extends InputController implements
-        FileManageActionsLocal, FileManageActions {
+        FileManageActionsLocal {
 
     private static final Log log = LogFactory.getLog(FileManageActionsBean.class);
 
@@ -94,7 +94,7 @@ public class FileManageActionsBean extends InputController implements
     @In(create = true, required = false)
     protected CoreSession documentManager;
 
-    @In(required = true)
+    @In
     protected TypeManager typeManager;
 
     @In(create = true)
@@ -103,7 +103,7 @@ public class FileManageActionsBean extends InputController implements
     @In(create = true)
     protected PublishActions publishActions;
 
-    protected transient FileManager fileManager;
+    protected FileManager fileManager;
 
     protected FileManager getFileManagerService() throws ClientException {
         if (fileManager == null) {
@@ -307,7 +307,7 @@ public class FileManageActionsBean extends InputController implements
     }
 
     // TODO: this method is weird! What is it doing?
-    public String delCopyWithId(String docId) throws ClientException {
+    public String delCopyWithId(String docId) {
         try {
             String debug = "deleting copyId " + docId;
             if (docId.startsWith("pasteRef_")) {

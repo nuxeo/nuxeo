@@ -102,15 +102,13 @@ public class IndexingTask extends AbstractIndexingTask {
         }
     }
 
-    private void recycledIfNeeded()
-    {
+    private void recycledIfNeeded() {
         boolean needRecycle;
 
         Thread thread = Thread.currentThread();
         if (thread instanceof IndexingThread) {
             IndexingThread idxThread = (IndexingThread) thread;
-            if (idxThread.canBeRecycled())
-            {
+            if (idxThread.canBeRecycled()) {
                 log.debug("recycling thread " + thread.getName());
                 thread.interrupt();
             }
