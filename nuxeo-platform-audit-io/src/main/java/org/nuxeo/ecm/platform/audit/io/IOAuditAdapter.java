@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,13 +38,11 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
-import org.nuxeo.ecm.platform.audit.NXAudit;
 import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
 import org.nuxeo.ecm.platform.audit.api.NXAuditEvents;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
-import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 import org.nuxeo.ecm.platform.io.api.AbstractIOResourceAdapter;
 import org.nuxeo.ecm.platform.io.api.IOResources;
 import org.nuxeo.runtime.api.Framework;
@@ -64,9 +61,10 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
     Map<String, Serializable> properties;
 
     /**
-     * Should be overridden if IOLogEntryBase is subclassed
+     * Should be overridden if IOLogEntryBase is subclassed.
      *
-     * @return IOLogEntryBase instance that will know how to write and read log entries
+     * @return IOLogEntryBase instance that will know how to write and read log
+     *         entries
      */
     protected IOLogEntryBase getLogEntryHelper() {
         return new IOLogEntryBase();
@@ -74,15 +72,15 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
 
     @Override
     public void setProperties(Map<String, Serializable> properties) {
-        if (properties != null) {
-            for (Map.Entry<String, Serializable> prop : properties.entrySet()) {
-                String propName = prop.getKey();
-                Serializable propValue = prop.getValue();
-                // TODO
-            }
-        } else {
-            log.warn("no props");
-        }
+        // TODO
+        // if (properties != null) {
+        // for (Map.Entry<String, Serializable> prop : properties.entrySet()) {
+        // String propName = prop.getKey();
+        // Serializable propValue = prop.getValue();
+        // }
+        // } else {
+        // log.warn("no props");
+        // }
     }
 
     protected static CoreSession getCoreSession(String repo) throws Exception {
@@ -90,7 +88,10 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         try {
             Framework.login();
             RepositoryManager manager = Framework.getService(RepositoryManager.class);
-            coreSession = manager.getRepository(repo).open();
+            Map<String, Serializable> context = new HashMap<String, Serializable>();
+            // FIXME: should use constants?
+            context.put("username", "system");
+            coreSession = manager.getRepository(repo).open(context);
         } catch (Exception e) {
             throw new ClientException(
                     "Failed to open core session to repository " + repo, e);
@@ -111,19 +112,6 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
     public static NXAuditEvents getNXAuditEventsService() {
         return (NXAuditEvents) Framework.getRuntime().getComponent(
                 NXAuditEventsService.NAME);
-    }
-
-    private static long createLogEntry(DocumentMessage doc) throws AuditException {
-        NXAuditEvents service = NXAudit.getNXAuditEventsService();
-        LogEntry logEntry = service.computeLogEntry(doc);
-        Logs logService;
-        try {
-            logService = Framework.getService(Logs.class);
-        } catch (Exception e) {
-            throw new AuditException(e);
-        }
-        logService.addLogEntries(Arrays.asList(logEntry));
-        return logEntry.getId();
     }
 
     /**
@@ -189,8 +177,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         try {
             helper.write(logEntries, out);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e);
         }
     }
 
@@ -202,9 +189,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         try {
             allEntries = logEntriesHelper.read(stream);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            // TODO need to define IOResourcesException
-            e.printStackTrace();
+            log.error(e);
             return null;
         }
 
@@ -249,7 +234,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
                 getLogService().addLogEntries(newLogs);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 
@@ -271,7 +256,8 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
             DocumentRef oldRef = entry.getKey();
             DocumentRef newRef = map.getDocRefMap().get(oldRef);
             if (newRef == null) {
-                log.error("newRef does not exist in translation map for " + oldRef);
+                log.error("newRef does not exist in translation map for "
+                        + oldRef);
                 continue;
             }
             List<LogEntry> docLogs = auditResources.getDocumentLogs(oldRef);
@@ -280,13 +266,6 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
             // IOLogEntryBase (subclass eventually)
             IOLogEntryBase helper = getLogEntryHelper();
             List<LogEntry> newLogs = helper.translate(docLogs, newRef);
-
-            /*
-             * try { getLogService().addLogEntries(newLogs); } catch
-             * (AuditException e) { // TODO Auto-generated catch block
-             * e.printStackTrace(); } catch (Exception e) { // TODO
-             * Auto-generated catch block e.printStackTrace(); }
-             */
 
             newResourcesMap.put(newRef, newLogs);
         }
