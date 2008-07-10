@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.webengine</groupId>
     <artifactId>nuxeo-webengine-parent</artifactId>
-    <version>5.2-SNAPSHOT</version>
+    <version>1.0.b1</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -13,7 +13,6 @@
   <artifactId>nuxeo-webengine-core</artifactId>
   <name>Nuxeo WebEngine Core</name>
   <description>WebEngine's core services and model.</description>
-  <version>5.2-SNAPSHOT</version>
 
 
   <build>

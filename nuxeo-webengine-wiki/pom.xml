@@ -5,14 +5,13 @@
   <parent>
     <groupId>org.nuxeo.ecm.webengine</groupId>
     <artifactId>nuxeo-webengine-parent</artifactId>
-    <version>5.2-SNAPSHOT</version>
+    <version>1.0.b1</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.webengine.wiki</groupId>
   <artifactId>nuxeo-webengine-wiki</artifactId>
   <name>Nuxeo Wiki</name>
   <description>Enteprise Wiki based on Nuxeo WebEngine.</description>
-  <version>5.2-SNAPSHOT</version>
   
   <build>
     <plugins>
