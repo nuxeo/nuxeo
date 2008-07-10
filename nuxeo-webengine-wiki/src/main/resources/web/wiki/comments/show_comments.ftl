@@ -21,6 +21,7 @@
     </ol>
 
   </div>
+<#if Session.hasPermission(Document.ref, "Write")>
   <div class="addComment">
     <ul>
       <li>
@@ -34,6 +35,4 @@
      </li>
    </ul>
 </div>
-
-<form action="${This.urlPath}@@add_comment" >
-</form>
+</#if>
