@@ -161,11 +161,7 @@ public class VersioningDocumentAdapter implements VersioningDocument {
                     + docRef, e);
         } finally {
             if (coreSession != null) {
-                try {
-                    CoreInstance.getInstance().close(coreSession);
-                } catch (ClientException e) {
-                    log.error("cannot close coreSession", e);
-                }
+                CoreInstance.getInstance().close(coreSession);
             }
         }
     }
