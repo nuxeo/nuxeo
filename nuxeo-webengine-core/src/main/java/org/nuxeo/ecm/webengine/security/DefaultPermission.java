@@ -19,8 +19,7 @@
 
 package org.nuxeo.ecm.webengine.security;
 
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.runtime.model.Adaptable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -41,8 +40,8 @@ public class DefaultPermission implements Permission {
         return name;
     }
 
-    public boolean check(CoreSession session, DocumentModel doc) {
-        return guard.check(session, doc);
+    public boolean check(Adaptable context) {
+        return guard.check(context);
     }
 
 }

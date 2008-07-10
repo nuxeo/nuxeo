@@ -21,9 +21,9 @@ package org.nuxeo.ecm.webengine.security.guards;
 
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.security.Guard;
+import org.nuxeo.runtime.model.Adaptable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -42,8 +42,8 @@ public class TypeGuard implements Guard {
         this.type = type;
     }
 
-    public boolean check(CoreSession session, DocumentModel doc) {
-        return doc.getType().equals(type);
+    public boolean check(Adaptable context) {
+        return context.getAdapter(DocumentModel.class).getType().equals(type);
     }
 
     @Override

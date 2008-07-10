@@ -19,9 +19,8 @@
 
 package org.nuxeo.ecm.webengine.security.guards;
 
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.security.Guard;
+import org.nuxeo.runtime.model.Adaptable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -35,8 +34,8 @@ public class Not implements Guard {
         this.perm = guard;
     }
 
-    public boolean check(CoreSession session, DocumentModel doc) {
-        return !perm.check(session, doc);
+    public boolean check(Adaptable context) {
+        return !perm.check(context);
     }
 
     @Override

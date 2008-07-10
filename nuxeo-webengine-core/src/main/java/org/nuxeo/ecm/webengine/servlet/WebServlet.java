@@ -79,6 +79,8 @@ public class WebServlet extends HttpServlet {
             throws ServletException, IOException {
         //double start = System.currentTimeMillis();
         resp.setContentType("text/html");
+        resp.addHeader("Server", "Nuxeo/WebEngine-1.0");
+
         if (req.getMethod().equals(WebConst.METHOD_HEAD)) {
             resp = new NoBodyResponse(resp);
         }

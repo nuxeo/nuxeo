@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.security.guards;
 
 import java.io.StringReader;
+import java.security.Principal;
 
 import javax.script.Bindings;
 import javax.script.Compilable;
@@ -35,6 +36,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.Adaptable;
 import org.nuxeo.runtime.scripting.ScriptingService;
 
 /**
@@ -62,14 +64,16 @@ public class ScriptGuard implements Guard {
         this.script = script;
     }
 
-    public boolean check(CoreSession session, DocumentModel doc) {
+    public boolean check(Adaptable context) {
         try {
             if (engine == null) {
                 comp = compile(type, script);
             }
             Bindings bindings = new SimpleBindings();
-            bindings.put("doc", doc);
-            bindings.put("session", session);
+            bindings.put("Context", context);
+            bindings.put("doc", context.getAdapter(DocumentModel.class));
+            bindings.put("session", context.getAdapter(CoreSession.class));
+            bindings.put("principal", context.getAdapter(Principal.class));
             Object result = null;
             if (comp != null) {
                 result = comp.eval(bindings);

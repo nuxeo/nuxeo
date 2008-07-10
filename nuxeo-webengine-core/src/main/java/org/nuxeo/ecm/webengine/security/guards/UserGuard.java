@@ -23,9 +23,8 @@ import java.security.Principal;
 
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.security.Guard;
+import org.nuxeo.runtime.model.Adaptable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -44,12 +43,12 @@ public class UserGuard implements Guard {
         this.username = username;
     }
 
-    public boolean check(CoreSession session, DocumentModel doc) {
-        Principal p = session.getPrincipal();
-        if (p == null) {
+    public boolean check(Adaptable context) {
+        Principal principal = context.getAdapter(Principal.class);
+        if (principal == null) {
             return false;
         }
-        return username.equals(p.getName());
+        return username.equals(principal.getName());
     }
 
     @Override

@@ -19,11 +19,17 @@
 
 package org.nuxeo.ecm.webengine;
 
+import java.text.ParseException;
+
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
+import org.nuxeo.ecm.webengine.security.Guard;
+import org.nuxeo.ecm.webengine.security.GuardDescriptor;
+import org.nuxeo.runtime.model.Adaptable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -42,6 +48,11 @@ public class WebApplicationMapping {
 
     @XNode("@default")
     protected boolean isDefault;
+
+    @XNode("permission")
+    protected  GuardDescriptor guardDescriptor;
+
+    private Guard guard;
 
 
     /**
@@ -131,6 +142,40 @@ public class WebApplicationMapping {
         this.path = new Path(pathAsString).makeAbsolute().removeTrailingSeparator();
     }
 
+    /**
+     * @return the guard.
+     */
+    public GuardDescriptor getGuardDescriptor() {
+        return guardDescriptor;
+    }
+
+    /**
+     * @param guard the guard to set.
+     */
+    public void setGuardDescriptor(GuardDescriptor guard) {
+        this.guardDescriptor = guard;
+    }
+
+    public void checkPermission(Adaptable adaptable) throws WebSecurityException {
+        if (!getGuard().check(adaptable)) {
+            throw new WebSecurityException("Access Restricted");
+        }
+    }
+
+    /**
+     * @return the guard.
+     */
+    public Guard getGuard() {
+        if (guard == null) {
+            try {
+                guard = guardDescriptor != null? guardDescriptor.getGuard() : Guard.DEFAULT;
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return guard;
+    }
 
     @Override
     public boolean equals(Object obj) {

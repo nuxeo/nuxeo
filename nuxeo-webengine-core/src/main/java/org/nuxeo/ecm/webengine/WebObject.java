@@ -20,20 +20,23 @@
 package org.nuxeo.ecm.webengine;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
+import org.nuxeo.runtime.model.Adaptable;
 
 /**
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class WebObject {
+public class WebObject implements Adaptable {
 
     protected static final Log log = LogFactory.getLog(WebObject.class);
 
@@ -178,6 +181,24 @@ public class WebObject {
         WebObjectDescriptor desc = getDescriptor();
         if (desc != null) {
             return desc.getRequestHandler().traverse(this, nextSegment);
+        }
+        return null;
+    }
+
+    /**
+     * We must support at least: CoreSession, DocumentModel, Principal
+     */
+    public <T> T getAdapter(Class<T> adapter) {
+        if (adapter == DocumentModel.class) {
+            return adapter.cast(getDocument());
+        } else if (adapter == CoreSession.class) {
+            try {
+            return adapter.cast(context.getCoreSession());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (adapter == Principal.class) {
+            return adapter.cast(context.getPrincipal());
         }
         return null;
     }

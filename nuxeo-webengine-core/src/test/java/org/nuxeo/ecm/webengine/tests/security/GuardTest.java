@@ -69,13 +69,16 @@ public class GuardTest extends NXRuntimeTestCase {
         assertNotNull(g);
         LocalSession session = new LocalSession();
         DocumentModelImpl doc = new DocumentModelImpl("/", "test", "Folder");
-        assertTrue(g.check(null, doc));
+        SecurityContext context = new SecurityContext(session, doc);
+        assertTrue(g.check(context));
 
         doc = new DocumentModelImpl("/", "test", "File");
-        assertFalse(g.check(null, doc));
+        context = new SecurityContext(session, doc);
+        assertFalse(g.check(context));
 
         doc = new DocumentModelImpl("/", "test", "Workspace");
-        assertTrue(g.check(null, doc));
+        context = new SecurityContext(session, doc);
+        assertTrue(g.check(context));
 
         ad = od.getAction("myAction2");
         g = ad.getGuard();
@@ -83,22 +86,27 @@ public class GuardTest extends NXRuntimeTestCase {
         NuxeoPrincipal principal = new UserPrincipal("bogdan");
         ctx.put("principal", principal);
         session.connect("demo", ctx);
-        assertTrue(g.check(session, doc));
+        context = new SecurityContext(session, doc);
+        assertTrue(g.check(context));
 
         ad = od.getAction("myAction3");
         g = ad.getGuard();
         doc.setProperty("dublincore", "title", "test");
         assertEquals("test", doc.getTitle());
-        assertTrue(g.check(session, doc));
+        context = new SecurityContext(session, doc);
+        assertTrue(g.check(context));
         doc.setProperty("dublincore", "title", "test3");
-        assertFalse(g.check(session, doc));
+        context = new SecurityContext(session, doc);
+        assertFalse(g.check(context));
 
         ad = od.getAction("myAction4");
         g = ad.getGuard();
-        assertFalse(g.check(session, doc));
+        context = new SecurityContext(session, doc);
+        assertFalse(g.check(context));
         doc.setProperty("dublincore", "title", "test.py");
         assertEquals("test.py", doc.getTitle());
-        assertTrue(g.check(session, doc));
+        context = new SecurityContext(session, doc);
+        assertTrue(g.check(context));
     }
 
 }

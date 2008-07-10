@@ -8,8 +8,9 @@
 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
     point="application-mapping">
-    <mapping path="/admin" webapp="admin" />
-    <mapping path="/admin/repository" webapp="admin" document="/default-domain" />
+    <mapping path="/admin" webapp="admin">
+      <permission expression="user=Administrator" />
+    </mapping>
   </extension>
 
 

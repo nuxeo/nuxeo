@@ -85,7 +85,7 @@ public class ActionDescriptor {
         if (!isEnabled) {
             return false;
         }
-        return getGuard().check(obj.getWebContext().getCoreSession(), obj.getDocument());
+        return getGuard().check(obj.getWebContext());
     }
 
     public String getId() {
@@ -163,7 +163,7 @@ public class ActionDescriptor {
      */
     public void run(WebObject obj) throws WebException {
         // check rights first
-        if (!getGuard().check(obj.getWebContext().getCoreSession(), obj.getDocument())) {
+        if (!getGuard().check(obj.getWebContext())) {
             throw new WebSecurityException(id);
         }
         getHandler().run(obj);

@@ -19,8 +19,7 @@
 
 package org.nuxeo.ecm.webengine.security;
 
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.runtime.model.Adaptable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -29,11 +28,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public interface Guard {
 
     Guard DEFAULT = new Guard() {
-        public boolean check(CoreSession session, DocumentModel doc) {
+        public boolean check(Adaptable adaptable) {
             return true;
         }
     };
 
-    boolean check(CoreSession session, DocumentModel doc);
+    boolean check(Adaptable context);
 
 }

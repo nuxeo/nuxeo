@@ -17,37 +17,42 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.security.guards;
+package org.nuxeo.ecm.webengine.tests.security;
 
-import org.nuxeo.common.xmap.annotation.XContent;
-import org.nuxeo.common.xmap.annotation.XObject;
+import java.security.Principal;
+
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webengine.security.Guard;
 import org.nuxeo.runtime.model.Adaptable;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@XObject("schema")
-public class SchemaGuard implements Guard {
+public class SecurityContext implements Adaptable {
 
-    @XContent
-    protected String schema;
+    protected CoreSession session;
+    protected DocumentModel doc;
 
-    protected SchemaGuard() {
+    public SecurityContext(CoreSession session, DocumentModel doc) {
+        this.session = session;
+        this.doc = doc;
     }
 
-    public SchemaGuard(String schema) {
-        this.schema = schema;
+    public <T> T getAdapter(Class<T> adapter) {
+        if (adapter == DocumentModel.class) {
+            return adapter.cast(doc);
+        } else if (adapter == CoreSession.class) {
+            try {
+            return adapter.cast(session);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (adapter == Principal.class) {
+            return adapter.cast(session.getPrincipal());
+        }
+        return null;
     }
 
-    public boolean check(Adaptable context) {
-        return context.getAdapter(DocumentModel.class).hasSchema(schema);
-    }
-
-    @Override
-    public String toString() {
-        return "SCHEMA[" + schema + "]";
-    }
 }

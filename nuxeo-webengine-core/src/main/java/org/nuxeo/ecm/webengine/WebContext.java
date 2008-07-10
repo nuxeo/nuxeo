@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.util.FormData;
+import org.nuxeo.runtime.model.Adaptable;
 
 /**
  * Represents the web invocation context.
@@ -47,7 +48,7 @@ import org.nuxeo.ecm.webengine.util.FormData;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public interface WebContext {
+public interface WebContext extends Adaptable {
 
     /**
      * Must be called before using the context

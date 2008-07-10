@@ -23,10 +23,9 @@ import java.security.Principal;
 
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.security.Guard;
+import org.nuxeo.runtime.model.Adaptable;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -45,8 +44,8 @@ public class GroupGuard implements Guard {
         this.group = group;
     }
 
-    public boolean check(CoreSession session, DocumentModel doc) {
-        Principal p = session.getPrincipal();
+    public boolean check(Adaptable context) {
+        Principal p = context.getAdapter(Principal.class);
         if (p instanceof NuxeoPrincipal) {
             ((NuxeoPrincipal)p).getGroups().contains(group);
         }

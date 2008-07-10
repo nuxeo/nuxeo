@@ -1,4 +1,4 @@
-﻿
+
 = Nuxeo WebEngine
 
 {toc}{/toc}
@@ -445,6 +445,9 @@ Here is an example for such a mapping rule:
     point="application-mapping">
     <mapping path="/" webapp="default" />
     <mapping path="/repository" webapp="default" document="/default-domain" default="true" />
+    <mapping path="/admin" webapp="admin">
+      <permission expression="user=Administrator" />
+    </mapping>
   </extension>
 }}}
 
@@ -460,7 +463,8 @@ The `default` attribute is a little bit special. It tells that this mapping rule
 
 Imagine in you display on a page the result of a search in the repository. Within the result you may have documents that are outside the scope of your application context. In order to be able to display such documents you need an URL (that your application is not aware of). In that case the `default` mapping rule will be used to compute the document URL.
 
-For more details about what can be configured in both configuration layers, please see the Configuration chapter.
+You can see that the last mapping declared above is containing a permission element. This element is used to have a security check whenever the mapping matches (e.g. a path starting with /admin is requested). In our case the security guard check if the current user is the Administrator. If the check failes a 401 (Unauthorized) error page is returned.
+
 
 === Directory Stacking
 

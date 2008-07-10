@@ -626,6 +626,24 @@ public class DefaultWebContext implements WebContext {
         return null;
     }
 
+    /**
+     * We must support at least: CoreSession, DocumentModel, Principal
+     */
+    public <T> T getAdapter(Class<T> adapter) {
+        if (adapter == DocumentModel.class) {
+            return adapter.cast(getTargetDocument());
+        } else if (adapter == CoreSession.class) {
+            try {
+            return adapter.cast(getCoreSession());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (adapter == Principal.class) {
+            return adapter.cast(request.getUserPrincipal());
+        }
+        return null;
+    }
+
     public void setClientUrlPath(String path) {
         request.getSession(true).setAttribute("clientUrlPath", path);
     }

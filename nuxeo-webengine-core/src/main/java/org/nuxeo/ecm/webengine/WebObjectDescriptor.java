@@ -28,8 +28,6 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.runtime.deploy.Contribution;
 import org.nuxeo.runtime.deploy.ExtensibleContribution;
@@ -141,11 +139,9 @@ public class WebObjectDescriptor extends ExtensibleContribution {
     }
 
     public Collection<ActionDescriptor> getEnabledActions(WebObject obj) throws WebException {
-        CoreSession session = obj.getWebContext().getCoreSession();
-        DocumentModel doc = obj.getDocument();
         List<ActionDescriptor> ads = new ArrayList<ActionDescriptor>();
         for (ActionDescriptor ad : actions.values()) {
-            if (ad.isEnabled() && ad.getGuard().check(session, doc)) {
+            if (ad.isEnabled() && ad.getGuard().check(obj)) {
                 ads.add(ad);
             }
         }
@@ -153,11 +149,9 @@ public class WebObjectDescriptor extends ExtensibleContribution {
     }
 
     public Collection<ActionDescriptor> getEnabledActions(WebObject obj, String category) throws WebException {
-        CoreSession session = obj.getWebContext().getCoreSession();
-        DocumentModel doc = obj.getDocument();
         List<ActionDescriptor> ads = new ArrayList<ActionDescriptor>();
         for (ActionDescriptor ad : actions.values()) {
-            if (ad.isEnabled() && ad.hasCategory(category) && ad.getGuard().check(session, doc)) {
+            if (ad.isEnabled() && ad.hasCategory(category) && ad.getGuard().check(obj)) {
                 ads.add(ad);
             }
         }
@@ -165,11 +159,9 @@ public class WebObjectDescriptor extends ExtensibleContribution {
     }
 
     public Map<String, Collection<ActionDescriptor>> getEnabledActionsByCategory(WebObject obj) throws WebException {
-        CoreSession session = obj.getWebContext().getCoreSession();
-        DocumentModel doc = obj.getDocument();
         Map<String, Collection<ActionDescriptor>> result = new HashMap<String, Collection<ActionDescriptor>>();
         for (ActionDescriptor ad : actions.values()) {
-            if (ad.isEnabled() && ad.getGuard().check(session, doc)) {
+            if (ad.isEnabled() && ad.getGuard().check(obj)) {
                 String[] cats = ad.getCategories();
                 for (String cat : cats) {
                     Collection<ActionDescriptor> list = result.get(cat);

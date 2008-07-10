@@ -148,6 +148,10 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         // apply rewrite rules on the path info
         app.getPathMapper().rewrite(pif);
         DefaultWebContext context = new DefaultWebContext(app, pif, req, resp);
+        if (mapping != null) {
+            // check the application guard if any
+            mapping.checkPermission(context); // throw an exception if the user doesn't have the required permission
+        }
         // traverse documents if any
         return context;
     }

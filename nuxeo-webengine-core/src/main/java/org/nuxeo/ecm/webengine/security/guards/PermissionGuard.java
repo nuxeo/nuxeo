@@ -24,6 +24,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.security.Guard;
+import org.nuxeo.runtime.model.Adaptable;
 
 /**
  * Check access against a built-in permission
@@ -43,8 +44,10 @@ public class PermissionGuard implements Guard {
         this.perm = perm;
     }
 
-    public boolean check(CoreSession session, DocumentModel doc) {
+    public boolean check(Adaptable context) {
         try {
+            CoreSession session = context.getAdapter(CoreSession.class);
+            DocumentModel doc = context.getAdapter(DocumentModel.class);
             return session.hasPermission(doc.getRef(), perm);
         }catch (Exception e) {
             return false;
