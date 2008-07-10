@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment xmlns="urn:jboss:bean-deployer:2.0">
+
+  <bean name="JCAMetaDataRepository" class="org.jboss.resource.metadata.repository.DefaultJCAMetaDataRepository"/>
+          
+  <!-- RAR Deployment -->
+  <bean name="RARParserDeployer" class="org.jboss.resource.deployers.RARParserDeployer">
+    <property name="metaDataRepository"><inject bean="JCAMetaDataRepository"/></property>
+    <property name="type">rar</property>
+  </bean>
+  
+  <bean name="RARDeployer" class="org.jboss.resource.deployers.RARDeployer">
+    <property name="workManagerName">jboss.jca:service=WorkManager</property>
+    <property name="XATerminatorName">jboss:service=TransactionManager</property>
+    <property name="type">rar</property>
+  </bean>
+  
+  <bean name="MCFBuilder" class="org.jboss.resource.deployers.builder.ManagedConnectionFactoryBuilder">
+    <property name="metaDataRepository"><inject bean="JCAMetaDataRepository"/></property>
+  </bean>   
+  
+  <bean name="PoolBuilder" class="org.jboss.resource.deployers.builder.ManagedConnectionPoolBuilder"/>
+  <bean name="ConnectionManagerBuilder" class="org.jboss.resource.deployers.builder.ConnectionManagerBuilder"/>
+  <bean name="ConnectionFactoryBindingBuilder" class="org.jboss.resource.deployers.builder.ConnectionFactoryBindingBuilder"/>
+  <bean name="MetaDataTypeMappingBuilder" class="org.jboss.resource.deployers.builder.MetaDataTypeMappingBuilder"/>
+  
+  <bean name="ManagedConnectionFactoryParserDeployer" class="org.jboss.resource.deployers.ManagedConnectionFactoryParserDeployer">
+    <property name="repository">
+      <inject bean="JCAMetaDataRepository" />
+    </property>
+    <property name="suffix">-ds.xml</property>      
+    <property name="type">jca-ds</property>
+  </bean>
+  
+  <bean name="ManagedConnectionFactoryDeployer" class="org.jboss.resource.deployers.ManagedConnectionFactoryDeployer">
+    <property name="repository">
+      <inject bean="JCAMetaDataRepository" />
+    </property>      
+    <property name="builders">
+      <list>
+        <inject bean="MCFBuilder" />
+        <inject bean="PoolBuilder" />
+        <inject bean="ConnectionManagerBuilder" />
+        <inject bean="ConnectionFactoryBindingBuilder" />
+        <inject bean="MetaDataTypeMappingBuilder" />            
+      </list>            
+    </property>
+    <property name="type">jca-ds</property>
+  </bean>
+  
+  <!-- The template for creating a datasource -->
+  <bean name="LocalTxDataSourceTemplate" class="org.jboss.resource.deployers.management.DsDataSourceTemplate">
+    <property name="info">
+      <inject bean="LocalTxDataSourceTemplateInfo" />
+    </property>
+  </bean>
+  <bean name="LocalTxDataSourceTemplateInfo"
+    class="org.jboss.resource.deployers.management.DsDataSourceTemplateInfo">
+    <constructor>
+      <parameter>LocalTxDataSourceTemplate</parameter>
+      <parameter>A template for datasource *-ds.xml deployments</parameter>
+      <parameter>local-tx-datasource</parameter>
+    </constructor>
+  </bean>
+  <bean name="XADataSourceTemplate" class="org.jboss.resource.deployers.management.DsDataSourceTemplate">
+    <property name="info">
+      <inject bean="XADataSourceTemplateInfo" />
+    </property>
+  </bean>
+  <bean name="XADataSourceTemplateInfo"
+    class="org.jboss.resource.deployers.management.DsDataSourceTemplateInfo">
+    <constructor>
+      <parameter>XADataSourceTemplate</parameter>
+      <parameter>A template for xa-datasource *-ds.xml deployments</parameter>
+      <parameter>xa-datasource</parameter>
+    </constructor>
+  </bean>
+  <bean name="NoTxDataSourceTemplate" class="org.jboss.resource.deployers.management.DsDataSourceTemplate">
+    <property name="info">
+      <inject bean="NoTxDataSourceTemplateInfo" />
+    </property>
+  </bean>
+  <bean name="NoTxDataSourceTemplateInfo"
+    class="org.jboss.resource.deployers.management.DsDataSourceTemplateInfo">
+    <constructor>
+      <parameter>NoTxDataSourceTemplate</parameter>
+      <parameter>A template for no-tx-datasource *-ds.xml deployments</parameter>
+      <parameter>no-tx-datasource</parameter>
+    </constructor>
+  </bean>
+  <bean name="TxConnectionFactoryTemplate" class="org.jboss.resource.deployers.management.DsDataSourceTemplate">
+    <property name="info"><inject bean="TxConnectionFactoryTemplateInfo"/></property>
+  </bean>
+  <bean name="TxConnectionFactoryTemplateInfo"
+    class="org.jboss.resource.deployers.management.DsDataSourceTemplateInfo">
+    <constructor>
+      <parameter>TxConnectionFactoryTemplate</parameter>
+      <parameter>A template for tx-connection-factory *-ds.xml deployments</parameter>
+      <parameter>tx-connection-factory</parameter>
+    </constructor>
+  </bean>
+  <bean name="NoTxConnectionFactoryTemplate" class="org.jboss.resource.deployers.management.DsDataSourceTemplate">
+    <property name="info">
+      <inject bean="NoTxConnectionFactoryTemplateInfo" />
+    </property>
+  </bean>
+  <bean name="NoTxConnectionFactoryTemplateInfo"
+    class="org.jboss.resource.deployers.management.DsDataSourceTemplateInfo">
+    <constructor>
+      <parameter>NoTxConnectionFactoryTemplate</parameter>
+      <parameter>A template for no-tx-connection-factory *-ds.xml deployments</parameter>
+      <parameter>no-tx-connection-factory</parameter>
+    </constructor>
+  </bean>
+   
+</deployment>
