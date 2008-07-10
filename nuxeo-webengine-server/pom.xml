@@ -1,10 +1,12 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.nuxeo.ecm.webengine</groupId>
     <artifactId>nuxeo-webengine-parent</artifactId>
-    <version>5.2-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-webengine-server</artifactId>
@@ -12,199 +14,8 @@
   <name>Nuxeo WebEngine Server</name>
   <description>Nuxeo WebEngine standalone server.</description>
 
-  <properties>
-    <nuxeo.wiki.version>1.0-SNAPSHOT</nuxeo.wiki.version>
-  </properties>
-
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.common</groupId>
-        <artifactId>nuxeo-common</artifactId>
-        <version>${nuxeo.common.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-launcher</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-scripting</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-osgi</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-jetty-adapter</artifactId>
-        <version>${nuxeo.runtime.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-api</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-schema</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-query</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-jcr-connector</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-client</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-shell-commands-base</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      
-
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-comment</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-comment-api</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-comment-core</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-versioning-api</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-dublincore</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-usermanager-api</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-usermanager-core</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-events-api</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-relations-api</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-relations-default-config</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-relations-core</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-relations-jena-plugin</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-directory-api</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-directory-core</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-directory-sql</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-directory-types-contrib</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-content-template-manager</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-webengine-core</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine.wiki</groupId>
-        <artifactId>nuxeo-webengine-wiki</artifactId>
-        <version>${nuxeo.wiki.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-rendering</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-versioning-core</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-comment</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-
-
       <!-- jboss client -->
       <dependency>
         <groupId>jboss</groupId>
@@ -222,13 +33,13 @@
         <version>4.0.2</version>
       </dependency>
       <dependency>
-	<groupId>org.apache.derby</groupId>
-	<artifactId>derby</artifactId>
-	<version>10.2.2.0</version>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>derby</artifactId>
+        <version>10.2.2.0</version>
       </dependency>
       <dependency>
         <groupId>xerces</groupId>
-	<artifactId>xercesImpl</artifactId>
+        <artifactId>xercesImpl</artifactId>
         <version>2.8.1</version>
       </dependency>
       <dependency>
@@ -237,16 +48,15 @@
         <version>0.9.91</version>
       </dependency>
       <dependency>
-         <groupId>org.hibernate</groupId>
-         <artifactId>hibernate</artifactId>
-         <version>3.2.4.ga</version>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate</artifactId>
+        <version>3.2.4.ga</version>
       </dependency>
       <dependency>
         <groupId>org.freemarker</groupId>
         <artifactId>freemarker</artifactId>
         <version>2.3.11</version>
       </dependency>
-
     </dependencies>
   </dependencyManagement>
 
@@ -283,15 +93,15 @@
 
     <!-- json -->
     <dependency>
-        <groupId>net.sf.json-lib</groupId>
-        <artifactId>json-lib</artifactId>
-        <version>2.2.1</version>
-	<classifier>jdk15</classifier>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <version>2.2.1</version>
+      <classifier>jdk15</classifier>
     </dependency>
     <dependency>
-        <groupId>net.sf.ezmorph</groupId>
-        <artifactId>ezmorph</artifactId>
-	<version>0.9</version>
+      <groupId>net.sf.ezmorph</groupId>
+      <artifactId>ezmorph</artifactId>
+      <version>0.9</version>
     </dependency>
 
     <dependency>
@@ -350,108 +160,108 @@
     </dependency>
 
     <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
       <artifactId>nuxeo-webengine-core</artifactId>
     </dependency>
 
     <dependency>
-        <groupId>org.nuxeo.ecm.webengine.wiki</groupId>
-        <artifactId>nuxeo-webengine-wiki</artifactId>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-wiki</artifactId>
     </dependency>
 
-    <dependency>      
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-dublincore</artifactId>
     </dependency>
-    
-    <dependency>      
+
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-comment</artifactId>
     </dependency>
-    
-    <dependency>      
+
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-comment-api</artifactId>
     </dependency>
-    
-    <dependency>      
+
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-comment-core</artifactId>
     </dependency>
-    
-    <dependency>      
+
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-content-template-manager</artifactId>
     </dependency>
-    
-    <dependency>      
+
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-api</artifactId>
     </dependency>
-    
-    <dependency>      
+
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-core</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-sql</artifactId>
     </dependency>
-    
-    <dependency>      
+
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-types-contrib</artifactId>
     </dependency>
 
-    <dependency>      
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-events-api</artifactId>      
+      <artifactId>nuxeo-platform-events-api</artifactId>
     </dependency>
 
-    <dependency>      
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-relations-api</artifactId>
     </dependency>
-    
-    <dependency>      
+
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-relations-core</artifactId>
     </dependency>
-    <dependency>      
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-relations-default-config</artifactId>
     </dependency>
-    <dependency>      
-      <groupId>org.nuxeo.ecm.platform</groupId>      
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-relations-jena-plugin</artifactId>
     </dependency>
-    <dependency>      
-      <groupId>org.nuxeo.ecm.platform</groupId>      
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-usermanager-api</artifactId>
     </dependency>
-    <dependency>      
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-usermanager-core</artifactId>
     </dependency>
-    <dependency>      
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-versioning-api</artifactId>
     </dependency>
-    <dependency>      
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-versioning-core</artifactId>
     </dependency>
 
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-client</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-shell-commands-base</artifactId>
-      </dependency>
-    
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-shell-commands-base</artifactId>
+    </dependency>
+
     <!-- jboss client -->
 
     <dependency>
@@ -528,17 +338,17 @@
       <artifactId>jline</artifactId>
     </dependency>
     <dependency>
-       <groupId>org.hibernate</groupId>
-       <artifactId>hibernate</artifactId>
-    </dependency>    
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate</artifactId>
+    </dependency>
     <dependency>
-  	<groupId>org.apache.derby</groupId>
-  	<artifactId>derby</artifactId>
-  	</dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
-    </dependency>    
+    </dependency>
   </dependencies>
 
   <build>
@@ -560,9 +370,7 @@
               <format>zip</format>
               <outputDirectory>target</outputDirectory>
               <targetFile>nuxeo-server</targetFile>
-              <descriptor>
-	        ${basedir}/src/main/assemble/assembly.xml
-              </descriptor>
+              <descriptor>${basedir}/src/main/assemble/assembly.xml</descriptor>
             </configuration>
           </execution>
           <execution>
