@@ -76,6 +76,23 @@
       </plugin>
     </plugins>
   </reporting>
+
+  <repositories>
+    <repository>
+      <id>nuxeo_release</id>
+      <url>http://archiva.nuxeo.org/archiva/repository/nuxeo_release</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>nuxeo_snapshot</id>
+      <url>http://archiva.nuxeo.org/archiva/repository/nuxeo_snapshot</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+  </repositories>
     
   <distributionManagement>
     <site>
