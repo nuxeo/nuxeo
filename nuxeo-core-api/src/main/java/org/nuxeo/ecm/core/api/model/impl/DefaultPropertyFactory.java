@@ -63,7 +63,7 @@ public class DefaultPropertyFactory extends CompositePropertyFactory {
 
     public static final PropertyFactory DEFAULT = new PropertyFactory() {
         public Property createProperty(Property parent, Field field, int flags) {
-            return DefaultPropertyFactory.newProperty(parent, field, flags);
+            return newProperty(parent, field, flags);
         }
     };
 
@@ -102,6 +102,7 @@ public class DefaultPropertyFactory extends CompositePropertyFactory {
             return new BinaryProperty(parent, field, flags);
         }
     };
+
     public static final PropertyFactory BLOB = new PropertyFactory() {
         public Property createProperty(Property parent, Field field, int flags) {
             return new BlobProperty(parent, field, flags);
@@ -109,9 +110,6 @@ public class DefaultPropertyFactory extends CompositePropertyFactory {
     };
 
 
-    /**
-     * @return the instance.
-     */
     public static DefaultPropertyFactory getInstance() {
         if (instance == null) {
             instance = new DefaultPropertyFactory();
@@ -195,15 +193,15 @@ public class DefaultPropertyFactory extends CompositePropertyFactory {
         Property property;
         Type type = field.getType();
         if (type.isSimpleType()) {
-            property = DefaultPropertyFactory.newScalarProperty(parent, field, flags);
+            property = newScalarProperty(parent, field, flags);
         } else if (type.isComplexType()) {
-            property = DefaultPropertyFactory.newMapProperty(parent, field, flags);
+            property = newMapProperty(parent, field, flags);
         } else if (type.isListType()) {
-            ListType ltype = (ListType)type;
+            ListType ltype = (ListType) type;
             if (ltype.isArray()) {
-                property = DefaultPropertyFactory.newArrayProperty(parent, field, flags);
+                property = newArrayProperty(parent, field, flags);
             } else {
-                property = DefaultPropertyFactory.newListProperty(parent, field, flags);
+                property = newListProperty(parent, field, flags);
             }
         } else {
             throw new IllegalArgumentException(
