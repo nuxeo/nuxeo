@@ -309,7 +309,7 @@ public class PersistenceContextByTable {
             knownChildren.put(parentId, children);
         }
         children.add(row, row.getString(model.HIER_CHILD_NAME_KEY),
-                (Long) row.get(model.HIER_CHILD_POS_KEY));
+                (Long) row.get(model.HIER_CHILD_POS_KEY), model);
     }
 
     /**
@@ -328,7 +328,8 @@ public class PersistenceContextByTable {
         Serializable parentId = row.get(model.HIER_PARENT_KEY);
         Children children = knownChildren.get(parentId);
         if (children != null) {
-            children.remove(row.getString(model.HIER_CHILD_NAME_KEY));
+            children.remove(row.getString(model.HIER_CHILD_NAME_KEY),
+                    (Long) row.get(model.HIER_CHILD_POS_KEY), model);
         }
     }
 
@@ -338,11 +339,13 @@ public class PersistenceContextByTable {
      *
      * @param parentId the parent id
      * @param name the name
+     * @param complexProp whether to get complex properties or real children, or
+     *            both
      * @return the row, or {@code null} if none is found
      * @throws StorageException
      */
-    public SimpleFragment getByHier(Serializable parentId, String name)
-            throws StorageException {
+    public SimpleFragment getByHier(Serializable parentId, String name,
+            Boolean complexProp) throws StorageException {
         SimpleFragment fragment;
 
         // check in the known children
@@ -350,7 +353,7 @@ public class PersistenceContextByTable {
         if (children != null) {
             fragment = children.get(name);
             if (fragment != SimpleFragment.UNKNOWN) {
-                return fragment;
+                return fragmentIfSamePropertyFlag(fragment, complexProp);
             }
         }
 
@@ -362,39 +365,51 @@ public class PersistenceContextByTable {
             addChild(fragment);
         }
 
-        return fragment;
+        return fragmentIfSamePropertyFlag(fragment, complexProp);
+    }
+
+    protected SimpleFragment fragmentIfSamePropertyFlag(SimpleFragment fragment,
+            Boolean properties) {
+        if (properties == null) {
+            return fragment;
+        }
+        return properties.equals((Boolean) fragment.get(model.HIER_CHILD_ISPROPERTY_KEY)) ?
+                fragment : null;
     }
 
     /**
      * Gets the list of children for a given parent id.
      *
      * @param parentId the parent id
+     * @param complexProp whether to get complex properties or real children, or
+     *            both
      * @return the list of children
      * @throws StorageException
      */
-    public Collection<SimpleFragment> getHierChildren(Serializable parentId)
-            throws StorageException {
+    public Collection<SimpleFragment> getHierChildren(Serializable parentId,
+            Boolean complexProp) throws StorageException {
+        Collection<SimpleFragment> fragments;
 
         // check in the known children
         Children children = knownChildren.get(parentId);
-        if (children != null) {
-            if (children.isComplete()) {
-                return children.getFragments();
-            }
-        } else {
+        if (children == null) {
             children = new Children(false);
             knownChildren.put(parentId, children);
+        } else {
+            fragments = children.getFragments(complexProp);
+            if (fragments != null) {
+                return fragments;
+            }
         }
 
         // ask the children to the mapper
-        Collection<SimpleFragment> fragments = mapper.readChildHierRows(
-                parentId, this);
+        fragments = mapper.readChildHierRows(parentId, complexProp, this);
 
         // we now know the full children for this parent
-        children.addComplete(fragments, model);
+        children.addComplete(fragments, complexProp, model);
 
         // the children may include newly-created ones
-        return children.getFragments();
+        return children.getFragments(complexProp);
     }
 
     /**

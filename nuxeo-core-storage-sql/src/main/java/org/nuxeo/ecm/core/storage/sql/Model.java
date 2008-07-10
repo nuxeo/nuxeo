@@ -69,6 +69,8 @@ public class Model {
 
     public static final String HIER_CHILD_POS_KEY = "pos";
 
+    public static final String HIER_CHILD_ISPROPERTY_KEY = "isproperty";
+
     public static final String COLL_TABLE_POS_KEY = "pos";
 
     public static final String COLL_TABLE_VALUE_KEY = "item";
@@ -203,7 +205,7 @@ public class Model {
         propertyFragment.put(propertyName, tableName);
         propertyFragmentKey.put(propertyName, key);
         fragmentKeysType.put(key, type);
-}
+    }
 
     /**
      * Creates the model for one schema or complex type.
@@ -238,6 +240,7 @@ public class Model {
                          * List.
                          */
                         // TODO list of complex types
+                        // throw new UnsupportedOperationException();
                     }
                 } else {
                     /*

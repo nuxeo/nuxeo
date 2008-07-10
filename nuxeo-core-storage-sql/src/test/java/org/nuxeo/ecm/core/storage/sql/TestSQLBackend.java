@@ -17,8 +17,11 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Florent Guillaume
@@ -101,10 +104,16 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", "TestDoc");
+
         nodea.setSingleProperty("tst:title", "hello world");
         nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
                 "c" });
         nodea.setCollectionProperty("tst:tags", new String[] { "1", "2" });
+        Map<String, Serializable> owner = new HashMap<String, Serializable>();
+        owner.put("firstname", "Bob");
+        owner.put("lastname", "Lemoche");
+        nodea.setComplexProperty("tst:owner", owner);
+
 
         assertEquals("hello world",
                 nodea.getSimpleProperty("tst:title").getString());

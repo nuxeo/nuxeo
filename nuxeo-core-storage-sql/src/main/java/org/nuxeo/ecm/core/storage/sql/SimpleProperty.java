@@ -66,42 +66,8 @@ public class SimpleProperty extends AbstractProperty {
 
     public void setValue(Serializable value) throws StorageException {
         checkWritable();
-        if (value == null) {
-            row.put(key, null);
-            // mark fragment dirty!
-            return;
-        }
-        switch (type) {
-        case STRING:
-            if (value instanceof String) {
-                row.put(key, value);
-                // mark fragment dirty!
-                return;
-            }
-            throw new RuntimeException("Value is not a String: " + value);
-        case BOOLEAN:
-            if (value instanceof Boolean) {
-                row.put(key, value);
-                // mark fragment dirty!
-                return;
-            }
-            throw new RuntimeException("Value is not a Boolean: " + value);
-        case DATETIME:
-            if (value instanceof Date) {
-                row.put(key, new java.sql.Timestamp(((Date) value).getTime()));
-                // mark fragment dirty!
-                return;
-            }
-            if (value instanceof Calendar) {
-                row.put(key, new java.sql.Timestamp(
-                        ((Calendar) value).getTimeInMillis()));
-                // mark fragment dirty!
-                return;
-            }
-            throw new RuntimeException("Value is not a Calendar: " + value);
-        default:
-            throw new RuntimeException("Not implemented: " + type);
-        }
+        row.put(key, normalize(value));
+        // mark fragment dirty!
     }
 
     /*

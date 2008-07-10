@@ -24,7 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -113,55 +113,72 @@ public class Mapper {
     }
 
     // for debug
-    private String resultsToString(ResultSet rs, List<Column> columns)
+    protected static void logResultSet(ResultSet rs, List<Column> columns)
             throws SQLException {
         List<String> res = new LinkedList<String>();
         int i = 0;
         for (Column column : columns) {
             i++;
             Serializable v = column.getFromResultSet(rs, i);
-            res.add(column.getKey() + "=" + String.valueOf(v));
+            res.add(column.getKey() + "=" + loggedValue(v));
         }
-        return StringUtils.join(res, ", ");
+        log.debug("SQL:   -> " + StringUtils.join(res, ", "));
     }
 
     // for debug
-    private void logSQL(String sql, List<Column> columns, SimpleFragment row) {
+    protected void logSQL(String sql, List<Column> columns, SimpleFragment row) {
+        List<Serializable> values = new ArrayList<Serializable>(columns.size());
         for (Column column : columns) {
             String key = column.getKey();
-            Serializable v;
-            if (key.equals(model.MAIN_KEY)) {
-                v = row.getId();
-            } else {
-                v = row.get(key);
-            }
+            values.add(key.equals(model.MAIN_KEY) ? row.getId() : row.get(key));
+        }
+        logSQL(sql, values);
+    }
+
+    // for debug
+    protected static void logSQL(String sql, List<Serializable> values) {
+        for (Serializable v : values) {
             String value;
-            if (v == null) {
-                value = "NULL";
-            } else if (v instanceof String) {
-                value = "'" + ((String) v).replace("'", "''") + "'";
-            } else {
-                value = v.toString();
-            }
+            value = loggedValue(v);
             sql = sql.replaceFirst("\\?", value);
         }
         log.debug("SQL: " + sql);
     }
 
-    private void logSQL(String sql, List<Serializable> values) {
-        for (Serializable v : values) {
-            String value;
-            if (v == null) {
-                value = "NULL";
-            } else if (v instanceof String) {
-                value = "'" + ((String) v).replace("'", "''") + "'";
-            } else {
-                value = v.toString();
-            }
-            sql = sql.replaceFirst("\\?", value);
+    /**
+     * Returns a loggable value using pseudo-SQL syntax.
+     */
+    @SuppressWarnings("boxing")
+    protected static String loggedValue(Serializable value) {
+        if (value == null) {
+            return "NULL";
         }
-        log.debug("SQL: " + sql);
+        if (value instanceof String) {
+            return "'" + ((String) value).replace("'", "''") + "'";
+        }
+        if (value instanceof Calendar) {
+            Calendar cal = (Calendar) value;
+            char sign;
+            int offset = cal.getTimeZone().getOffset(cal.getTimeInMillis()) / 60000;
+            if (offset < 0) {
+                offset = -offset;
+                sign = '-';
+            } else {
+                sign = '+';
+            }
+            return String.format(
+                    "TIMESTAMP '%04d-%02d-%02dT%02d:%02d:%02d%c%02d:%02d'",
+                    cal.get(Calendar.YEAR), //
+                    cal.get(Calendar.MONTH) + 1, //
+                    cal.get(Calendar.DAY_OF_MONTH), //
+                    cal.get(Calendar.HOUR_OF_DAY), //
+                    cal.get(Calendar.MINUTE), //
+                    cal.get(Calendar.SECOND), //
+                    sign, offset / 60, offset % 60);
+        }
+        return value.toString();
     }
+
     // ---------- low-level JDBC methods ----------
 
     /**
@@ -233,12 +250,7 @@ public class Mapper {
                     } else {
                         v = row.get(key);
                     }
-                    if (v == null) {
-                        ps.setNull(i, column.getSqlType());
-                    } else {
-                        ps.setObject(i, v);
-                        // TODO setBoolean for booleans
-                    }
+                    column.setToPreparedStatement(ps, i, v);
                 }
                 ps.execute();
             } catch (SQLException e) {
@@ -319,11 +331,7 @@ public class Mapper {
                             throw new AssertionError(
                                     "Invalid collection column: " + key);
                         }
-                        if (v == null) {
-                            ps.setNull(i, column.getSqlType());
-                        } else {
-                            ps.setObject(i, v);
-                        }
+                        column.setToPreparedStatement(ps, i, v);
                         if (debugValues != null) {
                             debugValues.add(v);
                         }
@@ -400,7 +408,7 @@ public class Mapper {
                 SimpleFragment row = new SimpleFragment(tableName, id,
                         State.PRISTINE, context, map);
                 if (log.isDebugEnabled()) {
-                    log.debug("SQL:   -> " + resultsToString(rs, columns));
+                    logResultSet(rs, columns);
                 }
                 // check that we didn't get several rows
                 if (rs.next()) {
@@ -453,7 +461,7 @@ public class Mapper {
                     if (v == null) {
                         throw new RuntimeException("Null value for key: " + key);
                     }
-                    ps.setObject(i, v);
+                    column.setToPreparedStatement(ps, i, v);
                     if (debugValues != null) {
                         debugValues.add(v);
                     }
@@ -486,7 +494,7 @@ public class Mapper {
                 SimpleFragment row = new SimpleFragment(model.HIER_TABLE_NAME,
                         id, State.PRISTINE, context, map);
                 if (log.isDebugEnabled()) {
-                    log.debug("SQL:   -> " + resultsToString(rs, columns));
+                    logResultSet(rs, columns);
                 }
                 // check that we didn't get several rows
                 if (rs.next()) {
@@ -509,17 +517,24 @@ public class Mapper {
      * <p>
      * Rows that are already known to the persistence context are returned from
      * it, so as to never have duplicate objects for the same row.
+     * <p>
+     * Depending on the {@link Boolean} {@literal complexProp}, only the complex
+     * properties, or only the regular children, or both, may be returned.
      *
      * @param parentId the parent id
+     * @param complexProp whether to get complex properties ({@code
+     *            Boolean#TRUE}), regular children({@code Boolean#FALSE}), or
+     *            both ({@code null})
      * @param context the persistence context to which the read rows are tied
      * @return the child hierarchy rows, or {@code null}
      */
     public Collection<SimpleFragment> readChildHierRows(Serializable parentId,
-            PersistenceContextByTable context) throws StorageException {
+            Boolean complexProp, PersistenceContextByTable context)
+            throws StorageException {
         if (parentId == null) {
             throw new IllegalArgumentException("Illegal null parentId");
         }
-        String sql = sqlInfo.getSelectChildrenSql();
+        String sql = sqlInfo.getSelectChildrenSql(complexProp);
         try {
             // XXX statement should be already prepared
             if (log.isDebugEnabled()) {
@@ -529,13 +544,13 @@ public class Mapper {
             try {
                 // compute where part
                 int i = 0;
-                for (Column column : sqlInfo.getSelectChildrenWhereColumns()) {
+                for (Column column : sqlInfo.getSelectChildrenWhereColumns(complexProp)) {
                     i++;
                     String key = column.getKey();
                     if (!key.equals(model.HIER_PARENT_KEY)) {
                         throw new AssertionError("Invalid hier column: " + key);
                     }
-                    ps.setObject(i, parentId);
+                    column.setToPreparedStatement(ps, i, parentId);
                 }
                 ResultSet rs = ps.executeQuery();
                 List<SimpleFragment> rows = new LinkedList<SimpleFragment>();
@@ -544,7 +559,7 @@ public class Mapper {
                     Serializable id = null;
                     Map<String, Serializable> map = new HashMap<String, Serializable>();
                     i = 0;
-                    List<Column> columns = sqlInfo.getSelectChildrenWhatColumns();
+                    List<Column> columns = sqlInfo.getSelectChildrenWhatColumns(complexProp);
                     for (Column column : columns) {
                         i++;
                         String key = column.getKey();
@@ -554,6 +569,9 @@ public class Mapper {
                         } else {
                             map.put(key, value);
                         }
+                    }
+                    if (complexProp != null) {
+                        map.put(model.HIER_CHILD_ISPROPERTY_KEY, complexProp);
                     }
                     if (context.isDeleted(id)) {
                         // row has been deleted in the persistent context,
@@ -570,8 +588,7 @@ public class Mapper {
                         row = new SimpleFragment(model.HIER_TABLE_NAME, id,
                                 State.PRISTINE, context, map);
                         if (log.isDebugEnabled()) {
-                            log.debug("SQL:   -> " +
-                                    resultsToString(rs, columns));
+                            logResultSet(rs, columns);
                         }
                     } else {
                         // row is already known in the persistent context,
@@ -674,11 +691,7 @@ public class Mapper {
                     } else {
                         v = row.get(key);
                     }
-                    if (v == null) {
-                        ps.setNull(i, column.getSqlType());
-                    } else {
-                        ps.setObject(i, v);
-                    }
+                    column.setToPreparedStatement(ps, i, v);
                 }
                 int count = ps.executeUpdate();
                 if (log.isDebugEnabled()) {

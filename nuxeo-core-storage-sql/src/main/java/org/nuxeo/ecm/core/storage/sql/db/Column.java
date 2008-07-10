@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.storage.sql.db;
 
 import java.io.Serializable;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -149,36 +150,66 @@ public class Column implements Serializable {
                 getScale());
     }
 
+    public void setToPreparedStatement(PreparedStatement ps, int index,
+            Serializable value) throws SQLException {
+        if (value == null) {
+            ps.setNull(index, sqlType);
+            return;
+        }
+        switch (sqlType) {
+        case Types.BIGINT:
+            ps.setLong(index, ((Long) value).longValue());
+            return;
+        case Types.INTEGER:
+            ps.setInt(index, ((Long) value).intValue());
+            return;
+        case Types.VARCHAR:
+        case Types.CLOB:
+            ps.setString(index, (String) value);
+            return;
+        case Types.BIT:
+            ps.setBoolean(index, ((Boolean) value).booleanValue());
+            return;
+        case Types.TIMESTAMP:
+            Calendar cal = (Calendar) value;
+            Timestamp ts = new Timestamp(cal.getTimeInMillis());
+            ps.setTimestamp(index, ts, cal); // cal passed for timezone
+            return;
+        default:
+            throw new SQLException("Unhandled SQL type: " + sqlType);
+        }
+    }
+
     // XXX this should be handled by specific type classes associated with the
     // column
     @SuppressWarnings("boxing")
-    public Serializable getFromResultSet(ResultSet rs, int columnIndex)
+    public Serializable getFromResultSet(ResultSet rs, int index)
             throws SQLException {
         // Here we make sure that we get the types we want, we don't let the
         // driver's getObject() return what it fancies.
         Serializable result;
         switch (sqlType) {
         case Types.BIGINT:
-            result = rs.getLong(columnIndex);
+            result = rs.getLong(index);
             break;
         case Types.INTEGER:
-            result = rs.getInt(columnIndex);
+            result = rs.getInt(index);
             break;
         case Types.VARCHAR:
         case Types.CLOB:
-            result = rs.getString(columnIndex);
+            result = rs.getString(index);
             break;
         case Types.TIMESTAMP:
-            Timestamp timestamp = rs.getTimestamp(columnIndex);
-            if (timestamp == null) {
+            Timestamp ts = rs.getTimestamp(index);
+            if (ts == null) {
                 result = null;
             } else {
                 result = new GregorianCalendar(); // XXX timezone
-                ((Calendar) result).setTimeInMillis(timestamp.getTime());
+                ((Calendar) result).setTimeInMillis(ts.getTime());
             }
             break;
         case Types.BIT:
-            result = rs.getBoolean(columnIndex);
+            result = rs.getBoolean(index);
             break;
         default:
             throw new SQLException("Unhandled SQL type: " + sqlType);

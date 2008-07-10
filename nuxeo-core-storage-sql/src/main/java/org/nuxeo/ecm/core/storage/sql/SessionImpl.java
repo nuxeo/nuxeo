@@ -240,6 +240,7 @@ public class SessionImpl implements Session, XAResource {
         return StringUtils.join(list, "/");
     }
 
+    /* Does not apply to properties for now (no use case). */
     public Node getNodeByPath(String path, Node node) throws StorageException {
         // TODO optimize this to use a dedicated path-based table
         checkLive();
@@ -267,7 +268,7 @@ public class SessionImpl implements Session, XAResource {
                 throw new IllegalArgumentException(
                         "Illegal path with empty component: " + path);
             }
-            node = getChildNode(node, name);
+            node = getChildNode(node, name, Boolean.FALSE);
             if (node == null) {
                 return null;
             }
@@ -275,8 +276,8 @@ public class SessionImpl implements Session, XAResource {
         return node;
     }
 
-    public Node addChildNode(Node parent, String name, String typeName)
-            throws StorageException {
+    public Node addChildNode(Node parent, String name, String typeName,
+            boolean complexProp) throws StorageException {
         checkLive();
         if (name == null || name.contains("/") || name.equals(".") ||
                 name.equals("..")) {
@@ -315,8 +316,9 @@ public class SessionImpl implements Session, XAResource {
         // TODO if folder is ordered, we have to compute the pos as max+1...
         map = new HashMap<String, Serializable>();
         map.put(model.HIER_PARENT_KEY, parent.mainFragment.getId());
-        map.put(model.HIER_CHILD_POS_KEY, null);
         map.put(model.HIER_CHILD_NAME_KEY, name);
+        map.put(model.HIER_CHILD_POS_KEY, null);
+        map.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.valueOf(complexProp));
         SimpleFragment hierRow = (SimpleFragment) context.createSimpleFragment(
                 model.HIER_TABLE_NAME, id, map);
         // TODO put it in a collection context instead
@@ -326,14 +328,15 @@ public class SessionImpl implements Session, XAResource {
         return new Node(type, this, context, rowGroup);
     }
 
-    public boolean hasChildNode(Node parent, String name)
+    public boolean hasChildNode(Node parent, String name, Boolean complexProp)
             throws StorageException {
         checkLive();
         // TODO could optimize further by not fetching the fragment at all
-        return context.getByHier(parent.getId(), name) != null;
+        return context.getByHier(parent.getId(), name, complexProp) != null;
     }
 
-    public Node getChildNode(Node parent, String name) throws StorageException {
+    public Node getChildNode(Node parent, String name, Boolean complexProp)
+            throws StorageException {
         checkLive();
         if (name == null || name.contains("/") || name.equals(".") ||
                 name.equals("..")) {
@@ -345,7 +348,7 @@ public class SessionImpl implements Session, XAResource {
 
         // find child hier row
         Serializable parentId = parent.getId();
-        SimpleFragment childHier = context.getByHier(parentId, name);
+        SimpleFragment childHier = context.getByHier(parentId, name, complexProp);
         if (childHier == null) {
             // not found
             return null;
@@ -373,14 +376,17 @@ public class SessionImpl implements Session, XAResource {
     }
 
     // TODO optimize with dedicated backend call
-    public boolean hasChildren(Node parent) throws StorageException {
+    public boolean hasChildren(Node parent, Boolean complex)
+            throws StorageException {
         checkLive();
-        return context.getHierChildren(parent.getId()).size() > 0;
+        return context.getHierChildren(parent.getId(), complex).size() > 0;
     }
 
-    public List<Node> getChildren(Node parent) throws StorageException {
+    public List<Node> getChildren(Node parent, Boolean complex)
+            throws StorageException {
         checkLive();
-        Collection<SimpleFragment> fragments = context.getHierChildren(parent.getId());
+        Collection<SimpleFragment> fragments = context.getHierChildren(
+                parent.getId(), complex);
         List<Node> nodes = new ArrayList<Node>(fragments.size());
         for (SimpleFragment fragment : fragments) {
             Serializable id = fragment.getId();

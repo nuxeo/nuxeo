@@ -28,6 +28,11 @@ import org.nuxeo.ecm.core.storage.StorageException;
 /**
  * Holds information about the children of a given parent node.
  * <p>
+ * There are two kinds of children, the "regular" ones, which correspond to
+ * child documents and have unique names, and the "properties", which correspond
+ * to complex properties and may have non-unique names (which allows for lists
+ * of complex properties).
+ * <p>
  * Information about children may be complete, or just partial if only a few
  * individual children have been retrieved.
  * <p>
@@ -47,30 +52,41 @@ public class Children {
      * This is the case when a query to the database has been made to fetch all
      * children, or when a new parent node with no children has been created.
      */
-    private boolean complete;
+    private boolean completeRegular;
 
-    private Map<String, SimpleFragment> existing;
+    private Map<String, SimpleFragment> existingRegular;
 
-    private Set<String> missing;
+    private Collection<SimpleFragment> allRegular;
+
+    private Set<String> missingRegular;
+
+    private boolean completeProperties;
+
+    private Map<String, SimpleFragment> existingProperties;
+
+    private Collection<SimpleFragment> allProperties;
+
+    private Set<String> missingProperties;
 
     public Children(boolean complete) {
-        this.complete = complete;
+        this.completeRegular = complete;
+        this.completeProperties = complete;
     }
 
-    public Children(Collection<SimpleFragment> fragments, Model model) {
-        addComplete(fragments, model);
+    private void newExistingRegular() {
+        existingRegular = new HashMap<String, SimpleFragment>();
     }
 
-    private void newExisting() {
-        existing = new HashMap<String, SimpleFragment>();
+    private void newExistingProperties() {
+        existingProperties = new HashMap<String, SimpleFragment>();
     }
 
-    private void newMissing() {
-        missing = new HashSet<String>();
+    private void newMissingRegular() {
+        missingRegular = new HashSet<String>();
     }
 
-    public boolean isComplete() {
-        return complete;
+    private void newMissingProperties() {
+        missingProperties = new HashSet<String>();
     }
 
     /**
@@ -79,22 +95,38 @@ public class Children {
      * @param fragment the hierarchy fragment for the child
      * @param name the child name
      * @param pos the child position
+     * @param model the model
      * @throws StorageException
      */
     // TODO unordered for now
-    public void add(SimpleFragment fragment, String name, Long pos)
+    public void add(SimpleFragment fragment, String name, Long pos, Model model)
             throws StorageException {
-        if (missing != null) {
-            missing.remove(name);
-        }
-        if (existing == null) {
-            newExisting();
-        } else {
-            if (existing.containsKey(name)) {
-                throw new StorageException("Duplicate name: " + name);
+        if (model.HIER_CHILD_POS_COMPLEX.equals(pos)) {
+            if (missingProperties != null) {
+                missingProperties.remove(name);
             }
+            if (existingProperties == null) {
+                newExistingProperties();
+            } else {
+                if (existingProperties.containsKey(name)) {
+                    throw new StorageException(
+                            "Duplicate complex property name: " + name);
+                }
+            }
+            existingProperties.put(name, fragment);
+        } else {
+            if (missingRegular != null) {
+                missingRegular.remove(name);
+            }
+            if (existingRegular == null) {
+                newExistingRegular();
+            } else {
+                if (existingRegular.containsKey(name)) {
+                    throw new StorageException("Duplicate child name: " + name);
+                }
+            }
+            existingRegular.put(name, fragment);
         }
-        existing.put(name, fragment);
     }
 
     /**
@@ -122,22 +154,43 @@ public class Children {
      * Removes a known child.
      *
      * @param name the child name
+     * @param pos the pos
+     * @param model the model
      * @throws StorageException
      */
-    public void remove(String name) throws StorageException {
-        if (existing != null) {
-            if (existing.remove(name) == null) {
-                throw new StorageException("Not existing: " + name);
+    public void remove(String name, Long pos, Model model)
+            throws StorageException {
+        if (model.HIER_CHILD_POS_COMPLEX.equals(pos)) {
+            if (existingProperties != null) {
+                if (existingProperties.remove(name) == null) {
+                    throw new StorageException(
+                            "Nonexistent complex property: " + name);
+                }
             }
-        }
-        if (missing == null) {
-            newMissing();
+            if (missingProperties == null) {
+                newMissingProperties();
+            } else {
+                if (missingProperties.contains(name)) {
+                    throw new StorageException(
+                            "Already missing complex property: " + name);
+                }
+            }
+            missingProperties.add(name);
         } else {
-            if (missing.contains(name)) {
-                throw new StorageException("Already missing: " + name);
+            if (existingRegular != null) {
+                if (existingRegular.remove(name) == null) {
+                    throw new StorageException("Nonexistent child: " + name);
+                }
             }
+            if (missingRegular == null) {
+                newMissingRegular();
+            } else {
+                if (missingRegular.contains(name)) {
+                    throw new StorageException("Already missing child: " + name);
+                }
+            }
+            missingRegular.add(name);
         }
-        missing.add(name);
     }
 
     /**
@@ -147,30 +200,56 @@ public class Children {
      * <p>
      * Returns {@link SimpleFragment#UNKNOWN} if there's no info about it.
      *
-     * @param name
+     * @param name the name
+     * @param complex {@code true} if a complex property is searched, {@code
+     *            false} otherwise
      * @return the fragment, or {@code null}, or {@link SimpleFragment#UNKNOWN}
      */
-    public SimpleFragment get(String name) {
-        if (complete) {
-            return existing == null ? null : existing.get(name);
-        }
-        if (existing != null) {
-            SimpleFragment fragment = existing.get(name);
-            if (fragment != null) {
-                return fragment;
+    public SimpleFragment get(String name, boolean complex) {
+        if (complex) {
+            if (completeProperties) {
+                return existingProperties == null ? null
+                        : existingProperties.get(name);
             }
+            if (existingProperties != null) {
+                SimpleFragment fragment = existingProperties.get(name);
+                if (fragment != null) {
+                    return fragment;
+                }
+            }
+            return missingProperties != null &&
+                    missingProperties.contains(name) ? null
+                    : SimpleFragment.UNKNOWN;
+        } else {
+            if (completeRegular) {
+                return existingRegular == null ? null
+                        : existingRegular.get(name);
+            }
+            if (existingRegular != null) {
+                SimpleFragment fragment = existingRegular.get(name);
+                if (fragment != null) {
+                    return fragment;
+                }
+            }
+            return missingRegular != null && missingRegular.contains(name) ? null
+                    : SimpleFragment.UNKNOWN;
         }
-        return missing != null && missing.contains(name) ? null
-                : SimpleFragment.UNKNOWN;
     }
 
     /**
      * Gets all the fragments, for a complete list of children.
+     * <p>
+     * If the list is not complete, returns {@code null}.
      *
-     * @return all the fragments
+     * @param complex whether to get complex properties or real children, or
+     *            both
+     * @return all the fragments, or {@code null}
      */
-    public Collection<SimpleFragment> getFragments() {
-        assert complete;
+    public Collection<SimpleFragment> getFragments(Boolean complex) {
+        if (!complete) {
+            return null;
+        }
+        XXX(complex);
         return existing.values();
     }
 }

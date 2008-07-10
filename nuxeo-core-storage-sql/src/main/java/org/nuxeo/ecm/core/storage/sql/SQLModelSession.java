@@ -289,7 +289,7 @@ public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
             throws DocumentException {
         Document doc;
         try {
-            doc = newDocument(session.getChildNode(node, name));
+            doc = newDocument(session.getChildNode(node, name, Boolean.FALSE));
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -303,7 +303,7 @@ public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
     protected List<Document> getChildren(Node node) throws DocumentException {
         List<Node> nodes;
         try {
-            nodes = session.getChildren(node);
+            nodes = session.getChildren(node, Boolean.FALSE);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -322,7 +322,7 @@ public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
 
     protected boolean hasChild(Node node, String name) throws DocumentException {
         try {
-            return session.hasChildNode(node, name);
+            return session.hasChildNode(node, name, Boolean.FALSE);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -330,7 +330,7 @@ public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
 
     protected boolean hasChildren(Node node) throws DocumentException {
         try {
-            return session.hasChildren(node);
+            return session.hasChildren(node, Boolean.FALSE);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -339,7 +339,7 @@ public class SQLModelSession implements org.nuxeo.ecm.core.model.Session {
     protected Document addChild(Node parent, String name, String typeName)
             throws DocumentException {
         try {
-            return newDocument(session.addChildNode(parent, name, typeName));
+            return newDocument(session.addChildNode(parent, name, typeName, false));
         } catch (StorageException e) {
             throw new DocumentException(e);
         }

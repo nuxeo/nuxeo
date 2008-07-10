@@ -164,24 +164,30 @@ public class PersistenceContext {
      *
      * @param parentId the parent id
      * @param name the name
+     * @param complex whether to get complex properties or real children, or
+     *            both
      * @return the row, or {@code null} if none is found
      * @throws StorageException
      */
-    public SimpleFragment getByHier(Serializable parentId, String name)
-            throws StorageException {
-        return contexts.get(model.HIER_TABLE_NAME).getByHier(parentId, name);
+    public SimpleFragment getByHier(Serializable parentId, String name,
+            Boolean complex) throws StorageException {
+        return contexts.get(model.HIER_TABLE_NAME).getByHier(parentId, name,
+                complex);
     }
 
     /**
      * Finds all the children given a parent id.
      *
      * @param parentId the parent id
+     * @param complex whether to get complex properties or real children, or
+     *            both
      * @return the collection of rows
      * @throws StorageException
      */
-    public Collection<SimpleFragment> getHierChildren(Serializable parentId)
-            throws StorageException {
-        return contexts.get(model.HIER_TABLE_NAME).getHierChildren(parentId);
+    public Collection<SimpleFragment> getHierChildren(Serializable parentId,
+            Boolean complex) throws StorageException {
+        return contexts.get(model.HIER_TABLE_NAME).getHierChildren(parentId,
+                complex);
     }
 
     /**

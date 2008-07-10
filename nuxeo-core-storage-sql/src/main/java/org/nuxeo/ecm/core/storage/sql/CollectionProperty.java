@@ -68,22 +68,14 @@ public class CollectionProperty extends AbstractProperty {
     public void setValue(Serializable[] value) throws StorageException {
         checkWritable();
         if (value == null) {
-            fragment.set(NULL_ARRAY);
-            // mark dataRow as dirty!
-            return;
-        }
-        switch (type) {
-        case ARRAY_STRING:
-            if (value.length > 0 && !(value instanceof String[])) {
-                throw new RuntimeException("Value is not a string array: " +
-                        value);
+            value = NULL_ARRAY;
+        } else {
+            for (int i = 0; i < value.length; i++) {
+                value[i] = normalize(value[i]);
             }
-            fragment.set(value);
-            // mark dataRow as dirty!
-            break;
-        default:
-            throw new RuntimeException("Not implemented: " + type);
         }
+        fragment.set(value);
+        // mark fragment dirty!
     }
 
     /*
