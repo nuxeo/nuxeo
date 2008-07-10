@@ -7,25 +7,27 @@ The WebEngine is a framework to build web applications on top of the Nuxeo EP pl
 
 == Overview
 
-The main goal for the WebEngine framework is to let users to build web applications quickly and easily and in a traditional way 
+The main goal for the WebEngine framework is to let users build web applications quickly and easily and in a traditional way 
 without having knowledge on advanced Java topics such as JSF or Seam.
 
-The second goal is to be able to develop web pages while the server is running, without the need of restarting
-the server each time the configuration or the code is modified.
+The second goal is to be able to update the application while the server is running, without the need of restarting the server each time the configuration or the code is modified.
 
-The web pages are build using Freemarker templates for the presentation part and optionally scripts 
-(like groovy, jython etc) or custom Java request handlers for the logical part.
+The web pages are build using FreeMarker templates for the presentation part and optionally scripts (like Groovy, Jython etc) or custom Java request handlers for the logical part.
 
-Thus a web application is made from:
-+ *Configuration* - based on the nuxeo extension points mechanism
-+ *Templates* - freemarker is used as the template engine
-+ *Scripts* - any script supported by java scripting engine.
-+ *Custom Java Code* - plugged-in through extension points
+Thus, a web application is made from:
++ *Configuration* - based on the nuxeo extension points mechanism.
++ *Templates* - FreeMarker is used as the template engine.
++ *Scripts* - any script supported by the Java scripting engine.
++ *Custom Java Code* - plugged-in through extension points.
 
 Here is an example of a simple template page
+
 {{{My name is ${Context.principal.name}!}}}
-that is outputting
+
+that will output when called:
+
 {{{My name is Administrator!}}}
+
 if you are logged in as __Administrator__.
 
 The same can be done from a script (in this example a groovy script):
@@ -79,7 +81,8 @@ The path formed by the concatenation of the Application path and the Traversal p
 
 ==== Application Path
 
-The application path is used to select which WebEngine application to use. WebEngine applications are useful to isolate the different sites you want to host. A single application may define several application paths. When defining an application path you can optionally specify a repository Document that will be selected as the root document when an application is selected.\
+The application path is used to select which WebEngine application to use. WebEngine applications are useful to isolate the different sites you want to host. A single application may define several application paths. When defining an application path you can optionally specify a repository Document that will be selected as the root document when an application is selected.
+
 More details about this in the WebEngine Application section.
 
 ==== Traversal Path
@@ -148,11 +151,11 @@ Lets say we want to use the following URL path:
 
 to display a list of the blogs of user `bstefanescu` created in May 2004. Lets say that we define an application path `/blogs` that specify a root Document `/default-domain/workspaces/blogs` where are stored the blogs in the repository.
 
-So by using a `/blogs` prefix in the URL path we will seclect the correct application so that we have the root `/default-domain/workspaces/blogs`.
+So by using a `/blogs` prefix in the URL path we will select the correct application so that we have the root `/default-domain/workspaces/blogs`.
 Then, we want to use a script that will be invoked in the context of the root document to perform a search like:
 {{{SELECT * FROM Blog WHERE ecm:path STARTSWITH ${blogs} AND dc:created >= DATE '$year-$month-01'}}}
 to select all the blog documents created after the given date and located under the `${blogs}` document.
-For this we need to extract from the input the year and the month information. We already known the `${blogs}` variable since it is the target document of the request (in our case it is the same as the seclected application root).
+For this we need to extract from the input the year and the month information. We already known the `${blogs}` variable since it is the target document of the request (in our case it is the same as the selected application root).
 In order to do this we need to define the following mapping:
 
 {{{/blogs/archive/(?year:[0-9]{4}?)/(?month:[0-9]{2}?)}}}
@@ -187,7 +190,8 @@ Example of relative paths:
 * ../../myscript.py
 * ./myscript.groovy
 
-Note that using relative paths is less efficient since the path lookup cannot be cached because the current directory used to resolve scripts depends on the current request context, context that is changing on each request or more may change during the same request.\
+Note that using relative paths is less efficient since the path lookup cannot be cached because the current directory used to resolve scripts depends on the current request context, context that is changing on each request or more may change during the same request.
+
 Also when a relative path points outside the web root directory then it will be truncated (i.e. trailing ../ removed) and resolved as an absolute path.
 
 ==== Resolving Action Scripts
@@ -276,9 +280,10 @@ Install a Nuxeo EP product. Download the webengine components from http://www.nu
 * nuxeo-webengine-core
 * nuxeo-webengine-wiki (optional)
 
-Copy these JARs inside nuxeo.ear/plugins
+Copy these JARs inside `nuxeo.ear/plugins`.
 
 Make sure you have nuxeo-runtime-scripting in your nuxeo.ear/system folder if not download and copy it into this folder.
+
 Make sure you have the following JARs in your `nuxeo.ear/libs`:
 * freemarker-2.3.11.jar
 * json-lib-2.2.1-jdk15.jar
@@ -314,7 +319,8 @@ Web application data may be contributed by separate OSGi modules (JARs). Usually
 
 It is recommended that modules should contribute files by creating a new directory into the `web` root and not by replacing existing files. The directory stacking mechanism can be used to override existing files if this is wanted. 
 
-Applications are useful when you need to deploy multiple sites on the same server or when you want to customize an existing application but don't want your changes to modify the existing application. For example you need to override the document type `File` is handled vut only in your application scope.\
+Applications are useful when you need to deploy multiple sites on the same server or when you want to customize an existing application but don't want your changes to modify the existing application. For example you need to override the document type `File` is handled vut only in your application scope.
+
 When hosting multiple sites using WebEngine it is better to separate these sites in applications rather than using a single application that will correctly dispatch request for each site by using mappings or other techniques. This ensure a better scalability since each application configuration is isolated from the others and each application will use its own cache.
 
 Even if isolated at configuration level, applications may share script, template or static files.
@@ -380,7 +386,7 @@ A WebEngine module, apart the configuration files may also deploy script and oth
   </extension>
 }}}
 
-The first extension point is delcaring all the files you want to copy from the JAR in the `web` directory the first time your module is loaded.
+The first extension point is declaring all the files you want to copy from the JAR in the `web` directory the first time your module is loaded.
 The `copy` directive is doing a directory or file copy by overwriting any existing file; the append directive is appending some file on an existing file.
 
 The special `guard` attribute is specifying a file that will act as a guard to prevent re-deploying your web files each time you restart the server.
@@ -393,7 +399,7 @@ If you don't want hot redeployment on your configuration file you need to add an
 
 Now that you deployed you know how to deploy a new application we can look into the application extension point to see how an application can be configured.
 
-Here is an example of an application configurtaion:
+Here is an example of an application configuration:
 
 {{{
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
@@ -414,7 +420,7 @@ Here is an example of an application configurtaion:
   </extension>
 }}}
 
-* `extends` attribute is optional and means that the current application extends the configuration defined for the `default` application.\
+* `extends` attribute is optional and means that the current application extends the configuration defined for the `default` application.
 * `repository` element is used to specify what repository this application will use (if any is used). It defaults to "default"
 * `errorPage` element specify a script or template to be used to handle errors. It defaults to "error.ftl". There are also more default pages that you can configure using the elements:
 ** `indexPage` - called when a root request `/` is made in that application. Defaults to "index.ftl"
@@ -432,7 +438,7 @@ This is done by defining rules to map request paths to applications.
 
 *Note* that a single application can be mapped to multiple paths.
 
-Here is an example fo such a mapping rule:
+Here is an example for such a mapping rule:
 
 {{{
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
@@ -444,11 +450,11 @@ Here is an example fo such a mapping rule:
 
 The mapping is done on path prefixes and the longest match win.
 
-The first mapping rule is mapping the __default__ application to any path that starts with `/` path. This means any requests that is not matched to an application will be handled by the default application.
+The first mapping rule maps the __default__ application to any path that starts with `/` path. This means any requests that is not matched to an application will be handled by the default application.
 
-The second mapping rule is mapping the __default__ application to any path that starts with `/repository`.
+The second mapping rule maps the __default__ application to any path that starts with `/repository`.
 
-Also the `document` attribute specify that when this rule matches the Document root should be set to `/default-domain`.
+Also the `document` attribute specifies that when this rule matches, the Document root should be set to `/default-domain`.
 
 The `default` attribute is a little bit special. It tells that this mapping rule is the default one when trying to compute document paths.
 
@@ -470,10 +476,12 @@ Stacking is inherited when an application extends another application.
 
 ==== Example
 
-Let's say module nuxeo-webengine-core contributed the `default` directory, nuxeo-webengine-wiki contributed the `wiki` directory and nuxeo-webengine-blogs the `blogs` directory.
+Let's say module `nuxeo-webengine-core` contributed the `default` directory, `nuxeo-webengine-wiki` contributed the `wiki` directory and `nuxeo-webengine-blogs` the `blogs` directory.
 
-The `wiki` folder contains scripts and templates that deals with `Wiki` and `WikiPage` document types, while the `blogs` folder declare the 
+The `wiki` folder contains scripts and templates that deals with `Wiki` and `WikiPage` document types, while the `blogs` folder declare the (FIXME).
+
 Then an application APP1 may use a stack: `wiki`, `default` and another application APP2 may use: `blogs`, `default`.
+
 Both APP1 and APP2  will see the scripts that deal with common Nuxeo types (the ones from `default`) but APP1 will not see blog related scripts and APP2 will not see wiki related scripts.
 
 Using the same mechanism you may change or hide only .css or .gif files creating thus skins.
