@@ -67,4 +67,9 @@ public class DocumentTypeDescriptor {
         this.facets = facets;
     }
 
+    @Override
+    public String toString() {
+        return "DocType: "+name;
+    }
+
 }
