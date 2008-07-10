@@ -2,20 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-parent</artifactId>
     <version>5.2-20080710</version>
   </parent>
 
-  <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.ecm.webengine</groupId>
   <artifactId>nuxeo-webengine-parent</artifactId>
   <version>1.0.b1</version>
   <packaging>pom</packaging>
   <name>Nuxeo WebEngine</name>
   <description>Nuxeo WebEngine is the lightweight content-centric web framework.</description>
-  
 
   <modules>
     <module>nuxeo-platform-rendering</module>
@@ -24,6 +23,74 @@
     <module>nuxeo-webengine-server</module>
     <module>nuxeo-webengine-wiki-jsf</module>
   </modules>
+
+  <properties>
+    <nuxeo.webengine.version>1.0.b1</nuxeo.webengine.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-rendering</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-core</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-wiki</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-wiki-jsf</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+
+      <!-- was missing in nuxeo-platform-parent:pom -->
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-scripting</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-jetty-adapter</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-launcher</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-client</artifactId>
+        <version>${nuxeo.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-comment</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-versioning-core</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+
+      <!-- nuxeo-addons -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-shell-commands-base</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <reporting>
     <plugins>
@@ -93,7 +160,7 @@
       </releases>
     </repository>
   </repositories>
-    
+
   <distributionManagement>
     <site>
       <id>maven_website</id>
@@ -112,11 +179,11 @@
       </url>
     </snapshotRepository>
   </distributionManagement>
-  
+
   <scm>
     <connection>scm:hg:http://hg.nuxeo.org/nuxeo-webengine#1.0.b1</connection>
     <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo-webengine#1.0.b1</developerConnection>
     <url>http://hg.nuxeo.org/nuxeo-webengine#1.0.b1/</url>
-  </scm>  
+  </scm>
 
 </project>

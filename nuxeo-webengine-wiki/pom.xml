@@ -8,11 +8,10 @@
     <version>1.0.b1</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.webengine.wiki</groupId>
   <artifactId>nuxeo-webengine-wiki</artifactId>
   <name>Nuxeo Wiki</name>
   <description>Enteprise Wiki based on Nuxeo WebEngine.</description>
-  
+
   <build>
     <plugins>
       <plugin>
@@ -82,10 +81,11 @@
       <artifactId>nuxeo-platform-webapp-core</artifactId>
       <type>ejb</type>
     </dependency>
+
+    <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-jcr-connector-test</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 
