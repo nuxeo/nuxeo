@@ -32,6 +32,46 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <aggregate>true</aggregate>
+          <maxmemory>512m</maxmemory>
+          <!--stylesheetfile>
+            ${basedir}/src/site/resources/css/jdstyle.css
+            </stylesheetfile-->
+          <windowtitle>
+            Nuxeo WebEngine ${project.version} API Documentation
+          </windowtitle>
+          <doctitle>
+            Nuxeo WebEngine ${project.version} API Documentation
+          </doctitle>
+          <header>Nuxeo WebEngine ${project.version}</header>
+          <links>
+            <link>http://doc.nuxeo.org/5.1/apidocs/</link>
+            <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
+            <link>http://java.sun.com/javaee/5/docs/api/</link>
+            <link> http://jakarta.apache.org/commons/collections/apidocs-COLLECTIONS_3_0/
+            </link>
+            <link>
+              http://jakarta.apache.org/commons/fileupload/apidocs/
+            </link>
+            <link>
+              http://jakarta.apache.org/commons/httpclient/apidocs/
+            </link>
+            <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
+            <link>http://jakarta.apache.org/commons/io/apidocs/</link>
+            <link>http://junit.sourceforge.net/javadoc/</link>
+            <link>http://logging.apache.org/log4j/docs/api/</link>
+            <link>
+              http://www.opensymphony.com/compass/versions/1.2M2/api/
+            </link>
+            <link>http://jackrabbit.apache.org/api-1/</link>
+            <link>http://www.day.com/maven/jsr170/javadocs/jcr-1.0/</link>
+            <link>http://myfaces.apache.org/tomahawk/apidocs/</link>
+            <link>http://www.restlet.org/documentation/1.0/api/</link>
+            <link>http://www.hibernate.org/hib_docs/v3/api/</link>
+            <link>http://docs.jboss.com/seam/1.1.5.GA/api/</link>
+            <link>http://docs.jboss.com/jbpm/v3.1/javadoc.jbpm/</link>
+            <link>http://docs.jboss.com/jbpm/v3.1/javadoc.identity/</link>
+            <link>http://labs.jboss.com/jbossremoting/docs/api/</link>
+          </links>
         </configuration>
       </plugin>
     </plugins>
@@ -53,5 +93,25 @@
       </releases>
     </repository>
   </repositories>
+  
+  <distributionManagement>
+    <site>
+      <id>maven_website</id>
+      <url>scpexe://gironde.nuxeo.com/home/mavenweb/webengine/</url>
+    </site>
+    <repository>
+      <id>nuxeo_release</id>
+      <url>
+        scpexe://tamise.nuxeo.com/home/archiva/repositories/nuxeo_release
+      </url>
+    </repository>
+    <snapshotRepository>
+      <id>nuxeo_snapshot</id>
+      <url>
+        scpexe://tamise.nuxeo.com/home/archiva/repositories/nuxeo_snapshot
+      </url>
+    </snapshotRepository>
+  </distributionManagement>
+  
 
 </project>
