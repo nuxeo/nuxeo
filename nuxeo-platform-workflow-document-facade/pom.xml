@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -11,8 +13,10 @@
   <artifactId>nuxeo-platform-workflow-document-facade</artifactId>
   <packaging>ejb</packaging>
   <name>Nuxeo Workflow Service - Document Management Facade</name>
-  <description>Nuxeo Enterprise Platform: Java EE facade for the document
-    management service of the Workflow Service.</description>
+  <description>
+    Nuxeo Enterprise Platform: Java EE facade for the document management
+    service of the Workflow Service.
+  </description>
 
   <dependencies>
     <dependency>
@@ -74,6 +78,42 @@
             <exclude>**/TestWorkItemsListsBeanRemote*.class</exclude>
           </excludes>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-ejb-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Bundle-Category>web,stateful</Bundle-Category>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <!-- build an artifact with implementations needed on client side but without persistence -->
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <classifier>remote-api</classifier>
+              <includes>
+                <include>**/WorkItemEntryImpl*</include>
+                <include>**/WorkItemsListEntryImpl*</include>
+              </includes>
+              <archive>
+                <manifestEntries>
+                  <Bundle-Category>stateless</Bundle-Category>
+                </manifestEntries>
+              </archive>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
