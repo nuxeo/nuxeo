@@ -31,14 +31,21 @@ import javax.transaction.xa.XAResource;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
+import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.security.SecurityManager;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
+import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
 
 /**
  * This class is the bridge between the Nuxeo SPI Session and the actual
@@ -292,7 +299,7 @@ public class SQLSession implements Session {
             throws DocumentException {
         Document doc;
         try {
-            doc = newDocument(session.getChildNode(node, name, Boolean.FALSE));
+            doc = newDocument(session.getChildNode(node, name, false));
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -306,7 +313,7 @@ public class SQLSession implements Session {
     protected List<Document> getChildren(Node node) throws DocumentException {
         List<Node> nodes;
         try {
-            nodes = session.getChildren(node, Boolean.FALSE);
+            nodes = session.getChildren(node, false);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -325,7 +332,7 @@ public class SQLSession implements Session {
 
     protected boolean hasChild(Node node, String name) throws DocumentException {
         try {
-            return session.hasChildNode(node, name, Boolean.FALSE);
+            return session.hasChildNode(node, name, false);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -333,7 +340,7 @@ public class SQLSession implements Session {
 
     protected boolean hasChildren(Node node) throws DocumentException {
         try {
-            return session.hasChildren(node, Boolean.FALSE);
+            return session.hasChildren(node, false);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -342,26 +349,61 @@ public class SQLSession implements Session {
     protected Document addChild(Node parent, String name, String typeName)
             throws DocumentException {
         try {
-            return newDocument(session.addChildNode(parent, name, typeName, false));
+            return newDocument(session.addChildNode(parent, name, typeName,
+                    false));
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
     }
 
     protected void removeNode(Node node) throws DocumentException {
-
+        throw new UnsupportedOperationException();
     }
 
     /*
-     * ----- called by SQLComplexProperty -----
+     * ----- property helpers -----
      */
 
-    protected Node getChildPropertyNode(Node node, String name)
+    protected Property getProperty(Node node, Field field)
             throws DocumentException {
-        try {
-            return session.getChildNode(node, name, Boolean.TRUE);
-        } catch (StorageException e) {
-            throw new DocumentException(e);
+        String name = field.getName().getPrefixedName();
+        Type type = field.getType();
+        if (type.isSimpleType()) {
+            SimpleProperty property;
+            try {
+                property = node.getSimpleProperty(name);
+            } catch (StorageException e) {
+                throw new DocumentException(e);
+            }
+            return new SQLSimpleProperty(property, type);
+        } else if (type.isListType()) {
+            ListType listType = (ListType) type;
+            if (listType.getFieldType().isSimpleType()) {
+                CollectionProperty property;
+                try {
+                    property = node.getCollectionProperty(name);
+                } catch (StorageException e) {
+                    throw new DocumentException(e);
+                }
+                return new SQLCollectionProperty(property, listType);
+            } else {
+                throw new UnsupportedOperationException("list");
+            }
+        } else {
+            // complex type
+            ComplexType complexType = (ComplexType) type;
+            Node childNode;
+            try {
+                childNode = session.getChildNode(node, name, true);
+            } catch (StorageException e) {
+                throw new DocumentException(e);
+            }
+            // TODO XXX childNode may be null!
+            if (childNode == null) {
+                throw new RuntimeException("TODO");
+            }
+            return new SQLComplexProperty(childNode, complexType, this);
         }
     }
+
 }

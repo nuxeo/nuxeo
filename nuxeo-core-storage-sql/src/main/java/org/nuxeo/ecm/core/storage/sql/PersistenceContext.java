@@ -159,35 +159,51 @@ public class PersistenceContext {
     }
 
     /**
+     * Gets a hierarchy fragment given an id.
+     * <p>
+     * If the fragment is not in the context, fetch it from the mapper. If it's
+     * not in the database, returns {@code null} or an absent fragment.
+     *
+     * @param id the fragment id
+     * @param createAbsent {@code true} to return an absent fragment as an
+     *            object instead of {@code null}
+     * @return the fragment, or {@code null} if none is found and {@value
+     *         createAbsent} was {@code false}
+     * @throws StorageException
+     */
+    public Fragment getChildById(Serializable id, boolean createAbsent)
+            throws StorageException {
+        return contexts.get(model.HIER_TABLE_NAME).getChildById(id, createAbsent);
+    }
+
+    /**
      * Finds a row in the hierarchy table given its parent id and name. If the
      * row is not in the context, fetch it from the mapper.
      *
      * @param parentId the parent id
      * @param name the name
-     * @param complex whether to get complex properties or real children, or
-     *            both
+     * @param complexProp whether to get complex properties or real children
      * @return the row, or {@code null} if none is found
      * @throws StorageException
      */
-    public SimpleFragment getByHier(Serializable parentId, String name,
-            Boolean complex) throws StorageException {
-        return contexts.get(model.HIER_TABLE_NAME).getByHier(parentId, name,
-                complex);
+    public SimpleFragment getChildByName(Serializable parentId, String name,
+            boolean complexProp) throws StorageException {
+        return contexts.get(model.HIER_TABLE_NAME).getChildByName(parentId,
+                name, complexProp);
     }
 
     /**
      * Finds all the children given a parent id.
      *
      * @param parentId the parent id
-     * @param complex whether to get complex properties or real children, or
-     *            both
+     * @param complexProp whether to get complex properties or real children
      * @return the collection of rows
      * @throws StorageException
      */
-    public Collection<SimpleFragment> getHierChildren(Serializable parentId,
-            Boolean complex) throws StorageException {
-        return contexts.get(model.HIER_TABLE_NAME).getHierChildren(parentId,
-                complex);
+    public Collection<SimpleFragment> getChildren(Serializable parentId,
+            boolean complexProp) throws StorageException {
+        return contexts.get(model.HIER_TABLE_NAME).getChildren(parentId,
+                complexProp);
     }
 
     /**

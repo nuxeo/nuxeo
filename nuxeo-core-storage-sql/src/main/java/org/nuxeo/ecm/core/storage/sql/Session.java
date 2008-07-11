@@ -100,17 +100,17 @@ public interface Session extends Connection {
      * Checks if a child node with the given name exists.
      * <p>
      * There are two kinds of children, the regular children documents and the
-     * complex properties. The {@link Boolean} {@value complexProp} allows a
-     * choice between those, or both.
+     * complex properties. The {@code boolean} {@value complexProp} allows a
+     * choice between those.
      *
      * @param parent the parent node
      * @param name the child name
      * @param complexProp whether to check complex properties or regular
-     *            children, {@code null} means both
+     *            children
      * @return {@code true} if a child node with that name exists
      * @throws StorageException
      */
-    boolean hasChildNode(Node parent, String name, Boolean complexProp)
+    boolean hasChildNode(Node parent, String name, boolean complexProp)
             throws StorageException;
 
     /**
@@ -123,7 +123,7 @@ public interface Session extends Connection {
      * @return the child node, or {@code null} is not found
      * @throws StorageException
      */
-    Node getChildNode(Node parent, String name, Boolean complexProp)
+    Node getChildNode(Node parent, String name, boolean complexProp)
             throws StorageException;
 
     /**
@@ -135,7 +135,7 @@ public interface Session extends Connection {
      * @return {@code true} if the parent has children
      * @throws StorageException
      */
-    boolean hasChildren(Node parent, Boolean complexProp)
+    boolean hasChildren(Node parent, boolean complexProp)
             throws StorageException;
 
     /**
@@ -147,7 +147,7 @@ public interface Session extends Connection {
      * @return the collection of children
      * @throws StorageException
      */
-    List<Node> getChildren(Node parent, Boolean complexProp)
+    List<Node> getChildren(Node parent, boolean complexProp)
             throws StorageException;
 
     /**

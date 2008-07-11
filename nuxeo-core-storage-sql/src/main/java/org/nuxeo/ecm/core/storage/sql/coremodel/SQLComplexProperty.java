@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,14 +26,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.NoSuchPropertyException;
 import org.nuxeo.ecm.core.model.Property;
-import org.nuxeo.ecm.core.repository.jcr.properties.PropertyFactory;
+import org.nuxeo.ecm.core.model.PropertyContainer;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.sql.Node;
-import org.nuxeo.ecm.core.storage.sql.SessionImpl;
 
 /**
  * A {@link SQLComplexProperty} gives access to a wrapped SQL-level {@link Node}
@@ -40,21 +44,23 @@ import org.nuxeo.ecm.core.storage.sql.SessionImpl;
  *
  * @author Florent Guillaume
  */
-public class SQLComplexProperty implements Property {
+public class SQLComplexProperty implements Property, PropertyContainer {
 
-    private final Node node;
+    private static final Log log = LogFactory.getLog(SQLComplexProperty.class);
 
-    private final Field field;
+    protected final Node node;
 
-    private final ComplexType type;
+    protected final ComplexType type;
+
+    protected final SQLSession session;
 
     /**
      * Creates a {@link SQLComplexProperty} to wrap a {@link Node}.
      */
-    public SQLComplexProperty(Node node, Field field) {
+    public SQLComplexProperty(Node node, ComplexType type, SQLSession session) {
         this.node = node;
-        this.field = field;
-        type = (ComplexType) field.getType();
+        this.type = type;
+        this.session = session;
     }
 
     /*
@@ -65,7 +71,7 @@ public class SQLComplexProperty implements Property {
         return node.getName();
     }
 
-    public ComplexType getType() {
+    public Type getType() {
         return type;
     }
 
@@ -94,6 +100,10 @@ public class SQLComplexProperty implements Property {
         }
     }
 
+    /*
+     * ----- Property + PropertyContainer -----
+     */
+
     public boolean isPropertySet(String name) throws DocumentException {
         throw new UnsupportedOperationException();
     }
@@ -103,23 +113,129 @@ public class SQLComplexProperty implements Property {
         if (field == null) {
             throw new NoSuchPropertyException(name);
         }
-        return SQLPropertyHelper.getProperty(node, field);
+        return session.getProperty(node, field);
     }
 
     public Collection<Property> getProperties() throws DocumentException {
         Collection<Field> fields = type.getFields();
         List<Property> properties = new ArrayList<Property>(fields.size());
-        for (Field childField : fields) {
-            String name = childField.getName().getPrefixedName();
-            SQLSession session;
-            Node child = session.getChildPropertyNode(node, name);
-            // XXX TODO may be null!
-            properties.add(SQLPropertyHelper.getProperty(child, childField));
+        for (Field field : fields) {
+            properties.add(session.getProperty(node, field));
         }
         return properties;
     }
 
     public Iterator<Property> getPropertyIterator() throws DocumentException {
+        return getProperties().iterator();
+    }
+
+    /*
+     * ----- org.nuxeo.ecm.core.model.PropertyContainer -------------------
+     * (used for SQLDocument, SQLComplexProperty itself doesn't need it)
+     */
+
+    public Map<String, Object> exportFlatMap(String[] schemas)
+            throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public Map<String, Map<String, Object>> exportMap(String[] schemas)
+            throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public Map<String, Object> exportMap(String schemaName)
+            throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public void importFlatMap(Map<String, Object> map) throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public void importMap(Map<String, Map<String, Object>> map)
+            throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<String> getDirtyFields() {
+        throw new UnsupportedOperationException();
+    }
+
+    public Object getPropertyValue(String name) throws DocumentException {
+        return getProperty(name).getValue();
+    }
+
+    public boolean getBoolean(String name) throws DocumentException {
+        Boolean value = (Boolean) getProperty(name).getValue();
+        return value == null ? false : value.booleanValue();
+    }
+
+    public Blob getContent(String name) throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public Calendar getDate(String name) throws DocumentException {
+        return (Calendar) getProperty(name).getValue();
+    }
+
+    public double getDouble(String name) throws DocumentException {
+        Double value = (Double) getProperty(name).getValue();
+        return value == null ? 0 : value.doubleValue();
+    }
+
+    public long getLong(String name) throws DocumentException {
+        Long value = (Long) getProperty(name).getValue();
+        return value == null ? 0 : value.longValue();
+    }
+
+    public String getString(String name) throws DocumentException {
+        return (String) getProperty(name).getValue();
+    }
+
+    public void setPropertyValue(String name, Object value)
+            throws DocumentException {
+        // TODO check constraints
+        try {
+            getProperty(name).setValue(value);
+            // TODO mark dirty fields
+        } catch (RuntimeException e) {
+            log.error("RuntimeException setting value: " + value +
+                    " on property: " + name);
+            throw e;
+        } catch (DocumentException e) {
+            // we log a debugging message here as it is a point where the
+            // property name is known
+            log.error("Error setting value: " + value + " on property: " + name);
+            throw e;
+        }
+    }
+
+    public void setBoolean(String name, boolean value) throws DocumentException {
+        setPropertyValue(name, Boolean.valueOf(value));
+    }
+
+    public void setContent(String name, Blob value) throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setDate(String name, Calendar value) throws DocumentException {
+        setPropertyValue(name, value);
+    }
+
+    public void setDouble(String name, double value) throws DocumentException {
+        setPropertyValue(name, Double.valueOf(value));
+    }
+
+    public void setLong(String name, long value) throws DocumentException {
+        setPropertyValue(name, Long.valueOf(value));
+    }
+
+    public void setString(String name, String value) throws DocumentException {
+        setPropertyValue(name, value);
+    }
+
+    public void removeProperty(String name) throws DocumentException {
         throw new UnsupportedOperationException();
     }
 

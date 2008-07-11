@@ -195,8 +195,8 @@ public class SessionImpl implements Session, XAResource {
         DocumentType childType = schemaManager.getDocumentType(childTypeName);
 
         // find hier row
-        SimpleFragment childHier = (SimpleFragment) context.get(
-                model.HIER_TABLE_NAME, id, false);
+        SimpleFragment childHier = (SimpleFragment) context.getChildById(id,
+                false);
 
         // TODO get all non-cached fragments at once using join / union
         FragmentsMap childFragments = new FragmentsMap();
@@ -268,7 +268,7 @@ public class SessionImpl implements Session, XAResource {
                 throw new IllegalArgumentException(
                         "Illegal path with empty component: " + path);
             }
-            node = getChildNode(node, name, Boolean.FALSE);
+            node = getChildNode(node, name, false);
             if (node == null) {
                 return null;
             }
@@ -328,15 +328,14 @@ public class SessionImpl implements Session, XAResource {
         return new Node(type, this, context, rowGroup);
     }
 
-    public boolean hasChildNode(Node parent, String name, Boolean complexProp)
+    public boolean hasChildNode(Node parent, String name, boolean complexProp)
             throws StorageException {
         checkLive();
         // TODO could optimize further by not fetching the fragment at all
-        return context.getByHier(parent.getId(), name, complexProp) != null;
+        return context.getChildByName(parent.getId(), name, complexProp) != null;
     }
 
-    /* Only used with real children */
-    public Node getChildNode(Node parent, String name, Boolean complexProp)
+    public Node getChildNode(Node parent, String name, boolean complexProp)
             throws StorageException {
         checkLive();
         if (name == null || name.contains("/") || name.equals(".") ||
@@ -349,7 +348,8 @@ public class SessionImpl implements Session, XAResource {
 
         // find child hier row
         Serializable parentId = parent.getId();
-        SimpleFragment childHier = context.getByHier(parentId, name, complexProp);
+        SimpleFragment childHier = context.getChildByName(parentId, name,
+                complexProp);
         if (childHier == null) {
             // not found
             return null;
@@ -377,21 +377,22 @@ public class SessionImpl implements Session, XAResource {
     }
 
     // TODO optimize with dedicated backend call
-    public boolean hasChildren(Node parent, Boolean complex)
+    public boolean hasChildren(Node parent, boolean complexProp)
             throws StorageException {
         checkLive();
-        return context.getHierChildren(parent.getId(), complex).size() > 0;
+        return context.getChildren(parent.getId(), complexProp).size() > 0;
     }
 
-    public List<Node> getChildren(Node parent, Boolean complex)
+    public List<Node> getChildren(Node parent, boolean complexProp)
             throws StorageException {
+        assert !complexProp; // no use case for all complex props yet
         checkLive();
-        Collection<SimpleFragment> fragments = context.getHierChildren(
-                parent.getId(), complex);
+        Collection<SimpleFragment> fragments = context.getChildren(
+                parent.getId(), complexProp);
         List<Node> nodes = new ArrayList<Node>(fragments.size());
         for (SimpleFragment fragment : fragments) {
-            Serializable id = fragment.getId();
-            nodes.add(getNodeById(id));
+            // TODO what if node is null?
+            nodes.add(getNodeById(fragment.getId()));
         }
         return nodes;
     }
@@ -440,6 +441,7 @@ public class SessionImpl implements Session, XAResource {
         }
     }
 
+    // TODO factor with addChildNode
     private Node addRootNode() throws StorageException {
         // use a temporary id that's guaranteed to not be in the db
         Serializable id = "T" + repository.getNextTemporaryId();
@@ -455,6 +457,7 @@ public class SessionImpl implements Session, XAResource {
         map.put(model.HIER_PARENT_KEY, null);
         map.put(model.HIER_CHILD_POS_KEY, null);
         map.put(model.HIER_CHILD_NAME_KEY, "");
+        map.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.FALSE);
         SimpleFragment hierRow = (SimpleFragment) context.createSimpleFragment(
                 model.HIER_TABLE_NAME, id, map);
 

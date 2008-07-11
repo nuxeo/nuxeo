@@ -56,15 +56,11 @@ public class Children {
 
     private Map<String, SimpleFragment> existingRegular;
 
-    private Collection<SimpleFragment> allRegular;
-
     private Set<String> missingRegular;
 
     private boolean completeProperties;
 
     private Map<String, SimpleFragment> existingProperties;
-
-    private Collection<SimpleFragment> allProperties;
 
     private Set<String> missingProperties;
 
@@ -94,14 +90,14 @@ public class Children {
      *
      * @param fragment the hierarchy fragment for the child
      * @param name the child name
-     * @param pos the child position
-     * @param model the model
+     * @param complexProp whether the child is a complex property or a regular
+     *            child
      * @throws StorageException
      */
     // TODO unordered for now
-    public void add(SimpleFragment fragment, String name, Long pos, Model model)
+    public void add(SimpleFragment fragment, String name, boolean complexProp)
             throws StorageException {
-        if (model.HIER_CHILD_POS_COMPLEX.equals(pos)) {
+        if (complexProp) {
             if (missingProperties != null) {
                 missingProperties.remove(name);
             }
@@ -135,32 +131,36 @@ public class Children {
      * Fragments already known are not erased, as they may be new.
      *
      * @param fragments
+     * @param complexProp whether the children are complex properties or regular
+     *            children
      * @param model
      */
-    public void addComplete(Collection<SimpleFragment> fragments, Model model) {
-        assert !complete;
-        if (existing == null) {
-            newExisting();
+    public void addComplete(Collection<SimpleFragment> fragments,
+            boolean complexProp, Model model) {
+        assert !complexProp; // no use case for complex props yet
+        assert !completeRegular;
+        if (existingRegular == null) {
+            newExistingRegular();
         }
         String name_key = model.HIER_CHILD_NAME_KEY;
         for (SimpleFragment fragment : fragments) {
-            existing.put(fragment.getString(name_key), fragment);
+            existingRegular.put(fragment.getString(name_key), fragment);
         }
-        missing = null; // could check coherence with existing
-        complete = true;
+        missingRegular = null; // could check coherence with existing
+        completeRegular = true;
     }
 
     /**
      * Removes a known child.
      *
      * @param name the child name
-     * @param pos the pos
-     * @param model the model
+     * @param complexProp whether the child is a complex property or a regular
+     *            child
      * @throws StorageException
      */
-    public void remove(String name, Long pos, Model model)
+    public void remove(String name, boolean complexProp)
             throws StorageException {
-        if (model.HIER_CHILD_POS_COMPLEX.equals(pos)) {
+        if (complexProp) {
             if (existingProperties != null) {
                 if (existingProperties.remove(name) == null) {
                     throw new StorageException(
@@ -201,12 +201,12 @@ public class Children {
      * Returns {@link SimpleFragment#UNKNOWN} if there's no info about it.
      *
      * @param name the name
-     * @param complex {@code true} if a complex property is searched, {@code
-     *            false} otherwise
+     * @param complexProp {@code true} if a complex property is searched,
+     *            {@code false} for a regular child
      * @return the fragment, or {@code null}, or {@link SimpleFragment#UNKNOWN}
      */
-    public SimpleFragment get(String name, boolean complex) {
-        if (complex) {
+    public SimpleFragment get(String name, boolean complexProp) {
+        if (complexProp) {
             if (completeProperties) {
                 return existingProperties == null ? null
                         : existingProperties.get(name);
@@ -241,15 +241,15 @@ public class Children {
      * <p>
      * If the list is not complete, returns {@code null}.
      *
-     * @param complex whether to get complex properties or real children, or
-     *            both
+     * @param complexProp {@code true} for complex properties, {@code false} for
+     *            regular children
      * @return all the fragments, or {@code null}
      */
-    public Collection<SimpleFragment> getFragments(Boolean complex) {
-        if (!complete) {
+    public Collection<SimpleFragment> getFragments(boolean complexProp) {
+        assert !complexProp; // no use case for complex props yet
+        if (!completeRegular) {
             return null;
         }
-        XXX(complex);
-        return existing.values();
+        return existingRegular.values();
     }
 }

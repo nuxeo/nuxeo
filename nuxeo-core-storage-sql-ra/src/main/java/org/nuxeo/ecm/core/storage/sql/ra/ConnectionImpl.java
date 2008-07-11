@@ -126,24 +126,24 @@ public class ConnectionImpl implements Session {
         return session.getNodeByPath(path, node);
     }
 
-    public boolean hasChildNode(Node parent, String name, Boolean complex)
+    public boolean hasChildNode(Node parent, String name, boolean complexProp)
             throws StorageException {
-        return session.hasChildNode(parent, name, complex);
+        return session.hasChildNode(parent, name, complexProp);
     }
 
-    public Node getChildNode(Node parent, String name, Boolean complex)
+    public Node getChildNode(Node parent, String name, boolean complexProp)
             throws StorageException {
-        return session.getChildNode(parent, name, complex);
+        return session.getChildNode(parent, name, complexProp);
     }
 
-    public boolean hasChildren(Node parent, Boolean complex)
+    public boolean hasChildren(Node parent, boolean complexProp)
             throws StorageException {
-        return session.hasChildren(parent, complex);
+        return session.hasChildren(parent, complexProp);
     }
 
-    public List<Node> getChildren(Node parent, Boolean complex)
+    public List<Node> getChildren(Node parent, boolean complexProp)
             throws StorageException {
-        return session.getChildren(parent, complex);
+        return session.getChildren(parent, complexProp);
     }
 
     public Node addChildNode(Node parent, String name, String typeName,

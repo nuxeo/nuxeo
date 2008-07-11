@@ -57,15 +57,15 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node root = session.getRootNode();
 
         // root doc /foo
-        Node nodefoo = session.addChildNode(root, "foo", "TestDoc");
+        Node nodefoo = session.addChildNode(root, "foo", "TestDoc", false);
         assertEquals(root.getId(), session.getParentNode(nodefoo).getId());
-        assertEquals("TestDoc", nodefoo.getDocumentType().getName());
+        assertEquals("TestDoc", nodefoo.getType().getName());
         assertEquals("/foo", session.getPath(nodefoo));
-        Node nodeabis = session.getChildNode(root, "foo");
+        Node nodeabis = session.getChildNode(root, "foo", false);
         assertEquals(nodefoo.getId(), nodeabis.getId());
 
         // first child /foo/bar
-        Node nodeb = session.addChildNode(nodefoo, "bar", "TestDoc");
+        Node nodeb = session.addChildNode(nodefoo, "bar", "TestDoc", false);
         assertEquals("/foo/bar", session.getPath(nodeb));
         assertEquals(nodefoo.getId(), session.getParentNode(nodeb).getId());
         assertEquals(nodeb.getId(),
@@ -79,19 +79,19 @@ public class TestSQLBackend extends SQLBackendTestCase {
          */
         session = repository.getConnection();
         root = session.getRootNode();
-        nodefoo = session.getChildNode(root, "foo");
+        nodefoo = session.getChildNode(root, "foo", false);
         assertEquals("foo", nodefoo.getName());
         assertEquals("/foo", session.getPath(nodefoo));
 
         // second child /foo/gee
-        Node nodec = session.addChildNode(nodefoo, "gee", "TestDoc");
+        Node nodec = session.addChildNode(nodefoo, "gee", "TestDoc", false);
         assertEquals("/foo/gee", session.getPath(nodec));
-        List<Node> children = session.getChildren(nodefoo);
+        List<Node> children = session.getChildren(nodefoo, false);
         assertEquals(2, children.size());
 
         session.save();
 
-        children = session.getChildren(nodefoo);
+        children = session.getChildren(nodefoo, false);
         assertEquals(2, children.size());
 
         // delete bar
@@ -103,7 +103,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     public void testBasics() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
-        Node nodea = session.addChildNode(root, "foo", "TestDoc");
+        Node nodea = session.addChildNode(root, "foo", "TestDoc", false);
 
         nodea.setSingleProperty("tst:title", "hello world");
         nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
@@ -112,7 +112,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Map<String, Serializable> owner = new HashMap<String, Serializable>();
         owner.put("firstname", "Bob");
         owner.put("lastname", "Lemoche");
-        nodea.setComplexProperty("tst:owner", owner);
+        //nodea.setComplexProperty("tst:owner", owner);
 
 
         assertEquals("hello world",
@@ -134,7 +134,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // now read from another session
         session = repository.getConnection();
         root = session.getRootNode();
-        nodea = session.getChildNode(root, "foo");
+        nodea = session.getChildNode(root, "foo", false);
         assertEquals("another",
                 nodea.getSimpleProperty("tst:title").getString());
         subjects = nodea.getCollectionProperty("tst:subjects").getStrings();

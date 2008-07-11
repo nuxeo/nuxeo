@@ -24,46 +24,31 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
-import org.nuxeo.ecm.core.model.NoSuchPropertyException;
-import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.schema.types.Field;
-import org.nuxeo.ecm.core.schema.types.ListType;
-import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
-import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;
 import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
 
 /**
  * @author Florent Guillaume
  */
-public class SQLDocument implements Document {
+public class SQLDocument extends SQLComplexProperty implements Document {
 
     private static final Log log = LogFactory.getLog(SQLDocument.class);
-
-    /** The session. */
-    private SQLSession session;
-
-    /** The underlying SQL node. */
-    private Node node;
-
-    private final DocumentType documentType;
 
     // we store lock state on the document because it is frequently used
     // (on each permission check)
@@ -79,26 +64,27 @@ public class SQLDocument implements Document {
      * @param node the JCR node to wrap
      * @throws StorageException if any JCR exception occurs
      */
-    SQLDocument(Node node, SQLSession session) throws StorageException {
-        this.node = node;
-        this.session = session;
-        documentType = node.getDocumentType();
+    SQLDocument(Node node, SQLSession session) {
+        super(node, (ComplexType) node.getType(), session);
     }
 
     /*
      * ----- org.nuxeo.ecm.core.model.Document -----
      */
 
-    public org.nuxeo.ecm.core.model.Session getSession() {
+    // public String getName(); from SQLComplexProperty
+    //
+    @Override
+    public DocumentType getType() {
+        return (DocumentType) type;
+    }
+
+    public Session getSession() {
         return session;
     }
 
     public boolean isFolder() {
-        return documentType.isFolder();
-    }
-
-    public String getName() {
-        return node.getName();
+        return ((DocumentType) type).isFolder();
     }
 
     public String getUUID() {
@@ -115,10 +101,6 @@ public class SQLDocument implements Document {
 
     public Calendar getLastModified() {
         throw new UnsupportedOperationException("unused");
-    }
-
-    public DocumentType getType() {
-        return documentType;
     }
 
     public boolean isProxy() {
@@ -213,6 +195,81 @@ public class SQLDocument implements Document {
     }
 
     /*
+     * ----- org.nuxeo.ecm.core.model.Lockable -----
+     */
+
+    // TODO: optimize this since it is used in permission checks
+    public boolean isLocked() throws DocumentException {
+        return getLock() != null;
+    }
+
+    public String getLock() throws DocumentException {
+        return null;
+        // throw new UnsupportedOperationException();
+    }
+
+    public void setLock(String key) throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public String unlock() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    /*
+     * ----- org.nuxeo.ecm.core.versioning.VersionableDocument -----
+     */
+
+    public boolean isVersion() {
+        return false;
+    }
+
+    public Document getSourceDocument() {
+        return this;
+    }
+
+    public void checkIn(String label) throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public void checkIn(String label, String description)
+            throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public void checkOut() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean isCheckedOut() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public void restore(String label) throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public List<String> getVersionsIds() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public Document getVersion(String label) throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public DocumentVersionIterator getVersions() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public DocumentVersion getLastVersion() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean hasVersions() throws DocumentException {
+        throw new UnsupportedOperationException();
+    }
+
+    /*
      * ----- org.nuxeo.ecm.core.model.DocumentContainer -----
      */
 
@@ -302,208 +359,8 @@ public class SQLDocument implements Document {
     }
 
     /*
-     * ----- org.nuxeo.ecm.core.model.PropertyContainer -----
+     * ----- PropertyContainer inherited from SQLComplexProperty -----
      */
-
-    public Property getProperty(String name) throws DocumentException {
-        Field field = documentType.getField(name);
-        if (field == null) {
-            throw new NoSuchPropertyException(name);
-        }
-        return SQLPropertyHelper.getProperty(node, field);
-    }
-
-    public String getString(String name) throws DocumentException {
-        return (String) getProperty(name).getValue();
-    }
-
-    public boolean getBoolean(String name) throws DocumentException {
-        Boolean value = (Boolean) getProperty(name).getValue();
-        return value == null ? false : value.booleanValue();
-    }
-
-    public Blob getContent(String name) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public Calendar getDate(String name) throws DocumentException {
-        return (Calendar) getProperty(name).getValue();
-    }
-
-    public double getDouble(String name) throws DocumentException {
-        Double value = (Double) getProperty(name).getValue();
-        return value == null ? 0 : value.doubleValue();
-    }
-
-    public long getLong(String name) throws DocumentException {
-        Long value = (Long) getProperty(name).getValue();
-        return value == null ? 0 : value.longValue();
-    }
-
-    public Object getPropertyValue(String name) throws DocumentException {
-        return getProperty(name).getValue();
-    }
-
-    public Collection<Property> getProperties() throws DocumentException {
-        throw new UnsupportedOperationException("unused");
-    }
-
-    public List<String> getDirtyFields() {
-        throw new UnsupportedOperationException("unused");
-    }
-
-    public Iterator<Property> getPropertyIterator() throws DocumentException {
-        throw new UnsupportedOperationException("unused");
-    }
-
-    public Map<String, Map<String, Object>> exportMap(String[] schemas)
-            throws DocumentException {
-        throw new UnsupportedOperationException("unused");
-    }
-
-    public Map<String, Object> exportMap(String schemaName)
-            throws DocumentException {
-        throw new UnsupportedOperationException("unused");
-    }
-
-    public Map<String, Object> exportFlatMap(String[] schemas)
-            throws DocumentException {
-        throw new UnsupportedOperationException("unused");
-    }
-
-    public void importMap(Map<String, Map<String, Object>> map)
-            throws DocumentException {
-        throw new UnsupportedOperationException("unused");
-    }
-
-    public void importFlatMap(Map<String, Object> map) throws DocumentException {
-        throw new UnsupportedOperationException("unused");
-    }
-
-    public boolean isPropertySet(String path) throws DocumentException {
-        throw new UnsupportedOperationException("unused");
-    }
-
-    public void removeProperty(String name) throws DocumentException {
-        throw new UnsupportedOperationException("unused");
-    }
-
-    public void setPropertyValue(String name, Object value)
-            throws DocumentException {
-        // TODO check constraints
-        try {
-            getProperty(name).setValue(value);
-            // TODO mark dirty fields
-        } catch (RuntimeException e) {
-            log.error("RuntimeException setting value: " + value +
-                    " on property: " + name);
-            throw e;
-        } catch (DocumentException e) {
-            // we log a debugging message here as it is a point where the
-            // property name is known
-            log.error("Error setting value: " + value + " on property: " + name);
-            throw e;
-        }
-    }
-
-    public void setBoolean(String name, boolean value) throws DocumentException {
-        setPropertyValue(name, Boolean.valueOf(value));
-    }
-
-    public void setContent(String name, Blob value) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public void setDate(String name, Calendar value) throws DocumentException {
-        setPropertyValue(name, value);
-    }
-
-    public void setDouble(String name, double value) throws DocumentException {
-        setPropertyValue(name, Double.valueOf(value));
-    }
-
-    public void setLong(String name, long value) throws DocumentException {
-        setPropertyValue(name, Long.valueOf(value));
-    }
-
-    public void setString(String name, String value) throws DocumentException {
-        setPropertyValue(name, value);
-    }
-
-    /*
-     * ----- org.nuxeo.ecm.core.versioning.VersionableDocument -----
-     */
-
-    public boolean isVersion() {
-        return false;
-    }
-
-    public Document getSourceDocument() {
-        return this;
-    }
-
-    public void checkIn(String label) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public void checkIn(String label, String description)
-            throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public void checkOut() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public boolean isCheckedOut() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public void restore(String label) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public List<String> getVersionsIds() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public Document getVersion(String label) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public DocumentVersionIterator getVersions() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public DocumentVersion getLastVersion() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public boolean hasVersions() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    /*
-     * ----- org.nuxeo.ecm.core.model.Lockable -----
-     */
-
-    // TODO: optimize this since it is used in permission checks
-    public boolean isLocked() throws DocumentException {
-        return getLock() != null;
-    }
-
-    public String getLock() throws DocumentException {
-        return null;
-        // throw new UnsupportedOperationException();
-    }
-
-    public void setLock(String key) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public String unlock() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
 
     /*
      * ----- -----

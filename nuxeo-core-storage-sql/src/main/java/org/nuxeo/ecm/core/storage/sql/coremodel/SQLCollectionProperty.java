@@ -23,8 +23,7 @@ import java.util.Iterator;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Property;
-import org.nuxeo.ecm.core.schema.types.Field;
-import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
 
@@ -38,15 +37,15 @@ public class SQLCollectionProperty implements Property {
 
     private final CollectionProperty property;
 
-    private final Field field;
+    private final ListType type;
 
     /**
      * Creates a {@link SQLCollectionProperty} to wrap a
      * {@link CollectionProperty}.
      */
-    public SQLCollectionProperty(CollectionProperty property, Field field) {
+    public SQLCollectionProperty(CollectionProperty property, ListType type) {
         this.property = property;
-        this.field = field;
+        this.type = type;
     }
 
     /*
@@ -57,8 +56,8 @@ public class SQLCollectionProperty implements Property {
         return property.getName();
     }
 
-    public Type getType() {
-        return field.getType();
+    public ListType getType() {
+        return type;
     }
 
     public boolean isNull() throws DocumentException {

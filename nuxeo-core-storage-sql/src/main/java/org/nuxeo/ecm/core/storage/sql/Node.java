@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -37,7 +37,7 @@ public class Node {
      * complex property is created for it we are able to get proper core type
      * information for the document and its properties.
      */
-    protected final DocumentType documentType;
+    protected final Type type;
 
     /** The persistence context used. */
     protected final PersistenceContext context;
@@ -64,14 +64,14 @@ public class Node {
     /**
      * Creates a Node.
      *
-     * @param documentType the node type
+     * @param type the node type
      * @param session the session
      * @param context the persistence context
      * @param rowGroup the group of rows for the node
      */
-    protected Node(DocumentType documentType, Session session,
+    protected Node(Type type, Session session,
             PersistenceContext context, FragmentGroup rowGroup) {
-        this.documentType = documentType;
+        this.type = type;
         this.context = context;
         model = session.getModel();
         mainFragment = rowGroup.main;
@@ -103,8 +103,8 @@ public class Node {
         return hierFragment.getString(model.HIER_CHILD_NAME_KEY);
     }
 
-    public DocumentType getDocumentType() {
-        return documentType;
+    public Type getType() {
+        return type;
     }
 
     // ----- modification -----

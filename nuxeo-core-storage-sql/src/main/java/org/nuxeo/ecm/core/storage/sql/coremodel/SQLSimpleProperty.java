@@ -23,7 +23,6 @@ import java.util.Iterator;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Property;
-import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
@@ -38,14 +37,14 @@ public class SQLSimpleProperty implements Property {
 
     private final SimpleProperty property;
 
-    private final Field field;
+    private final Type type;
 
     /**
      * Creates a {@link SQLSimpleProperty} to wrap a {@link SimpleProperty}.
      */
-    public SQLSimpleProperty(SimpleProperty property, Field field) {
+    public SQLSimpleProperty(SimpleProperty property, Type type) {
         this.property = property;
-        this.field = field;
+        this.type = type;
     }
 
     /*
@@ -57,7 +56,7 @@ public class SQLSimpleProperty implements Property {
     }
 
     public Type getType() {
-        return field.getType();
+        return type;
     }
 
     public boolean isNull() throws DocumentException {

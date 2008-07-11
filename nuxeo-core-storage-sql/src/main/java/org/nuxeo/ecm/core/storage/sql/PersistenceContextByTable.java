@@ -187,7 +187,7 @@ public class PersistenceContextByTable {
     }
 
     /**
-     * Gets a fragment.
+     * Gets a fragment. Not applicable to hierarchy fragments.
      * <p>
      * If it's not in the context, fetch it from the mapper. If it's not in the
      * database, returns {@code null} or an absent fragment.
@@ -236,7 +236,50 @@ public class PersistenceContextByTable {
                         this);
             }
         }
-        if (knownChildren != null && fragment != null) {
+        return fragment;
+    }
+
+    /**
+     * Gets a hierarchy fragment.
+     * <p>
+     * If it's not in the context, fetch it from the mapper. If it's not in the
+     * database, returns {@code null} or an absent fragment.
+     *
+     * @param id the fragment id
+     * @param createAbsent {@code true} to return an absent fragment as an
+     *            object instead of {@code null}
+     * @return the fragment, or {@code null} if none is found and {@value
+     *         createAbsent} was {@code false}
+     * @throws StorageException
+     */
+    public Fragment getChildById(Serializable id, boolean createAbsent)
+            throws StorageException {
+        if (isDeleted(id)) {
+            return null;
+        }
+        Fragment fragment = getIfPresent(id);
+        if (fragment != null) {
+            return fragment;
+        }
+        fragment = absent.get(id);
+        if (fragment != null) {
+            return fragment;
+        }
+
+        // read it through the mapper
+        boolean isTemporaryId = id instanceof String &&
+                ((String) id).startsWith("T");
+        if (isTemporaryId) {
+            if (createAbsent) {
+                fragment = new SimpleFragment(tableName, id, State.ABSENT,
+                        this, null);
+            } else {
+                fragment = null;
+            }
+        } else {
+            fragment = mapper.readSingleRow(tableName, id, createAbsent, this);
+        }
+        if (fragment != null) {
             // add as a child of its parent
             addChild((SimpleFragment) fragment);
         }
@@ -299,7 +342,7 @@ public class PersistenceContextByTable {
     }
 
     /**
-     * Adds a row to the known children of its parent.
+     * Adds a hierarchy row to the known children of its parent.
      */
     private void addChild(SimpleFragment row) throws StorageException {
         Serializable parentId = row.get(model.HIER_PARENT_KEY);
@@ -308,8 +351,8 @@ public class PersistenceContextByTable {
             children = new Children(false);
             knownChildren.put(parentId, children);
         }
-        children.add(row, row.getString(model.HIER_CHILD_NAME_KEY),
-                (Long) row.get(model.HIER_CHILD_POS_KEY), model);
+        boolean complexProp = ((Boolean) row.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
+        children.add(row, row.getString(model.HIER_CHILD_NAME_KEY), complexProp);
     }
 
     /**
@@ -328,8 +371,9 @@ public class PersistenceContextByTable {
         Serializable parentId = row.get(model.HIER_PARENT_KEY);
         Children children = knownChildren.get(parentId);
         if (children != null) {
+            boolean complexProp = ((Boolean) row.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
             children.remove(row.getString(model.HIER_CHILD_NAME_KEY),
-                    (Long) row.get(model.HIER_CHILD_POS_KEY), model);
+                    complexProp);
         }
     }
 
@@ -339,55 +383,47 @@ public class PersistenceContextByTable {
      *
      * @param parentId the parent id
      * @param name the name
-     * @param complexProp whether to get complex properties, or real children,
-     *            or both
+     * @param complexProp whether to get complex properties or regular children
      * @return the row, or {@code null} if none is found
      * @throws StorageException
      */
-    public SimpleFragment getByHier(Serializable parentId, String name,
-            Boolean complexProp) throws StorageException {
-        SimpleFragment fragment;
+    public SimpleFragment getChildByName(Serializable parentId, String name,
+            boolean complexProp) throws StorageException {
 
         // check in the known children
+        SimpleFragment fragment;
         Children children = knownChildren.get(parentId);
         if (children != null) {
-            fragment = children.get(name);
+            fragment = children.get(name, complexProp);
             if (fragment != SimpleFragment.UNKNOWN) {
-                return fragmentIfSamePropertyFlag(fragment, complexProp);
+                return fragment;
             }
         }
 
         // read it through the mapper
-        fragment = mapper.readChildHierRow(parentId, name, this);
-
-        // add as know child
+        fragment = mapper.readChildHierRow(parentId, name, complexProp, this);
         if (fragment != null) {
+            // add as know child
             addChild(fragment);
+            boolean isComplex = ((Boolean) fragment.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
+            if (isComplex != complexProp) {
+                fragment = null;
+            }
         }
 
-        return fragmentIfSamePropertyFlag(fragment, complexProp);
-    }
-
-    protected SimpleFragment fragmentIfSamePropertyFlag(
-            SimpleFragment fragment, Boolean properties) {
-        if (properties == null) {
-            return fragment;
-        }
-        return properties.equals((Boolean) fragment.get(model.HIER_CHILD_ISPROPERTY_KEY)) ? fragment
-                : null;
+        return fragment;
     }
 
     /**
      * Gets the list of children for a given parent id.
      *
      * @param parentId the parent id
-     * @param complexProp whether to get complex properties, or real children,
-     *            or both
+     * @param complexProp whether to get complex properties or regular children
      * @return the list of children
      * @throws StorageException
      */
-    public Collection<SimpleFragment> getHierChildren(Serializable parentId,
-            Boolean complexProp) throws StorageException {
+    public Collection<SimpleFragment> getChildren(Serializable parentId,
+            boolean complexProp) throws StorageException {
         Collection<SimpleFragment> fragments;
 
         // check in the known children

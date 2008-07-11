@@ -430,13 +430,15 @@ public class Mapper {
      *
      * @param parentId the parent id
      * @param childName the child name
+     * @param complexProp whether to get complex properties ({@code true}) or
+     *            regular children({@code false})
      * @param context the persistence context to which the read row is tied
      * @return the child hierarchy row, or {@code null}
      */
     public SimpleFragment readChildHierRow(Serializable parentId,
-            String childName, PersistenceContextByTable context)
-            throws StorageException {
-        String sql = sqlInfo.getSelectByChildNameSql();
+            String childName, boolean complexProp,
+            PersistenceContextByTable context) throws StorageException {
+        String sql = sqlInfo.getSelectByChildNameSql(complexProp);
         try {
             // XXX statement should be already prepared
             List<Serializable> debugValues = null;
@@ -447,7 +449,7 @@ public class Mapper {
             try {
                 // compute where part
                 int i = 0;
-                for (Column column : sqlInfo.getSelectByChildNameWhereColumns()) {
+                for (Column column : sqlInfo.getSelectByChildNameWhereColumns(complexProp)) {
                     i++;
                     String key = column.getKey();
                     Serializable v;
@@ -478,7 +480,7 @@ public class Mapper {
                 Serializable id = null;
                 Map<String, Serializable> map = new HashMap<String, Serializable>();
                 i = 0;
-                List<Column> columns = sqlInfo.getSelectByChildNameWhatColumns();
+                List<Column> columns = sqlInfo.getSelectByChildNameWhatColumns(complexProp);
                 for (Column column : columns) {
                     i++;
                     String key = column.getKey();
@@ -491,6 +493,7 @@ public class Mapper {
                 }
                 map.put(model.HIER_PARENT_KEY, parentId);
                 map.put(model.HIER_CHILD_NAME_KEY, childName);
+                map.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.valueOf(complexProp));
                 SimpleFragment row = new SimpleFragment(model.HIER_TABLE_NAME,
                         id, State.PRISTINE, context, map);
                 if (log.isDebugEnabled()) {
@@ -518,18 +521,17 @@ public class Mapper {
      * Rows that are already known to the persistence context are returned from
      * it, so as to never have duplicate objects for the same row.
      * <p>
-     * Depending on the {@link Boolean} {@literal complexProp}, only the complex
-     * properties, or only the regular children, or both, may be returned.
+     * Depending on the boolean {@literal complexProp}, only the complex
+     * properties or only the regular children are returned.
      *
      * @param parentId the parent id
-     * @param complexProp whether to get complex properties ({@code
-     *            Boolean#TRUE}), regular children({@code Boolean#FALSE}), or
-     *            both ({@code null})
+     * @param complexProp whether to get complex properties ({@code true}) or
+     *            regular children({@code false})
      * @param context the persistence context to which the read rows are tied
      * @return the child hierarchy rows, or {@code null}
      */
     public Collection<SimpleFragment> readChildHierRows(Serializable parentId,
-            Boolean complexProp, PersistenceContextByTable context)
+            boolean complexProp, PersistenceContextByTable context)
             throws StorageException {
         if (parentId == null) {
             throw new IllegalArgumentException("Illegal null parentId");
@@ -570,9 +572,6 @@ public class Mapper {
                             map.put(key, value);
                         }
                     }
-                    if (complexProp != null) {
-                        map.put(model.HIER_CHILD_ISPROPERTY_KEY, complexProp);
-                    }
                     if (context.isDeleted(id)) {
                         // row has been deleted in the persistent context,
                         // ignore it
@@ -585,6 +584,7 @@ public class Mapper {
                     SimpleFragment row = (SimpleFragment) context.getIfPresent(id);
                     if (row == null) {
                         map.put(model.HIER_PARENT_KEY, parentId);
+                        map.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.valueOf(complexProp));
                         row = new SimpleFragment(model.HIER_TABLE_NAME, id,
                                 State.PRISTINE, context, map);
                         if (log.isDebugEnabled()) {

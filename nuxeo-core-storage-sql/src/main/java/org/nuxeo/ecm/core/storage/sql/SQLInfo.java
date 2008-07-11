@@ -88,29 +88,41 @@ public class SQLInfo {
 
     private final Map<String, String> deleteSqlMap; // statement
 
-    private String selectByChildNameSql;
+    private String selectByChildNameAllSql;
 
-    private List<Column> selectByChildNameWhatColumns;
+    private String selectByChildNameRegularSql;
 
-    private List<Column> selectByChildNameWhereColumns;
+    private String selectByChildNamePropertiesSql;
+
+    private List<Column> selectByChildNameAllWhatColumns;
+
+    private List<Column> selectByChildNameRegularWhatColumns;
+
+    private List<Column> selectByChildNamePropertiesWhatColumns;
+
+    private List<Column> selectByChildNameAllWhereColumns;
+
+    private List<Column> selectByChildNameRegularWhereColumns;
+
+    private List<Column> selectByChildNamePropertiesWhereColumns;
 
     private String selectChildrenAllSql;
 
-    private String selectChildrenPropertiesSql;
-
     private String selectChildrenRegularSql;
 
-    private List<Column> selectChildrenAllWhereColumns;
-
-    private List<Column> selectChildrenPropertiesWhereColumns;
-
-    private List<Column> selectChildrenRegularWhereColumns;
+    private String selectChildrenPropertiesSql;
 
     private List<Column> selectChildrenAllWhatColumns;
 
+    private List<Column> selectChildrenRegularWhatColumns;
+
     private List<Column> selectChildrenPropertiesWhatColumns;
 
-    private List<Column> selectChildrenRegularWhatColumns;
+    private List<Column> selectChildrenAllWhereColumns;
+
+    private List<Column> selectChildrenRegularWhereColumns;
+
+    private List<Column> selectChildrenPropertiesWhereColumns;
 
     /**
      * Generates and holds the needed SQL statements given a {@link Model} and a
@@ -136,18 +148,25 @@ public class SQLInfo {
         identityFetchSqlMap = new HashMap<String, String>();
         identityFetchColumnMap = new HashMap<String, Column>();
 
-        selectByChildNameSql = null;
-        selectByChildNameWhatColumns = null;
-        selectByChildNameWhereColumns = null;
+        selectByChildNameAllSql = null;
+        selectByChildNameAllWhatColumns = null;
+        selectByChildNameAllWhereColumns = null;
+        selectByChildNameRegularSql = null;
+        selectByChildNameRegularWhatColumns = null;
+        selectByChildNameRegularWhereColumns = null;
+        selectByChildNamePropertiesSql = null;
+        selectByChildNamePropertiesWhatColumns = null;
+        selectByChildNamePropertiesWhereColumns = null;
+
         selectChildrenAllSql = null;
-        selectChildrenPropertiesSql = null;
-        selectChildrenRegularSql = null;
-        selectChildrenAllWhereColumns = null;
-        selectChildrenPropertiesWhereColumns = null;
-        selectChildrenRegularWhereColumns = null;
         selectChildrenAllWhatColumns = null;
-        selectChildrenPropertiesWhatColumns = null;
+        selectChildrenAllWhereColumns = null;
+        selectChildrenRegularSql = null;
         selectChildrenRegularWhatColumns = null;
+        selectChildrenRegularWhereColumns = null;
+        selectChildrenPropertiesSql = null;
+        selectChildrenPropertiesWhatColumns = null;
+        selectChildrenPropertiesWhereColumns = null;
 
         insertSqlMap = new HashMap<String, String>();
         insertColumnsMap = new HashMap<String, List<Column>>();
@@ -209,16 +228,34 @@ public class SQLInfo {
         return selectByIdColumnsMap.get(typeName);
     }
 
-    public String getSelectByChildNameSql() {
-        return selectByChildNameSql;
+    public String getSelectByChildNameSql(Boolean complexProp) {
+        if (complexProp == null) {
+            return selectByChildNameAllSql;
+        } else if (complexProp.booleanValue()) {
+            return selectByChildNamePropertiesSql;
+        } else {
+            return selectByChildNameRegularSql;
+        }
     }
 
-    public List<Column> getSelectByChildNameWhatColumns() {
-        return selectByChildNameWhatColumns;
+    public List<Column> getSelectByChildNameWhatColumns(Boolean complexProp) {
+        if (complexProp == null) {
+            return selectByChildNameAllWhatColumns;
+        } else if (complexProp.booleanValue()) {
+            return selectByChildNamePropertiesWhatColumns;
+        } else {
+            return selectByChildNameRegularWhatColumns;
+        }
     }
 
-    public List<Column> getSelectByChildNameWhereColumns() {
-        return selectByChildNameWhereColumns;
+    public List<Column> getSelectByChildNameWhereColumns(Boolean complexProp) {
+        if (complexProp == null) {
+            return selectByChildNameAllWhereColumns;
+        } else if (complexProp.booleanValue()) {
+            return selectByChildNamePropertiesWhereColumns;
+        } else {
+            return selectByChildNameRegularWhereColumns;
+        }
     }
 
     public String getSelectChildrenSql(Boolean complexProp) {
@@ -231,16 +268,6 @@ public class SQLInfo {
         }
     }
 
-    public List<Column> getSelectChildrenWhereColumns(Boolean complexProp) {
-        if (complexProp == null) {
-            return selectChildrenAllWhereColumns;
-        } else if (complexProp.booleanValue()) {
-            return selectChildrenPropertiesWhereColumns;
-        } else {
-            return selectChildrenRegularWhereColumns;
-        }
-    }
-
     public List<Column> getSelectChildrenWhatColumns(Boolean complexProp) {
         if (complexProp == null) {
             return selectChildrenAllWhatColumns;
@@ -248,6 +275,16 @@ public class SQLInfo {
             return selectChildrenPropertiesWhatColumns;
         } else {
             return selectChildrenRegularWhatColumns;
+        }
+    }
+
+    public List<Column> getSelectChildrenWhereColumns(Boolean complexProp) {
+        if (complexProp == null) {
+            return selectChildrenAllWhereColumns;
+        } else if (complexProp.booleanValue()) {
+            return selectChildrenPropertiesWhereColumns;
+        } else {
+            return selectChildrenRegularWhereColumns;
         }
     }
 
@@ -363,7 +400,8 @@ public class SQLInfo {
         maker.newColumn(model.HIER_CHILD_NAME_KEY, Types.VARCHAR); // text?
         maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, Types.BIT); // not null
         maker.postProcess();
-        maker.postProcessSelectByChildName();
+        maker.postProcessSelectByChildNameAll();
+        maker.postProcessSelectByChildNamePropertiesFlag();
         maker.postProcessSelectChildrenAll();
         maker.postProcessSelectChildrenPropertiesFlag();
     }
@@ -523,9 +561,9 @@ public class SQLInfo {
             }
         }
 
-        protected void postProcessSelectByChildName() {
-            List<Column> whatColumns = new ArrayList<Column>(2);
-            List<String> whats = new ArrayList<String>(2);
+        protected void postProcessSelectByChildNameAll() {
+            List<Column> whatColumns = new ArrayList<Column>(3);
+            List<String> whats = new ArrayList<String>(3);
             List<Column> whereColumns = new ArrayList<Column>(2);
             List<String> wheres = new ArrayList<String>(2);
             for (Column column : table.getColumns()) {
@@ -544,9 +582,48 @@ public class SQLInfo {
             select.setWhat(StringUtils.join(whats, ", "));
             select.setFrom(table.getQuotedName(dialect));
             select.setWhere(StringUtils.join(wheres, " AND "));
-            selectByChildNameSql = select.getStatement();
-            selectByChildNameWhatColumns = whatColumns;
-            selectByChildNameWhereColumns = whereColumns;
+            selectByChildNameAllSql = select.getStatement();
+            selectByChildNameAllWhatColumns = whatColumns;
+            selectByChildNameAllWhereColumns = whereColumns;
+        }
+
+        protected void postProcessSelectByChildNamePropertiesFlag() {
+            List<Column> whatColumns = new ArrayList<Column>(3);
+            List<String> whats = new ArrayList<String>(3);
+            List<Column> whereColumns = new ArrayList<Column>(2);
+            List<String> wheresProperties = new ArrayList<String>(2);
+            List<String> wheresRegular = new ArrayList<String>(2);
+            for (Column column : table.getColumns()) {
+                String name = column.getName();
+                String qname = column.getQuotedName(dialect);
+                if (name.equals(model.HIER_PARENT_KEY) ||
+                        name.equals(model.HIER_CHILD_NAME_KEY)) {
+                    wheresRegular.add(qname + " = ?");
+                    wheresProperties.add(qname + " = ?");
+                    whereColumns.add(column);
+                } else if (name.equals(model.HIER_CHILD_ISPROPERTY_KEY)) {
+                    wheresRegular.add(qname + " = " +
+                            dialect.toBooleanValueString(false));
+                    wheresProperties.add(qname + " = " +
+                            dialect.toBooleanValueString(true));
+                } else {
+                    whats.add(qname);
+                    whatColumns.add(column);
+                }
+            }
+            Select select = new Select(dialect);
+            select.setWhat(StringUtils.join(whats, ", "));
+            select.setFrom(table.getQuotedName(dialect));
+            // regular children
+            select.setWhere(StringUtils.join(wheresRegular, " AND "));
+            selectByChildNameRegularSql = select.getStatement();
+            selectByChildNameRegularWhatColumns = whatColumns;
+            selectByChildNameRegularWhereColumns = whereColumns;
+            // complex properties
+            select.setWhere(StringUtils.join(wheresProperties, " AND "));
+            selectByChildNamePropertiesSql = select.getStatement();
+            selectByChildNamePropertiesWhatColumns = whatColumns;
+            selectByChildNamePropertiesWhereColumns = whereColumns;
         }
 
         protected void postProcessSelectChildrenAll() {
