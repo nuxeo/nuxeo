@@ -5,6 +5,13 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
     point="actions">
 
+
+    <action id="flexActionSample"
+      link="/flexsamples/actions.swf" enabled="true"
+      label="flex action sample">
+      <category>FLEX_SAMPLES</category>
+    </action>
+
     <action id="newWorkspaceFlex"
       link="" enabled="true"
       label="command.create.workspace" icon="/icons/action_add.gif">

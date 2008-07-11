@@ -15,6 +15,8 @@
             		name="visible" value="true"/>
 		 <mx:SetProperty target="{logoutButton}"
             		name="visible" value="true"/>
+		 <mx:SetProperty target="{sampleButton}"
+            		name="visible" value="true"/>
 
 		</mx:State>
 		<mx:State name="NotLoggedInState">			
@@ -28,6 +30,9 @@
             		name="visible" value="false"/>
 		 <mx:SetProperty target="{logoutButton}"
             		name="visible" value="false"/>
+		 <mx:SetProperty target="{sampleButton}"
+            		name="visible" value="false"/>
+
 		</mx:State>
 	</mx:states>
 
@@ -37,6 +42,7 @@
 			import mx.rpc.events.FaultEvent;
 			import mx.rpc.events.ResultEvent;	
 			import org.nuxeo.ecm.flex.login.NuxeoLogin;
+			import flash.net.*;
 
 			private var nxLogin:NuxeoLogin;
 
@@ -91,6 +97,12 @@
 			private function faultHandler(event:FaultEvent):void {
 				 Alert.show(event.fault.faultString, event.fault.faultCode.toString());
 			}	
+
+		        private function goToSamples():void {
+	        		var u:URLRequest = new URLRequest("/nuxeo/flexsamples/index.faces");
+			        navigateToURL(u,"_self");
+			}
+
 			
 	]]>
 	</mx:Script>
@@ -126,6 +138,7 @@
 			</mx:Form>
 
 
+   <mx:Button id="sampleButton" label="view the samples" click="goToSamples()" visible="false"/>
    <mx:Button id="pingButton" label="ping server" click="authPingTester.ping()" visible="false"/>
    <mx:Label id="pingLabel" text='server ping reply: "{authPingTester.ping.lastResult}"' visible="false"/>
    <mx:Button id="logoutButton" label="Log out" click="doLogout()" visible="false"/>   

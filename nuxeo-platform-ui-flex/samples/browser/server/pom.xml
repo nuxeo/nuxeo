@@ -3,14 +3,14 @@
 
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-platform-ui-flex-samples-users-parent</artifactId>
+    <artifactId>nuxeo-platform-ui-flex-samples-browser-parent</artifactId>
     <version>5.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-platform-ui-flex-samples-users</artifactId>
-  <name>Nuxeo UserManager Flex Sample Server side</name>
+  <artifactId>nuxeo-platform-ui-flex-samples-browser</artifactId>
+  <name>Nuxeo Doc Browser Flex Sample Server side</name>
   <description>
-    Nuxeo Enterprise Platform: Flex UserManager sample server side components
+    Nuxeo Enterprise Platform: Flex doc browser sample server side components
   </description>
 
   <repositories>
@@ -26,7 +26,7 @@
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-ui-flex-samples-users-swf</artifactId>
+      <artifactId>nuxeo-platform-ui-flex-samples-browser-swf</artifactId>
       <version>5.2-SNAPSHOT</version>
       <type>swf</type>
     </dependency>
@@ -96,9 +96,9 @@
                             <modules>
                                 <swfModule>
                                     <groupId>org.nuxeo.ecm.platform</groupId>
-                                    <artifactId>nuxeo-platform-ui-flex-samples-users-swf</artifactId>
+                                    <artifactId>nuxeo-platform-ui-flex-samples-browser-swf</artifactId>
                                     <targetPath>${project.build.directory}/classes/nuxeo.war/flexsamples</targetPath>
-                                    <targetFilename>users.swf</targetFilename>
+                                    <targetFilename>browser.swf</targetFilename>
                                 </swfModule>
                             </modules>
                         </configuration>
