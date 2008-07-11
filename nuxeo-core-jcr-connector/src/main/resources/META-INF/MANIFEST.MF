@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Nuxeo JCR Connector
 Bundle-SymbolicName: org.nuxeo.ecm.core.jcr
 Bundle-Vendor: Nuxeo
-Fragment-Host: org.nuxeo.ecm.core;bundle-version="1.0.0"
+Fragment-Host: org.nuxeo.ecm.core
 Bundle-Localization: bundle
 Bundle-ClassPath: ., jackrabbit-api-1.3.3.jar,
  jackrabbit-core-1.3.3.jar,
@@ -28,7 +28,8 @@ Export-Package: org.apache.jackrabbit.core.persistence.bundle,
  org.nuxeo.ecm.core.repository.jcr.versioning,
  org.nuxeo.ecm.core.versioning.custom
 Nuxeo-Component: OSGI-INF/JCRLifeCycleManager.xml
-Require-Bundle: org.apache.commons.collections,
+Require-Bundle: org.apache.jackrabbit,
+ org.apache.commons.collections,
  org.apache.lucene,
  org.apache.lucene.analysis,
  org.nuxeo.ecm.core
