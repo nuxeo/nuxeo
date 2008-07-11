@@ -49,7 +49,7 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 
 /**
  * Test Queries.
- *
+ * 
  * @author DM
  */
 public class TestQuery extends RepositoryTestCase {
@@ -86,7 +86,7 @@ public class TestQuery extends RepositoryTestCase {
 
     /**
      * Creates the following structure of documents:
-     *
+     * 
      * <pre>
      *  -- root
      *     +- testfolder1
@@ -97,13 +97,13 @@ public class TestQuery extends RepositoryTestCase {
      *        +- testfolder3
      *            -- testfile4
      * </pre>
-     *
+     * 
      */
     private void createDocs() throws Exception {
         Calendar date1 = Calendar.getInstance();
-        date1.set(1974, 6-1, 24); // month is 0 based
+        date1.set(1974, 6 - 1, 24); // month is 0 based
         Calendar date2 = Calendar.getInstance();
-        date2.set(1975, 6-1, 24);
+        date2.set(1975, 6 - 1, 24);
 
         // put some data in workspace
         Document folder1 = root.addChild("testfolder1", "Folder");
@@ -189,6 +189,33 @@ public class TestQuery extends RepositoryTestCase {
 
     }
 
+    public void testSQLWithInclusion() throws Exception {
+        final String logPrefix = "<testJCRXPathContain> ";
+        log.info(logPrefix + "...");
+
+        final String sql = "SELECT * FROM document WHERE dc:title IN ('testfile1_Title', 'testfile2_Title', 'testfile3_Title', 'testfile4_Title')";
+
+        Query qry = session.createQuery(sql, Query.Type.NXQL);
+        QueryResult qr = qry.execute();
+
+        printResults(qr, logPrefix);
+
+        assertEquals(4, qr.count());
+    }
+
+    public void testSQLWithBetween() throws Exception {
+        final String logPrefix = "<testJCRXPathContain> ";
+        log.info(logPrefix + "...");
+
+        final String sql = "SELECT * FROM document WHERE dc:issued BETWEEN DATE '1973-10-12' AND DATE '1976-12-15'";
+
+        Query qry = session.createQuery(sql, Query.Type.NXQL);
+        QueryResult qr = qry.execute();
+
+        printResults(qr, logPrefix);
+
+        assertEquals(3, qr.count());
+    }
 
     public void testSQLWithLike() throws Exception {
         final String logPrefix = "<testJCRXPathContain> ";
@@ -337,7 +364,6 @@ public class TestQuery extends RepositoryTestCase {
         doc.setString("dc:description", "Yet another description");
         session.save();
 
-
         // adjusting the query to the new title
         sql = "SELECT * FROM document WHERE dc:title LIKE 'testfile1_Mo%'";
         qry = session.createQuery(sql, Query.Type.NXQL);
@@ -398,14 +424,14 @@ public class TestQuery extends RepositoryTestCase {
     /**
      * Convenience method to display a query result. It prints several node (of
      * the JCRDocument) properties.
-     *
+     * 
      * @param qr the QueryResult object
      * @param logPrefix
      * @throws RepositoryException
      * @throws QueryException
      */
-    private static void printResults(final QueryResult qr, final String logPrefix)
-            throws RepositoryException, QueryException {
+    private static void printResults(final QueryResult qr,
+            final String logPrefix) throws RepositoryException, QueryException {
         while (qr.next()) {
 
             final Object row = qr.getObject();
@@ -422,13 +448,13 @@ public class TestQuery extends RepositoryTestCase {
 
     /**
      * Creates a node string description usable in debugging.
-     *
+     * 
      * @param node
      * @param sep a node props separator
      * @return
      * @throws RepositoryException
      */
-    @SuppressWarnings({"StringConcatenationInsideStringBufferAppend"})
+    @SuppressWarnings( { "StringConcatenationInsideStringBufferAppend" })
     private static String getNodeDesc(Node node, final String sep)
             throws RepositoryException {
         PropertyIterator pi = node.getProperties();
