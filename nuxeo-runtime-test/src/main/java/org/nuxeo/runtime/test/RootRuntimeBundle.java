@@ -19,9 +19,9 @@
 
 package org.nuxeo.runtime.test;
 
+import org.nuxeo.osgi.BundleFile;
 import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.osgi.OSGiAdapter;
-import org.nuxeo.osgi.BundleFile;
 import org.osgi.framework.BundleActivator;
 
 /**

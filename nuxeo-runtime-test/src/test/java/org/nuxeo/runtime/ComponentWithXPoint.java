@@ -20,6 +20,7 @@
 package org.nuxeo.runtime;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,17 +29,14 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.Extension;
 
-/**
- * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
- */
+/** @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> */
 public class ComponentWithXPoint implements Component {
 
     private static final Log log = LogFactory.getLog(ComponentWithXPoint.class);
 
-    public final static ComponentName NAME= new ComponentName("BaseXPoint");
+    public static final ComponentName NAME = new ComponentName("BaseXPoint");
 
-    ArrayList<ContributionTest> contribs = new ArrayList<ContributionTest>();
+    final List<ContributionTest> contribs = new ArrayList<ContributionTest>();
 
     public void activate(ComponentContext context) {
     }
@@ -50,7 +48,7 @@ public class ComponentWithXPoint implements Component {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
             log.debug("Registering: " + ((ContributionTest) contrib).message);
-            this.contribs.add((ContributionTest)contrib);
+            this.contribs.add((ContributionTest) contrib);
         }
     }
 
@@ -58,7 +56,7 @@ public class ComponentWithXPoint implements Component {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
             log.debug("Un-Registering: " + ((ContributionTest) contrib).message);
-            this.contribs.add((ContributionTest)contrib);
+            this.contribs.add((ContributionTest) contrib);
         }
     }
 

@@ -22,10 +22,7 @@ package org.nuxeo.runtime;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-/**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
- */
+/** @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> */
 public class TestExtensionPoint extends NXRuntimeTestCase {
 
     @Override
@@ -35,16 +32,16 @@ public class TestExtensionPoint extends NXRuntimeTestCase {
         deployContrib("OverridingXPoint.xml");
     }
 
-
     public void testOverride() {
-        ComponentWithXPoint co = (ComponentWithXPoint)Framework.getRuntime().getComponent(ComponentWithXPoint.NAME);
+        ComponentWithXPoint co = (ComponentWithXPoint) Framework.getRuntime().getComponent(
+                ComponentWithXPoint.NAME);
         ContributionTest[] contribs = co.getContributions();
         assertEquals(2, contribs.length);
         assertTrue(contribs[0].getClass() == ContributionTest.class);
         assertTrue(contribs[1].getClass() == ContributionTestOverrided.class);
-        System.out.println(((ContributionTest)contribs[0]).message);
-        System.out.println(((ContributionTest)contribs[1]).message);
-        System.out.println(((ContributionTestOverrided)contribs[1]).name);
+        System.out.println(contribs[0].message);
+        System.out.println(contribs[1].message);
+        System.out.println(((ContributionTestOverrided) contribs[1]).name);
     }
 
 }
