@@ -39,9 +39,9 @@ public class TestExtensionPoint extends NXRuntimeTestCase {
         assertEquals(2, contribs.length);
         assertTrue(contribs[0].getClass() == ContributionTest.class);
         assertTrue(contribs[1].getClass() == ContributionTestOverrided.class);
-        System.out.println(contribs[0].message);
-        System.out.println(contribs[1].message);
-        System.out.println(((ContributionTestOverrided) contribs[1]).name);
+        assertEquals("XP contrib", contribs[0].message);
+        assertEquals("OverXP contrib", contribs[1].message);
+        assertEquals("My duty is to override", ((ContributionTestOverrided) contribs[1]).name);
     }
 
 }
