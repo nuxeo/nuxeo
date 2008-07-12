@@ -1205,7 +1205,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         return clone;
     }
 
-    public DataModel cloneDataModel(Schema schema, DataModel data) {
+    public static DataModel cloneDataModel(Schema schema, DataModel data) {
         DataModel dm = new DataModelImpl(schema.getName());
         for (Field field : schema.getFields()) {
             String key = field.getName().getLocalName();
@@ -1423,7 +1423,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         String segment = path.segment(0);
         int p = segment.indexOf(':');
         if (p == -1) { // support also other schema paths? like schema.property
-            // allow also unprefixed schemas -> make a search for the first matching schema having a property with same name as path segment 0
+            // allow also unprefixed schemas -> make a search for the first
+            // matching schema having a property with same name as path segment 0
             DocumentPart[] parts = getParts();
             for (DocumentPart part : parts) {
                 if (part.getSchema().hasField(segment)) {

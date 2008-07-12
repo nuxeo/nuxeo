@@ -150,7 +150,6 @@ public class TypeAnnotationRegistry<T> {
 
         System.out.println(mgr.get(MapProperty.class));
         System.out.println(mgr.get(StringProperty.class));
-
     }
 
 }
