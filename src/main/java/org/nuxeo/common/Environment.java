@@ -77,13 +77,9 @@ public class Environment {
         this.properties.put(Environment.HOME_DIR, this.home.getAbsolutePath());
     }
 
-    /**
-     * @return the home.
-     */
     public File getHome() {
         return home;
     }
-
 
     public File getTemp() {
         if (temp == null) {
@@ -92,16 +88,10 @@ public class Environment {
         return temp;
     }
 
-    /**
-     * @param temp the temp to set.
-     */
     public void setTemp(File temp) {
         this.temp = temp;
     }
 
-    /**
-     * @return the config.
-     */
     public File getConfig() {
         if (config == null) {
             config = new File(home, "config");
@@ -109,16 +99,10 @@ public class Environment {
         return config;
     }
 
-    /**
-     * @param config the config to set.
-     */
     public void setConfig(File config) {
         this.config = config;
     }
 
-    /**
-     * @return the log.
-     */
     public File getLog() {
         if (log == null) {
             log = new File(home, "log");
@@ -126,16 +110,10 @@ public class Environment {
         return log;
     }
 
-    /**
-     * @param log the log to set.
-     */
     public void setLog(File log) {
         this.log = log;
     }
 
-    /**
-     * @return the data.
-     */
     public File getData() {
         if (data == null) {
             data = new File(home, "data");
@@ -143,16 +121,10 @@ public class Environment {
         return data;
     }
 
-    /**
-     * @param data the data to set.
-     */
     public void setData(File data) {
         this.data = data;
     }
 
-    /**
-     * @return the web.
-     */
     public File getWeb() {
         if (web == null) {
             web = new File(home, "web");
@@ -160,9 +132,6 @@ public class Environment {
         return web;
     }
 
-    /**
-     * @param web the web to set.
-     */
     public void setWeb(File web) {
         this.web = web;
     }
@@ -188,9 +157,6 @@ public class Environment {
         properties.put(key, value);
     }
 
-    /**
-     * @return the properties.
-     */
     public Properties getProperties() {
         return properties;
     }

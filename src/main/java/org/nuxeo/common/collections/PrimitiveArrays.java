@@ -198,7 +198,7 @@ public final class PrimitiveArrays {
     }
 
     public static List<?> toList(@NotNull Object array) {
-        @NotNull Class<?> arrType = array.getClass().getComponentType();
+        Class<?> arrType = array.getClass().getComponentType();
         if (arrType.isPrimitive()) {
             if (arrType == Integer.TYPE) {
                 int[] ar = (int[]) array;

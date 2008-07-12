@@ -23,17 +23,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Generic registry implementation.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public class Registry<T> {
-
-    private static final Log log = LogFactory.getLog(Registry.class);
 
     private final String name;
 
