@@ -76,11 +76,9 @@ public class StandaloneApplication extends OSGiAdapter {
         return StandaloneApplication.instance;
     }
 
-
-
     private StandaloneApplication(SharedClassLoader cl, Environment env) {
         super (env.getHome(), env.getData(), env.getProperties());
-        this.classLoader = cl;
+        classLoader = cl;
         this.env = env;
     }
 
@@ -111,6 +109,7 @@ public class StandaloneApplication extends OSGiAdapter {
         return isStarted;
     }
 
+    @Override
     public void shutdown() throws IOException {
         if (!isStarted) {
             throw new IllegalStateException("OSGi Application was not started");
@@ -154,9 +153,6 @@ public class StandaloneApplication extends OSGiAdapter {
         return classPath;
     }
 
-    /**
-     * @param classPath the classPath to set.
-     */
     public void setClassPath(List<File> classPath) {
         this.classPath = classPath;
     }
@@ -173,11 +169,11 @@ public class StandaloneApplication extends OSGiAdapter {
             try {
                 cpath.restore(cache);
             } catch (BundleException e) { // rebuild cache
-                cpath.scan(this.classPath, scanForNestedJARs);
+                cpath.scan(classPath, scanForNestedJARs);
                 cpath.store(cache);
             }
         } else {
-            cpath.scan(this.classPath, scanForNestedJARs);
+            cpath.scan(classPath, scanForNestedJARs);
             cpath.store(cache);
         }
         installAll(cpath.getBundles());
@@ -195,7 +191,9 @@ public class StandaloneApplication extends OSGiAdapter {
     }
 
     /**
-     * Create the system bundle from the  jar specified by the nuxeo.osgi.system.bundle property.
+     * Creates the system bundle from the jar specified by the
+     * nuxeo.osgi.system.bundle property.
+     *
      * @param properties
      * @return
      * @throws IOException
@@ -211,11 +209,9 @@ public class StandaloneApplication extends OSGiAdapter {
         return sysbf;
     }
 
-
     public static CommandLineOptions getComandLineOptions() {
         return options;
     }
-
 
     public static boolean hasCommandLineOption(String option) {
         return options != null && options.hasOption(option);
@@ -304,7 +300,5 @@ public class StandaloneApplication extends OSGiAdapter {
             }
         }
     }
-
-
 
 }

@@ -44,19 +44,21 @@ public class ClassPathScanner {
 
     public ClassPathScanner(Callback callback, boolean scanForNestedJars) {
         this.callback = callback;
-        this.scanForNestedJARs = scanForNestedJars;
+        scanForNestedJARs = scanForNestedJars;
     }
 
     /**
      * @param scanForNestedJars the scanForNestedJars to set.
      */
     public void setScanForNestedJARs(boolean scanForNestedJars) {
-        this.scanForNestedJARs = scanForNestedJars;
+        scanForNestedJARs = scanForNestedJars;
     }
 
     /**
-     * Scan the given class path and put found OSGi bundles in bundles, regular JARs in jars and
-     * append any nested jar or bundle into the given class loader
+     * Scan the given class path and put found OSGi bundles in bundles, regular
+     * JARs in jars and append any nested jar or bundle into the given class
+     * loader.
+     *
      * @param classPath
      * @param bundles
      * @param jars
@@ -117,47 +119,55 @@ public class ClassPathScanner {
         return bundles;
     }
 
-
     public static interface Callback {
         /**
-         * A nested JAR was found on the class path. Usually a callback should handle this by adding the JAR to a class loader
+         * A nested JAR was found on the class path. Usually a callback should
+         * handle this by adding the JAR to a class loader
          * <p>
-         * The callback should return a directory to be used to extract nested JARs from this JAR.
+         * The callback should return a directory to be used to extract nested
+         * JARs from this JAR.
          * <p>
          * The callback may return null to skip nested JAR extraction
          *
          * @param bf the JAR found
-         * @return the folder to be used to extract JARs or null to skip extraction
+         * @return the folder to be used to extract JARs or null to skip
+         *         extraction
          * @throws IOException
          */
-        public void handleNestedJar(BundleFile bf) throws IOException;
+        void handleNestedJar(BundleFile bf) throws IOException;
 
         /**
-         * A JAR was found on the class path. Usually a callback should handle this by adding the JAR to a class loader
+         * A JAR was found on the class path. Usually a callback should handle
+         * this by adding the JAR to a class loader.
          * <p>
-         * The callback should return a directory to be used to extract nested JARs from this JAR.
+         * The callback should return a directory to be used to extract nested
+         * JARs from this JAR.
          * <p>
-         * The callback may return null to skip nested JAR extraction
+         * The callback may return null to skip nested JAR extraction.
          *
          * @param bf the JAR found
-         * @return the folder to be used to extract JARs or null to skip extraction
+         * @return the folder to be used to extract JARs or null to skip
+         *         extraction
          * @throws IOException
          */
-        public File handleJar(BundleFile bf) throws IOException;
+        File handleJar(BundleFile bf) throws IOException;
 
         /**
-         *  A Bundle was found on the class path. Usually a callback should handle this by adding the Bundle to a class loader
-         *  and installing it in an OSGi framework
+         * A Bundle was found on the class path. Usually a callback should
+         * handle this by adding the Bundle to a class loader and installing it
+         * in an OSGi framework
          * <p>
-         * The callback should return a directory to be used to extract nested JARs from this JAR.
+         * The callback should return a directory to be used to extract nested
+         * JARs from this JAR.
          * <p>
-         * The callback may return null to skip nested JAR extraction
+         * The callback may return null to skip nested JAR extraction.
          *
          * @param bf the JAR found
-         * @return the folder to be used to extract JARs or null to skip extraction
+         * @return the folder to be used to extract JARs or null to skip
+         *         extraction
          * @throws IOException
          */
-        public File handleBundle(BundleFile bf) throws IOException;
+        File handleBundle(BundleFile bf) throws IOException;
     }
 
 }
