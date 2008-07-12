@@ -163,7 +163,6 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
     }
 
     public String listBundles() {
-        double total = 0;
         BundleImpl[] bundles = osgi.getInstalledBundles();
         Arrays.sort(bundles, new Comparator<BundleImpl>() {
             public int compare(BundleImpl o1, BundleImpl o2) {
@@ -171,6 +170,7 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
             }
         });
         StringBuilder buf = new StringBuilder();
+        double total = 0;
         for (BundleImpl bundle : bundles) {
             buf.append(bundle.getBundleId()).append(": ")
                     .append(bundle.getSymbolicName()).append(" [ state: ")

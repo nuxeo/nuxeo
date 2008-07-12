@@ -61,44 +61,26 @@ public abstract class ApplicationLoader {
         return tmpDir;
     }
 
-    /**
-     * @param extractNestedJARs The extractNestedJARs to set.
-     */
     public void setExtractNestedJARs(boolean extractNestedJARs) {
         this.extractNestedJARs = extractNestedJARs;
     }
 
-    /**
-     * @return the extractNestedJARs.
-     */
     public boolean getExtractNestedJARs() {
         return extractNestedJARs;
     }
 
-    /**
-     * @param scanForNestedJARs The scanForNestedJARs to set.
-     */
     public void setScanForNestedJARs(boolean scanForNestedJARs) {
         this.scanForNestedJARs = scanForNestedJARs;
     }
 
-    /**
-     * @return the scanForNestedJARs.
-     */
     public boolean getScanForNestedJARs() {
         return scanForNestedJARs;
     }
 
-    /**
-     * @param patterns the patterns to set.
-     */
     public void setPatterns(FileNamePattern[] patterns) {
         this.patterns = patterns;
     }
 
-    /**
-     * @return the patterns.
-     */
     public FileNamePattern[] getPatterns() {
         return patterns;
     }
@@ -107,7 +89,7 @@ public abstract class ApplicationLoader {
      * Scans and loads the given directory for OSGi bundles and regular JARs and
      * fills the given lists appropriately.
      * <p>
-     * Loading means registering with the given shared class loader each bundle found
+     * Loading means registering with the given shared class loader each bundle found.
      *
      * @param root the directory to recursively scan
      * @param bundles the list to fill with found bundles
@@ -179,7 +161,6 @@ public abstract class ApplicationLoader {
 
     }
 
-
     public class BundleFileScanner extends DefaultCallback {
 
         final List<BundleFile> bundles;
@@ -217,7 +198,6 @@ public abstract class ApplicationLoader {
 
         final List<BundleFile> bundles;
         final List<BundleFile> jars;
-
 
         public BundleFileLoader(List<BundleFile> bundles, List<BundleFile> jars) {
             this.bundles = bundles;
