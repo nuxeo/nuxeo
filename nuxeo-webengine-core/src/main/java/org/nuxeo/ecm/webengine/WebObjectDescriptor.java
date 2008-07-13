@@ -138,7 +138,7 @@ public class WebObjectDescriptor extends ExtensibleContribution {
         return result;
     }
 
-    public Collection<ActionDescriptor> getEnabledActions(WebObject obj) throws WebException {
+    public Collection<ActionDescriptor> getEnabledActions(WebObject obj) {
         List<ActionDescriptor> ads = new ArrayList<ActionDescriptor>();
         for (ActionDescriptor ad : actions.values()) {
             if (ad.isEnabled() && ad.getGuard().check(obj)) {
@@ -148,7 +148,7 @@ public class WebObjectDescriptor extends ExtensibleContribution {
         return ads;
     }
 
-    public Collection<ActionDescriptor> getEnabledActions(WebObject obj, String category) throws WebException {
+    public Collection<ActionDescriptor> getEnabledActions(WebObject obj, String category) {
         List<ActionDescriptor> ads = new ArrayList<ActionDescriptor>();
         for (ActionDescriptor ad : actions.values()) {
             if (ad.isEnabled() && ad.hasCategory(category) && ad.getGuard().check(obj)) {
@@ -158,7 +158,7 @@ public class WebObjectDescriptor extends ExtensibleContribution {
         return ads;
     }
 
-    public Map<String, Collection<ActionDescriptor>> getEnabledActionsByCategory(WebObject obj) throws WebException {
+    public Map<String, Collection<ActionDescriptor>> getEnabledActionsByCategory(WebObject obj) {
         Map<String, Collection<ActionDescriptor>> result = new HashMap<String, Collection<ActionDescriptor>>();
         for (ActionDescriptor ad : actions.values()) {
             if (ad.isEnabled() && ad.getGuard().check(obj)) {

@@ -40,7 +40,7 @@ public class CopyOperation {
     @XNode("@target")
     protected String target;
 
-    public void run(Installer installer, File bundleDir, File installDir) throws URISyntaxException, IOException {
+    public void run(Installer installer, File bundleDir, File installDir) throws IOException {
         File dest = new File(installDir, target);
         if (path.endsWith("/*")) {
             dest.mkdirs();

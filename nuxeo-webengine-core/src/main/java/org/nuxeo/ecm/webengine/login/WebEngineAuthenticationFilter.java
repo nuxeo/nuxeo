@@ -186,13 +186,13 @@ public class WebEngineAuthenticationFilter implements Filter {
 
     /**
      * If a request contains the "nuxeo@@login" parameter a login will be performed using
-     * 'userid' and 'password' parameters. If the 'userid' is null (not specified by the client) a logout will be performed
+     * 'userid' and 'password' parameters. If the 'userid' is null (not specified by the client) a logout will be performed.
+     *
      * @param httpRequest
      * @return
-     * @throws IOException
      */
     public String[] getClientAuthorizationTokens(
-            HttpServletRequest httpRequest) throws IOException {
+            HttpServletRequest httpRequest) {
         if (httpRequest.getParameter("nuxeo_login") != null) {
             String userId = httpRequest.getParameter("userid");
             String passwd = httpRequest.getParameter("password");

@@ -33,8 +33,13 @@ import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
  *
  */
 public class ACLUtils {
+    
+    private ACLUtils() {
+    }
 
-    public static void removePermission(CoreSession session, DocumentRef docRef, String username, String permission) throws ClientException {
+    public static void removePermission(CoreSession session,
+            DocumentRef docRef, String username, String permission)
+            throws ClientException {
         ACP acp = session.getACP(docRef);
         if (acp == null) {
             return;
@@ -47,7 +52,8 @@ public class ACLUtils {
 
         int i = 0;
         for (; i<aces.length; i++) {
-            if (permission.equals(aces[i].getPermission()) && username.equals(aces[i].getUsername())) {
+            if (permission.equals(aces[i].getPermission())
+                    && username.equals(aces[i].getUsername())) {
                 break;
             }
         }

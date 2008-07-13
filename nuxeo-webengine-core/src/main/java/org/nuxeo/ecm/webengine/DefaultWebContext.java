@@ -81,14 +81,14 @@ public class DefaultWebContext implements WebContext {
     protected final HttpServletRequest request;
     protected final HttpServletResponse response;
 
-    protected PathInfo pathInfo;
+    protected final PathInfo pathInfo;
 
-    protected WebApplication app;
+    protected final WebApplication app;
     protected FormData form;
 
     protected final Map<String,Object> vars; // global vars to share between scripts
 
-    protected List<File> scriptExecutionStack;
+    protected final List<File> scriptExecutionStack;
 
     protected String basePath;
     protected String applicationPath;
@@ -443,9 +443,9 @@ public class DefaultWebContext implements WebContext {
 
     public String getCookie(String name) {
         Cookie[] cookies = request.getCookies();
-        for (int i=0; i<cookies.length; i++) {
-            if (name.equals(cookies[i].getName())) {
-                return cookies[i].getValue();
+        for (Cookie cooky : cookies) {
+            if (name.equals(cooky.getName())) {
+                return cooky.getValue();
             }
         }
         return null;

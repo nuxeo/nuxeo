@@ -33,9 +33,9 @@ import java.util.List;
  */
 public class DirectoryStack {
 
-    protected List<Entry> dirs;
+    protected final List<Entry> dirs;
 
-    public DirectoryStack() throws IOException {
+    public DirectoryStack() {
         dirs = new ArrayList<Entry>();
     }
 
@@ -92,8 +92,8 @@ public class DirectoryStack {
 
 
     public static class Entry implements Comparable<Entry> {
-        public File file;
-        public int priority;
+        public final File file;
+        public final int priority;
         public Entry(File file, int priority) {
             this.file = file;
             this.priority = priority;

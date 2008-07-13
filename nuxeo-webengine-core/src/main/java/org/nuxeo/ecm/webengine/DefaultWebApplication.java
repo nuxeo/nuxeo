@@ -54,9 +54,9 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
 
     public static final Log log = LogFactory.getLog(WebApplication.class);
 
-    protected WebEngine engine;
+    protected final String id;
+    protected final WebEngine engine;
     protected FreemarkerEngine rendering;
-    protected String id;
     protected DirectoryStack dirStack;
     protected String errorPage;
     protected String indexPage;
@@ -268,7 +268,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
 
     public ScriptFile getFile(String path) throws IOException {
         int len = path.length();
-        if (path == null || len == 0) {
+        if (len == 0) {
             return null;
         }
         char c = path.charAt(0);
@@ -284,7 +284,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
      * @param path a normalized path (absolute path)
      * @return
      */
-    private final ScriptFile findFile(String path) throws IOException {
+    private ScriptFile findFile(String path) throws IOException {
         ScriptFile file = fileCache.get(path);
         if (file == null) {
             File f = dirStack.getFile(path);

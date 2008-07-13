@@ -56,11 +56,9 @@ public class CreateActionHandler implements ActionHandler {
             } catch (IOException e) {
                 throw new WebException("Failed to redirect to the newly created page: "+path, e);
             }
-            return;
         } else {
             DocumentModel doc = createSubPage(parent, name, object.getWebContext());
             object.getWebContext().resolveFirstUnresolvedSegment(doc);
-            return;
         }
     }
 

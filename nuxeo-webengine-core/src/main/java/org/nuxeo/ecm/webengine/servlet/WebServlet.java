@@ -64,7 +64,7 @@ public class WebServlet extends HttpServlet {
     private WebEngine engine;
 
 
-    public final static WebContext getContext() {
+    public static WebContext getContext() {
         return CONTEXT.get();
     }
 

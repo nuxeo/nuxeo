@@ -72,11 +72,12 @@ public class JBossAuthenticationPropagator implements AuthenticationPropagator {
         return uid;
     }
 
-    private final void doPropagate(final Method method, final Subject subject, final Principal principal, final Object credentials) {
+    private void doPropagate(final Method method, final Subject subject,
+            final Principal principal, final Object credentials) {
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
             public Object run() {
                 try {
-                    method.invoke(null, new Object[] {subject, principal, credentials});
+                    method.invoke(null, subject, principal, credentials);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

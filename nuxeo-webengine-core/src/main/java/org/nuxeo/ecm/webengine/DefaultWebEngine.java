@@ -56,8 +56,8 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
     protected final Map<String,WebObjectDescriptor> registry;
     protected final Map<String, String> bindings;
 
-    protected ConcurrentMap<String, WebApplication> apps;
-    protected PathMap<WebApplicationMapping> pathMap;
+    protected final ConcurrentMap<String, WebApplication> apps;
+    protected final PathMap<WebApplicationMapping> pathMap;
     protected WebApplicationMapping defaultMapping;
     protected final ReentrantLock mappingLock = new ReentrantLock();
 
@@ -66,9 +66,9 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
     protected final Map<String,Object> env;
     protected ResourceBundle messages;
 
-    protected Map<String, Object> renderingExtensions;
+    protected final Map<String, Object> renderingExtensions;
 
-    protected ListenerList listeners = new ListenerList();
+    protected final ListenerList listeners = new ListenerList();
     protected FileChangeNotifier notifier;
     protected long lastMessagesUpdate = 0;
     protected Scripting scripting;

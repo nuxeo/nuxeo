@@ -130,7 +130,7 @@ public class Installer {
         //TODO
     }
 
-    public static void copyResources(Bundle bundle, String path, File root) throws URISyntaxException, IOException {
+    public static void copyResources(Bundle bundle, String path, File root) throws IOException {
         File file = Framework.getRuntime().getBundleFile(bundle);
         if (file == null) {
             throw new UnsupportedOperationException("Couldn't transform the bundle location into a file");

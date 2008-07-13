@@ -97,14 +97,14 @@ public class PathMap<T> {
         public Entry<T> lookup(String[] segments, boolean exactMatch) {
             Entry<T> entry = this;
             Entry<T> match = null;
-            for (int i=0; i<segments.length; i++) {
+            for (String segment : segments) {
                 if (entry.value != null) {
                     match = entry;
                 }
                 if (entry.entries == null) {
                     return exactMatch ? null : match;
                 }
-                entry = entry.entries.get(segments[i]);
+                entry = entry.entries.get(segment);
                 if (entry == null) {
                     return exactMatch ? null : match;
                 }
@@ -117,17 +117,17 @@ public class PathMap<T> {
 
         public void put(String[] segments, T value) {
             Entry<T> entry = this;
-            for (int i=0; i<segments.length; i++) {
+            for (String segment : segments) {
                 Entry<T> newEntry = null;
                 if (entry.entries == null) {
                     entry.entries = new HashMap<String, Entry<T>>();
                     newEntry = new Entry<T>();
-                    entry.entries.put(segments[i], newEntry);
+                    entry.entries.put(segment, newEntry);
                 } else {
-                    newEntry = entry.entries.get(segments[i]);
+                    newEntry = entry.entries.get(segment);
                     if (newEntry == null) {
                         newEntry = new Entry<T>();
-                        entry.entries.put(segments[i], newEntry);
+                        entry.entries.put(segment, newEntry);
                     }
                 }
                 entry = newEntry;

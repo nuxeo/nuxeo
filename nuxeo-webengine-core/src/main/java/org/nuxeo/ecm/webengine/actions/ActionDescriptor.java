@@ -81,7 +81,7 @@ public class ActionDescriptor {
         return isEnabled;
     }
 
-    public boolean isEnabled(WebObject obj) throws WebException {
+    public boolean isEnabled(WebObject obj) {
         if (!isEnabled) {
             return false;
         }
@@ -119,16 +119,10 @@ public class ActionDescriptor {
         this.guard = guard;
     }
 
-    /**
-     * @param categories the categories to set.
-     */
     public void setCategories(String ... categories) {
         this.categories = categories;
     }
 
-    /**
-     * @return the categories.
-     */
     public String[] getCategories() {
         return categories;
     }
