@@ -44,7 +44,7 @@ public class Modification implements Serializable {
     public static final int CONTENT = 64;
     public static final int SECURITY = 128;
     public static final int STATE = 256;
-    public static final int UPDATE_MODIFICATION =CONTENT | SECURITY | STATE;
+    public static final int UPDATE_MODIFICATION = CONTENT | SECURITY | STATE;
 
     public int type;
     public final DocumentRef ref;

@@ -24,15 +24,13 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 
 /**
  * A set of modification descriptors.
- * <p/>
- * This class is not thread safe
+ * <p>
+ * This class is not thread safe.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ModificationSet implements Serializable, Iterable<Modification> {
 
@@ -80,7 +78,7 @@ public class ModificationSet implements Serializable, Iterable<Modification> {
         return ar[index];
     }
 
-    public Modification getModifcation(DocumentRef ref) {
+    public Modification getModification(DocumentRef ref) {
         for (int i=0; i<length; i++) {
             if (ar[i].ref.equals(ref)) {
                 return ar[i];
@@ -89,8 +87,16 @@ public class ModificationSet implements Serializable, Iterable<Modification> {
         return null;
     }
 
+    /**
+     * Deprecated (spelling mistake in method name). Use getModification insteas.
+     */
+    @Deprecated
+    public Modification getModifcation(DocumentRef ref) {
+        return getModification(ref);
+    }
+
     public int indexOf(DocumentRef ref) {
-        for (int i=0; i<length; i++) {
+        for (int i = 0; i < length; i++) {
             if (ar[i].ref.equals(ref)) {
                 return i;
             }
@@ -141,31 +147,6 @@ public class ModificationSet implements Serializable, Iterable<Modification> {
         }
         public void remove() {
             ModificationSet.this.remove(index);
-        }
-    }
-
-    public static void main(String[] args) {
-        ModificationSet set = new ModificationSet();
-        set.add(new IdRef("a"), Modification.CREATE);
-        set.add(new IdRef("b"), Modification.REMOVE);
-        set.add(new IdRef("c"), Modification.CONTENT);
-        set.add(new IdRef("e"), Modification.SECURITY);
-        set.add(new IdRef("d"), Modification.STATE);
-        for (Modification m : set) {
-            System.out.println("> "+m);
-        }
-        System.out.println("===========================");
-        set.add(new IdRef("c"), Modification.STATE | Modification.SECURITY);
-        for (int i=0; i<set.size(); i++) {
-            System.out.println("> "+set.get(i));
-        }
-        System.out.println("===========================");
-        Modification mod = set.getModifcation(new IdRef("c"));
-        System.out.println(mod+" = "+Modification.UPDATE_MODIFICATION);
-        System.out.println("===========================");
-        set.remove(2);
-        for (Modification m : set) {
-            System.out.println("> "+m);
         }
     }
 

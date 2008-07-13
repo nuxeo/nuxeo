@@ -1237,7 +1237,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         Calendar timeStamp = (Calendar) getProperty("dublincore", "modified");
 
         if (timeStamp != null) {
-            key = key + '-' + String.valueOf(timeStamp.getTimeInMillis());
+            key += '-' + String.valueOf(timeStamp.getTimeInMillis());
         }
         return key;
     }
