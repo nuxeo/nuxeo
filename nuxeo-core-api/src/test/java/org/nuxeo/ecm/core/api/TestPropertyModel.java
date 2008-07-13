@@ -319,11 +319,7 @@ public class TestPropertyModel extends TestCase {
         // test raw values
         Map<String, Serializable> expected = new Book().getMap();
         expected.put("book:price", 111L);
-//        assertEquals(expected,  dp.getValue());
-//        System.out.println(expected);
-//        System.out.println(dp.getValue());
         assertTrue(valueEquals(expected,  dp.getValue()));
-
 
         // test resolve path
         prop = dp.resolvePath("title");

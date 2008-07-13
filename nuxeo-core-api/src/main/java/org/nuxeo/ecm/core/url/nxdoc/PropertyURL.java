@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.url.nxobj.ObjectURL;
  */
 public class PropertyURL implements URLStreamHandlerFactory {
 
-
     public static URL getURL(DocumentModel doc, String xpath) {
         return ObjectURL.getURL(doc, xpath, Handler.getInstance());
     }
@@ -50,11 +49,11 @@ public class PropertyURL implements URLStreamHandlerFactory {
         return createURL(doc.getRepositoryName(), doc.getId(), xpath, doc.getSessionId());
     }
 
-
     public URLStreamHandler createURLStreamHandler(String protocol) {
         if ("nxdoc".equals(protocol)) {
             return new Handler();
         }
         return null;
     }
+
 }

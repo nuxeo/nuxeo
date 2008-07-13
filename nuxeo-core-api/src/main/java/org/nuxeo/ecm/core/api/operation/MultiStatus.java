@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.api.operation;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class MultiStatus extends Status {
 
@@ -30,15 +29,15 @@ public class MultiStatus extends Status {
     protected Status[] children;
 
     public MultiStatus(int severity) {
-        super (severity);
+        super(severity);
     }
 
     public MultiStatus(int severity, String message) {
-        super (severity, message);
+        super(severity, message);
     }
 
     public MultiStatus(int severity, Throwable exception) {
-        super (severity, exception);
+        super(severity, exception);
     }
 
     @Override

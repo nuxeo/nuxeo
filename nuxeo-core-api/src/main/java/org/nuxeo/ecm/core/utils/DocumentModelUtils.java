@@ -70,6 +70,7 @@ public final class DocumentModelUtils {
 
     /**
      * The given propertyName should have 'schema_name:property_name' format.
+     *
      * @param doc
      * @param propertyName
      * @return <code>null</code> if any error occurs.

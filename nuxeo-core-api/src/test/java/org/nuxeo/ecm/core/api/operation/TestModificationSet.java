@@ -28,6 +28,9 @@ public class TestModificationSet extends TestCase {
         assertTrue(set.getModification(new IdRef("e")).isSecurityUpdate());
         assertTrue(set.getModification(new IdRef("d")).isStateUpdate());
 
+        assertFalse(set.getModification(new IdRef("a")).isRemove());
+        assertFalse(set.getModification(new IdRef("b")).isCreate());
+
         Iterator<Modification> it = set.iterator();
         assertEquals("a [8]", it.next().toString());
         assertEquals("b [16]", it.next().toString());
