@@ -91,8 +91,7 @@ public class JCRQueryXPathResult implements QueryResult {
                 if (schemas == null) {
                     schemas = getSchemasInSelectClause(doc);
                 }
-                DocumentModel docModel = DocumentModelFactory
-                        .createDocumentModel(doc, schemas);
+                DocumentModel docModel = DocumentModelFactory.createDocumentModel(doc, schemas);
                 list.add(docModel);
             }
             return new DocumentModelListImpl(list);

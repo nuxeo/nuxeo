@@ -40,10 +40,10 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> TODO: fdate
- *         literals need special handling - make a xpathLiteral() method to be
- *         able to intercept date literals to adapt them
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+// TODO: fdate literals need special handling - make a xpathLiteral() method to be
+// able to intercept date literals to adapt them
 public class XPathBuilder implements QueryConstants {
 
     public static String fromNXQL(String query) throws QueryException {
@@ -59,9 +59,9 @@ public class XPathBuilder implements QueryConstants {
     }
 
     /**
-     * Build the element part of the XPATH query. Example: element(*,
-     * ecmdt:Document) for SELECT * FROM Document
-     * 
+     * Builds the element part of the XPATH query. Example:
+     * {@code element(*, ecmdt:Document)} for {@code SELECT * FROM Document}.
+     *
      * @param builder
      */
     static void buildElementPart(XPathQuery xq, SQLQuery query) {
@@ -171,10 +171,9 @@ public class XPathBuilder implements QueryConstants {
      * Process special expressions. If the expression is not a special one
      * return false so that the expression will be processed in the default way.
      * Otherwise process it and return true.
-     * 
+     *
      * @param xq
      * @param expr
-     * @param acceptPathExpressions
      * @return
      * @throws QueryException
      */
@@ -340,11 +339,11 @@ public class XPathBuilder implements QueryConstants {
         int size = list.size() - 1;
         for (int i = 0; i < size; i++) {
             Literal literal = list.get(i);
-            xq.predicate.append(name).append(" = ").append(literal).append(
-                    " or ");
+            xq.predicate.append(name).append(" = ").append(literal)
+                    .append(" or ");
         }
-        xq.predicate.append(name).append(" = ").append(list.get(size)).append(
-                ") ");
+        xq.predicate.append(name).append(" = ").append(list.get(size))
+                .append(") ");
     }
 
     static void expression(XPathQuery xq, Expression expr)
@@ -491,14 +490,14 @@ public class XPathBuilder implements QueryConstants {
      * match otherwise the absolute path will be used
      * </ul>
      * <p>
-     * Note: Descendants or self is not supported by jackrabbit
+     * Note: descendants or self is not supported by Jackrabbit.
      * <p>
      * STARTSWITH path is the same as LIKE "path/%"
-     * 
-     * 
+     *
+     *
      * @param docPath
      * @param buf the buffer to fill with the computed path. The path will
-     *            allways end with a /
+     *            always end with a /
      * @return the document name if any was computed from the path expression or
      *         null otherwise
      */
@@ -542,8 +541,8 @@ public class XPathBuilder implements QueryConstants {
         if (segment.length() == 1 && segment.charAt(0) == '%') { // "%/..."
             buf.append("//").append(segment).append("/ecm:children/");
         } else { // "/..."
-            buf.append("/jcr:root/ecm:root/ecm:children/").append(segment).append(
-                    "/ecm:children/");
+            buf.append("/jcr:root/ecm:root/ecm:children/").append(segment)
+                    .append("/ecm:children/");
         }
         segment = path.lastSegment();
         if (segment.length() == 1 && segment.charAt(0) == '%') { // "../%"
@@ -563,41 +562,6 @@ public class XPathBuilder implements QueryConstants {
             buf.append("/");
         }
         return docName;
-    }
-
-    public static void main(String[] args) {
-        double s = System.currentTimeMillis();
-        try {
-            String q = null, x = null, xq = null;
-            q = "SELECT * FROM Document WHERE test/dc:title='test'";
-            x = "//element(*, ecmdt:Document)[dc:title='test']";
-            xq = fromNXQL(q);
-            System.out.println(xq);
-
-            System.out.println(fromNXQL("select * from File where ecm:path LIKE '%/wiki/FrontPage'"));
-            System.out.println(fromNXQL("select * from File where ecm:path LIKE '%/wiki/FrontPage/'"));
-            System.out.println(fromNXQL("select * from File where ecm:path LIKE '%/wiki/FrontPage/%'"));
-            System.out.println(fromNXQL("select * from File where ecm:path LIKE '/wiki/FrontPage'"));
-            System.out.println(fromNXQL("select * from File where ecm:path LIKE '/wiki/FrontPage/'"));
-            System.out.println(fromNXQL("select * from File where ecm:path LIKE '/wiki/FrontPage/%'"));
-
-            System.out.println(fromNXQL("select doc from File where ecm:fulltext = '%MyText%'"));
-            System.out.println(fromNXQL("select * from File where ecm:fulltext = '%MyText%' and ecm:id='test'"));
-            System.out.println(fromNXQL("select * from File where ecm:name = 'My' and ecm:test NOT LIKE 'test'"));
-            System.out.println(fromNXQL("select * from File where ecm:fulltext = '%MyText%' and dc:title IN ('test1', 'test2')"));
-
-            //
-            q = "select * from document where ecm:path LIKE '%/ws/%' and dc:created between DATE '2004-02-10' and DATE '2005-01-02'";
-            System.out.println(fromNXQL(q));
-            q = "select * from document where ecm:path LIKE '/default-domain/workspaces/%' and   dc:created != TIMESTAMP '1003-02-10 10:00:00' and my:urgency = 2 order by ecm:path";
-            System.out.println(fromNXQL(q));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            System.out.println(">>>> "
-                    + ((System.currentTimeMillis() - s) / 1000) + " sec.");
-        }
     }
 
 }
