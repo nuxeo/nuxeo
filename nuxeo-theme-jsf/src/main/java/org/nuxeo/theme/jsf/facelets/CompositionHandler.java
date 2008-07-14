@@ -140,7 +140,7 @@ public final class CompositionHandler extends TagHandler implements
                     final String spec = new JSFNegotiator(strategy,
                             facesContext).getSpec();
                     final URL themeUrl = new URL(spec);
-                    requestMap.put("nxthemesThemeUrl", themeUrl);
+                    requestMap.put("org.nuxeo.theme.url", themeUrl);
                     ctx.includeFacelet(parent, themeUrl);
                 } catch (NegotiationException e) {
                     log.error("Could not get default negotiation settings.", e);

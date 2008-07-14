@@ -16,11 +16,9 @@ package org.nuxeo.theme.jsf.component;
 
 public class UIView extends UIBaseMVC {
 
-    private static final String className = "view";
-
     @Override
     public final String getClassName() {
-        return className;
+        return "view";
     }
 
 }

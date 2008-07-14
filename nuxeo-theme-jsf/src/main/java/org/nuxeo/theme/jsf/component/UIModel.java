@@ -16,11 +16,9 @@ package org.nuxeo.theme.jsf.component;
 
 public class UIModel extends UIBaseMVC {
 
-    private static final String className = "model";
-
     @Override
     public final String getClassName() {
-        return className;
+        return "model";
     }
 
 }

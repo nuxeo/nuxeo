@@ -135,7 +135,7 @@ public class UiManager implements UiManagerLocal {
         }
         HttpServletResponse response = (HttpServletResponse) externalContext.getResponse();
         Map<String, Object> requestMap = externalContext.getRequestMap();
-        URL themeUrl = (URL) requestMap.get("nxthemesThemeUrl");
+        URL themeUrl = (URL) requestMap.get("org.nuxeo.theme.url");
         String pagePath = themeManager.getPagePathByUrl(themeUrl);
 
         // Store the current page path in a cookie

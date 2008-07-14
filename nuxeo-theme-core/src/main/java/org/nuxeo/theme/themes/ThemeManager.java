@@ -58,6 +58,8 @@ import org.nuxeo.theme.relations.DyadicRelation;
 import org.nuxeo.theme.relations.Predicate;
 import org.nuxeo.theme.relations.Relation;
 import org.nuxeo.theme.relations.RelationStorage;
+import org.nuxeo.theme.templates.TemplateEngineType;
+import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 import org.nuxeo.theme.uids.Identifiable;
@@ -149,6 +151,19 @@ public final class ThemeManager implements Registrable {
                 engineName);
     }
 
+    public static TemplateEngineType getTemplateEngineByUrl(final URL url) {
+        if (url == null) {
+            return null;
+        }
+        final String[] path = url.getPath().split("/");
+        if (path.length <= 6) {
+            return null;
+        }
+        final String engineName = path[6];
+        return (TemplateEngineType) Manager.getTypeRegistry().lookup(
+                TypeFamily.TEMPLATE_ENGINE, engineName);
+    }
+
     public static String getViewModeByUrl(final URL url) {
         if (url == null) {
             return null;
@@ -161,6 +176,14 @@ public final class ThemeManager implements Registrable {
     }
 
     public ThemeElement getThemeByUrl(final URL url) {
+        String themeName = getThemeNameByUrl(url);
+        if (themeName == null) {
+            return null;
+        }
+        return getThemeByName(themeName);
+    }
+
+    public static String getThemeNameByUrl(final URL url) {
         if (url == null) {
             return null;
         }
@@ -168,10 +191,9 @@ public final class ThemeManager implements Registrable {
         if (path.length <= 3) {
             return null;
         }
-        final String themeName = path[3];
-        return getThemeByName(themeName);
+        return path[3];
     }
-
+    
     public String getPagePathByUrl(final URL url) {
         if (url == null) {
             return null;
@@ -731,6 +753,19 @@ public final class ThemeManager implements Registrable {
 
     public synchronized void setResource(String name, String content) {
         cachedResources.put(name, content);
+    }
+    
+    // Template engines
+    public static List<String> getTemplateEngineNames() {
+        List<String> types = new ArrayList<String>();
+        for (Type type : Manager.getTypeRegistry().getTypes(TypeFamily.TEMPLATE_ENGINE)) {
+            types.add(type.getTypeName());
+        }
+        return types;
+    }
+    
+    public static String getDefaultTemplateEngineName() {
+        return "jsf-facelets";
     }
 
 }

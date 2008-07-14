@@ -35,7 +35,7 @@ public class UITabs extends UIOutput {
     private String controlledBy;
 
     @Override
-    public void encodeBegin(final FacesContext context) throws IOException {
+    public void encodeAll(final FacesContext context) throws IOException {
         final ResponseWriter writer = context.getResponseWriter();
 
         final Map<String, Object> attributes = getAttributes();
@@ -82,11 +82,6 @@ public class UITabs extends UIOutput {
         writer.startElement("ins", this);
         writer.writeAttribute("class", "view", null);
         writer.write(Utils.toJson(view));
-    }
-
-    @Override
-    public void encodeEnd(final FacesContext context) throws IOException {
-        final ResponseWriter writer = context.getResponseWriter();
         writer.endElement("ins");
     }
 
