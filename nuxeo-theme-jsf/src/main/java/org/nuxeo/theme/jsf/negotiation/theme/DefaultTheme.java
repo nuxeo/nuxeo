@@ -24,7 +24,7 @@ public final class DefaultTheme implements Scheme {
 
     public String getOutcome(final Object context) {
         final Map<String, Object> requestMap = ((FacesContext) context).getExternalContext().getRequestMap();
-        return (String) requestMap.get("nxthemesDefaultTheme");
+        return (String) requestMap.get("org.nuxeo.theme.default.theme");
     }
 
 }

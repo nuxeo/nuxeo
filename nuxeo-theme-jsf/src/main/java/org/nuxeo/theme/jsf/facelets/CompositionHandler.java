@@ -120,11 +120,11 @@ public final class CompositionHandler extends TagHandler implements
             if (application != null) {
                 final NegotiationDef negotiation = application.getNegotiation();
                 if (negotiation != null) {
-                    requestMap.put("nxthemesDefaultTheme",
+                    requestMap.put("org.nuxeo.theme.default.theme",
                             negotiation.getDefaultTheme());
-                    requestMap.put("nxthemesDefaultEngine",
+                    requestMap.put("org.nuxeo.theme.default.engine",
                             negotiation.getDefaultEngine());
-                    requestMap.put("nxthemesDefaultPerspective",
+                    requestMap.put("org.nuxeo.theme.default.perspective",
                             negotiation.getDefaultPerspective());
                     strategy = negotiation.getStrategy();
                 }
