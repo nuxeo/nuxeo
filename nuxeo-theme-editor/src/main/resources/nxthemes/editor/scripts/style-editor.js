@@ -43,11 +43,12 @@ NXThemesStyleEditor.renderElement = function(id, area) {
     };
     var url = window.location.href;
     var i = url.indexOf('?');
+    var query_params = $H({'engine': 'fragments-only'})'';
     if (i > 0) {
       var query_string = url.substr(i+1);
-      var query_params = $H(query_string.toQueryParams()).update({'engine': 'fragments-only'});
-      url = url.substr(0, i) + '?' + query_params.toQueryString();
+      query_params = query_params.update($H(query_string.toQueryParams()));
     }
+    url = url.substr(0, i) + '?' + query_params.toQueryString();
     new Ajax.Request(url, options);
 };
 
