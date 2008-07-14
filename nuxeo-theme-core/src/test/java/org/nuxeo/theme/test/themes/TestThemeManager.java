@@ -15,6 +15,7 @@
 package org.nuxeo.theme.test.themes;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
@@ -31,7 +32,6 @@ import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.formats.layouts.Layout;
 import org.nuxeo.theme.formats.styles.Style;
-import org.nuxeo.theme.formats.styles.StyleFormat;
 import org.nuxeo.theme.formats.widgets.Widget;
 import org.nuxeo.theme.fragments.FragmentFactory;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
@@ -95,6 +95,11 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(themeManager.getPageNames("default").contains("page2"));
     }
 
+    public void testGetThemeNameByUrl() throws MalformedURLException {
+        URL themeUrl = new URL("nxtheme://theme/engine/mode/theme/page/perspective/template-engine");
+        assertEquals("theme", ThemeManager.getThemeNameByUrl(themeUrl));
+    }
+    
     public void testGetThemeOf() {
         Element theme = ElementFactory.create("theme");
         Element page = ElementFactory.create("page");

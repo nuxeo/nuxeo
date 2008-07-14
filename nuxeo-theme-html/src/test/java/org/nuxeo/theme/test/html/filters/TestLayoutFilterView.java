@@ -16,6 +16,7 @@ package org.nuxeo.theme.test.html.filters;
 
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.theme.elements.ElementFactory;
 import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.formats.DefaultFormat;
 import org.nuxeo.theme.formats.FormatFilter;
@@ -43,7 +44,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.html", "OSGI-INF/nxthemes-html-contrib.xml");
 
         // create the elements to render
-        PageElement page = new PageElement();
+        PageElement page =  (PageElement) ElementFactory.create("page");
         page.setUid(1);
 
         ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(

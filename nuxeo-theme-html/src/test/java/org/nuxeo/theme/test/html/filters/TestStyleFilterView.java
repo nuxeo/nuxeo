@@ -16,11 +16,12 @@ package org.nuxeo.theme.test.html.filters;
 
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.theme.elements.ElementFactory;
 import org.nuxeo.theme.elements.PageElement;
-import org.nuxeo.theme.formats.DefaultFormat;
+import org.nuxeo.theme.formats.Format;
+import org.nuxeo.theme.formats.FormatFactory;
 import org.nuxeo.theme.formats.FormatFilter;
 import org.nuxeo.theme.formats.FormatType;
-import org.nuxeo.theme.formats.styles.StyleFormat;
 import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
@@ -30,7 +31,7 @@ public class TestStyleFilterView extends NXRuntimeTestCase {
 
     FormatFilter filter;
 
-    DefaultFormat format;
+    Format format;
 
     FormatType formatType;
 
@@ -47,17 +48,17 @@ public class TestStyleFilterView extends NXRuntimeTestCase {
         themeService.getRegistry("relations").clear();
 
         // create the elements to render
-        PageElement page = new PageElement();
+        PageElement page = (PageElement) ElementFactory.create("page");
         page.setUid(1);
 
-        TypeRegistry typeRegistry = (TypeRegistry) themeService.getRegistry("types");
+        TypeRegistry typeRegistry = (TypeRegistry) themeService.getRegistry("types");        
         formatType = (FormatType) typeRegistry.lookup(TypeFamily.FORMAT,
                 "style");
 
         info = new DummyRenderingInfo(page, null);
 
         // set the format
-        format = new StyleFormat();
+        format = FormatFactory.create("style");
         format.setUid(1);
         format.setProperty("dummy", "property");
 
