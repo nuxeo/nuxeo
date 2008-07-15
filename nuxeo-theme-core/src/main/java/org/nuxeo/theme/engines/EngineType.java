@@ -30,8 +30,8 @@ public final class EngineType implements Type {
     @XNode("@name")
     public String name;
 
-    @XNode("@template-view-handler")
-    public String templateViewHandler = "org.nuxeo.theme.views.TemplateView";
+    @XNode("@template-view")
+    public String templateView = "org.nuxeo.theme.views.TemplateView";
     
     @XNodeMap(value = "renderer", key = "@element", type = HashMap.class, componentType = RendererType.class)
     public Map<String, RendererType> renderers;
@@ -61,12 +61,12 @@ public final class EngineType implements Type {
         this.name = name;
     }
 
-    public String getTemplateViewHandler() {
-        return templateViewHandler;
+    public String getTemplateView() {
+        return templateView;
     }
 
-    public void setTemplateViewHandler(String templateViewHandler) {
-        this.templateViewHandler = templateViewHandler;
+    public void setTemplateView(String templateView) {
+        this.templateView = templateView;
     }
 
 }

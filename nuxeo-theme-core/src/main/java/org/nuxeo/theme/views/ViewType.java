@@ -112,7 +112,7 @@ public final class ViewType implements Type {
         if (className == null) {
             EngineType engine = (EngineType) Manager.getTypeRegistry().lookup(
                     TypeFamily.ENGINE, engineName);
-            className = engine.getTemplateViewHandler();
+            className = engine.getTemplateView();
         }
         try {
             view = (View) Class.forName(className).newInstance();

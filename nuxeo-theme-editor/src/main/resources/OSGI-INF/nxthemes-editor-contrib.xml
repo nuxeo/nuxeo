@@ -355,7 +355,7 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="engines">
 
-    <engine name="editor" template-view-handler="org.nuxeo.theme.html.HTMLView">
+    <engine name="editor" template-view="org.nuxeo.theme.html.HTMLView">
 
       <renderer element="theme">
         <filter>add widget</filter>
@@ -372,7 +372,7 @@
 
     </engine>
 
-    <engine name="page-editor" template-view-handler="org.nuxeo.theme.html.HTMLView">
+    <engine name="page-editor" template-view="org.nuxeo.theme.html.HTMLView">
 
       <renderer element="theme" />
 
@@ -412,7 +412,7 @@
 
     </engine>
 
-    <engine name="fragments-only" template-view-handler="org.nuxeo.html.HTMLView">
+    <engine name="fragments-only" template-view="org.nuxeo.html.HTMLView">
 
       <renderer element="theme">
         <filter>add widget</filter>

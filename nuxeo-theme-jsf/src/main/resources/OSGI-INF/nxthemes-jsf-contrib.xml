@@ -10,7 +10,7 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="engines">
 
-    <engine name="default" template-view-handler="org.nuxeo.theme.html.HTMLView">
+    <engine name="default" template-view="org.nuxeo.theme.html.HTMLView">
 
       <renderer element="theme">
         <filter>add widget</filter>
