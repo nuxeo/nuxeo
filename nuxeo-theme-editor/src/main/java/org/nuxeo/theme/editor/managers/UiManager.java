@@ -968,9 +968,12 @@ public class UiManager implements UiManagerLocal {
                 TypeFamily.APPLICATION, applicationPath);
 
         if (application != null) {
-            return application.getTemplateEngine();
+            String templateEngine = application.getTemplateEngine();
+	    if (templateEngine != null) {
+	        return templateEngine;
+	    }
         }
-        return null;
+        return ThemeManager.getDefaultTemplateEngineName();
     }
 
 }

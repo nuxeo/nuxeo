@@ -765,6 +765,7 @@ public final class ThemeManager implements Registrable {
     }
     
     public static String getDefaultTemplateEngineName() {
+        // TODO use XML configuration
         return "jsf-facelets";
     }
 
