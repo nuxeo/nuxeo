@@ -38,6 +38,9 @@ public final class ViewType implements Type {
     @XNode("engine")
     public String engineName = "default";
 
+    @XNode("template-engine")
+    private String templateEngine;
+
     @XNode("mode")
     public String mode = "*";
 
@@ -68,15 +71,16 @@ public final class ViewType implements Type {
     }
 
     public ViewType(final String viewName, final String className,
-            final String engineName, final String mode,
-            final String elementTypeName, final String modelTypeName,
-            final String formatTypeName, final String template,
-            final String[] resources) {
+            final String engineName, final String templateEngine,
+            final String mode, final String elementTypeName,
+            final String modelTypeName, final String formatTypeName,
+            final String template, final String[] resources) {
         this.viewName = viewName;
         this.elementTypeName = elementTypeName;
         this.modelTypeName = modelTypeName;
         this.formatTypeName = formatTypeName;
         this.engineName = engineName;
+        this.templateEngine = templateEngine;
         this.mode = mode;
         this.className = className;
         this.template = template;
@@ -85,16 +89,17 @@ public final class ViewType implements Type {
 
     public String getTypeName() {
         return computeName(formatTypeName, elementTypeName, viewName,
-                modelTypeName, engineName, mode);
+                modelTypeName, engineName, mode, templateEngine);
     }
 
     public static String computeName(final String formatTypeName,
             final String elementTypeName, final String viewName,
             final String modelTypeName, final String engineName,
-            final String mode) {
+            final String mode, final String templateEngineName) {
 
-        return String.format("%s/%s/%s/%s/%s/%s", formatTypeName,
-                elementTypeName, viewName, modelTypeName, engineName, mode);
+        return String.format("%s/%s/%s/%s/%s/%s/%s", formatTypeName,
+                elementTypeName, viewName, modelTypeName, engineName, mode,
+                templateEngineName);
     }
 
     public TypeFamily getTypeFamily() {
@@ -171,4 +176,11 @@ public final class ViewType implements Type {
         this.icon = icon;
     }
 
+    public String getTemplateEngine() {
+        return templateEngine;
+    }
+
+    public void setTemplateEngine(String templateEngine) {
+        this.templateEngine = templateEngine;
+    }
 }

@@ -46,6 +46,8 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
+import org.nuxeo.theme.editor.previews.Preview;
+import org.nuxeo.theme.editor.states.UiStatesLocal;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFormatter;
 import org.nuxeo.theme.elements.ElementType;
@@ -59,8 +61,6 @@ import org.nuxeo.theme.formats.widgets.Widget;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentType;
 import org.nuxeo.theme.html.Utils;
-import org.nuxeo.theme.editor.previews.Preview;
-import org.nuxeo.theme.editor.states.UiStatesLocal;
 import org.nuxeo.theme.jsf.negotiation.CookieManager;
 import org.nuxeo.theme.models.ModelType;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
@@ -113,13 +113,14 @@ public class UiManager implements UiManagerLocal {
     public String getCurrentPagePath() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         ExternalContext externalContext = facesContext.getExternalContext();
-        String pagePath = CookieManager.getCookie("nxthemes.theme", externalContext);
+        String pagePath = CookieManager.getCookie("nxthemes.theme",
+                externalContext);
         if (pagePath == null) {
             pagePath = String.format("%s/default", getDefaultTheme());
         }
         return pagePath;
     }
-    
+
     public String getCurrentThemeName() {
         return getCurrentPagePath().split("/")[0];
     }
@@ -135,7 +136,7 @@ public class UiManager implements UiManagerLocal {
         }
         HttpServletResponse response = (HttpServletResponse) externalContext.getResponse();
         Map<String, Object> requestMap = externalContext.getRequestMap();
-        URL themeUrl = (URL) requestMap.get("org.nuxeo.theme.themeurl");
+        URL themeUrl = (URL) requestMap.get("org.nuxeo.theme.url");
         String pagePath = themeManager.getPagePathByUrl(themeUrl);
 
         // Store the current page path in a cookie
@@ -180,15 +181,18 @@ public class UiManager implements UiManagerLocal {
 
     public List<FragmentInfo> getAvailableFragments() {
         final List<FragmentInfo> fragments = new ArrayList<FragmentInfo>();
-
         final List<Type> fragmentTypes = Manager.getTypeRegistry().getTypes(
                 TypeFamily.FRAGMENT);
-
+        final String templateEngine = getTemplateEngine();
         for (Type f : fragmentTypes) {
             final FragmentType fragmentType = (FragmentType) f;
             final FragmentInfo fragmentInfo = new FragmentInfo(fragmentType);
             for (ViewType viewType : getViewTypesForFragmentType(fragmentType)) {
-                fragmentInfo.addView(viewType);
+                final String viewTemplateEngine = viewType.getTemplateEngine();
+                if ("*".equals(viewTemplateEngine)
+                        || templateEngine.equals(viewTemplateEngine)) {
+                    fragmentInfo.addView(viewType);
+                }
             }
             fragments.add(fragmentInfo);
         }
@@ -956,4 +960,17 @@ public class UiManager implements UiManagerLocal {
         }
         return defaultTheme;
     }
+
+    private String getTemplateEngine() {
+        final TypeRegistry typeRegistry = Manager.getTypeRegistry();
+        final String applicationPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
+        final ApplicationType application = (ApplicationType) typeRegistry.lookup(
+                TypeFamily.APPLICATION, applicationPath);
+
+        if (application != null) {
+            return application.getTemplateEngine();
+        }
+        return null;
+    }
+
 }

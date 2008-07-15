@@ -23,6 +23,7 @@ import org.nuxeo.theme.engines.EngineType;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.models.Info;
 import org.nuxeo.theme.models.Model;
+import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.uids.Identifiable;
 
@@ -41,7 +42,7 @@ public class RenderingInfo implements Info, Identifiable {
     private String name;
 
     private URL themeUrl;
-
+    
     private boolean dirty = false;
 
     public RenderingInfo() {
@@ -126,6 +127,10 @@ public class RenderingInfo implements Info, Identifiable {
 
     public ThemeElement getTheme() {
         return Manager.getThemeManager().getThemeByUrl(themeUrl);
+    }
+
+    public TemplateEngineType getTemplateEngine() {
+        return ThemeManager.getTemplateEngineByUrl(themeUrl);
     }
 
 }

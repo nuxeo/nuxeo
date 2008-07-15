@@ -6,6 +6,13 @@
     Web-related features and resources are registered here.
     @author Jean-Marc Orliaguet (jmo@chalmers.se)
   </documentation>
+  
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="template-engines">
+    
+    <template-engine name="html" title="Plain HTML" />
+
+  </extension>
 
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="resources">
@@ -141,9 +148,8 @@
 
   <extension target="org.nuxeo.theme.services.ThemeService" point="views">
 
-    <!-- format filter views -->
-
-    <view>
+    <view> 
+      <template-engine>*</template-engine>
       <format-type>layout</format-type>
       <class>
         org.nuxeo.theme.html.filters.layout.DefaultLayoutView
@@ -151,10 +157,77 @@
     </view>
 
     <view>
+      <template-engine>*</template-engine>
       <format-type>style</format-type>
       <class>
         org.nuxeo.theme.html.filters.style.DefaultStyleView
       </class>
+    </view>
+
+    <view name="theme view">
+      <template-engine>html</template-engine>      
+      <element-type>theme</element-type>
+      <format-type>widget</format-type>
+      <template>nxthemes/html/widgets/theme-view.xml</template>
+      <resource>nxthemes.css</resource>
+      <resource>autosuggest.css</resource>
+    </view>
+
+    <view name="page frame">
+      <template-engine>html</template-engine>      
+      <element-type>page</element-type>
+      <format-type>widget</format-type>
+      <template>nxthemes/html/widgets/page-frame.xml</template>
+    </view>
+
+    <view name="section frame">
+      <template-engine>html</template-engine>      
+      <element-type>section</element-type>
+      <format-type>widget</format-type>
+      <template>nxthemes/html/widgets/section-frame.xml</template>
+    </view>
+
+    <view name="cell frame">
+      <template-engine>html</template-engine>     
+      <element-type>cell</element-type>
+      <format-type>widget</format-type>
+      <template>nxthemes/html/widgets/cell-frame.xml</template>
+    </view>
+
+    <view name="vertical menu">
+      <template-engine>html</template-engine>      
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <model-type>menu item</model-type>
+      <template>nxthemes/html/widgets/vertical-menu.xml</template>
+    </view>
+
+    <view name="horizontal tabs">
+      <template-engine>html</template-engine>      
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <model-type>menu item</model-type>
+      <template>
+        nxthemes/html/widgets/horizontal-tabs.xml
+      </template>
+    </view>
+
+    <view name="plain text">
+      <template-engine>html</template-engine>      
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <model-type>text</model-type>
+      <icon>/nuxeo/nxthemes/icons/plain-text.png</icon>
+      <template>nxthemes/html/widgets/plain-text.xml</template>
+    </view>
+
+    <view name="plain html">
+      <template-engine>html</template-engine>      
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <model-type>html</model-type>
+      <icon>/nuxeo/nxthemes/icons/plain-html.png</icon>
+      <template>nxthemes/html/widgets/plain-html.xml</template>
     </view>
 
   </extension>

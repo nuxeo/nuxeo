@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -42,12 +43,14 @@ import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.presets.PaletteType;
 import org.nuxeo.theme.presets.PresetType;
+import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.themes.ThemeParser;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
+import org.nuxeo.theme.views.ViewType;
 
 public class ThemeService extends DefaultComponent {
 
@@ -98,8 +101,8 @@ public class ThemeService extends DefaultComponent {
                 || xp.equals("models") || xp.equals("formats")
                 || xp.equals("format-filters")
                 || xp.equals("standalone-filters") || xp.equals("resources")
-                || xp.equals("views") || xp.equals("negotiations")
-                || xp.equals("shortcuts") || xp.equals("vocabularies")) {
+                || xp.equals("negotiations") || xp.equals("shortcuts")
+                || xp.equals("vocabularies")) {
             registerTypeExtension(extension);
         } else if (xp.equals("applications")) {
             registerApplicationExtension(extension);
@@ -107,12 +110,18 @@ public class ThemeService extends DefaultComponent {
             registerPerspectiveExtension(extension);
         } else if (xp.equals("engines")) {
             registerEngineExtension(extension);
+        } else if (xp.equals("template-engines")) {
+            registerTemplateEngineExtension(extension);
         } else if (xp.equals("event-listeners")) {
             registerEventListenerExtension(extension);
         } else if (xp.equals("themes")) {
             registerThemeExtension(extension);
         } else if (xp.equals("presets")) {
             registerPresetExtension(extension);
+        } else if (xp.equals("views")) {
+            registerViewExtension(extension);
+        } else {
+            log.warn(String.format("Unknown extension point: %s", xp));
         }
     }
 
@@ -125,7 +134,7 @@ public class ThemeService extends DefaultComponent {
                 || xp.equals("models") || xp.equals("formats")
                 || xp.equals("format-filters")
                 || xp.equals("standalone-filters") || xp.equals("resources")
-                || xp.equals("views") || xp.equals("engines")
+                || xp.equals("engines") || xp.equals("template-engines")
                 || xp.equals("negotiations") || xp.equals("perspectives")
                 || xp.equals("applications") || xp.equals("shortcuts")
                 || xp.equals("vocabularies")) {
@@ -136,6 +145,10 @@ public class ThemeService extends DefaultComponent {
             unregisterThemeExtension(extension);
         } else if (xp.equals("presets")) {
             unregisterPresetExtension(extension);
+        } else if (xp.equals("views")) {
+            unregisterViewExtension(extension);
+        } else {
+            log.warn(String.format("Unknown extension point: %s", xp));
         }
     }
 
@@ -279,6 +292,19 @@ public class ThemeService extends DefaultComponent {
         }
     }
 
+    private void registerTemplateEngineExtension(Extension extension) {
+        Object[] contribs = extension.getContributions();
+        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
+        for (Object contrib : contribs) {
+            TemplateEngineType engine = (TemplateEngineType) contrib;
+            if (!engine.getName().matches("[a-z0-9_\\-]+")) {
+                log.error("Template engine names may only contain lowercase alphanumeric characters, underscores and hyphens ");
+                continue;
+            }
+            typeRegistry.register(engine);
+        }
+    }
+
     private void registerThemeExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         RuntimeContext extensionContext = extension.getContext();
@@ -394,6 +420,50 @@ public class ThemeService extends DefaultComponent {
         if (typeRegistry != null) {
             for (Object contrib : contribs) {
                 typeRegistry.unregister((Type) contrib);
+            }
+        }
+    }
+
+    private void registerViewExtension(Extension extension) {
+        Object[] contribs = extension.getContributions();
+        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
+        StringBuilder sb = new StringBuilder();
+        sb.append("*");
+        final List<String> templateEngineNames = ThemeManager.getTemplateEngineNames();
+        for (String n : templateEngineNames) {
+            sb.append(String.format(", %s", n));
+        }
+        for (Object contrib : contribs) {
+            ViewType viewType = (ViewType) contrib;
+            final String templateEngine = viewType.getTemplateEngine();
+            if (templateEngine == null
+                    || !(templateEngineNames.contains(templateEngine) || "*".equals(templateEngine))) {
+                final String defaultTemplateEngineName = ThemeManager.getDefaultTemplateEngineName();
+                viewType.setTemplateEngine(defaultTemplateEngineName);
+                final String viewName = viewType.getViewName();
+                if (templateEngineNames.size() > 0) {
+                    if ("*".equals(viewName)) {
+                        log.warn(String.format(
+                                "Please set the 'template-engine' attribute on <view> to one of: %s (default is '%s')",
+                                sb.toString(), defaultTemplateEngineName));
+                    } else {
+                        log.warn(String.format(
+                                "Please set the 'template-engine' attribute on <view name=\"%s\"> to one of: %s (default is '%s')",
+                                viewName, sb.toString(),
+                                defaultTemplateEngineName));
+                    }
+                }
+            }
+            typeRegistry.register(viewType);
+        }
+    }
+
+    private void unregisterViewExtension(Extension extension) {
+        Object[] contribs = extension.getContributions();
+        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
+        if (typeRegistry != null) {
+            for (Object contrib : contribs) {
+                typeRegistry.unregister((ViewType) contrib);
             }
         }
     }

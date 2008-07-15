@@ -8,6 +8,13 @@
   </documentation>
 
   <extension target="org.nuxeo.theme.services.ThemeService"
+    point="template-engines">
+    
+    <template-engine name="jsf-facelets" title="JSF/Facelets" />
+    
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
     point="engines">
 
     <engine name="default" template-view="org.nuxeo.theme.html.HTMLView">
@@ -126,8 +133,25 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="views">
 
+    <view>
+      <template-engine>jsf-facelets</template-engine>      
+      <format-type>layout</format-type>
+      <class>
+        org.nuxeo.theme.html.filters.layout.DefaultLayoutView
+      </class>
+    </view>
+
+    <view>
+      <template-engine>jsf-facelets</template-engine>     
+      <format-type>style</format-type>
+      <class>
+        org.nuxeo.theme.html.filters.style.DefaultStyleView
+      </class>
+    </view>
+
     <view name="theme view">
       <element-type>theme</element-type>
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>nxthemes/jsf/widgets/theme-view.xml</template>
       <resource>nxthemes.css</resource>
@@ -136,24 +160,28 @@
 
     <view name="page frame">
       <element-type>page</element-type>
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>nxthemes/jsf/widgets/page-frame.xml</template>
     </view>
 
     <view name="section frame">
       <element-type>section</element-type>
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>nxthemes/jsf/widgets/section-frame.xml</template>
     </view>
 
     <view name="cell frame">
       <element-type>cell</element-type>
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>nxthemes/jsf/widgets/cell-frame.xml</template>
     </view>
 
     <view name="vertical menu">
       <element-type>fragment</element-type>
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <model-type>menu item</model-type>
       <template>nxthemes/jsf/widgets/vertical-menu.xml</template>
@@ -161,6 +189,7 @@
 
     <view name="horizontal tabs">
       <element-type>fragment</element-type>
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <model-type>menu item</model-type>
       <template>
@@ -170,6 +199,7 @@
 
     <view name="plain text">
       <element-type>fragment</element-type>
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <model-type>text</model-type>
       <icon>/nuxeo/nxthemes/icons/plain-text.png</icon>
@@ -178,6 +208,7 @@
 
     <view name="plain html">
       <element-type>fragment</element-type>
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <model-type>html</model-type>
       <icon>/nuxeo/nxthemes/icons/plain-html.png</icon>
@@ -186,6 +217,7 @@
 
     <view name="facelet region">
       <element-type>fragment</element-type>
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <model-type>region</model-type>
       <icon>/nuxeo/nxthemes/icons/facelet-region.png</icon>

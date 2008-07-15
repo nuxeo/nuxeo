@@ -27,6 +27,7 @@ import org.nuxeo.theme.rendering.AbstractFilter;
 import org.nuxeo.theme.rendering.FilterTypeFamily;
 import org.nuxeo.theme.rendering.RenderingInfo;
 import org.nuxeo.theme.resources.ResourceManager;
+import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 import org.nuxeo.theme.views.View;
@@ -39,7 +40,6 @@ public class FormatFilter extends AbstractFilter {
     private FormatType formatType;
 
     private final TypeRegistry typeRegistry;
-
 
     public FormatFilter() {
         typeRegistry = Manager.getTypeRegistry();
@@ -60,6 +60,7 @@ public class FormatFilter extends AbstractFilter {
     @Override
     public RenderingInfo process(final RenderingInfo info, final boolean cache) {
         final EngineType engine = info.getEngine();
+        final TemplateEngineType templateEngineType = info.getTemplateEngine();
         final String viewMode = info.getViewMode();
         final ElementType elementType = info.getElement().getElementType();
 
@@ -70,7 +71,7 @@ public class FormatFilter extends AbstractFilter {
 
         // look for a view by model type and by view name
         final View view = getView(format.getName(), engine, viewMode,
-                elementType, modelType, formatType);
+                elementType, modelType, formatType, templateEngineType);
 
         if (view == null) {
             log.warn(String.format(
@@ -78,11 +79,12 @@ public class FormatFilter extends AbstractFilter {
                     formatType.getTypeName(), format.getName(),
                     elementType.getTypeName()));
         } else {
+
             final String markup = view.render(info);
             info.setMarkup(markup);
 
             // Add resources used by the view (.css, .js, ...)
-            final  URL themeUrl = info.getThemeUrl();
+            final URL themeUrl = info.getThemeUrl();
             final ResourceManager resourceManager = Manager.getResourceManager();
             for (String resource : view.getViewType().getResources()) {
                 resourceManager.addResource(resource, themeUrl);
@@ -93,13 +95,17 @@ public class FormatFilter extends AbstractFilter {
 
     private View getView(final String viewName, final EngineType engine,
             final String viewMode, final ElementType elementType,
-            final ModelType modelType, final FormatType formatType) {
+            final ModelType modelType, final FormatType formatType,
+            final TemplateEngineType templateEngineType) {
 
         // allow to fall back on no specific view name
         final String effectiveViewName = (viewName == null || viewName.equals("")) ? "*"
                 : viewName;
         final String effectiveViewMode = viewMode == null ? "*" : viewMode;
         final String engineName = engine == null ? "default" : engine.getName();
+        final String templateEngineName = templateEngineType == null ? null
+                : templateEngineType.getName();
+
         final String elementTypeName = elementType == null ? "*"
                 : elementType.getTypeName();
         final String modelTypeName = modelType == null ? "*"
@@ -108,25 +114,28 @@ public class FormatFilter extends AbstractFilter {
                 : formatType.getTypeName();
 
         View view = getViewFor(formatTypeName, elementTypeName,
-                effectiveViewName, modelTypeName, engineName, effectiveViewMode);
+                effectiveViewName, modelTypeName, engineName,
+                effectiveViewMode, templateEngineName);
 
-        // fall back to unspecifed element type
+        // fall back to unspecified element type
         if (view == null && !"*".equals(elementTypeName)) {
             view = getViewFor(formatTypeName, "*", effectiveViewName,
-                    modelTypeName, engineName, effectiveViewMode);
+                    modelTypeName, engineName, effectiveViewMode,
+                    templateEngineName);
         }
 
-        // fall back to unspecifed model type
+        // fall back to unspecified model type
         if (view == null && !"*".equals(modelTypeName)) {
             view = getViewFor(formatTypeName, elementTypeName,
-                    effectiveViewName, "*", engineName, effectiveViewMode);
+                    effectiveViewName, "*", engineName, effectiveViewMode,
+                    templateEngineName);
         }
 
-        // fall back to unspecifed element and model type
+        // fall back to unspecified element and model type
         if (view == null && !"*".equals(elementTypeName)
                 && !"*".equals(modelTypeName)) {
             view = getViewFor(formatTypeName, "*", effectiveViewName, "*",
-                    engineName, effectiveViewMode);
+                    engineName, effectiveViewMode, templateEngineName);
         }
         return view;
     }
@@ -134,22 +143,34 @@ public class FormatFilter extends AbstractFilter {
     private View getViewFor(final String formatTypeName,
             final String elementTypeName, final String viewName,
             final String modelTypeName, final String engineName,
-            final String viewMode) {
+            final String viewMode, final String templateEngineName) {
 
-        ViewType viewType = (ViewType) typeRegistry.lookup(TypeFamily.VIEW,
+        ViewType viewType = (ViewType) typeRegistry.lookup(
+                TypeFamily.VIEW,
                 ViewType.computeName(formatTypeName, elementTypeName, viewName,
-                        modelTypeName, engineName, viewMode));
+                        modelTypeName, engineName, viewMode, templateEngineName));
 
+        // Any view mode
         if (viewType == null && !"*".equals(viewMode)) {
             viewType = (ViewType) typeRegistry.lookup(TypeFamily.VIEW,
                     ViewType.computeName(formatTypeName, elementTypeName,
-                            viewName, modelTypeName, engineName, "*"));
+                            viewName, modelTypeName, engineName, "*",
+                            templateEngineName));
         }
 
+        // Any view mode, default engine
         if (viewType == null && !"default".equals(engineName)) {
             viewType = (ViewType) typeRegistry.lookup(TypeFamily.VIEW,
                     ViewType.computeName(formatTypeName, elementTypeName,
-                            viewName, modelTypeName, "default", "*"));
+                            viewName, modelTypeName, "default", "*",
+                            templateEngineName));
+        }
+        
+        // Any template engine
+        if (viewType == null && !"*".equals(templateEngineName)) {
+            viewType = (ViewType) typeRegistry.lookup(TypeFamily.VIEW,
+                    ViewType.computeName(formatTypeName, elementTypeName,
+                            viewName, modelTypeName, engineName, viewMode, "*"));
         }
 
         return viewType == null ? null : viewType.getView();
