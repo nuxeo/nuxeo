@@ -64,22 +64,22 @@
 
   <assemble>
     <set>template</set>
-    <outputFile>/</outputFile>
+    <outputFile>nxserver</outputFile>
   </assemble>
 
   <assemble>
     <set>launcher-lib</set>
-    <outputFile>/</outputFile>
+    <outputFile>nxserver</outputFile>
   </assemble>
 
   <assemble>
     <set>third-party-libs</set>
-    <outputFile>lib</outputFile>
+    <outputFile>nxserver/lib</outputFile>
   </assemble>
 
   <assemble>
     <set>bundles</set>
-    <outputFile>bundles</outputFile>
+    <outputFile>nxserver/bundles</outputFile>
   </assemble>
 
 </assembly>
