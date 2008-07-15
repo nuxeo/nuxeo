@@ -113,9 +113,14 @@ public class JSONModel extends StandaloneFilter {
         s.append(firstMatcher.group(1));
         s.append('>');
         s.append("<ins class=\"model\">");
-        s.append("<f:verbatim xmlns:f=\"http://java.sun.com/jsf/core\">");
-        s.append(Utils.toJson(model));
-        s.append("</f:verbatim></ins>");
+        if ("jsf-facelets".equals(info.getEngine().getName())) {
+            s.append("<f:verbatim xmlns:f=\"http://java.sun.com/jsf/core\">");
+            s.append(Utils.toJson(model));
+            s.append("</f:verbatim>");
+        } else {
+            s.append(Utils.toJson(model));
+        }
+        s.append("</ins>");
         s.append(othersMatcher.group(1));
 
         info.setMarkup(s.toString());
@@ -130,7 +135,8 @@ public class JSONModel extends StandaloneFilter {
         final FormatType widgetType = (FormatType) Manager.getTypeRegistry().lookup(
                 TypeFamily.FORMAT, "widget");
 
-        final Format widget = ElementFormatter.getFormatByType(element, widgetType);
+        final Format widget = ElementFormatter.getFormatByType(element,
+                widgetType);
         if (widget == null) {
             return widgets;
         }
