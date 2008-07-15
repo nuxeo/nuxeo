@@ -227,6 +227,7 @@
 
     <view name="theme view">
       <engine>editor</engine>
+      <template-engine>jsf-facelets</template-engine>
       <element-type>theme</element-type>
       <format-type>widget</format-type>
       <template>
@@ -242,6 +243,7 @@
     <!--  Pages -->
     <view name="page frame">
       <engine>page-editor</engine>
+      <template-engine>jsf-facelets</template-engine>
       <element-type>page</element-type>
       <format-type>widget</format-type>
       <template>
@@ -251,6 +253,7 @@
 
     <view name="page frame">
       <engine>page-editor</engine>
+      <template-engine>jsf-facelets</template-engine>
       <mode>area-styles-page</mode>
       <element-type>page</element-type>
       <format-type>widget</format-type>
@@ -259,6 +262,7 @@
 
     <view name="page frame">
       <engine>page-editor</engine>
+      <template-engine>jsf-facelets</template-engine>
       <mode>area-styles-section</mode>
       <element-type>page</element-type>
       <format-type>widget</format-type>
@@ -269,6 +273,7 @@
 
     <view name="page frame">
       <engine>page-editor</engine>
+      <template-engine>jsf-facelets</template-engine>
       <mode>area-styles-cell</mode>
       <element-type>page</element-type>
       <format-type>widget</format-type>
@@ -281,6 +286,7 @@
     <!-- sections -->
     <view name="section frame">
       <engine>page-editor</engine>
+      <template-engine>jsf-facelets</template-engine>
       <element-type>section</element-type>
       <format-type>widget</format-type>
       <template>
@@ -290,6 +296,7 @@
 
     <view name="section frame">
       <engine>page-editor</engine>
+      <template-engine>jsf-facelets</template-engine>
       <mode>area-styles-section</mode>
       <element-type>section</element-type>
       <format-type>widget</format-type>
@@ -298,6 +305,7 @@
 
     <view name="section frame">
       <engine>page-editor</engine>
+      <template-engine>jsf-facelets</template-engine>
       <mode>area-styles-cell</mode>
       <element-type>section</element-type>
       <format-type>widget</format-type>
@@ -308,6 +316,7 @@
 
     <view>
       <engine>page-editor</engine>
+      <template-engine>jsf-facelets</template-engine>
       <mode>layout</mode>
       <element-type>section</element-type>
       <format-type>layout</format-type>
@@ -319,6 +328,7 @@
     <!-- cell -->
     <view name="cell frame">
       <engine>page-editor</engine>
+      <template-engine>jsf-facelets</template-engine>
       <element-type>cell</element-type>
       <format-type>widget</format-type>
       <class>
@@ -328,6 +338,7 @@
 
     <view name="cell frame">
       <engine>page-editor</engine>
+      <template-engine>jsf-facelets</template-engine>
       <mode>area-styles-cell</mode>
       <element-type>cell</element-type>
       <format-type>widget</format-type>
@@ -336,6 +347,7 @@
 
     <view>
       <engine>page-editor</engine>
+      <template-engine>jsf-facelets</template-engine>
       <mode>layout</mode>
       <element-type>cell</element-type>
       <format-type>layout</format-type>
@@ -345,6 +357,7 @@
     <!-- Override the default style view in layout mode-->
     <view>
       <engine>page-editor</engine>
+      <template-engine>jsf-facelets</template-engine>
       <mode>layout</mode>
       <format-type>style</format-type>
       <class>org.nuxeo.theme.html.filters.BypassView</class>

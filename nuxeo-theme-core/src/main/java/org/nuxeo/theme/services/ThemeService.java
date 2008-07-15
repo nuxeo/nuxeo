@@ -439,30 +439,22 @@ public class ThemeService extends DefaultComponent {
         Object[] contribs = extension.getContributions();
         TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
         StringBuilder sb = new StringBuilder();
-        sb.append("*");
         final List<String> templateEngineNames = ThemeManager.getTemplateEngineNames();
         for (String n : templateEngineNames) {
-            sb.append(String.format(", %s", n));
+            sb.append(String.format(" '%s'", n));
         }
         for (Object contrib : contribs) {
             ViewType viewType = (ViewType) contrib;
             final String templateEngine = viewType.getTemplateEngine();
             if (templateEngine == null
-                    || !(templateEngineNames.contains(templateEngine) || "*".equals(templateEngine))) {
+                    || !(templateEngineNames.contains(templateEngine))) {
                 final String defaultTemplateEngineName = ThemeManager.getDefaultTemplateEngineName();
                 viewType.setTemplateEngine(defaultTemplateEngineName);
                 final String viewName = viewType.getViewName();
                 if (templateEngineNames.size() > 0) {
-                    if ("*".equals(viewName)) {
-                        log.warn(String.format(
-                                "Please set the 'template-engine' attribute on <view> to one of: %s (default is '%s')",
-                                sb.toString(), defaultTemplateEngineName));
-                    } else {
-                        log.warn(String.format(
-                                "Please set the 'template-engine' attribute on <view name=\"%s\"> to one of: %s (default is '%s')",
-                                viewName, sb.toString(),
-                                defaultTemplateEngineName));
-                    }
+                    log.warn(String.format(
+                            "Please set the 'template-engine' attribute on <view name=\"%s\"> to one of:%s (default is '%s')",
+                            viewName, sb.toString(), defaultTemplateEngineName));
                 }
             }
             typeRegistry.register(viewType);

@@ -16,11 +16,14 @@ package org.nuxeo.theme.test.html.filters;
 
 import java.net.URL;
 
+import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.Element;
+import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.engines.EngineType;
 import org.nuxeo.theme.formats.Format;
 import org.nuxeo.theme.models.Model;
 import org.nuxeo.theme.rendering.RenderingInfo;
+import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.themes.ThemeManager;
 
 public class DummyRenderingInfo extends RenderingInfo {
@@ -99,6 +102,14 @@ public class DummyRenderingInfo extends RenderingInfo {
     @Override
     public void setDirty(boolean dirty) {
         this.dirty = dirty;
+    }
+
+    public ThemeElement getTheme() {
+        return Manager.getThemeManager().getThemeByUrl(themeUrl);
+    }
+
+    public TemplateEngineType getTemplateEngine() {
+        return ThemeManager.getTemplateEngineByUrl(themeUrl);
     }
 
 }

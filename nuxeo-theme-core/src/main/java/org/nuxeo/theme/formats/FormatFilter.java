@@ -166,13 +166,6 @@ public class FormatFilter extends AbstractFilter {
                             templateEngineName));
         }
         
-        // Any template engine
-        if (viewType == null && !"*".equals(templateEngineName)) {
-            viewType = (ViewType) typeRegistry.lookup(TypeFamily.VIEW,
-                    ViewType.computeName(formatTypeName, elementTypeName,
-                            viewName, modelTypeName, engineName, viewMode, "*"));
-        }
-
         return viewType == null ? null : viewType.getView();
     }
 }

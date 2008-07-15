@@ -14,6 +14,8 @@
 
 package org.nuxeo.theme.test.html.filters;
 
+import java.net.URL;
+
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.elements.ElementFactory;
@@ -39,22 +41,28 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
-        deployContrib("org.nuxeo.theme.html", "OSGI-INF/nxthemes-html-contrib.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core",
+                "OSGI-INF/nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.html",
+                "OSGI-INF/nxthemes-html-contrib.xml");
 
         // create the elements to render
-        PageElement page =  (PageElement) ElementFactory.create("page");
+        PageElement page = (PageElement) ElementFactory.create("page");
         page.setUid(1);
 
         ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
                 ThemeService.ID);
 
+        URL themeUrl = new URL(
+                "nxtheme://theme/default/mode/theme/page/perspective/html");
+
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");
         formatType = (FormatType) typeRegistry.lookup(TypeFamily.FORMAT,
                 "layout");
 
-        info = new DummyRenderingInfo(page, null);
+        info = new DummyRenderingInfo(page, themeUrl);
 
         // set the format
         format = new DefaultFormat();

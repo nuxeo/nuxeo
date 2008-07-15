@@ -149,7 +149,7 @@
   <extension target="org.nuxeo.theme.services.ThemeService" point="views">
 
     <view> 
-      <template-engine>*</template-engine>
+      <template-engine>html</template-engine>
       <format-type>layout</format-type>
       <class>
         org.nuxeo.theme.html.filters.layout.DefaultLayoutView
@@ -157,7 +157,7 @@
     </view>
 
     <view>
-      <template-engine>*</template-engine>
+      <template-engine>html</template-engine>
       <format-type>style</format-type>
       <class>
         org.nuxeo.theme.html.filters.style.DefaultStyleView
