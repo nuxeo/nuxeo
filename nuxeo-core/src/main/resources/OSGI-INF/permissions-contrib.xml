@@ -42,7 +42,7 @@
     <permission name="Remove" />
     <permission name="ManageWorkflows" />
     <permission name="WriteLifeCycle" />
-    <permission name="ForceUnlock" />
+    <permission name="Unlock" />
 
     <permission name="Remove">
       <include>RemoveChildren</include>
