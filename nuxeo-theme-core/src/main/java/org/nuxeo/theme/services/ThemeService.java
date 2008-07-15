@@ -214,6 +214,12 @@ public class ThemeService extends DefaultComponent {
                 if (templateEngine != null) {
                     oldApplication.setTemplateEngine(templateEngine);
                 }
+                if (oldApplication.getTemplateEngine() == null) {
+                    final String defaultTemplateEngine = ThemeManager.getDefaultTemplateEngineName();
+                    log.warn(String.format("Please set the template-engine on <application root=\"%s\" template-engine=\"...\"> (default is '%s')",
+                            application.getRoot(), defaultTemplateEngine));
+                    oldApplication.setTemplateEngine(defaultTemplateEngine);
+                }
                 
                 NegotiationDef negotiation = application.getNegotiation();
                 if (negotiation != null) {
