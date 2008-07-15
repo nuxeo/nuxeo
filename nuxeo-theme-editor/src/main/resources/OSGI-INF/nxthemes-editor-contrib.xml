@@ -230,7 +230,7 @@
       <element-type>theme</element-type>
       <format-type>widget</format-type>
       <template>
-        nxthemes/editor/widgets/theme-view.xml
+        nxthemes/editor/widgets/jsf/theme-view.xml
       </template>
       <resource>nxthemes.css</resource>
       <resource>nxthemes-widgets.js</resource>
@@ -245,7 +245,7 @@
       <element-type>page</element-type>
       <format-type>widget</format-type>
       <template>
-        nxthemes/editor/widgets/page-frame.xml
+        nxthemes/editor/widgets/jsf/page-frame.xml
       </template>
     </view>
 
@@ -263,7 +263,7 @@
       <element-type>page</element-type>
       <format-type>widget</format-type>
       <template>
-        nxthemes/editor/widgets/page-frame.xml
+        nxthemes/editor/widgets/jsf/page-frame.xml
       </template>
     </view>
 
@@ -273,7 +273,7 @@
       <element-type>page</element-type>
       <format-type>widget</format-type>
       <template>
-        nxthemes/editor/widgets/page-frame.xml
+        nxthemes/editor/widgets/jsf/page-frame.xml
       </template>
     </view>
 
@@ -284,7 +284,7 @@
       <element-type>section</element-type>
       <format-type>widget</format-type>
       <template>
-        nxthemes/editor/widgets/section-frame.xml
+        nxthemes/editor/widgets/jsf/section-frame.xml
       </template>
     </view>
 
@@ -302,7 +302,7 @@
       <element-type>section</element-type>
       <format-type>widget</format-type>
       <template>
-        nxthemes/editor/widgets/section-frame.xml
+        nxthemes/editor/widgets/jsf/section-frame.xml
       </template>
     </view>
 
