@@ -44,16 +44,19 @@
   <extension target="org.nuxeo.theme.services.ThemeService" point="views">
 
     <view name="nuxeo5 logo">
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>incl/logo.xhtml</template>
     </view>
 
     <view name="nuxeo5 alternate logo">
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>incl/logo_alternate.xhtml</template>
     </view>
 
     <view name="nuxeo5 includes">
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>incl/includes.xhtml</template>
       <resource>dragdrop.js</resource>
@@ -81,6 +84,7 @@
     </view>
 
     <view name="nuxeo5 user services">
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>incl/user_services.xhtml</template>
       <!-- TODO: remove later -->
@@ -88,11 +92,13 @@
     </view>
 
     <view name="nuxeo5 breadcrumbs">
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>incl/breadcrumb.xhtml</template>
     </view>
 
     <view name="nuxeo5 tree explorer">
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>incl/tree_explorer.xhtml</template>
     </view>
@@ -104,23 +110,27 @@
         based on a hierarchical meta data. See the DirectoryTreeService
         extension point for more info on how to use this fragment.
       -->
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>incl/directory_tree_explorer.xhtml</template>
     </view>
 
     <view name="nuxeo5 clip board">
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>incl/user_clipboard.xhtml</template>
       <resource>dragdrop.js</resource>
     </view>
 
     <view name="nuxeo5 calendar actions">
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>incl/user_calendar.xhtml</template>
       <resource>dragdrop.js</resource>
     </view>
 
     <view name="nuxeo5 footer">
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>incl/footer.xhtml</template>
     </view>
@@ -128,6 +138,7 @@
     <view name="nuxeo5 user tasks">
       <!-- Fragment to be displayed as part of the dashboard to display the
         list of tasks of the current user -->
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>incl/dashboard_user_tasks.xhtml</template>
       <resource>foldable-box.js</resource>
@@ -136,6 +147,7 @@
     <view name="nuxeo5 user processes">
       <!-- Fragment to be displayed as part of the dashboard to display the
         list of processes of the current user (i.e : the ones where he is initiator -->
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>incl/dashboard_user_processes.xhtml</template>
       <resource>foldable-box.js</resource>
@@ -144,6 +156,7 @@
     <view name="nuxeo5 user workspaces">
       <!-- Fragment to be displayed as part of the dashboard to display the
         list of tasks of workspaces the current user can see -->
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>incl/dashboard_user_workspaces.xhtml</template>
       <resource>foldable-box.js</resource>
@@ -152,6 +165,7 @@
     <view name="nuxeo5 user documents">
       <!-- Fragment to be displayed as part of the dashboard to display the
         list of documents the current user has been working on recently -->
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>incl/dashboard_user_documents.xhtml</template>
       <resource>foldable-box.js</resource>
@@ -160,6 +174,7 @@
     <view name="nuxeo5 user deleted documents">
       <!-- Fragment to be displayed as part of the dashboard to display the
         list of documents the current user has been working on recently -->
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>incl/dashboard_user_deleted_documents.xhtml</template>
       <resource>foldable-box.js</resource>
@@ -168,6 +183,7 @@
     <view name="nuxeo5 last documents">
       <!-- Fragment to be displayed as part of the dashboard to display the
         list of documents that have been modified recently -->
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>incl/dashboard_last_documents.xhtml</template>
       <resource>foldable-box.js</resource>
@@ -176,6 +192,7 @@
     <view name="nuxeo5 last published documents">
       <!-- Fragment to be displayed as part of the dashboard to display the
         list of documents that have been published recently -->
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>incl/dashboard_last_published_documents.xhtml</template>
       <resource>foldable-box.js</resource>
@@ -184,6 +201,7 @@
     <view name="nuxeo5 user sections">
       <!-- Fragment to be displayed as part of the dashboard to display the
         list of documents the current user has been working on recently -->
+      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>incl/dashboard_user_sections.xhtml</template>
       <resource>foldable-box.js</resource>
@@ -233,7 +251,7 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="applications">
 
-    <application root="/nuxeo">
+    <application root="/nuxeo" template-engine="jsf-facelets">
 
       <negotiation>
         <strategy>nuxeo5</strategy>
