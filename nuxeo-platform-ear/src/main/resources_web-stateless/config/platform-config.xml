@@ -60,7 +60,6 @@
     point="services">
     <service class="org.nuxeo.ecm.core.api.CoreSession" name="default"
       group="core">
-      <!--adapter>org.nuxeo.ecm.core.api.CoreSessionAdapter</adapter-->
       <locator>%DocumentManagerBean</locator>
     </service>
     <service class="org.nuxeo.ecm.core.search.api.client.SearchService"
@@ -89,6 +88,10 @@
     <service class="org.nuxeo.ecm.core.schema.TypeProvider" group="core">
       <locator>%TypeProviderBean</locator>
     </service>
+    <service class="org.nuxeo.ecm.platform.usermanager.UserManager"
+      group="platform">
+      <locator>%UserManagerBean</locator>
+    </service>
     <service class="org.nuxeo.ecm.platform.versioning.api.VersioningManager"
       group="core">
       <locator>%VersioningManagerBean</locator>
@@ -101,10 +104,6 @@
     <service class="org.nuxeo.ecm.core.api.security.PermissionProvider"
       group="core">
       <locator>%PermissionProviderBean</locator>
-    </service>
-    <service class="org.nuxeo.ecm.platform.usermanager.UserManager"
-      group="platform">
-      <locator>%UserManagerBean</locator>
     </service>
     <service class="org.nuxeo.ecm.platform.relations.api.RelationManager"
       group="platform/relations">

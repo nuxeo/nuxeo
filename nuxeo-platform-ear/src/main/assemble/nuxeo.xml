@@ -45,6 +45,8 @@
     </excludes>
   </fileSet>
 
+  <!-- CUSTOMER RESOURCES -->
+
   <!-- ARTIFACTS -->
   <assemble>
     <outputFile>/</outputFile>
@@ -66,15 +68,14 @@
     <import>**</import>
     <includeDependencies>true</includeDependencies>
     <includes>
-      <artifact group="org.nuxeo.*" category="runtime" includeDependsOnCategory="false"/>
-      <artifact group="org.nuxeo.*" category="jboss4" includeDependsOnCategory="false"/>
-      <artifact group="org.nuxeo.*" category="core" />
-      <artifact group="org.nuxeo.*" category="search" />
-      <artifact group="org.nuxeo.*" category="web" />
+      <artifact group="org.nuxeo.*" category="runtime,jboss4"
+        includeDependsOnCategory="false" />
+      <artifact group="org.nuxeo.*" category="core,search,web" />
+      <!-- nuxeo-addons -->
     </includes>
     <excludes>
       <artifact group="!org.nuxeo*" />
-      <artifact group="org.nuxeo.common" />
+      <artifact name="nuxeo-common" />
       <artifact name="nuxeo-runtime-jboss-extensions" />
 
       <artifact name="nuxeo-platform-webapp" />
@@ -83,6 +84,7 @@
       <artifact name="nuxeo-platform-audit-facade" />
       <artifact name="nuxeo-platform-placeful-facade" />
       <artifact name="nuxeo-platform-search-compass-plugin" />
+      <artifact name="nuxeo-platform-ear" />
     </excludes>
   </artifactSet>
 
@@ -108,6 +110,7 @@
   </assemble>
   <artifactSet id="nuxeo-fixed-libs">
     <artifacts>
+      <artifact group="org.freemarker" name="freemarker" version="2.3.11" />
       <artifact group="org.osgi" name="osgi-core" version="4.1" />
       <artifact group="commons-collections" name="commons-collections"
         version="3.1" />
@@ -150,7 +153,7 @@
     </artifacts>
   </artifactSet>
 
-  <!-- third party libraries based on dependencies
+  <!-- third party libraries based on dependencies -->
   <assemble>
     <outputFile>lib2</outputFile>
     <set>nuxeo-libs-via-dependency-tree</set>
@@ -165,5 +168,20 @@
       <artifact group="org.nuxeo.*" />
     </excludes>
   </artifactSet>
+
+  <!-- CUSTOMER ARTIFACTS -->
+  <!--
+    <assemble>
+    <outputFile>plugins</outputFile>
+    <set>customer-plugins</set>
+    </assemble>
+    <artifactSet id="customer-plugins">
+    <import>**</import>
+    <includeDependencies>false</includeDependencies>
+    <includes>
+    <artifact group="com.customer.sample" />
+    </includes>
+    </artifactSet>
   -->
+
 </assembly>
