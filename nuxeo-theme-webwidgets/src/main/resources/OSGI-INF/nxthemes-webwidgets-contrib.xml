@@ -108,6 +108,7 @@
     point="views">
 
     <view name="web widget panel">
+      <template-engine>jsf-facelets</template-engine>
       <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>web widget region</model-type>
@@ -117,6 +118,7 @@
     </view>
 
     <view name="theme view">
+      <template-engine>jsf-facelets</template-engine>
       <mode>web-widgets</mode>
       <element-type>theme</element-type>
       <format-type>widget</format-type>
@@ -126,6 +128,7 @@
     </view>
 
     <view name="page frame">
+      <template-engine>jsf-facelets</template-engine>    
       <mode>web-widgets</mode>
       <element-type>page</element-type>
       <format-type>widget</format-type>
