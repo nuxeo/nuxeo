@@ -210,6 +210,11 @@ public class ThemeService extends DefaultComponent {
 
             } else {
                 // Merge properties from already registered application
+                String templateEngine = application.getTemplateEngine();
+                if (templateEngine != null) {
+                    oldApplication.setTemplateEngine(templateEngine);
+                }
+                
                 NegotiationDef negotiation = application.getNegotiation();
                 if (negotiation != null) {
                     NegotiationDef oldNegotiation = oldApplication.getNegotiation();

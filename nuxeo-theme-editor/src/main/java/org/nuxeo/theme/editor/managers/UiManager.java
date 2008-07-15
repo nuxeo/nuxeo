@@ -963,7 +963,11 @@ public class UiManager implements UiManagerLocal {
 
     private String getTemplateEngine() {
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        final String applicationPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
+        final FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext == null) {
+            return ThemeManager.getDefaultTemplateEngineName();
+        }
+        final String applicationPath = facesContext.getExternalContext().getRequestContextPath();
         final ApplicationType application = (ApplicationType) typeRegistry.lookup(
                 TypeFamily.APPLICATION, applicationPath);
 
