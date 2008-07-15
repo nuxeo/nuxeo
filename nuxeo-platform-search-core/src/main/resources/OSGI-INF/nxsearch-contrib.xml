@@ -29,11 +29,14 @@
       <field name="title" analyzer="default" stored="true"
         indexed="true" type="Text" binary="false" sortable="true"
         sortOption="case-insensitive"/>
-        <field name="coverage" stored="true" indexed="true" sortable="false"
+      <field name="description" analyzer="default" stored="true"
+        indexed="true" type="Text" binary="false" sortable="true"
+        sortOption="case-insensitive"/>
+      <field name="coverage" stored="true" indexed="true" sortable="false"
         type="Path"/>
-        <field name="subjects" stored="true" indexed="true" sortable="false"
+      <field name="subjects" stored="true" indexed="true" sortable="false"
         type="Path" multiple="true"/>
-      </resource>
+    </resource>
     <resource name="common" prefix="common" indexAllFields="true"
       type="schema">
       <field name="size" stored="true" indexed="true" type="int" />
