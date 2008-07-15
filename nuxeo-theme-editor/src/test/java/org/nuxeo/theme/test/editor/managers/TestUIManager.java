@@ -31,7 +31,7 @@ public class TestUIManager extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.theme.editor.tests", "fragment-config.xml");
     }
 
-    public void testGetList() {
+    public void testGetAvailableFragments() {
         UiManager uiManager = new UiManager();
         List<UiManager.FragmentInfo> fragments = uiManager.getAvailableFragments();
 
