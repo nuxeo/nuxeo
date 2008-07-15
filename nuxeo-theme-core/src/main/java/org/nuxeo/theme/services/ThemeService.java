@@ -206,19 +206,20 @@ public class ThemeService extends DefaultComponent {
                     TypeFamily.APPLICATION, application.getTypeName());
 
             if (oldApplication == null) {
+                String templateEngine = application.getTemplateEngine();
+                if (templateEngine == null) {
+                    final String defaultTemplateEngine = ThemeManager.getDefaultTemplateEngineName();
+                    log.warn(String.format("Please set the 'template-engine' attribute on <application root=\"%s\" template-engine=\"...\"> (default is '%s')",
+                            application.getRoot(), defaultTemplateEngine));
+                    application.setTemplateEngine(defaultTemplateEngine);
+		}
                 typeRegistry.register(application);
 
             } else {
                 // Merge properties from already registered application
-                String templateEngine = application.getTemplateEngine();
+                final String templateEngine = application.getTemplateEngine();
                 if (templateEngine != null) {
                     oldApplication.setTemplateEngine(templateEngine);
-                }
-                if (oldApplication.getTemplateEngine() == null) {
-                    final String defaultTemplateEngine = ThemeManager.getDefaultTemplateEngineName();
-                    log.warn(String.format("Please set the template-engine on <application root=\"%s\" template-engine=\"...\"> (default is '%s')",
-                            application.getRoot(), defaultTemplateEngine));
-                    oldApplication.setTemplateEngine(defaultTemplateEngine);
                 }
                 
                 NegotiationDef negotiation = application.getNegotiation();
@@ -453,7 +454,7 @@ public class ThemeService extends DefaultComponent {
                 final String viewName = viewType.getViewName();
                 if (templateEngineNames.size() > 0) {
                     log.warn(String.format(
-                            "Please set the 'template-engine' attribute on <view name=\"%s\"> to one of:%s (default is '%s')",
+                            "Please set the 'template-engine' attribute on <view name=\"%s\" template-engine=\"...\"> to one of%s (default is '%s')",
                             viewName, sb.toString(), defaultTemplateEngineName));
                 }
             }
