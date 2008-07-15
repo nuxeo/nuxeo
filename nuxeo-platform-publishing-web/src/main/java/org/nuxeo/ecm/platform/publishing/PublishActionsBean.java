@@ -14,6 +14,7 @@
  * Contributors:
  *     Narcis Paslaru
  *     Florent Guillaume
+ *     Thierry Martins
  */
 
 package org.nuxeo.ecm.platform.publishing;
@@ -119,7 +120,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
     @In(create = true)
     protected transient VersioningManager versioningManager;
 
-    @In(create = true, required = true)
+    @In(create = true)
     protected transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
@@ -184,7 +185,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
             }
         }
         return sectionTypes;
-
     }
 
     private DocumentMessageProducer getDocumentMessageProducer()
@@ -279,8 +279,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
                 } finally {
                     try {
                         repository.close(unrestrictedSession);
-                    } catch (ClientException e) {
-                        throw e;
                     } catch (Exception e) {
                         throw new ClientException(e);
                     }
@@ -302,7 +300,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
          * @throws ClientException
          */
         public abstract void run() throws ClientException;
-
     }
 
     protected void getSectionsSelectModel() throws ClientException {
@@ -369,7 +366,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
             }
 
         }.runUnrestricted();
-
     }
 
     private void accumulateAvailableSections(DocumentModelTree sections,
@@ -846,7 +842,6 @@ public class PublishActionsBean implements PublishActions, Serializable {
         } catch (Exception e) {
             throw new ClientException(e);
         }
-
     }
 
     // TODO move to protected

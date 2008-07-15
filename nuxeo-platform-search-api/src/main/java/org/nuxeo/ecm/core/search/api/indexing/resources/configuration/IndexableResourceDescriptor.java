@@ -123,10 +123,10 @@ public class IndexableResourceDescriptor implements IndexableResourceConf {
         this.type = type;
     }
 
+    @Override
     public String toString() {
         return String.format("%s '%s' (type=%s)",
-                this.getClass().getSimpleName(), this.getName(),
-                this.getType());
+                getClass().getSimpleName(), name, type);
     }
 
 }

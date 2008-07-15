@@ -632,7 +632,6 @@ public class DocumentTaskActionsBean extends InputController implements
         Events.instance().raiseEvent(EventNames.DOCUMENT_SELECTION_CHANGED);
         Events.instance().raiseEvent(
                 EventNames.CURRENT_DOCUMENT_LIFE_CYCLE_CHANGED);
-
     }
 
     public String removeOneTask(ActionEvent event) {
@@ -810,7 +809,6 @@ public class DocumentTaskActionsBean extends InputController implements
         Events.instance().raiseEvent(EventNames.DOCUMENT_SELECTION_CHANGED);
         Events.instance().raiseEvent(
                 EventNames.CURRENT_DOCUMENT_LIFE_CYCLE_CHANGED);
-
     }
 
     public String rejectOneTask() {

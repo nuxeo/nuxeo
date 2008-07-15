@@ -85,7 +85,6 @@ public class InputFileInfo {
             throw new ConverterException("error.inputFile.invalidFile");
         }
         return convertedBlob;
-
     }
 
     public Object getChoice() {
