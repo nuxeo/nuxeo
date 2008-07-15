@@ -120,7 +120,6 @@
       <mode>web-widgets</mode>
       <element-type>theme</element-type>
       <format-type>widget</format-type>
-      <class>org.nuxeo.theme.jsf.views.JSFView</class>
       <template>nxthemes/webwidgets/widgets/theme-view.xml</template>
       <resource>nxthemes-webwidgets-edit.js</resource>
       <resource>nxthemes-webwidgets-edit.css</resource>
@@ -130,7 +129,6 @@
       <mode>web-widgets</mode>
       <element-type>page</element-type>
       <format-type>widget</format-type>
-      <class>org.nuxeo.theme.jsf.views.JSFView</class>
       <template>
         nxthemes/webwidgets/widgets/page-frame.xml
       </template>

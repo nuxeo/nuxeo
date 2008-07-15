@@ -9,7 +9,6 @@
       <element-type>page</element-type>
       <format-type>widget</format-type>
       <model-type>menu item</model-type>
-      <class>org.nuxeo.theme.jsf.views.JSFView</class>
       <template>nxthemes/jsf/widgets/page-frame.xml</template>
       <resource>css/style.css</resource>
       <resource>script/script.js</resource>
@@ -18,14 +17,12 @@
     <view name="section frame">
       <element-type>section</element-type>
       <format-type>widget</format-type>
-      <class>org.nuxeo.theme.jsf.views.JSFView</class>
       <template>nxthemes/jsf/widgets/section-frame.xml</template>
     </view>
 
     <view name="cell frame">
       <element-type>cell</element-type>
       <format-type>widget</format-type>
-      <class>org.nuxeo.theme.jsf.views.JSFView</class>
       <template>nxthemes/jsf/widgets/cell-frame.xml</template>
     </view>
 
@@ -33,7 +30,6 @@
       <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>menu item</model-type>
-      <class>org.nuxeo.theme.jsf.views.JSFView</class>
       <template>nxthemes/jsf/widgets/vertical-menu.xml</template>
     </view>
 
