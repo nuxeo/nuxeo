@@ -222,6 +222,8 @@
 
   </extension>
 
+  <!-- JSF/Facelets Views -->
+
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="views">
 
@@ -364,6 +366,154 @@
     </view>
 
   </extension>
+
+
+  <!-- Freemarker Views -->
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="views">
+
+    <view name="theme view">
+      <engine>editor</engine>
+      <template-engine>freemarker</template-engine>
+      <element-type>theme</element-type>
+      <format-type>widget</format-type>
+      <template>
+        nxthemes/editor/widgets/fm/theme-view.xml
+      </template>
+      <resource>nxthemes.css</resource>
+      <resource>nxthemes-widgets.js</resource>
+      <resource>nxthemes-controllers.js</resource>
+      <resource>nxthemes-editor-authoring.js</resource>
+      <resource>nxthemes-editor-authoring.css</resource>
+    </view>
+
+    <!--  Pages -->
+    <view name="page frame">
+      <engine>page-editor</engine>
+      <template-engine>freemarker</template-engine>
+      <element-type>page</element-type>
+      <format-type>widget</format-type>
+      <template>
+        nxthemes/editor/widgets/fm/page-frame.xml
+      </template>
+    </view>
+
+    <view name="page frame">
+      <engine>page-editor</engine>
+      <template-engine>freemarker</template-engine>
+      <mode>area-styles-page</mode>
+      <element-type>page</element-type>
+      <format-type>widget</format-type>
+      <class>org.nuxeo.theme.editor.views.PageFrameAreaStyle</class>
+    </view>
+
+    <view name="page frame">
+      <engine>page-editor</engine>
+      <template-engine>freemarker</template-engine>
+      <mode>area-styles-section</mode>
+      <element-type>page</element-type>
+      <format-type>widget</format-type>
+      <template>
+        nxthemes/editor/widgets/fm/page-frame.xml
+      </template>
+    </view>
+
+    <view name="page frame">
+      <engine>page-editor</engine>
+      <template-engine>freemarker</template-engine>
+      <mode>area-styles-cell</mode>
+      <element-type>page</element-type>
+      <format-type>widget</format-type>
+      <template>
+        nxthemes/editor/widgets/fm/page-frame.xml
+      </template>
+    </view>
+
+
+    <!-- sections -->
+    <view name="section frame">
+      <engine>page-editor</engine>
+      <template-engine>freemarker</template-engine>
+      <element-type>section</element-type>
+      <format-type>widget</format-type>
+      <template>
+        nxthemes/editor/widgets/fm/section-frame.xml
+      </template>
+    </view>
+
+    <view name="section frame">
+      <engine>page-editor</engine>
+      <template-engine>freemarker</template-engine>
+      <mode>area-styles-section</mode>
+      <element-type>section</element-type>
+      <format-type>widget</format-type>
+      <class>org.nuxeo.theme.editor.views.SectionFrameAreaStyle</class>
+    </view>
+
+    <view name="section frame">
+      <engine>page-editor</engine>
+      <template-engine>freemarker</template-engine>
+      <mode>area-styles-cell</mode>
+      <element-type>section</element-type>
+      <format-type>widget</format-type>
+      <template>
+        nxthemes/editor/widgets/fm/section-frame.xml
+      </template>
+    </view>
+
+    <view>
+      <engine>page-editor</engine>
+      <template-engine>freemarker</template-engine>
+      <mode>layout</mode>
+      <element-type>section</element-type>
+      <format-type>layout</format-type>
+      <class>
+        org.nuxeo.theme.editor.views.SectionLayout
+      </class>
+    </view>
+
+    <!-- cell -->
+    <view name="cell frame">
+      <engine>page-editor</engine>
+      <template-engine>freemarker</template-engine>
+      <element-type>cell</element-type>
+      <format-type>widget</format-type>
+      <class>
+        org.nuxeo.theme.editor.views.CellFrameWidget
+      </class>
+    </view>
+
+    <view name="cell frame">
+      <engine>page-editor</engine>
+      <template-engine>freemarker</template-engine>
+      <mode>area-styles-cell</mode>
+      <element-type>cell</element-type>
+      <format-type>widget</format-type>
+      <class>org.nuxeo.theme.editor.views.CellFrameAreaStyle</class>
+    </view>
+
+    <view>
+      <engine>page-editor</engine>
+      <template-engine>freemarker</template-engine>
+      <mode>layout</mode>
+      <element-type>cell</element-type>
+      <format-type>layout</format-type>
+      <class>org.nuxeo.theme.editor.views.CellLayout</class>
+    </view>
+
+    <!-- Override the default style view in layout mode-->
+    <view>
+      <engine>page-editor</engine>
+      <template-engine>freemarker</template-engine>
+      <mode>layout</mode>
+      <format-type>style</format-type>
+      <class>org.nuxeo.theme.html.filters.BypassView</class>
+    </view>
+
+  </extension>
+
+
 
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="engines">

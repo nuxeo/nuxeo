@@ -447,16 +447,20 @@ public class ThemeService extends DefaultComponent {
         for (Object contrib : contribs) {
             ViewType viewType = (ViewType) contrib;
             final String templateEngine = viewType.getTemplateEngine();
-            if (templateEngine == null
-                    || !(templateEngineNames.contains(templateEngine))) {
+            final String viewName = viewType.getViewName();
+            if (templateEngine == null) {
                 final String defaultTemplateEngineName = ThemeManager.getDefaultTemplateEngineName();
                 viewType.setTemplateEngine(defaultTemplateEngineName);
-                final String viewName = viewType.getViewName();
                 if (templateEngineNames.size() > 0) {
                     log.warn(String.format(
                             "Please set the 'template-engine' attribute on <view name=\"%s\" template-engine=\"...\"> to one of%s (default is '%s')",
                             viewName, sb.toString(), defaultTemplateEngineName));
                 }
+            } else if (!templateEngineNames.contains(templateEngine)) {
+                log.debug(String.format(
+                        "Unknown template-engine: '%s' on <view name=\"%s\" template-engine=\"...\"> (registered template engines are:%s)",
+                        templateEngine, viewName, sb.toString()));
+                continue;
             }
             typeRegistry.register(viewType);
         }
