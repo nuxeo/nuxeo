@@ -250,9 +250,9 @@ public class VersioningService extends DefaultComponent implements
                     // WF
                     // also the rule is that if wf specified an inc option
                     // that one is to be added
-                    // set default so it will appear selected
-                    wfvaction.setDefault(true);
                     versIncOpts.addOption(wfvaction);
+                    // set default so it will appear selected
+                    versIncOpts.setDefaultVersioningAction(wfvaction);
                 }
 
                 versIncOpts.setVersioningAction(wfvaction);
@@ -377,7 +377,9 @@ public class VersioningService extends DefaultComponent implements
 
                     VersioningActions vAction = VersioningActions.getByActionName(opt.getValue());
                     if (vAction != null) {
-                        vAction.setDefault(opt.isDefault());
+                        if (opt.isDefault()) {
+                            editOptions.setDefaultVersioningAction(vAction);
+                        }
                         editOptions.addOption(vAction);
                     } else {
                         log.warn("Invalid action name: " + opt);

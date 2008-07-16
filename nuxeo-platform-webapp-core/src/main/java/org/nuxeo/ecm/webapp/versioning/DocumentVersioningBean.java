@@ -105,11 +105,9 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
      * field used for deciding whether or not to display versioning controls
      * section (in document editing)
      */
-    private Boolean rendered = false;
+    private Boolean rendered;
 
-    private VersioningActions selectedOption = VersioningActions.ACTION_NO_INCREMENT;
-
-    private Boolean atCreationTime = false;
+    private VersioningActions selectedOption;
 
     // XXX: cache to workaround a performance problem computing availability of
     // versioning schema we should probably use a lighter test such as a trusted
@@ -131,13 +129,17 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return getAvailableVersioningHistory(document);
     }
 
+    // FIXME: should cache the list and invalidate it correctly as it refers to
+    // current document
     public Collection<VersionModel> getCurrentItemVersioningHistory() {
         return getItemVersioningHistory(navigationContext.getCurrentDocument());
     }
 
     @Factory(value = "currentDocumentIncrementationRules", scope = EVENT)
+    // FIXME: should cache the String and invalidate it correctly as it refers
+    // to current document
     public String factoryForIncrementationRules() {
-        if (atCreationTime) {
+        if (!getRendered()) {
             return null;
         }
         return getIncRulesResult();
@@ -149,6 +151,8 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
      * user as an explanation of what versioning rule will be automatically
      * applied.
      */
+    // FIXME: should cache the String and invalidate it correctly as it refers
+    // to current document
     public String getIncRulesResult() {
         String editOptionsInfo = null;
 
@@ -218,14 +222,17 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     }
 
     /**
-     * @return Map with available versioning options for the currentItem
+     * @return Map with available versioning options for the current document
      */
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)
     public void resetVersioningOption() {
         availableVersioningOptionsMap = null;
-        atCreationTime = false;
+        selectedOption = null;
+        rendered = null;
     }
 
+    // FIXME: should cache the map and invalidate it correctly as it refers to
+    // current document
     public Map<String, String> getAvailableVersioningOptionsMap() {
         final String logPrefix = "<getAvailableVersioningOptionsMap> ";
 
@@ -241,31 +248,21 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
             availableVersioningOptionsMap.put(value, key);
         }
 
-        if (availableVersioningOptionsMap.isEmpty()) {
-            // document without versioning
-            log.debug("current document not with versioning");
-            rendered = false;
-            // will return an empty list thus the controls won't be displayed
-        } else {
-            rendered = true;
-        }
-
         return availableVersioningOptionsMap;
     }
 
     /**
      * For documents about to be created there should be no versioning options.
-     *
      */
     @Observer(value = { EventNames.NEW_DOCUMENT_CREATED }, create = false, inject = false)
     public void resetRenderingStatus() {
-        atCreationTime = true;
+        rendered = false;
     }
 
     public Map<String, String> getVersioningOptionsMap(
             final DocumentModel documentModel) {
 
-        if (null == documentModel) {
+        if (documentModel == null) {
             throw new IllegalArgumentException("null documentModel");
         }
 
@@ -273,7 +270,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
 
         final VersionIncEditOptions options = getAvailableVersioningOptions(documentModel);
 
-        if (null == options) {
+        if (options == null) {
             return versioningOptionsMap;
         }
 
@@ -283,12 +280,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
             final String label = resourcesAccessor.getMessages().get(
                     optionResName);
             versioningOptionsMap.put(option.name(), label);
-
-            // make sure we have one selected
-            if (option.isDefault()) {
-                selectedOption = option;
-            }
-
         }
 
         return versioningOptionsMap;
@@ -372,6 +363,18 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     }
 
     public String getVersioningOptionInstanceId() {
+        if (selectedOption == null) {
+            // FIXME: should cache the versioning options and invalidate them
+            // correctly as it refers to current document
+            DocumentModel currentDoc = navigationContext.getCurrentDocument();
+            final VersionIncEditOptions options = getAvailableVersioningOptions(currentDoc);
+            // get it from options
+            selectedOption = options.getDefaultVersioningAction();
+            if (selectedOption == null) {
+                // XXX default selected value, can be argued.
+                selectedOption = VersioningActions.ACTION_NO_INCREMENT;
+            }
+        }
         return selectedOption.name();
     }
 
@@ -487,21 +490,18 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return getRendered();
     }
 
+    // FIXME: should cache the boolean invalidate it correctly as it refers to
+    // current document
     public Boolean getRendered() {
-        if (navigationContext.getCurrentDocument() == null) {
-            // XXX: glefter: hack: some refactoring needed in order to update
-            // rendered properly upon goHome()
-            log.warn("getRendered: navigationContext.getCurrentDocument() == null, returning false");
-            return false;
+        if (rendered == null) {
+            rendered = false;
+            if (navigationContext.getCurrentDocument() != null) {
+                Map<String, String> options = getAvailableVersioningOptionsMap();
+                if (options != null && !options.isEmpty()) {
+                    rendered = true;
+                }
+            }
         }
-        if (atCreationTime) {
-            return false;
-        }
-
-        if (availableVersioningOptionsMap == null) {
-            getAvailableVersioningOptionsMap();
-        }
-
         return rendered;
     }
 

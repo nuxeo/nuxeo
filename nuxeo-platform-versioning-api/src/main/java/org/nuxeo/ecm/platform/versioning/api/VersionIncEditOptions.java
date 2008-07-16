@@ -40,6 +40,8 @@ public class VersionIncEditOptions implements Serializable {
 
     private VersioningActions versioningAction = VersioningActions.ACTION_UNDEFINED;
 
+    private VersioningActions defaultVersioningAction = null;
+
     private final List<VersioningActions> options = new ArrayList<VersioningActions>();
 
     public void addInfo(String info) {
@@ -63,11 +65,27 @@ public class VersionIncEditOptions implements Serializable {
 
     /**
      * Gets the versioning action to be proposed to the user.
+     * <p>
+     * Can be a generic action that will define a list of actions to be
+     * presented to the user.
+     * </p>
      *
      * @return ACTION_UNDEFINED if not explicitly set. Could be null.
      */
     public VersioningActions getVersioningAction() {
         return versioningAction;
+    }
+
+    /**
+     * Returns action to be presented by default to user.
+     */
+    public VersioningActions getDefaultVersioningAction() {
+        return defaultVersioningAction;
+    }
+
+    public void setDefaultVersioningAction(
+            VersioningActions defaultVersioningAction) {
+        this.defaultVersioningAction = defaultVersioningAction;
     }
 
     public void addOption(VersioningActions option) {
@@ -80,6 +98,7 @@ public class VersionIncEditOptions implements Serializable {
 
     public void clearOptions() {
         options.clear();
+        setDefaultVersioningAction(null);
     }
 
     @Override
