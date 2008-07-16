@@ -61,13 +61,13 @@ public class TableRowId implements Serializable, Comparable<TableRowId> {
             return -2;
         }
 
-        if (uniqueIdentifier < id.getUniqueIdentifier()) {
+        if (uniqueIdentifier < id.uniqueIdentifier) {
             return -1;
         }
-        if (uniqueIdentifier == id.getUniqueIdentifier()) {
+        if (uniqueIdentifier == id.uniqueIdentifier) {
             return 0;
         }
-        if (uniqueIdentifier > id.getUniqueIdentifier()) {
+        if (uniqueIdentifier > id.uniqueIdentifier) {
             return 1;
         }
 

@@ -115,8 +115,8 @@ public final class DefaultSchemaFieldDescriptorsFactory {
     /**
      * Returns the list of indexable field descriptor for a given schema name.
      *
-     * @param name : the schema name
-     * @param excludeFields : explicitly exclude those field names.
+     * @param name the schema name
+     * @param excludeFields explicitly exclude those field names.
      * @return a list of indexable field descriptor instances.
      */
     public List<IndexableFieldDescriptor> getFieldDescriptorsBySchemaName(
@@ -164,7 +164,7 @@ public final class DefaultSchemaFieldDescriptorsFactory {
      *
      * @param type the type of the field
      * @param indexingName the name of the produced field descriptor.
-     * @param multiple if true, forces the multiplicity of the produced
+     * @param forceMultiple if true, forces the multiplicity of the produced
      *            descriptors
      * @return an indexable field descriptor.
      */
@@ -172,12 +172,8 @@ public final class DefaultSchemaFieldDescriptorsFactory {
             String indexingName, boolean forceMultiple) {
         String indexingAnalyzer = "default";
         String indexingType = "keyword";
-        boolean stored = true;
-        boolean indexed = true;
-        boolean binary = false;
         boolean multiple = forceMultiple; // a starting point
 
-        boolean sortable = true; // XXX use the conf @ doctype level
         Map<String, String> termVector = new HashMap<String, String>();
 
         if (type.isListType()) {
@@ -185,10 +181,12 @@ public final class DefaultSchemaFieldDescriptorsFactory {
             type = ((ListType) type).getFieldType();
             if (type.isComplexType()) {
                 return handleComplexType((ComplexType) type,
-                        indexingName + ":", multiple);
+                        indexingName + ':', multiple);
             }
         }
 
+        boolean stored = true;
+        boolean binary = false;
         if (type.getName().equals("binary")) {
             binary = true;
             indexingType = "text";
@@ -203,6 +201,8 @@ public final class DefaultSchemaFieldDescriptorsFactory {
 
         List<IndexableFieldDescriptor> res = new ArrayList<IndexableFieldDescriptor>(
                 1);
+        boolean indexed = true;
+        boolean sortable = true; // XXX use the conf @ doctype level
         res.add(new IndexableFieldDescriptor(indexingName, indexingAnalyzer,
                 indexingType, stored, indexed, binary, multiple, sortable,
                 null, termVector, null));
@@ -213,7 +213,6 @@ public final class DefaultSchemaFieldDescriptorsFactory {
      * Return a bunch of field descriptors from a given complex type, prefix and
      * multiplicity are imposed from the outside
      *
-     * @param field the given field
      * @return a collection of indexable field descriptors
      */
     private List<IndexableFieldDescriptor> handleComplexType(ComplexType type,
@@ -236,7 +235,8 @@ public final class DefaultSchemaFieldDescriptorsFactory {
      */
 
     private List<IndexableFieldDescriptor> handleComplexField(Field field) {
-        String prefix = field.getName().getLocalName() + ":";
+        String prefix = field.getName().getLocalName() + ':';
         return handleComplexType((ComplexType) field.getType(), prefix, false);
     }
+
 }

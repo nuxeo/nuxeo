@@ -127,7 +127,7 @@ public class TestIORemoteCopy2 extends NXRuntimeTestCase {
         assertNotNull(coreSession2);
 
         // get ioService from the first server
-        ioService = (IOManager) Framework.getService(IOManager.class);
+        ioService = Framework.getService(IOManager.class);
         assertNotNull(ioService);
 
         remoteIOManager = Framework.getService(IOManager.class, "remote");
@@ -197,7 +197,7 @@ public class TestIORemoteCopy2 extends NXRuntimeTestCase {
     }
 
     // this is using existing documents in the repositories
-    void prepareLocations2() throws ExportDocumentException, IOException, ClientException {
+    void prepareLocations2() throws ExportDocumentException {
         srcDocId = new IdRef("6a840040-ee01-4c67-b734-4df7696e5b46");
         dstDocId = new IdRef("7b027a65-808d-4958-b583-eff15a5b2071");
         // this will be transmitted to the source server thus it will know
