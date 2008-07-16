@@ -33,7 +33,12 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningActions;
  * @see org.nuxeo.ecm.platform.versioning.VersioningActions
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ *
+ * @deprecated use
+ *             {@link org.nuxeo.ecm.platform.versioning.api.VersionIncEditOptions}
+ *             instead
  */
+@Deprecated
 public class VersionIncEditOptions implements Serializable {
 
     private static final long serialVersionUID = 8401716646032719628L;
@@ -43,7 +48,6 @@ public class VersionIncEditOptions implements Serializable {
     private VersioningActions versioningAction = VersioningActions.ACTION_UNDEFINED;
 
     private final List<VersioningActions> options = new ArrayList<VersioningActions>();
-
 
     public void addInfo(String info) {
         this.info.append(info);

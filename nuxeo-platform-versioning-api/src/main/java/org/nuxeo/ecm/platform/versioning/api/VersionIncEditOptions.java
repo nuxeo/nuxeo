@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * This class composes a result of versioning interrogation about what
  * incrementation options are available. If the versioningAction is
@@ -42,7 +41,6 @@ public class VersionIncEditOptions implements Serializable {
     private VersioningActions versioningAction = VersioningActions.ACTION_UNDEFINED;
 
     private final List<VersioningActions> options = new ArrayList<VersioningActions>();
-
 
     public void addInfo(String info) {
         this.info.append(info);
