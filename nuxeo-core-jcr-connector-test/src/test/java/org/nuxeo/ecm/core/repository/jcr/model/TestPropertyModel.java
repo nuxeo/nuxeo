@@ -146,7 +146,7 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
     }
 
     // NXP-2468
-    public void XXXtestBlobListValue() throws Exception {
+    public void testBlobListValue() throws Exception {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:fileList") instanceof List);
         assertEquals(0, ((List) doc.getPropertyValue("tp:fileList")).size());

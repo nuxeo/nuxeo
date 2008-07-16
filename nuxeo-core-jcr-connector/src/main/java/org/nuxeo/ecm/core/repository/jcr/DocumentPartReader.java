@@ -103,13 +103,13 @@ public class DocumentPartReader {
         } else if (property.isList()) { // an array property -> TODO this is for compatibility
             readArrayProperty(parent, property);
         } else { // a structured property like blobs
-            Node node = parent.getNode(property.getName());
+            Node node = parent.getNode(getNodeName(property));
             readStructuredProperty(node, property);
         }
     }
 
     public static void readPrimitiveProperty(Node parent, Property property) throws Exception {
-        javax.jcr.Property p = parent.getProperty(property.getName());
+        javax.jcr.Property p = parent.getProperty(getNodeName(property));
         switch (p.getType()) {
         case PropertyType.STRING:
             property.init(p.getString());
@@ -137,7 +137,7 @@ public class DocumentPartReader {
     }
 
     public static void readArrayProperty(Node parent, Property property) throws Exception {
-        javax.jcr.Property p = parent.getProperty(property.getName());
+        javax.jcr.Property p = parent.getProperty(getNodeName(property));
         Object array = jcrValuesToArray(p.getValues(), p.getType());
         property.init((Serializable)array);
     }
@@ -204,6 +204,15 @@ public class DocumentPartReader {
         }
     }
 
+    /**
+     * This method computes the node name that corresponds to a property. When reading/writing
+     * properties to JCR items you must use this method and not <code>parent.getNode(property.getName())</code>
+     * because in the case of list elements the node names are generated UIDs and doesn't correspond
+     * to the XSD property name
+     *
+     * @param property the property
+     * @return the node name corresponding to the given property
+     */
     public static String getNodeName(Property property) {
         String name = (String)property.getData();
         return name == null ? property.getName() : name;
