@@ -43,7 +43,7 @@ NXThemesStyleEditor.renderElement = function(id, area) {
     };
     var url = window.location.href;
     var i = url.indexOf('?');
-    var query_params = $H({'engine': 'fragments-only'})'';
+    var query_params = $H({'engine': 'fragments-only'});
     if (i > 0) {
       var query_string = url.substr(i+1);
       query_params = query_params.update($H(query_string.toQueryParams()));
