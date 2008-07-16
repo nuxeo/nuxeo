@@ -22,7 +22,6 @@ package org.nuxeo.ecm.core.api.local;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.AbstractSession;
@@ -42,30 +41,28 @@ public class LocalSession extends AbstractSession {
 
     private Session session;
 
-    private NuxeoPrincipal principal;
-
 
     // Locally we don't yet support NXCore.getRepository()
-    protected Session createSession(String repoName,
-            Map<String, Serializable> context) throws ClientException {
+    protected Session createSession(String repoName) throws ClientException {
+        NuxeoPrincipal principal = null;
         try {
-            if (context != null) {
-                principal = (NuxeoPrincipal) context.get("principal");
+            if (sessionContext != null) {
+                principal = (NuxeoPrincipal) sessionContext.get("principal");
                 if (principal == null) {
-                    String username = (String) context.get("username");
+                    String username = (String) sessionContext.get("username");
                     if (username != null) {
                         principal = new UserPrincipal(username);
                     }
                 }
             } else {
-                context = new HashMap<String, Serializable>();
+                sessionContext = new HashMap<String, Serializable>();
             }
             // store the principal in the core session context so that other core tools may retrieve it
-            context.put("principal", principal);
+            sessionContext.put("principal", principal);
 
             Repository repo = NXCore.getRepositoryService()
                     .getRepositoryManager().getRepository(repoName);
-            return repo.getSession(context);
+            return repo.getSession(sessionContext);
         } catch (Exception e) {
             throw new ClientException("Failed to load repository " + repoName, e);
         }
@@ -73,13 +70,13 @@ public class LocalSession extends AbstractSession {
 
     @Override
     public Principal getPrincipal() {
-        return principal;
+        return (Principal)sessionContext.get("principal");
     }
 
     @Override
     protected Session getSession() throws ClientException {
         if (session == null) {
-            session = createSession(repositoryName, sessionContext);
+            session = createSession(repositoryName);
         }
         return session;
     }

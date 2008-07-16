@@ -119,7 +119,7 @@ public class TestTypeManager extends NXRuntimeTestCase {
         assertTrue(tff.contains("Parent"));
     }
 
-    public void testInheritanceCache() throws Exception {
+    public void testInheritanceCache() {
         SchemaDescriptor[] schemas = new SchemaDescriptor[0];
         DocumentTypeDescriptor dtd;
         dtd = new DocumentTypeDescriptor(TypeConstants.DOCUMENT,
