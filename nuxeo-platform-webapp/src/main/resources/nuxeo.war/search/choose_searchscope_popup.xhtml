@@ -19,8 +19,9 @@
       value="#{messages['title.advancedsearch.choose.path']}" />
     </h2>
 
-    <c:set var="decorator" value="popup" />
-    <ui:include src="/search/search_path_tree_explorer.xhtml" />
+    <a4j:form>
+      <ui:include src="/search/search_path_tree_explorer.xhtml" />
+    </a4j:form>
 
   </ui:define>
 

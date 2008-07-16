@@ -15,7 +15,7 @@
 </ui:define>
 
 <ui:define name="body">
-  <a4j:outputPanel ajaxRendered="true"><a4j:form ajaxSubmit="true" id="searchForm">
+  <a4j:outputPanel ajaxRendered="true"><h:form id="searchForm">
 
     <div class="foldableBox">
       <h3 class="unfolded">
@@ -40,7 +40,7 @@
     </div>
 
     <ui:include src="/search/search_buttons.xhtml" />
-  </a4j:form></a4j:outputPanel>
+  </h:form></a4j:outputPanel>
 
   <f:subview rendered="#{currentNuxeoPrincipal.administrator}">
     <div class="foldableBox">

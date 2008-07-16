@@ -61,9 +61,7 @@
       <a4j:region renderRegionOnly="true">
         <dl>
           <dd class="menuForm">
-           <ui:decorate template="/layouts/#{decorator}_decorator.xhtml">
-            <ui:define name="tree">
-
+            <a4j:outputPanel ajaxRendered="true">
             <h:panelGroup id="treeNav">
               <nxu:lazyTree value="#{reducedTreeManager.treeModel}"
                 showNav="false" showRootNode="true"
@@ -114,9 +112,7 @@
 
               </nxu:lazyTree>
             </h:panelGroup>
-
-            </ui:define>
-          </ui:decorate>
+            </a4j:outputPanel>
 
           </dd>
         </dl>
