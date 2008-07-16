@@ -148,24 +148,21 @@
 
   <extension target="org.nuxeo.theme.services.ThemeService" point="views">
 
-    <view> 
-      <template-engine>html</template-engine>
+    <view template-engine="html">
       <format-type>layout</format-type>
       <class>
         org.nuxeo.theme.html.filters.layout.DefaultLayoutView
       </class>
     </view>
 
-    <view>
-      <template-engine>html</template-engine>
+    <view template-engine="html">
       <format-type>style</format-type>
       <class>
         org.nuxeo.theme.html.filters.style.DefaultStyleView
       </class>
     </view>
 
-    <view name="theme view">
-      <template-engine>html</template-engine>      
+    <view name="theme view" template-engine="html">
       <element-type>theme</element-type>
       <format-type>widget</format-type>
       <template>nxthemes/html/widgets/theme-view.xml</template>
@@ -173,37 +170,32 @@
       <resource>autosuggest.css</resource>
     </view>
 
-    <view name="page frame">
-      <template-engine>html</template-engine>      
+    <view name="page frame" template-engine="html">
       <element-type>page</element-type>
       <format-type>widget</format-type>
       <template>nxthemes/html/widgets/page-frame.xml</template>
     </view>
 
-    <view name="section frame">
-      <template-engine>html</template-engine>      
+    <view name="section frame" template-engine="html">
       <element-type>section</element-type>
       <format-type>widget</format-type>
       <template>nxthemes/html/widgets/section-frame.xml</template>
     </view>
 
-    <view name="cell frame">
-      <template-engine>html</template-engine>     
+    <view name="cell frame" template-engine="html">
       <element-type>cell</element-type>
       <format-type>widget</format-type>
       <template>nxthemes/html/widgets/cell-frame.xml</template>
     </view>
 
-    <view name="vertical menu">
-      <template-engine>html</template-engine>      
+    <view name="vertical menu" template-engine="html">
       <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>menu item</model-type>
       <template>nxthemes/html/widgets/vertical-menu.xml</template>
     </view>
 
-    <view name="horizontal tabs">
-      <template-engine>html</template-engine>      
+    <view name="horizontal tabs" template-engine="html">
       <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>menu item</model-type>
@@ -212,8 +204,7 @@
       </template>
     </view>
 
-    <view name="plain text">
-      <template-engine>html</template-engine>      
+    <view name="plain text" template-engine="html">
       <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>text</model-type>
@@ -221,8 +212,7 @@
       <template>nxthemes/html/widgets/plain-text.xml</template>
     </view>
 
-    <view name="plain html">
-      <template-engine>html</template-engine>      
+    <view name="plain html" template-engine="html">
       <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>html</model-type>

@@ -5,8 +5,7 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="views">
 
-    <view name="page frame">
-      <template-engine>jsf-facelets</template-engine>
+    <view name="page frame" template-engine="jsf-facelets">
       <element-type>page</element-type>
       <format-type>widget</format-type>
       <model-type>menu item</model-type>
@@ -15,22 +14,19 @@
       <resource>script/script.js</resource>
     </view>
 
-    <view name="section frame">
-      <template-engine>jsf-facelets</template-engine>    
+    <view name="section frame" template-engine="jsf-facelets">
       <element-type>section</element-type>
       <format-type>widget</format-type>
       <template>nxthemes/jsf/widgets/section-frame.xml</template>
     </view>
 
-    <view name="cell frame">
-      <template-engine>jsf-facelets</template-engine>    
+    <view name="cell frame" template-engine="jsf-facelets">
       <element-type>cell</element-type>
       <format-type>widget</format-type>
       <template>nxthemes/jsf/widgets/cell-frame.xml</template>
     </view>
 
-    <view name="vertical menu">
-      <template-engine>jsf-facelets</template-engine>    
+    <view name="vertical menu" template-engine="jsf-facelets">
       <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>menu item</model-type>

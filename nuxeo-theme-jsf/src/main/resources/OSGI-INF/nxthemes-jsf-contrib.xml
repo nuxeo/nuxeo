@@ -133,63 +133,55 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="views">
 
-    <view>
-      <template-engine>jsf-facelets</template-engine>      
+    <view template-engine="jsf-facelets">
       <format-type>layout</format-type>
       <class>
         org.nuxeo.theme.html.filters.layout.DefaultLayoutView
       </class>
     </view>
 
-    <view>
-      <template-engine>jsf-facelets</template-engine>     
+    <view template-engine="jsf-facelets">
       <format-type>style</format-type>
       <class>
         org.nuxeo.theme.html.filters.style.DefaultStyleView
       </class>
     </view>
 
-    <view name="theme view">
+    <view name="theme view" template-engine="jsf-facelets">
       <element-type>theme</element-type>
-      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>nxthemes/jsf/widgets/theme-view.xml</template>
       <resource>nxthemes.css</resource>
       <resource>autosuggest.css</resource>
     </view>
 
-    <view name="page frame">
+    <view name="page frame" template-engine="jsf-facelets">
       <element-type>page</element-type>
-      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>nxthemes/jsf/widgets/page-frame.xml</template>
     </view>
 
-    <view name="section frame">
+    <view name="section frame" template-engine="jsf-facelets">
       <element-type>section</element-type>
-      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>nxthemes/jsf/widgets/section-frame.xml</template>
     </view>
 
-    <view name="cell frame">
+    <view name="cell frame" template-engine="jsf-facelets">
       <element-type>cell</element-type>
-      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <template>nxthemes/jsf/widgets/cell-frame.xml</template>
     </view>
 
-    <view name="vertical menu">
+    <view name="vertical menu" template-engine="jsf-facelets">
       <element-type>fragment</element-type>
-      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <model-type>menu item</model-type>
       <template>nxthemes/jsf/widgets/vertical-menu.xml</template>
     </view>
 
-    <view name="horizontal tabs">
+    <view name="horizontal tabs" template-engine="jsf-facelets">
       <element-type>fragment</element-type>
-      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <model-type>menu item</model-type>
       <template>
@@ -197,27 +189,24 @@
       </template>
     </view>
 
-    <view name="plain text">
+    <view name="plain text" template-engine="jsf-facelets">
       <element-type>fragment</element-type>
-      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <model-type>text</model-type>
       <icon>/nuxeo/nxthemes/icons/plain-text.png</icon>
       <template>nxthemes/jsf/widgets/plain-text.xml</template>
     </view>
 
-    <view name="plain html">
+    <view name="plain html" template-engine="jsf-facelets">
       <element-type>fragment</element-type>
-      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <model-type>html</model-type>
       <icon>/nuxeo/nxthemes/icons/plain-html.png</icon>
       <template>nxthemes/jsf/widgets/plain-html.xml</template>
     </view>
 
-    <view name="facelet region">
+    <view name="facelet region" template-engine="jsf-facelets">
       <element-type>fragment</element-type>
-      <template-engine>jsf-facelets</template-engine>
       <format-type>widget</format-type>
       <model-type>region</model-type>
       <icon>/nuxeo/nxthemes/icons/facelet-region.png</icon>

@@ -107,8 +107,7 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="views">
 
-    <view name="web widget panel">
-      <template-engine>jsf-facelets</template-engine>
+    <view name="web widget panel" template-engine="jsf-facelets">
       <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>web widget region</model-type>
@@ -117,8 +116,7 @@
       <resource>nxthemes-webwidgets-view.js</resource>
     </view>
 
-    <view name="theme view">
-      <template-engine>jsf-facelets</template-engine>
+    <view name="theme view" template-engine="jsf-facelets">
       <mode>web-widgets</mode>
       <element-type>theme</element-type>
       <format-type>widget</format-type>
@@ -127,8 +125,7 @@
       <resource>nxthemes-webwidgets-edit.css</resource>
     </view>
 
-    <view name="page frame">
-      <template-engine>jsf-facelets</template-engine>    
+    <view name="page frame" template-engine="jsf-facelets">
       <mode>web-widgets</mode>
       <element-type>page</element-type>
       <format-type>widget</format-type>

@@ -38,7 +38,7 @@ public final class ViewType implements Type {
     @XNode("engine")
     public String engineName = "default";
 
-    @XNode("template-engine")
+    @XNode("@template-engine")
     private String templateEngine;
 
     @XNode("mode")
