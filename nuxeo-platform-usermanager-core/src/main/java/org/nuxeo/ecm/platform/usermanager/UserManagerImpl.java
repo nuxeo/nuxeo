@@ -316,7 +316,7 @@ public class UserManagerImpl implements UserManager {
             principal.setVirtualGroups(virtualGroups);
         }
 
-        // TODO: renable roles initialzation once we have a use case for
+        // TODO: renable roles initialization once we have a use case for
         // a role directory. In the mean time we only set the JBOSS role
         // that is required to login
         List<String> roles = Arrays.asList("regular");
