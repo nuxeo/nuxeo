@@ -79,7 +79,7 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
         } else {
             internalSetValue(value);
         }
-        clearFlags(IS_PHANTOM);
+        removePhantomFlag();
     }
 
 
