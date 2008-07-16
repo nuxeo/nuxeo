@@ -193,6 +193,26 @@ public class TestPropertyModel extends RepositoryOSGITestCase {
         assertTrue(actualBlob instanceof Blob);
     }
 
+    public void testComplexPropertyChain() throws Exception {
+        Property p = doc.getProperty("tp:complexChain");
+        assertTrue(p.getValue() instanceof Map);
+        assertEquals(0, ((Map) p.getValue()).size());
+        p.setValue("string", "test");
+        HashMap<String,Serializable> map = new HashMap<String,Serializable>();
+        map.put("string", "test2");
+        p.setValue("complex", map);
+
+        doc = coreSession.saveDocument(doc);
+
+        p = doc.getProperty("tp:complexChain");
+        assertTrue(p.getValue() instanceof Map);
+        assertEquals("test", p.getValue("string"));
+        assertEquals("test2", p.getValue("complex/string"));
+        p= p.get("complex");
+        assertTrue(p.getValue() instanceof Map);
+        assertEquals("test2", p.getValue("string"));
+    }
+
     // NXP-2318: i don't get what's supposed to be answered to these questions
     public void XXXtestArrayOrListProperties() throws Exception {
         Property prop = doc.getProperty("tp:stringArray");

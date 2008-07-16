@@ -89,7 +89,7 @@ public abstract class AbstractProperty implements Property {
             return;
         }
         internalSetValue(value);
-        clearFlags(IS_PHANTOM);
+        removePhantomFlag();
     }
 
     public  void removePhantomFlag() {
