@@ -247,7 +247,7 @@ public class SQLHelper {
             PreparedStatement ps = connection.prepareStatement(insertSql);
 
             while ((columnValues = csvReader.readNext()) != null) {
-                if (columnValues.length <= 0
+                if (columnValues.length == 0
                         || (columnValues.length == 1 && "".equals(columnValues[0]))) {
                     // NXP-2538: allow columns with only one value but skip
                     // empty lines
