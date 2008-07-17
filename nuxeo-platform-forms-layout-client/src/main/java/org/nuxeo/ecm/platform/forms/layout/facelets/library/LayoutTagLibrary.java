@@ -37,9 +37,9 @@ import com.sun.facelets.tag.AbstractTagLibrary;
  */
 public class LayoutTagLibrary extends AbstractTagLibrary {
 
-    public final static String Namespace = "http://nuxeo.org/nxforms/layout";
+    public static final String Namespace = "http://nuxeo.org/nxforms/layout";
 
-    public final static LayoutTagLibrary Instance = new LayoutTagLibrary();
+    public static final LayoutTagLibrary Instance = new LayoutTagLibrary();
 
     public LayoutTagLibrary() {
         super(Namespace);
@@ -51,7 +51,6 @@ public class LayoutTagLibrary extends AbstractTagLibrary {
         addTagHandler("layoutRowWidget", LayoutRowWidgetTagHandler.class);
         addTagHandler("subWidget", SubWidgetTagHandler.class);
         addTagHandler("documentLayout", DocumentLayoutTagHandler.class);
-
     }
 
 }

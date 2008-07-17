@@ -49,7 +49,7 @@ import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  * @deprecated use org.nuxeo.ecm.platform.ui.web.shield.NuxeoErrorInterceptor
- *             instead
+ *             instead - TODO: Remove in 5.2.
  */
 @Deprecated
 public class ErrorHandlingInterceptor implements Serializable {
@@ -99,7 +99,7 @@ public class ErrorHandlingInterceptor implements Serializable {
                 }
             }
 
-            String redirectToViewId = null;
+            String redirectToViewId;
             try {
                 log.error("Exception caught, redirecting to the error page...");
                 final Context sessionContext = Contexts.getSessionContext();

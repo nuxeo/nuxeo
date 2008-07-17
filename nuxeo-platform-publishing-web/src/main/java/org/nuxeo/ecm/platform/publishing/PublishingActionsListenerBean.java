@@ -87,7 +87,7 @@ public class PublishingActionsListenerBean extends InputController implements
     private static final Log log = LogFactory.getLog(PublishingActionsListenerBean.class);
 
     @In(create = true, required = false)
-    private CoreSession documentManager;
+    private transient CoreSession documentManager;
 
     @In(create = true)
     protected transient Principal currentUser;
@@ -102,7 +102,7 @@ public class PublishingActionsListenerBean extends InputController implements
     protected transient DashboardActions dashboardActions;
 
     @In(create = true)
-    protected PublishActions publishActions;
+    protected transient PublishActions publishActions;
 
     @In
     protected transient Context eventContext;
