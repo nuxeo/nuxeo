@@ -75,7 +75,7 @@ public class GroupsSubscriptionsAction extends InputController implements
     @In(create = true)
     private PrincipalListManager principalListManager;
 
-    @In(required = true, create = true)
+    @In(create = true)
     private transient NotificationManager notificationManager;
 
     private String selectedGrant;
