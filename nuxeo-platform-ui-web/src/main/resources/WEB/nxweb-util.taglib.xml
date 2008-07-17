@@ -113,9 +113,7 @@
     <function-class>
       org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions
     </function-class>
-    <function-signature>
-      List getCSLData(java.lang.String)
-    </function-signature>
+    <function-signature>List getCSLData(java.lang.String)</function-signature>
   </function>
   <!-- XXX AT: should be in nxdirectory taglib, not util -->
   <function>
@@ -123,9 +121,7 @@
     <function-class>
       org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions
     </function-class>
-    <function-signature>
-      int getListSize(java.lang.String)
-    </function-signature>
+    <function-signature>int getListSize(java.lang.String)</function-signature>
   </function>
   <tag>
     <tag-name>methodResult</tag-name>
@@ -204,6 +200,26 @@
       </handler-class>
     </component>
   </tag>
+  <tag>
+    <tag-name>editor</tag-name>
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.editor.UIHtmlEditor
+      </component-type>
+    </component>
+  </tag>
+  <tag>
+    <tag-name>inputDateTime</tag-name>
+    <component>
+      <component-type>
+        org.nuxeo.ecm.platform.ui.web.component.date.UIInputDateTime
+      </component-type>
+      <handler-class>
+        com.sun.facelets.tag.jsf.html.HtmlComponentHandler
+      </handler-class>
+    </component>
+  </tag>
+
   <!-- tomahawk tags -->
   <tag>
     <tag-name>dataList</tag-name>
@@ -234,55 +250,39 @@
     <tag-name>inputDate</tag-name>
     <component>
       <component-type>org.apache.myfaces.HtmlInputDate</component-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.DeprecatedComponentHandler
+      </handler-class>
     </component>
   </tag>
   <tag>
     <tag-name>inputCalendar</tag-name>
     <component>
-      <component-type>
-        org.apache.myfaces.HtmlInputCalendar
-      </component-type>
+      <component-type>org.apache.myfaces.HtmlInputCalendar</component-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.DeprecatedComponentHandler
+      </handler-class>
     </component>
   </tag>
   <tag>
     <tag-name>schedule</tag-name>
     <component>
       <component-type>org.apache.myfaces.Schedule</component-type>
+      <handler-class>
+        org.nuxeo.ecm.platform.ui.web.tag.handler.DeprecatedComponentHandler
+      </handler-class>
     </component>
   </tag>
   <tag>
     <tag-name>graphicImage</tag-name>
     <component>
-      <component-type>
-        org.apache.myfaces.HtmlGraphicImage
-      </component-type>
-    </component>
-  </tag>
-  <tag>
-    <tag-name>editor</tag-name>
-    <component>
-      <component-type>
-        org.nuxeo.ecm.platform.ui.web.component.editor.UIHtmlEditor
-      </component-type>
-    </component>
-  </tag>
-  <tag>
-    <tag-name>inputDateTime</tag-name>
-    <component>
-      <component-type>
-        org.nuxeo.ecm.platform.ui.web.component.date.UIInputDateTime
-      </component-type>
-      <handler-class>
-        com.sun.facelets.tag.jsf.html.HtmlComponentHandler
-      </handler-class>
+      <component-type>org.apache.myfaces.HtmlGraphicImage</component-type>
     </component>
   </tag>
   <tag>
     <tag-name>inputFileUpload</tag-name>
     <component>
-      <component-type>
-        org.apache.myfaces.trinidad.CoreInputFile
-      </component-type>
+      <component-type>org.apache.myfaces.trinidad.CoreInputFile</component-type>
       <handler-class>
         org.apache.myfaces.trinidadinternal.facelets.TrinidadComponentHandler
       </handler-class>
@@ -291,9 +291,7 @@
   <tag>
     <tag-name>selectOneRadio</tag-name>
     <component>
-      <component-type>
-        org.apache.myfaces.HtmlSelectOneRadio
-      </component-type>
+      <component-type>org.apache.myfaces.HtmlSelectOneRadio</component-type>
       <renderer-type>org.apache.myfaces.Radio</renderer-type>
     </component>
   </tag>
