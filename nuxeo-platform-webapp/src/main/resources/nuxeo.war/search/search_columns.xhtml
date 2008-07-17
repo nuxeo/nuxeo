@@ -6,6 +6,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxdir="http://nuxeo.org/nxdirectory">
 
    <nxdir:chainSelect
@@ -116,7 +117,7 @@
     <h:outputText value="#{messages['label.search.orderBy']}" />
     <h:selectOneMenu value="#{searchColumns.sortColumn}" >
       <f:selectItem itemLabel="#{messages['label.vocabulary.selectValue']}" itemValue="" />
-      <t:selectItems value="#{searchColumns.resultColumns}" var="field"
+      <nxu:selectItems value="#{searchColumns.resultColumns}" var="field"
         itemLabel="#{messages[field.label]}" itemValue="#{field.prefixedName}" />
     </h:selectOneMenu>
 
