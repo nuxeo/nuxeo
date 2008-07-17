@@ -3,6 +3,13 @@
 <component name="org.nuxeo.theme.core.tests.views">
 
   <extension target="org.nuxeo.theme.services.ThemeService"
+    point="template-engines">
+    
+    <template-engine name="jsf-facelets" title="JSF/Facelets" />
+    
+  </extension>
+  
+  <extension target="org.nuxeo.theme.services.ThemeService"
     point="views">
 
     <view name="page frame" template-engine="jsf-facelets">
