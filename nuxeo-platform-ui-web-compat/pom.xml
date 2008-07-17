@@ -37,47 +37,6 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-installed</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.apache.myfaces.tomahawk</groupId>
-                  <artifactId>tomahawk</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.apache.myfaces.tomahawk</groupId>
-                  <artifactId>tomahawk-sandbox</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.apache.myfaces.trinidad</groupId>
-                  <artifactId>trinidad-api</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.apache.myfaces.trinidad</groupId>
-                  <artifactId>trinidad-impl</artifactId>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>
-                ${project.build.outputDirectory}/lib
-              </outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-
   <reporting>
     <plugins>
       <plugin>
