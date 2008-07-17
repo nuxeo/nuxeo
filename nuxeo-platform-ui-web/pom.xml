@@ -130,13 +130,8 @@
       <scope>runtime</scope><!-- needed only for execution -->
     </dependency>
     <dependency>
-      <groupId>org.apache.myfaces.tomahawk</groupId>
-      <artifactId>tomahawk</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.richfaces.framework</groupId>
       <artifactId>richfaces-api</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -196,6 +191,10 @@
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
       <version>1.0.1B</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
     </dependency>
   </dependencies>
 
