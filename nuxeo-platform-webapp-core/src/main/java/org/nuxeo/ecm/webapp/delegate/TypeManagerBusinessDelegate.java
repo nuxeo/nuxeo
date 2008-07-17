@@ -86,7 +86,7 @@ public class TypeManagerBusinessDelegate implements Serializable {
 
     @Destroy
     @PermitAll
-    public void destroy() throws ClientException {
+    public void destroy() {
         if (null != typeManager) {
             //typeManager.remove();
             typeManager = null;

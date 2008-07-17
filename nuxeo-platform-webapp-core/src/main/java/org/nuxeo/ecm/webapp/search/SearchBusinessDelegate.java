@@ -140,7 +140,6 @@ public class SearchBusinessDelegate implements Serializable {
 
             throw EJBExceptionHandler.wrapException(t);
         }
-
     }
 
     /**
@@ -176,7 +175,6 @@ public class SearchBusinessDelegate implements Serializable {
 
             throw EJBExceptionHandler.wrapException(t);
         }
-
     }
 
     /**
