@@ -90,6 +90,7 @@
   <!-- third party libraries embedded in the ear -->
   <artifactSet id="nuxeo-fixed-libs">
     <artifacts>
+      <artifact group="org.freemarker" name="freemarker" version="2.3.11" />
       <artifact group="org.osgi" name="osgi-core" version="4.1" />
       <artifact group="commons-collections" name="commons-collections" version="3.1" />
       <artifact group="commons-io" name="commons-io" version="1.2" />

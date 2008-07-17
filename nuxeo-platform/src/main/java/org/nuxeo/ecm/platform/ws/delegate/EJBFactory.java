@@ -50,4 +50,5 @@ public class EJBFactory implements Serializable {
         InitialContext ctx = getInitialContext();
         return (NuxeoRemoting) ctx.lookup(beanRemoteLocation);
     }
+
 }

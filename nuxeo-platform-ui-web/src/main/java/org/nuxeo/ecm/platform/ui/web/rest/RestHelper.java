@@ -23,6 +23,7 @@ import static org.jboss.seam.ScopeType.EVENT;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,7 +55,7 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 @Name("restHelper")
 @Scope(EVENT)
 @NuxeoJavaBeanErrorHandler
-public class RestHelper {
+public class RestHelper implements Serializable {
 
     private static final Log log = LogFactory.getLog(RestHelper.class);
 
