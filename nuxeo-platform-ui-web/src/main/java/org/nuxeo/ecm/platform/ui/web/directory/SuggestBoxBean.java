@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.directory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,7 +27,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,6 +44,10 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 @Name("suggestBox")
 @Scope(ScopeType.EVENT)
 @Transactional
+/**
+ * @deprecated: use rich:suggestionbox instead
+ */
+@Deprecated
 public class SuggestBoxBean implements Serializable {
 
     private static final Log log = LogFactory.getLog(SuggestBoxBean.class);
@@ -85,8 +89,8 @@ public class SuggestBoxBean implements Serializable {
             if (directory != null) {
                 directory.close();
             }
-            return false;
         }
+        return false;
     }
 
     // ToDo, remove this function and use filters in the directory service
