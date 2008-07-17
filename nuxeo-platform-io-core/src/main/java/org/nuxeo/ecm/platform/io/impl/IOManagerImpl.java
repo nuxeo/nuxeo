@@ -486,7 +486,7 @@ public class IOManagerImpl implements IOManager {
         return externalizeExport(repo, null, docReaderFactoryName, readerFactoryParams, ioAdapters);
     }
 
-    private String externalizeExport(String repo,
+    public String externalizeExport(String repo,
             Collection<DocumentRef> sources, String docReaderFactoryName,
             Map<String, Object> readerFactoryParams,
             Collection<String> ioAdapters) throws ClientException {

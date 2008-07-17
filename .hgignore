@@ -6,4 +6,6 @@ bin
 target
 *~
 *.orig
-nuxeo-platform-ear/nuxeo.ear.org
+*.ipr
+*.iml
+*.iws
