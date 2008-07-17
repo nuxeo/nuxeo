@@ -58,7 +58,7 @@ public class ServiceManager {
 
     @SuppressWarnings("unchecked")
     public <T> T getService(Class<T> serviceClass, String key) throws Exception {
-        String bindingKey = serviceClass.getName()+"/"+key;
+        String bindingKey = serviceClass.getName()+"@"+key;
         Binding binding = bindings.get(bindingKey);
         if (binding != null) {
             Object obj = binding.get();
@@ -68,22 +68,12 @@ public class ServiceManager {
                 return (T)obj;
             }
         }
-        return (T)findService(serviceClass, key, bindingKey);
+        return (T)findService(serviceClass, bindingKey);
     }
 
     public Object findService(Class<?> serviceClass, String bindingKey) {
         for (int i=0; i<providers.length; i++) {
             Object obj = providers[i].getService(serviceClass, bindingKey);
-            if (obj != null) {
-                return obj;
-            }
-        }
-        return null;
-    }
-
-    public Object findService(Class<?> serviceClass, String bindingKey, String key) {
-        for (int i=0; i<providers.length; i++) {
-            Object obj = providers[i].getService(serviceClass, bindingKey, key);
             if (obj != null) {
                 return obj;
             }

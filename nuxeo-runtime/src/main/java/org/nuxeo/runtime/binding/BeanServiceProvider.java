@@ -79,11 +79,10 @@ public class BeanServiceProvider extends AbstractServiceProvider {
     }
 
     public Object getService(Class<?> serviceClass, String bindingKey) {
-        String className = serviceClass.getName();
         try {
             Object obj = null;
             if (tryLocalFirst) {
-                JndiName name = new JndiName(className, LOCAL_SUFFIX);
+                JndiName name = new JndiName(bindingKey, LOCAL_SUFFIX);
                 obj = ctx.lookup(name); // throws an exception if not found
                 if (manager != null) {
                     JndiBinding binding = new JndiBinding(bindingKey, ctx, name);
@@ -91,33 +90,7 @@ public class BeanServiceProvider extends AbstractServiceProvider {
                     return obj;
                 }
             }
-            JndiName name = new JndiName(className, REMOTE_SUFFIX);
-            obj = ctx.lookup(name); // throws an exception if not found
-            if (manager != null) {
-                JndiBinding binding = new JndiBinding(bindingKey, ctx, name);
-                manager.registerBinding(bindingKey, binding);
-            }
-            return obj;
-        } catch (NamingException e) {
-            // do nothing
-        }
-        return null;
-    }
-
-    public Object getService(Class<?> serviceClass, String bindingKey, String key) {
-        String className = serviceClass.getName();
-        try {
-            Object obj = null;
-            if (tryLocalFirst) {
-                JndiName name = new JndiName(className, LOCAL_SUFFIX);
-                obj = ctx.lookup(name); // throws an exception if not found
-                if (manager != null) {
-                    JndiBinding binding = new JndiBinding(bindingKey, ctx, name);
-                    manager.registerBinding(bindingKey, binding);
-                }
-                return obj;
-            }
-            JndiName name = new JndiName(className, REMOTE_SUFFIX);
+            JndiName name = new JndiName(bindingKey, REMOTE_SUFFIX);
             obj = ctx.lookup(name); // throws an exception if not found
             if (manager != null) {
                 JndiBinding binding = new JndiBinding(bindingKey, ctx, name);

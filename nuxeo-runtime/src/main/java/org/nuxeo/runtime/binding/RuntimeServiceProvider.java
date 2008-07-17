@@ -55,6 +55,9 @@ public class RuntimeServiceProvider extends AbstractServiceProvider implements C
         bindings = null;
     }
 
+    /**
+     * Named service lookup is not supported
+     */
     public Object getService(Class<?> serviceClass, String bindingKey) {
         ComponentInstance comp = runtime.getComponentManager().getComponentProvidingService(serviceClass);
         if (comp == null) {
@@ -76,12 +79,6 @@ public class RuntimeServiceProvider extends AbstractServiceProvider implements C
             }
             return obj;
         }
-        return null;
-    }
-
-
-    public Object getService(Class<?> serviceClass, String bindingKey, String key) {
-        // TODO Auto-generated method stub
         return null;
     }
 

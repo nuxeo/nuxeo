@@ -52,23 +52,18 @@ public interface ServiceProvider {
      * If the lookup succeeds and the provider is attached to a service manager it may use the binding key to
      * register a service binding on the manager so that the next time the same service is requested
      * it will be picked up from the manager cache.
+     * <p>
+     * Note that the binding key should be used to lookup the service.
+     * Usually this key is the service class name but can be different when querying a named service
+     * (in this case it will be serviceClass + '@' + serviceName).
+     * <p>
+     * If implementors doesn't support named services then they can use the serviceClass to
+     * perform the lookup.
      *
      * @param serviceClass the interface of the service
      * @param bindingKey the binding key to use when caching bindings
      * @return the service instance if any was found or null otherwise
      */
     Object getService(Class<?> serviceClass, String bindingKey);
-
-    /**
-     * Same as the {@link #getService(Class, String)} method but accept an additional key parameter
-     * to be used to lookup the service. The key can be used for example to get a specific instance of a
-     * service that implements the given interface
-     *
-     * @param serviceClass the interface of the service to lookup
-     * @param bindingKey the binding key to use to cache bindings
-     * @param key an additional lookup key
-     * @return the service instance if any, null otherwise
-     */
-    Object getService(Class<?> serviceClass, String bindingKey, String key);
 
 }

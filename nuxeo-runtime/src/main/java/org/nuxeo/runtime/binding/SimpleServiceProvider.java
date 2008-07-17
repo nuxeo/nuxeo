@@ -67,6 +67,9 @@ public class SimpleServiceProvider extends AbstractServiceProvider {
         // TODO Auto-generated method stub
     }
 
+    /**
+     * Named service lookup is not yet supported (so bindingKey will be ignored at lookup time)
+     */
     public Object getService(Class<?> serviceClass, String bindingKey) {
         String name = serviceClass.getName();
         Object obj = registry.get(name);
@@ -78,11 +81,6 @@ public class SimpleServiceProvider extends AbstractServiceProvider {
             }
             return obj;
         }
-        return null;
-    }
-
-    public Object getService(Class<?> serviceClass, String bindingKey, String key) {
-        // TODO Auto-generated method stub
         return null;
     }
 
