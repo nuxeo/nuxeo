@@ -304,15 +304,5 @@
     </component>
   </tag>
 
-  <tag>
-    <tag-name>lazyTree</tag-name>
-    <component>
-      <component-type>org.apache.myfaces.HtmlTree2</component-type>
-      <renderer-type>
-        org.nuxeo.ecm.platform.ui.web.tree.HtmlLazyTreeRenderer
-      </renderer-type>
-    </component>
-  </tag>
-
   <!-- add other tags here -->
 </facelet-taglib>

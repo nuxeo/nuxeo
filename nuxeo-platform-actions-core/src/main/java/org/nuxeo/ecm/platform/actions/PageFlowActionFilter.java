@@ -22,7 +22,7 @@ package org.nuxeo.ecm.platform.actions;
 import java.util.Collections;
 import java.util.Map;
 
-import org.jboss.seam.core.Pageflow;
+import org.jboss.seam.pageflow.Pageflow;
 import org.jbpm.graph.def.Transition;
 
 /**

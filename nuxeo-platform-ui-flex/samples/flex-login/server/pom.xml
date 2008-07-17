@@ -1,0 +1,111 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-ui-flex-login-parent</artifactId>
+    <version>5.2-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-platform-ui-flex-login</artifactId>
+  <name>Nuxeo Flex Login Server components</name>
+  <description>
+    Nuxeo Enterprise Platform: Flex Login server side components
+  </description>
+
+  <repositories>
+        <repository>
+            <id>repository.jboss.org</id>
+            <url>http://repository.jboss.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-ui-flex-login-swf</artifactId>
+      <version>5.2-SNAPSHOT</version>
+      <type>swf</type>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-ui-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-ui-flex</artifactId>
+      <version>5.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.faces</groupId>
+      <artifactId>jsf-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.faces</groupId>
+      <artifactId>jsf-impl</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <version>1.0.1B</version>
+    </dependency>
+  </dependencies>
+
+ <build>        
+        <plugins>
+            <plugin>
+                <groupId>net.israfil.mojo</groupId>
+                <artifactId>maven-flex2-plugin</artifactId>
+                <executions><execution>
+                        <id>copy-flex</id>
+                        <phase>process-classes</phase>
+                        <goals><goal>copy-flex-applications</goal></goals>
+                        <configuration>
+                            <modules>
+                                <swfModule>
+                                    <groupId>org.nuxeo.ecm.platform</groupId>
+                                    <artifactId>nuxeo-platform-ui-flex-login-swf</artifactId>
+                                    <targetPath>${project.build.directory}/classes/nuxeo.war</targetPath>
+                                    <targetFilename>login.swf</targetFilename>
+                                </swfModule>
+                            </modules>
+                        </configuration>
+                </execution></executions>
+            </plugin>
+	</plugins>
+</build>
+   
+
+</project>
