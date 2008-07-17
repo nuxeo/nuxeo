@@ -1,0 +1,74 @@
+/*
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     bstefanescu
+ *
+ * $Id$
+ */
+
+package org.nuxeo.runtime.binding;
+
+/**
+ * A service provider is responsible to lookup services.
+ *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ *
+ */
+public interface ServiceProvider {
+
+    /**
+     * Attach the provider to a service manager
+     * @param mgr
+     * @throws IllegalStateException if the provider is already attached to a manager
+     */
+    void setManager(ServiceManager mgr);
+
+    /**
+     * Get the service manager on which this provider is attached or null if none
+     * @return the service manager or null if none
+     */
+    ServiceManager getManager();
+
+    /**
+     * The provider is no more needed.
+     * It should release now any system resources
+     */
+    void destroy();
+
+    /**
+     * Get the service instance given its interface class. Returns null if no service is found
+     * <p>
+     * If the lookup succeeds and the provider is attached to a service manager it may use the binding key to
+     * register a service binding on the manager so that the next time the same service is requested
+     * it will be picked up from the manager cache.
+     *
+     * @param serviceClass the interface of the service
+     * @param bindingKey the binding key to use when caching bindings
+     * @return the service instance if any was found or null otherwise
+     */
+    Object getService(Class<?> serviceClass, String bindingKey);
+
+    /**
+     * Same as the {@link #getService(Class, String)} method but accept an additional key parameter
+     * to be used to lookup the service. The key can be used for example to get a specific instance of a
+     * service that implements the given interface
+     *
+     * @param serviceClass the interface of the service to lookup
+     * @param bindingKey the binding key to use to cache bindings
+     * @param key an additional lookup key
+     * @return the service instance if any, null otherwise
+     */
+    Object getService(Class<?> serviceClass, String bindingKey, String key);
+
+}

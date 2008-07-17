@@ -150,9 +150,8 @@ public class RemotingService extends DefaultComponent {
                             new ObjectName(INVOKER_NAME));
                 }
             }
+            serviceBindings = new ServiceBindings(context.getRuntimeContext().getBundle().getBundleContext());
         }
-
-        serviceBindings = new ServiceBindings(context.getRuntimeContext().getBundle().getBundleContext());
     }
 
     public InvokerLocator getServerLocator() {

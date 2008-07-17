@@ -19,6 +19,8 @@
 
 package org.nuxeo.runtime.binding;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -34,6 +36,7 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -54,6 +57,9 @@ public class ServiceBindings implements BundleListener {
 
     public final static Log log = LogFactory.getLog(ServiceBindings.class);
 
+    // static bindings are used to force the binding to an explicit implementation
+    // and it is binding the interface only if it is declared by a bundle in the system
+    protected Properties staticBindings;
     protected BundleContext bundleContext;
     private InitialContext jndiContext;
 
@@ -65,6 +71,7 @@ public class ServiceBindings implements BundleListener {
     public ServiceBindings(BundleContext bundleContext, InitialContext jndContext) {
         this.bundleContext = bundleContext;
         this.bundleContext.addBundleListener(this);
+        this.staticBindings = new Properties();
     }
 
     /**
@@ -80,6 +87,16 @@ public class ServiceBindings implements BundleListener {
         return jndiContext;
     }
 
+    public void createServiceAliases(String itf, String impl) throws NamingException {
+        createAlias(getLocalName(impl), createLocalJndiName(itf));
+        createAlias(getRemoteName(impl), createRemoteJndiName(itf));
+    }
+
+    public void removeServiceAliases(String itf) throws NamingException {
+        removeAlias(createLocalJndiName(itf));
+        removeAlias(createRemoteJndiName(itf));
+    }
+
     public void createAlias(String fromName, String aliasName) throws NamingException {
         createAlias(getInitialContext(), fromName, aliasName);
     }
@@ -92,6 +109,27 @@ public class ServiceBindings implements BundleListener {
         bundleContext.removeBundleListener(this);
     }
 
+    /**
+     * Static bindings can be used to override bindings deployed from JARs
+     * <p>
+     * The static bindings should be put in the configuration directory in the file <code>service.bindings</code>
+     */
+    protected void loadStaticBindings() {
+        Environment env = Environment.getDefault();
+        if (env == null) {
+            log.error("No Environment found. Unable to create service bindings");
+            return;
+        }
+        File config = Environment.getDefault().getConfig();
+        if (config != null) {
+            File cfg = new File(config, "service.bindings");
+            try {
+                staticBindings.load(new FileInputStream(cfg));
+            } catch (Exception e) {
+                // do nothing
+            }
+        }
+    }
 
     public void bundleChanged(BundleEvent event) {
         try {
@@ -101,9 +139,14 @@ public class ServiceBindings implements BundleListener {
                 if (properties != null) {
                     for (Map.Entry<Object,Object> entry : properties.entrySet()) {
                         String itf = entry.getKey().toString();
-                        String impl = entry.getValue().toString();
-                        createAlias(getLocalName(impl), createLocalJndiName(itf));
-                        createAlias(getRemoteName(impl), createRemoteJndiName(itf));
+                        // use preferentially the static bindings
+                        String impl = staticBindings.getProperty(itf);
+                        if (impl == null) {
+                            impl = entry.getValue().toString();
+                        } else {
+                            log.info("Using static binding: "+itf +" -> "+impl);
+                        }
+                        createServiceAliases(itf, impl);
                     }
                 }
                 break;
@@ -112,8 +155,7 @@ public class ServiceBindings implements BundleListener {
                 if (properties != null) {
                     for (Map.Entry<Object,Object> entry : properties.entrySet()) {
                         String itf = entry.getKey().toString();
-                        removeAlias(createLocalJndiName(itf));
-                        removeAlias(createRemoteJndiName(itf));
+                        removeServiceAliases(itf);
                     }
                 }
                 break;
@@ -147,7 +189,11 @@ public class ServiceBindings implements BundleListener {
         return new JndiName("nxservice", name, "remote");
     }
 
-
+    /**
+     * TODO XXX this method is working only on jboss
+     * @param beanClass
+     * @return
+     */
     protected String getRemoteName(String beanClass) {
         String name = null;
         int p = beanClass.lastIndexOf('.');
@@ -159,6 +205,11 @@ public class ServiceBindings implements BundleListener {
         return "nuxeo/"+name+"/remote";
     }
 
+    /**
+     * TODO XXX this method is working only on jboss
+     * @param beanClass
+     * @return
+     */
     protected String getLocalName(String beanClass) {
         String name = null;
         int p = beanClass.lastIndexOf('.');
