@@ -63,6 +63,9 @@ public class ServiceBindings implements BundleListener {
     protected BundleContext bundleContext;
     private InitialContext jndiContext;
 
+    // the bindings that were done: itf ->  impl
+    // this is useful to track duplicated bindings
+    private Properties bindings;
 
     public ServiceBindings(BundleContext ctx) throws NamingException {
         this (ctx, new InitialContext());
@@ -72,6 +75,8 @@ public class ServiceBindings implements BundleListener {
         this.bundleContext = bundleContext;
         this.bundleContext.addBundleListener(this);
         this.staticBindings = new Properties();
+        this.bindings = new Properties();
+        loadStaticBindings();
     }
 
     /**
@@ -90,11 +95,13 @@ public class ServiceBindings implements BundleListener {
     public void createServiceAliases(String itf, String impl) throws NamingException {
         createAlias(getLocalName(impl), createLocalJndiName(itf));
         createAlias(getRemoteName(impl), createRemoteJndiName(itf));
+        bindings.put(itf, impl);
     }
 
-    public void removeServiceAliases(String itf) throws NamingException {
+    public void removeServiceAliases(String itf, String impl) throws NamingException {
         removeAlias(createLocalJndiName(itf));
         removeAlias(createRemoteJndiName(itf));
+        bindings.remove(itf);
     }
 
     public void createAlias(String fromName, String aliasName) throws NamingException {
@@ -139,12 +146,18 @@ public class ServiceBindings implements BundleListener {
                 if (properties != null) {
                     for (Map.Entry<Object,Object> entry : properties.entrySet()) {
                         String itf = entry.getKey().toString();
+                        String impl = entry.getValue().toString();
+                        if (log.isDebugEnabled()) {
+                            String  alreadyImpl = bindings.getProperty(itf);
+                            if (alreadyImpl != null) {
+                                log.warn("Overriding existing service alias for ["+itf +" -> "+ alreadyImpl+"] by "+impl);
+                            }
+                        }
                         // use preferentially the static bindings
-                        String impl = staticBindings.getProperty(itf);
-                        if (impl == null) {
-                            impl = entry.getValue().toString();
-                        } else {
-                            log.info("Using static binding: "+itf +" -> "+impl);
+                        String staticImpl = staticBindings.getProperty(itf);
+                        if (staticImpl != null) {
+                            log.debug("Using static binding: "+itf +" -> "+staticImpl+". Overriding default implementation: "+impl);
+                            impl = staticImpl;
                         }
                         createServiceAliases(itf, impl);
                     }
@@ -155,7 +168,8 @@ public class ServiceBindings implements BundleListener {
                 if (properties != null) {
                     for (Map.Entry<Object,Object> entry : properties.entrySet()) {
                         String itf = entry.getKey().toString();
-                        removeServiceAliases(itf);
+                        String impl = entry.getValue().toString();
+                        removeServiceAliases(itf, impl);
                     }
                 }
                 break;
@@ -250,6 +264,7 @@ public class ServiceBindings implements BundleListener {
               aliasCtx = aliasCtx.createSubcontext(comp);
            }
         }
+
         aliasCtx.rebind(atom, link);
 
         if (log.isDebugEnabled()) {
