@@ -64,6 +64,11 @@ public class Environment {
     protected Properties properties;
     protected String[] args;
 
+    protected boolean isAppServer;
+    protected String hostAppName;
+    protected String hostAppVersion;
+
+
     public Environment(File home) {
         this (home, null);
     }
@@ -79,6 +84,30 @@ public class Environment {
 
     public File getHome() {
         return home;
+    }
+
+    public boolean isApplicationServer() {
+      return isAppServer;
+    }
+
+    public void setIsApplicationServer(boolean isAppServer) {
+        this.isAppServer = isAppServer;
+    }
+
+    public String getHostApplicationName() {
+        return hostAppName;
+    }
+
+    public String getHostApplicationVersion() {
+        return hostAppVersion;
+    }
+
+    public void setHostApplicationName(String name) {
+        this.hostAppName = name;
+    }
+
+    public void setHostApplicationVersion(String version) {
+        this.hostAppVersion = version;
     }
 
     public File getTemp() {
