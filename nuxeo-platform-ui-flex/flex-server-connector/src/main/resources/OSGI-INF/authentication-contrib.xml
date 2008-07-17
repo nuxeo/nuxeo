@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.auth.flex">
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+
+    <authenticationPlugin name="FLEX_AUTH" enabled="true"
+      class="org.nuxeo.ecm.platform.ui.flex.auth.FlexAuthenticationPlugin">
+      <needStartingURLSaving>true</needStartingURLSaving>
+      <parameters>
+        <parameter name="LoginPage">login.swf</parameter>
+        <parameter name="UsernameKey">user_name</parameter>
+        <parameter name="PasswordKey">user_password</parameter>
+      </parameters>
+    </authenticationPlugin>
+   </extension>
+
+</component>

@@ -31,8 +31,8 @@ import javax.servlet.ServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.seam.contexts.Lifecycle;
-import org.jboss.seam.util.Transactions;
+import org.jboss.seam.contexts.FacesLifecycle;
+import org.jboss.seam.transaction.Transaction;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.WrappedException;
@@ -51,10 +51,11 @@ public class NuxeoExceptionFilter implements Filter {
             ServletResponse response, Throwable t) throws IOException,
             ServletException {
 
+        log.error("Uncaught exception",t);
 
         rollbackTransactionIfNecessary();
 
-        if (Lifecycle.getPhaseId() == PhaseId.RENDER_RESPONSE) {
+        if (FacesLifecycle.getPhaseId() == PhaseId.RENDER_RESPONSE) {
             if (response.isCommitted()) {
                 log.error("Uncaught exception, too late to redirect");
                 if (t instanceof ServletException) {
@@ -238,9 +239,9 @@ public class NuxeoExceptionFilter implements Filter {
 
     private static void rollbackTransactionIfNecessary() {
         try {
-            if (Transactions.isTransactionActiveOrMarkedRollback()) {
+            if (Transaction.instance().isActiveOrMarkedRollback()) {
                 log.info("killing transaction");
-                Transactions.getUserTransaction().rollback();
+                Transaction.instance().rollback();
             }
         } catch (Exception te) {
             log.error("could not roll back transaction", te);

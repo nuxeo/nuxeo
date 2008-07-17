@@ -1,0 +1,18 @@
+<component name="org.nuxeo.ecm.platform.actions.flex.browser">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+
+    <action id="flexBrowserSample"
+      link="/flexsamples/browser.swf" enabled="true"
+      label="flex browser sample">
+      <category>FLEX_SAMPLES</category>
+    </action>
+
+  </extension>
+
+
+</component>

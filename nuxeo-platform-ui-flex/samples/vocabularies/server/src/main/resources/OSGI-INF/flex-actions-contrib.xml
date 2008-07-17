@@ -1,0 +1,18 @@
+<component name="org.nuxeo.ecm.platform.actions.flex.voc">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+
+    <action id="flexVocSample"
+      link="/flexsamples/vocabularies.swf" enabled="true"
+      label="flex vocabularies sample">
+      <category>FLEX_SAMPLES</category>
+    </action>
+
+  </extension>
+
+
+</component>
