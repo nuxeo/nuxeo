@@ -37,7 +37,7 @@ import com.sun.facelets.tag.jsf.html.HtmlComponentHandler;
  *
  * <p>
  * Behaves like a {@link HtmlComponentHandler} but issues a deprecation warning
- * when used.
+ * log when used.
  * </p>
  *
  * @author Anahide Tchertchian
@@ -56,7 +56,7 @@ public class DeprecatedComponentHandler extends HtmlComponentHandler {
         if (log.isWarnEnabled()) {
             log.warn("Component '" + c
                     + "' is deprecated and might not work correctly. "
-                    + "Try to use another tag library");
+                    + "Try to use an equivalent tag in another library");
         }
         super.applyNextHandler(ctx, c);
     }

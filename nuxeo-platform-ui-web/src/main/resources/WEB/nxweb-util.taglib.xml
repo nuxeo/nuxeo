@@ -113,9 +113,7 @@
     <function-class>
       org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions
     </function-class>
-    <function-signature>
-      List getCSLData(java.lang.String)
-    </function-signature>
+    <function-signature>List getCSLData(java.lang.String)</function-signature>
   </function>
   <!-- XXX AT: should be in nxdirectory taglib, not util -->
   <function>
@@ -123,9 +121,7 @@
     <function-class>
       org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions
     </function-class>
-    <function-signature>
-      int getListSize(java.lang.String)
-    </function-signature>
+    <function-signature>int getListSize(java.lang.String)</function-signature>
   </function>
   <tag>
     <tag-name>methodResult</tag-name>
@@ -224,14 +220,11 @@
     </component>
   </tag>
 
-  <!-- tomahawk/trinidad tags wrappers -->
+  <!-- tomahawk tags -->
   <tag>
     <tag-name>dataList</tag-name>
     <component>
       <component-type>org.apache.myfaces.HtmlDataList</component-type>
-      <handler-class>
-        org.nuxeo.ecm.platform.ui.web.tag.handler.DeprecatedComponentHandler
-      </handler-class>
     </component>
   </tag>
   <tag>
@@ -239,27 +232,18 @@
     <component>
       <component-type>org.apache.myfaces.HtmlDataTable</component-type>
       <renderer-type>org.apache.myfaces.Table</renderer-type>
-      <handler-class>
-        org.nuxeo.ecm.platform.ui.web.tag.handler.DeprecatedComponentHandler
-      </handler-class>
     </component>
   </tag>
   <tag>
     <tag-name>columns</tag-name>
     <component>
       <component-type>org.apache.myfaces.HtmlColumns</component-type>
-      <handler-class>
-        org.nuxeo.ecm.platform.ui.web.tag.handler.DeprecatedComponentHandler
-      </handler-class>
     </component>
   </tag>
   <tag>
     <tag-name>column</tag-name>
     <component>
       <component-type>org.apache.myfaces.HtmlColumn</component-type>
-      <handler-class>
-        org.nuxeo.ecm.platform.ui.web.tag.handler.DeprecatedComponentHandler
-      </handler-class>
     </component>
   </tag>
   <tag>
@@ -274,9 +258,7 @@
   <tag>
     <tag-name>inputCalendar</tag-name>
     <component>
-      <component-type>
-        org.apache.myfaces.HtmlInputCalendar
-      </component-type>
+      <component-type>org.apache.myfaces.HtmlInputCalendar</component-type>
       <handler-class>
         org.nuxeo.ecm.platform.ui.web.tag.handler.DeprecatedComponentHandler
       </handler-class>
@@ -294,44 +276,26 @@
   <tag>
     <tag-name>graphicImage</tag-name>
     <component>
-      <component-type>
-        org.apache.myfaces.HtmlGraphicImage
-      </component-type>
-      <handler-class>
-        org.nuxeo.ecm.platform.ui.web.tag.handler.DeprecatedComponentHandler
-      </handler-class>
+      <component-type>org.apache.myfaces.HtmlGraphicImage</component-type>
     </component>
   </tag>
   <tag>
     <tag-name>inputFileUpload</tag-name>
     <component>
-      <component-type>
-        org.apache.myfaces.trinidad.CoreInputFile
-      </component-type>
-      <handler-class>
-        org.nuxeo.ecm.platform.ui.web.tag.handler.DeprecatedComponentHandler
-      </handler-class>
+      <component-type>org.apache.myfaces.trinidad.CoreInputFile</component-type>
     </component>
   </tag>
   <tag>
     <tag-name>selectOneRadio</tag-name>
     <component>
-      <component-type>
-        org.apache.myfaces.HtmlSelectOneRadio
-      </component-type>
+      <component-type>org.apache.myfaces.HtmlSelectOneRadio</component-type>
       <renderer-type>org.apache.myfaces.Radio</renderer-type>
-      <handler-class>
-        org.nuxeo.ecm.platform.ui.web.tag.handler.DeprecatedComponentHandler
-      </handler-class>
     </component>
   </tag>
   <tag>
     <tag-name>radio</tag-name>
     <component>
       <component-type>org.apache.myfaces.HtmlRadio</component-type>
-      <handler-class>
-        org.nuxeo.ecm.platform.ui.web.tag.handler.DeprecatedComponentHandler
-      </handler-class>
     </component>
   </tag>
 
