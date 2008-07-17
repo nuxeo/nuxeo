@@ -33,6 +33,7 @@ import org.jboss.system.ListenerServiceMBeanSupport;
 import org.jboss.system.server.Server;
 import org.jboss.system.server.ServerConfig;
 import org.jboss.system.server.ServerConfigLocator;
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.osgi.OSGiAdapter;
@@ -133,10 +134,26 @@ public class JBossOSGiAdapter extends ListenerServiceMBeanSupport implements JBo
         instance = this;
         ServerConfig jbossConfig = ServerConfigLocator.locate();
         File workingDir =  new File(jbossConfig.getServerDataDir(), "NXRuntime");
-        osgi = new OSGiAdapter(workingDir);
         File installDir = FileUtils.getFileFromURL(getEARDeployment().url);
+        File configDir = new File(installDir, "config"); // TODO: must not use a directory from the ear.
+        // initialize the Environment
+        Environment env = new Environment(workingDir);
+        env.setConfig(configDir);
+        env.setLog( jbossConfig.getServerLogDir());
+        env.setTemp(jbossConfig.getServerTempDir());
+        env.setHostApplicationName("JBoss");
+        Package pkg = Package.getPackage("org.jboss");
+        if (pkg == null) {
+            env.setHostApplicationVersion("4.0.5.GA");
+        } else {
+            env.setHostApplicationVersion(pkg.getImplementationVersion());
+        }
+        env.setIsApplicationServer(true);
+        Environment.setDefault(env);
+        // start osgi adapter
+        osgi = new OSGiAdapter(workingDir);
         osgi.setProperty("INSTALL_DIR", installDir.getAbsolutePath());
-        osgi.setProperty("CONFIG_DIR", new File(installDir, "config").getAbsolutePath());
+        osgi.setProperty("CONFIG_DIR", configDir.getAbsolutePath());
         String addr = System.getProperty("jboss.bind.address");
         if (addr != null) {
             osgi.setProperty("nuxeo.bind.address", addr);

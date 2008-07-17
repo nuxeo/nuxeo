@@ -254,6 +254,8 @@ public class StandaloneApplication extends OSGiAdapter {
             if (val != null) {
                 env.setProperty(Environment.BUNDLES, val);
             }
+            env.setHostApplicationName("NXLauncher");
+            env.setHostApplicationVersion("1.0.0");
             env.getData().mkdirs();
             env.getLog().mkdirs();
             env.getTemp().mkdirs();
