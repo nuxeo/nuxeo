@@ -58,7 +58,7 @@
 
   <h:outputText value="#{messages['label.dublincore.title']}" />
   <t:panelGroup colspan="3">
-    <t:inputText value="#{doc.advanced_search.title}" styleClass="dataInputText" />
+    <h:inputText value="#{doc.advanced_search.title}" styleClass="dataInputText" />
   </t:panelGroup>
 
   <h:outputText value="#{messages['label.dublincore.description']}" />
@@ -206,7 +206,7 @@
   <h:selectBooleanCheckbox value="#{deleteActions.searchDeletedDocuments}"
     rendered="#{deleteActions.trashManagementEnabled}" />
   <t:panelGroup colspan="3" rendered="#{deleteActions.trashManagementEnabled}">
-    <t:outputText value="#{messages['label.search.deleted.documents']}" />
+    <h:outputText value="#{messages['label.search.deleted.documents']}" />
   </t:panelGroup>
 </t:panelGrid>
 

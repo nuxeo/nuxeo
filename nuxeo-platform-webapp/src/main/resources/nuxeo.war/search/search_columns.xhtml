@@ -87,7 +87,7 @@
     styleClass="resultColumnsContainer">
 
     <div id="fieldRef:#{field.fullName}" class="cell" style="display: inline">
-      <t:outputText value="#{messages[field.label]}" />
+      <h:outputText value="#{messages[field.label]}" />
      <a4j:commandLink
        reRender="a4j_resultFieldList, result_messages, sortPanelGrid"
        styleClass="button"
