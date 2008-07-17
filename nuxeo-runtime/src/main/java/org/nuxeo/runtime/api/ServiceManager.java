@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public final class ServiceManager {
+public final class ServiceManager implements org.nuxeo.runtime.ServiceManager {
 
     private static final Log log = LogFactory.getLog(ServiceManager.class);
 

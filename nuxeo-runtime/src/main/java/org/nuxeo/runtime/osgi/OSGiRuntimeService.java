@@ -181,7 +181,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     protected void loadConfig() throws Exception {
         Environment env = Environment.getDefault();
-        if (env != null) {
+        // TODO: in JBoss there is a deployer that will deploy nuxeo configuration files ..
+        if (env != null && !"JBoss".equals(env.getHostApplicationName())) {
             File dir = env.getConfig() ;
             if (dir != null) {
                 System.out.println(dir.getAbsolutePath());

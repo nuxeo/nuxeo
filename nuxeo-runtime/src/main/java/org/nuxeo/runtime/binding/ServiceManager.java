@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ServiceManager {
+public class ServiceManager implements org.nuxeo.runtime.ServiceManager {
 
     protected ServiceProvider[] providers;
     protected Map<String, Binding> bindings = new ConcurrentHashMap<String, Binding>();
