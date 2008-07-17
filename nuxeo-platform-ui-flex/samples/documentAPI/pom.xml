@@ -1,0 +1,50 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-parent</artifactId>
+    <version>5.2-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-platform-ui-flex-samples-documentAPI-parent</artifactId>
+  <name>Nuxeo Flex Sample for Document API</name>
+  <packaging>pom</packaging>
+  <description>
+    Nuxeo Enterprise Platform: Flex DocumentAPI sample parent pom
+  </description>
+
+  <repositories>
+        <repository>
+            <id>repository.jboss.org</id>
+            <url>http://repository.jboss.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+   <modules>
+    <module>client</module>
+    <module>server</module>
+   </modules>
+
+  <properties>
+    <nuxeo.platform.flex.sample.version>5.2-SNAPSHOT</nuxeo.platform.flex.sample.version>
+  </properties>
+
+  <!--<dependencies>   
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-ui-flex-samples-documentAPI</artifactId>
+        <version>${nuxeo.platform.flex.sample.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-ui-flex-samples-documentAPI-swf</artifactId>
+        <version>${nuxeo.platform.flex.sample.version}</version>
+      </dependency>
+  </dependencies>-->
+
+</project>
+
