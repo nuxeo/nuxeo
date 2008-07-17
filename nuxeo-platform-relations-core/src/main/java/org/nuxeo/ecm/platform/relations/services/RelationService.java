@@ -42,9 +42,12 @@ import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.descriptors.GraphDescriptor;
 import org.nuxeo.ecm.platform.relations.descriptors.GraphTypeDescriptor;
 import org.nuxeo.ecm.platform.relations.descriptors.ResourceAdapterDescriptor;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 
 /**
  * Relation service.
@@ -55,7 +58,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  */
 public class RelationService extends DefaultComponent implements
-        RelationManager {
+        RelationManager, FrameworkListener {
 
     public static final ComponentName NAME = new ComponentName(
             "org.nuxeo.ecm.platform.relations.services.RelationService");
@@ -437,5 +440,46 @@ public class RelationService extends DefaultComponent implements
             String base) throws ClientException {
         return getGraphByName(graphName).write(out, lang, base);
     }
+
+    public void frameworkEvent(FrameworkEvent event) {
+
+        if (event.getType() == FrameworkEvent.STARTED) {
+
+            ClassLoader jbossCL =  Thread.currentThread().getContextClassLoader();
+            ClassLoader nuxeoCL = RelationService.class.getClassLoader();
+            try
+            {
+                Thread.currentThread().setContextClassLoader(nuxeoCL);
+                log.info("Relation Service initialization");
+
+                for (String graphName : graphDescriptionRegistry.keySet())
+                {
+                    log.info("create RDF Graph " + graphName);
+                    try {
+                        Graph graph = this.getGraphByName(graphName);
+                        graph.size();
+                    } catch (Exception e) {
+                        log.error("Error while initializing graph " + graphName, e);
+                    }
+                }
+            }
+            finally
+            {
+                Thread.currentThread().setContextClassLoader(jbossCL);
+                log.debug("JBoss ClassLoader restored");
+            }
+        }
+    }
+
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        context.getRuntimeContext().getBundle().getBundleContext().addFrameworkListener(this);
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) throws Exception {
+        context.getRuntimeContext().getBundle().getBundleContext().removeFrameworkListener(this);
+    }
+
 
 }
