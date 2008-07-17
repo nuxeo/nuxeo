@@ -23,7 +23,9 @@
                       rowCountVar="rowCount">
           <h:outputText value=" | " rendered="#{row!=(rowCount-1)}"/>
           <nxh:commandLink action="#{action.getLink()}">
-            <t:htmlTag value="br" rendered="#{row==(rowCount-1)}"/>
+            <f:subview rendered="#{row==(rowCount-1)}">
+              <br />
+            </f:subview>
             <h:outputText value="#{messages[action.label]}" />
           </nxh:commandLink>
         </nxu:dataList>

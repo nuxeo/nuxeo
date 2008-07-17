@@ -24,11 +24,9 @@
       <f:attribute name="disabled" value="#{not provider.previousPageAvailable}"/>
     </h:commandButton>
 
-    <t:htmlTag value="span">
-	<!-- Message system seems to evaluate expressions only once :-(
-	have to resort back to a method -->
-        <h:outputText value="#{provider.currentPageStatus}"/>
-    </t:htmlTag>
+    <h:panelGroup styleClass="currentPageStatus">
+      <h:outputText value="#{provider.currentPageStatus}"/>
+    </h:panelGroup>
 
     <h:commandButton action="#{provider.next}"
                      alt="next"
