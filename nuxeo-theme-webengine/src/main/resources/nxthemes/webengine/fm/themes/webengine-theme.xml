@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<theme name="webengine">
+  <layout>
+    <page name="default">
+      <section>
+        <cell>
+          <fragment type="region fragment" />
+        </cell>
+      </section>
+    </page>
+  </layout>
+
+  <properties element="page[1]/section[1]/cell[1]/fragment[1]">
+    <name>content</name>
+    <defaultSrc/>
+    <defaultBody>##This is the content block##</defaultBody>
+  </properties>
+
+  <formats>
+    <layout element="page[1]">
+      <margin>0</margin>
+      <padding>0</padding>
+    </layout>
+    <layout element="page[1]/section[1]">
+      <width>100%</width>
+    </layout>
+    <layout element="page[1]/section[1]/cell[1]">
+      <width>100%</width>
+      <text-align>left</text-align>
+    </layout>
+  
+    <widget element="">
+      <view>theme view</view>
+      <charset>utf-8</charset>
+      <icon>theme-icon.png</icon>
+    </widget>
+
+    <widget element="page[1]">
+      <view>page frame</view>
+    </widget>
+
+    <widget element="page[1]/section[1]">
+      <view>section frame</view>
+    </widget>
+
+    <widget element="page[1]/section[1]/cell[1]">
+      <view>cell frame</view>
+    </widget>
+
+    <widget element="page[1]/section[1]/cell[1]/fragment[1]">
+      <view>block region</view>
+    </widget>
+
+  </formats>
+
+</theme>
