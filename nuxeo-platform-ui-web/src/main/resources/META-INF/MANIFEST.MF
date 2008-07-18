@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo ECM Web Platform Fragment
 Bundle-SymbolicName: org.nuxeo.ecm.platform.ui;singleton:=true
 Require-Bundle: org.nuxeo.ecm.platform.ui.api,
- org.nuxeo.ecm.platform.ui.compat,
  org.nuxeo.ecm.webapp.ui,
  org.nuxeo.ecm.platform.url.api
 Nuxeo-Component: OSGI-INF/authentication-framework.xml,
