@@ -73,8 +73,6 @@ public final class FieldAdapterManager {
             value = getDateAsCalendar((Date) value);
         } else if (value instanceof UploadedFile) {
             value = getTrinidadFileAsBlob((UploadedFile) value);
-        } else if (value instanceof org.apache.myfaces.custom.fileupload.UploadedFile) {
-            value = getTomahawkFileAsBlob((org.apache.myfaces.custom.fileupload.UploadedFile) value);
         } else if (value instanceof Object[]) {
             Object[] array = (Object[]) value;
             Class<?> oldType = array.getClass().getComponentType();
@@ -110,8 +108,7 @@ public final class FieldAdapterManager {
         Class<?> newType = componentType;
         if (componentType.equals(Date.class)) {
             newType = Calendar.class;
-        } else if (componentType.equals(UploadedFile.class)
-                || componentType.equals(org.apache.myfaces.custom.fileupload.UploadedFile.class)) {
+        } else if (componentType.equals(UploadedFile.class)) {
             newType = Blob.class;
         }
         return newType;
@@ -192,24 +189,6 @@ public final class FieldAdapterManager {
                     + e.getMessage());
         }
 
-        return blob;
-    }
-
-    private static Blob getTomahawkFileAsBlob(
-            org.apache.myfaces.custom.fileupload.UploadedFile upFile) {
-        Blob blob = new StreamingBlob(new MyfacesUploadedFileStreamSource(
-                upFile));
-        try {
-            MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
-            String mimeType = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
-                    upFile.getName(), blob, upFile.getContentType());
-            blob.setMimeType(mimeType);
-        } catch (MimetypeDetectionException err) {
-            log.error("could not detect the mimetype for " + upFile.getName());
-        } catch (Exception e) {
-            log.error("Error whil accessible mimetype service "
-                    + e.getMessage());
-        }
         return blob;
     }
 

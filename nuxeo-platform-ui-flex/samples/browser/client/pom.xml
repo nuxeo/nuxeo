@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+               
+   <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-ui-flex-samples-browser-parent</artifactId>
+    <version>5.2-SNAPSHOT</version>
+  </parent>
+ 
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-ui-flex-samples-browser-swf</artifactId>
+    <packaging>swf</packaging>
+    <name>Nuxeo Flex Browser SWF</name>
+    <version>5.2-SNAPSHOT</version>
+    <properties>
+        <flex.home>${env.FLEX_HOME}</flex.home>
+    </properties>
+
+ <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-ui-flex-client-components</artifactId>
+      <version>5.2-SNAPSHOT</version>
+      <type>swc</type>
+    </dependency>
+ </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>net.israfil.mojo</groupId>
+                <artifactId>maven-flex2-plugin</artifactId>
+                <version>1.3</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <flexHome>${flex.home}</flexHome>
+                    <main>client.mxml</main>
+                    <dataServicesConfig>src/main/resources/services-config.xml</dataServicesConfig>
+                    <extraParameters>
+                        <parameter>
+                            <name>compiler.fonts.local-fonts-snapshot</name>
+                            <values><value>${env.FLEX_HOME}/frameworks/localFonts.ser</value></values>
+                        </parameter>
+                    </extraParameters>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    
+</project>

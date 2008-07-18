@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Web Platform Compat Fragment
+Bundle-SymbolicName: org.nuxeo.ecm.platform.ui.compat;singleton:=true
+Require-Bundle: org.nuxeo.ecm.platform.ui

@@ -283,9 +283,6 @@
     <tag-name>inputFileUpload</tag-name>
     <component>
       <component-type>org.apache.myfaces.trinidad.CoreInputFile</component-type>
-      <handler-class>
-        org.apache.myfaces.trinidadinternal.facelets.TrinidadComponentHandler
-      </handler-class>
     </component>
   </tag>
   <tag>
@@ -302,15 +299,4 @@
     </component>
   </tag>
 
-  <tag>
-    <tag-name>lazyTree</tag-name>
-    <component>
-      <component-type>org.apache.myfaces.HtmlTree2</component-type>
-      <renderer-type>
-        org.nuxeo.ecm.platform.ui.web.tree.HtmlLazyTreeRenderer
-      </renderer-type>
-    </component>
-  </tag>
-
-  <!-- add other tags here -->
 </facelet-taglib>
