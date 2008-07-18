@@ -33,7 +33,7 @@
       <artifactId>commons-logging-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>jboss</groupId>
+      <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
       <scope>provided</scope>
     </dependency>
