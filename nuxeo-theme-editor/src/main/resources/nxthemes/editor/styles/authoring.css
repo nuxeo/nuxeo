@@ -1143,6 +1143,7 @@ div.nxthemesUnregisteredWidget {
   font: italic 13px Arial !important;
   margin: 3px !important;
   background: #f9f0f0 !important;
-  opacity: 0.5;
+  opacity: 0.6;
   color: #900;
+  cursor: default;
 }
