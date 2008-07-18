@@ -41,6 +41,7 @@
       <artifact name="nuxeo-platform-relations-web"/>
       <artifact name="nuxeo-platform-types-core"/>
       <artifact name="nuxeo-platform-ui-web"/>
+      <artifact name="nuxeo-platform-ui-web-compat"/>
       <artifact name="nuxeo-platform-userdata" />
       <artifact name="nuxeo-platform-syndication"/>
       <artifact name="nuxeo-platform-workflow-client" />
