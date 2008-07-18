@@ -177,6 +177,10 @@ public class UiManager implements UiManagerLocal {
         public List<ViewType> getViews() {
             return viewTypes;
         }
+
+        public int size() {
+            return viewTypes.size();
+        }
     }
 
     public List<FragmentInfo> getAvailableFragments() {
@@ -189,12 +193,13 @@ public class UiManager implements UiManagerLocal {
             final FragmentInfo fragmentInfo = new FragmentInfo(fragmentType);
             for (ViewType viewType : getViewTypesForFragmentType(fragmentType)) {
                 final String viewTemplateEngine = viewType.getTemplateEngine();
-                if ("*".equals(viewTemplateEngine)
-                        || templateEngine.equals(viewTemplateEngine)) {
+                if (templateEngine.equals(viewTemplateEngine)) {
                     fragmentInfo.addView(viewType);
                 }
             }
-            fragments.add(fragmentInfo);
+            if (fragmentInfo.size() > 0) {
+                fragments.add(fragmentInfo);
+            }
         }
         return fragments;
     }
@@ -708,10 +713,14 @@ public class UiManager implements UiManagerLocal {
         if (!selectedElement.getElementType().getTypeName().equals("fragment")) {
             return selectItemList;
         }
+        final String templateEngine = getTemplateEngine();
         FragmentType fragmentType = ((Fragment) selectedElement).getFragmentType();
         for (ViewType viewType : getViewTypesForFragmentType(fragmentType)) {
-            selectItemList.add(new SelectItem(viewType.getViewName(),
-                    viewType.getViewName()));
+            final String viewName = viewType.getViewName();
+            final String viewTemplateEngine = viewType.getTemplateEngine();
+            if (templateEngine.equals(viewTemplateEngine)) {
+                selectItemList.add(new SelectItem(viewName, viewName));
+            }
         }
         return selectItemList;
     }

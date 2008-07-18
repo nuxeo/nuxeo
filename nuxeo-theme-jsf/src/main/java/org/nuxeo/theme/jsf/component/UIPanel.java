@@ -48,7 +48,12 @@ public class UIPanel extends UIOutput {
     public void encodeAll(final FacesContext context) throws IOException {
         final ResponseWriter writer = context.getResponseWriter();
         Map<String, String> params = new HashMap<String, String>();
-        params.put("org.nuxeo.theme.application.path", context.getExternalContext().getRequestContextPath());
+        String applicationPath = context.getExternalContext().getRequestParameterMap().get(
+                "org.nuxeo.theme.application.path");
+        if (applicationPath == null) {
+            applicationPath = context.getExternalContext().getRequestContextPath();
+        }
+        params.put("org.nuxeo.theme.application.path", applicationPath);
         Map<String, Object> attributes = getAttributes();
         params.put("identifier", (String) attributes.get("identifier"));
         params.put("url", (String) attributes.get("url"));
