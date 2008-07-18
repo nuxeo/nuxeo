@@ -89,7 +89,8 @@ public class JSONModel extends StandaloneFilter {
             model_data.put("copyable", true);
             model_data.put("deletable", true);
             model_data.put("pastable", true);
-            model_data.put("widgets", getWidgetsFor(element));
+            model_data.put("widgets", getWidgetsFor(element,
+                    info.getTemplateEngine().getName()));
             model_data.put("has widget", true);
             model_data.put("has style", true);
         }
@@ -127,7 +128,8 @@ public class JSONModel extends StandaloneFilter {
         return info;
     }
 
-    private static List<Map<String, Object>> getWidgetsFor(final Element element) {
+    private static List<Map<String, Object>> getWidgetsFor(
+            final Element element, final String templateEngine) {
         final List<Map<String, Object>> widgets = new ArrayList<Map<String, Object>>();
         final FragmentType fragmentType = ((Fragment) element).getFragmentType();
         final ModelType modelType = fragmentType.getModelType();
@@ -143,7 +145,17 @@ public class JSONModel extends StandaloneFilter {
         String thisViewName = widget.getName();
 
         for (Type v : Manager.getTypeRegistry().getTypes(TypeFamily.VIEW)) {
-            ViewType viewType = (ViewType) v;
+            final ViewType viewType = (ViewType) v;
+            final String viewName = viewType.getViewName();
+
+            if ("*".equals(viewName)) {
+                continue;
+            }
+
+            // select the current template engine
+            if (!templateEngine.equals(viewType.getTemplateEngine())) {
+                continue;
+            }
 
             // select fragment views
             ElementType elementType = viewType.getElementType();
@@ -160,7 +172,6 @@ public class JSONModel extends StandaloneFilter {
             // match model types
             if (modelType == viewType.getModelType()) {
                 Map<String, Object> widgetInfo = new HashMap<String, Object>();
-                String viewName = viewType.getViewName();
                 widgetInfo.put("choice", viewName);
                 widgetInfo.put("label", viewName);
                 if (thisViewName.equals(viewName)) {
