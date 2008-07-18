@@ -351,6 +351,13 @@
       <format-type>style</format-type>
       <class>org.nuxeo.theme.html.filters.BypassView</class>
     </view>
+    
+    <view template-engine="jsf-facelets">
+      <engine>page-editor</engine>
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <class>org.nuxeo.theme.editor.views.UnregisteredWidget</class>
+    </view>
 
   </extension>
 
@@ -485,6 +492,13 @@
       <class>org.nuxeo.theme.html.filters.BypassView</class>
     </view>
 
+    <view template-engine="freemarker">
+      <engine>page-editor</engine>
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <class>org.nuxeo.theme.editor.views.UnregisteredWidget</class>
+    </view>
+    
   </extension>
 
 

@@ -1136,3 +1136,12 @@ form.nxthemesInheritedStyles button {
 form.nxthemesInheritedStyles button:hover {
   color: #600;
 }
+
+div.nxthemesUnregisteredWidget {
+  border: 1px dotted #900;
+  padding: 7px !important;
+  font: italic 13px Arial !important;
+  margin: 3px !important;
+  background-color: #f9f3f0;
+  color: #900;
+}

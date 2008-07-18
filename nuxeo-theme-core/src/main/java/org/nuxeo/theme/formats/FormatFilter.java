@@ -137,6 +137,13 @@ public class FormatFilter extends AbstractFilter {
             view = getViewFor(formatTypeName, "*", effectiveViewName, "*",
                     engineName, effectiveViewMode, templateEngineName);
         }
+        
+        // fall back to unspecified view name
+        if (view == null && !"*".equals(effectiveViewName)) {
+            view = getViewFor(formatTypeName, elementTypeName, "*",
+                    modelTypeName, engineName, effectiveViewMode,
+                    templateEngineName);
+        }
         return view;
     }
 
