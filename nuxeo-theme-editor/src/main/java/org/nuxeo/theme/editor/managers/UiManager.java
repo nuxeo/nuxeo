@@ -193,7 +193,7 @@ public class UiManager implements UiManagerLocal {
             final FragmentInfo fragmentInfo = new FragmentInfo(fragmentType);
             for (ViewType viewType : getViewTypesForFragmentType(fragmentType)) {
                 final String viewTemplateEngine = viewType.getTemplateEngine();
-                if (templateEngine.equals(viewTemplateEngine)) {
+                if (!"*".equals(viewType.getViewName()) && templateEngine.equals(viewTemplateEngine)) {
                     fragmentInfo.addView(viewType);
                 }
             }
@@ -718,7 +718,7 @@ public class UiManager implements UiManagerLocal {
         for (ViewType viewType : getViewTypesForFragmentType(fragmentType)) {
             final String viewName = viewType.getViewName();
             final String viewTemplateEngine = viewType.getTemplateEngine();
-            if (templateEngine.equals(viewTemplateEngine)) {
+            if (!"*".equals(viewName) && templateEngine.equals(viewTemplateEngine)) {
                 selectItemList.add(new SelectItem(viewName, viewName));
             }
         }
