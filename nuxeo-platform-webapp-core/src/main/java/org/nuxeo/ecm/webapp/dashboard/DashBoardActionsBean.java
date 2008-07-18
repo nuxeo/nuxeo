@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -375,6 +376,9 @@ public class DashBoardActionsBean extends InputController implements
 
     private DocumentModelList getDocumentModelListForIds(Set<String> uuids)
             throws ClientException {
+        if(uuids == null || uuids.isEmpty()) {
+            return new DocumentModelListImpl();
+        }
         StringBuilder coreQuery = new StringBuilder("select * from document ");
         // in is not implemented yet.
         for(String id : uuids) {
