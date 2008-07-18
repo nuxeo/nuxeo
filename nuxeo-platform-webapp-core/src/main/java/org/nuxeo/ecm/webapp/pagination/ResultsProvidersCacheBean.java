@@ -19,10 +19,12 @@
 
 package org.nuxeo.ecm.webapp.pagination;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.io.Serializable;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.event.PhaseId;
@@ -81,7 +83,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache, Seriali
     @In(create = true)
     protected transient ResourcesAccessor resourcesAccessor;
 
-    private transient HashMap<String, PagedDocumentsProvider> resultsProvidersCache;
+    private transient Map<String, PagedDocumentsProvider> resultsProvidersCache;
 
     /**
      * Used to indicate that providers have already been refreshed within this
@@ -89,7 +91,7 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache, Seriali
      */
     @In(required = false)
     @Out(scope = ScopeType.EVENT, required = false)
-    private transient HashSet<String> cleanProviders;
+    private transient Set<String> cleanProviders;
 
     // ----- lifecycle methods ------
     /**
@@ -182,9 +184,9 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache, Seriali
         return provider;
     }
 
-
     /**
-     * Return an empty provider with the expected actual type for given name
+     * Returns an empty provider with the expected actual type for given name.
+     *
      * @param name
      * @return the empty provider
      * @throws ClientException
