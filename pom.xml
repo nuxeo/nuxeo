@@ -307,13 +307,6 @@
         <version>${jboss.version}</version>
         <scope>provided</scope>
       </dependency>
-      <!-- BBB old version for the benefit of dependent poms -->
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-seam</artifactId>
-        <version>2.0.3.CR1-NX</version>
-        <scope>provided</scope>
-      </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam</artifactId>
