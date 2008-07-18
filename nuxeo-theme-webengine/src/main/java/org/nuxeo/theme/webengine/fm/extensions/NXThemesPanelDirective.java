@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
+import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.theme.html.ui.Panel;
 
 import freemarker.core.Environment;
@@ -51,6 +52,11 @@ public class NXThemesPanelDirective implements TemplateDirectiveModel {
         }
 
         Writer writer = env.getOut();
-        writer.write(Panel.render(Utils.getTemplateDirectiveParameters(params)));
+        WebContext context = (WebContext) Utils.getWrappedObject("Context", env);
+
+        Map<String, String> attributes = Utils.getTemplateDirectiveParameters(params);
+        attributes.put("org.nuxeo.theme.application.path", context.getBasePath());
+        
+        writer.write(Panel.render(attributes));
     }
 }

@@ -21,7 +21,7 @@ public class Panel {
 
     public static String render(Map<String, String> params) {
         StringBuilder sb = new StringBuilder();
-
+        
         String identifier = params.get("identifier");
         String url = params.get("url");
         String loading = params.get("loading");
@@ -37,18 +37,21 @@ public class Panel {
         model.put("id", identifier);
         Map<String, Object> data = new HashMap<String, Object>();
 
+        Map<String, Object> form = new HashMap<String, Object>();
         if (url != null) {
             String[] query = url.split("\\?");
             if (query.length > 1) {
-                Map<String, Object> form = new HashMap<String, Object>();
                 for (String param : query[1].split("&")) {
                     String[] kv = param.split("=");
                     form.put(kv[0], kv[1]);
                 }
-                data.put("form", form);
                 url = query[0];
             }
         }
+        // add context information
+        form.put("org.nuxeo.theme.application.path", params.get("org.nuxeo.theme.application.path"));
+        
+        data.put("form", form);
         data.put("url", url);
 
         if (null != loading) {

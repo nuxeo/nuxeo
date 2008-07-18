@@ -945,13 +945,26 @@ public class UiManager implements UiManagerLocal {
     }
 
     /* Private API */
+
+    private String getApplicationPath() {
+        final FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext == null) {
+            return "/nuxeo";
+        }
+        final String applicationPath = facesContext.getExternalContext().getRequestParameterMap().get(
+                "org.nuxeo.theme.application.path");
+        if (applicationPath == null) {
+            return facesContext.getExternalContext().getRequestContextPath();
+        }
+        return applicationPath;
+    }
+
     private String getDefaultTheme() {
         String defaultTheme = "";
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        final String applicationPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
+        final String applicationPath = getApplicationPath();
         final ApplicationType application = (ApplicationType) typeRegistry.lookup(
                 TypeFamily.APPLICATION, applicationPath);
-
         if (application != null) {
             NegotiationDef negotiation = application.getNegotiation();
             if (negotiation != null) {
@@ -963,11 +976,10 @@ public class UiManager implements UiManagerLocal {
 
     private String getTemplateEngine() {
         final TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        final FacesContext facesContext = FacesContext.getCurrentInstance();
-        if (facesContext == null) {
+        final String applicationPath = getApplicationPath();
+        if (applicationPath == null) {
             return ThemeManager.getDefaultTemplateEngineName();
         }
-        final String applicationPath = facesContext.getExternalContext().getRequestContextPath();
         final ApplicationType application = (ApplicationType) typeRegistry.lookup(
                 TypeFamily.APPLICATION, applicationPath);
 
