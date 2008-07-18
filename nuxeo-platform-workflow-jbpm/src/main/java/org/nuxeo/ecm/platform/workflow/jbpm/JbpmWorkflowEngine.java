@@ -388,7 +388,8 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
     }
 
     /**
-     * warning: if 2 variables from 2 different token have the same key one will be overridden.
+     * warning: if 2 variables from 2 different token have the same key one will
+     * be overridden.
      */
     @SuppressWarnings("unchecked")
     public Map<String, Serializable> listProcessInstanceAttributes(String pid) {
@@ -407,8 +408,10 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         } catch (Exception e) {
             log.error(e);
         }
-        for(VariableInstance vi : vis) {
-            if(!(vi instanceof ByteArrayInstance)) {//don't load, it would mean 1 requete to the db by isntance.
+        for (VariableInstance vi : vis) {
+            if (!(vi instanceof ByteArrayInstance)) {// don't load, it would
+                // mean 1 requete to the
+                // db by isntance.
                 props.put(vi.getName(), (Serializable) vi.getValue());
             }
         }
@@ -420,7 +423,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         } catch (Exception e) {
             log.error(e);
         }
-        for(ByteArrayInstance bai : bais) {
+        for (ByteArrayInstance bai : bais) {
             props.put(bai.getName(), (Serializable) bai.getValue());
         }
         ctx.closeContext();
@@ -627,7 +630,9 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
                 ProcessInstance processInstance = (ProcessInstance) object[1];
                 StringInstance creator = (StringInstance) object[2];
                 if (isStateCandidate(taskInstance, state)) {
-                    workItems.add(WAPIGenerator.createWorkItemInstance(taskInstance, processInstance, (String) creator.getValue()));
+                    workItems.add(WAPIGenerator.createWorkItemInstance(
+                            taskInstance, processInstance,
+                            (String) creator.getValue()));
                 }
             }
         }
@@ -635,28 +640,32 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         ctx.closeContext();
         return workItems;
     }
+
     public Collection<WMWorkItemInstance> getWorkItemsFor(
             List<WMParticipant> participants, String state) {
 
         Collection<WMWorkItemInstance> workItems = new ArrayList<WMWorkItemInstance>();
-
+        if (participants == null || participants.isEmpty()) {
+            return workItems;
+        }
         JbpmWorkflowExecutionContext ctx = getExecutionContext();
 
         JbpmContext jctx = ctx.getContext();
         Session session = jctx.getSession();
         List<Object[]> objects = null;
         StringBuilder actorIds = new StringBuilder();
-        for(WMParticipant participant : participants) {
+        for (WMParticipant participant : participants) {
             actorIds.append("'" + participant.getName() + "',");
         }
         actorIds.deleteCharAt(actorIds.length() - 1);
-        String query = "select ti, ti.taskMgmtInstance.processInstance, si " +
-                       "from org.jbpm.taskmgmt.exe.TaskInstance as ti, " +
-                       "org.jbpm.context.exe.variableinstance.StringInstance si " +
-                       "where ti.actorId in (" + actorIds + ") " +
-                       "and ti.taskMgmtInstance.processInstance = si.processInstance " +
-                       "and ti.end is null " +
-                       "and si.name = 'author'";
+        String query = "select ti, ti.taskMgmtInstance.processInstance, si "
+                + "from org.jbpm.taskmgmt.exe.TaskInstance as ti, "
+                + "org.jbpm.context.exe.variableinstance.StringInstance si "
+                + "where ti.actorId in ("
+                + actorIds
+                + ") "
+                + "and ti.taskMgmtInstance.processInstance = si.processInstance "
+                + "and ti.end is null " + "and si.name = 'author'";
         try {
             objects = session.createQuery(query).list();
         } catch (Exception e) {
@@ -668,7 +677,9 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
                 ProcessInstance processInstance = (ProcessInstance) object[1];
                 StringInstance creator = (StringInstance) object[2];
                 if (isStateCandidate(taskInstance, state)) {
-                    workItems.add(WAPIGenerator.createWorkItemInstance(taskInstance, processInstance, (String) creator.getValue()));
+                    workItems.add(WAPIGenerator.createWorkItemInstance(
+                            taskInstance, processInstance,
+                            (String) creator.getValue()));
                 }
             }
         }
@@ -676,6 +687,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         ctx.closeContext();
         return workItems;
     }
+
     public Collection<WMWorkItemInstance> getWorkItemsFor(
             String workflowInstanceId, String state, WMParticipant participant) {
 
@@ -1433,22 +1445,26 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
     @SuppressWarnings("unchecked")
     public Collection<WMProcessInstance> listProcessInstanceForCreators(
             List<String> groupNames) {
+        List<WMProcessInstance> processes = new ArrayList<WMProcessInstance>();
+        if (groupNames == null || groupNames.isEmpty()) {
+            return processes;
+        }
         JbpmWorkflowExecutionContext ctx = getExecutionContext();
         Session session = ctx.getContext().getSession();
         StringBuilder values = new StringBuilder();
-        for(String group : groupNames) {
+        for (String group : groupNames) {
             values.append("'" + group + "',");
         }
         values.deleteCharAt(values.length() - 1);
-        String query = "select si.processInstance, si.value " +
-        		"from org.jbpm.context.exe.variableinstance.StringInstance si " +
-        		"where si.name = '" + WorkflowConstants.WORKFLOW_CREATOR + "' " +
-        	    "and si.value in (" + values + ") " +
-        	    "and si.processInstance.end is null ";
+        String query = "select si.processInstance, si.value "
+                + "from org.jbpm.context.exe.variableinstance.StringInstance si "
+                + "where si.name = '" + WorkflowConstants.WORKFLOW_CREATOR
+                + "' " + "and si.value in (" + values + ") "
+                + "and si.processInstance.end is null ";
         List<Object[]> list = session.createQuery(query).list();
-        List<WMProcessInstance> processes = new ArrayList<WMProcessInstance>();
-        for(Object[] objects : list) {
-            processes.add(WAPIGenerator.createProcessInstance((ProcessInstance) objects[0], (String) objects[1]));
+        for (Object[] objects : list) {
+            processes.add(WAPIGenerator.createProcessInstance(
+                    (ProcessInstance) objects[0], (String) objects[1]));
         }
         ctx.closeContext();
         return processes;
