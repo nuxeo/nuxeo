@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -395,7 +396,9 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
     public Map<String, Serializable> listProcessInstanceAttributes(String pid) {
 
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-
+        if(pid == null) {
+            return props;
+        }
         JbpmWorkflowExecutionContext ctx = getExecutionContext();
 
         JbpmContext jctx = ctx.getContext();
@@ -407,6 +410,9 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
             vis = query.list();
         } catch (Exception e) {
             log.error(e);
+        }
+        if(vis == null || vis.isEmpty()) {
+            return props;
         }
         for (VariableInstance vi : vis) {
             if (!(vi instanceof ByteArrayInstance)) {// don't load, it would

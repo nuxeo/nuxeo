@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.workflow.document.ejb;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +85,9 @@ public class WorkflowDocumentRelationBean implements
     @SuppressWarnings("unchecked")
     public Map<String, List<String>> getDocumentModelsPids(
             Set<String> pids) {
+        if(pids == null || pids.isEmpty()) {
+            return Collections.EMPTY_MAP;
+        }
         StringBuilder query = new StringBuilder("select wi from WorkflowInstanceRefEntry as wi ");
         query.append(" left join fetch wi.documentRefs ");
         query.append("where wi.workflowInstanceId in (");
