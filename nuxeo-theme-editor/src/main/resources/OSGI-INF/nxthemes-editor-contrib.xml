@@ -502,7 +502,6 @@
   </extension>
 
 
-
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="engines">
 

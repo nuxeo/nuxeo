@@ -75,9 +75,9 @@ public class FormatFilter extends AbstractFilter {
 
         if (view == null) {
             log.warn(String.format(
-                    "No %s view with name '%s' found for %s element",
+                    "No %s view with name '%s' found for %s element (theme URL is: %s)",
                     formatType.getTypeName(), format.getName(),
-                    elementType.getTypeName()));
+                    elementType.getTypeName(), info.getThemeUrl().toString()));
         } else {
 
             final String markup = view.render(info);
@@ -137,11 +137,11 @@ public class FormatFilter extends AbstractFilter {
             view = getViewFor(formatTypeName, "*", effectiveViewName, "*",
                     engineName, effectiveViewMode, templateEngineName);
         }
-        
-        // fall back to unspecified view name
+
+        // fall back to unspecified view name and unspecified model type
         if (view == null && !"*".equals(effectiveViewName)) {
             view = getViewFor(formatTypeName, elementTypeName, "*",
-                    modelTypeName, engineName, effectiveViewMode,
+                    "*", engineName, effectiveViewMode,
                     templateEngineName);
         }
         return view;
@@ -172,7 +172,7 @@ public class FormatFilter extends AbstractFilter {
                             viewName, modelTypeName, "default", "*",
                             templateEngineName));
         }
-        
+
         return viewType == null ? null : viewType.getView();
     }
 }
