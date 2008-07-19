@@ -95,7 +95,7 @@
       <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>region</model-type>
-      <icon>/nuxeo/nxthemes/webengine/fm/icons/block-region.png</icon>
+      <icon>/nuxeo/nxthemes/icons/block-region.png</icon>
       <class>
         org.nuxeo.theme.webengine.fm.filters.widgets.BlockRegionView
       </class>

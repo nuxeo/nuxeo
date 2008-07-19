@@ -11,4 +11,12 @@
 
   </extension>
 
+  <install>
+
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+
+  </install>
+
 </fragment>
