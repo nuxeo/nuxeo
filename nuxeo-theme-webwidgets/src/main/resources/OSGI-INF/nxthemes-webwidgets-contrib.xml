@@ -107,6 +107,7 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="views">
 
+    <!-- JSF/Facelets -->
     <view name="web widget panel" template-engine="jsf-facelets">
       <element-type>fragment</element-type>
       <format-type>widget</format-type>
@@ -120,7 +121,7 @@
       <mode>web-widgets</mode>
       <element-type>theme</element-type>
       <format-type>widget</format-type>
-      <template>nxthemes/webwidgets/widgets/theme-view.xml</template>
+      <template>nxthemes/webwidgets/widgets/jsf/theme-view.xml</template>
       <resource>nxthemes-webwidgets-edit.js</resource>
       <resource>nxthemes-webwidgets-edit.css</resource>
     </view>
@@ -130,7 +131,35 @@
       <element-type>page</element-type>
       <format-type>widget</format-type>
       <template>
-        nxthemes/webwidgets/widgets/page-frame.xml
+        nxthemes/webwidgets/widgets/jsf/page-frame.xml
+      </template>
+    </view>
+    
+    <!-- Freemarker -->
+    <view name="web widget panel" template-engine="freemarker">
+      <element-type>fragment</element-type>
+      <format-type>widget</format-type>
+      <model-type>web widget region</model-type>
+      <icon>/nuxeo/nxthemes-web-widgets/icons/panel.png</icon>
+      <class>org.nuxeo.theme.webwidgets.PanelView</class>
+      <resource>nxthemes-webwidgets-view.js</resource>
+    </view>
+
+    <view name="theme view" template-engine="freemarker">
+      <mode>web-widgets</mode>
+      <element-type>theme</element-type>
+      <format-type>widget</format-type>
+      <template>nxthemes/webwidgets/widgets/fm/theme-view.xml</template>
+      <resource>nxthemes-webwidgets-edit.js</resource>
+      <resource>nxthemes-webwidgets-edit.css</resource>
+    </view>
+
+    <view name="page frame" template-engine="freemarker">
+      <mode>web-widgets</mode>
+      <element-type>page</element-type>
+      <format-type>widget</format-type>
+      <template>
+        nxthemes/webwidgets/widgets/fm/page-frame.xml
       </template>
     </view>
 
