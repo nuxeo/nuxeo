@@ -71,16 +71,10 @@ public class WebApplicationDescriptor extends ExtensibleContribution {
         return contributionId;
     }
 
-    /**
-     * @return the repositoryName.
-     */
     public String getRepositoryName() {
         return repositoryName;
     }
 
-    /**
-     * @param repositoryName the repositoryName to set.
-     */
     public void setRepositoryName(String repositoryName) {
         this.repositoryName = repositoryName;
     }
@@ -125,7 +119,7 @@ public class WebApplicationDescriptor extends ExtensibleContribution {
         return roots;
     }
 
-    public void setRoots(ArrayList<RootDescriptor> descriptors) {
+    public void setRoots(List<RootDescriptor> descriptors) {
         roots = descriptors;
     }
 
@@ -181,13 +175,13 @@ public class WebApplicationDescriptor extends ExtensibleContribution {
 
     @Override
     public void install(ManagedComponent comp, Contribution contrib) throws Exception {
-        WebEngine engine = ((WebEngineComponent)comp).getEngine();
-        engine.registerApplication((WebApplicationDescriptor)contrib);
+        WebEngine engine = ((WebEngineComponent) comp).getEngine();
+        engine.registerApplication((WebApplicationDescriptor) contrib);
     }
 
     @Override
     public void uninstall(ManagedComponent comp, Contribution contrib) throws Exception {
-        WebEngine engine = ((WebEngineComponent)comp).getEngine();
+        WebEngine engine = ((WebEngineComponent) comp).getEngine();
         engine.unregisterApplication(contrib.getContributionId());
     }
 

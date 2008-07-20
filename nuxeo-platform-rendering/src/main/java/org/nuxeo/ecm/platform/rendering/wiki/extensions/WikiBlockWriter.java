@@ -33,10 +33,10 @@ import org.nuxeo.ecm.platform.rendering.wiki.WikiWriter;
  */
 public class WikiBlockWriter extends WikiWriter {
 
-    protected String blockName;
+    protected final String blockName;
 
     public WikiBlockWriter(WikiWriter parent, String blockName) {
-        super (parent);
+        super(parent);
         this.blockName = blockName;
     }
 

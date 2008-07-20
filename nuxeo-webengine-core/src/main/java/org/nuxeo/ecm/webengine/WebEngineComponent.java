@@ -123,13 +123,10 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
         super.deactivate(context);
     }
 
-    private static void deployWebDir(Bundle bundle, File root) throws URISyntaxException, IOException {
+    private static void deployWebDir(Bundle bundle, File root) throws IOException {
         Installer.copyResources(bundle, "web", root);
     }
 
-    /**
-     * @return the engine.
-     */
     public WebEngine getEngine() {
         return engine;
     }

@@ -128,7 +128,6 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
         }
     }
 
-
     protected void parse(String expr) throws ParseException {
         OpStack stack = new OpStack();
         List<Token> result = new ArrayList<Token>();
@@ -176,11 +175,6 @@ public class PostfixExpression implements Iterable<PostfixExpression.Token> {
             result.add(stack.pop());
         }
         this.expr = result.toArray(new Token[result.size()]);
-    }
-
-
-    public static void main(String[] args) {
-
     }
 
 }

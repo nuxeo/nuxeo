@@ -64,12 +64,13 @@ import org.python.core.PyDictionary;
  */
 public class DefaultWebContext implements WebContext {
 
-    private static final Log log = LogFactory.getLog(WebContext.class);
-
     public static final String CORESESSION_KEY = "SiteCoreSession";
 
     public static boolean USE_CORE_SEARCH = false;
+
     private static CoreSession anonymousSession; //TODO: this should be relative to the web app
+
+    private static final Log log = LogFactory.getLog(WebContext.class);
 
     protected final WebEngine engine;
     protected CoreSession session;
@@ -123,7 +124,7 @@ public class DefaultWebContext implements WebContext {
             return;
         }
         CoreSession session = getCoreSession();
-        DocumentModel doc =  null;
+        DocumentModel doc;
         try {
             doc = session.getDocument(documentRoot);
         } catch (Exception e) {
@@ -468,9 +469,6 @@ public class DefaultWebContext implements WebContext {
         response.getWriter().write(text);
     }
 
-    /**
-     * @return the log.
-     */
     public Log getLog() {
         return DefaultWebContext.log;
     }

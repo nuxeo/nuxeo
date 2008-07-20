@@ -9,7 +9,7 @@ class Permission {
     String name
     boolean granted
     String permission
-    
+
     Permission(String name, String permission, boolean granted) {
         this.name = name
         this.permission = permission
@@ -22,7 +22,7 @@ acp = Context.coreSession.getACP(Context.targetDocument.ref);
 permissions = []
 for (acl in acp.getACLs()) {
     for (ace in acl.getACEs()) {
-        permissions.add(new Permission(ace.getUsername(), ace.getPermission(), ace.isGranted()))
+        permissions.add(new Permission(ace.username, ace.permission, ace.isGranted()))
     }
 }
 

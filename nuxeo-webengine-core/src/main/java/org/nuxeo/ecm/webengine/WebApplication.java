@@ -54,7 +54,7 @@ public interface WebApplication extends ResourceLocator {
 
     String getDefaultPage();
 
-    void setDefaultPage(String page);
+    void setDefaultPage(String defaultPage);
 
     ScriptFile getFile(String path)  throws IOException;
 
@@ -71,4 +71,5 @@ public interface WebApplication extends ResourceLocator {
     String getRepositoryName();
 
     void setRepositoryName(String repositoryName);
+
 }

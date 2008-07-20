@@ -34,7 +34,8 @@ public class NewMethod implements TemplateMethodModelEx {
     public Object exec(List arguments) throws TemplateModelException {
         int size = arguments.size();
         if (size < 1) {
-            throw new TemplateModelException("Invalid number of arguments for new(class, ...) method");
+            throw new TemplateModelException(
+                    "Invalid number of arguments for new(class, ...) method");
         }
 
         Class<?> klass;

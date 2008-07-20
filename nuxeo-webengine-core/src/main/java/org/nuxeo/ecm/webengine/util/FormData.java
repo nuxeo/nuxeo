@@ -65,7 +65,7 @@ public class FormData {
 
     protected static ServletFileUpload fu = new ServletFileUpload(new DiskFileItemFactory());
 
-    protected HttpServletRequest request;
+    protected final HttpServletRequest request;
     protected boolean isMultipart = false;
     protected RequestContext ctx;
 

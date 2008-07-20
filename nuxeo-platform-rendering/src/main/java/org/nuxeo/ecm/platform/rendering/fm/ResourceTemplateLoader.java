@@ -39,8 +39,8 @@ import freemarker.cache.URLTemplateLoader;
 public class ResourceTemplateLoader implements TemplateLoader {
 
     protected ResourceLocator locator;
-    protected MyURLTemplateLoader urlLoader;
-    protected MyFileTemplateLoader fileLoader;
+    protected final MyURLTemplateLoader urlLoader;
+    protected final MyFileTemplateLoader fileLoader;
 
 
     public ResourceTemplateLoader(ResourceLocator locator) {
@@ -49,16 +49,10 @@ public class ResourceTemplateLoader implements TemplateLoader {
         fileLoader = new MyFileTemplateLoader();
     }
 
-    /**
-     * @param locator the locator to set.
-     */
     public void setLocator(ResourceLocator locator) {
         this.locator = locator;
     }
 
-    /**
-     * @return the locator.
-     */
     public ResourceLocator getLocator() {
         return locator;
     }

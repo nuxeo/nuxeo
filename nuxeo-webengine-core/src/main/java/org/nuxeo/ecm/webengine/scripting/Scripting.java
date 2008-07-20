@@ -58,7 +58,7 @@ public class Scripting {
 
     private final ConcurrentMap<File, Entry> cache = new ConcurrentHashMap<File, Entry>();
 
-    protected ScriptEngineManager scriptMgr = new ScriptEngineManager();
+    protected final ScriptEngineManager scriptMgr = new ScriptEngineManager();
 
     public Scripting() {
     }

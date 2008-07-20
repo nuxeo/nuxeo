@@ -30,10 +30,10 @@ import javax.servlet.http.HttpServletRequestWrapper;
  */
 public class WebEngineRequestWrapper extends HttpServletRequestWrapper {
 
-    UserSession userSession;
+    final UserSession userSession;
 
     public WebEngineRequestWrapper(HttpServletRequest request, UserSession userSession) {
-        super (request);
+        super(request);
         this.userSession = userSession;
     }
 

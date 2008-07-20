@@ -94,7 +94,7 @@ public class BlockWriter extends Writer {
         }
     }
 
-    public void writeBlock(BlockWriter bw) throws IOException {
+    public void writeBlock(BlockWriter bw) {
         if (!suppressOutput) {
             segments.add(buf.toString()); // add the current buffer to the segments list
             buf.setLength(0); // reset buffer
@@ -103,7 +103,7 @@ public class BlockWriter extends Writer {
         reg.addBlock(bw.name, bw); // inform the container about the new block
     }
 
-    public void writeSuperBlock() throws IOException {
+    public void writeSuperBlock() {
         if (!suppressOutput) {
             segments.add(buf.toString()); // add the current buffer to the segments list
             buf.setLength(0); // reset buffer

@@ -8,12 +8,12 @@ def pw = new PrintWriter(buf)
 error.printStackTrace(pw)
 pw.close()
 def stacktrace = buf.toString()
-def args = ['error' : error, 'stacktrace' : stacktrace]
+def args = ['error': error, 'stacktrace': stacktrace]
 
 // locate template directory
 def setErrorStatus = false // do not send error status when in client sub contexts  it may break ajax calls like for example for jquery tabs
 def prefix
-if (Context.getClientContext() != null) {
+if (Context.clientContext != null) {
   prefix = "include/page"
 } else {
   prefix = "include"

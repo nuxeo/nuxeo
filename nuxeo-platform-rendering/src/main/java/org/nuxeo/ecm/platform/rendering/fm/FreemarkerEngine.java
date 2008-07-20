@@ -98,9 +98,6 @@ public class FreemarkerEngine implements RenderingEngine {
         return this.loader.getLocator();
     }
 
-    /**
-     * @return the loader.
-     */
     public ResourceTemplateLoader getLoader() {
         return loader;
     }

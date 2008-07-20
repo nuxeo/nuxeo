@@ -69,7 +69,7 @@ public class WebObject implements Adaptable {
         return null;
     }
 
-    public final Collection<ActionDescriptor> getActions() throws WebException {
+    public final Collection<ActionDescriptor> getActions() {
         WebObjectDescriptor desc = getDescriptor();
         if (desc != null) {
             return desc.getEnabledActions(this);
@@ -77,7 +77,7 @@ public class WebObject implements Adaptable {
         return null;
     }
 
-    public final Collection<ActionDescriptor> getActions(String category) throws WebException {
+    public final Collection<ActionDescriptor> getActions(String category) {
         WebObjectDescriptor desc = getDescriptor();
         if (desc != null) {
             return desc.getEnabledActions(this, category);
@@ -85,7 +85,7 @@ public class WebObject implements Adaptable {
         return null;
     }
 
-    public final Map<String, Collection<ActionDescriptor>> getActionsByCategory() throws WebException {
+    public final Map<String, Collection<ActionDescriptor>> getActionsByCategory() {
         WebObjectDescriptor desc = getDescriptor();
         if (desc != null) {
             return desc.getEnabledActionsByCategory(this);
@@ -116,9 +116,6 @@ public class WebObject implements Adaptable {
         return null;
     }
 
-    /**
-     * @return the request.
-     */
     public WebContext getWebContext() {
         return context;
     }

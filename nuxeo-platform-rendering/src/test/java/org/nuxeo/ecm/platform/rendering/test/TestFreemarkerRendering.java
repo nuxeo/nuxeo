@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
@@ -49,7 +50,8 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
     public static void initSchemaManager() throws Exception {
         SchemaManagerImpl mgr = new SchemaManagerImpl();
         XSDLoader loader = new XSDLoader(mgr);
-        loader.loadSchema("dublincore", "dc", TestFreemarkerRendering.class.getClassLoader().getResource("mySchema.xsd"));
+        loader.loadSchema("dublincore", "dc",
+                TestFreemarkerRendering.class.getClassLoader().getResource("mySchema.xsd"));
         // set a custom service provider to be able to lookup services without loading the framework
         DefaultServiceProvider provider = new DefaultServiceProvider();
         provider.registerService(SchemaManager.class, mgr);
@@ -65,8 +67,10 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         engine.setResourceLocator(new MyResourceLocator());
 
         WikiTransformer tr = new WikiTransformer();
-        tr.getSerializer().addFilter(new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
-        tr.getSerializer().addFilter(new PatternFilter("NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
+        tr.getSerializer().addFilter(
+                new PatternFilter("[A-Z]+[a-z]+[A-Z][A-Za-z]*", "<link>$0</link>"));
+        tr.getSerializer().addFilter(
+                new PatternFilter("NXP-[0-9]+", "<a href=\"http://jira.nuxeo.org/browse/$0\">$0</a>"));
         tr.getSerializer().registerMacro(new FreemarkerMacro());
         engine.setSharedVariable("wiki", tr);
     }
@@ -74,9 +78,11 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
     public void testRendering() throws Exception {
         final DocumentModelImpl doc1 = new DocumentModelImpl("/root/folder/wiki1", "Test Doc 1", "File");
         doc1.addDataModel(new DataModelImpl("dublincore"));
-        doc1.getPart("dublincore").get("title").setValue("The dublincore title for doc1");
-        doc1.getPart("dublincore").get("description").setValue("A descripton *with* wiki code and a WikiName");
-        Blob blob = new StreamingBlob(new URLSource(TestFreemarkerRendering.class.getClassLoader().getResource("blob.wiki")));
+        DocumentPart documentPart = doc1.getPart("dublincore");
+        documentPart.get("title").setValue("The dublincore title for doc1");
+        documentPart.get("description").setValue("A descripton *with* wiki code and a WikiName");
+        Blob blob = new StreamingBlob(
+                new URLSource(TestFreemarkerRendering.class.getClassLoader().getResource("blob.wiki")));
         doc1.getPart("dublincore").get("content").setValue(blob);
 
         DocumentModelImpl doc2 = new DocumentModelImpl("/root/folder/wiki2", "Test Doc 2", "File");
@@ -92,12 +98,11 @@ public class TestFreemarkerRendering extends NXRuntimeTestCase {
         double s = System.currentTimeMillis();
         engine.render("c.ftl", input, writer);
         double e = System.currentTimeMillis();
-        System.out.println("###############################");
+
         System.out.println(writer.getBuffer());
-        System.out.println("###############################");
         System.out.println(">>>>>>>>>> RENDERING TOOK: "+((e-s)/1000));
-        System.out.println("###############################");
         System.out.flush();
+
         for (int i=0; i<1; i++) {
             writer = new StringWriter();
             s = System.currentTimeMillis();

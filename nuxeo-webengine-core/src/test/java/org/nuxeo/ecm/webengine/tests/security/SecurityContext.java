@@ -32,8 +32,8 @@ import org.nuxeo.runtime.model.Adaptable;
  */
 public class SecurityContext implements Adaptable {
 
-    protected CoreSession session;
-    protected DocumentModel doc;
+    protected final CoreSession session;
+    protected final DocumentModel doc;
 
     public SecurityContext(CoreSession session, DocumentModel doc) {
         this.session = session;

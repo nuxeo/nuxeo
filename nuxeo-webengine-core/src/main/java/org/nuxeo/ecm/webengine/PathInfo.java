@@ -33,21 +33,13 @@ public class PathInfo {
     public static final Path ROOT_PATH = new Path("/");
 
     protected DocumentRef document; // the root document if any
-    protected Path path; // original path (without action)
-    protected Path applicationPath; // the application path
+    protected final Path path; // original path (without action)
+    protected final Path applicationPath; // the application path
     protected Path traversalPath; // original path - application path
     protected Path trailingPath = EMPTY_PATH; // trailing segments that were not traversed
     protected String action;
     protected String script;
     protected Attributes attrs;
-
-    public PathInfo(Path path) {
-        this (path, ROOT_PATH, Attributes.EMPTY_ATTRS);
-    }
-
-    public PathInfo(Path path, Path applicationPath) {
-        this (path, applicationPath, Attributes.EMPTY_ATTRS);
-    }
 
     public PathInfo(Path path, Path applicationPath, Attributes attrs) {
         this.path = path;
@@ -62,93 +54,65 @@ public class PathInfo {
         setAttributes(attrs);
     }
 
-    /**
-     * @return the applicationPath.
-     */
+    public PathInfo(Path path) {
+        this(path, ROOT_PATH, Attributes.EMPTY_ATTRS);
+    }
+
+    public PathInfo(Path path, Path applicationPath) {
+        this(path, applicationPath, Attributes.EMPTY_ATTRS);
+    }
+
     public Path getApplicationPath() {
         return applicationPath;
     }
 
-    /**
-     * @param attrs the attrs to set.
-     */
     public void setAttributes(Attributes attrs) {
         this.attrs = attrs == null ? Attributes.EMPTY_ATTRS : attrs;
     }
 
-    /**
-     * @return the path.
-     */
     public Path getPath() {
         return path;
     }
 
-    /**
-     * @param trailingPath the trailingPath to set.
-     */
     public void setTrailingPath(Path trailingPath) {
         this.trailingPath = trailingPath == null ? EMPTY_PATH : trailingPath.makeAbsolute();
     }
 
-    /**
-     * @return the trailingPath.
-     */
     public Path getTrailingPath() {
         return trailingPath;
     }
 
-    /**
-     * @return the traversalPath.
-     */
     public Path getTraversalPath() {
         return traversalPath;
     }
 
-    /**
-     * @param script the script to set.
-     */
     public void setScript(String script) {
         this.script = script;
     }
 
-    /**
-     * @return the script.
-     */
     public String getScript() {
         return script;
     }
 
-    /**
-     * @param action the action to set.
-     */
     public void setAction(String action) {
         this.action = action;
     }
 
-    /**
-     * @return the action.
-     */
     public String getAction() {
         return action;
     }
 
-    /**
-     * @param root the root to set.
-     */
     public void setDocument(DocumentRef root) {
         this.document = root;
     }
 
-    /**
-     * @return the root.
-     */
     public DocumentRef getDocument() {
         return document;
     }
 
     /**
      * Tests whether this path info has a traversal path
-     * (i.e. the traversal path contains at least one segment)
+     * (i.e. the traversal path contains at least one segment).
      * @return
      */
     public boolean hasTraversalPath() {
@@ -156,8 +120,9 @@ public class PathInfo {
     }
 
     /**
-     * Tests whether this path info has a traversal path
-     * (i.e. the trailing path contains at least one segment)
+     * Tests whether this path info has a trailing path
+     * (i.e. the trailing path contains at least one segment).
+     *
      * @return
      */
     public boolean hasTrailingPath() {
@@ -166,7 +131,8 @@ public class PathInfo {
 
 
     /**
-     * This pathInfo is empty (input path is either null, "" or "/")
+     * Tests whether pathInfo is empty (input path is either null, "" or "/").
+     *
      * @return true if this path info is empty false otherwise
      */
     public boolean isEmpty() {
@@ -175,16 +141,14 @@ public class PathInfo {
 
     /**
      * Tests whether this path info specify a document mapping
-     * (i.e. the root property is a non empty string)
+     * (i.e. the root property is a non empty string).
+     *
      * @return
      */
     public boolean hasDocumentMapping() {
         return document != null;
     }
 
-    /**
-     * @return the attrs.
-     */
     public Attributes getAttributes() {
         return attrs;
     }

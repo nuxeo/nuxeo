@@ -89,11 +89,11 @@ public class PermissionService implements PostfixExpression.Visitor {
     public Object createOperation(Token token, Object lparam, Object rparam) {
         switch (token.type) {
         case PostfixExpression.AND:
-            return new And((Guard)lparam, (Guard)rparam);
+            return new And((Guard) lparam, (Guard) rparam);
         case PostfixExpression.OR:
-            return new Or((Guard)lparam, (Guard)rparam);
+            return new Or((Guard) lparam, (Guard) rparam);
         case PostfixExpression.NOT:
-            return new Not((Guard)lparam);
+            return new Not((Guard) lparam);
         }
         throw new IllegalStateException("Supported ops are: AND, OR and NOT");
     }

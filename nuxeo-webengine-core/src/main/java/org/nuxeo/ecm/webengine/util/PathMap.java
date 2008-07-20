@@ -33,7 +33,7 @@ import org.nuxeo.common.utils.Path;
  */
 public class PathMap<T> {
 
-    protected Entry<T> root;
+    protected final Entry<T> root;
 
     public PathMap() {
         root = new Entry<T>();

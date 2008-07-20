@@ -37,13 +37,11 @@ public class FakeSession implements HttpSession {
 
     static final Random RANDOM = new Random();
 
-    private Map<String,Object> attrs;
-    private String sid;
-    private long ctime = System.currentTimeMillis();
+    private final Map<String,Object> attrs;
+    private final String sid;
+    private final long ctime = System.currentTimeMillis();
 
-    /**
-     *
-     */
+
     public FakeSession() {
         long id = RANDOM.nextLong();
         sid = Long.toHexString(id);

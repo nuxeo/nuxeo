@@ -69,18 +69,18 @@ public class UserSession implements Serializable, HttpSessionBindingListener {
         return anonymous;
     }
 
-    protected Subject subject;
-    protected Principal principal;
-    protected Object credentials;
+    protected final Subject subject;
+    protected final Principal principal;
+    protected final Object credentials;
 
     protected transient CoreSession coreSession;
 
     public UserSession(Principal principal) {
-        this (principal, null);
+        this(principal, null);
     }
 
     public UserSession(Principal principal, String password) {
-        this (principal, password == null ? new char[0] : password.toCharArray());
+        this(principal, password == null ? new char[0] : password.toCharArray());
     }
 
     public UserSession(Principal principal, Object credentials) {
@@ -94,16 +94,10 @@ public class UserSession implements Serializable, HttpSessionBindingListener {
         this.subject = new Subject(true, principals, publicCredentials, privateCredentials);
     }
 
-    /**
-     * @param coreSession the coreSession to set.
-     */
     public void setCoreSession(CoreSession coreSession) {
         this.coreSession = coreSession;
     }
 
-    /**
-     * @return the coreSession.
-     */
     public CoreSession getCoreSession() {
         return coreSession;
     }
@@ -112,23 +106,14 @@ public class UserSession implements Serializable, HttpSessionBindingListener {
         return this == anonymous;
     }
 
-    /**
-     * @return the principal.
-     */
     public Principal getPrincipal() {
         return principal;
     }
 
-    /**
-     * @return the credentials.
-     */
     public Object getCredentials() {
         return credentials;
     }
 
-    /**
-     * @return the subject.
-     */
     public Subject getSubject() {
         return subject;
     }
@@ -154,12 +139,9 @@ public class UserSession implements Serializable, HttpSessionBindingListener {
     }
 
     protected void install(HttpSession session) {
-
     }
 
     protected void uninstall(HttpSession session) {
-
     }
-
 
 }

@@ -43,13 +43,11 @@ public class WikiWriter implements IWikiPrinter, WikiText {
     protected static final String LINE_SEP = System.getProperty("line.separator");
 
     protected WikiWriter parent = null;
-    protected List<String> segments = new ArrayList<String>();
-    protected List<WikiText> dynamicSegments = new ArrayList<WikiText>();
-    protected StringBuilder buf = new StringBuilder();
+    protected final List<String> segments = new ArrayList<String>();
+    protected final List<WikiText> dynamicSegments = new ArrayList<WikiText>();
+    protected final StringBuilder buf = new StringBuilder();
 
-    /**
-     *
-     */
+
     public WikiWriter() {
     }
 
@@ -80,9 +78,6 @@ public class WikiWriter implements IWikiPrinter, WikiText {
         return parent;
     }
 
-    /**
-     * @return the buffer.
-     */
     public StringBuilder getBuffer() {
         return buf;
     }

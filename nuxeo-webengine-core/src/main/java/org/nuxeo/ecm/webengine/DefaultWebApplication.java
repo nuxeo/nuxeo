@@ -137,9 +137,6 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         return rendering;
     }
 
-    /**
-     * @param repositoryName the repositoryName to set.
-     */
     public void setRepositoryName(String repositoryName) {
         this.repositoryName = repositoryName;
     }
@@ -156,16 +153,10 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         return mapper;
     }
 
-    /**
-     * @return the engine.
-     */
     public WebEngine getEngine() {
         return engine;
     }
 
-    /**
-     * @return the id.
-     */
     public String getId() {
         return id;
     }
@@ -174,35 +165,25 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
         return dirStack;
     }
 
-    /**
-     * @return the defaultPage.
-     */
     public String getDefaultPage() {
         return defaultPage;
     }
 
     /**
-     * Used by tests
+     * Used by tests.
      * @param defaultPage the defaultPage to set.
      */
     public void setDefaultPage(String defaultPage) {
         this.defaultPage = defaultPage;
     }
 
-    /**
-     * @return the errorPage.
-     */
     public String getErrorPage() {
         return errorPage;
     }
 
-    /**
-     * @return the indexPage.
-     */
     public String getIndexPage() {
         return indexPage;
     }
-
 
     public String getTypeBinding(String type) {
         if (typeBindings != null) {
@@ -316,7 +297,6 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
     public WebEngine getWebEngine() {
         return engine;
     }
-
 
     public void registerRenderingExtension(String id, Object obj) {
         rendering.setSharedVariable(id, obj);

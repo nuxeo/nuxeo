@@ -29,7 +29,7 @@ import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 
 public class WikiPageDocResourceLocator implements ResourceLocator {
 
-    protected DocumentModel wikiPage;
+    protected final DocumentModel wikiPage;
     protected File wikiFile;
 
     public void cleanup() {
@@ -57,8 +57,7 @@ public class WikiPageDocResourceLocator implements ResourceLocator {
 
     public File getResourceFile(String key) {
         try {
-            File file = getTempFileFromWikiPage();
-            return file;
+            return getTempFileFromWikiPage();
         } catch (IOException e) {
             return null;
         }
@@ -67,8 +66,7 @@ public class WikiPageDocResourceLocator implements ResourceLocator {
     public URL getResourceURL(String key) {
         try {
             File file = getTempFileFromWikiPage();
-            URL url = new URL("file://" + file.getAbsolutePath());
-            return url;
+            return new URL("file://" + file.getAbsolutePath());
         } catch (IOException e) {
             return null;
         }

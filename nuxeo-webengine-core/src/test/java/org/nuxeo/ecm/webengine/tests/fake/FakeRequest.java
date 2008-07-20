@@ -64,7 +64,7 @@ public class FakeRequest implements HttpServletRequest {
 
     protected String ct = "application/octetstream";
 
-    protected FakeSession session = new FakeSession();
+    protected final FakeSession session = new FakeSession();
 
     public FakeRequest(String method, String subUrl, InputStream is) {
         this.method = method;

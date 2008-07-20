@@ -7,8 +7,7 @@ The WebEngine is a framework to build web applications on top of the Nuxeo EP pl
 
 == Overview
 
-The main goal for the WebEngine framework is to let users build web applications quickly and easily and in a traditional way 
-without having knowledge on advanced Java topics such as JSF or Seam.
+The main goal for the WebEngine framework is to let users build web applications quickly and easily and in a traditional way, without having knowledge on advanced Java topics such as JSF or Seam.
 
 The second goal is to be able to update the application while the server is running, without the need of restarting the server each time the configuration or the code is modified.
 
@@ -103,7 +102,7 @@ Lets say you defined an application bound to an application path of `/repository
 + `/foo/bar` - the traversal path
 
 Lets say your application path `repository` defines a root document that points to `/default-domain/workspaces/MyWorkspace` (this is a repository path).
-Then the application will try to resolve the `/foo/bar` path as a repository path starting from te root Document. So the selected document (the target document of the request) will be one of:
+Then the application will try to resolve the `/foo/bar` path as a repository path starting from the root Document. So the selected document (the target document of the request) will be one of:
 
 * `/default-domain/workspaces/MyWorkspace` - the root itself
 * `/default-domain/workspaces/MyWorkspace/foo` - if `foo` is resolved as a child document of the root but `bar` is not resolved as a child document of `foo`

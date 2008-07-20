@@ -38,7 +38,7 @@ public final class ScriptFile {
         .getRootDirectory().getAbsolutePath();
 
     protected File file;
-    protected String ext;
+    protected final String ext;
 
 
     //TODO should remove the typed file name

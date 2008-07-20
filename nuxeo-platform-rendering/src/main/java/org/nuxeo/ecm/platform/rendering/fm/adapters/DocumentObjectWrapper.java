@@ -37,7 +37,7 @@ import freemarker.template.TemplateModelException;
  */
 public class DocumentObjectWrapper extends DefaultObjectWrapper {
 
-    protected FreemarkerEngine engine;
+    protected final FreemarkerEngine engine;
 
     public DocumentObjectWrapper(FreemarkerEngine engine) {
         this.engine = engine;

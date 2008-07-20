@@ -47,7 +47,7 @@ import org.wikimodel.wem.WikiParserException;
 public class WikiPreviewBean {
 
     @In(create = true)
-    private transient NavigationContext navigationContext;
+    private NavigationContext navigationContext;
 
     protected FreemarkerEngine engine;
 

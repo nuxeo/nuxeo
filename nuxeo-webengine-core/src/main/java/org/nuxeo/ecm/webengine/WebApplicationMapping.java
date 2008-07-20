@@ -55,11 +55,7 @@ public class WebApplicationMapping {
     private Guard guard;
 
 
-    /**
-     *
-     */
     public WebApplicationMapping() {
-        // TODO Auto-generated constructor stub
     }
 
     public WebApplicationMapping(String path, String webapp, String docRoot) {
@@ -70,42 +66,25 @@ public class WebApplicationMapping {
         }
     }
 
-    /**
-     * @param isDefault the isDefault to set.
-     */
     public void setDefault(boolean isDefault) {
         this.isDefault = isDefault;
     }
 
-    /**
-     * @return the isDefault.
-     */
     public boolean isDefault() {
         return isDefault;
     }
 
-    /**
-     * @return the path.
-     */
     public Path getPath() {
         return path;
     }
 
-
-    /**
-     * @return the webApp.
-     */
     public String getWebApp() {
         return webApp;
     }
 
-    /**
-     * @return the docRoot.
-     */
     public DocumentRef getDocRoot() {
         return docRoot;
     }
-
 
     @XNode("@document")
     public void setDocRoot(String docRoot) {
@@ -113,45 +92,27 @@ public class WebApplicationMapping {
         this.docRoot = new PathRef(rootPath.toString());
     }
 
-    /**
-     * @return the rootPath.
-     */
     public Path getRootPath() {
         return rootPath;
     }
 
-    /**
-     * @param webApp the webApp to set.
-     */
     public void setWebApp(String webApp) {
         this.webApp = webApp;
     }
 
-    /**
-     * @param path the path to set.
-     */
     public void setPath(Path path) {
         this.path = path.makeAbsolute().removeTrailingSeparator();
     }
 
-    /**
-     * @param pathAsString the pathAsString to set.
-     */
     @XNode("@path")
     public void setPathAsString(String pathAsString) {
         this.path = new Path(pathAsString).makeAbsolute().removeTrailingSeparator();
     }
 
-    /**
-     * @return the guard.
-     */
     public GuardDescriptor getGuardDescriptor() {
         return guardDescriptor;
     }
 
-    /**
-     * @param guard the guard to set.
-     */
     public void setGuardDescriptor(GuardDescriptor guard) {
         this.guardDescriptor = guard;
     }
@@ -162,9 +123,6 @@ public class WebApplicationMapping {
         }
     }
 
-    /**
-     * @return the guard.
-     */
     public Guard getGuard() {
         if (guard == null) {
             try {

@@ -1,10 +1,10 @@
 // admin action dispatcher
 
-form = Context.getForm();
+form = Context.form;
 appId = form.getString("webapp");
 path = form.getString("path");
 docPath = form.getString("docpath");
-docMapper = Engine.getDocumentMapper();
+docMapper = Engine.documentMapper;
 
 docMapper.removeMapping(appId, path, docPath);
 try {

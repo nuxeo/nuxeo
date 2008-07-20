@@ -28,7 +28,7 @@ package org.nuxeo.ecm.platform.rendering.wiki;
  */
 public class Toc {
 
-    protected Entry head;
+    protected final Entry head;
     protected Entry tail;
 
     public Toc() {
