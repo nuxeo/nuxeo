@@ -1,0 +1,19 @@
+<html xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+    <h:outputText value="Available Flex samples"/>
+    <ui:repeat value="#{webActions.getActionsList('FLEX_SAMPLES')}" var="action">
+          <li>
+            <h:outputLink value="/nuxeo#{messages[action.link]}">
+              <h:outputText value="#{messages[action.label]}" />
+            </h:outputLink>
+          </li>
+    </ui:repeat>
+
+
+
+</html>
