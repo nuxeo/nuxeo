@@ -178,27 +178,11 @@ public class ParallelReviewWorkflowDocumentSecurityPolicy extends
         }
         return hasAction;
     }
-<<<<<<< variant A
 
->>>>>>> variant B
     public boolean selectThisItem(WMWorkItemInstance item) {
         return true;
     }
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicy#canEndWorkItem(org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMParticipant,
-     *      org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance)
-     */
-####### Ancestor
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicy#canEndWorkItem(org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMParticipant,
-     *      org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance)
-     */
-======= end
     public boolean canEndWorkItem(Principal participant, WMWorkItemInstance wi)
             throws WMWorkflowException {
         boolean granted = false;

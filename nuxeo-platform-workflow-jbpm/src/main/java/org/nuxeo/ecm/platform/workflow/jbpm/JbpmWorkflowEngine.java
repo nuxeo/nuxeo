@@ -1137,7 +1137,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
 
         ctx.getContext().save(pi);
 
-        workItem = WAPIGenerator.createWorkItemInstance(eti);
+        WMWorkItemInstance workItem = WAPIGenerator.createWorkItemInstance(eti);
 
         ctx.closeContext();
         return workItem;
@@ -1441,8 +1441,6 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         }
 
         return filtered;
-    }
-
     }
 
     @SuppressWarnings("unchecked")
