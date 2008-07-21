@@ -267,6 +267,11 @@ public class WAPIGenerator {
         return wii;
     }
 
+    /**
+     * Use {@link #createWorkItemInstance(TaskInstance, ProcessInstance, String)} instead.
+     * @param taskInstance
+     * @return
+     */
     @Deprecated
     public static WMWorkItemInstance createWorkItemInstance(
             TaskInstance taskInstance) {

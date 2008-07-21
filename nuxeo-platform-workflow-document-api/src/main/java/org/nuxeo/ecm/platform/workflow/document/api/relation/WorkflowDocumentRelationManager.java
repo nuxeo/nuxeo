@@ -86,6 +86,11 @@ public interface WorkflowDocumentRelationManager extends Serializable {
     void deleteDocumentWorkflowRef(DocumentRef docRef,
             String pid) throws WorkflowDocumentRelationException;
 
+    /**
+     *
+     * @param pids Process instance Id
+     * @return map pid - document ref ids associated with this pid.
+     */
     Map<String, List<String>> getDocumentModelsPids(Set<String> pids);
 
 }

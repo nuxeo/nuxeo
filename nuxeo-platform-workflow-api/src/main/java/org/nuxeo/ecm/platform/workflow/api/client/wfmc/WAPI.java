@@ -166,6 +166,7 @@ public interface WAPI extends Serializable {
      */
     Collection<WMWorkItemInstance> getWorkItemsFor(WMParticipant participant,
             String state) throws WMWorkflowException;
+
     Collection<WMWorkItemInstance> getWorkItemsFor(List<WMParticipant> participant,
             String state) throws WMWorkflowException;
     /**

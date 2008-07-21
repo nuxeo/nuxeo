@@ -56,6 +56,10 @@ public abstract class AbstractWorkflowDocumentSecurityPolicy implements
     protected AbstractWorkflowDocumentSecurityPolicy() {
     }
 
+    public boolean selectThisItem(WMWorkItemInstance item) throws WMWorkflowException {
+        return true;
+    }
+
     public String getName() {
         return name;
     }
