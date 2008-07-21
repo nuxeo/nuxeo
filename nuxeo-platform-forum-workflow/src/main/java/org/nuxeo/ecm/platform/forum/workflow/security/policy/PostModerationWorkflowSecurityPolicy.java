@@ -97,4 +97,9 @@ public class PostModerationWorkflowSecurityPolicy extends
         return false;
     }
 
+    public boolean selectThisItem(WMWorkItemInstance item)
+            throws WMWorkflowException {
+        return true;
+    }
+
 }

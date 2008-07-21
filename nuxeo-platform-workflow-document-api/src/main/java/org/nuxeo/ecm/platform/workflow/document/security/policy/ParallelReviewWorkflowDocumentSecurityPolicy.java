@@ -179,6 +179,10 @@ public class ParallelReviewWorkflowDocumentSecurityPolicy extends
         return hasAction;
     }
 
+    public boolean selectThisItem(WMWorkItemInstance item) {
+        return true;
+    }
+
     public boolean canEndWorkItem(Principal participant, WMWorkItemInstance wi)
             throws WMWorkflowException {
         boolean granted = false;
@@ -222,5 +226,6 @@ public class ParallelReviewWorkflowDocumentSecurityPolicy extends
             throws WMWorkflowException {
         return false;
     }
+
 
 }

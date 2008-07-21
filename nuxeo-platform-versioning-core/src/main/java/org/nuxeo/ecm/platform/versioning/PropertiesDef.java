@@ -20,12 +20,16 @@ package org.nuxeo.ecm.platform.versioning;
 
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.utils.DocumentModelUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Defines default values for versions properties.
  *
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+ *
+ * @deprecated use {@link org.nuxeo.ecm.platform.versioning.api.PropertiesDef}
+ *             instead
  */
 @Deprecated
 public final class PropertiesDef {
@@ -37,7 +41,9 @@ public final class PropertiesDef {
     private PropertiesDef() {
     }
 
-    // helper to deprecate
+    /**
+     * @deprecated use {@link DocumentModelUtils#getSchemaName(String) instead}
+     */
     @Deprecated
     public static String getSchemaName(String propertyName) {
         String[] s = propertyName.split(":");
@@ -57,7 +63,9 @@ public final class PropertiesDef {
         }
     }
 
-    // helper to deprecate
+    /**
+     * @deprecated use {@link DocumentModelUtils#getFieldName(String) instead}
+     */
     @Deprecated
     public static String getFieldName(String propertyName) {
         String[] s = propertyName.split(":");

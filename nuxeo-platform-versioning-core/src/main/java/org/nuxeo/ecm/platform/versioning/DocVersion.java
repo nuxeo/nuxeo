@@ -21,6 +21,11 @@ package org.nuxeo.ecm.platform.versioning;
 
 import java.io.Serializable;
 
+/**
+ * @deprecated use {@link org.nuxeo.ecm.platform.versioning.api.DocVersion}
+ *             instead
+ */
+@Deprecated
 public interface DocVersion extends Serializable {
 
     Long getMinorVersion();

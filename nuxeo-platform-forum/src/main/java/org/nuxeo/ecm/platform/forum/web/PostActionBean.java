@@ -344,6 +344,9 @@ public class PostActionBean extends InputController implements PostAction {
             vars.put(ForumConstants.THREAD_REF, getParentThread().getRef());
             vars.put(ForumConstants.FORUM_MODERATORS_LIST,
                     threadAction.getModerators().toArray());
+
+            vars.put(WorkflowConstants.WORKFLOW_CREATOR, currentUser.getName());
+
             vars.put(WorkflowConstants.DOCUMENT_LOCATION_URI,
                     post.getRepositoryName());
             workflowPath = wapi.startProcess(processId, vars, null);

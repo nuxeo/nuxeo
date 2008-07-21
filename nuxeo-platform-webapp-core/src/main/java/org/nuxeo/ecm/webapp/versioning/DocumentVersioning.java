@@ -45,9 +45,11 @@ public interface DocumentVersioning {
     String getIncRulesResult();
 
     /**
-     * Returns the available versioning options for the document parameter and state.
+     * Returns the available versioning options for the document parameter and
+     * state.
      *
-     * @param document - the document for which the versioning options will be returned
+     * @param document - the document for which the versioning options will be
+     *            returned
      * @return a collection of option names.
      */
     Collection<VersionModel> getItemVersioningHistory(DocumentModel document);
@@ -60,7 +62,8 @@ public interface DocumentVersioning {
     Collection<VersioningActions> getCurrentItemVersioningOptions();
 
     /**
-     * Returns the available versioning history for the currentItem and state.
+     * Returns the available versioning history for the current document and
+     * state.
      *
      * @return a collection of option names.
      */
@@ -85,10 +88,8 @@ public interface DocumentVersioning {
     void incrementVersions(DocumentModel documentModel,
             VersioningActions selectedOption);
 
-    /* Seam factory for incrementation rules */
     String factoryForIncrementationRules();
 
-    /* Seam factory for Versioning option */
     boolean factoryForRenderVersioningOption();
 
     /**
@@ -100,25 +101,27 @@ public interface DocumentVersioning {
      */
     void setVersioningOptionInstanceId(String optionId) throws ClientException;
 
-    void setVersioningOptionInstanceId(DocumentModel document, String optionId) throws ClientException;
+    void setVersioningOptionInstanceId(DocumentModel document, String optionId)
+            throws ClientException;
 
-    void setVersioningOptionInstanceId(DocumentModel document, VersioningActions option) throws ClientException;
+    void setVersioningOptionInstanceId(DocumentModel document,
+            VersioningActions option) throws ClientException;
 
     /**
-     * Versioning incrementation options - select radio component validator method.
-     * Check if an option has been selected. This is mandatory since the component is
-     * being displayed.
+     * Versioning incrementation options - select radio component validator
+     * method. Check if an option has been selected. This is mandatory since the
+     * component is being displayed.
      *
      * @param context
      * @param component
      * @param value
      */
-    void validateOptionSelection(FacesContext context,
-            UIComponent component, Object value);
+    void validateOptionSelection(FacesContext context, UIComponent component,
+            Object value);
 
     /**
-     * Web action method that specify to create or not a document snapshot before
-     * update (and possible version incrementation).
+     * Web action method that specify to create or not a document snapshot
+     * before update (and possible version incrementation).
      *
      * @param createSnapshot
      */

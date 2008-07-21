@@ -160,7 +160,7 @@ public class WorkItemsListsActionsBean extends InputController implements
                     "No name submitted for the creation of the work items list... Cancelling");
         }
 
-        // Check that the name has not been choosen yet by user
+        // Check that the name has not been chosen yet by user
         if (wiLists.getWorkItemListEntryByName(participantName, name) == null) {
             wiLists.saveWorkItemsListFor(pid, participantName, name);
             Events.instance().raiseEvent(EventNames.WORK_ITEMS_LIST_ADDED);

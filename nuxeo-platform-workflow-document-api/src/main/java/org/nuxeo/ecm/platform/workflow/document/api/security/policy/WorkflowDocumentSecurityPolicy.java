@@ -98,10 +98,16 @@ public interface WorkflowDocumentSecurityPolicy extends Serializable {
      * @return true if direct action to perform, false if not.
      * @throws WMWorkflowException
      */
-    // XXX AT: this should take the work item as parameter, and not the
-    // principal
     boolean hasParticipantImmediateAction(String pid, Principal principal)
             throws WMWorkflowException;
+
+    /**
+     * Should we show this item in a dashboard.
+     * @param item
+     * @return
+     * @throws WMWorkflowException
+     */
+    boolean selectThisItem(WMWorkItemInstance item) throws WMWorkflowException;
 
     /**
      * Checks if a given participant can remove a given work item.

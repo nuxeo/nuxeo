@@ -20,7 +20,11 @@ import static org.jboss.seam.annotations.Install.FRAMEWORK;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.security.PermitAll;
 import javax.ejb.PostActivate;
@@ -47,6 +51,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -114,7 +119,7 @@ public class DashBoardActionsBean extends InputController implements
     @In
     protected transient Context eventContext;
 
-    @In(create = true, required = false)
+    @In(create = true)
     protected transient CoreSession documentManager;
 
     @In(create = true)
@@ -213,35 +218,15 @@ public class DashBoardActionsBean extends InputController implements
 
             Principal principal = documentManager.getPrincipal();
 
-            List<String> groupNames = new ArrayList<String>();
+            List<String> creators = new ArrayList<String>();
             if (principal instanceof NuxeoPrincipal) {
-                groupNames = ((NuxeoPrincipal) principal).getAllGroups();
+                creators = ((NuxeoPrincipal) principal).getAllGroups();
             }
+            creators.add(principal.getName());
 
             List<WMProcessInstance> procs = new ArrayList<WMProcessInstance>();
 
-            // Workflow started directly to the current user.
-            WMParticipant participant = new WMParticipantImpl(
-                    principal.getName());
-            WMProcessInstanceIterator procsIt = wapi.listProcessInstances(new WMFilterImpl(
-                    WorkflowConstants.WORKFLOW_CREATOR, WMFilter.EQ,
-                    participant.getName()));
-            while (procsIt.hasNext()) {
-                procs.add(procsIt.next());
-            }
-
-            // Workflow started by one of the current user group
-            // This case doesn't happend in the default Nuxeo app but could be
-            // in a custom application.
-            for (String groupName : groupNames) {
-                participant = new WMParticipantImpl(groupName);
-                procsIt = wapi.listProcessInstances(new WMFilterImpl(
-                        WorkflowConstants.WORKFLOW_CREATOR, WMFilter.EQ,
-                        participant.getName()));
-                while (procsIt.hasNext()) {
-                    procs.add(procsIt.next());
-                }
-            }
+            procs.addAll(wapi.getProcessInstanceForCreators(creators));
 
             for (WMProcessInstance proc : procs) {
 
@@ -268,8 +253,6 @@ public class DashBoardActionsBean extends InputController implements
                     documentProcessItems.add(item);
                 }
             }
-        } catch (WMWorkflowException we) {
-            throw EJBExceptionHandler.wrapException(we);
         } catch (ClientException ce) {
             throw EJBExceptionHandler.wrapException(ce);
         }
@@ -305,45 +288,26 @@ public class DashBoardActionsBean extends InputController implements
                 groupNames = ((NuxeoPrincipal) principal).getAllGroups();
             }
 
-            // Tasks assigned directly to the principal
-            WMParticipant participant = new WMParticipantImpl(
-                    principal.getName());
-            Collection<WMWorkItemInstance> workItems = wapi.getWorkItemsFor(
-                    participant, WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
-
-            // Tasks assigned to one of its group.
-            for (String groupName : groupNames) {
-                participant = new WMParticipantImpl(groupName);
-                Collection<WMWorkItemInstance> groupWorkitems = wapi.getWorkItemsFor(
-                        participant, WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
-                if (groupWorkitems != null) {
-                    workItems.addAll(groupWorkitems);
-                }
+            List<WMParticipant> participants = new ArrayList<WMParticipant>();
+            for(String name : groupNames) {
+                participants.add(new WMParticipantImpl(name));
             }
+            participants.add(new WMParticipantImpl(principal.getName()));
+            Collection<WMWorkItemInstance> workItems = wapi.getWorkItemsFor(
+                    participants, WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
 
-            // To avoid duplicated workitem if part of several assigned groups
-            // and / or assigned directly. The ones assigned directly to the
-            // principal get precedence.
-            /* Rux NXP-1706: actually it doesn't work. Different work items on same
-             * document have differnt ids, but the document is only one. So redundant
-             * links displayed. Instead of searching for WM items Ids, just avoid
-             * document duplication.
-             */
             List<DocumentRef> alreadyIn = new ArrayList<DocumentRef>();
-            for (WMWorkItemInstance workItem : workItems) {
-
-                /* Rux NXP-1706: can't use it here
-                // Already in the list : do not duplicate
-                if (alreadyIn.contains(workItem.getId())) {
-                    continue;
-                }*/
-
+            Set<String> pids = new HashSet<String>();
+            for(WMWorkItemInstance workItem : workItems) {
+                pids.add(workItem.getProcessInstance().getId());
+            }
+            Map<String, List<DocumentModel>> pidDmMap = getDocumentModelsForPids(
+                    wDoc, pids);
+            for(WMWorkItemInstance workItem : workItems) {
                 // Check if the user has an action to perform.
-                String pid = workItem.getProcessInstance().getId();
                 WorkflowDocumentSecurityPolicy policy = wDocSecuPolicy.getWorkflowDocumentSecurityPolicyFor(workItem.getProcessInstance().getName());
                 if (policy != null) {
-                    boolean canManage = policy.hasParticipantImmediateAction(
-                            pid, workItem.getParticipant());
+                    boolean canManage = policy.selectThisItem(workItem);
                     if (!canManage) {
                         continue;
                     }
@@ -352,20 +316,8 @@ public class DashBoardActionsBean extends InputController implements
                 String authorName = workItem.getProcessInstance().getAuthorName();
                 String workflowType = workItem.getProcessInstance().getName();
 
-                DocumentRef[] docRefs = wDoc.getDocumentRefsFor(pid);
-                for (DocumentRef docRef : docRefs) {
-                    DocumentModel dm;
-                    try {
-                        dm = documentManager.getDocument(docRef);
-                    } catch (ClientException ce) {
-                        log.error("Associated document doesn't exist anymore... Skipping work item");
-                        continue;
-                    }
-
-                    // :XXX: Maybe show the task in the future even if no
-                    // document associated here.
-
-                    /* Rux NXP-1706: but in here is the right place*/
+                for (DocumentModel dm : pidDmMap.get(workItem.getProcessInstance().getId())) {
+                    DocumentRef docRef = dm.getRef();
                     if (alreadyIn.contains(docRef)) {
                         continue;
                     }
@@ -383,7 +335,6 @@ public class DashBoardActionsBean extends InputController implements
                     dashboardItems.add(dashBoardItem);
 
                     // Do not duplicate in the future.
-                    /* Rux NXP-1706: agree*/
                     alreadyIn.add(docRef);
                 }
             }
@@ -395,11 +346,53 @@ public class DashBoardActionsBean extends InputController implements
         return dashboardItems;
     }
 
+    private Map<String, List<DocumentModel>> getDocumentModelsForPids(
+            WorkflowDocumentRelationManager wDoc, Set<String> pids)
+            throws ClientException {
+        Map<String, List<String>> pidUuidsList = wDoc.getDocumentModelsPids(pids);
+        Set<String> uuids = new HashSet<String>();
+        for(Map.Entry<String, List<String>> entry : pidUuidsList.entrySet()) {
+            for(String s: entry.getValue()) {
+                uuids.add(s);
+            }
+        }
+        DocumentModelList documentModelList = getDocumentModelListForIds(uuids);
+        Map<String, DocumentModel> dmMap = new HashMap<String, DocumentModel>();
+        for(DocumentModel dm : documentModelList) {
+            dmMap.put(dm.getId(), dm);
+        }
+        Map<String, List<DocumentModel>> pidDmMap = new HashMap<String, List<DocumentModel>>();
+        for(String pid : pidUuidsList.keySet()) {
+            List<String> dmIds = pidUuidsList.get(pid);
+            List<DocumentModel> dms = new ArrayList<DocumentModel>();
+            for(String id : dmIds) {
+                dms.add(dmMap.get(id));
+            }
+            pidDmMap.put(pid, dms);
+        }
+        return pidDmMap;
+    }
+
+    private DocumentModelList getDocumentModelListForIds(Set<String> uuids)
+            throws ClientException {
+        if(uuids == null || uuids.isEmpty()) {
+            return new DocumentModelListImpl();
+        }
+        StringBuilder coreQuery = new StringBuilder("select * from document ");
+        // in is not implemented yet.
+        for(String id : uuids) {
+            coreQuery.append(" or jcr:uuid = '" + id + "' ");
+        }
+        int or = coreQuery.indexOf("or");
+        coreQuery.replace(or,  or + 2, "where");
+        DocumentModelList documentModelList = documentManager.query(coreQuery.toString());
+        return documentModelList;
+    }
+
     @Destroy
     @Remove
     @PermitAll
     public void destroy() {
-        log.debug("Removing Seam component...");
     }
 
     protected DocumentRef getDocumentRefForItem(String itemId) {
@@ -488,12 +481,10 @@ public class DashBoardActionsBean extends InputController implements
     }
 
     public DocumentModelList getUserDocuments() throws ClientException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public DocumentModelList getUserWorkspaces() throws ClientException {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -516,5 +507,4 @@ public class DashBoardActionsBean extends InputController implements
     public SortInfo getSortInfo() {
         return sortInfo;
     }
-
 }
