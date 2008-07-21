@@ -79,7 +79,7 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
         } else {
             internalSetValue(value);
         }
-        clearFlags(IS_PHANTOM);
+        removePhantomFlag();
     }
 
 
@@ -97,8 +97,7 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
 
 
     @Override
-    protected Property internalGetChild(Field field)
-            throws UnsupportedOperationException {
+    protected Property internalGetChild(Field field) {
         try {
             ObjectAdapter subAdapter = adapter.getAdapter(field.getName().getPrefixedName());
             if (subAdapter == null) { // a simple property
@@ -126,7 +125,7 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
         if (property == null) {
             return false;
         }
-        ScalarProperty sp = (ScalarProperty)property;
+        ScalarProperty sp = (ScalarProperty) property;
         Object v1 = getValue();
         Object v2 = sp.getValue();
         if (v1 == null) {

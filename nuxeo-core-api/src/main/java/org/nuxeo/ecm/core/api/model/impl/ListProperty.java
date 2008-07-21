@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.PropertyVisitor;
 import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -77,8 +76,8 @@ public class ListProperty extends AbstractProperty implements List<Property> {
      * TODO FIXME XXX uncommented <code>return true;</code>
      * see NXP-1653.
      * @see DefaultPropertyFactory line 216
-     * @see {@link ListProperty#getValue()}
-     * @see {@link ListProperty#accept()}
+     * @see {@link ListProperty#getValue}
+     * @see {@link ListProperty#accept}
      */
     public boolean isContainer() {
         //return true; // - this can be uncommented when scalar list will be fixed
@@ -101,7 +100,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         return property;
     }
 
-    public Property add() throws PropertyException {
+    public Property add() {
         Field lfield = getType().getField();
         Property property = getRoot().createProperty(this, lfield, 0);
         children.add(property);
@@ -121,13 +120,11 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         return (ListType)field.getType();
     }
 
-    public Property get(String name) throws PropertyNotFoundException,
-            UnsupportedOperationException {
+    public Property get(String name) {
         return children.get(Integer.parseInt(name));
     }
 
-    public Property get(int index)
-            throws UnsupportedOperationException {
+    public Property get(int index) {
         return children.get(index);
     }
 
@@ -184,11 +181,11 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         if (value == null) { // IGNORE null values - properties will be considered PHANTOMS
             return;
         }
-        List<Serializable> list = null;
+        List<Serializable> list;
         if (value.getClass().isArray()) { // accept also arrays
-            list = (List<Serializable>)PrimitiveArrays.toList(value);
+            list = (List<Serializable>) PrimitiveArrays.toList(value);
         } else {
-            list = (List<Serializable>)value;
+            list = (List<Serializable>) value;
         }
         children.clear(); // do not use clear() method since it is marking the list as dirty
         Field lfield = getType().getField();
@@ -198,7 +195,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
             property.init(obj);
             children.add(property);
         }
-        clearFlags(IS_PHANTOM);
+        removePhantomFlag();
     }
 
     @Override
@@ -217,12 +214,12 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         Collection<?> col;
         Class<?> klass = value.getClass();
         if (klass == ListDiff.class) { // listdiff support for compatibility
-            applyListDiff((ListDiff)value);
+            applyListDiff((ListDiff) value);
             return;
         } else if (klass.isArray()) { // array support
             col = arrayToList(value);
         } else if (value instanceof Collection) { // collection support
-            col = (Collection<?>)value;
+            col = (Collection<?>) value;
         } else {
             throw new InvalidPropertyValueException(getPath());
         }
@@ -274,7 +271,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         }
         // use the key as the property data (this is the internal name of
         // the list item property)
-        removed.add((String)property.getData());
+        removed.add((String) property.getData());
     }
 
     @Override
@@ -304,7 +301,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     public Serializable normalize(Object value)
             throws PropertyConversionException {
         if (isNormalized(value)) {
-            return (Serializable)value;
+            return (Serializable) value;
         }
         if (value.getClass().isArray()) {
             return arrayToList(value);
@@ -317,7 +314,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
             throws PropertyConversionException {
         if (value == null) {
             return null;
-        } else if ( toType.isAssignableFrom(value.getClass())) {
+        } else if (toType.isAssignableFrom(value.getClass())) {
             return toType.cast(value);
         }
         if (toType.isArray()) {
@@ -335,7 +332,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         return super.convertTo(value, toType);
     }
 
-    // Returns ArrayList
+    // Must return ArrayList
     public static ArrayList<?> arrayToList(Object obj) {
         Object[] ar = PrimitiveArrays.toObjectArray(obj);
         ArrayList<Object> list = new ArrayList<Object>(ar.length);
@@ -367,7 +364,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
                 get(entry.index).setValue(entry.value);
                 break;
             case ListDiff.MOVE:
-                int toIndex = (Integer)entry.value;
+                int toIndex = (Integer) entry.value;
                 int fromIndex = entry.index;
                 Property src = children.get(fromIndex);
                 src.moveTo(toIndex);
@@ -380,7 +377,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         if (!(property instanceof ListProperty)) {
             return false;
         }
-        ListProperty lp = (ListProperty)property;
+        ListProperty lp = (ListProperty) property;
         List<Property> c1 = children;
         List<Property> c2 = lp.children;
         if (c1.size() != c2.size()) {
