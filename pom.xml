@@ -320,6 +320,21 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>org.jboss.seam</groupId>
+        <artifactId>jboss-seam-ui</artifactId>
+        <version>2.0.3.CR1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam</groupId>
+        <artifactId>jboss-seam-mail</artifactId>
+        <version>2.0.3.CR1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam</groupId>
+        <artifactId>jboss-seam-debug</artifactId>
+        <version>2.0.3.CR1</version>
+      </dependency>
+      <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-serialization</artifactId>
         <version>1.0.0-RC1</version>
@@ -389,30 +404,6 @@
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-core</artifactId>
         <version>2.0.0</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.myfaces.trinidad</groupId>
-        <artifactId>trinidad-api</artifactId>
-        <version>1.0.1-incubating-NXEP51M2</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.myfaces.trinidad</groupId>
-        <artifactId>trinidad-impl</artifactId>
-        <version>1.0.1-incubating-NXEP51M2</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.myfaces.tomahawk</groupId>
-        <artifactId>tomahawk</artifactId>
-        <version>1.1.5</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.myfaces.tomahawk</groupId>
-        <artifactId>tomahawk-sandbox</artifactId>
-        <version>1.1.5</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -1002,7 +993,6 @@
                 </link>
                 <link>http://jackrabbit.apache.org/api-1/</link>
                 <link>http://www.day.com/maven/jsr170/javadocs/jcr-1.0/</link>
-                <link>http://myfaces.apache.org/tomahawk/apidocs/</link>
                 <link>http://www.restlet.org/documentation/1.0/api/</link>
                 <link>http://www.hibernate.org/hib_docs/v3/api/</link>
                 <link>http://docs.jboss.com/seam/1.1.5.GA/api/</link>
