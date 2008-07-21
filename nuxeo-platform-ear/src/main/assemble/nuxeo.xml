@@ -45,8 +45,6 @@
     </excludes>
   </fileSet>
 
-  <!-- CUSTOMER RESOURCES -->
-
   <!-- ARTIFACTS -->
   <assemble>
     <outputFile>/</outputFile>
@@ -168,18 +166,31 @@
     <artifact group="org.nuxeo.*" />
     </excludes>
   </artifactSet>
+  -->
 
-  <!-- CUSTOMER ARTIFACTS -->
-  <!--
+  <!-- CUSTOM RESOURCES
+    <assemble>
+    <outputFile>/</outputFile>
+    <set>custom-resources</set>
+    </assemble>
+    <fileSet id="custom-resources">
+    <directory>src/main/resources_custom</directory>
+    <excludes>
+    <exclude>**/.svn</exclude>
+    </excludes>
+    </fileSet>
+  -->
+
+  <!-- CUSTOM ARTIFACTS
     <assemble>
     <outputFile>plugins</outputFile>
-    <set>customer-plugins</set>
+    <set>custom-plugins</set>
     </assemble>
-    <artifactSet id="customer-plugins">
+    <artifactSet id="custom-plugins">
     <import>**</import>
     <includeDependencies>false</includeDependencies>
     <includes>
-    <artifact group="com.customer.sample" />
+    <artifact group="com.custom.sample" />
     </includes>
     </artifactSet>
   -->
