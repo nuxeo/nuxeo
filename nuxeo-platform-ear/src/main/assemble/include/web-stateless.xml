@@ -42,9 +42,9 @@
       <artifact name="nuxeo-platform-remote-autoconf" />
     </includes>
     <excludes>
-      <artifact name="nuxeo-platform-audit-search"/>
-      <artifact name="nuxeo-platform-audit-core"/>
-      <artifact name="nuxeo-platform-audit-io"/>
+      <artifact name="nuxeo-platform-audit-search" />
+      <artifact name="nuxeo-platform-audit-core" />
+      <artifact name="nuxeo-platform-audit-io" />
       <artifact name="nuxeo-platform-dublincore" />
       <artifact name="nuxeo-platform-cache-server" />
       <artifact name="nuxeo-platform-comment" />
@@ -73,13 +73,13 @@
       <artifact name="nuxeo-platform-publishing" />
       <artifact name="nuxeo-platform-publishing-facade" />
       <artifact name="nuxeo-platform-relations-default-config" />
-      <artifact name="nuxeo-platform-relations-search"/>
-      <artifact name="nuxeo-platform-relations-core"/>
-      <artifact name="nuxeo-platform-relations-facade"/>
-      <artifact name="nuxeo-platform-relations-io"/>
-      <artifact name="nuxeo-platform-relations-jena-plugin"/>
+      <artifact name="nuxeo-platform-relations-search" />
+      <artifact name="nuxeo-platform-relations-core" />
+      <artifact name="nuxeo-platform-relations-facade" />
+      <artifact name="nuxeo-platform-relations-io" />
+      <artifact name="nuxeo-platform-relations-jena-plugin" />
       <artifact name="nuxeo-platform-scheduler-core" />
-      <artifact name="nuxeo-platform-search-*" file="!*search-api*"/>
+      <artifact name="nuxeo-platform-search-*" file="!*search-api*" />
       <artifact name="nuxeo-platform-uidgen-core" />
       <artifact name="nuxeo-platform-userdata" />
       <artifact name="nuxeo-platform-userdata-core-contrib" />
@@ -95,9 +95,9 @@
       <artifact name="nuxeo-platform-workflow-jbpm-document-handlers" />
 
       <!--
-      <artifact name="nuxeo-platform-mimetype-facade"/>
-      <artifact name="nuxeo-platform-url-facade" />
-       -->
+        <artifact name="nuxeo-platform-mimetype-facade"/>
+        <artifact name="nuxeo-platform-url-facade" />
+      -->
     </excludes>
   </artifactSet>
 

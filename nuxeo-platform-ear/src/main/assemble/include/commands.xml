@@ -10,12 +10,12 @@
     <set>nuxeo-fixed-libs</set>
   </assemble>
 
-<!--
-  <assemble>
+  <!--
+    <assemble>
     <outputFile>lib-test</outputFile>
     <set>nuxeo-libs</set>
-  </assemble>
- -->
+    </assemble>
+  -->
 
   <assemble>
     <outputFile>themes</outputFile>

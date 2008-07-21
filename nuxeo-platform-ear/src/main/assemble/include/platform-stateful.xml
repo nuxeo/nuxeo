@@ -27,8 +27,8 @@
       <artifact group="org.nuxeo.ecm.platform" />
     </includes>
     <excludes>
-      <artifact name="nuxeo-platform-audit-client"/>
-      <artifact name="nuxeo-platform-actions-core"/>
+      <artifact name="nuxeo-platform-audit-client" />
+      <artifact name="nuxeo-platform-actions-core" />
       <artifact name="nuxeo-platform-cache-client" />
       <artifact name="nuxeo-platform-cache-web" />
       <artifact name="nuxeo-platform-comment-web" />
@@ -38,21 +38,21 @@
       <artifact name="nuxeo-platform-io-client" />
       <artifact name="nuxeo-platform-notification-web" />
       <artifact name="nuxeo-platform-publishing-web" />
-      <artifact name="nuxeo-platform-relations-web"/>
-      <artifact name="nuxeo-platform-types-core"/>
-      <artifact name="nuxeo-platform-ui-web"/>
-      <artifact name="nuxeo-platform-ui-web-compat"/>
+      <artifact name="nuxeo-platform-relations-web" />
+      <artifact name="nuxeo-platform-types-core" />
+      <artifact name="nuxeo-platform-ui-web" />
+      <artifact name="nuxeo-platform-ui-web-compat" />
       <artifact name="nuxeo-platform-userdata" />
-      <artifact name="nuxeo-platform-syndication"/>
+      <artifact name="nuxeo-platform-syndication" />
       <artifact name="nuxeo-platform-workflow-client" />
       <artifact name="nuxeo-platform" />
       <artifact name="nuxeo-platform-ws" />
 
       <!--
-      <artifact name="nuxeo-platform-mimetype-facade" />
-      <artifact name="nuxeo-platform-comment" />
-      <artifact name="nuxeo-platform-workflow-document" />
-       -->
+        <artifact name="nuxeo-platform-mimetype-facade" />
+        <artifact name="nuxeo-platform-comment" />
+        <artifact name="nuxeo-platform-workflow-document" />
+      -->
     </excludes>
   </artifactSet>
 
