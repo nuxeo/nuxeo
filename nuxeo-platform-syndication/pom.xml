@@ -62,12 +62,10 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
-      <version>2.4</version>
     </dependency>
     <dependency>
-      <groupId>myfaces</groupId>
-      <artifactId>myfaces</artifactId>
-      <version>1.0.9</version>
+      <groupId>javax.faces</groupId>
+      <artifactId>jsf-api</artifactId>
     </dependency>
 
   </dependencies>
