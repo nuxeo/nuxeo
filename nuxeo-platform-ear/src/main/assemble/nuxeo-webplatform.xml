@@ -45,8 +45,10 @@
     <import>**</import>
     <includeDependencies>true</includeDependencies>
     <includes>
-      <artifact group="org.nuxeo.*" category="runtime" includeDependsOnCategory="false"/>
-      <artifact group="org.nuxeo.*" category="jboss4" includeDependsOnCategory="false"/>
+      <artifact group="org.nuxeo.*" category="runtime"
+        includeDependsOnCategory="false" />
+      <artifact group="org.nuxeo.*" category="jboss4"
+        includeDependsOnCategory="false" />
       <artifact group="org.nuxeo.*" category="web" />
     </includes>
     <excludes>
@@ -84,7 +86,8 @@
   <artifactSet id="nuxeo-fixed-libs">
     <artifacts>
       <artifact group="org.osgi" name="osgi-core" version="4.1" />
-      <artifact group="commons-collections" name="commons-collections" version="3.1" />
+      <artifact group="commons-collections" name="commons-collections"
+        version="3.1" />
       <artifact group="commons-io" name="commons-io" version="1.2" />
       <artifact group="commons-lang" name="commons-lang" version="2.2" />
       <artifact group="commons-fileupload" name="commons-fileupload"
@@ -98,7 +101,14 @@
       <artifact group="org.hibernate" name="hibernate-entitymanager"
         version="3.2.0.ga" />
       <artifact group="jboss" name="jboss-cache-jdk50" version="1.4.0.SP1" />
-      <artifact group="org.jboss.seam" name="jboss-seam" version="1.1.5.NX3" />
+      <artifact group="org.jboss.seam" name="jboss-seam" version="2.0.3.CR1-NX" />
+      <artifact group="org.jboss.seam" name="jboss-seam-remoting"
+        version="2.0.3.CR1" />
+      <artifact group="org.jboss.seam" name="jboss-seam-ui" version="2.0.3.CR1" />
+      <artifact group="org.jboss.seam" name="jboss-seam-mail"
+        version="2.0.3.CR1" />
+      <artifact group="org.jboss.seam" name="jboss-seam-debug"
+        version="2.0.3.CR1" />
       <artifact group="jboss" name="jbpm" version="3.1.2" />
       <artifact group="jboss" name="jgroups" version="2.2.9" />
       <artifact group="net.sf.json-lib" name="json-lib" version="0.9" />
@@ -111,35 +121,30 @@
       <artifact group="org.richfaces.framework" name="richfaces-impl"
         version="3.2.1.GA" />
       <artifact group="org.richfaces.ui" name="richfaces-ui" version="3.2.1.GA" />
-      <artifact group="org.apache.myfaces.tomahawk" name="tomahawk"
-        version="1.1.5" />
-      <artifact group="org.apache.myfaces.tomahawk" name="tomahawk-sandbox"
-        version="1.1.5" />
-      <artifact group="org.apache.myfaces.trinidad" name="trinidad-api"
-        version="1.0.1-incubating-NXEP51M2" />
-      <artifact group="org.apache.myfaces.trinidad" name="trinidad-impl"
-        version="1.0.1-incubating-NXEP51M2" />
-      <artifact group="org.apache.directory.server" name="apacheds-protocol-shared" version="1.5.1" />
-      <artifact group="org.apache.directory.shared" name="shared-ldap" version="0.9.7" />
+      <artifact group="org.apache.directory.server"
+        name="apacheds-protocol-shared" version="1.5.1" />
+      <artifact group="org.apache.directory.shared" name="shared-ldap"
+        version="0.9.7" />
       <artifact group="com.sun.facelets" name="jsf-facelets" version="1.1.11" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-jbossws-wrapper" version="4.0.5.GA" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-jbossws-wrapper"
+        version="4.0.5.GA" />
     </artifacts>
   </artifactSet>
 
   <!-- third party libraries based on dependencies
-  <assemble>
+    <assemble>
     <outputFile>lib2</outputFile>
     <set>nuxeo-libs-via-dependency-tree</set>
-  </assemble>
-  <artifactSet id="nuxeo-libs-via-dependency-tree">
+    </assemble>
+    <artifactSet id="nuxeo-libs-via-dependency-tree">
     <import>**</import>
     <includeDependencies>true</includeDependencies>
     <includes>
-      <artifact scope="compile" />
+    <artifact scope="compile" />
     </includes>
     <excludes>
-      <artifact group="org.nuxeo.*" />
+    <artifact group="org.nuxeo.*" />
     </excludes>
-  </artifactSet>
+    </artifactSet>
   -->
 </assembly>

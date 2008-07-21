@@ -12,29 +12,11 @@
   <artifactId>nuxeo-platform-ui-web-compat</artifactId>
   <name>Nuxeo Web Framework Compatibility package</name>
   <description>
-    Provides compatibility classes and configuration for Tomahawk and Trinidad
-    JSF libraries, that are now replaces by RicheFaces.
+    Provides some compatibility classes and configuration for Tomahawk JSF
+    libraries, that is now replaced by RichFaces.
   </description>
 
   <dependencies>
-    <dependency>
-      <groupId>org.apache.myfaces.trinidad</groupId>
-      <artifactId>trinidad-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.myfaces.trinidad</groupId>
-      <artifactId>trinidad-impl</artifactId>
-      <scope>runtime</scope><!-- needed only for execution -->
-    </dependency>
-    <dependency>
-      <groupId>org.apache.myfaces.tomahawk</groupId>
-      <artifactId>tomahawk</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.richfaces.framework</groupId>
-      <artifactId>richfaces-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>javax.el</groupId>
       <artifactId>el-api</artifactId>
@@ -49,16 +31,40 @@
     </dependency>
   </dependencies>
 
-  <reporting>
+  <build>
     <plugins>
       <plugin>
-        <groupId>net.sourceforge.maven-taglib</groupId>
-        <artifactId>maven-taglib-plugin</artifactId>
-        <configuration>
-          <taglib.src.dir>src/main/resources/WEB</taglib.src.dir>
-        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <!-- artifacts in WEB-INF/lib, not needed in any classpath -->
+          <execution>
+            <id>copy-installed</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.myfaces.tomahawk</groupId>
+                  <artifactId>tomahawk</artifactId>
+                  <version>1.1.5</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.myfaces.tomahawk</groupId>
+                  <artifactId>tomahawk-sandbox</artifactId>
+                  <version>1.1.5</version>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>
+                ${project.build.outputDirectory}/WEB/lib
+              </outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
-  </reporting>
+  </build>
 
 </project>

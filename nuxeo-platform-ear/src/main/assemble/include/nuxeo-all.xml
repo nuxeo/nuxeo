@@ -112,8 +112,14 @@
       <artifact group="org.hibernate" name="hibernate-entitymanager"
         version="3.2.0.ga" />
       <artifact group="jboss" name="jboss-cache-jdk50" version="1.4.0.SP1" />
-      <!--artifact group="jboss" name="jboss-remoting" version="4.0.4.GA"/-->
       <artifact group="org.jboss.seam" name="jboss-seam" version="2.0.3.CR1-NX" />
+      <artifact group="org.jboss.seam" name="jboss-seam-remoting"
+        version="2.0.3.CR1" />
+      <artifact group="org.jboss.seam" name="jboss-seam-ui" version="2.0.3.CR1" />
+      <artifact group="org.jboss.seam" name="jboss-seam-mail"
+        version="2.0.3.CR1" />
+      <artifact group="org.jboss.seam" name="jboss-seam-debug"
+        version="2.0.3.CR1" />
       <artifact group="org.jboss.el" name="jboss-el" version="2.0.1.GA" />
       <artifact group="org.richfaces.framework" name="richfaces-api"
         version="3.2.1.GA" />

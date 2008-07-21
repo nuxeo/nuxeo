@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.platform.ui.web.compat.tomahawk;
+package org.nuxeo.ecm.platform.ui.web.component;
 
 import java.io.IOException;
 
@@ -30,11 +30,11 @@ import javax.faces.context.ResponseWriter;
  *
  * @author Anahide Tchertchian
  */
-public class DisabledTomahawkComponent extends UIComponentBase {
+public class DisabledComponent extends UIComponentBase {
 
-    public static final String COMPONENT_TYPE = "nuxeo.web.tomahawk.disabled";
+    public static final String COMPONENT_TYPE = "nuxeo.web.disabled";
 
-    public static final String COMPONENT_FAMILY = "nuxeo.web.tomahawk.disabled";
+    public static final String COMPONENT_FAMILY = "nuxeo.web.disabled";
 
     @Override
     public String getFamily() {
@@ -49,7 +49,7 @@ public class DisabledTomahawkComponent extends UIComponentBase {
     @Override
     public void encodeBegin(FacesContext context) throws IOException {
         ResponseWriter writer = context.getResponseWriter();
-        writer.write("This tomahawk component is disabled. Please use another tag library");
+        writer.write("This component is disabled. Please use another tag library");
         writer.flush();
     }
 

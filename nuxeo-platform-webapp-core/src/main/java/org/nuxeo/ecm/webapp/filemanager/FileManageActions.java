@@ -19,15 +19,16 @@
 
 package org.nuxeo.ecm.webapp.filemanager;
 
+import java.io.InputStream;
+
 import javax.ejb.Remote;
 
-import org.apache.myfaces.trinidad.model.UploadedFile;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ui.web.api.SimpleFileManager;
 
 @Remote
-public interface FileManageActions extends SimpleFileManager{
+public interface FileManageActions extends SimpleFileManager {
 
     String display();
 
@@ -39,9 +40,13 @@ public interface FileManageActions extends SimpleFileManager{
      */
     String addFile() throws ClientException;
 
-    void setFileUpload(UploadedFile fileUpload);
+    void setFileUpload(InputStream fileUpload);
 
-    UploadedFile getFileUpload();
+    InputStream getFileUpload();
+
+    void setFileName(String fileName);
+
+    String getFileName();
 
     @WebRemote
     String addFileFromPlugin(String content, String mimetype, String fullName,
@@ -64,10 +69,6 @@ public interface FileManageActions extends SimpleFileManager{
     @WebRemote
     String copyWithId(String docId) throws ClientException;
 
-    /*
-     * @WebRemote public String delCopyWithId(String docId) throws
-     * ClientException;
-     */
     @WebRemote
     String pasteWithId(String docId) throws ClientException;
 

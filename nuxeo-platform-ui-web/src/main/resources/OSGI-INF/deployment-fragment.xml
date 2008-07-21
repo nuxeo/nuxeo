@@ -220,6 +220,17 @@
       <url-pattern>/a4j.res/*</url-pattern>
     </filter-mapping>
 
+    <!-- multipart filter -->
+    <filter>
+      <filter-name>Seam Multipart Filter</filter-name>
+      <filter-class>org.jboss.seam.web.MultipartFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+      <filter-name>Seam Multipart Filter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
   </extension>
 
   <!-- AT: mixing servlets and mappings for clarity, does not change
@@ -347,6 +358,10 @@
   </extension>
 
   <extension target="faces-config#APPLICATION">
+
+    <view-handler>
+      org.nuxeo.theme.jsf.facelets.NXThemesFaceletViewHandler
+    </view-handler>
 
     <navigation-handler>
       org.nuxeo.ecm.platform.ui.web.rest.FancyNavigationHandler
@@ -523,6 +538,13 @@
       </component-type>
       <component-class>
         org.nuxeo.ecm.platform.ui.web.component.document.RestDocumentLink
+      </component-class>
+    </component>
+
+    <component>
+      <component-type>nuxeo.web.disabled</component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.DisabledComponent
       </component-class>
     </component>
 

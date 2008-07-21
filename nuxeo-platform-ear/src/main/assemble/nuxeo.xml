@@ -127,6 +127,13 @@
         version="3.2.0.ga" />
       <artifact group="jboss" name="jboss-cache-jdk50" version="1.4.0.SP1" />
       <artifact group="org.jboss.seam" name="jboss-seam" version="2.0.3.CR1-NX" />
+      <artifact group="org.jboss.seam" name="jboss-seam-remoting"
+        version="2.0.3.CR1" />
+      <artifact group="org.jboss.seam" name="jboss-seam-ui" version="2.0.3.CR1" />
+      <artifact group="org.jboss.seam" name="jboss-seam-mail"
+        version="2.0.3.CR1" />
+      <artifact group="org.jboss.seam" name="jboss-seam-debug"
+        version="2.0.3.CR1" />
       <artifact group="org.jboss.el" name="jboss-el" version="2.0.1.GA" />
       <artifact group="jboss" name="jbpm" version="3.1.2" />
       <artifact group="jboss" name="jgroups" version="2.2.9" />
@@ -140,14 +147,6 @@
       <artifact group="org.richfaces.framework" name="richfaces-impl"
         version="3.2.1.GA" />
       <artifact group="org.richfaces.ui" name="richfaces-ui" version="3.2.1.GA" />
-      <artifact group="org.apache.myfaces.tomahawk" name="tomahawk"
-        version="1.1.5" />
-      <artifact group="org.apache.myfaces.tomahawk" name="tomahawk-sandbox"
-        version="1.1.5" />
-      <artifact group="org.apache.myfaces.trinidad" name="trinidad-api"
-        version="1.0.1-incubating-NXEP51M2" />
-      <artifact group="org.apache.myfaces.trinidad" name="trinidad-impl"
-        version="1.0.1-incubating-NXEP51M2" />
       <artifact group="org.apache.directory.server"
         name="apacheds-protocol-shared" version="1.5.1" />
       <artifact group="org.apache.directory.shared" name="shared-ldap"

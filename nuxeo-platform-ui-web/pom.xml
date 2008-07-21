@@ -105,6 +105,10 @@
       <artifactId>jboss-seam</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam-ui</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>
     </dependency>
@@ -115,15 +119,6 @@
     <dependency>
       <groupId>com.sun.facelets</groupId>
       <artifactId>jsf-facelets</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.myfaces.trinidad</groupId>
-      <artifactId>trinidad-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.myfaces.trinidad</groupId>
-      <artifactId>trinidad-impl</artifactId>
-      <scope>runtime</scope><!-- needed only for execution -->
     </dependency>
     <dependency>
       <groupId>org.richfaces.framework</groupId>
@@ -239,26 +234,6 @@
             </goals>
             <configuration>
               <artifactItems>
-                <artifactItem>
-                  <groupId>org.jboss.seam</groupId>
-                  <artifactId>jboss-seam-mail</artifactId>
-                  <version>2.0.3.CR1</version>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jboss.seam</groupId>
-                  <artifactId>jboss-seam-ui</artifactId>
-                  <version>2.0.3.CR1</version>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jboss.seam</groupId>
-                  <artifactId>jboss-seam-debug</artifactId>
-                  <version>2.0.3.CR1</version>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.jboss.seam</groupId>
-                  <artifactId>jboss-seam-remoting</artifactId>
-                  <version>2.0.3.CR1</version>
-                </artifactItem>
                 <!--  also in parent pom but shouldn't -->
                 <artifactItem>
                   <groupId>javax.servlet</groupId>

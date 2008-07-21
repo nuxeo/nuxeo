@@ -249,28 +249,19 @@
   <tag>
     <tag-name>inputDate</tag-name>
     <component>
-      <component-type>org.apache.myfaces.HtmlInputDate</component-type>
-      <handler-class>
-        org.nuxeo.ecm.platform.ui.web.tag.handler.DeprecatedComponentHandler
-      </handler-class>
+      <component-type>nuxeo.web.disabled</component-type>
     </component>
   </tag>
   <tag>
     <tag-name>inputCalendar</tag-name>
     <component>
-      <component-type>org.apache.myfaces.HtmlInputCalendar</component-type>
-      <handler-class>
-        org.nuxeo.ecm.platform.ui.web.tag.handler.DeprecatedComponentHandler
-      </handler-class>
+      <component-type>nuxeo.web.disabled</component-type>
     </component>
   </tag>
   <tag>
     <tag-name>schedule</tag-name>
     <component>
-      <component-type>org.apache.myfaces.Schedule</component-type>
-      <handler-class>
-        org.nuxeo.ecm.platform.ui.web.tag.handler.DeprecatedComponentHandler
-      </handler-class>
+      <component-type>nuxeo.web.disabled</component-type>
     </component>
   </tag>
   <tag>
@@ -282,7 +273,7 @@
   <tag>
     <tag-name>inputFileUpload</tag-name>
     <component>
-      <component-type>org.apache.myfaces.trinidad.CoreInputFile</component-type>
+      <component-type>nuxeo.web.disabled</component-type>
     </component>
   </tag>
   <tag>
@@ -296,6 +287,13 @@
     <tag-name>radio</tag-name>
     <component>
       <component-type>org.apache.myfaces.HtmlRadio</component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>lazyTree</tag-name>
+    <component>
+      <component-type>nuxeo.web.disabled</component-type>
     </component>
   </tag>
 

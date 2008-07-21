@@ -28,12 +28,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.myfaces.trinidad.model.UploadedFile;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * The FieldAdapterManager fills the gap between the storage and the display
@@ -71,8 +65,6 @@ public final class FieldAdapterManager {
         // FIXME: Temp hack : While we still have no EP management
         if (value instanceof Date) {
             value = getDateAsCalendar((Date) value);
-        } else if (value instanceof UploadedFile) {
-            value = getTrinidadFileAsBlob((UploadedFile) value);
         } else if (value instanceof Object[]) {
             Object[] array = (Object[]) value;
             Class<?> oldType = array.getClass().getComponentType();
@@ -108,8 +100,6 @@ public final class FieldAdapterManager {
         Class<?> newType = componentType;
         if (componentType.equals(Date.class)) {
             newType = Calendar.class;
-        } else if (componentType.equals(UploadedFile.class)) {
-            newType = Blob.class;
         }
         return newType;
     }
@@ -171,25 +161,6 @@ public final class FieldAdapterManager {
 
     private static Date getCalendarAsDate(Calendar value) {
         return value.getTime();
-    }
-
-    private static Blob getTrinidadFileAsBlob(UploadedFile upFile) {
-        Blob blob = new StreamingBlob(new TrinidadUploadedFileStreamSource(
-                upFile));
-        try {
-            MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
-            String mimeType = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
-                    upFile.getFilename(), blob, upFile.getContentType());
-            blob.setMimeType(mimeType);
-        } catch (MimetypeDetectionException err) {
-            log.error("could not detect the mimetype for "
-                    + upFile.getFilename());
-        } catch (Exception e) {
-            log.error("Error whil accessible mimetype service "
-                    + e.getMessage());
-        }
-
-        return blob;
     }
 
 }
