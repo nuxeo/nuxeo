@@ -46,10 +46,10 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Servlet for publishing SiteObjects
- *
+ * 
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class WebServlet extends HttpServlet {
 
@@ -62,7 +62,6 @@ public class WebServlet extends HttpServlet {
     private static final ThreadLocal<WebContext> CONTEXT = new ThreadLocal<WebContext>();
 
     private WebEngine engine;
-
 
     public static WebContext getContext() {
         return CONTEXT.get();
@@ -77,8 +76,8 @@ public class WebServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        //double start = System.currentTimeMillis();
-        resp.setContentType("text/html");
+        // double start = System.currentTimeMillis();
+        resp.setContentType("text/html; charset=UTF-8");
         resp.addHeader("Server", "Nuxeo/WebEngine-1.0");
 
         if (req.getMethod().equals(WebConst.METHOD_HEAD)) {
@@ -100,26 +99,28 @@ public class WebServlet extends HttpServlet {
                 if (app == null) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     PrintStream buf = new PrintStream(baos);
-                    buf.print("Failed to create request context. " +
-                            "<p>Cannot create pretty error message since a default application is not defined." +
-                            "<p>Error message is: "+e.getMessage()+
-                    "<p>The stack trace is:<hr><p><pre>");
+                    buf.print("Failed to create request context. "
+                            + "<p>Cannot create pretty error message since a default application is not defined."
+                            + "<p>Error message is: " + e.getMessage()
+                            + "<p>The stack trace is:<hr><p><pre>");
                     e.printStackTrace(buf);
                     buf.print("</pre>");
                     buf.close();
-                    resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, new String(baos.toByteArray()));
+                    resp.sendError(
+                            HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                            new String(baos.toByteArray()));
                     return;
                 }
                 String p = req.getPathInfo();
-                context = new DefaultWebContext(app,
-                        new PathInfo(p == null ? PathInfo.ROOT_PATH : new Path(p)),
-                        req, resp);
+                context = new DefaultWebContext(app, new PathInfo(
+                        p == null ? PathInfo.ROOT_PATH : new Path(p)), req,
+                        resp);
             }
             WebApplication app = context.getApplication();
             ScriptFile page = context.getFile(app.getErrorPage());
             if (page == null) {
-                displayError(resp, we, "ErrorPage not found: "+app.getErrorPage(),
-                        WebConst.SC_INTERNAL_SERVER_ERROR);
+                displayError(resp, we, "ErrorPage not found: "
+                        + app.getErrorPage(), WebConst.SC_INTERNAL_SERVER_ERROR);
                 return;
             }
             try {
@@ -132,11 +133,12 @@ public class WebServlet extends HttpServlet {
         } finally {
             CONTEXT.set(null);
         }
-        //System.out.println(">>> SITE REQUEST TOOK:  "+((System.currentTimeMillis()-start)/1000));
+        // System.out.println(">>> SITE REQUEST TOOK:  "+((System.
+        // currentTimeMillis()-start)/1000));
     }
 
-    protected void service(WebContext context, HttpServletRequest req, HttpServletResponse resp)
-            throws Exception {
+    protected void service(WebContext context, HttpServletRequest req,
+            HttpServletResponse resp) throws Exception {
         if (context.getLastObject() == null) { // a request outside the root
             showStaticPage(context);
             return;
@@ -148,7 +150,8 @@ public class WebServlet extends HttpServlet {
             showStaticPage(context);
             return;
         }
-        // avoid running default action handling mechanism when invocation is redirected to scripts
+        // avoid running default action handling mechanism when invocation is
+        // redirected to scripts
         if (context.getPathInfo().getScript() == null) {
             RequestHandler handler = targetObject.getRequestHandler();
             if (handler != null) {
@@ -171,14 +174,15 @@ public class WebServlet extends HttpServlet {
             return;
         }
 
-        //double s = System.currentTimeMillis();
+        // double s = System.currentTimeMillis();
         ScriptFile script = context.getTargetScript();
         if (script != null) {
             context.exec(script, null);
         } else {
             context.getResponse().setStatus(WebConst.SC_NOT_FOUND);
         }
-        //System.out.println(">>>>>>>>>> RENDERING TOOK: " + ((System.currentTimeMillis() - s) / 1000));
+        // System.out.println(">>>>>>>>>> RENDERING TOOK: " +
+        // ((System.currentTimeMillis() - s) / 1000));
     }
 
     protected static void displayError(HttpServletResponse resp, Throwable t,
@@ -216,16 +220,18 @@ public class WebServlet extends HttpServlet {
 
     public void showStaticPage(WebContext context) throws Exception {
         try {
-            //double s = System.currentTimeMillis();
+            // double s = System.currentTimeMillis();
             ScriptFile script = context.getTargetScript();
             if (script != null) {
                 context.exec(script, null);
             } else {
                 context.getResponse().sendError(WebConst.SC_NOT_FOUND);
             }
-            //System.out.println(">>>>>>>>>> STATIC RENDERING TOOK: "+ ((System.currentTimeMillis() - s)/1000));
+            // System.out.println(">>>>>>>>>> STATIC RENDERING TOOK: "+
+            // ((System.currentTimeMillis() - s)/1000));
         } catch (WebException e) {
-            displayError(context.getResponse(), e, "Error during the rendering process");
+            displayError(context.getResponse(), e,
+                    "Error during the rendering process");
         }
     }
 
