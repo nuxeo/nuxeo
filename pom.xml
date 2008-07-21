@@ -761,7 +761,11 @@
         <artifactId>nuxeo-runtime-template</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-scripting</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-core</artifactId>

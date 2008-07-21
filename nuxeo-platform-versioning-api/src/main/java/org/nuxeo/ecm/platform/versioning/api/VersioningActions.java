@@ -44,6 +44,11 @@ public enum VersioningActions implements Serializable {
 
     private final String name;
 
+    /**
+     * @deprecated an enum should not hold a state value: it is reset
+     *             when serializing it.
+     */
+    @Deprecated
     private boolean isDefault;
 
     private VersioningActions(String name) {
@@ -60,10 +65,20 @@ public enum VersioningActions implements Serializable {
         return null;
     }
 
+    /**
+     * @deprecated an enum should not hold a state value: it is reset
+     *             when serializing it, see NXP-2516.
+     */
+    @Deprecated
     public boolean isDefault() {
         return this.isDefault;
     }
 
+    /**
+     * @deprecated an enum should not hold a state value: it is reset
+     *             when serializing it, see NXP-2516.
+     */
+    @Deprecated
     public void setDefault(boolean isDefault) {
         this.isDefault = isDefault;
     }

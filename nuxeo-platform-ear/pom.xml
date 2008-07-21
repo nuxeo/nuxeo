@@ -394,12 +394,6 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-webapp-types</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-workflow-api</artifactId>
-    </dependency>
-     -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-workflow-client</artifactId>
@@ -421,6 +415,13 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-workflow-document-facade</artifactId>
       <type>ejb</type>
+    </dependency>
+    <!-- artifact with only implementations needed on client side in 2parts environment -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-workflow-document-facade</artifactId>
+      <classifier>remote-api</classifier>
+      <version>${nuxeo.platform.version}</version>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
