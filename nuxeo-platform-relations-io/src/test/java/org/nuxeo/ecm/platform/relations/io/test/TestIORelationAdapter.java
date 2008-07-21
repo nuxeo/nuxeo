@@ -76,11 +76,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
 
     private static final String doc1Ref = "DOC200600013_02.01";
 
-    private static final String doc2Ref = "DOC200600015_01.00";
-
     private static final String doc1RefCopy = "DOC200600013_02.01_copy";
-
-    private static final String doc2RefCopy = "DOC200600015_01.00_copy";
 
     private static final QNameResource doc1Resource = new QNameResourceImpl(
             documentNamespace, "demo/DOC200600013_02.01");
@@ -90,9 +86,6 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
 
     private static final QNameResource doc1ResourceCopy = new QNameResourceImpl(
             documentNamespace, "demo/DOC200600013_02.01_copy");
-
-    private static final QNameResource doc2ResourceCopy = new QNameResourceImpl(
-            documentNamespace, "demo/DOC200600015_01.00_copy");
 
     private static final Resource simpleResource = new ResourceImpl(
             "http://www.wikipedia.com/Enterprise_Content_Management");
@@ -142,7 +135,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    private static InputStream getTestFile(String filePath) throws Exception {
+    private static InputStream getTestFile(String filePath) {
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(
                 filePath);
     }
@@ -160,11 +153,7 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
 
     private static void feedGraph(String filePath, Graph graph) throws Exception {
         assertSame(0L, graph.size());
-        try {
-            graph.read(getTestFile(filePath), null, null);
-        } catch (Exception err) {
-            err.printStackTrace();
-        }
+        graph.read(getTestFile(filePath), null, null);
         assertNotSame(0L, graph.size());
     }
 
@@ -280,7 +269,6 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
                 new StatementImpl(doc2Resource, isBasedOn, doc1ResourceCopy),
                 new StatementImpl(doc1ResourceCopy, references, simpleResource) });
         Collections.sort(expected);
-        System.err.println(ioRes.getStatements());
         assertEquals(2, ioRes.getStatements().size());
         List<Statement> actual = ioRes.getStatements();
         Collections.sort(actual);
@@ -304,7 +292,6 @@ public class TestIORelationAdapter extends NXRuntimeTestCase {
                 new StatementImpl(doc2Resource, isBasedOn, doc1Resource),
                 new StatementImpl(doc1Resource, references, simpleResource) });
         Collections.sort(expected);
-        System.err.println(ioRes.getStatements());
         assertEquals(2, ioRes.getStatements().size());
         List<Statement> actual = ioRes.getStatements();
         Collections.sort(actual);

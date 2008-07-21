@@ -58,6 +58,9 @@ import org.nuxeo.ecm.platform.workflow.jbpm.util.IDConverter;
  */
 public class WAPIGenerator {
 
+    // Utility class.
+    private WAPIGenerator() {}
+
     public static WMParticipant createWorkflowPrincipal(String actorId) {
         return new WMParticipantImpl(actorId);
     }
@@ -76,7 +79,6 @@ public class WAPIGenerator {
         }
 
         return pdef;
-
     }
 
     public static WMProcessInstance createProcessInstance(
@@ -138,7 +140,6 @@ public class WAPIGenerator {
         }
 
         return pi;
-
     }
     public static WMTransitionDefinition createTransitionDefinition(
             Transition transition) {
@@ -158,7 +159,6 @@ public class WAPIGenerator {
         }
 
         return tx;
-
     }
 
     public static WMActivityDefinition createActivityDefinition(Node node) {
@@ -201,7 +201,6 @@ public class WAPIGenerator {
             activityDefinition = null;
         }
         return activityDefinition;
-
     }
 
     public static WMActivityInstance createActivityInstance(Token token) {
@@ -220,7 +219,6 @@ public class WAPIGenerator {
         }
 
         return ai;
-
     }
 
     public static WMWorkItemDefinition createWorkItemDefinition(Task task) {
@@ -238,7 +236,6 @@ public class WAPIGenerator {
         }
 
         return widef;
-
     }
 
     public static WMWorkItemInstance createWorkItemInstance(
