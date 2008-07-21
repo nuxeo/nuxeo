@@ -26,6 +26,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 
+/**
+ * @deprecated ejb lookup is not done by hand anymore.
+ */
+@Deprecated
 public final class EjbLocator {
 
     public static final String documentManagerRemote = "DocumentManagerBean/remote";
@@ -33,7 +37,8 @@ public final class EjbLocator {
     private static final Log log = LogFactory.getLog(EjbLocator.class);
 
     // Utility class.
-    private EjbLocator() {}
+    private EjbLocator() {
+    }
 
     /**
      * Returns a remote document manager bean.

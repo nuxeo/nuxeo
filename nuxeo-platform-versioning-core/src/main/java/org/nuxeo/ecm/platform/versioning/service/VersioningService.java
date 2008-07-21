@@ -25,8 +25,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.security.auth.login.LoginContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jetbrains.annotations.NotNull;
@@ -35,9 +33,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.utils.DocumentModelUtils;
@@ -52,7 +47,6 @@ import org.nuxeo.ecm.platform.versioning.api.VersioningException;
 import org.nuxeo.ecm.platform.versioning.api.VersioningManager;
 import org.nuxeo.ecm.platform.versioning.wfintf.WFState;
 import org.nuxeo.ecm.platform.versioning.wfintf.WFVersioningPolicyProvider;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -195,36 +189,36 @@ public class VersioningService extends DefaultComponent implements
         // TODO
     }
 
-    // ----- versioning api impl --------
-    public VersionIncEditOptions getVersionIncEditOptions(@NotNull DocumentModel docModel)
-            throws VersioningException, ClientException, DocumentException {
+    public VersionIncEditOptions getVersionIncEditOptions(@NotNull
+    DocumentModel docModel) throws VersioningException, ClientException,
+            DocumentException {
         if (null == docModel.getSessionId()) {
             throw new IllegalArgumentException(
                     "document model is not bound to a core session (null sessionId)");
         }
 
-        final CoreSession coreSession = CoreInstance.getInstance().getSession(docModel.getSessionId());
+        final CoreSession coreSession = CoreInstance.getInstance().getSession(
+                docModel.getSessionId());
         if (null == coreSession) {
-            throw new ClientException("cannot get core session for doc: " + docModel);
+            throw new ClientException("cannot get core session for doc: "
+                    + docModel);
         }
         String lifecycleState = coreSession.getCurrentLifeCycleState(docModel.getRef());
 
-        //DocumentType type = NXSchema.getSchemaManager().getDocumentType(docType);
         DocumentType type = docModel.getDocumentType();
 
         // check if we have versionable facet for the given doc type
         if (!type.getFacets().contains(FacetNames.VERSIONABLE)) {
             final VersionIncEditOptions vincOpt = new VersionIncEditOptions();
             vincOpt.setVersioningAction(VersioningActions.NO_VERSIONING);
-            vincOpt.addInfo("no versioning for doc type '" + type.getName() + "'");
+            vincOpt.addInfo("no versioning for doc type '" + type.getName()
+                    + "'");
             return vincOpt;
         }
 
-        //DocumentModel doc = getDocumentModel(docRef);
-
         final boolean wfInProgress = WFState.hasWFProcessInProgress(docModel);
 
-        // TODO fixme - hardcoded state
+        // FIXME hardcoded state
         if (wfInProgress) {
             log.debug("workflow in progress");
             lifecycleState = "review";
@@ -248,7 +242,6 @@ public class VersioningService extends DefaultComponent implements
 
             if (wfvaction != null) {
                 versIncOpts.clearOptions();
-                // return null;// wfvaction;
                 if (wfvaction == VersioningActions.ACTION_CASE_DEPENDENT) {
                     versIncOpts.addOption(VersioningActions.ACTION_NO_INCREMENT);
                     versIncOpts.addOption(VersioningActions.ACTION_INCREMENT_MINOR);
@@ -257,46 +250,20 @@ public class VersioningService extends DefaultComponent implements
                     // WF
                     // also the rule is that if wf specified an inc option
                     // that one is to be added
-                    // set default so it will appear selected
-                    wfvaction.setDefault(true);
                     versIncOpts.addOption(wfvaction);
+                    // set default so it will appear selected
+                    versIncOpts.setDefaultVersioningAction(wfvaction);
                 }
 
                 versIncOpts.setVersioningAction(wfvaction);
             } else {
-                // XXX wf action is null!!?
                 log.error("wf action is null");
                 versIncOpts.addInfo("wf action is null");
-
                 versIncOpts.setVersioningAction(null);
             }
         }
 
         return versIncOpts;
-    }
-
-    private DocumentModel getDocumentModel(DocumentRef docRef) throws VersioningException{
-        CoreSession coreSession = null;
-        try {
-            // make sure we'll have an authenticated thread
-            LoginContext loginContext = Framework.login();
-            RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-            Repository repo= mgr.getDefaultRepository();
-            coreSession = repo.open();
-            return coreSession.getDocument(docRef);
-        } catch (Exception e) {
-            //log.error("cannot retrieve document for ref: " + docRef ,e);
-            throw new VersioningException("cannot retrieve document for ref: " + docRef ,e);
-        }
-        finally {
-            if (coreSession != null) {
-                try {
-                    CoreInstance.getInstance().close(coreSession);
-                } catch (ClientException e) {
-                    log.error("cannot close coreSession", e);
-                }
-            }
-        }
     }
 
     /**
@@ -306,7 +273,7 @@ public class VersioningService extends DefaultComponent implements
      * @param lifecycleState
      * @return
      *
-     * @deprecated parameters are insuficient for a full evaluation. Will be
+     * @deprecated parameters are insufficient for a full evaluation. Will be
      *             removed. Use getVersionIncEditOptions(...)
      */
     @Deprecated
@@ -385,11 +352,6 @@ public class VersioningService extends DefaultComponent implements
             log.debug(logPrefix + info);
             editOptions.addInfo(info);
 
-            /*
-             * VersioningActions va = VersioningActions
-             * .getByActionName(action); if (va != null) options.add(va);
-             */
-
             // will add options (these are to be displayed to user) only if
             // action is ask_user
             if (VersioningActions.ACTION_CASE_DEPENDENT == descriptorAction) {
@@ -397,7 +359,8 @@ public class VersioningService extends DefaultComponent implements
                 final RuleOptionDescriptor[] descOptions = descriptor.getOptions();
                 for (RuleOptionDescriptor opt : descOptions) {
 
-                    // check if there is a specified evaluator to display or not this option
+                    // check if there is a specified evaluator to display or not
+                    // this option
                     Evaluator evaluator = opt.getEvaluator();
                     if (evaluator != null) {
                         if (docModel != null) {
@@ -406,8 +369,7 @@ public class VersioningService extends DefaultComponent implements
                                         + opt);
                                 continue;
                             }
-                        }
-                        else {
+                        } else {
                             log.warn("Cannot invoke evaluator with null document for option: "
                                     + opt);
                         }
@@ -415,7 +377,9 @@ public class VersioningService extends DefaultComponent implements
 
                     VersioningActions vAction = VersioningActions.getByActionName(opt.getValue());
                     if (vAction != null) {
-                        vAction.setDefault(opt.isDefault());
+                        if (opt.isDefault()) {
+                            editOptions.setDefaultVersioningAction(vAction);
+                        }
                         editOptions.addOption(vAction);
                     } else {
                         log.warn("Invalid action name: " + opt);
@@ -482,11 +446,13 @@ public class VersioningService extends DefaultComponent implements
                 // check document type
                 String docType = req.getDocument().getType();
                 if (!descriptor.isDocTypeAccounted(docType)) {
-                    log.debug(logPrefix + "rule descriptor excluded for doc type: "
+                    log.debug(logPrefix
+                            + "rule descriptor excluded for doc type: "
                             + docType);
                     continue;
                 }
-                log.debug(logPrefix + "rule descriptor matching doc type: " + docType);
+                log.debug(logPrefix + "rule descriptor matching doc type: "
+                        + docType);
 
                 // FIXME: match with a specific rule
                 boolean handled = performRuleAction(descriptor, req);
@@ -503,12 +469,12 @@ public class VersioningService extends DefaultComponent implements
             try {
                 lifecycleState = req.getDocument().getCurrentLifeCycleState();
             } catch (ClientException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error(e);
                 log.warn(logPrefix
                         + "Cannot get CurrentLifeCycleState for document "
                         + req.getDocument());
-                lifecycleState = ""; // XXX: what rule ???
+                // XXX what rule should apply?
+                lifecycleState = "";
             }
 
             log.debug(logPrefix + "CurrentLifeCycleState : " + lifecycleState);
@@ -575,17 +541,19 @@ public class VersioningService extends DefaultComponent implements
         // if editaction.. identify option and perform additional operations if
         // specified
         // like: perform lifecycle transition
+        // AT: yeah, me too.
         if (descriptor instanceof EditBasedRuleDescriptor) {
             RuleOptionDescriptor[] opts = ((EditBasedRuleDescriptor) descriptor).getOptions();
 
             DocumentModel doc = req.getDocument();
             String currentDocLifeCycleState;
             try {
-                CoreSession coreSession = CoreInstance.getInstance().getSession(doc.getSessionId());
+                CoreSession coreSession = CoreInstance.getInstance().getSession(
+                        doc.getSessionId());
                 if (null == coreSession) {
-                    throw new ClientException("cannot get core session for doc: " + doc);
+                    throw new ClientException(
+                            "cannot get core session for doc: " + doc);
                 }
-                //currentDocLifeCycleState = doc.getCurrentLifeCycleState();
                 currentDocLifeCycleState = coreSession.getCurrentLifeCycleState(doc.getRef());
             } catch (ClientException e) {
                 log.warn("cannot get lifecycle to perform possible transition "
@@ -598,7 +566,6 @@ public class VersioningService extends DefaultComponent implements
             String descriptorLifecycleState = ((EditBasedRuleDescriptor) descriptor).getLifecycleState();
             if (!descriptorLifecycleState.equals("*")
                     && !descriptorLifecycleState.equals(currentDocLifeCycleState)) {
-                // log.debug("not applied for lifecycle: " + lifecycleState);
                 return false;
             }
 
@@ -613,9 +580,11 @@ public class VersioningService extends DefaultComponent implements
                 VersioningActions selectedOption = req.getVersioningAction();
 
                 // NXP-1236 : apply default incrementation option
-                if (selectedOption == VersioningActions.ACTION_INCREMENT_DEFAULT && option.isDefault()) {
+                if (selectedOption == VersioningActions.ACTION_INCREMENT_DEFAULT
+                        && option.isDefault()) {
                     action = VersioningActions.getByActionName(optionValue);
-                    selectedOption = action; // to perform lifecycle transition
+                    selectedOption = action; // to perform lifecycle
+                    // transition
                 }
 
                 if (selectedOption == VersioningActions.getByActionName(optionValue)) {
@@ -678,7 +647,8 @@ public class VersioningService extends DefaultComponent implements
         return ver;
     }
 
-    public DocumentModel incrementMajor(DocumentModel doc) throws ClientException {
+    public DocumentModel incrementMajor(DocumentModel doc)
+            throws ClientException {
         String documentType = doc.getType();
         String majorPropName = getMajorVersionPropertyName(documentType);
         String minorPropName = getMinorVersionPropertyName(documentType);
@@ -700,7 +670,8 @@ public class VersioningService extends DefaultComponent implements
         return doc;
     }
 
-    public DocumentModel incrementMinor(DocumentModel doc) throws ClientException {
+    public DocumentModel incrementMinor(DocumentModel doc)
+            throws ClientException {
         String documentType = doc.getType();
         String majorPropName = getMajorVersionPropertyName(documentType);
         String minorPropName = getMinorVersionPropertyName(documentType);
@@ -748,8 +719,8 @@ public class VersioningService extends DefaultComponent implements
 
     /**
      * Returns the property name to use when setting the major version for this
-     * document type or default property name if not explicitly set for the given
-     * document type.
+     * document type or default property name if not explicitly set for the
+     * given document type.
      */
     public String getMajorVersionPropertyName(String documentType) {
         if (propertiesDescriptors.containsKey(documentType)) {
@@ -764,8 +735,8 @@ public class VersioningService extends DefaultComponent implements
 
     /**
      * Returns the property name to use when setting the minor version for this
-     * document type or default property name if not explicitly set for the given
-     * document type.
+     * document type or default property name if not explicitly set for the
+     * given document type.
      */
     public String getMinorVersionPropertyName(String documentType) {
         if (propertiesDescriptors.containsKey(documentType)) {
@@ -784,18 +755,20 @@ public class VersioningService extends DefaultComponent implements
         throw new UnsupportedOperationException("not implemented");
     }
 
-    public SnapshotOptions getCreateSnapshotOption(DocumentModel document) throws ClientException {
-        // we cannot rely on cached document lifecycle state, getting it directly
-        // from the core
-        // String lifecycleState = document.getCurrentLifeCycleState();
+    public SnapshotOptions getCreateSnapshotOption(DocumentModel document)
+            throws ClientException {
+        // we cannot rely on cached document lifecycle state, so refetch it
+        // directly from the core
         if (null == document.getSessionId()) {
             throw new IllegalArgumentException(
                     "document model is not bound to a core session (null sessionId)");
         }
 
-        final CoreSession coreSession = CoreInstance.getInstance().getSession(document.getSessionId());
+        final CoreSession coreSession = CoreInstance.getInstance().getSession(
+                document.getSessionId());
         if (null == coreSession) {
-            throw new ClientException("cannot get core session for doc: " + document);
+            throw new ClientException("cannot get core session for doc: "
+                    + document);
         }
         String lifecycleState = coreSession.getCurrentLifeCycleState(document.getRef());
 

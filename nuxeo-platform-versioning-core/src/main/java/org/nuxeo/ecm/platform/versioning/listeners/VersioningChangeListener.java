@@ -80,16 +80,17 @@ public class VersioningChangeListener extends AbstractEventListener implements
     }
 
     /**
-     * Could be overriden to perform custom processing. By default it
-     * calls VersioningModifierService.doModifications(newDoc)
+     * Could be overridden to perform custom processing. By default it calls
+     * VersioningModifierService.doModifications(newDoc)
      *
      * @param newDoc
      * @param oldDoc
      */
-    protected void versionsChangeNotify(final DocumentModel newDoc, final DocumentModel oldDoc) {
-        //Call the EP here
-        VersioningModifierService service = (VersioningModifierService) Framework
-                .getRuntime().getComponent(VersioningModifierService.NAME);
+    protected void versionsChangeNotify(final DocumentModel newDoc,
+            final DocumentModel oldDoc) {
+        // Call the EP here
+        VersioningModifierService service = (VersioningModifierService) Framework.getRuntime().getComponent(
+                VersioningModifierService.NAME);
 
         service.doModifications(newDoc);
 
