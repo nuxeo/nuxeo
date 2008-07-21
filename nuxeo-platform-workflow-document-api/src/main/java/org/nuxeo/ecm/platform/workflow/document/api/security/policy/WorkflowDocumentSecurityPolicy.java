@@ -102,6 +102,7 @@ public interface WorkflowDocumentSecurityPolicy extends Serializable {
     // principal
     boolean hasParticipantImmediateAction(String pid, Principal principal)
             throws WMWorkflowException;
+    boolean selectThisItem(WMWorkItemInstance item) throws WMWorkflowException;
 
     /**
      * Checks if a given participant can remove a given work item.

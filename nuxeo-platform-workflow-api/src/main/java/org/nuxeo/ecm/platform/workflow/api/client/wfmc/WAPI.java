@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.workflow.api.client.wfmc;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -165,7 +166,8 @@ public interface WAPI extends Serializable {
      */
     Collection<WMWorkItemInstance> getWorkItemsFor(WMParticipant participant,
             String state) throws WMWorkflowException;
-
+    Collection<WMWorkItemInstance> getWorkItemsFor(List<WMParticipant> participant,
+            String state) throws WMWorkflowException;
     /**
      * Returns for a given workflow participant and for a given process instance
      * all work items in a given state.
@@ -328,5 +330,13 @@ public interface WAPI extends Serializable {
      */
     WMWorkItemIterator listWorkItems(WMFilter filter)
             throws WMWorkflowException;
+
+    /**
+     * Return a list of process instance having one of the group has creator.
+     *
+     * @param groupNames a list of group.
+     * @return
+     */
+    Collection<WMProcessInstance> getProcessInstanceForCreators(List<String> groupNames);
 
 }

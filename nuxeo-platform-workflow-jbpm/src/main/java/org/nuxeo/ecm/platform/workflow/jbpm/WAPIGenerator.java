@@ -26,6 +26,7 @@ import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.def.Transition;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
+import org.jbpm.security.permission.CreateProcessInstancePermission;
 import org.jbpm.taskmgmt.def.Task;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMActivityDefinition;
@@ -79,6 +80,39 @@ public class WAPIGenerator {
     }
 
     public static WMProcessInstance createProcessInstance(
+            ProcessInstance instance, String creator) {
+
+        WMProcessInstance pi;
+
+        if (instance != null) {
+            String status;
+            if (instance.hasEnded()) {
+                status = WorkflowConstants.WORKFLOW_INSTANCE_STATUS_INACTIVE;
+            } else {
+                status = WorkflowConstants.WORKFLOW_INSTANCE_STATUS_ACTIVE;
+            }
+
+            pi = new WMProcessInstanceImpl(
+                    IDConverter.getNXWorkflowIdentifier(instance.getId()),
+                    createProcessDefinition(instance.getProcessDefinition()),
+                    status,
+                    instance.getStart(),
+                    instance.getEnd(),
+                    createWorkflowPrincipal(creator));
+        } else {
+            pi = null;
+        }
+
+        return pi;
+
+    }
+
+    /**
+     * @param instance
+     * @return
+     */
+    @Deprecated
+    public static WMProcessInstance createProcessInstance(
             ProcessInstance instance) {
 
         WMProcessInstance pi;
@@ -106,7 +140,6 @@ public class WAPIGenerator {
         return pi;
 
     }
-
     public static WMTransitionDefinition createTransitionDefinition(
             Transition transition) {
 
@@ -209,7 +242,7 @@ public class WAPIGenerator {
     }
 
     public static WMWorkItemInstance createWorkItemInstance(
-            TaskInstance taskInstance) {
+            TaskInstance taskInstance, ProcessInstance processInstance, String creator) {
 
         WMWorkItemInstance wii;
 
@@ -221,7 +254,7 @@ public class WAPIGenerator {
                     eTaskInstance.getDescription(),
                     createWorkItemDefinition(eTaskInstance.getTask()),
                     createWorkflowPrincipal(eTaskInstance.getActorId()),
-                    createProcessInstance(eTaskInstance.getToken().getProcessInstance()),
+                    createProcessInstance(processInstance, creator),
                     eTaskInstance.getStart(), eTaskInstance.getEnd(),
                     eTaskInstance.getDueDate(), eTaskInstance.getDirective(),
                     eTaskInstance.isCancelled(), eTaskInstance.getComment(),
@@ -232,6 +265,13 @@ public class WAPIGenerator {
         }
 
         return wii;
+    }
+
+    @Deprecated
+    public static WMWorkItemInstance createWorkItemInstance(
+            TaskInstance taskInstance) {
+        return createWorkItemInstance(taskInstance, taskInstance.getTaskMgmtInstance().getProcessInstance(), (String) taskInstance.getTaskMgmtInstance().getProcessInstance().getContextInstance().getVariable(
+                WorkflowConstants.WORKFLOW_CREATOR));
     }
 
 }

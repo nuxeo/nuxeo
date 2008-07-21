@@ -20,8 +20,14 @@
 package org.nuxeo.ecm.platform.workflow.document.api.relation;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance;
 
 /**
  * Workflow document relations.
@@ -79,5 +85,7 @@ public interface WorkflowDocumentRelationManager extends Serializable {
      */
     void deleteDocumentWorkflowRef(DocumentRef docRef,
             String pid) throws WorkflowDocumentRelationException;
+
+    Map<String, List<String>> getDocumentModelsPids(Set<String> pids);
 
 }

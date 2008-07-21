@@ -214,6 +214,31 @@
     ]]>
   </query>
 
+    <query name="TaskMgmtSession.findAllTaskInstancesProcessInstanceByActorId">
+    <![CDATA[
+      select ti, ti.taskMgmtInstance.processInstance, si
+      from org.jbpm.taskmgmt.exe.TaskInstance as ti,
+	  org.jbpm.context.exe.variableinstance.StringInstance si
+      where ti.actorId = :actorId
+      and ti.taskMgmtInstance.processInstance = si.processInstance
+      and si.name = 'author'
+    ]]>
+  </query>
+    <query name="Nuxeo.findAllVariablesForPid">
+    <![CDATA[
+      select vi
+      from org.jbpm.context.exe.VariableInstance vi
+      where vi.processInstance.id = :pid
+    ]]>
+  </query>
+    <query name="Nuxeo.findAllByteArrayForPid">
+    <![CDATA[
+      select ba
+      from org.jbpm.context.exe.variableinstance.ByteArrayInstance ba
+      left join fetch ba.value
+      where ba.processInstance.id = :pid
+    ]]>
+  </query>
   <query name="TaskMgmtSession.findTaskInstancesByActorIds">
     <![CDATA[
       select ti
