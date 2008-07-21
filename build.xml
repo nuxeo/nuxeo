@@ -66,6 +66,7 @@
 
   <target name="install" depends="install-unix,install-windows" description="Run mvn install" />
   <target name="install-unix" if="osfamily-unix">
+    <exec executable="env"/>
     <exec executable="mvn" failonerror="true">
       <arg value="install" />
       <arg value="-Dmaven.test.skip=true" />
