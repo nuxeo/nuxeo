@@ -163,8 +163,6 @@ public class DocVersioningListener extends AbstractEventListener implements
                                 + "Should be incremented by user selection.");
                     } catch (VersioningException e) {
                         log.error(e);
-                    } catch (DocumentException e) {
-                        log.error(e);
                     } catch (ClientException e) {
                         log.error(e);
                     }
