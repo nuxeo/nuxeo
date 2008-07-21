@@ -165,6 +165,14 @@ public class FileManageActionsBean extends InputController implements
         return true;
     }
 
+    protected String getErrorMessage(String errorType, String errorInfo) {
+        // Rux INA-224 simple patch for the moment, until full i18n into
+        // Exceptions
+        return String.format("%s |(%s)| %s", errorType, errorInfo,
+                resourcesAccessor.getMessages().get(
+                        "message.operation.fails.generic"));
+    }
+
     public String addFileFromPlugin(String content, String mimetype,
             String fullName, String morePath, Boolean UseBase64)
             throws ClientException {
@@ -180,14 +188,7 @@ public class FileManageActionsBean extends InputController implements
                     morePath);
         } catch (Throwable t) {
             log.error(t);
-            // Rux INA-224 simple patch for the moment, until full i18n into
-            // Exceptions
-            return TRANSF_ERROR
-                    + " |("
-                    + fullName
-                    + ")| "
-                    + resourcesAccessor.getMessages().get(
-                            "message.operation.fails.generic");
+            return getErrorMessage(TRANSF_ERROR, fullName);
         }
     }
 
@@ -216,27 +217,13 @@ public class FileManageActionsBean extends InputController implements
                         documentManager, blob, path, true, fullName);
             } catch (FileManagerPermissionException e) {
                 // security check failed
-                // Rux INA-224 simple patch for the moment, until full i18n into
-                // Exceptions
                 log.error("No permissions creating " + fullName);
-                return TRANSF_ERROR
-                        + " |("
-                        + fullName
-                        + ")| "
-                        + resourcesAccessor.getMessages().get(
-                                "message.operation.fails.generic");
+                return getErrorMessage(TRANSF_ERROR, fullName);
             }
 
             if (createdDoc == null) {
-                // Rux INA-224 simple patch for the moment, until full i18n into
-                // Exceptions
                 log.error("Couldn't create the document " + fullName);
-                return TRANSF_ERROR
-                        + " |("
-                        + fullName
-                        + ")| "
-                        + resourcesAccessor.getMessages().get(
-                                "message.operation.fails.generic");
+                return getErrorMessage(TRANSF_ERROR, fullName);
             }
 
             // update the context, raise events and return the next page
@@ -249,15 +236,8 @@ public class FileManageActionsBean extends InputController implements
             eventManager.raiseEventsOnDocumentSelected(createdDoc);
             return createdDoc.getName();
         } catch (Throwable t) {
-            // Rux INA-224 simple patch for the moment, until full i18n into
-            // Exceptions
             log.error(t);
-            return TRANSF_ERROR
-                    + " |("
-                    + fullName
-                    + ")| "
-                    + resourcesAccessor.getMessages().get(
-                            "message.operation.fails.generic");
+            return getErrorMessage(TRANSF_ERROR, fullName);
         }
     }
 
@@ -278,15 +258,8 @@ public class FileManageActionsBean extends InputController implements
                     documentManager, blob, path, true, fullName);
             return createdDoc.getName();
         } catch (Throwable t) {
-            // Rux INA-224 simple patch for the moment, until full i18n into
-            // Exceptions
             log.error(t);
-            return TRANSF_ERROR
-                    + " |("
-                    + fullName
-                    + ")| "
-                    + resourcesAccessor.getMessages().get(
-                            "message.operation.fails.generic");
+            return getErrorMessage(TRANSF_ERROR, fullName);
         }
     }
 
@@ -306,27 +279,13 @@ public class FileManageActionsBean extends InputController implements
                 createdDoc = getFileManagerService().createFolder(
                         documentManager, fullName, path);
             } catch (FileManagerPermissionException e) {
-                // Rux INA-224 simple patch for the moment, until full i18n into
-                // Exceptions
                 log.error("No permissions creating folder " + fullName);
-                return TRANSF_ERROR
-                        + " |("
-                        + fullName
-                        + ")| "
-                        + resourcesAccessor.getMessages().get(
-                                "message.operation.fails.generic");
+                return getErrorMessage(TRANSF_ERROR, fullName);
             }
 
             if (createdDoc == null) {
-                // Rux INA-224 simple patch for the moment, until full i18n into
-                // Exceptions
                 log.error("Couldn't create the folder " + fullName);
-                return TRANSF_ERROR
-                        + " |("
-                        + fullName
-                        + ")| "
-                        + resourcesAccessor.getMessages().get(
-                                "message.operation.fails.generic");
+                return getErrorMessage(TRANSF_ERROR, fullName);
             }
 
             eventManager.raiseEventsOnDocumentSelected(createdDoc);
@@ -334,15 +293,8 @@ public class FileManageActionsBean extends InputController implements
                     currentDocument);
             return createdDoc.getName();
         } catch (Throwable t) {
-            // Rux INA-224 simple patch for the moment, until full i18n into
-            // Exceptions
             log.error(t);
-            return TRANSF_ERROR
-                    + " |("
-                    + fullName
-                    + ")| "
-                    + resourcesAccessor.getMessages().get(
-                            "message.operation.fails.generic");
+            return getErrorMessage(TRANSF_ERROR, fullName);
         }
     }
 
@@ -361,15 +313,8 @@ public class FileManageActionsBean extends InputController implements
             log.debug(debug);
             return debug;
         } catch (Throwable t) {
-            // Rux INA-224 simple patch for the moment, until full i18n into
-            // Exceptions
             log.error(t);
-            return COPY_ERROR
-                    + " |("
-                    + docId
-                    + ")| "
-                    + resourcesAccessor.getMessages().get(
-                            "message.operation.fails.generic");
+            return getErrorMessage(COPY_ERROR, docId);
         }
     }
 
@@ -511,15 +456,8 @@ public class FileManageActionsBean extends InputController implements
 
             return debug;
         } catch (Throwable t) {
-            // Rux INA-224 simple patch for the moment, until full i18n into
-            // Exceptions
             log.error(t);
-            return MOVE_ERROR
-                    + " |("
-                    + docId
-                    + ")| "
-                    + resourcesAccessor.getMessages().get(
-                            "message.operation.fails.generic");
+            return getErrorMessage(MOVE_ERROR, docId);
         }
     }
 
@@ -540,15 +478,8 @@ public class FileManageActionsBean extends InputController implements
             clipboardActions.putSelectionInWorkList(docsToAdd, true);
             return debug;
         } catch (Throwable t) {
-            // Rux INA-224 simple patch for the moment, until full i18n into
-            // Exceptions
             log.error(t);
-            return COPY_ERROR
-                    + " |("
-                    + docId
-                    + ")| "
-                    + resourcesAccessor.getMessages().get(
-                            "message.operation.fails.generic");
+            return getErrorMessage(COPY_ERROR, docId);
         }
     }
 
@@ -569,15 +500,8 @@ public class FileManageActionsBean extends InputController implements
             clipboardActions.pasteDocumentList(pasteDocs);
             return debug;
         } catch (Throwable t) {
-            // Rux INA-224 simple patch for the moment, until full i18n into
-            // Exceptions
             log.error(t);
-            return PASTE_ERROR
-                    + " |("
-                    + docId
-                    + ")| "
-                    + resourcesAccessor.getMessages().get(
-                            "message.operation.fails.generic");
+            return getErrorMessage(PASTE_ERROR, docId);
         }
     }
 
