@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,7 +39,11 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jbpm.JbpmContext;
 import org.jbpm.JbpmException;
+import org.jbpm.bytes.ByteArray;
 import org.jbpm.context.exe.ContextInstance;
+import org.jbpm.context.exe.VariableInstance;
+import org.jbpm.context.exe.variableinstance.ByteArrayInstance;
+import org.jbpm.context.exe.variableinstance.StringInstance;
 import org.jbpm.db.GraphSession;
 import org.jbpm.db.TaskMgmtSession;
 import org.jbpm.graph.def.Node;
@@ -383,38 +388,50 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         return activities;
     }
 
+    /**
+     * warning: if 2 variables from 2 different token have the same key one will
+     * be overridden.
+     */
+    @SuppressWarnings("unchecked")
     public Map<String, Serializable> listProcessInstanceAttributes(String pid) {
 
         Map<String, Serializable> props = new HashMap<String, Serializable>();
-
+        if(pid == null) {
+            return props;
+        }
         JbpmWorkflowExecutionContext ctx = getExecutionContext();
-        GraphSession graphSession = ctx.getGraphSession();
 
-        ProcessInstance pi = null;
+        JbpmContext jctx = ctx.getContext();
+        Session session = jctx.getSession();
+        List<VariableInstance> vis = null;
         try {
-            pi = graphSession.getProcessInstance(IDConverter.getJbpmIdentifier(pid));
-        } catch (JbpmException jbpme) {
-            log.error("Cannot find workflow instance...", jbpme);
+            Query query = session.getNamedQuery("Nuxeo.findAllVariablesForPid");
+            query.setString("pid", pid);
+            vis = query.list();
+        } catch (Exception e) {
+            log.error(e);
         }
-
-        if (pi != null) {
-            ContextInstance ctxInstance = pi.getContextInstance();
-            List tokenObjects = pi.findAllTokens();
-
-            for (Object tokenObject : tokenObjects) {
-                Token token = (Token) tokenObject;
-                Map objectMaps = ctxInstance.getVariables(token);
-                if (objectMaps != null) {
-                    for (Object object : objectMaps.keySet()) {
-                        String key = (String) object;
-                        Serializable value = (Serializable) objectMaps.get(key);
-                        props.put(key, value);
-                    }
-                }
+        if(vis == null || vis.isEmpty()) {
+            return props;
+        }
+        for (VariableInstance vi : vis) {
+            if (!(vi instanceof ByteArrayInstance)) {// don't load, it would
+                // mean 1 requete to the
+                // db by isntance.
+                props.put(vi.getName(), (Serializable) vi.getValue());
             }
-
         }
-
+        List<ByteArrayInstance> bais = null;
+        try {
+            Query query = session.getNamedQuery("Nuxeo.findAllByteArrayForPid");
+            query.setString("pid", pid);
+            bais = query.list();
+        } catch (Exception e) {
+            log.error(e);
+        }
+        for (ByteArrayInstance bai : bais) {
+            props.put(bai.getName(), (Serializable) bai.getValue());
+        }
         ctx.closeContext();
         return props;
     }
@@ -605,20 +622,70 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
 
         JbpmContext jctx = ctx.getContext();
         Session session = jctx.getSession();
-        List objects = null;
+        List<Object[]> objects = null;
         try {
-            Query query = session.getNamedQuery("TaskMgmtSession.findAllTaskInstancesByActorId");
+            Query query = session.getNamedQuery("TaskMgmtSession.findAllTaskInstancesProcessInstanceByActorId");
             query.setString("actorId", participant.getName());
             objects = query.list();
         } catch (Exception e) {
             log.error(e);
         }
-
         if (objects != null) {
-            for (Object object : objects) {
-                TaskInstance taskInstance = (TaskInstance) object;
+            for (Object[] object : objects) {
+                TaskInstance taskInstance = (TaskInstance) object[0];
+                ProcessInstance processInstance = (ProcessInstance) object[1];
+                StringInstance creator = (StringInstance) object[2];
                 if (isStateCandidate(taskInstance, state)) {
-                    workItems.add(WAPIGenerator.createWorkItemInstance(taskInstance));
+                    workItems.add(WAPIGenerator.createWorkItemInstance(
+                            taskInstance, processInstance,
+                            (String) creator.getValue()));
+                }
+            }
+        }
+
+        ctx.closeContext();
+        return workItems;
+    }
+
+    public Collection<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participants, String state) {
+
+        Collection<WMWorkItemInstance> workItems = new ArrayList<WMWorkItemInstance>();
+        if (participants == null || participants.isEmpty()) {
+            return workItems;
+        }
+        JbpmWorkflowExecutionContext ctx = getExecutionContext();
+
+        JbpmContext jctx = ctx.getContext();
+        Session session = jctx.getSession();
+        List<Object[]> objects = null;
+        StringBuilder actorIds = new StringBuilder();
+        for (WMParticipant participant : participants) {
+            actorIds.append("'" + participant.getName() + "',");
+        }
+        actorIds.deleteCharAt(actorIds.length() - 1);
+        String query = "select ti, ti.taskMgmtInstance.processInstance, si "
+                + "from org.jbpm.taskmgmt.exe.TaskInstance as ti, "
+                + "org.jbpm.context.exe.variableinstance.StringInstance si "
+                + "where ti.actorId in ("
+                + actorIds
+                + ") "
+                + "and ti.taskMgmtInstance.processInstance = si.processInstance "
+                + "and ti.end is null " + "and si.name = 'author'";
+        try {
+            objects = session.createQuery(query).list();
+        } catch (Exception e) {
+            log.error(e);
+        }
+        if (objects != null) {
+            for (Object[] object : objects) {
+                TaskInstance taskInstance = (TaskInstance) object[0];
+                ProcessInstance processInstance = (ProcessInstance) object[1];
+                StringInstance creator = (StringInstance) object[2];
+                if (isStateCandidate(taskInstance, state)) {
+                    workItems.add(WAPIGenerator.createWorkItemInstance(
+                            taskInstance, processInstance,
+                            (String) creator.getValue()));
                 }
             }
         }
@@ -1003,7 +1070,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         try {
             pi = graphSession.getProcessInstance(IDConverter.getJbpmIdentifier(activityInstance.getProcessInstance().getId()));
         } catch (JbpmException jbpme) {
-            log.error("Cannot find workflow instance...", jbpme);
+            log.error("Cannot find workflow instance.", jbpme);
             throw new WMWorkflowException(jbpme);
         }
 
@@ -1094,7 +1161,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         try {
             pi = graphSession.getProcessInstance(IDConverter.getJbpmIdentifier(activityInstance.getProcessInstance().getId()));
         } catch (JbpmException jbpme) {
-            log.error("Cannot find workflow instance...", jbpme);
+            log.debug("Cannot find workflow instance.", jbpme);
         }
 
         if (pi == null) {
@@ -1113,7 +1180,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
                 workItemDefinitions.add(workItemDefinition);
             }
         } else {
-            log.error("Path does not exist anymore ....");
+            log.debug("Path does not exist anymore.");
         }
 
         ctx.closeContext();
@@ -1123,7 +1190,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
     public void removeWorkItem(WMWorkItemInstance workItem) {
 
         if (workItem == null) {
-            log.error("Work item is null................................ ");
+            log.debug("Work item is null. ");
             return;
         }
 
@@ -1133,7 +1200,7 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
         ExtendedTaskInstance jbpmTask = (ExtendedTaskInstance) tms.getTaskInstance(IDConverter.getJbpmIdentifier(workItem.getId()));
 
         if (jbpmTask == null) {
-            log.error("Cannot find jbpm task.............................");
+            log.debug("Cannot find jbpm task.");
             ctx.closeContext();
             return;
         }
@@ -1365,11 +1432,9 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
                 int fcomp = filter.getComparison();
                 String authorName = pi.getAuthorName();
                 if ((WMFilter.EQ == fcomp && fcreator.equals(authorName))
-                        || (WMFilter.NE == fcomp && !fcreator.equals(
-                                authorName))) {
+                        || (WMFilter.NE == fcomp && !fcreator.equals(authorName))) {
                     filtered.add(pi);
-                }
-                else {
+                } else {
                     log.debug("Discard pi with name=" + pi.getId());
                 }
             } else {
@@ -1381,5 +1446,33 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
 
         return filtered;
 
+    }
+
+    @SuppressWarnings("unchecked")
+    public Collection<WMProcessInstance> listProcessInstanceForCreators(
+            List<String> groupNames) {
+        List<WMProcessInstance> processes = new ArrayList<WMProcessInstance>();
+        if (groupNames == null || groupNames.isEmpty()) {
+            return processes;
+        }
+        JbpmWorkflowExecutionContext ctx = getExecutionContext();
+        Session session = ctx.getContext().getSession();
+        StringBuilder values = new StringBuilder();
+        for (String group : groupNames) {
+            values.append("'" + group + "',");
+        }
+        values.deleteCharAt(values.length() - 1);
+        String query = "select si.processInstance, si.value "
+                + "from org.jbpm.context.exe.variableinstance.StringInstance si "
+                + "where si.name = '" + WorkflowConstants.WORKFLOW_CREATOR
+                + "' " + "and si.value in (" + values + ") "
+                + "and si.processInstance.end is null ";
+        List<Object[]> list = session.createQuery(query).list();
+        for (Object[] objects : list) {
+            processes.add(WAPIGenerator.createProcessInstance(
+                    (ProcessInstance) objects[0], (String) objects[1]));
+        }
+        ctx.closeContext();
+        return processes;
     }
 }

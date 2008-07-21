@@ -348,6 +348,8 @@ public class PostActionBean extends InputController implements PostAction {
             vars.put(ForumConstants.FORUM_MODERATORS_LIST,
                     threadAction.getModerators().toArray());
 
+            vars.put(WorkflowConstants.WORKFLOW_CREATOR, currentUser.getName());
+
             vars.put(WorkflowConstants.DOCUMENT_LOCATION_URI,
                     post.getRepositoryName());
 

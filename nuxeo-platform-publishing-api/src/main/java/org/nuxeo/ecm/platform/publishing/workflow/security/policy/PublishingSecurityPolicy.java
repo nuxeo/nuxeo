@@ -169,4 +169,8 @@ public class PublishingSecurityPolicy extends
         return hasAction;
     }
 
+    public boolean selectThisItem(WMWorkItemInstance item) {
+        return true;
+    }
+
 }
