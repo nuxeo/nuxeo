@@ -152,10 +152,10 @@ public interface SearchActions extends StatefulBaseLifeCycle,
      * Refresh cache
      */
     void refreshCache();
-    
+
     /**
      * Is search service reindexing all ?
-     * 
+     *
      * @return bool flag
      */
     boolean isReindexingAll();

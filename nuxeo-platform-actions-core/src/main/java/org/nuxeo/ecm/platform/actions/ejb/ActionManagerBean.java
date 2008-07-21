@@ -55,7 +55,7 @@ public class ActionManagerBean implements ActionManager {
     @PostConstruct
     public void initialize() {
         try {
-            actionService = (ActionManager) Framework.getLocalService(ActionManager.class);
+            actionService = Framework.getLocalService(ActionManager.class);
         } catch (Exception e) {
             log.error("Failed to lookup ActionService", e);
         }
