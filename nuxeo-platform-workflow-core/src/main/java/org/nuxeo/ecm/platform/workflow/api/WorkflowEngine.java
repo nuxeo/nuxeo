@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -272,6 +273,8 @@ public interface WorkflowEngine {
      */
     Collection<WMWorkItemInstance> getWorkItemsFor(WMParticipant participant,
             String state);
+    Collection<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participants, String state);
 
     /**
      * Returns the work items for a given process instance in a given state.
@@ -396,4 +399,12 @@ public interface WorkflowEngine {
      */
     WMWorkItemIterator listWorkItems(WMFilter filter)
             throws WMWorkflowException;
+
+    /**
+     * Return a list of process instance having created by one of those users.
+     *
+     * @param groupNames the creators.
+     * @return
+     */
+    Collection<WMProcessInstance> listProcessInstanceForCreators(List<String> creators);
 }
