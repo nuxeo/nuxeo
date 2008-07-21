@@ -45,8 +45,8 @@ public enum VersioningActions implements Serializable {
     private final String name;
 
     /**
-     * @deprecated an enum should not hold a state value: it is reset
-     *             when serializing it.
+     * @deprecated an enum should not hold a state value: it is reset when
+     *             serializing it.
      */
     @Deprecated
     private boolean isDefault;
@@ -57,17 +57,19 @@ public enum VersioningActions implements Serializable {
     }
 
     public static VersioningActions getByActionName(String actionName) {
-        for (VersioningActions va : VersioningActions.values()) {
-            if (va.toString().equals(actionName)) {
-                return va;
+        if (actionName != null) {
+            try {
+                return Enum.valueOf(VersioningActions.class, actionName.trim());
+            } catch (IllegalArgumentException e) {
+                // no action found by that name
             }
         }
         return null;
     }
 
     /**
-     * @deprecated an enum should not hold a state value: it is reset
-     *             when serializing it, see NXP-2516.
+     * @deprecated an enum should not hold a state value: it is reset when
+     *             serializing it, see NXP-2516.
      */
     @Deprecated
     public boolean isDefault() {
@@ -75,8 +77,8 @@ public enum VersioningActions implements Serializable {
     }
 
     /**
-     * @deprecated an enum should not hold a state value: it is reset
-     *             when serializing it, see NXP-2516.
+     * @deprecated an enum should not hold a state value: it is reset when
+     *             serializing it, see NXP-2516.
      */
     @Deprecated
     public void setDefault(boolean isDefault) {
