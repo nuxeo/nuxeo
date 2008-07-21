@@ -45,7 +45,8 @@
     <import>**</import>
     <includeDependencies>true</includeDependencies>
     <includes>
-      <artifact group="org.nuxeo.*" category="runtime,jboss4" includeDependsOnCategory="false"/>
+      <artifact group="org.nuxeo.*" category="runtime,jboss4"
+        includeDependsOnCategory="false" />
       <artifact group="org.nuxeo.*" category="stateless" />
     </includes>
     <excludes>
@@ -59,20 +60,20 @@
   </artifactSet>
 
   <!--
-  <assemble>
+    <assemble>
     <outputFile>system</outputFile>
     <unpack>true</unpack>
     <unpackInNewDirectory>true</unpackInNewDirectory>
     <set>nuxeo-platform-unpacked</set>
-  </assemble>
-  <artifactSet id="nuxeo-platform-unpacked">
+    </assemble>
+    <artifactSet id="nuxeo-platform-unpacked">
     <import>**</import>
     <includes>
-      <artifact name="nuxeo-platform-audit-facade" />
-      <artifact name="nuxeo-platform-placeful-facade" />
+    <artifact name="nuxeo-platform-audit-facade" />
+    <artifact name="nuxeo-platform-placeful-facade" />
     </includes>
-  </artifactSet>
-   -->
+    </artifactSet>
+  -->
 
   <!-- third party libraries embedded in the ear -->
   <assemble>
@@ -82,7 +83,8 @@
   <artifactSet id="nuxeo-fixed-libs">
     <artifacts>
       <artifact group="org.osgi" name="osgi-core" version="4.1" />
-      <artifact group="commons-collections" name="commons-collections" version="3.1" />
+      <artifact group="commons-collections" name="commons-collections"
+        version="3.1" />
       <artifact group="commons-io" name="commons-io" version="1.2" />
       <artifact group="commons-lang" name="commons-lang" version="2.2" />
       <artifact group="commons-fileupload" name="commons-fileupload"
@@ -112,27 +114,30 @@
         version="1.0.1-incubating-NXEP51M2" />
       <artifact group="org.apache.myfaces.trinidad" name="trinidad-impl"
         version="1.0.1-incubating-NXEP51M2" />
-      <artifact group="org.apache.directory.server" name="apacheds-protocol-shared" version="1.5.1" />
-      <artifact group="org.apache.directory.shared" name="shared-ldap" version="0.9.7" />
+      <artifact group="org.apache.directory.server"
+        name="apacheds-protocol-shared" version="1.5.1" />
+      <artifact group="org.apache.directory.shared" name="shared-ldap"
+        version="0.9.7" />
       <artifact group="com.sun.facelets" name="jsf-facelets" version="1.1.11" />
-      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-jbossws-wrapper" version="4.0.5.GA" />
+      <artifact group="org.nuxeo.ecm.platform" name="nuxeo-jbossws-wrapper"
+        version="4.0.5.GA" />
     </artifacts>
   </artifactSet>
 
   <!-- third party libraries based on dependencies
-  <assemble>
+    <assemble>
     <outputFile>lib2</outputFile>
     <set>nuxeo-libs-via-dependency-tree</set>
-  </assemble>
-  <artifactSet id="nuxeo-libs-via-dependency-tree">
+    </assemble>
+    <artifactSet id="nuxeo-libs-via-dependency-tree">
     <import>**</import>
     <includeDependencies>true</includeDependencies>
     <includes>
-      <artifact scope="compile" />
+    <artifact scope="compile" />
     </includes>
     <excludes>
-      <artifact group="org.nuxeo.*" />
+    <artifact group="org.nuxeo.*" />
     </excludes>
-  </artifactSet>
+    </artifactSet>
   -->
 </assembly>

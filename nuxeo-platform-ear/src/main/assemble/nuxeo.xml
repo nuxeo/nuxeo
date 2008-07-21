@@ -165,7 +165,7 @@
     <excludes>
     <artifact group="org.nuxeo.*" />
     </excludes>
-  </artifactSet>
+    </artifactSet>
   -->
 
   <!-- CUSTOM RESOURCES

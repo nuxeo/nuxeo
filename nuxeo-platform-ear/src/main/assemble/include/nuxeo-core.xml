@@ -22,21 +22,21 @@
       <exclude>lib-fragments.xml</exclude>
       <exclude>nxdocument.cpm.xml</exclude>
       <!--
-      <exclude>config/addWorkspace.jpdl.xml</exclude>
-      <exclude>config/commentService-config-bundle.xml</exclude>
-      <exclude>config/default-sql-directories-bundle.xml</exclude>
-      <exclude>config/nuxeo-webapp-core.properties</exclude>
-      <exclude>config/nxrelations-default-jena-bundle.xml</exclude>
-      <exclude>datasources/nxarchive*.xml</exclude>
-      <exclude>datasources/nxaudit*.xml</exclude>
-      <exclude>datasources/nxcomment*.xml</exclude>
-      <exclude>datasources/nxplaceful*.xml</exclude>
-      <exclude>datasources/nxrelations*.xml</exclude>
-      <exclude>datasources/nxsearch*.xml</exclude>
-      <exclude>datasources/nxsqldirectory*.xml</exclude>
-      <exclude>datasources/nxworkflow*.xml</exclude>
-      <exclude>OSGI-INF/templates/WAR_MANIFEST.MF</exclude>
-      <exclude>config/fileManagerService-config-bundle.xml</exclude>
+        <exclude>config/addWorkspace.jpdl.xml</exclude>
+        <exclude>config/commentService-config-bundle.xml</exclude>
+        <exclude>config/default-sql-directories-bundle.xml</exclude>
+        <exclude>config/nuxeo-webapp-core.properties</exclude>
+        <exclude>config/nxrelations-default-jena-bundle.xml</exclude>
+        <exclude>datasources/nxarchive*.xml</exclude>
+        <exclude>datasources/nxaudit*.xml</exclude>
+        <exclude>datasources/nxcomment*.xml</exclude>
+        <exclude>datasources/nxplaceful*.xml</exclude>
+        <exclude>datasources/nxrelations*.xml</exclude>
+        <exclude>datasources/nxsearch*.xml</exclude>
+        <exclude>datasources/nxsqldirectory*.xml</exclude>
+        <exclude>datasources/nxworkflow*.xml</exclude>
+        <exclude>OSGI-INF/templates/WAR_MANIFEST.MF</exclude>
+        <exclude>config/fileManagerService-config-bundle.xml</exclude>
       -->
     </excludes>
   </fileSet>

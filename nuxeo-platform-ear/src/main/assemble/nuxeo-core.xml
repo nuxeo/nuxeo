@@ -32,7 +32,8 @@
     <import>**</import>
     <includeDependencies>true</includeDependencies>
     <includes>
-      <artifact group="org.nuxeo.*" category="runtime,jboss4" includeDependsOnCategory="false"/>
+      <artifact group="org.nuxeo.*" category="runtime,jboss4"
+        includeDependsOnCategory="false" />
       <artifact group="org.nuxeo.*" category="core" />
     </includes>
     <excludes>
@@ -92,19 +93,19 @@
   </artifactSet>
 
   <!-- third party libraries based on dependencies
-  <assemble>
+    <assemble>
     <outputFile>lib2</outputFile>
     <set>nuxeo-libs-via-dependency-tree</set>
-  </assemble>
-  <artifactSet id="nuxeo-libs-via-dependency-tree">
+    </assemble>
+    <artifactSet id="nuxeo-libs-via-dependency-tree">
     <import>**</import>
     <includeDependencies>true</includeDependencies>
     <includes>
-      <artifact scope="compile" />
+    <artifact scope="compile" />
     </includes>
     <excludes>
-      <artifact group="org.nuxeo.*" />
+    <artifact group="org.nuxeo.*" />
     </excludes>
-  </artifactSet>
+    </artifactSet>
   -->
 </assembly>

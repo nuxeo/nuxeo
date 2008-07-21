@@ -1,6 +1,5 @@
 <assembly>
 
-
   <fileSet id="nuxeo-template">
     <directory>src/main/resources</directory>
     <includes>
