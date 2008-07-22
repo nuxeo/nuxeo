@@ -57,11 +57,9 @@ public enum VersioningActions implements Serializable {
     }
 
     public static VersioningActions getByActionName(String actionName) {
-        if (actionName != null) {
-            try {
-                return Enum.valueOf(VersioningActions.class, actionName.trim());
-            } catch (IllegalArgumentException e) {
-                // no action found by that name
+        for (VersioningActions va : VersioningActions.values()) {
+            if (va.toString().equals(actionName)) {
+                return va;
             }
         }
         return null;
