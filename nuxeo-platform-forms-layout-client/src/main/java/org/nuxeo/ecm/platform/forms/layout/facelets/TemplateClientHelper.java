@@ -35,7 +35,7 @@ public class TemplateClientHelper {
 
     public static final String SUBWIDGET_FACELET_NAME = "subwidget";
 
-    final static String PATTERN = "_([0-9]+)";
+    static final String PATTERN = "_([0-9]+)";
 
     private TemplateClientHelper() {
     }
