@@ -70,9 +70,8 @@ public class XPathBuilder implements QueryConstants {
         }
 
         String from = query.from.elements.get(0);
-        if (query.from.getType() == FromClause.LOCATION) { // TODO nxql parser
-            // doesn't support
-            // this
+        if (query.from.getType() == FromClause.LOCATION) {
+            // TODO NXQL parser doesn't support this
             xq.type = NodeConstants.ECM_NT_DOCUMENT.rawname;
             StringBuilder buf = new StringBuilder(1024);
             String name = buildPathPattern(buf, from, false);
@@ -81,6 +80,10 @@ public class XPathBuilder implements QueryConstants {
             }
         } else if ("document".equals(from) || "*".equals(from)) {
             xq.type = NodeConstants.ECM_NT_DOCUMENT.rawname;
+        } else if ("proxy".equals(from) || "documentProxy".equals(from)) {
+            // a proxy search - need special handling to deref. proxies
+            xq.type = NodeConstants.ECM_NT_DOCUMENT_PROXY.rawname;
+            xq.isProxyQuery = true;
         } else {
             xq.type = TypeAdapter.docType2Jcr(from);
         }
@@ -167,6 +170,10 @@ public class XPathBuilder implements QueryConstants {
         xq.path = buf.toString();
     }
 
+    public static String operator(Operator op) {
+        return op == Operator.NOTEQ ? "!=" : op.toString();
+    }
+
     /**
      * Process special expressions. If the expression is not a special one
      * return false so that the expression will be processed in the default way.
@@ -188,6 +195,17 @@ public class XPathBuilder implements QueryConstants {
                 }
                 xq.predicate.append("jcr:contains(., '").append(
                         ((StringLiteral) expr.rvalue).value).append("')");
+                return true;
+            } else if (name.equals(ECM_TYPE)) {
+                if (expr.rvalue.getClass() != StringLiteral.class) {
+                    throw new QueryException(
+                            "Invalid query:  ecm:fulltext can only be compared against string values");
+                }
+                String type = ((StringLiteral) expr.rvalue).value;
+                type = TypeAdapter.docType2Jcr(type);
+                xq.predicate.append("@").append(JcrConstants.JCR_PRIMARYTYPE);
+                xq.predicate.append(" ").append(operator(expr.operator)).append(" '")
+                .append(type).append("'");
                 return true;
             } else if (name.equals(ECM_NAME)) {
                 if (expr.rvalue.getClass() != StringLiteral.class) {
@@ -469,8 +487,6 @@ public class XPathBuilder implements QueryConstants {
         } else {
             if (ECM_PATH.equals(name)) {
                 name = JcrConstants.JCR_PATH;
-            } else if (ECM_TYPE.equals(name)) {
-                name = JcrConstants.JCR_PRIMARYTYPE;
             } else if (ECM_ID.equals(name)) {
                 name = JcrConstants.JCR_UUID;
                 // } else if (ECM_SCHEMA.equals(name)) {

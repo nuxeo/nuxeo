@@ -32,10 +32,14 @@ public class XPathQuery {
     // path expression: //doc1/doc2/ should contain a trailing /
     String path = null;
     StringBuilder orderBy = new StringBuilder();
+    boolean isProxyQuery = false;
 
     public String toString() {
         if (name == null) {
             name = "*";
+        }
+        if (isProxyQuery) {
+            return proxyQueryToString();
         }
         if (predicate.length() > 0) {
             return new StringBuilder(256).append(path == null ? "//" : path)
@@ -45,6 +49,22 @@ public class XPathQuery {
             return new StringBuilder(256).append(path == null ? "//" : path)
             .append("element(").append(name).append(",").append(type)
             .append(")").append(predicate).append(orderBy).toString();
+        }
+    }
+
+    public String proxyQueryToString() {
+        if (predicate.length() > 0) {
+            return new StringBuilder(256).append(path == null ? "//" : path)
+            .append("element(").append(name).append(",").append(type)
+            .append(")")
+            .append("/jcr:deref(@ecm:refFrozenNode, '*')")
+            .append("[").append(predicate).append("]").append(orderBy).toString();
+        } else {
+            return new StringBuilder(256).append(path == null ? "//" : path)
+            .append("element(").append(name).append(",").append(type)
+            .append(")")
+            .append("/jcr:deref(@ecm:refFrozenNode, '*')")
+            .append(predicate).append(orderBy).toString();
         }
     }
 
