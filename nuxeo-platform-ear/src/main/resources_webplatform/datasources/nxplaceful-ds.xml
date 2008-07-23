@@ -1,19 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <datasources>
-  <local-tx-datasource>
-    <jndi-name>placeful_service_ds</jndi-name>
-    <connection-url>
-      jdbc:hsqldb:${jboss.server.data.dir}${/}hypersonic${/}nxplacefulservice
-    </connection-url>
-    <driver-class>org.hsqldb.jdbcDriver</driver-class>
-    <user-name>sa</user-name>
-    <password></password>
-  </local-tx-datasource>
-
-  <mbean code="org.jboss.jdbc.HypersonicDatabase"
-    name="jboss:service=Hypersonic,database=nxplacefulservice">
-    <attribute name="Database">nxplacefulservice</attribute>
-    <attribute name="InProcessMode">true</attribute>
+  <!-- 
+  Link datasource to point to NuxeoDS.
+  See unified-nuxeo-ds.xml to set a different database
+  -->
+  <mbean code="org.jboss.naming.NamingAlias"
+    name="jboss.jca:name=placeful_service_ds,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">java:/placeful_service_ds</attribute>
   </mbean>
 </datasources>
