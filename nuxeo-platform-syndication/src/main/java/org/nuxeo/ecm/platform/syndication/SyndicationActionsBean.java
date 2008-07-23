@@ -252,7 +252,7 @@ public class SyndicationActionsBean implements SyndicationActions {
      * @return the feed items
      * @throws ClientException
      */
-    protected List<FeedItem> getFeedItems(List<DocumentModel> docs)
+    protected static List<FeedItem> getFeedItems(List<DocumentModel> docs)
             throws ClientException {
         return FeedItemAdapter.toFeedItemList(docs);
     }
@@ -273,18 +273,18 @@ public class SyndicationActionsBean implements SyndicationActions {
         url.append(path);
         url.append('?');
         url.append(key);
-        url.append("=");
+        url.append('=');
         url.append(urlencode(value));
-        url.append("&");
+        url.append('&');
         url.append(FEEDTYPE_KEY);
-        url.append("=");
+        url.append('=');
         if (feedType != null) {
             url.append(urlencode(feedType));
         }
         return url.toString();
     }
 
-    protected void writeFeed(SyndFeed feed) {
+    protected static void writeFeed(SyndFeed feed) {
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
         response.setContentType("application/xml; charset=UTF-8");
@@ -296,7 +296,7 @@ public class SyndicationActionsBean implements SyndicationActions {
         context.responseComplete();
     }
 
-    protected void sendForbidden() {
+    protected static void sendForbidden() {
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
