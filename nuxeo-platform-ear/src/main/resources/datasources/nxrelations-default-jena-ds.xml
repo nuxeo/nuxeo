@@ -1,20 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0"?>
 <datasources>
   <local-tx-datasource>
     <jndi-name>nxrelations-default-jena</jndi-name>
-    <connection-url>
-      jdbc:hsqldb:${jboss.server.data.dir}${/}hypersonic${/}nxrelations-default-jena
-    </connection-url>
-    <driver-class>org.hsqldb.jdbcDriver</driver-class>
+    <connection-url>jdbc:derby:${jboss.server.data.dir}/derby/nuxeo;create=true</connection-url>
+    <driver-class>org.apache.derby.jdbc.EmbeddedDriver</driver-class>
     <user-name>sa</user-name>
     <password></password>
   </local-tx-datasource>
-
-  <mbean code="org.jboss.jdbc.HypersonicDatabase"
-    name="jboss:service=Hypersonic,database=nxrelations-default-jena">
-    <attribute name="Database">nxrelations-default-jena</attribute>
-    <attribute name="InProcessMode">true</attribute>
-  </mbean>
 </datasources>
-

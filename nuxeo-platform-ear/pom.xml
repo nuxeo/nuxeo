@@ -618,6 +618,10 @@
                   <artifactId>nuxeo-runtime-jboss-extensions</artifactId>
                   <version>${nuxeo.runtime.version}</version>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.derby</groupId>
+                  <artifactId>derby</artifactId>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/lib</outputDirectory>
             </configuration>

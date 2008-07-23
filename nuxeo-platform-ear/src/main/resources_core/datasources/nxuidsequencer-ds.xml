@@ -1,20 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0"?>
 <datasources>
-  <local-tx-datasource>
+  <xa-datasource>
     <jndi-name>nxuidsequencer</jndi-name>
-    <connection-url>
-      jdbc:hsqldb:${jboss.server.data.dir}${/}hypersonic${/}nxuidsequencer
-    </connection-url>
-    <driver-class>org.hsqldb.jdbcDriver</driver-class>
-    <user-name>sa</user-name>
-    <password></password>
-  </local-tx-datasource>
-
-  <mbean code="org.jboss.jdbc.HypersonicDatabase"
-    name="jboss:service=Hypersonic,database=nxuidsequencer">
-    <attribute name="Database">nxuidsequencer</attribute>
-    <attribute name="InProcessMode">true</attribute>
-  </mbean>
+    <xa-datasource-class>org.apache.derby.jdbc.EmbeddedXADataSource</xa-datasource-class>
+    <xa-datasource-property name="DatabaseName">${jboss.server.data.dir}/derby/nuxeo</xa-datasource-property>
+    <xa-datasource-property name="User">sa</xa-datasource-property>
+    <xa-datasource-property name="Password"></xa-datasource-property>
+    <xa-datasource-property name="CreateDatabase">create</xa-datasource-property>
+    <track-connection-by-tx/>
+    <no-tx-separate-pools/>
+  </xa-datasource>
 </datasources>
-
