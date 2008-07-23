@@ -338,11 +338,9 @@
       <fileset file="nuxeo-platform/nuxeo-platform-ear/target/derby-jdbc-lib/*.jar" />
     </copy>
     -->
-    <echo>
-    </echo>
-    <echo>Done: Don't forget to put derby library in ${jboss.deploy}/lib</echo>
-    <echo>
-    </echo>
+    <echo></echo>
+    <echo>Done: Don't forget to put derby library in ${jboss.lib}</echo>
+    <echo></echo>
   </target>
 
   <target name="test" depends="test-unix,test-windows" description="Run tests" />
