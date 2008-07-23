@@ -80,7 +80,7 @@ public class XPathBuilder implements QueryConstants {
             }
         } else if ("document".equals(from) || "*".equals(from)) {
             xq.type = NodeConstants.ECM_NT_DOCUMENT.rawname;
-        } else if ("proxy".equals(from) || "documentProxy".equals(from)) {
+        } else if ("publishedVersions".equals(from)) {
             // a proxy search - need special handling to deref. proxies
             xq.type = NodeConstants.ECM_NT_DOCUMENT_PROXY.rawname;
             xq.isProxyQuery = true;
