@@ -324,7 +324,7 @@
     </copy>
     -->
     <echo></echo>
-    <echo>Done: Don't forget to put derby library in ${jboss.deploy}/lib</echo>
+    <echo>Done: Don't forget to put derby library in ${jboss.lib}</echo>
     <echo></echo>
   </target>
 
