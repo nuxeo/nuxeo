@@ -148,6 +148,7 @@ public class LDAPDirectory extends AbstractDirectory {
             props.put("com.sun.jndi.ldap.connect.pool.protocol", "plain ssl");
             props.put("com.sun.jndi.ldap.connect.pool.authentication",
                     "none simple DIGEST-MD5");
+            props.put("com.sun.jndi.ldap.connect.pool.timeout", "1800000"); // 30 min
         }
         return props;
     }
