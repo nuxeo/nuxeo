@@ -8,7 +8,7 @@
   <mbean code="org.jboss.naming.NamingAlias"
     name="jboss.jca:name=nxcomment-jena,service=DataSourceBinding">
     <attribute name="ToName">java:/NuxeoDS</attribute>
-    <attribute name="FromName">java:/nxcomment-jena</attribute>
+    <attribute name="FromName">java:/comment-relations</attribute>
   </mbean>
 </datasources>
 
