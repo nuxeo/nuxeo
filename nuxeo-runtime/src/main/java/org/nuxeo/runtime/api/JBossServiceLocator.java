@@ -39,7 +39,9 @@ public class JBossServiceLocator extends JndiServiceLocator {
     @Override
     public void initialize(String host, int port, Properties properties)
             throws Exception {
-        if (port == 0) port = 1099;
+        if (port == 0) {
+            port = 1099;
+        }
         if (properties != null) {
             prefix = properties.getProperty("prefix", "nuxeo/");
             suffix = properties.getProperty("suffix", getDefaultSuffix());
@@ -67,7 +69,7 @@ public class JBossServiceLocator extends JndiServiceLocator {
     }
 
     public String getDefaultSuffix() {
-    	return System.getProperty("jboss.home.dir") == null ? "/remote" : "/local"; // if not in jboss return "/remote"
+        return System.getProperty("jboss.home.dir") == null ? "/remote" : "/local"; // if not in jboss return "/remote"
     }
 
 }

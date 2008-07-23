@@ -213,6 +213,15 @@ public class ServiceDescriptor implements Serializable {
     }
 
     @Override
+    public int hashCode() {
+        int result;
+        result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (serviceClassName != null ? serviceClassName.hashCode() : 0);
+        result = 31 * result + (group != null ? group.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append("[name=" + getName() + ", group=" + getGroup()

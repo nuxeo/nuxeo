@@ -34,17 +34,17 @@ import org.apache.commons.logging.LogFactory;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public final class ServiceManager {
+public final class ServiceManager implements org.nuxeo.runtime.ServiceManager {
 
     private static final Log log = LogFactory.getLog(ServiceManager.class);
 
     private static final ServiceManager instance = new ServiceManager();
 
-    protected final Map<String, ServiceDescriptor> services = new HashMap<String, ServiceDescriptor>();
+    private final Map<String, ServiceDescriptor> services = new HashMap<String, ServiceDescriptor>();
 
-    protected final List<ServiceHost> servers = new Vector<ServiceHost>();
+    private final List<ServiceHost> servers = new Vector<ServiceHost>();
 
-    protected final Map<String, ServiceGroup> groups = new HashMap<String, ServiceGroup>();
+    private final Map<String, ServiceGroup> groups = new HashMap<String, ServiceGroup>();
 
     // Singleton.
     private ServiceManager() {
@@ -163,8 +163,7 @@ public final class ServiceManager {
         ServiceLocatorFactory factory = ServiceLocatorFactory.getFactory(uri.getScheme());
         if (factory != null) {
             ServiceLocator locator = factory.createLocator(uri);
-            return locator.lookup(uri.getPath().substring(1)); // avoid leading
-            // /
+            return locator.lookup(uri.getPath().substring(1)); // avoid leading /
         }
         return null;
     }

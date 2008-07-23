@@ -53,6 +53,7 @@ public final class Framework {
      * The runtime instance.
      */
     private static RuntimeService runtime;
+    private static org.nuxeo.runtime.ServiceManager serviceMgr;
 
     private Framework() { }
 
@@ -64,6 +65,7 @@ public final class Framework {
         }
         Framework.runtime = runtimeService;
         NXRuntime.setRuntime(runtime); // for compatibility with older API
+        initServiceManager();
         runtime.start();
     }
 
@@ -72,6 +74,20 @@ public final class Framework {
             runtime.stop();
             NXRuntime.setRuntime(null); // for compatibility with older API
             runtime = null;
+        }
+    }
+
+    private static void initServiceManager() {
+        String sm = Framework.getProperty("org.nuxeo.runtime.ServiceManager");
+        if (sm == null) { // compatibility mode
+            serviceMgr = org.nuxeo.runtime.api.ServiceManager.getInstance();
+        } else {
+            try {
+                serviceMgr = (org.nuxeo.runtime.ServiceManager)Class.forName(sm).newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new Error("Failed to initialize service manager");
+            }
         }
     }
 
@@ -92,7 +108,7 @@ public final class Framework {
      * @return
      */
     public static <T> T getService(Class<T> serviceClass) throws Exception {
-        return ServiceManager.getInstance().getService(serviceClass);
+        return serviceMgr.getService(serviceClass);
     }
 
     /**
@@ -105,7 +121,7 @@ public final class Framework {
      */
     public static <T> T getService(Class<T> serviceClass, String name)
             throws Exception {
-        return ServiceManager.getInstance().getService(serviceClass, name);
+        return serviceMgr.getService(serviceClass, name);
     }
 
     /**
@@ -116,6 +132,7 @@ public final class Framework {
      * @throws Exception
      */
     public static <T> T getLocalService(Class<T> serviceClass) {
+        //TODO: obsolete code remove it
         ServiceProvider provider = DefaultServiceProvider.getProvider();
         if (provider != null) {
             return provider.getService(serviceClass);
@@ -125,17 +142,13 @@ public final class Framework {
     }
 
     /**
-     * Get a (possibly remote) object that is bound to the given key.
-     * This method is using the regietred service providers to find the object
-     * @param key the object key
-     * @return the object or null if none (or if an error occured)
-     *
-     * This method exists on the branch 1.4 only for compatibility with Apogee.
+     * Lookup a registered object given its key
+     * @param key
+     * @return
      */
     public static Object lookup(String key) {
-        return null;
+        return null; //TODO
     }
-
 
     /**
      * Login in the system as the system user (a pseudo-user having all

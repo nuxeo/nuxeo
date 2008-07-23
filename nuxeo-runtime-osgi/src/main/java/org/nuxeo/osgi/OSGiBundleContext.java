@@ -46,6 +46,10 @@ public class OSGiBundleContext implements BundleContext {
         this.bundle = bundle;
     }
 
+    public OSGiAdapter getOSGiAdapter() {
+        return bundle.osgi;
+    }
+
     public void addBundleListener(BundleListener listener) {
         bundle.osgi.addBundleListener(listener);
     }

@@ -38,7 +38,7 @@ public class ComponentDeploymentTest extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp2.xml");
     }
 
-    public void testContributions() throws Exception {
+    public void testContributions() {
         RuntimeService runtime = Framework.getRuntime();
         ComponentManager mgr = runtime.getComponentManager();
         assertTrue(mgr.size() > 0);

@@ -94,4 +94,8 @@ public class RemoteComponentInstance implements ComponentInstance {
     public Object getPropertyValue(String property, Object defValue) {
         throw new UnsupportedOperationException("Operation not supported for remote components");
     }
+
+    public String[] getProvidedServiceNames() {
+        throw new UnsupportedOperationException("Operation not supported for remote components");
+    }
 }
