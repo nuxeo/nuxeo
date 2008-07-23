@@ -30,7 +30,6 @@ public class NoExtensionFoundException extends Exception {
     private static final long serialVersionUID = -961763618434457798L;
 
     public NoExtensionFoundException() {
-
     }
 
     public NoExtensionFoundException(String message) {
