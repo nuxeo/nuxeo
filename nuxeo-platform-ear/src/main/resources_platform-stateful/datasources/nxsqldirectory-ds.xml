@@ -1,19 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <datasources>
-  <local-tx-datasource>
-    <jndi-name>nxsqldirectory</jndi-name>
-    <connection-url>
-      jdbc:hsqldb:${jboss.server.data.dir}${/}hypersonic${/}nxsqldirectory
-    </connection-url>
-    <driver-class>org.hsqldb.jdbcDriver</driver-class>
-    <user-name>sa</user-name>
-    <password></password>
-  </local-tx-datasource>
-
-  <mbean code="org.jboss.jdbc.HypersonicDatabase"
-    name="jboss:service=Hypersonic,database=nxsqldirectory">
-    <attribute name="Database">nxsqldirectory</attribute>
-    <attribute name="InProcessMode">true</attribute>
+  <!-- 
+  Link datasource to point to NuxeoDS.
+  See unified-nuxeo-ds.xml to set a different database
+  -->
+  <mbean code="org.jboss.naming.NamingAlias"
+    name="jboss.jca:name=nxsqldirectory,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">java:/nxsqldirectory</attribute>
   </mbean>
 </datasources>

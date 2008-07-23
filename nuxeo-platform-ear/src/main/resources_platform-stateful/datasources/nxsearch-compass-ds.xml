@@ -4,19 +4,13 @@
   <!-- The following is kept as a sample for
 easy live edition. It is NOT used in the default app. -->
 
-  <local-tx-datasource>
-    <jndi-name>nxsearch-compass</jndi-name>
-    <connection-url>
-      jdbc:hsqldb:${jboss.server.data.dir}${/}hypersonic${/}nxsearch-compass
-    </connection-url>
-    <driver-class>org.hsqldb.jdbcDriver</driver-class>
-    <user-name>sa</user-name>
-    <password></password>
-  </local-tx-datasource>
-
-  <mbean code="org.jboss.jdbc.HypersonicDatabase"
-    name="jboss:service=Hypersonic,database=nxsearch-compass">
-    <attribute name="Database">nxsearch-compass</attribute>
-    <attribute name="InProcessMode">true</attribute>
+  <!-- 
+  Link datasource to point to NuxeoDS.
+  See unified-nuxeo-ds.xml to set a different database
+  -->
+  <mbean code="org.jboss.naming.NamingAlias"
+    name="jboss.jca:name=nxsearch-compass,service=DataSourceBinding">
+    <attribute name="ToName">java:/NuxeoDS</attribute>
+    <attribute name="FromName">java:/nxsearch-compass</attribute>
   </mbean>
 </datasources>

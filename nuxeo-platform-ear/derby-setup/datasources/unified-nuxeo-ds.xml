@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <datasources>
   <xa-datasource>
-    <jndi-name>nxworkflowjbpm</jndi-name>
+    <jndi-name>NuxeoDS</jndi-name>
     <xa-datasource-class>org.apache.derby.jdbc.EmbeddedXADataSource</xa-datasource-class>
     <xa-datasource-property name="DatabaseName">${jboss.server.data.dir}/derby/nuxeo</xa-datasource-property>
     <xa-datasource-property name="User">sa</xa-datasource-property>
