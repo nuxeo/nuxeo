@@ -58,7 +58,7 @@ public class TestXPathBuilder extends TestCase {
         x = "//element(*,ecmdt:File)[(jcr:contains(., '%MyText%')) and ( (dc:title = 'test1' or dc:title = 'test2') )]";
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
-        q = "select * from proxy where ecm:fulltext = '%MyText%' and ecm:type = 'File'";
+        q = "select * from publishedVersions where ecm:fulltext = '%MyText%' and ecm:type = 'File'";
         x = "//element(*,ecmnt:documentProxy)/jcr:deref(@ecm:refFrozenNode, '*')[(jcr:contains(., '%MyText%')) and (@jcr:primaryType = 'ecmdt:File')]";
         assertEquals(x, XPathBuilder.fromNXQL(q));
 
