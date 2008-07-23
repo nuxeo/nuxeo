@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.relations.web.listener.ejb;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,7 +31,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.io.Serializable;
 
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;

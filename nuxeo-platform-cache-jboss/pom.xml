@@ -17,6 +17,7 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
+
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-cache-jdk50</artifactId>
@@ -28,14 +29,6 @@
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-system</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-aop-jdk50</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-serialization</artifactId>
     </dependency>
     <dependency>
       <groupId>jboss</groupId>

@@ -51,6 +51,9 @@ public class TemplateItemDescriptor  implements Serializable {
     @XNodeList(value = "acl/ace", type = ArrayList.class, componentType = ACEDescriptor.class)
     public ArrayList<ACEDescriptor> acl;
 
+    @XNodeList(value = "properties/property", type = ArrayList.class, componentType = PropertyDescriptor.class)
+    public List<PropertyDescriptor> properties;
+
     public String getDescription() {
         return description;
     }
@@ -69,6 +72,10 @@ public class TemplateItemDescriptor  implements Serializable {
 
     public List<ACEDescriptor> getAcl() {
         return acl;
+    }
+
+    public List<PropertyDescriptor> getProperties() {
+        return properties;
     }
 
 }

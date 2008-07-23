@@ -25,10 +25,12 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.platform.content.template.service.ACEDescriptor;
+import org.nuxeo.ecm.platform.content.template.service.PropertyDescriptor;
 import org.nuxeo.ecm.platform.content.template.service.TemplateItemDescriptor;
 
 public class SimpleTemplateBasedFactory extends BaseContentFactory {
@@ -55,8 +57,18 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
             newChild.setProperty("dublincore", "title", item.getTitle());
             newChild.setProperty("dublincore", "description",
                     item.getDescription());
+            setProperties(item.getProperties(), newChild);
             newChild = session.createDocument(newChild);
             setAcl(item.getAcl(), newChild.getRef());
+        }
+    }
+
+    protected void setProperties(List<PropertyDescriptor> properties,
+            DocumentModel doc) throws ClientException {
+        if (properties != null && !properties.isEmpty()) {
+            for (PropertyDescriptor property : properties) {
+                doc.setPropertyValue(property.getXpath(), property.getValue());
+            }
         }
     }
 

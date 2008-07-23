@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
+import org.nuxeo.ecm.core.query.sql.model.Literal;
 import org.nuxeo.runtime.model.RuntimeContext;
 
 @XObject(value = "queryModel")
@@ -224,10 +225,12 @@ public class QueryModelDescriptor {
                     queryBuilder.append(b ? 1 : 0);
                 } else if (params[i] instanceof Number) {
                     queryBuilder.append(params[i]);
+                } else if (params[i] instanceof Literal) {
+                    queryBuilder.append(params[i].toString());
                 } else {
                     String queryParam = params[i].toString();
-                    // TODO will escape everything as if it where a string
-                    // which is ok for dates but wrong for integers
+                    // this will escape everything as if it where a string
+                    // use a literal if you want to do your own custom stuff
                     // TODO replug escaper from SQLQueryParser
                     queryBuilder.append(prepareStringLiteral(queryParam));
                 }

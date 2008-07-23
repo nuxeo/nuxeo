@@ -59,6 +59,7 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.workflow.api.client.delegate.WAPIBusinessDelegate;
 import org.nuxeo.ecm.platform.workflow.api.client.events.EventNames;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WAPI;
+import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMParticipant;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMProcessInstance;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemState;
@@ -164,6 +165,7 @@ public class PublishingActionsListenerBean extends InputController implements
     }
 
     public String publishDocument() throws PublishingException {
+        WMParticipant creator;
         try {
             WMWorkItemInstance wi = getPublishingWorkItem();
             if (wi == null) {
@@ -171,6 +173,7 @@ public class PublishingActionsListenerBean extends InputController implements
                         "No publishing task found for user="
                                 + currentUser.getName());
             }
+            creator = wi.getProcessInstance().getAuthor();
             wapi.endWorkItem(wi.getId(),
                     PublishingConstants.WORKFLOW_TRANSITION_TO_PUBLISH);
         } catch (WMWorkflowException e) {
@@ -214,6 +217,7 @@ public class PublishingActionsListenerBean extends InputController implements
             eventInfo.put("targetSection", section.getName());
             eventInfo.put("proxy", currentDocument);
             eventInfo.put("sectionPath", section.getPathAsString());
+            eventInfo.put(WorkflowConstants.WORKFLOW_CREATOR, creator.getName());
             notifyEvent(
                     org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_PUBLICATION_APPROVED,
                     eventInfo, rejectPublishingComment, sourceDocument);
@@ -260,6 +264,7 @@ public class PublishingActionsListenerBean extends InputController implements
         // Compute parent before deleting the document.
         DocumentModel currentDocument = getCurrentDocument();
         DocumentModel parent;
+        WMParticipant creator;
         try {
             parent = documentManager.getDocument(currentDocument.getParentRef());
         } catch (ClientException ce) {
@@ -273,6 +278,7 @@ public class PublishingActionsListenerBean extends InputController implements
                         "No publishing task found for user="
                                 + currentUser.getName());
             }
+            creator = wi.getProcessInstance().getAuthor();
             wapi.endWorkItem(wi.getId(),
                     PublishingConstants.WORKFLOW_TRANSITION_TO_REJECT);
         } catch (WMWorkflowException e) {
@@ -317,6 +323,7 @@ public class PublishingActionsListenerBean extends InputController implements
             Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
             eventInfo.put("targetSection", section);
             eventInfo.put("proxy", currentDocument);
+            eventInfo.put(WorkflowConstants.WORKFLOW_CREATOR, creator.getName());
 
             notifyEvent(
                     org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_PUBLICATION_REJECTED,

@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.ec.notification.service;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.ec.placeful.PlacefulServiceImpl;
 import org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces.EJBPlacefulService;
 import org.nuxeo.ecm.platform.ec.placeful.interfaces.PlacefulService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -46,9 +45,10 @@ public final class NotificationServiceHelper {
                 NotificationService.NAME);
     }
 
-    public static PlacefulService getPlacefulService() {
+    public static PlacefulService getPlacefulService() throws Exception {
         return (PlacefulService) Framework.getRuntime().getComponent(
-                PlacefulServiceImpl.ID);
+                PlacefulService.ID);
+//        return Framework.getService(PlacefulService.class);
     }
 
     public static EJBPlacefulService getPlacefulServiceBean()

@@ -115,12 +115,18 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
         }
     }
 
+    /**
+     * Opens a system session
+     */
     protected CoreSession getCoreSession(String repo) throws Exception {
         CoreSession coreSession;
         try {
             Framework.login();
             RepositoryManager manager = Framework.getService(RepositoryManager.class);
-            coreSession = manager.getRepository(repo).open();
+            Map<String, Serializable> context = new HashMap<String, Serializable>();
+            // FIXME: should use constants?
+            context.put("username", "system");
+            coreSession = manager.getRepository(repo).open(context);
         } catch (Exception e) {
             throw new ClientException(
                     "Failed to open core session to repository " + repo, e);

@@ -19,6 +19,13 @@
 
 package org.nuxeo.ecm.platform.ui.web.tree;
 
+import java.io.IOException;
+
+import javax.faces.component.UIComponent;
+import javax.faces.component.UIViewRoot;
+import javax.faces.context.FacesContext;
+import javax.faces.context.ResponseWriter;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.myfaces.custom.tree2.HtmlTree;
@@ -27,12 +34,6 @@ import org.apache.myfaces.custom.tree2.TreeState;
 import org.apache.myfaces.custom.tree2.TreeWalker;
 import org.apache.myfaces.shared_tomahawk.renderkit.html.HTML;
 import org.apache.myfaces.shared_tomahawk.renderkit.html.HtmlRendererUtils;
-
-import javax.faces.component.UIComponent;
-import javax.faces.component.UIViewRoot;
-import javax.faces.context.FacesContext;
-import javax.faces.context.ResponseWriter;
-import java.io.IOException;
 
 public class HtmlLazyTreeRenderer extends HtmlTreeRenderer {
 

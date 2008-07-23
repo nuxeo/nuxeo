@@ -109,8 +109,8 @@ public class WorkflowServiceImpl extends DefaultComponent implements
                             : desc.context;
                     URL definitionUrl = definitionContext.getResource(definitionPath);
 
-                    log.debug("Request definition deployment in engine: " +
-                            desc.getEngineName());
+                    log.debug("Request definition deployment in engine: "
+                            + desc.getEngineName());
                     if (definitionUrl != null) {
 
                         log.debug("Definition URL @ " + definitionUrl.getPath());
@@ -147,7 +147,7 @@ public class WorkflowServiceImpl extends DefaultComponent implements
                     unregisterWorkflowEngine(desc.getName());
                 }
             } else if (extension.getExtensionPoint().equals("definition")) {
-                //log.debug("Unregistering workflow definition");
+                // log.debug("Unregistering workflow definition");
                 /*
                  * for (Object contribution : contributions) {
                  * WorkflowDefinitionDeploymentDescriptor desc =
@@ -189,7 +189,9 @@ public class WorkflowServiceImpl extends DefaultComponent implements
             engine = getWorkflowEngineByName(engineName);
         }
         if (engine == null) {
-            log.error("No suitable workflow engine for deployment found !");
+            log.error("No suitable workflow engine for deployment found ("
+                    + (engineName != null ? engineName : "defaultEngine: "
+                            + defaultEngine) + ")");
             return null;
         }
         WMProcessDefinitionState deployment = engine.deployDefinition(stream,
@@ -207,7 +209,9 @@ public class WorkflowServiceImpl extends DefaultComponent implements
         }
         boolean found = false;
         if (engine == null) {
-            log.error("No suitable workflow engine for deployment found !");
+            log.error("No suitable workflow engine for deployment found ("
+                    + (engineName != null ? engineName : "defaultEngine: "
+                            + defaultEngine) + ")");
         } else {
             found = engine.isDefinitionDeployed(workflowDefinitionId);
         }
@@ -223,7 +227,9 @@ public class WorkflowServiceImpl extends DefaultComponent implements
             engine = getWorkflowEngineByName(engineName);
         }
         if (engine == null) {
-            log.error("No suitable workflow engine for deployment found !");
+            log.error("No suitable workflow engine for deployment found ("
+                    + (engineName != null ? engineName : "defaultEngine: "
+                            + defaultEngine) + ")");
         } else {
             engine.undeployDefinition(workflowDefinitionId);
         }

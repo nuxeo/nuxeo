@@ -25,7 +25,7 @@
     <documentation>The default platform layout</documentation>
     <server name="default" host="${org.nuxeo.ecm.instance.host}" port="1099">
       <service class="org.nuxeo.ecm.core.api.CoreSession" jndiName="${org.nuxeo.ecm.platform.coresession.facade}" private="true"/>
-      <service class="org.nuxeo.ecm.platform.types.ejb.TypeManager" jndiName="%TypeManagerBean"/>
+      <service class="org.nuxeo.ecm.platform.types.TypeManager" jndiName="%TypeManagerBean"/>
       <repository name="default" class="org.nuxeo.ecm.core.api.CoreSession" description="Default Repository"/>
     </server>
   </extension>
@@ -106,7 +106,6 @@
       group="platform">
       <locator>%NotificationServiceBean</locator>
     </service>
-    <!--service class="org.nuxeo.ecm.platform.types.ejb.TypeManager" group="platform"/-->
   </extension>
 </component>
 

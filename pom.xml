@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -124,6 +126,8 @@
     <module>nuxeo-platform-ws</module>
     <module>nuxeo-platform-forum</module>
     <module>nuxeo-platform-forum-core</module>
+    <module>nuxeo-platform-forum-api</module>
+    <module>nuxeo-platform-forum-workflow</module>
     <module>nuxeo-platform-publishing-api</module>
     <module>nuxeo-platform-publishing</module>
     <module>nuxeo-platform-publishing-facade</module>
@@ -177,11 +181,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
-        <artifactId>nuxeo-core-jcr-connector-test</artifactId>
-        <version>${nuxeo.core.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-query</artifactId>
         <version>${nuxeo.core.version}</version>
       </dependency>
@@ -214,8 +213,25 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-api-test</artifactId>
+        <artifactId>nuxeo-platform-archive-api</artifactId>
         <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-archive-default-config</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-archive-facade</artifactId>
+        <version>${nuxeo.platform.version}</version>
+        <type>ejb</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-archive-web</artifactId>
+        <version>${nuxeo.platform.version}</version>
+        <type>ejb</type>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -388,17 +404,17 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-forum-api</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-forum-workflow</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-login</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-auth-web-jboss</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-jboss</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>
@@ -532,11 +548,6 @@
         <artifactId>nuxeo-platform-search-facade</artifactId>
         <version>${nuxeo.platform.version}</version>
         <type>ejb</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-search-test</artifactId>
-        <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -694,7 +705,23 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-workflow-test</artifactId>
+        <artifactId>nuxeo-platform-imaging-api</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-core</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-facade</artifactId>
+        <version>${nuxeo.platform.version}</version>
+        <type>ejb</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-imaging-transform</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>
@@ -736,10 +763,9 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.runtime</groupId>
-        <artifactId>nuxeo-runtime-test</artifactId>
+        <artifactId>nuxeo-runtime-scripting</artifactId>
         <version>${nuxeo.runtime.version}</version>
       </dependency>
-
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-core</artifactId>
@@ -844,12 +870,54 @@
         <artifactId>nuxeo-platform-relations-io</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-auth-web-jboss</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-login-jboss</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-ear</artifactId>
         <version>${nuxeo.platform.version}</version>
         <type>pom</type>
+      </dependency>
+
+      <!-- scope test -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-jcr-connector-test</artifactId>
+        <version>${nuxeo.core.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-api-test</artifactId>
+        <version>${nuxeo.platform.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-search-test</artifactId>
+        <version>${nuxeo.platform.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-workflow-test</artifactId>
+        <version>${nuxeo.platform.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.runtime</groupId>
+        <artifactId>nuxeo-runtime-test</artifactId>
+        <version>${nuxeo.runtime.version}</version>
+        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -866,13 +934,14 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 
   <scm>
     <connection>scm:hg:http://hg.nuxeo.org/nuxeo/nuxeo-platform</connection>
-    <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-platform</developerConnection>
+    <developerConnection>
+      scm:hg:https://hg.nuxeo.org/nuxeo/nuxeo-platform
+    </developerConnection>
     <url>http://hg.nuxeo.org/nuxeo/nuxeo-platform</url>
   </scm>
 

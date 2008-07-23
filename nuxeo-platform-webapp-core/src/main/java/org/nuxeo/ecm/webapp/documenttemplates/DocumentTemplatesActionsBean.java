@@ -19,10 +19,10 @@
 
 package org.nuxeo.ecm.webapp.documenttemplates;
 
-import java.io.Serializable;
-
 import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
+
+import java.io.Serializable;
 
 import javax.faces.application.FacesMessage;
 

@@ -74,7 +74,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 @Name("documentVersioning")
 @Scope(CONVERSATION)
 @NuxeoJavaBeanErrorHandler
-@Install(precedence=FRAMEWORK)
+@Install(precedence = FRAMEWORK)
 public class DocumentVersioningBean implements DocumentVersioning, Serializable {
 
     private static final long serialVersionUID = 75409841629876L;
@@ -93,7 +93,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
-    // @DataModel("availableVersioningOptionsMap")
     protected Map<String, String> availableVersioningOptionsMap;
 
     @In(create = true)
@@ -102,13 +101,13 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     @In(create = true)
     private transient VersioningManager versioningManager;
 
-    // field used for deciding whether or not to display versioning controls
-    // section (in document editing)
-    private Boolean rendered = false;
+    /**
+     * field used for deciding whether or not to display versioning controls
+     * section (in document editing)
+     */
+    private Boolean rendered;
 
-    private VersioningActions selectedOption = VersioningActions.ACTION_NO_INCREMENT;
-
-    private Boolean atCreationTime = false;
+    private VersioningActions selectedOption;
 
     // XXX: cache to workaround a performance problem computing availability of
     // versioning schema we should probably use a lighter test such as a trusted
@@ -130,13 +129,17 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return getAvailableVersioningHistory(document);
     }
 
+    // FIXME: should cache the list and invalidate it correctly as it refers to
+    // current document
     public Collection<VersionModel> getCurrentItemVersioningHistory() {
         return getItemVersioningHistory(navigationContext.getCurrentDocument());
     }
 
     @Factory(value = "currentDocumentIncrementationRules", scope = EVENT)
+    // FIXME: should cache the String and invalidate it correctly as it refers
+    // to current document
     public String factoryForIncrementationRules() {
-        if (atCreationTime) {
+        if (!getRendered()) {
             return null;
         }
         return getIncRulesResult();
@@ -148,6 +151,8 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
      * user as an explanation of what versioning rule will be automatically
      * applied.
      */
+    // FIXME: should cache the String and invalidate it correctly as it refers
+    // to current document
     public String getIncRulesResult() {
         String editOptionsInfo = null;
 
@@ -192,8 +197,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
      */
     private Collection<VersionModel> getAvailableVersioningHistory(
             DocumentModel doc) {
-        // iteratie peste toate versiunile
-        List<VersionModel> versions;
+        List<VersionModel> versions = Collections.emptyList();
 
         try {
             versions = documentManager.getVersionsForDocument(doc.getRef());
@@ -209,41 +213,27 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
                 }
             }
 
-        } catch (ClientException e) { //
-            e.printStackTrace();
+        } catch (ClientException e) {
             log.error("Error retrieving versioning history ", e);
-            // XXX : fail safe - need better handling return
-            // availableVersioningOptionsMap;
-            versions = Collections.emptyList();
-        } catch (DocumentException de) {
-            de.printStackTrace();
-            log.error("Error retrieving versioning history ", de);
-            // XXX : fail safe - need better handling return
-            // availableVersioningOptionsMap;
-            versions = Collections.emptyList();
+        } catch (DocumentException e) {
+            log.error("Error retrieving versioning history ", e);
         }
         return versions;
     }
 
     /**
-     * @return Map with available versioning options for the currentItem
+     * @return Map with available versioning options for the current document
      */
-    // @Factory("availableVersioningOptionsMap")
-    @Observer( value={ EventNames.DOCUMENT_SELECTION_CHANGED }, create=false, inject=false)
+    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)
     public void resetVersioningOption() {
         availableVersioningOptionsMap = null;
-        atCreationTime = false;
+        selectedOption = null;
+        rendered = null;
     }
 
+    // FIXME: should cache the map and invalidate it correctly as it refers to
+    // current document
     public Map<String, String> getAvailableVersioningOptionsMap() {
-
-        // the versioning options could have been changed
-        // even if the current doc is the same, so we should always
-        // reload
-        // if (this.availableVersioningOptionsMap != null) {
-        // return this.availableVersioningOptionsMap;
-        // }
-
         final String logPrefix = "<getAvailableVersioningOptionsMap> ";
 
         log.debug(logPrefix + "Recomputing versioning options list");
@@ -251,42 +241,28 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         DocumentModel docModel = navigationContext.getCurrentDocument();
         final Map<String, String> versioningOptionsMap = getVersioningOptionsMap(docModel);
 
-        //
         // should reverse keys with values for the jsf controls
-        //
         availableVersioningOptionsMap = new LinkedHashMap<String, String>();
         for (String key : versioningOptionsMap.keySet()) {
             final String value = versioningOptionsMap.get(key);
             availableVersioningOptionsMap.put(value, key);
         }
 
-        if (availableVersioningOptionsMap.isEmpty()) {
-            // document without versioning
-            log.debug("current document not with versioning");
-            rendered = false;
-            // will return an empty list thus the controls won't be displayed
-        } else {
-            rendered = true;
-        }
-
-        assert availableVersioningOptionsMap != null;
-
         return availableVersioningOptionsMap;
     }
 
     /**
      * For documents about to be created there should be no versioning options.
-     *
      */
-    @Observer( value={ EventNames.NEW_DOCUMENT_CREATED }, create=false, inject=false)
+    @Observer(value = { EventNames.NEW_DOCUMENT_CREATED }, create = false, inject = false)
     public void resetRenderingStatus() {
-        atCreationTime = true;
+        rendered = false;
     }
 
     public Map<String, String> getVersioningOptionsMap(
             final DocumentModel documentModel) {
 
-        if (null == documentModel) {
+        if (documentModel == null) {
             throw new IllegalArgumentException("null documentModel");
         }
 
@@ -294,7 +270,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
 
         final VersionIncEditOptions options = getAvailableVersioningOptions(documentModel);
 
-        if (null == options) {
+        if (options == null) {
             return versioningOptionsMap;
         }
 
@@ -304,12 +280,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
             final String label = resourcesAccessor.getMessages().get(
                     optionResName);
             versioningOptionsMap.put(option.name(), label);
-
-            // make sure we have one selected
-            if (option.isDefault()) {
-                selectedOption = option;
-            }
-
         }
 
         return versioningOptionsMap;
@@ -330,10 +300,8 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
 
         try {
             options = versioningManager.getVersionIncEditOptions(documentModel);
-        } catch (VersioningException e) { //
+        } catch (VersioningException e) {
             log.error("Error retrieving versioning options ", e);
-            // XXX : fail safe - need better handling return
-            // availableVersioningOptionsMap;
         } catch (ClientException e) {
             log.error("Error retrieving versioning options ", e);
         } catch (DocumentException e) {
@@ -357,13 +325,10 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         log.debug(logPrefix + selectedOption);
 
         // save as new version
-        VersionModel oldVersion = null;
         try {
-            oldVersion = saveDocumentAsNewVersion(documentModel);
-        } catch (ClientException e1) {
-            // TODO Auto-generated catch block
-            // FIXME : DM
-            e1.printStackTrace();
+            saveDocumentAsNewVersion(documentModel);
+        } catch (ClientException e) {
+            log.error(e);
         }
 
         try {
@@ -374,34 +339,9 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
             }
             // no incrementation
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            // FIXME : DM
+            log.error(e);
         }
-        /*
-         * catch (VersioningException e) { // TODO Auto-generated catch block
-         * e.printStackTrace(); }
-         */
-
-        // if (oldVersion != null) {
-        // notifyVersionChange(oldVersion, documentModel);
-        // }
     }
-
-    /*
-     * Notify Core Listeners about document version change with versioning inc.
-     *
-     * @param oldVersion
-     */
-    /*
-     * @Deprecated private void notifyVersionChange(VersionModel oldVersion,
-     *             DocumentModel currentDoc) { DocumentRef docRef =
-     *             currentDoc.getRef(); try { DocumentModel oldDoc =
-     *             documentManager.getDocumentWithVersion( docRef, oldVersion);
-     *
-     * versioningManager.notifyVersionChange(oldDoc, currentDoc); } catch
-     * (ClientException e) { e.printStackTrace(); } }
-     */
 
     /**
      *
@@ -411,7 +351,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
      */
     private VersionModel saveDocumentAsNewVersion(DocumentModel documentModel)
             throws ClientException {
-
         // Do a checkin / checkout of the edited version
         DocumentRef docRef = documentModel.getRef();
         VersionModel newVersion = new VersionModelImpl();
@@ -420,13 +359,22 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         log.debug("Checked in " + documentModel);
         documentManager.checkOut(docRef);
         log.debug("Checked out " + documentModel);
-
-        // currentItem = documentManager.getDocument(docRef);
-
         return newVersion;
     }
 
     public String getVersioningOptionInstanceId() {
+        if (selectedOption == null) {
+            // FIXME: should cache the versioning options and invalidate them
+            // correctly as it refers to current document
+            DocumentModel currentDoc = navigationContext.getCurrentDocument();
+            final VersionIncEditOptions options = getAvailableVersioningOptions(currentDoc);
+            // get it from options
+            selectedOption = options.getDefaultVersioningAction();
+            if (selectedOption == null) {
+                // XXX default selected value, can be argued.
+                selectedOption = VersioningActions.ACTION_NO_INCREMENT;
+            }
+        }
         return selectedOption.name();
     }
 
@@ -441,7 +389,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         log.debug("selected option: " + optionId);
         if (optionId != null) {
             selectedOption = VersioningActions.valueOf(optionId);
-
             setVersioningOptionInstanceId(docModel, selectedOption);
         } else {
             // component is present but no option has been selected
@@ -450,7 +397,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     }
 
     /**
-     * Set incrementation option for the givent document.
+     * Set incrementation option for the given document.
      *
      * @param docModel
      * @param option
@@ -543,21 +490,18 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return getRendered();
     }
 
+    // FIXME: should cache the boolean invalidate it correctly as it refers to
+    // current document
     public Boolean getRendered() {
-        if (navigationContext.getCurrentDocument() == null) {
-            // XXX: glefter: hack: some refactoring needed in order to update
-            // rendered properly upon goHome()
-            log.warn("getRendered: navigationContext.getCurrentDocument() == null, returning false");
-            return false;
+        if (rendered == null) {
+            rendered = false;
+            if (navigationContext.getCurrentDocument() != null) {
+                Map<String, String> options = getAvailableVersioningOptionsMap();
+                if (options != null && !options.isEmpty()) {
+                    rendered = true;
+                }
+            }
         }
-        if (atCreationTime) {
-            return false;
-        }
-
-        if (availableVersioningOptionsMap == null) {
-            getAvailableVersioningOptionsMap();
-        }
-
         return rendered;
     }
 
@@ -566,7 +510,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     }
 
     /**
-     * Tells wheter or not the current object has uid schema (ie the versioning
+     * Tells whether or not the current object has uid schema (ie the versioning
      * info is available).
      *
      * @return

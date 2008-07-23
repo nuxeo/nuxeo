@@ -16,6 +16,14 @@
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-facade</artifactId>
       <type>ejb</type>
     </dependency>
@@ -31,29 +39,20 @@
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-annotations-ejb3</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-j2ee</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.ejb</groupId>
       <artifactId>ejb</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.jws</groupId>
-      <artifactId>jsr181</artifactId>
-      <scope>provided</scope>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-cache-jdk50</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>

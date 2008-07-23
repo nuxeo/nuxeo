@@ -32,7 +32,7 @@ import org.nuxeo.runtime.model.Adaptable;
  * <p>
  * The default one is to expose the rendering outcome as a stream.
  * <p>
- * Specialized results may be retrieved using {@link Adaptable#getAdapter()} method
+ * Specialized results may be retrieved using {@link Adaptable#getAdapter(Class)} method
  *
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -52,7 +52,7 @@ public interface RenderingResult extends Adaptable, Serializable {
     /**
      * Gets the rendering result as a stream.
      *
-     * @return the streamj or null if the outcome cannot be expressed as a stream
+     * @return the stream or null if the outcome cannot be expressed as a stream
      */
     InputStream getStream() throws IOException;
 

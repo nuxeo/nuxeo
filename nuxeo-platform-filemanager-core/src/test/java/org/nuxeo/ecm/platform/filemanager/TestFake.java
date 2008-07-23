@@ -21,8 +21,8 @@ package org.nuxeo.ecm.platform.filemanager;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Properties;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;

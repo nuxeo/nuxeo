@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -225,7 +226,20 @@ public class WAPIImpl implements WAPI {
 
         return workItems;
     }
+    public Collection<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participant, String state) throws WMWorkflowException {
 
+        Collection<WMWorkItemInstance> workItems;
+
+        WorkflowEngine workflowEngine = getDefaultEngine();
+        if (workflowEngine != null) {
+            workItems = workflowEngine.getWorkItemsFor(participant, state);
+        } else {
+            workItems = new ArrayList<WMWorkItemInstance>();
+        }
+
+        return workItems;
+    }
     public Collection<WMWorkItemInstance> getWorkItemsFor(String pid,
             String state, WMParticipant participant) throws WMWorkflowException {
 
@@ -422,6 +436,15 @@ public class WAPIImpl implements WAPI {
         WorkflowEngine workflowEngine = getDefaultEngine();
         if (workflowEngine != null) {
             return workflowEngine.listWorkItems(filter);
+        }
+        return null;
+    }
+
+    public Collection<WMProcessInstance> getProcessInstanceForCreators(
+            List<String> groupNames) {
+        WorkflowEngine workflowEngine = getDefaultEngine();
+        if (workflowEngine != null) {
+            return workflowEngine.listProcessInstanceForCreators(groupNames);
         }
         return null;
     }

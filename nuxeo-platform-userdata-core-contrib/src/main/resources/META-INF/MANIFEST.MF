@@ -3,6 +3,7 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo UserData project
 Bundle-SymbolicName: org.nuxeo.ecm.platform.userdata.core-contrib;singleton=true
 Bundle-Vendor: Nuxeo
+Bundle-Category: core
 Nuxeo-Component: OSGI-INF/userdata-schemas-contrib.xml,
   OSGI-INF/userdata-defaultPermissions-contrib.xml
 Eclipse-LazyStart: true

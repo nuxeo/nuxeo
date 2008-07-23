@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.io.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +31,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
@@ -55,7 +53,6 @@ import org.nuxeo.ecm.core.io.DocumentWriter;
 import org.nuxeo.ecm.core.io.DocumentWriterFactory;
 import org.nuxeo.ecm.core.io.DocumentsExporter;
 import org.nuxeo.ecm.core.io.DocumentsImporter;
-import org.nuxeo.ecm.core.io.IOCoreEvents;
 import org.nuxeo.ecm.core.io.IODocumentManager;
 import org.nuxeo.ecm.core.io.exceptions.ExportDocumentException;
 import org.nuxeo.ecm.core.io.exceptions.ImportDocumentException;
@@ -72,7 +69,7 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
 
 /**
  * IOManager implementation
- * 
+ *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class IOManagerImpl implements IOManager {
@@ -174,9 +171,6 @@ public class IOManagerImpl implements IOManager {
         // repo,
         // sources, recurse, format);
         DocumentTranslationMap map = docsExporter.exportDocs(docsZip);
-
-        Set<DocumentRef> docRefs = map.getDocRefMap().keySet();
-        IOCoreEvents.notifyEvents(docRefs, repo, IOCoreEvents.DOCUMENT_EXPORTED);
 
         ZipEntry docsEntry = new ZipEntry(DOCUMENTS_ADAPTER_NAME + ".zip");
         zip.putNextEntry(docsEntry);
@@ -317,9 +311,6 @@ public class IOManagerImpl implements IOManager {
             }
         }
         zip.close();
-
-        Collection<DocumentRef> docRefs = map.getDocRefMap().values();
-        IOCoreEvents.notifyEvents(docRefs, repo, IOCoreEvents.DOCUMENT_IMPORTED);
     }
 
     public Collection<DocumentRef> copyDocumentsAndResources(String repo,
@@ -479,11 +470,11 @@ public class IOManagerImpl implements IOManager {
             }
         }
     }
-    
+
     public String externalizeExport(String repo,
             Collection<DocumentRef> sources,
             Collection<String> ioAdapters) throws ClientException {
-    
+
         return externalizeExport(repo, sources, null, null, ioAdapters);
     }
 
@@ -491,7 +482,7 @@ public class IOManagerImpl implements IOManager {
             String docReaderFactoryName,
             Map<String, Object> readerFactoryParams,
             Collection<String> ioAdapters) throws ClientException {
-    
+
         return externalizeExport(repo, null, docReaderFactoryName, readerFactoryParams, ioAdapters);
     }
 
@@ -623,12 +614,12 @@ public class IOManagerImpl implements IOManager {
             // TODO throw another error maybe
             throw new ClientException("bad class type: " + factoryObj);
         }
-        
+
         if (customDocWriter == null) {
             throw new ClientException("null DocumentWriter created by "
                     + docWriterFactoryName);
         }
-        
+
         return customDocWriter;
     }
 
@@ -653,13 +644,13 @@ public class IOManagerImpl implements IOManager {
             // TODO throw another error maybe
             throw new ClientException("bad class type: " + factoryObj);
         }
-        
+
         // guard against NPE
         if (customDocReader == null) {
             throw new ClientException("null DocumentReader created by "
                     + docReaderFactoryName);
         }
-        
+
         return customDocReader;
     }
 
@@ -683,10 +674,10 @@ public class IOManagerImpl implements IOManager {
                 rFactoryParams = new HashMap<String, Object>();
             }
             rFactoryParams.put("source_stream", in);
-            
+
             DocumentReader customDocReader = createDocReader(
                     docReaderFactoryClassName, rFactoryParams);
-            
+
             IODocumentManager docManager = new IODocumentManagerImpl();
             DocumentTranslationMap map =  docManager.importDocuments(customDocReader, customDocWriter);
 

@@ -85,25 +85,6 @@ public interface VersioningManager {
 
     SnapshotOptions getCreateSnapshotOption(DocumentModel docModel) throws ClientException;
 
-    /*
-     * Checks with the registered VersioningService for the given document
-     * incrementation options and if the case with the existing document
-     * workflow.
-     *
-     * @param docRef the reference to the document
-     * @param documentManager
-     * @return a list of version incrementation options available for the given
-     *         document ref
-     *
-     * @throws VersioningException
-     * @throws ClientException
-     *
-     * @deprecated use getVersionIncEditOptions
-     */
-    //@Deprecated
-    //VersionIncEditOptions getVersionIncOptions(DocumentRef docRef,
-    //        CoreSession documentManager) throws VersioningException, DocumentException, ClientException;
-
     DocumentModel incrementMinor(DocumentModel docModel) throws ClientException,
             VersioningException;
 
@@ -112,10 +93,5 @@ public interface VersioningManager {
 
     DocVersion getNextVersion(DocumentModel docModel) throws ClientException,
             VersioningException;
-
-    // FIXME : DM : Due to be removed
-    //@Deprecated
-    //void notifyVersionChange(DocumentModel oldDocument,
-    //        DocumentModel newDocument);
 
 }

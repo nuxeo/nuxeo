@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.ec.notification.ejb.bean;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,21 +31,12 @@ import javax.ejb.Stateless;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ec.notification.ejb.facade.NotificationServiceLocal;
-import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
-import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
-import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.notification.api.NotificationRegistry;
-import org.nuxeo.ecm.platform.url.DocumentLocationImpl;
-import org.nuxeo.ecm.platform.url.DocumentViewImpl;
-import org.nuxeo.ecm.platform.url.api.DocumentLocation;
-import org.nuxeo.ecm.platform.url.api.DocumentView;
-import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -63,42 +53,51 @@ public class NotificationServiceBean implements NotificationManager {
     // EntityManager em;
     private static final Log log = LogFactory.getLog(NotificationServiceBean.class);
 
-    protected transient NotificationService service;
-
-    private DocumentViewCodecManager docLocator;
+    protected transient NotificationManager service;
 
     @PostActivate
     @PostConstruct
     public void initialize() {
-        service = (NotificationService) Framework.getRuntime().getComponent(
-                NotificationService.NAME);
+        try {
+            service = Framework.getLocalService(NotificationManager.class);
+        } catch (Exception e) {
+            log.error("Could not get relation service", e);
+        }
     }
 
     public void addSubscription(String username, String notification,
             DocumentModel doc, Boolean sendConfirmationEmail,
-            NuxeoPrincipal principal, String notificationName) throws ClientException {
-        service.addSubscription(username, notification, doc, sendConfirmationEmail, principal, notificationName);
+            NuxeoPrincipal principal, String notificationName)
+            throws ClientException {
+        service.addSubscription(username, notification, doc,
+                sendConfirmationEmail, principal, notificationName);
     }
 
-    public List<String> getSubscribers(String notification, String docId) throws ClientException {
+    public List<String> getSubscribers(String notification, String docId)
+            throws ClientException {
         return service.getSubscribers(notification, docId);
     }
 
-    public List<String> getSubscriptionsForUserOnDocument(String username, String docId)
-            throws ClassNotFoundException, ClientException {
+    public List<String> getSubscriptionsForUserOnDocument(String username,
+            String docId) throws ClassNotFoundException, ClientException {
         return service.getSubscriptionsForUserOnDocument(username, docId);
     }
 
-    public List<String> getUsersSubscribedToNotificationOnDocument(String notification,
-            String docId) throws ClientException {
-        return service.getUsersSubscribedToNotificationOnDocument(notification, docId);
+    public List<String> getUsersSubscribedToNotificationOnDocument(
+            String notification, String docId) throws ClientException {
+        return service.getUsersSubscribedToNotificationOnDocument(notification,
+                docId);
     }
 
-    public void removeSubscription(String username, String notification, String docId)
-            throws ClientException {
+    public void removeSubscription(String username, String notification,
+            String docId) throws ClientException {
         service.removeSubscription(username, notification, docId);
     }
 
+    /**
+     * @deprecated should not have to use the registry
+     */
+    @Deprecated
     public NotificationRegistry getNotificationRegistry() {
         return service.getNotificationRegistry();
     }
@@ -107,92 +106,21 @@ public class NotificationServiceBean implements NotificationManager {
         return service.getNotificationByName(selectedNotification);
     }
 
-    public void sendNotification(String notificationName, Map<String, Object> infoMap, String userPrincipal) throws ClientException {
-
-        Notification notif = getNotificationByName(notificationName);
-
-        NuxeoPrincipal recepient = NotificationServiceHelper.getUsersService().getPrincipal(userPrincipal);
-        // XXX hack, principals have only one model
-        DataModel model = recepient.getModel().getDataModels().values().iterator().next();
-        String email = (String) model.getData("email");
-        String mailTemplate = notif.getTemplate();
-
-        infoMap.put("mail.to", email);
-
-        String authorUsername = (String) infoMap.get("author");
-
-        if (authorUsername != null) {
-            NuxeoPrincipal author = NotificationServiceHelper.getUsersService().getPrincipal(authorUsername);
-            infoMap.put("principalAuthor", author);
-        }
-
-//        mail.put("doc", docMessage); - should be already there
-
-    	String subject = notif.getSubject() == null ? "Notification"
-                : notif.getSubject();
-        if (notif.getSubjectTemplate() != null) {
-        	subject = notif.getSubjectTemplate();
-        }
-        	
-        subject = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix()
-                + subject;
-
-        infoMap.put("subject", subject);
-        infoMap.put("template", mailTemplate);
-
-        try {
-            EmailHelper.sendmail(infoMap);
-        } catch (Exception e) {
-            throw new ClientException("Failed to send notification email ", e);
-        }
+    public List<Notification> getNotificationsForSubscriptions(String parentType) {
+        return service.getNotificationsForSubscriptions(parentType);
     }
 
     public void sendDocumentByMail(DocumentModel doc,
             String freemarkerTemplateName, String subject, String comment,
             NuxeoPrincipal sender, List<String> sendTo) {
-        Map<String, Object> infoMap = new HashMap<String, Object>();
-        infoMap.put("document", doc);
-        infoMap.put("subject", subject);
-        infoMap.put("comment", comment);
-        infoMap.put("sender", sender);
-
-        DocumentLocation docLoc = new DocumentLocationImpl(
-                doc.getRepositoryName(), doc.getRef());
-        DocumentView docView = new DocumentViewImpl(docLoc);
-        docView.setViewId("view_documents");
-        infoMap.put(
-                "docUrl",
-                getDocLocator().getUrlFromDocumentView(
-                        docView,
-                        true,
-                        NotificationServiceHelper.getNotificationService().getServerUrlPrefix()));
-
-
-        if (freemarkerTemplateName == null){
-            freemarkerTemplateName = "defaultNotifTemplate";
-        }
-        infoMap.put("template", freemarkerTemplateName);
-
-        for (String to : sendTo) {
-            infoMap.put("mail.to", to);
-            try {
-                EmailHelper.sendmail(infoMap);
-            } catch (Exception e) {
-                log.debug("Failed to send notification email "+e);
-            }
-        }
+        service.sendDocumentByMail(doc, freemarkerTemplateName, subject,
+                comment, sender, sendTo);
     }
 
-    private DocumentViewCodecManager getDocLocator() {
-        if (docLocator == null) {
-            try {
-                docLocator = Framework.getService(DocumentViewCodecManager.class);
-            } catch (Exception e) {
-                log.info("Could not get service for document view manager");
-            }
-        }
-
-        return docLocator;
+    public void sendNotification(String notificationName,
+            Map<String, Object> infoMap, String userPrincipal)
+            throws ClientException {
+        service.sendNotification(notificationName, infoMap, userPrincipal);
     }
 
 }

@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * Document manager business delegate.
  *
  */
+// XXX AT: why is this useful? is it still needed?
 public class DocumentManagerBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = 1L;

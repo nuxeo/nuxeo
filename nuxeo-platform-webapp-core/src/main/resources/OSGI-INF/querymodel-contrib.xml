@@ -167,6 +167,10 @@
           <field schema="advanced_search" name="isCheckedInVersion" />
         </predicate>
 
+        <predicate parameter="ecm:path" operator="STARTSWITH">
+          <field schema="advanced_search" name="searchpath" />
+        </predicate>
+
         <predicate parameter="dc:title" operator="LIKE">
           <field schema="advanced_search" name="title" />
         </predicate>

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webapp.bulkupdate;
 
 import java.util.List;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.types.FieldWidget;

@@ -21,6 +21,18 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-query</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-search-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-search-core</artifactId>
     </dependency>
@@ -39,17 +51,17 @@
       <artifactId>lucene-analyzers</artifactId>
       <version>${lucene.version}</version>
     </dependency>
-    <dependency>
-      <groupId>opensymphony</groupId>
-      <artifactId>compass-gps</artifactId>
-      <version>${compass.version}</version>
-    </dependency>
-    
+
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <scope>provided</scope>
+      <version>1.4</version>
+    </dependency>
     <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>jta</artifactId>
@@ -58,16 +70,30 @@
     </dependency>
 
     <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-search-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-transform-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
+      <version>1.0.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
   <build>
-
     <plugins>
-
       <!-- FIXME: disable tests for now : working with junit-->
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -99,10 +125,12 @@
                 <artifactItem>
                   <groupId>opensymphony</groupId>
                   <artifactId>compass-core</artifactId>
+                  <version>${compass.version}</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>opensymphony</groupId>
                   <artifactId>compass-gps</artifactId>
+                  <version>${compass.version}</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>opensymphony</groupId>

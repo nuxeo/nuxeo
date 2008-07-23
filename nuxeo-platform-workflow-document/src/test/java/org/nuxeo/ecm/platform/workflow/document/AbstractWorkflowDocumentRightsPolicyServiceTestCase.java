@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.platform.workflow.document;
 
-import org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService;
+import org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicyManager;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -29,7 +29,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public abstract class AbstractWorkflowDocumentRightsPolicyServiceTestCase
         extends NXRuntimeTestCase {
 
-    protected WorkflowDocumentSecurityPolicyService service;
+    protected WorkflowDocumentSecurityPolicyManager service;
 
     @Override
     public void setUp() throws Exception {

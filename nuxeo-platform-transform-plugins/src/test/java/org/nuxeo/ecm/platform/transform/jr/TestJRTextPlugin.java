@@ -11,7 +11,6 @@ import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
 import org.nuxeo.ecm.platform.transform.plugin.jr.ExcelToTextPlugin;
 import org.nuxeo.ecm.platform.transform.plugin.jr.HtmlToTextPlugin;
 import org.nuxeo.ecm.platform.transform.plugin.jr.OOoSimpleTextExtractor;
-import org.nuxeo.ecm.platform.transform.plugin.jr.XMLToTextPlugin;
 import org.nuxeo.ecm.platform.transform.plugin.xml.Xml2TextPluginImpl;
 import org.nuxeo.ecm.platform.transform.timer.SimpleTimer;
 

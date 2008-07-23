@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.search.ejb;
 
-import java.io.Serializable;
-
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJBException;
 import javax.ejb.MessageDriven;

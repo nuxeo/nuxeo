@@ -14,7 +14,7 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ * $Id: SearchActionsBean.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
 package org.nuxeo.ecm.webapp.search;
@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.ejb.PostActivate;
 import javax.ejb.PrePassivate;
+import javax.faces.application.FacesMessage;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -42,6 +43,7 @@ import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.WebRemote;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
+import org.jboss.seam.core.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -133,6 +135,9 @@ public class SearchActionsBean extends InputController implements
 
     @In(required = false, create = true)
     private transient ResultsProvidersCache resultsProvidersCache;
+
+    @In(create = true, required = false)
+    protected transient FacesMessages facesMessages;
 
     @In(create = true)
     private transient ClipboardActions clipboardActions;
@@ -303,8 +308,11 @@ public class SearchActionsBean extends InputController implements
                         sortInfo);
                 page = ACTION_PAGE_SEARCH_ADVANCED;
             } else if (searchTypeId == SearchType.KEYWORDS) {
-                if (simpleSearchKeywords == null) {
+                if (simpleSearchKeywords == null || simpleSearchKeywords == "") {
                     log.warn("simpleSearchKeywords not given");
+                    facesMessages.add(FacesMessage.SEVERITY_INFO,
+                            resourcesAccessor.getMessages().get(
+                                    "feedback.search.noKeywords"));
                     return ACTION_PAGE_SEARCH_NO_KEYWORDS;
                 }
                 resultsProvidersCache.invalidate(QM_SIMPLE);
@@ -468,7 +476,7 @@ public class SearchActionsBean extends InputController implements
             SortInfo sortInfo) throws ClientException,
             ResultsProviderFarmUserException {
         // TODO param!
-        // XXX : we have here a dependency to the Core implemetation
+        // XXX : we have here a dependency to the Core implementation
         try {
             switch (searchTypeId) {
             case NXQL:

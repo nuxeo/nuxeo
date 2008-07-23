@@ -29,7 +29,6 @@ import org.nuxeo.ecm.platform.transform.interfaces.Plugin;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformServiceCommon;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Extension;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 

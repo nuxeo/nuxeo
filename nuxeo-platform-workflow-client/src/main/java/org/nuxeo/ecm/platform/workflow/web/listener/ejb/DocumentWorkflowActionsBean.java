@@ -33,17 +33,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.Create;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -199,7 +193,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
     @Create
     public void init()
     {
-    	Events.instance().raiseEvent(EventNames.WF_INIT);
+        Events.instance().raiseEvent(EventNames.WF_INIT);
     }
 
     public Map<String, String> getMessages() {

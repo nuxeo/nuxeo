@@ -29,7 +29,6 @@ import org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocu
 import org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicyManager;
 import org.nuxeo.ecm.platform.workflow.document.service.extensions.WorkflowDocumentSecurityPolicyDescriptor;
 import org.nuxeo.ecm.platform.workflow.document.service.extensions.WorkflowDocumentSecurityPolicyRelationDescriptor;
-import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
@@ -42,9 +41,6 @@ import org.nuxeo.runtime.model.Extension;
  */
 public class WorkflowDocumentSecurityPolicyService extends DefaultComponent
         implements WorkflowDocumentSecurityPolicyManager {
-
-    public static final ComponentName NAME = new ComponentName(
-            "org.nuxeo.ecm.platform.workflow.document.service.WorkflowDocumentSecurityPolicyService");
 
     private static final long serialVersionUID = 6097407199815945362L;
 

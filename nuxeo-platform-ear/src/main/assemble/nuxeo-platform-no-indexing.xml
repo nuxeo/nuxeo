@@ -1,6 +1,7 @@
+<!-- deprecated -->
 <assembly>
 
-  <include>include/commands.xml</include>  
+  <include>include/commands.xml</include>
   <include>include/nuxeo-all.xml</include>
   <include>include/exclude-core.xml</include>
   <include>include/exclude-indexing.xml</include>

@@ -29,7 +29,6 @@ import javax.ejb.PrePassivate;
 import javax.ejb.Remote;
 import javax.ejb.Remove;
 import javax.ejb.Stateless;
-import javax.naming.NamingException;
 import javax.persistence.Transient;
 
 import org.apache.commons.logging.Log;
@@ -108,16 +107,18 @@ public class VersioningManagerBean implements VersioningManager {
         return service.getVersionIncEditOptions(docModel);
     }
 
+    /**
+     * @deprecated i'm not in the interface, my life is meaningless. please
+     *             don't use me. please.
+     */
     @Deprecated
     public VersionIncEditOptions getVersionIncOptions(DocumentRef docRef,
-            CoreSession documentManager) throws VersioningException, DocumentException, ClientException {
+            CoreSession documentManager) throws VersioningException,
+            DocumentException, ClientException {
 
         final String logPrefix = "<getVersionIncOptions> ";
 
         // check with VersioningService
-        // final DocumentModel doc = getDocumentModel(docRef);
-
-        // final DocumentManager documentManager = getDocumentManager();
         final String currentLifeCycleState;
         final String documentType;
         final DocumentModel dm;
@@ -126,8 +127,6 @@ public class VersioningManagerBean implements VersioningManager {
             dm = documentManager.getDocument(docRef);
             documentType = dm.getType();
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            // e.printStackTrace();
             throw new VersioningException(
                     "Error getting currentLifeCycleState", e);
         }
@@ -153,7 +152,6 @@ public class VersioningManagerBean implements VersioningManager {
         log.debug(logPrefix + "wfvaction = " + wfvaction);
         options = new VersionIncEditOptions();
         if (wfvaction != null) {
-            // return null;// wfvaction;
             if (wfvaction == VersioningActions.ACTION_CASE_DEPENDENT) {
                 options.addOption(VersioningActions.ACTION_NO_INCREMENT);
                 options.addOption(VersioningActions.ACTION_INCREMENT_MINOR);
@@ -162,38 +160,10 @@ public class VersioningManagerBean implements VersioningManager {
                 options.addOption(wfvaction);
             }
         } else {
-            // XXX wf action is null!!?
             log.error(logPrefix + "wf action is null");
         }
 
         return options;
-
-        // XXX fallback if the WF does not specifically define it
-    }
-
-    private CoreSession getDocumentManager() throws VersioningException {
-        try {
-            return EjbLocator.getDocumentManager();
-            // return __getDocumentManager();
-        } catch (NamingException e) {
-            throw new VersioningException("Error getting DocumentManager", e);
-        }
-    }
-
-    private DocumentModel getDocumentModel(DocumentRef docRef)
-            throws VersioningException {
-
-        final CoreSession documentManager = getDocumentManager();
-
-        try {
-            return documentManager.getDocument(docRef);
-        } catch (ClientException e) {
-            throw new VersioningException("Error accessing DocumentModel", e);
-        }
-    }
-
-    public void remove() {
-        // TODO Auto-generated method stub
     }
 
     public DocumentModel incrementMajor(DocumentModel doc)
@@ -222,13 +192,19 @@ public class VersioningManagerBean implements VersioningManager {
         return service.getNextVersion(doc);
     }
 
+    /**
+     * @deprecated i'm not in the interface, my life is meaningless. please
+     *             don't use me. please.
+     */
     @Deprecated
     public void notifyVersionChange(DocumentModel oldDocument,
             DocumentModel newDocument) {
-        VersioningChangeNotifier.notifyVersionChange(oldDocument, newDocument, null);
+        VersioningChangeNotifier.notifyVersionChange(oldDocument, newDocument,
+                null);
     }
 
-    public SnapshotOptions getCreateSnapshotOption(DocumentModel document) throws ClientException {
+    public SnapshotOptions getCreateSnapshotOption(DocumentModel document)
+            throws ClientException {
         return service.getCreateSnapshotOption(document);
     }
 

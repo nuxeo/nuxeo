@@ -19,7 +19,11 @@
 
 package org.nuxeo.ecm.core.search.backend.compass;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import junit.framework.TestCase;
 

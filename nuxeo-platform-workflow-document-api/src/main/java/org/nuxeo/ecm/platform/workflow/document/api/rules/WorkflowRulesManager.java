@@ -22,12 +22,17 @@ package org.nuxeo.ecm.platform.workflow.document.api.rules;
 import java.io.Serializable;
 import java.util.Set;
 
+import org.nuxeo.runtime.model.ComponentName;
+
 /**
  * Workflow rules interface.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public interface WorkflowRulesManager extends Serializable {
+
+    public static final ComponentName NAME = new ComponentName(
+                "org.nuxeo.ecm.platform.workflow.document.service.WorkflowRulesService");
 
     /**
      * Returns allowed workflow definition names for a given document type.

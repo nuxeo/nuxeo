@@ -27,9 +27,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Local;
-import javax.ejb.PostActivate;
 import javax.ejb.Remote;
-import javax.ejb.Remove;
 import javax.ejb.Stateless;
 
 import org.apache.commons.logging.Log;

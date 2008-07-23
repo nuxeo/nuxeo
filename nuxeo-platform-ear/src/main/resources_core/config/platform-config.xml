@@ -23,7 +23,7 @@
     <documentation>The default platform layout</documentation>
     <server name="default" host="${org.nuxeo.ecm.instance.host}" port="1099">
       <service class="org.nuxeo.ecm.core.api.CoreSession" jndiName="${org.nuxeo.ecm.platform.coresession.facade}" private="true"/>
-      <service class="org.nuxeo.ecm.platform.types.ejb.TypeManager" jndiName="%TypeManagerBean"/>
+      <service class="org.nuxeo.ecm.platform.types.TypeManager" jndiName="%TypeManagerBean"/>
       <repository name="default" class="org.nuxeo.ecm.core.api.CoreSession" description="Default Repository"/>
     </server>
   </extension>
@@ -60,7 +60,6 @@
   <extension target="org.nuxeo.runtime.api.ServiceManagement" point="services">
     <service class="org.nuxeo.ecm.core.api.CoreSession" name="default"
       group="core">
-      <!--adapter>org.nuxeo.ecm.core.api.CoreSessionAdapter</adapter-->
       <locator>%DocumentManagerBean</locator>
     </service>
     <service class="org.nuxeo.ecm.core.search.api.client.SearchService"
@@ -115,18 +114,11 @@
       group="platform/transform">
       <locator>%NXTransformBean</locator>
     </service>
-    <service class="org.nuxeo.ecm.platform.notification.api.NotificationManager"
-      group="platform">
-      <locator>%NotificationServiceBean</locator>
-    </service>
-    <!-- addon nuxeo-platform-userworkspace
     <service
-      class="org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceManager"
+      class="org.nuxeo.ecm.platform.filemanager.api.FileManager"
       group="platform">
-      <locator>%UserWorkspaceManagerBean</locator>
+      <locator>%FileManagerBean</locator>
     </service>
-	-->
-    <!--service class="org.nuxeo.ecm.platform.types.ejb.TypeManager" group="platform"/-->
   </extension>
 </component>
 

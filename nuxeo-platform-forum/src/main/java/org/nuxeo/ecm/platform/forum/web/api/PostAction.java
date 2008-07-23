@@ -113,6 +113,7 @@ public interface PostAction extends Serializable {
 
     /**
      * Cancels the action of adding a Post.
+     *
      * @return the view id to stay on thread view
      * @throws ClientException
      */
@@ -127,11 +128,12 @@ public interface PostAction extends Serializable {
 
     /**
      * Gets the parent post of the given post
-     * @return the parent Post is exist, null otherwise (if no parent is not a post).
+     *
+     * @return the parent Post is exist, null otherwise (if no parent is not a
+     *         post).
      * @throws ClientException
      */
-    //DocumentModel getParentPost(String postNumber) throws ClientException;
-
+    // DocumentModel getParentPost(String postNumber) throws ClientException;
     /**
      * Gets the moderators List set on the Thread containing the Post.
      *
@@ -170,12 +172,9 @@ public interface PostAction extends Serializable {
     /*
      * Returns true if the parent of the specified post, is a published Post.
      *
-     * @return
-     * @throws ClientException
-     * @throws WMWorkflowException
+     * @return @throws ClientException @throws WMWorkflowException
      */
-    //boolean isParentPostPublished(String postNumber) throws ClientException;
-
+    // boolean isParentPostPublished(String postNumber) throws ClientException;
     Collection<WMWorkItemInstance> getPendingTasksForPrincipal()
             throws WMWorkflowException;
 
@@ -187,6 +186,5 @@ public interface PostAction extends Serializable {
 
     String rejectPost(DocumentModel post) throws WMWorkflowException,
             ClientException;
-
 
 }

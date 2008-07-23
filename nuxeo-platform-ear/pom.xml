@@ -161,6 +161,10 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-forum-workflow</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-search-api</artifactId>
     </dependency>
     <dependency>
@@ -392,10 +396,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-workflow-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-workflow-client</artifactId>
       <type>ejb</type>
     </dependency>
@@ -416,6 +416,13 @@
       <artifactId>nuxeo-platform-workflow-document-facade</artifactId>
       <type>ejb</type>
     </dependency>
+    <!-- artifact with only implementations needed on client side in 2parts environment -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-workflow-document-facade</artifactId>
+      <classifier>remote-api</classifier>
+      <version>${nuxeo.platform.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-workflow-facade</artifactId>
@@ -428,10 +435,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-workflow-jbpm-document-handlers</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
@@ -546,16 +549,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-nuxeo-plugin</artifactId>
         <extensions>true</extensions>
-        <configuration>
-          <runPreprocessor>false</runPreprocessor>
-          <format>directory</format>
-          <outputDirectory>target</outputDirectory>
-          <targetFile>${nuxeo.ear.assembly}.ear</targetFile>
-          <!--descriptor>${basedir}/src/main/assemble/nuxeo.xml</descriptor-->
-          <descriptor>
-            ${basedir}/src/main/assemble/${nuxeo.ear.assembly}.xml
-          </descriptor>
-        </configuration>
         <executions>
           <execution>
             <id>assemble-ear</id>
@@ -563,6 +556,15 @@
             <goals>
               <goal>assembly</goal>
             </goals>
+            <configuration>
+              <runPreprocessor>false</runPreprocessor>
+              <format>directory</format>
+              <outputDirectory>target</outputDirectory>
+              <targetFile>${nuxeo.ear.assembly}.ear</targetFile>
+              <descriptor>
+                ${basedir}/src/main/assemble/${nuxeo.ear.assembly}.xml
+              </descriptor>
+            </configuration>
           </execution>
         </executions>
       </plugin>

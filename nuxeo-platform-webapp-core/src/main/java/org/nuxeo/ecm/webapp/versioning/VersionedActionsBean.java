@@ -22,9 +22,9 @@ import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.EVENT;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.Serializable;
 
 import javax.faces.application.FacesMessage;
 
@@ -148,7 +148,6 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
                 navigationContext.getCurrentDocument().getRef(),
                 selectedVersion);
         documentManager.save();
-        // documentManager.checkOut(restoredDocument.getRef());
 
         // same as edit basically
         // XXX AT: do edit events need to be sent?

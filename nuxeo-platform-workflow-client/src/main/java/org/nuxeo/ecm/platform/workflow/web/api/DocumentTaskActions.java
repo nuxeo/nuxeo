@@ -27,7 +27,6 @@ import java.util.Map;
 
 import javax.faces.event.ActionEvent;
 
-import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemDefinition;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkItemInstance;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMWorkflowException;
 

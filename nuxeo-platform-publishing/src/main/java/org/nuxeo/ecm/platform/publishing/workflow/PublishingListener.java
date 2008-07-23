@@ -56,8 +56,6 @@ import org.nuxeo.ecm.platform.workflow.document.api.ejb.delegate.WorkflowDocumen
 import org.nuxeo.ecm.platform.workflow.document.api.security.WorkflowDocumentSecurityManager;
 import org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicy;
 import org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicyManager;
-import org.nuxeo.ecm.platform.workflow.api.client.events.EventNames;
-import org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicyManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -154,6 +152,7 @@ public class PublishingListener implements MessageListener {
                 msg.getRepositoryName());
         vars.put(PublishingConstants.WORKFLOW_REVIEWERS, getReviewers(msg));
         vars.put(PublishingConstants.SUBMITTED_BY, msg.getPrincipalName());
+        vars.put(WorkflowConstants.WORKFLOW_CREATOR, msg.getPrincipalName());
 
         // Start the process
         WMActivityInstance activity = wapi.startProcess(pd.getId(), vars, null);

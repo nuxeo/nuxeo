@@ -6,8 +6,9 @@
   xmlns:nxf="http://nuxeo.org/nxweb/function"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"><a4j:region>
+  <a4j:outputPanel  id="#{idParam}">
   <h:form rendered="${!empty documents}">
-    <nxu:dataTable id="#{idParam}" value="#{documents}" var="doc" preserveSort="true"
+    <nxu:dataTable value="#{documents}" var="doc" preserveSort="true"
       preserveDataModel="false" rowClasses="dataRowEven,dataRowOdd"
       sortable="false" styleClass="dataList">
 
@@ -116,10 +117,13 @@
         </nxu:methodResult>
       </nxu:column>
     </nxu:dataTable>
+    </h:form>
+   </a4j:outputPanel>
 
+<h:form>
     <a4j:commandButton value="#{messages['label.refresh']}" reRender="#{idParam}" styleClass="button" />
-  </h:form>
 
+  </h:form>
 </a4j:region>
 
 <ui:include src="/incl/popupMenu.xhtml"/>

@@ -22,7 +22,7 @@
 
     <server name="default" host="localhost">
 
-      <service class="org.nuxeo.ecm.platform.types.ejb.TypeManager" jndiName="%TypeManagerBean"/>
+      <service class="org.nuxeo.ecm.platform.types.TypeManager" jndiName="%TypeManagerBean"/>
 
       <repository name="demo" class="org.nuxeo.ecm.core.api.CoreSession" description="Demo Repository"/>
 

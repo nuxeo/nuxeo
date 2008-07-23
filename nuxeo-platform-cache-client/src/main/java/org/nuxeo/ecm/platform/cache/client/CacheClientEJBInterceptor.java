@@ -28,8 +28,8 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.aop.advice.Interceptor;
 import org.jboss.aop.joinpoint.Invocation;
 import org.jboss.aop.joinpoint.MethodInvocation;
-import org.nuxeo.ecm.platform.cache.CacheableObjectKeys;
 import org.nuxeo.ecm.platform.cache.CacheServiceException;
+import org.nuxeo.ecm.platform.cache.CacheableObjectKeys;
 import org.nuxeo.ecm.platform.cache.data.DocumentModelGhost;
 
 /**

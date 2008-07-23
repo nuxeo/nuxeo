@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.ejb;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.ejb.Stateless;
 
 import org.jetbrains.annotations.NotNull;

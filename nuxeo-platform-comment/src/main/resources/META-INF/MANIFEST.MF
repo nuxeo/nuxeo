@@ -3,9 +3,8 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo Comment project
 Bundle-SymbolicName: org.nuxeo.ecm.platform.comment;singleton=true
 Bundle-Vendor: Nuxeo
+Bundle-Category: web,stateful
 Nuxeo-Component: OSGI-INF/CommentService.xml,
-  OSGI-INF/comment-types-contrib.xml,
-  OSGI-INF/comment-defaultPermissions-contrib.xml,
   OSGI-INF/comment-platform-contrib.xml,
   OSGI-INF/CommentService.xml  
 Eclipse-LazyStart: true

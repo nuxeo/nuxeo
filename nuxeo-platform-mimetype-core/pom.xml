@@ -17,13 +17,10 @@
       <artifactId>nuxeo-platform-mimetype-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-api</artifactId>
     </dependency>
+
     <dependency>
       <groupId>jmimemagic</groupId>
       <artifactId>jmimemagic</artifactId>
@@ -39,15 +36,10 @@
       <artifactId>poi-scratchpad</artifactId>
       <version>3.0.2-FINAL</version>
     </dependency>
-    <dependency>
-      <groupId>javax.ejb</groupId>
-      <artifactId>ejb</artifactId>
-      <scope>provided</scope>
-    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

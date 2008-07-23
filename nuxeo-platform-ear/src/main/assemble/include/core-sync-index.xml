@@ -78,11 +78,11 @@
 </artifactSet>
 
 
-<artifactSet id="nuxeo-platform-unpacked"/>
+  <artifactSet id="nuxeo-platform-unpacked" />
 
-<artifactSet id="nuxeo-web"/>
+  <artifactSet id="nuxeo-web" />
 
-<artifactSet id="nuxeo-themes"/>
+  <artifactSet id="nuxeo-themes" />
 
 
 </assembly>
