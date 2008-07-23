@@ -249,7 +249,7 @@
     <exec executable="mvn" failonerror="true">
       <arg value="-f" />
       <arg value="nuxeo-platform/nuxeo-platform-ear/pom.xml" />
-      <arg value="-Dproject.build.directory=${jboss.lib}" />
+      <arg value="-Djboss.lib=${jboss.lib}" />
       <arg value="dependency:copy" />
       <arg value="${mvn.opts}" />
     </exec>
@@ -261,7 +261,7 @@
       <arg value="mvn.bat" />
       <arg value="-f" />
       <arg value="nuxeo-platform/nuxeo-platform-ear/pom.xml" />
-      <arg value="-Dproject.build.directory=${jboss.lib}" />
+      <arg value="-Djboss.lib=${jboss.lib}" />
       <arg value="dependency:copy" />
       <arg value="${mvn.opts}" />
     </exec>
