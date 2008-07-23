@@ -41,32 +41,4 @@
       <artifactId>jboss-cache</artifactId>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <configuration>
-          <artifactItems>
-            <artifactItem>
-              <groupId>org.nuxeo.common</groupId>
-              <artifactId>nuxeo-common</artifactId>
-              <version>${nuxeo.common.version}</version>
-              <overWrite>true</overWrite>
-              <outputDirectory>${jboss.lib}</outputDirectory>
-            </artifactItem>
-            <artifactItem>
-              <groupId>org.nuxeo.runtime</groupId>
-              <artifactId>nuxeo-runtime-jboss-extensions</artifactId>
-              <version>${nuxeo.runtime.version}</version>
-              <overWrite>true</overWrite>
-              <outputDirectory>${jboss.lib}</outputDirectory>
-            </artifactItem>
-          </artifactItems>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
 </project>
