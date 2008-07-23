@@ -595,6 +595,23 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
+        <configuration>
+          <outputDirectory>${jboss.lib}</outputDirectory>
+          <artifactItems>
+            <artifactItem>
+              <groupId>org.nuxeo.common</groupId>
+              <artifactId>nuxeo-common</artifactId>
+              <version>${nuxeo.common.version}</version>
+              <overWrite>true</overWrite>
+            </artifactItem>
+            <artifactItem>
+              <groupId>org.nuxeo.runtime</groupId>
+              <artifactId>nuxeo-runtime-jboss-extensions</artifactId>
+              <version>${nuxeo.runtime.version}</version>
+              <overWrite>true</overWrite>
+            </artifactItem>
+          </artifactItems>
+        </configuration>
         <executions>
           <execution>
             <id>copy-installed</id>
@@ -603,18 +620,6 @@
               <goal>copy</goal>
             </goals>
             <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.nuxeo.common</groupId>
-                  <artifactId>nuxeo-common</artifactId>
-                  <version>${nuxeo.common.version}</version>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.nuxeo.runtime</groupId>
-                  <artifactId>nuxeo-runtime-jboss-extensions</artifactId>
-                  <version>${nuxeo.runtime.version}</version>
-                </artifactItem>
-              </artifactItems>
               <outputDirectory>${project.build.directory}/lib</outputDirectory>
             </configuration>
           </execution>
@@ -629,9 +634,10 @@
                 <artifactItem>
                   <groupId>postgresql</groupId>
                   <artifactId>postgresql</artifactId>
+                  <version>8.2-507.jdbc3</version>
+                  <outputDirectory>${project.build.directory}/postgresql-jdbc-lib</outputDirectory>
                 </artifactItem>
               </artifactItems>
-              <outputDirectory>${project.build.directory}/postgresql-jdbc-lib</outputDirectory>
             </configuration>
           </execution>
         </executions>

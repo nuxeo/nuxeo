@@ -9,6 +9,7 @@
     <directory>src/main/resources_common</directory>
     <excludes>
       <exclude>**/.svn</exclude>
+      <exclude>**/unified-nuxeo-ds.xml</exclude>
     </excludes>
   </fileSet>
 

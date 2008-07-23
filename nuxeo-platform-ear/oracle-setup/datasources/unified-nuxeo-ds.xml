@@ -1,6 +1,6 @@
 <datasources>
   <local-tx-datasource>
-    <jndi-name>nxuidsequencer</jndi-name>
+    <jndi-name>NuxeoDS</jndi-name>
     <connection-url>jdbc:oracle:thin:@localhost:1521:XE</connection-url>
     <driver-class>oracle.jdbc.driver.OracleDriver</driver-class>
     <user-name>NUXEO</user-name>
@@ -9,6 +9,6 @@
          ensure the connection is still up before using it
     <check-valid-connection-sql>;</check-valid-connection-sql>
     -->
-  </local-tx-datasource> 
+  </local-tx-datasource>
 
 </datasources>
