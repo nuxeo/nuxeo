@@ -250,12 +250,18 @@
       <fileset dir="${nuxeo.ear.build}" />
     </copy>
   </target>
-  <target name="copy-lib" depends="clean-lib,copy-lib-unix,copy-lib-windows" description="Copy Nuxeo libs in jboss" />
+  <target name="copy-lib" depends="clean-lib,copy-lib-unix,copy-lib-windows" description="Copy Nuxeo libs in jboss">
+    <!-- copy derby manually for now -->
+    <copy todir="${jboss.lib}" failonerror="false" overwrite="true">
+      <fileset file="nuxeo-platform/nuxeo-platform-ear/target/lib/derby*.jar" />
+    </copy>
+  </target>
   <target name="clean-lib" depends="setproperties">
     <delete>
       <fileset dir="${jboss.lib}">
         <include name="nuxeo-runtime-jboss-extensions-*.jar" />
         <include name="nuxeo-common-*.jar" />
+        <include name="derby*.jar" />
       </fileset>
     </delete>
   </target>
@@ -317,30 +323,6 @@
     <copy todir="${jboss.nuxeo.ear}/platform/nuxeo-platform-search-compass-plugin-5.2-SNAPSHOT.jar" failonerror="false" overwrite="true">
       <fileset file="${basedir}/${oracle.config}/compass.cfg.xml" />
     </copy>
-  </target>
-
-  <target name="copy-derby" depends="setproperties" description="Deploy default derby config">
-    <property name="derby.config" value="nuxeo-platform/nuxeo-platform-ear/derby-setup" />
-    <copy todir="${jboss.nuxeo.ear}/config" failonerror="false" overwrite="true">
-      <fileset file="${basedir}/${derby.config}/config/*.xml" />
-      <fileset file="${basedir}/${derby.config}/config/*.properties" />
-    </copy>
-    <copy todir="${jboss.nuxeo.ear}/datasources" failonerror="false" overwrite="true">
-      <fileset file="${basedir}/${derby.config}/datasources/*.xml" />
-    </copy>
-    <!-- XXX: find a way not to depend on the version number of nxsearch compass -->
-    <copy todir="${jboss.nuxeo.ear}/platform/nuxeo-platform-search-compass-plugin-5.2-SNAPSHOT.jar" failonerror="false" overwrite="true">
-      <fileset file="${basedir}/${derby.config}/compass.cfg.xml" />
-    </copy>
-    <!-- TODO: maven config to get derby lib -->
-    <!--
-    <copy todir="${jboss.deploy}/lib" failonerror="false" overwrite="true">
-      <fileset file="nuxeo-platform/nuxeo-platform-ear/target/derby-jdbc-lib/*.jar" />
-    </copy>
-    -->
-    <echo></echo>
-    <echo>Done: Don't forget to put derby library in ${jboss.lib}</echo>
-    <echo></echo>
   </target>
 
   <target name="test" depends="test-unix,test-windows" description="Run tests" />

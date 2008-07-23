@@ -205,9 +205,16 @@
                 <transformationSet>
                   <dir>${jboss.server}</dir>
                   <includes>
-                    <include>conf/log4j.xml</include>
+                    <include>conf/jboss-log4j.xml</include>
                   </includes>
                   <stylesheet>src/main/xsl/log4j.xsl</stylesheet>
+                </transformationSet>
+                <transformationSet>
+                  <dir>${jboss.server}</dir>
+                  <includes>
+                    <include>conf/jbossjta-properties.xml</include>
+                  </includes>
+                  <stylesheet>src/main/xsl/jbossjta-properties.xsl</stylesheet>
                 </transformationSet>
               </transformationSets>
             </configuration>

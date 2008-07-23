@@ -146,6 +146,12 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>derby</artifactId>
+        <version>10.4.1.3</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
         <groupId>javax.ejb</groupId>
         <artifactId>ejb-api</artifactId>
         <version>3.0</version>
