@@ -190,7 +190,7 @@ public class TestContentTemplateFactory extends RepositoryTestCase {
         testWS = session.createDocument(testWS);
         session.save();
 
-        // Check children and rights
+        // Check children, rights and properties
         DocumentModelList children = session.getChildren(testWS.getRef());
         assertEquals(3, children.size());
 
@@ -201,6 +201,9 @@ public class TestContentTemplateFactory extends RepositoryTestCase {
                 if (existingACL != null) {
                     assertEquals(0, existingACL.size());
                 }
+                // check properties
+                assertEquals("Administrator", child.getPropertyValue("dublincore:creator"));
+                assertEquals("coverage", child.getPropertyValue("dublincore:coverage"));
             } else if (child.getTitle().equals("Secret Folder")) {
                 ACP acp = session.getACP(child.getRef());
                 ACL existingACL = acp.getACL(ACL.LOCAL_ACL);

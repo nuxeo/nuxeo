@@ -39,14 +39,21 @@
       </template>
     </factoryBinding>
 
-    <factoryBinding name="WorkspaceFactory" factoryName="SimpleTemplateFactory" targetType="Workspace">
+    <factoryBinding name="WorkspaceFactory" factoryName="SimpleTemplateFactory"
+                     targetType="Workspace">
       <template>
-        <templateItem typeName="Folder" id="Folder1" title="Folder1" description="First Folder"/>
-        <templateItem typeName="Folder" id="Secret_Folder" title="Secret Folder" description="Secret Folder">
-           <acl>
-             <ace granted="true" permission="Everything" userName="Administrator"/>
-             <ace granted="false" permission="Everything" userName="Everyone"/>
-           </acl>
+        <templateItem typeName="Folder" id="Folder1" title="Folder1" description="First Folder">
+          <properties>
+            <property xpath="dublincore:creator" value="Administrator"/>
+            <property xpath="dublincore:coverage" value="coverage"/>
+          </properties>
+        </templateItem>
+        <templateItem typeName="Folder" id="Secret_Folder" title="Secret Folder"
+                       description="Secret Folder">
+          <acl>
+            <ace granted="true" permission="Everything" userName="Administrator"/>
+            <ace granted="false" permission="Everything" userName="Everyone"/>
+          </acl>
         </templateItem>
         <templateItem typeName="Folder" id="Folder2" title="Folder2" description="Second Folder"/>
       </template>
