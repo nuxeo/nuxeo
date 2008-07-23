@@ -53,7 +53,8 @@ public class MemoryDirectory extends AbstractDirectory {
 
     public MemoryDirectorySession session;
 
-    public MemoryDirectory(String name, String schema, String idField, String passwordField) throws DirectoryException {
+    public MemoryDirectory(String name, String schema, String idField,
+            String passwordField) throws DirectoryException {
         this(name, schema, new HashSet<String>(), idField, passwordField);
 
         SchemaManager sm = getSchemaManager();
@@ -65,7 +66,6 @@ public class MemoryDirectory extends AbstractDirectory {
         for (Field f: fields) {
             schemaSet.add(f.getName().getLocalName());
         }
-
     }
 
     public SchemaManager getSchemaManager() throws DirectoryException {
