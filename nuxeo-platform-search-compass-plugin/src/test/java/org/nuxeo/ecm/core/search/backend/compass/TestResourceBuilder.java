@@ -43,10 +43,10 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.FieldConst
 
 public class TestResourceBuilder extends TestCase {
 
-    ResourceBuilder builder;
-    CompassSession session;
-    IntrospectableCompassBackend backend;
-    Map<String, FakeIndexableResourceDataDescriptor> dataConfs;
+    private ResourceBuilder builder;
+    private CompassSession session;
+    private IntrospectableCompassBackend backend;
+    private Map<String, FakeIndexableResourceDataDescriptor> dataConfs;
 
     @Override
     public void setUp() {
@@ -233,7 +233,6 @@ public class TestResourceBuilder extends TestCase {
         } finally {
             session.close();
         }
-
     }
 
     // Now with a property that has defined in compass mappings file
@@ -253,6 +252,6 @@ public class TestResourceBuilder extends TestCase {
         } finally {
             session.close();
         }
-
     }
+
 }

@@ -40,7 +40,7 @@ public class RelationSearchBusinessDelegate {
      */
     public static RelationManager getRelationManager() {
         try {
-            return (RelationManager) Framework.getService(RelationManager.class);
+            return Framework.getService(RelationManager.class);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             return null;
