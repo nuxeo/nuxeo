@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.resource.ResourceException;
 import javax.transaction.xa.XAResource;
@@ -31,6 +32,7 @@ import javax.transaction.xa.XAResource;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
+import org.nuxeo.ecm.core.model.NoSuchPropertyException;
 import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.Query;
@@ -43,6 +45,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.security.SecurityManager;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
+import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
 import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
@@ -313,7 +316,7 @@ public class SQLSession implements Session {
     protected List<Document> getChildren(Node node) throws DocumentException {
         List<Node> nodes;
         try {
-            nodes = session.getChildren(node, false);
+            nodes = session.getChildren(node, false, null);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -356,17 +359,43 @@ public class SQLSession implements Session {
         }
     }
 
-    protected void removeNode(Node node) throws DocumentException {
-        throw new UnsupportedOperationException();
+    protected List<Node> getComplexList(Node node, String name)
+            throws DocumentException {
+        List<Node> nodes;
+        try {
+            nodes = session.getChildren(node, true, name);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+        return nodes;
     }
 
     /*
      * ----- property helpers -----
      */
 
-    protected Property getProperty(Node node, Field field)
-            throws DocumentException {
-        String name = field.getName().getPrefixedName();
+    /**
+     * Create a property. Node may be null if the parent property hasn't be
+     * created yet.
+     */
+    protected Property makeProperty(Node node, ComplexType complexType,
+            String name) throws DocumentException {
+
+        Field field;
+        if (Model.SYSTEM_LIFECYCLE_POLICY_PROP.equals(name)) {
+            field = Model.SYSTEM_LIFECYCLE_POLICY_FIELD;
+        } else if (Model.SYSTEM_LIFECYCLE_STATE_PROP.equals(name)) {
+            field = Model.SYSTEM_LIFECYCLE_STATE_FIELD;
+        } else if (Model.SYSTEM_DIRTY_PROP.equals(name)) {
+            field = Model.SYSTEM_DIRTY_FIELD;
+        } else {
+            field = complexType.getField(name);
+        }
+
+        if (field == null) {
+            throw new NoSuchPropertyException(name);
+        }
+
         Type type = field.getType();
         if (type.isSimpleType()) {
             SimpleProperty property;
@@ -387,22 +416,25 @@ public class SQLSession implements Session {
                 }
                 return new SQLCollectionProperty(property, listType);
             } else {
-                throw new UnsupportedOperationException("list");
+                return new SQLComplexListProperty(node, listType, name, this);
             }
         } else {
             // complex type
-            ComplexType complexType = (ComplexType) type;
             Node childNode;
             try {
                 childNode = session.getChildNode(node, name, true);
+                if (childNode == null) {
+                    // Create the needed complex property. This could also be
+                    // done lazily when an actual write is done -- this would
+                    // mean refactoring the various SQL*Property classes to hold
+                    // parent information.
+                    childNode = session.addChildNode(node, name,
+                            type.getName(), true);
+                }
             } catch (StorageException e) {
                 throw new DocumentException(e);
             }
-            // TODO XXX childNode may be null!
-            if (childNode == null) {
-                throw new RuntimeException("TODO");
-            }
-            return new SQLComplexProperty(childNode, complexType, this);
+            return new SQLComplexProperty(childNode, (ComplexType) type, this);
         }
     }
 

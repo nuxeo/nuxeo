@@ -264,7 +264,7 @@ public class Mapper {
             if (isql != null) {
                 Column icolumn = sqlInfo.getIdentityFetchColumn(tableName);
                 try {
-                    log.debug("SQL: " + isql);
+                    // log.debug("SQL: " + isql);
                     ps = connection.prepareStatement(isql);
                     ResultSet rs;
                     try {
@@ -493,7 +493,8 @@ public class Mapper {
                 }
                 map.put(model.HIER_PARENT_KEY, parentId);
                 map.put(model.HIER_CHILD_NAME_KEY, childName);
-                map.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.valueOf(complexProp));
+                map.put(model.HIER_CHILD_ISPROPERTY_KEY,
+                        Boolean.valueOf(complexProp));
                 SimpleFragment row = new SimpleFragment(model.HIER_TABLE_NAME,
                         id, State.PRISTINE, context, map);
                 if (log.isDebugEnabled()) {
@@ -584,7 +585,8 @@ public class Mapper {
                     SimpleFragment row = (SimpleFragment) context.getIfPresent(id);
                     if (row == null) {
                         map.put(model.HIER_PARENT_KEY, parentId);
-                        map.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.valueOf(complexProp));
+                        map.put(model.HIER_CHILD_ISPROPERTY_KEY,
+                                Boolean.valueOf(complexProp));
                         row = new SimpleFragment(model.HIER_TABLE_NAME, id,
                                 State.PRISTINE, context, map);
                         if (log.isDebugEnabled()) {

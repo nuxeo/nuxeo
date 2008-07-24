@@ -30,7 +30,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.model.NoSuchPropertyException;
 import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.PropertyContainer;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -40,7 +39,7 @@ import org.nuxeo.ecm.core.storage.sql.Node;
 
 /**
  * A {@link SQLComplexProperty} gives access to a wrapped SQL-level {@link Node}
- * .
+ * . This is used for documents and for complex properties.
  *
  * @author Florent Guillaume
  */
@@ -83,7 +82,7 @@ public class SQLComplexProperty implements Property, PropertyContainer {
         throw new UnsupportedOperationException();
     }
 
-    public Map<String, Object> getValue() throws DocumentException {
+    public Object getValue() throws DocumentException {
         Map<String, Object> map = new HashMap<String, Object>();
         Collection<Property> properties = getProperties();
         for (Property property : properties) {
@@ -95,13 +94,19 @@ public class SQLComplexProperty implements Property, PropertyContainer {
     @SuppressWarnings("unchecked")
     public void setValue(Object value) throws DocumentException {
         Map<String, Object> map = (Map<String, Object>) value;
+        if (map == null) {
+            // XXX should delete the node?
+            // throw new RuntimeException("null");
+            return;
+        }
         for (Entry<String, Object> entry : map.entrySet()) {
-            getProperty(entry.getKey()).setValue(entry.getValue());
+            Property property = getProperty(entry.getKey());
+            property.setValue(entry.getValue());
         }
     }
 
     /*
-     * ----- Property + PropertyContainer -----
+     * ----- Property & PropertyContainer -----
      */
 
     public boolean isPropertySet(String name) throws DocumentException {
@@ -109,18 +114,15 @@ public class SQLComplexProperty implements Property, PropertyContainer {
     }
 
     public Property getProperty(String name) throws DocumentException {
-        Field field = type.getField(name);
-        if (field == null) {
-            throw new NoSuchPropertyException(name);
-        }
-        return session.getProperty(node, field);
+        return session.makeProperty(node, type, name);
     }
 
     public Collection<Property> getProperties() throws DocumentException {
         Collection<Field> fields = type.getFields();
         List<Property> properties = new ArrayList<Property>(fields.size());
         for (Field field : fields) {
-            properties.add(session.getProperty(node, field));
+            String name = field.getName().getPrefixedName();
+            properties.add(session.makeProperty(node, type, name));
         }
         return properties;
     }
@@ -166,31 +168,31 @@ public class SQLComplexProperty implements Property, PropertyContainer {
         return getProperty(name).getValue();
     }
 
+    public String getString(String name) throws DocumentException {
+        return (String) getProperty(name).getValue();
+    }
+
     public boolean getBoolean(String name) throws DocumentException {
         Boolean value = (Boolean) getProperty(name).getValue();
         return value == null ? false : value.booleanValue();
     }
 
-    public Blob getContent(String name) throws DocumentException {
-        throw new UnsupportedOperationException();
+    public long getLong(String name) throws DocumentException {
+        Long value = (Long) getProperty(name).getValue();
+        return value == null ? 0L : value.longValue();
+    }
+
+    public double getDouble(String name) throws DocumentException {
+        Double value = (Double) getProperty(name).getValue();
+        return value == null ? 0D : value.doubleValue();
     }
 
     public Calendar getDate(String name) throws DocumentException {
         return (Calendar) getProperty(name).getValue();
     }
 
-    public double getDouble(String name) throws DocumentException {
-        Double value = (Double) getProperty(name).getValue();
-        return value == null ? 0 : value.doubleValue();
-    }
-
-    public long getLong(String name) throws DocumentException {
-        Long value = (Long) getProperty(name).getValue();
-        return value == null ? 0 : value.longValue();
-    }
-
-    public String getString(String name) throws DocumentException {
-        return (String) getProperty(name).getValue();
+    public Blob getContent(String name) throws DocumentException {
+        throw new UnsupportedOperationException();
     }
 
     public void setPropertyValue(String name, Object value)
@@ -199,40 +201,36 @@ public class SQLComplexProperty implements Property, PropertyContainer {
         try {
             getProperty(name).setValue(value);
             // TODO mark dirty fields
-        } catch (RuntimeException e) {
-            log.error("RuntimeException setting value: " + value +
-                    " on property: " + name);
-            throw e;
         } catch (DocumentException e) {
             // we log a debugging message here as it is a point where the
             // property name is known
-            log.error("Error setting value: " + value + " on property: " + name);
+            log.error("Error setting property: " + name + " value: " + value);
             throw e;
         }
+    }
+
+    public void setString(String name, String value) throws DocumentException {
+        setPropertyValue(name, value);
     }
 
     public void setBoolean(String name, boolean value) throws DocumentException {
         setPropertyValue(name, Boolean.valueOf(value));
     }
 
-    public void setContent(String name, Blob value) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public void setDate(String name, Calendar value) throws DocumentException {
-        setPropertyValue(name, value);
+    public void setLong(String name, long value) throws DocumentException {
+        setPropertyValue(name, Long.valueOf(value));
     }
 
     public void setDouble(String name, double value) throws DocumentException {
         setPropertyValue(name, Double.valueOf(value));
     }
 
-    public void setLong(String name, long value) throws DocumentException {
-        setPropertyValue(name, Long.valueOf(value));
+    public void setDate(String name, Calendar value) throws DocumentException {
+        setPropertyValue(name, value);
     }
 
-    public void setString(String name, String value) throws DocumentException {
-        setPropertyValue(name, value);
+    public void setContent(String name, Blob value) throws DocumentException {
+        throw new UnsupportedOperationException();
     }
 
     public void removeProperty(String name) throws DocumentException {

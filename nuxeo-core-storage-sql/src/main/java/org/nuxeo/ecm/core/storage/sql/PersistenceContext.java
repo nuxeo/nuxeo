@@ -142,20 +142,20 @@ public class PersistenceContext {
      *
      * @param tableName the fragment table name
      * @param id the fragment id
-     * @param createAbsent {@code true} to return an absent fragment as an
+     * @param allowAbsent {@code true} to return an absent fragment as an
      *            object instead of {@code null}
      * @return the fragment, or {@code null} if none is found and {@value
-     *         createAbsent} was {@code false}
+     *         allowAbsent} was {@code false}
      * @throws StorageException
      */
-    public Fragment get(String tableName, Serializable id, boolean createAbsent)
+    public Fragment get(String tableName, Serializable id, boolean allowAbsent)
             throws StorageException {
         PersistenceContextByTable context = contexts.get(tableName);
         if (context == null) {
             context = new PersistenceContextByTable(tableName, mapper);
             contexts.put(tableName, context);
         }
-        return context.get(id, createAbsent);
+        return context.get(id, allowAbsent);
     }
 
     /**
@@ -165,15 +165,16 @@ public class PersistenceContext {
      * not in the database, returns {@code null} or an absent fragment.
      *
      * @param id the fragment id
-     * @param createAbsent {@code true} to return an absent fragment as an
+     * @param allowAbsent {@code true} to return an absent fragment as an
      *            object instead of {@code null}
-     * @return the fragment, or {@code null} if none is found and {@value
-     *         createAbsent} was {@code false}
+     * @return the hierarchy fragment, or {@code null} if none is found and
+     *         {@value allowAbsent} was {@code false}
      * @throws StorageException
      */
-    public Fragment getChildById(Serializable id, boolean createAbsent)
+    public Fragment getChildById(Serializable id, boolean allowAbsent)
             throws StorageException {
-        return contexts.get(model.HIER_TABLE_NAME).getChildById(id, createAbsent);
+        return contexts.get(model.HIER_TABLE_NAME).getChildById(id,
+                allowAbsent);
     }
 
     /**
@@ -183,7 +184,7 @@ public class PersistenceContext {
      * @param parentId the parent id
      * @param name the name
      * @param complexProp whether to get complex properties or real children
-     * @return the row, or {@code null} if none is found
+     * @return the hierarchy fragment, or {@code null} if none is found
      * @throws StorageException
      */
     public SimpleFragment getChildByName(Serializable parentId, String name,
@@ -197,7 +198,7 @@ public class PersistenceContext {
      *
      * @param parentId the parent id
      * @param complexProp whether to get complex properties or real children
-     * @return the collection of rows
+     * @return the collection of hierarchy fragments
      * @throws StorageException
      */
     public Collection<SimpleFragment> getChildren(Serializable parentId,
