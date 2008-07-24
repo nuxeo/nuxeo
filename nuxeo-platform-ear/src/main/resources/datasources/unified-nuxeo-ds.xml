@@ -23,7 +23,7 @@
   </local-tx-datasource>
   <!-- configuration of the HSQL database -->
   <mbean code="org.jboss.jdbc.HypersonicDatabase"
-    name="jboss:service=Hypersonic,database=nxaudit-logs">
+    name="jboss:service=Hypersonic,database=nuxeo">
     <attribute name="Database">nuxeo</attribute>
     <attribute name="InProcessMode">true</attribute>
   </mbean>
@@ -31,7 +31,7 @@
   <!-- Configuration for Postgres -->
   <!-- 
   <local-tx-datasource>
-    <jndi-name>nxarchive-records</jndi-name>
+    <jndi-name>NuxeoDS</jndi-name>
     <connection-url>jdbc:postgresql://localhost:5432/nuxeo</connection-url>
     <driver-class>org.postgresql.Driver</driver-class>
     <user-name>username</user-name>
