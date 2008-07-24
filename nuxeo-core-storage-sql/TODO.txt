@@ -1,12 +1,22 @@
 SQL Storage TODO
 
+- security
+
+- checkin/checkout
+
+- proxies
+
+- locking
+
+- copy/move
+
+- transactional blob storage
+
+- recursive removal on node remove
+
+- blob storage GC
+
 - hierarchy management, children optimizations
-
-- refactor core document apis
-
-- implement core sql adapter
-
-- transactional file storage
 
 - table aggregation and optimization
 

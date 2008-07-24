@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
+import java.io.InputStream;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,38 +37,62 @@ import org.nuxeo.ecm.core.storage.sql.Node;
  */
 public class SQLContentProperty extends SQLComplexProperty {
 
+    // constants based on core-types.xsd fields. XXX Should be in model
+    public static final String ENCODING = "encoding";
+
+    public static final String MIME_TYPE = "mime-type";
+
+    public static final String FILE_NAME = "name";
+
+    public static final String DIGEST = "digest";
+
+    public static final String LENGTH = "length";
+
     public SQLContentProperty(Node node, ComplexType type, SQLSession session) {
         super(node, type, session);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Object getValue() throws DocumentException {
         Map<String, Object> map = (Map<String, Object>) super.getValue();
-        try {
-            String sid = getSession().getUserSessionId();
-            SQLBlob blob = new SQLBlob(node);
-            String repositoryName = getRepository().getName();
-            return new LazyBlob(blob.getStream(), blob.getEncoding(),
-                    blob.getMimeType(), sid, node.getPath() + '/' + "DATA",
-                    repositoryName, blob.getFilename(), blob.getDigest(),
-                    blob.getLength());
-        } catch (Exception e) {
-            throw new DocumentException("Failed to create SQL lazy blob", e);
-        }
+        String sid = null; // getSession().getUserSessionId();
+        String dataKey = "/XXX/foo/bar/DATA"; // Used for what ? XXX
+        String repositoryName = session.getRepository().getName();
+        InputStream stream = null; // JCRBlobInputStream
+        // XXX TODO stream
+        String encoding = (String) map.get(ENCODING);
+        String mimeType = (String) map.get(MIME_TYPE);
+        String filename = (String) map.get(FILE_NAME);
+        String digest = (String) map.get(DIGEST);
+        Long llength = (Long) map.get(LENGTH);
+        long length = llength == null ? 0 : llength.longValue();
+        return new LazyBlob(stream, encoding, mimeType, sid, dataKey,
+                repositoryName, filename, digest, length);
     }
 
     @Override
     public void setValue(Object value) throws DocumentException {
         // XXX AT: set null value insted of HashMap, waiting for NXP-912
+        Map<String, Object> map = new HashMap<String, Object>();
         if (value instanceof Blob) {
             Blob blob = (Blob) value;
-            if (blob.getMimeType() == null) {
-                blob.setMimeType("application/octet-stream");
+            String encoding = blob.getEncoding();
+            String mimeType = blob.getMimeType();
+            if (mimeType == null) {
+                mimeType = "application/octet-stream";
             }
-            SQLBlob.setContent(node, (Blob) value);
-        } else {
-            SQLBlob.setContent(node, null);
+            String filename = blob.getFilename();
+            String digest = blob.getDigest();
+            Long length = Long.valueOf(blob.getLength());
+            map.put(ENCODING, encoding);
+            map.put(MIME_TYPE, mimeType);
+            map.put(FILE_NAME, filename);
+            map.put(DIGEST, digest);
+            map.put(LENGTH, length);
+            // XXX TODO stream
         }
+        super.setValue(map);
     }
 
 }

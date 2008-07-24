@@ -29,7 +29,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
-                "OSGI-INF/test-core-types-contrib.xml");
+                "OSGI-INF/test-backend-core-types-contrib.xml");
     }
 
     public void testRootNode() throws Exception {

@@ -62,7 +62,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         File dbdir = new File("target/test/repository");
         deleteRecursive(dbdir);
         deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
-                "OSGI-INF/test-repository-contrib.xml");
+                "OSGI-INF/test-repo-repository-contrib.xml");
     }
 
     protected static void deleteRecursive(File file) {

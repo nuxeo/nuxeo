@@ -112,7 +112,7 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public void remove() throws DocumentException {
-        throw new UnsupportedOperationException();
+        session.remove(node);
     }
 
     public void save() throws DocumentException {
@@ -250,7 +250,10 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public List<String> getVersionsIds() throws DocumentException {
-        throw new UnsupportedOperationException();
+        log.error("getProxies unimplemented, returning empty list");
+        return Collections.emptyList();
+        // XXX TODO
+        // throw new UnsupportedOperationException();
     }
 
     public Document getVersion(String label) throws DocumentException {

@@ -21,14 +21,16 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.resource.ResourceException;
 import javax.transaction.xa.XAResource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
@@ -57,6 +59,8 @@ import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
  * @author Florent Guillaume
  */
 public class SQLSession implements Session {
+
+    private static final Log log = LogFactory.getLog(SQLSession.class);
 
     private final SQLRepository repository;
 
@@ -185,6 +189,10 @@ public class SQLSession implements Session {
                 id = Long.valueOf(uuid);
             }
             Node node = session.getNodeById(id);
+            if (node == null) {
+                // required by callers such as AbstractSession.exists
+                throw new NoSuchDocumentException(uuid);
+            }
             return newDocument(node);
         } catch (StorageException e) {
             throw new DocumentException("Failed to get document by UUID", e);
@@ -239,8 +247,10 @@ public class SQLSession implements Session {
 
     public Collection<Document> getProxies(Document document, Document parent)
             throws DocumentException {
+        log.error("getProxies unimplemented, returning empty list");
+        return Collections.emptyList();
         // XXX TODO
-        throw new UnsupportedOperationException();
+        // throw new UnsupportedOperationException();
     }
 
     public InputStream getDataStream(String key) throws DocumentException {
@@ -370,6 +380,14 @@ public class SQLSession implements Session {
         return nodes;
     }
 
+    protected void remove(Node node) throws DocumentException {
+        try {
+            session.removeNode(node);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
     /*
      * ----- property helpers -----
      */
@@ -390,6 +408,8 @@ public class SQLSession implements Session {
             field = Model.SYSTEM_DIRTY_FIELD;
         } else {
             field = complexType.getField(name);
+            // qualify if necessary (some callers pass unprefixed names)
+            name = field.getName().getPrefixedName();
         }
 
         if (field == null) {
@@ -420,6 +440,7 @@ public class SQLSession implements Session {
             }
         } else {
             // complex type
+            ComplexType fieldComplexType = (ComplexType) type;
             Node childNode;
             try {
                 childNode = session.getChildNode(node, name, true);
@@ -434,7 +455,12 @@ public class SQLSession implements Session {
             } catch (StorageException e) {
                 throw new DocumentException(e);
             }
-            return new SQLComplexProperty(childNode, (ComplexType) type, this);
+            // TODO use a better switch
+            if (type.getName().equals("content")) {
+                return new SQLContentProperty(childNode, fieldComplexType, this);
+            } else {
+                return new SQLComplexProperty(childNode, fieldComplexType, this);
+            }
         }
     }
 

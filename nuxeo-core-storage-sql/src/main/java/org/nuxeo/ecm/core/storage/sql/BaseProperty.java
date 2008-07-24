@@ -78,6 +78,11 @@ public abstract class BaseProperty {
                 return value;
             }
             throw new StorageException("Value is not a Boolean: " + value);
+        case LONG:
+            if (value instanceof Long) {
+                return value;
+            }
+            throw new StorageException("Value is not a Long: " + value);
         case DATETIME:
             if (value instanceof Calendar) {
                 return value;
