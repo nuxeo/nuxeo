@@ -721,7 +721,7 @@ public class TestCompassBackendInternals extends TestCase {
         }
     }
 
-    class FakeResolvedResource extends ResolvedResourceImpl {
+    private static class FakeResolvedResource extends ResolvedResourceImpl {
 
         private static final long serialVersionUID = 1L;
 
@@ -733,10 +733,8 @@ public class TestCompassBackendInternals extends TestCase {
 
         @Override
         public IndexableResourceConf getConfiguration() {
-            // TODO Auto-generated method stub
             return conf;
         }
-
     }
 
     public void testGetAlias() throws Exception {

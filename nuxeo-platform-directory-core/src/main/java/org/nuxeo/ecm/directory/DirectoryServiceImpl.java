@@ -40,11 +40,11 @@ public class DirectoryServiceImpl extends DefaultComponent implements
     private Map<String, List<DirectoryFactory>> factoriesByDirectoryName;
 
     public Directory getDirectory(String name) throws DirectoryException {
-        Directory dir = null;
         List<DirectoryFactory> potentialFactories = factoriesByDirectoryName.get(name);
         if (potentialFactories == null) {
             return null;
         }
+        Directory dir = null;
         for (DirectoryFactory factory : potentialFactories) {
             dir = factory.getDirectory(name);
             if (null != dir) {

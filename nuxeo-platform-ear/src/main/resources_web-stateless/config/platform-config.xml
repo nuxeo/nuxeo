@@ -18,7 +18,8 @@
         (localhost)
       </li>
     </ul>
-    @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+    @author
+    <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
   </documentation>
 
   <extension target="org.nuxeo.ecm.platform.api.PlatformService"
@@ -74,12 +75,6 @@
       group="platform/io">
       <locator>%IOManagerBean</locator>
     </service>
-    <!--
-      <service class="org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry"
-      group="platform/mimetype">
-      <locator>%MimetypeRegistryBean</locator>
-      </service>
-    -->
     <service class="org.nuxeo.ecm.platform.publishing.api.PublishingService"
       group="platform">
       <locator>%PublishingServiceBean</locator>
@@ -87,6 +82,10 @@
     <!-- the remote type provider used to import types : see below the provider extension -->
     <service class="org.nuxeo.ecm.core.schema.TypeProvider" group="core">
       <locator>%TypeProviderBean</locator>
+    </service>
+    <service class="org.nuxeo.ecm.platform.filemanager.api.FileManager"
+      group="core">
+      <locator>%FileManagerBean</locator>
     </service>
     <service class="org.nuxeo.ecm.platform.usermanager.UserManager"
       group="platform">
@@ -160,13 +159,6 @@
       group="platform">
       <locator>%WorkItemsListsBean</locator>
     </service>
-    <!--
-      <service
-      class="org.nuxeo.ecm.platform.ec.placeful.ejb.interfaces.PlacefulServiceRemote"
-      group="platform">
-      <locator>%PlacefulServiceBean</locator>
-      </service>
-    -->
     <service class="org.nuxeo.ecm.platform.notification.api.NotificationManager"
       group="platform">
       <locator>%NotificationServiceBean</locator>
