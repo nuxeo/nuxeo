@@ -473,11 +473,14 @@ public class SQLInfo {
             case STRING:
                 sqlType = Types.CLOB; // or VARCHAR for system tables?
                 break;
+            case BOOLEAN:
+                sqlType = Types.BIT;
+                break;
             case LONG:
                 sqlType = Types.INTEGER;
                 break;
-            case BOOLEAN:
-                sqlType = Types.BIT;
+            case DOUBLE:
+                sqlType = Types.DOUBLE;
                 break;
             case DATETIME:
                 sqlType = Types.TIMESTAMP;

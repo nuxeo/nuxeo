@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
@@ -31,13 +32,15 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
  */
 public enum PropertyType {
     STRING, //
-    LONG, //
     BOOLEAN, //
+    LONG, //
+    DOUBLE, //
     DATETIME, //
     BINARY, //
     ARRAY_STRING(STRING), //
-    ARRAY_LONG(LONG), //
     ARRAY_BOOLEAN(BOOLEAN), //
+    ARRAY_LONG(LONG), //
+    ARRAY_DOUBLE(DOUBLE), //
     ARRAY_DATETIME(DATETIME), //
     ARRAY_BINARY(BINARY);
 
@@ -60,22 +63,24 @@ public enum PropertyType {
     }
 
     public static PropertyType fromFieldType(Type fieldType, boolean array) {
-        if (fieldType instanceof LongType) {
-            return array ? ARRAY_LONG : LONG;
-        } else if (fieldType instanceof StringType) {
+        if (fieldType instanceof StringType) {
             return array ? ARRAY_STRING : STRING;
+        } else if (fieldType instanceof BooleanType) {
+            return array ? ARRAY_BOOLEAN : BOOLEAN;
+        } else if (fieldType instanceof LongType) {
+            return array ? ARRAY_LONG : LONG;
+        } else if (fieldType instanceof DoubleType) {
+            return array ? ARRAY_DOUBLE : DOUBLE;
         } else if (fieldType instanceof DateType) {
             return array ? ARRAY_DATETIME : DATETIME;
         } else if (fieldType instanceof BinaryType) {
             return array ? ARRAY_BINARY : BINARY;
-        } else if (fieldType instanceof BooleanType) {
-            return array ? ARRAY_BOOLEAN : BOOLEAN;
-        } else if (fieldType instanceof DoubleType) {
-            throw new RuntimeException("Unimplemented primitive type: " +
-                    fieldType.getClass().getName());
         } else if (fieldType instanceof IntegerType) {
             throw new RuntimeException("Unimplemented primitive type: " +
                     fieldType.getClass().getName());
+        } else if (fieldType instanceof SimpleTypeImpl) {
+            // simple type with constraints -- ignore constraints XXX
+            return fromFieldType(fieldType.getSuperType(), array);
         } else {
             throw new RuntimeException("Invalid primitive type: " +
                     fieldType.getClass().getName());

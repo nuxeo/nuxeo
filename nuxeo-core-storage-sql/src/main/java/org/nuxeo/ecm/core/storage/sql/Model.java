@@ -173,6 +173,10 @@ public class Model {
         return typeFragments.get(typeName);
     }
 
+    public boolean isComplexType(String typeName) {
+        return typeFragments.containsKey(typeName);
+    }
+
     /**
      * Creates all the models.
      */

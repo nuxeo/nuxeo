@@ -305,10 +305,12 @@ public class SessionImpl implements Session, XAResource {
         Type type = schemaManager.getDocumentType(typeName);
         if (type == null) {
             type = schemaManager.getSchema(typeName);
-            if (type == null) {
-                // happens core "content" which is included each time
-                // but not registered as a toplevel schema
+            if (type == null && !model.isComplexType(typeName)) {
+                throw new StorageException("Unknown type: " + typeName);
             }
+            // happens for any complex type not registered directly as a
+            // toplevel schema, like "content", or "Name" in unit tests.
+            // => no high level Type info for them
         }
 
         // XXX TODO XXX may not be a document type for complex props
@@ -421,10 +423,10 @@ public class SessionImpl implements Session, XAResource {
         return nodes;
     }
 
-    // TODO XXX remove recursively the children
     public void removeNode(Node node) throws StorageException {
         checkLive();
         node.remove();
+        // TODO XXX remove recursively the children
     }
 
     /*
