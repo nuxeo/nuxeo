@@ -7,16 +7,4 @@
     <user-name>sa</user-name>
     <password></password>
   </local-tx-datasource>
-    <!--
-  <xa-datasource>
-    <jndi-name>nxsqldirectory</jndi-name>
-    <xa-datasource-class>org.apache.derby.jdbc.EmbeddedXADataSource</xa-datasource-class>
-    <xa-datasource-property name="DatabaseName">${jboss.server.data.dir}/derby/nuxeo</xa-datasource-property>
-    <xa-datasource-property name="User">sa</xa-datasource-property>
-    <xa-datasource-property name="Password"></xa-datasource-property>
-    <xa-datasource-property name="CreateDatabase">create</xa-datasource-property>
-    <track-connection-by-tx/>
-    <no-tx-separate-pools/>
-  </xa-datasource>
--->
 </datasources>
