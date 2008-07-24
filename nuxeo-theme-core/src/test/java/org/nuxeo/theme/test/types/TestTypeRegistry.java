@@ -25,15 +25,15 @@ public class TestTypeRegistry extends NXRuntimeTestCase {
 
     private TypeRegistry typeRegistry;
 
-    private PresetType preset1 = null;
+    private PresetType preset1;
 
-    private PresetType preset2 = null;
+    private PresetType preset2;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
                 ThemeService.ID);
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");
@@ -74,12 +74,12 @@ public class TestTypeRegistry extends NXRuntimeTestCase {
         assertNull(typeRegistry.lookup(TypeFamily.PRESET, "preset1"));
 
         // clear registry
-        // typeRegistry.register(preset1);
-        // typeRegistry.clear();
+        typeRegistry.register(preset1);
+        typeRegistry.clear();
 
-        // assertTrue(typeRegistry.getTypes(TypeFamily.PRESET).isEmpty());
-        // assertTrue(typeRegistry.getTypeNames(TypeFamily.PRESET).isEmpty());
-        // assertNull(typeRegistry.lookup(TypeFamily.PRESET, "preset1"));
+        assertTrue(typeRegistry.getTypes(TypeFamily.PRESET).isEmpty());
+        assertTrue(typeRegistry.getTypeNames(TypeFamily.PRESET).isEmpty());
+        assertNull(typeRegistry.lookup(TypeFamily.PRESET, "preset1"));
     }
 
 }

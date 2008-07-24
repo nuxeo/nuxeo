@@ -21,6 +21,7 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.ElementType;
+import org.nuxeo.theme.engines.EngineType;
 import org.nuxeo.theme.formats.FormatType;
 import org.nuxeo.theme.models.ModelType;
 import org.nuxeo.theme.types.Type;
@@ -37,8 +38,14 @@ public final class ViewType implements Type {
     @XNode("engine")
     public String engineName = "default";
 
+    @XNode("@template-engine")
+    private String templateEngine;
+
     @XNode("mode")
     public String mode = "*";
+
+    @XNode("icon")
+    public String icon = "/nuxeo/nxthemes/icons/no-icon.png";
 
     @XNode("element-type")
     public String elementTypeName = "*";
@@ -58,19 +65,22 @@ public final class ViewType implements Type {
     @XNodeList(value = "resource", type = String[].class, componentType = String.class)
     public String[] resources;
 
-    private View view = null;
+    private View view;
 
     public ViewType() {
     }
 
-    public ViewType(final String viewName, final String className, final String engineName,
-            final String mode, final String elementTypeName, final String modelTypeName,
-            final String formatTypeName, final String template, final String[] resources) {
+    public ViewType(final String viewName, final String className,
+            final String engineName, final String templateEngine,
+            final String mode, final String elementTypeName,
+            final String modelTypeName, final String formatTypeName,
+            final String template, final String[] resources) {
         this.viewName = viewName;
         this.elementTypeName = elementTypeName;
         this.modelTypeName = modelTypeName;
         this.formatTypeName = formatTypeName;
         this.engineName = engineName;
+        this.templateEngine = templateEngine;
         this.mode = mode;
         this.className = className;
         this.template = template;
@@ -79,15 +89,17 @@ public final class ViewType implements Type {
 
     public String getTypeName() {
         return computeName(formatTypeName, elementTypeName, viewName,
-                modelTypeName, engineName, mode);
+                modelTypeName, engineName, mode, templateEngine);
     }
 
     public static String computeName(final String formatTypeName,
-            final String elementTypeName, final String viewName, final String modelTypeName,
-            final String engineName, final String mode) {
+            final String elementTypeName, final String viewName,
+            final String modelTypeName, final String engineName,
+            final String mode, final String templateEngineName) {
 
-        return String.format("%s/%s/%s/%s/%s/%s", formatTypeName,
-                elementTypeName, viewName, modelTypeName, engineName, mode);
+        return String.format("%s/%s/%s/%s/%s/%s/%s", formatTypeName,
+                elementTypeName, viewName, modelTypeName, engineName, mode,
+                templateEngineName);
     }
 
     public TypeFamily getTypeFamily() {
@@ -101,6 +113,11 @@ public final class ViewType implements Type {
     public View getView() {
         if (view != null) {
             return view;
+        }
+        if (className == null) {
+            EngineType engine = (EngineType) Manager.getTypeRegistry().lookup(
+                    TypeFamily.ENGINE, engineName);
+            className = engine.getTemplateView();
         }
         try {
             view = (View) Class.forName(className).newInstance();
@@ -151,4 +168,19 @@ public final class ViewType implements Type {
         this.mode = mode;
     }
 
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public String getTemplateEngine() {
+        return templateEngine;
+    }
+
+    public void setTemplateEngine(String templateEngine) {
+        this.templateEngine = templateEngine;
+    }
 }

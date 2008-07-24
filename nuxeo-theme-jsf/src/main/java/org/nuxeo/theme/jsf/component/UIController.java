@@ -16,11 +16,9 @@ package org.nuxeo.theme.jsf.component;
 
 public class UIController extends UIBaseMVC {
 
-    private static final String className = "controller";
-
     @Override
     public final String getClassName() {
-        return className;
+        return "controller";
     }
 
 }

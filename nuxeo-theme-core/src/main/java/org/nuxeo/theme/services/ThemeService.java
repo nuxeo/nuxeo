@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -29,7 +30,6 @@ import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.CachingDef;
-import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.NegotiationDef;
 import org.nuxeo.theme.Registrable;
 import org.nuxeo.theme.RegistryType;
@@ -43,12 +43,14 @@ import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.presets.PaletteParser;
 import org.nuxeo.theme.presets.PaletteType;
 import org.nuxeo.theme.presets.PresetType;
+import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.themes.ThemeDescriptor;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.themes.ThemeParser;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
+import org.nuxeo.theme.views.ViewType;
 
 public class ThemeService extends DefaultComponent {
 
@@ -99,8 +101,8 @@ public class ThemeService extends DefaultComponent {
                 || xp.equals("models") || xp.equals("formats")
                 || xp.equals("format-filters")
                 || xp.equals("standalone-filters") || xp.equals("resources")
-                || xp.equals("views") || xp.equals("negotiations")
-                || xp.equals("shortcuts")) {
+                || xp.equals("negotiations") || xp.equals("shortcuts")
+                || xp.equals("vocabularies")) {
             registerTypeExtension(extension);
         } else if (xp.equals("applications")) {
             registerApplicationExtension(extension);
@@ -108,12 +110,18 @@ public class ThemeService extends DefaultComponent {
             registerPerspectiveExtension(extension);
         } else if (xp.equals("engines")) {
             registerEngineExtension(extension);
+        } else if (xp.equals("template-engines")) {
+            registerTemplateEngineExtension(extension);
         } else if (xp.equals("event-listeners")) {
             registerEventListenerExtension(extension);
         } else if (xp.equals("themes")) {
             registerThemeExtension(extension);
         } else if (xp.equals("presets")) {
             registerPresetExtension(extension);
+        } else if (xp.equals("views")) {
+            registerViewExtension(extension);
+        } else {
+            log.warn(String.format("Unknown extension point: %s", xp));
         }
     }
 
@@ -126,9 +134,10 @@ public class ThemeService extends DefaultComponent {
                 || xp.equals("models") || xp.equals("formats")
                 || xp.equals("format-filters")
                 || xp.equals("standalone-filters") || xp.equals("resources")
-                || xp.equals("views") || xp.equals("engines")
+                || xp.equals("engines") || xp.equals("template-engines")
                 || xp.equals("negotiations") || xp.equals("perspectives")
-                || xp.equals("applications") || xp.equals("shortcuts")) {
+                || xp.equals("applications") || xp.equals("shortcuts")
+                || xp.equals("vocabularies")) {
             unregisterTypeExtension(extension);
         } else if (xp.equals("event-listeners")) {
             unregisterEventListenerExtension(extension);
@@ -136,6 +145,10 @@ public class ThemeService extends DefaultComponent {
             unregisterThemeExtension(extension);
         } else if (xp.equals("presets")) {
             unregisterPresetExtension(extension);
+        } else if (xp.equals("views")) {
+            unregisterViewExtension(extension);
+        } else {
+            log.warn(String.format("Unknown extension point: %s", xp));
         }
     }
 
@@ -176,8 +189,10 @@ public class ThemeService extends DefaultComponent {
     private void unregisterTypeExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
-        for (Object contrib : contribs) {
-            typeRegistry.unregister((Type) contrib);
+        if (typeRegistry != null) {
+            for (Object contrib : contribs) {
+                typeRegistry.unregister((Type) contrib);
+            }
         }
     }
 
@@ -191,10 +206,22 @@ public class ThemeService extends DefaultComponent {
                     TypeFamily.APPLICATION, application.getTypeName());
 
             if (oldApplication == null) {
+                String templateEngine = application.getTemplateEngine();
+                if (templateEngine == null) {
+                    final String defaultTemplateEngine = ThemeManager.getDefaultTemplateEngineName();
+                    log.warn(String.format("Please set the 'template-engine' attribute on <application root=\"%s\" template-engine=\"...\"> (default is '%s')",
+                            application.getRoot(), defaultTemplateEngine));
+                    application.setTemplateEngine(defaultTemplateEngine);
+		}
                 typeRegistry.register(application);
 
             } else {
                 // Merge properties from already registered application
+                final String templateEngine = application.getTemplateEngine();
+                if (templateEngine != null) {
+                    oldApplication.setTemplateEngine(templateEngine);
+                }
+                
                 NegotiationDef negotiation = application.getNegotiation();
                 if (negotiation != null) {
                     NegotiationDef oldNegotiation = oldApplication.getNegotiation();
@@ -243,9 +270,8 @@ public class ThemeService extends DefaultComponent {
                 Map<String, ViewDef> viewDefs = application.getViewDefs();
                 if (!viewDefs.isEmpty()) {
                     Map<String, ViewDef> oldViewDefs = oldApplication.getViewDefs();
-                    for (Map.Entry entry : viewDefs.entrySet()) {
-                        oldViewDefs.put((String) entry.getKey(),
-                                (ViewDef) entry.getValue());
+                    for (Map.Entry<String, ViewDef> entry : viewDefs.entrySet()) {
+                        oldViewDefs.put(entry.getKey(), entry.getValue());
                     }
                 }
             }
@@ -272,6 +298,19 @@ public class ThemeService extends DefaultComponent {
             EngineType engine = (EngineType) contrib;
             if (!engine.getName().matches("[a-z0-9_\\-]+")) {
                 log.error("Rendering engine names may only contain lowercase alphanumeric characters, underscores and hyphens ");
+                continue;
+            }
+            typeRegistry.register(engine);
+        }
+    }
+
+    private void registerTemplateEngineExtension(Extension extension) {
+        Object[] contribs = extension.getContributions();
+        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
+        for (Object contrib : contribs) {
+            TemplateEngineType engine = (TemplateEngineType) contrib;
+            if (!engine.getName().matches("[a-z0-9_\\-]+")) {
+                log.error("Template engine names may only contain lowercase alphanumeric characters, underscores and hyphens ");
                 continue;
             }
             typeRegistry.register(engine);
@@ -347,13 +386,11 @@ public class ThemeService extends DefaultComponent {
             url = extensionContext.getResource(src);
         }
 
-        ThemeManager themeManager = Manager.getThemeManager();
-
         if (url != null) {
             typeRegistry.register(palette);
             Map<String, String> entries = PaletteParser.parse(url);
             for (String key : entries.keySet()) {
-                String value = themeManager.resolvePresets(entries.get(key));
+                String value = ThemeManager.resolvePresets(entries.get(key));
                 PresetType preset = new PresetType(key, value, paletteName,
                         category);
                 typeRegistry.register(preset);
@@ -392,8 +429,50 @@ public class ThemeService extends DefaultComponent {
     private void unregisterEventListenerExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         TypeRegistry typeRegistry = (TypeRegistry) getRegistry("events");
+        if (typeRegistry != null) {
+            for (Object contrib : contribs) {
+                typeRegistry.unregister((Type) contrib);
+            }
+        }
+    }
+
+    private void registerViewExtension(Extension extension) {
+        Object[] contribs = extension.getContributions();
+        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
+        StringBuilder sb = new StringBuilder();
+        final List<String> templateEngineNames = ThemeManager.getTemplateEngineNames();
+        for (String n : templateEngineNames) {
+            sb.append(String.format(" '%s'", n));
+        }
         for (Object contrib : contribs) {
-            typeRegistry.unregister((Type) contrib);
+            ViewType viewType = (ViewType) contrib;
+            final String templateEngine = viewType.getTemplateEngine();
+            final String viewName = viewType.getViewName();
+            if (templateEngine == null) {
+                final String defaultTemplateEngineName = ThemeManager.getDefaultTemplateEngineName();
+                viewType.setTemplateEngine(defaultTemplateEngineName);
+                if (templateEngineNames.size() > 0) {
+                    log.warn(String.format(
+                            "Please set the 'template-engine' attribute on <view name=\"%s\" template-engine=\"...\"> to one of%s (default is '%s')",
+                            viewName, sb.toString(), defaultTemplateEngineName));
+                }
+            } else if (!templateEngineNames.contains(templateEngine)) {
+                log.debug(String.format(
+                        "Unknown template-engine: '%s' on <view name=\"%s\" template-engine=\"...\"> (registered template engines are:%s)",
+                        templateEngine, viewName, sb.toString()));
+                continue;
+            }
+            typeRegistry.register(viewType);
+        }
+    }
+
+    private void unregisterViewExtension(Extension extension) {
+        Object[] contribs = extension.getContributions();
+        TypeRegistry typeRegistry = (TypeRegistry) getRegistry("types");
+        if (typeRegistry != null) {
+            for (Object contrib : contribs) {
+                typeRegistry.unregister((ViewType) contrib);
+            }
         }
     }
 

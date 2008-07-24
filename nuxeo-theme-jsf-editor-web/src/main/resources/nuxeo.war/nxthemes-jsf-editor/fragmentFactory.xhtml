@@ -11,10 +11,10 @@ Fragments
   <ui:repeat value="#{nxthemesUiManager.availableFragments}"
     var="fragment">
     <li class="fragment">#{fragment.fragmentType.typeName}</li>
-    <ul class="views">
+    <ul class="views" style="display:none">
       <ui:repeat value="#{fragment.views}" var="v">
         <li class="nxthemesFragmentFactory" title="Drag this widget to the canvas"
-          typename="#{fragment.fragmentType.typeName}/#{v.viewName}">#{v.viewName}</li>
+          typename="#{fragment.fragmentType.typeName}/#{v.viewName}"><img src="#{v.icon}" width="16" height="16" /> #{v.viewName}</li>
       </ui:repeat>
     </ul>
   </ui:repeat>

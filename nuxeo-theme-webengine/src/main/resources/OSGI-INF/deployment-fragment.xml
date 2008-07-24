@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<fragment>
+
+
+  <extension target="application#MODULE">
+
+    <module>
+      <ejb>${bundle.fileName}</ejb>
+    </module>
+
+  </extension>
+
+  <install>
+
+    <unzip from="${bundle.fileName}" to="/">
+      <include>nuxeo.war/**</include>
+    </unzip>
+
+  </install>
+
+</fragment>

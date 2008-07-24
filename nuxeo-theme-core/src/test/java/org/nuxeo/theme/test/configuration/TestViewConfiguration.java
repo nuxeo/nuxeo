@@ -30,8 +30,8 @@ public class TestViewConfiguration extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "model-config.xml");
         deployContrib("org.nuxeo.theme.core.tests", "view-config.xml");
 
@@ -42,7 +42,7 @@ public class TestViewConfiguration extends NXRuntimeTestCase {
 
     public void testRegisterView() throws Exception {
         view1 = (ViewType) typeRegistry.lookup(TypeFamily.VIEW,
-                "widget/page/page frame/menu item/default/*");
+                "widget/page/page frame/menu item/default/*/jsf-facelets");
         assertNotNull(view1);
 
         assertEquals("page", view1.getElementType().getTypeName());
@@ -51,6 +51,7 @@ public class TestViewConfiguration extends NXRuntimeTestCase {
         assertEquals("nxthemes/jsf/widgets/page-frame.xml", view1.getTemplate());
         assertEquals("css/style.css", view1.getResources()[0]);
         assertEquals("script/script.js", view1.getResources()[1]);
+        assertEquals("jsf-facelets", view1.getTemplateEngine());
     }
 
 }

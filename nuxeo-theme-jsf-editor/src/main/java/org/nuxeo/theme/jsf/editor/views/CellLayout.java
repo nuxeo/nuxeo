@@ -18,14 +18,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuxeo.theme.formats.Format;
-import org.nuxeo.theme.jsf.filters.layouts.DefaultLayoutView;
 import org.nuxeo.theme.rendering.RenderingInfo;
+
+import org.nuxeo.theme.html.filters.layout.DefaultLayoutView;
 
 public class CellLayout extends DefaultLayoutView {
 
     static final Pattern contentPattern = Pattern.compile("<.*?>(.*)</td>",
             Pattern.DOTALL);
 
+    @Override
     public String render(final RenderingInfo info) {
         final String markup = info.getMarkup();
         final Matcher contentMatcher = contentPattern.matcher(markup);

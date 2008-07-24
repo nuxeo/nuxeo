@@ -22,7 +22,7 @@ import javax.faces.component.UIOutput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-import org.nuxeo.theme.jsf.Utils;
+import org.nuxeo.theme.html.ui.Button;
 
 public class UIButton extends UIOutput {
 
@@ -39,49 +39,17 @@ public class UIButton extends UIOutput {
     private String classNames;
 
     @Override
-    public void encodeBegin(final FacesContext context) throws IOException {
+    public void encodeAll(final FacesContext context) throws IOException {
         final ResponseWriter writer = context.getResponseWriter();
-
-        final Map attributes = getAttributes();
-        identifier = (String) attributes.get("identifier");
-        controlledBy = (String) attributes.get("controlledBy");
-        switchTo = (String) attributes.get("switchTo");
-        link = (String) attributes.get("link");
-        label = (String) attributes.get("label");
-        classNames = (String) attributes.get("classNames");
-
-        // view
-        Map<String, Object> view = new HashMap<String, Object>();
-        view.put("id", identifier);
-        Map<String, Object> widget = new HashMap<String, Object>();
-        widget.put("type", "button");
-        view.put("widget", widget);
-        if (null != switchTo) {
-            String[] p = switchTo.split("/");
-            if (p.length > 1) {
-                view.put("perspectiveController", p[0]);
-                view.put("toPerspective", p[1]);
-            }
-        }
-        if (null != controlledBy) {
-            view.put("controllers", controlledBy.split(","));
-        }
-        if (null != link) {
-            view.put("link", link);
-        }
-        if (null != classNames) {
-            view.put("classNames", classNames);
-        }
-        view.put("label", label);
-        writer.startElement("ins", this);
-        writer.writeAttribute("class", "view", null);
-        writer.write(Utils.toJson(view));
-    }
-
-    @Override
-    public void encodeEnd(final FacesContext context) throws IOException {
-        ResponseWriter writer = context.getResponseWriter();
-        writer.endElement("ins");
+        Map<String, String> params = new HashMap<String, String>();
+	Map<String, Object> attributes = getAttributes();
+	params.put("identifier", (String) attributes.get("identifier"));
+	params.put("controlledBy", (String) attributes.get("controlledBy"));
+	params.put("switchTo", (String) attributes.get("switchTo"));
+	params.put("link", (String) attributes.get("link"));
+	params.put("label", (String) attributes.get("label"));
+	params.put("classNames", (String) attributes.get("classNames"));
+        writer.write(Button.render(params));
     }
 
     public String getControlledBy() {

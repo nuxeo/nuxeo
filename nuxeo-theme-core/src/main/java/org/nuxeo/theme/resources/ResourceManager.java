@@ -14,7 +14,10 @@
 
 package org.nuxeo.theme.resources;
 
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +34,7 @@ public final class ResourceManager implements Registrable {
 
     private static final Log log = LogFactory.getLog(ResourceManager.class);
 
-    private final Map<URL, List<String>> cache = new HashMap<URL, List<String>>();
+    private final Map<URI, List<String>> cache = new HashMap<URI, List<String>>();
 
     private final TypeRegistry typeRegistry = Manager.getTypeRegistry();
 
@@ -52,11 +55,27 @@ public final class ResourceManager implements Registrable {
         }
     }
 
-    public List<String> getResourcesFor(URL themeUrl) {
-        if (!cache.containsKey(themeUrl)) {
-            cache.put(themeUrl, new ArrayList<String>());
+    public List<String> getResourcesFor(String themeUrl) {
+        try {
+            return getResourcesFor(new URL(themeUrl));
+        } catch (MalformedURLException e) {
+            log.warn(e);
+            return null;
         }
-        return cache.get(themeUrl);
+    }
+    
+    public List<String> getResourcesFor(URL themeUrl) {
+        URI uri;
+        try {
+            uri = themeUrl.toURI();
+        } catch (URISyntaxException e) {
+            log.warn(e);
+            return null;
+        }
+        if (!cache.containsKey(uri)) {
+            cache.put(uri, new ArrayList<String>());
+        }
+        return cache.get(uri);
     }
 
     public void clear() {
