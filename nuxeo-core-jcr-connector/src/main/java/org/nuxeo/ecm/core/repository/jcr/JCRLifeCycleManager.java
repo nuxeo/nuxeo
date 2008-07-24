@@ -23,8 +23,8 @@ import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 
-import org.nuxeo.ecm.core.lifecycle.AbstractLifeCycleManager;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
+import org.nuxeo.ecm.core.lifecycle.LifeCycleManager;
 import org.nuxeo.ecm.core.model.Document;
 
 /**
@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.model.Document;
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *
  */
-public class JCRLifeCycleManager extends AbstractLifeCycleManager {
+public class JCRLifeCycleManager implements LifeCycleManager {
 
     // :XXX: Check if we should take care of synchronization at this level.
 

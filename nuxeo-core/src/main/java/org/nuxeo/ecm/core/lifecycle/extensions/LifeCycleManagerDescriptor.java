@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,8 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- * $Id: LifeCycleManagerDescriptor.java 16046 2007-04-12 14:34:58Z fguillaume $
+ *     Julien Anguenot
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.lifecycle.extensions;
@@ -27,17 +27,14 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @see org.nuxeo.ecm.core.lifecycle.impl.LifeCycleImpl
  * @see org.nuxeo.ecm.core.lifecycle.LifeCycleManager
  *
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @author Julien Anguenot
+ * @author Florent Guillaume
  */
-@XObject(value = "lifecyclemanager", order = {"@name"})
+@XObject("lifecyclemanager")
 public class LifeCycleManagerDescriptor {
-
-    @XNode("@name")
-    private String name;
 
     @XNode("@class")
     private String className;
-
 
     public String getClassName() {
         return className;
@@ -45,14 +42,6 @@ public class LifeCycleManagerDescriptor {
 
     public void setClassName(String className) {
         this.className = className;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
 }

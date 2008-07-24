@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,14 +12,16 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- * $Id: LifeCycleDescriptor.java 16207 2007-04-15 11:56:45Z sfermigier $
+ *     Julien Anguenot
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.lifecycle.extensions;
 
 import java.util.Collection;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
@@ -34,18 +36,23 @@ import org.w3c.dom.Element;
  * @see org.nuxeo.ecm.core.lifecycle.impl.LifeCycleServiceImpl
  * @see org.nuxeo.ecm.core.lifecycle.LifeCycle
  *
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @author Julien Anguenot
+ * @author Florent Guillaume
  */
 @XObject(value = "lifecycle", order = { "@name" })
 public class LifeCycleDescriptor {
+
+    private static final Log log = LogFactory.getLog(LifeCycleDescriptor.class);
 
     /** Name of this life cycle. */
     @XNode("@name")
     private String name;
 
-    /** The life cycle manager that will be used for this given life cycle. */
     @XNode("@lifecyclemanager")
-    private String lifeCycleManager;
+    public void setLifeCycleManager(String lifeCycleManager) {
+        log.warn("Ignoring deprecated lifecyclemanager attribute '" +
+                lifeCycleManager + "' for lifecycle '" + name + "'");
+    }
 
     /** The initial state name. */
     @XNode("@initial")
@@ -69,10 +76,6 @@ public class LifeCycleDescriptor {
         this.description = description;
     }
 
-    public String getLifeCycleManager() {
-        return lifeCycleManager;
-    }
-
     public String getName() {
         return name;
     }
@@ -81,10 +84,6 @@ public class LifeCycleDescriptor {
         LifeCycleStateConfiguration conf = new LifeCycleStateConfiguration(
                 states);
         return conf.getStates();
-    }
-
-    public void setLifeCycleManager(String lifeCycleManager) {
-        this.lifeCycleManager = lifeCycleManager;
     }
 
     public void setName(String name) {
@@ -114,8 +113,8 @@ public class LifeCycleDescriptor {
      * @return a life cycle instance out of the life cycle configuration.
      */
     public LifeCycle getLifeCycle() {
-        return new LifeCycleImpl(name, lifeCycleManager, initialStateName,
-                getStates(), getTransitions());
+        return new LifeCycleImpl(name, initialStateName, getStates(),
+                getTransitions());
     }
 
     public void setInitialStateName(String initialStateName) {
