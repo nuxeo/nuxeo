@@ -66,7 +66,7 @@
 
   <target name="install" depends="install-unix,install-windows" description="Run mvn install" />
   <target name="install-unix" if="osfamily-unix">
-    <exec executable="env"/>
+    <exec executable="env" />
     <exec executable="mvn" failonerror="true">
       <arg value="install" />
       <arg value="-Dmaven.test.skip=true" />
@@ -151,35 +151,12 @@
     <delete dir="${jboss.server}/data" />
   </target>
 
-  <target name="patch405" description="Patch a JBoss 4.0.5 for use by Nuxeo-EP">
-    <antcall target="patch">
-      <param name="pom.file" value="jboss-patch/pom-4.0.5.xml" />
-    </antcall>
-  </target>
-  <target name="patch405-2parts" description="Package Nuxeo-EP in two parts">
-    <antcall target="patch405">
-      <param name="jboss.home" value="${jboss1.dir}" />
-    </antcall>
-    <antcall target="patch405">
-      <param name="jboss.home" value="${jboss2.dir}" />
-    </antcall>
-  </target>
-  <target name="patch405-3parts" description="Package Nuxeo-EP in three parts">
-    <antcall target="package">
-      <param name="jboss.home" value="${jboss1.dir}" />
-    </antcall>
-    <antcall target="patch405">
-      <param name="jboss.home" value="${jboss2.dir}" />
-    </antcall>
-    <antcall target="patch405">
-      <param name="jboss.home" value="${jboss3.dir}" />
-    </antcall>
+  <target name="patch405" description="Patch a JBoss 4.0.5 for use by Nuxeo-EP (deprecated : no more 4.0.5 compatibility)">
+    <echo>Jboss 4.0.5 is not supported anymore, user Jboss >= 4.2.2</echo>
   </target>
 
   <target name="patch404" description="Patch a JBoss 4.0.4 for use by Nuxeo-EP (deprecated : no more 4.0.4 compatibility)">
-    <antcall target="patch">
-      <param name="pom.file" value="jboss-patch/pom.xml" />
-    </antcall>
+    <echo>Jboss 4.0.4 is not supported anymore, user Jboss >= 4.2.2</echo>
   </target>
 
   <target name="patch" depends="setproperties,patch-unix,patch-windows" />
