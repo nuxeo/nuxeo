@@ -1,0 +1,18 @@
+<component name="org.nuxeo.ecm.platform.actions.flex.tree">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+
+    <action id="flexTreeSample"
+      link="/flexsamples/tree.swf" enabled="true"
+      label="flex tree sample">
+      <category>FLEX_SAMPLES</category>
+    </action>
+
+  </extension>
+
+
+</component>

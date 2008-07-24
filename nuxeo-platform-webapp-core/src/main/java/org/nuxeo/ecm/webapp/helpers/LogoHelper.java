@@ -30,7 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.ConversationEntry;
 import org.jboss.seam.core.Manager;
@@ -217,22 +217,24 @@ public class LogoHelper implements Serializable{
             cId = getLastOrMainConversationId(cId);
             suffix += conversationManager.getConversationIdParameter() + '='
                     + cId;
+            /**
             if (conversationManager.isLongRunningConversation()) {
                 suffix += '&'
                         + conversationManager.getConversationIsLongRunningParameter()
                         + "true";
                 lastMainConversation = cId;
-            }
+            }**/
         } else {
             ConversationEntry conv = conversationManager.getCurrentConversationEntry();
             String convId = conv.getConversationIdStack().get(0);
             convId = getLastOrMainConversationId(convId);
             suffix += conversationManager.getConversationIdParameter() + '='
                     + convId;
+            /**
             suffix += '&'
                     + conversationManager.getConversationIsLongRunningParameter()
                     + "true";
-            lastMainConversation = convId;
+            lastMainConversation = convId;**/
         }
 
         return suffix;
