@@ -5,10 +5,7 @@
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
     point="lifecycle">
 
-
-
-    <lifecycle name="post_moderation" lifecyclemanager="jcrlifecyclemanager"
-      initial="moderation_pending">
+    <lifecycle name="post_moderation" initial="moderation_pending">
 
       <transitions>
         <transition name="moderation_publish" destinationState="moderation_published">
