@@ -68,6 +68,10 @@ public class ThemeDescriptor implements Type {
     }
 
     public boolean isWritable() {
+        if (getUrl() == null) {
+            // themes with missing definition are not writable
+            return false;
+        }
         final String protocol = getUrl().getProtocol();
         return protocol.equals("ftp") || protocol.equals("file");
     }
