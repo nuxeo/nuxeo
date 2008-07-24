@@ -21,6 +21,16 @@
     <xs:list itemType="xs:int" />
   </xs:simpleType>
 
+  <xs:element name="complexChain" type="nxs:complexChain" />
+  <xs:complexType name="complexChain">
+    <xs:sequence>
+      <xs:element name="string" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" />
+      <xs:element name="complex" type="nxs:complexType" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:element name="complex" type="nxs:complexType" />
   <xs:complexType name="complexType">
     <xs:sequence>

@@ -221,7 +221,7 @@ public final class PropertyContainerAdapter {
         JCRBlob.setContent(node, name, value);
     }
 
-    public static Collection<org.nuxeo.ecm.core.model.Property> getProperties(JCRNodeProxy node)
+    public static Collection<Property> getProperties(JCRNodeProxy node)
             throws DocumentException {
         Node jcrNode  = node.getNode();
         if (jcrNode == null) {
@@ -235,7 +235,7 @@ public final class PropertyContainerAdapter {
         return props;
     }
 
-    public static Iterator<org.nuxeo.ecm.core.model.Property> getPropertyIterator(JCRNodeProxy node)
+    public static Iterator<Property> getPropertyIterator(JCRNodeProxy node)
             throws DocumentException {
         Node jcrNode  = node.getNode();
         if (jcrNode == null) {

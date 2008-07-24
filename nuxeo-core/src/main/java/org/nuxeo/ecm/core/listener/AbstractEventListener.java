@@ -87,12 +87,14 @@ public abstract class AbstractEventListener implements EventListener {
     }
 
     /**
-     * Handle a core event.
+     * Handles a core event.
      *
-     * @param coreEvent  the core event to notify
+     * @param coreEvent the core event to notify
      * @deprecated use handleEvent instead - notifyEvent is a bad name
      * This method is preserved for compatibility - remove it when all event listeners will be refactored
      */
+    // TODO: remove in 5.2
+    @Deprecated
     public void notifyEvent(CoreEvent coreEvent) throws Exception {
     }
 
@@ -100,6 +102,7 @@ public abstract class AbstractEventListener implements EventListener {
      * A default implementation required for compatibility with notifyEvent
      * When notifyEvent will be removed remove this default implementation too
      */
+    // TODO: remove in 5.2
     public void handleEvent(CoreEvent coreEvent) throws Exception {
         notifyEvent(coreEvent);
     }
