@@ -93,6 +93,27 @@
         <version>2.2</version>
         <scope>provided</scope>
       </dependency>
+      <!-- used in jboss patch -->
+      <dependency>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>1.6</version>
+        <scope>provided</scope>
+      </dependency>
+      <!-- used in jboss patch -->
+      <dependency>
+        <groupId>commons-digester</groupId>
+        <artifactId>commons-digester</artifactId>
+        <version>1.8</version>
+        <scope>provided</scope>
+      </dependency>
+      <!-- used in jboss patch -->
+      <dependency>
+        <groupId>commons-el</groupId>
+        <artifactId>commons-el</artifactId>
+        <version>1.0</version>
+        <scope>provided</scope>
+      </dependency>
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
@@ -122,6 +143,12 @@
         <groupId>hsqldb</groupId>
         <artifactId>hsqldb</artifactId>
         <version>1.8.0.1</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>derby</artifactId>
+        <version>10.4.1.3</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -286,18 +313,32 @@
         <version>${jboss.version}</version>
         <scope>provided</scope>
       </dependency>
-      <!-- BBB old version for the benefit of dependent poms -->
       <dependency>
-        <groupId>jboss</groupId>
+        <groupId>org.jboss.seam</groupId>
         <artifactId>jboss-seam</artifactId>
-        <version>1.1.5.NX3</version>
+        <version>2.0.3.CR1-NX</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
-        <artifactId>jboss-seam</artifactId>
-        <version>1.1.5.NX3</version>
+        <artifactId>jboss-seam-remoting</artifactId>
+        <version>2.0.3.CR1</version>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam</groupId>
+        <artifactId>jboss-seam-ui</artifactId>
+        <version>2.0.3.CR1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam</groupId>
+        <artifactId>jboss-seam-mail</artifactId>
+        <version>2.0.3.CR1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.seam</groupId>
+        <artifactId>jboss-seam-debug</artifactId>
+        <version>2.0.3.CR1</version>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
@@ -372,30 +413,6 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>org.apache.myfaces.trinidad</groupId>
-        <artifactId>trinidad-api</artifactId>
-        <version>1.0.1-incubating-NXEP51M2</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.myfaces.trinidad</groupId>
-        <artifactId>trinidad-impl</artifactId>
-        <version>1.0.1-incubating-NXEP51M2</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.myfaces.tomahawk</groupId>
-        <artifactId>tomahawk</artifactId>
-        <version>1.1.5</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.myfaces.tomahawk</groupId>
-        <artifactId>tomahawk-sandbox</artifactId>
-        <version>1.1.5</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate</artifactId>
         <version>3.2.0.ga</version>
@@ -409,7 +426,7 @@
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-entitymanager</artifactId>
+        <artifactId>hibernate</artifactId>
         <version>3.2.0.ga</version>
         <scope>provided</scope>
       </dependency>
@@ -594,6 +611,24 @@
         <artifactId>xmlParserAPIs</artifactId>
         <scope>provided</scope>
         <version>2.6.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.richfaces.framework</groupId>
+        <artifactId>richfaces-api</artifactId>
+        <scope>provided</scope>
+        <version>3.2.1.GA</version>
+      </dependency>
+      <dependency>
+        <groupId>org.richfaces.framework</groupId>
+        <artifactId>richfaces-impl</artifactId>
+        <scope>provided</scope>
+        <version>3.2.1.GA</version>
+      </dependency>
+      <dependency>
+        <groupId>org.richfaces.ui</groupId>
+        <artifactId>richfaces-ui</artifactId>
+        <scope>provided</scope>
+        <version>3.2.1.GA</version>
       </dependency>
       <dependency>
         <groupId>jsr170</groupId>
@@ -964,7 +999,6 @@
                 </link>
                 <link>http://jackrabbit.apache.org/api-1/</link>
                 <link>http://www.day.com/maven/jsr170/javadocs/jcr-1.0/</link>
-                <link>http://myfaces.apache.org/tomahawk/apidocs/</link>
                 <link>http://www.restlet.org/documentation/1.0/api/</link>
                 <link>http://www.hibernate.org/hib_docs/v3/api/</link>
                 <link>http://docs.jboss.com/seam/1.1.5.GA/api/</link>
@@ -1149,6 +1183,7 @@
         </pluginManagement>
       </build>
     </profile>
+
     <!-- activating the build number generation in plugins manifest for apogee -->
     <profile>
       <id>svn-rev-in-mf</id>

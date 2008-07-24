@@ -16,13 +16,13 @@
 
   <properties>
     <security.dirname>security.sar/META-INF</security.dirname>
-    <tomcat.dirname>jbossweb-tomcat55.sar</tomcat.dirname>
+    <tomcat.dirname>jboss-web.deployer</tomcat.dirname>
     <jboss.server>${jboss.dir}/server/default</jboss.server>
     <jboss.lib>${jboss.server}/lib</jboss.lib>
     <jboss.conf>${jboss.server}/conf</jboss.conf>
     <jboss.deploy>${jboss.server}/deploy</jboss.deploy>
   </properties>
-  
+
   <profiles>
     <profile>
       <id>jrmp</id>
@@ -46,18 +46,26 @@
                 </goals>
                 <configuration>
                   <transformationSets>
-                    
+
                     <transformationSet>
                       <dir>${jboss.server}</dir>
                       <includes>
                         <include>conf/jboss-service.xml</include>
                         <include>deploy/jmx-invoker-service.xml</include>
                         <include>deploy/ear-deployer.xml</include>
-                        <include>deploy/http-invoker.sar/META-INF/jboss-service.xml</include>
-                        <include>deploy/management/console-mgr.sar/META-INF/jboss-service.xml</include>
-                        <include>deploy/ejb3.deployer/META-INF/jboss-service.xml</include>
+                        <include>
+                          deploy/http-invoker.sar/META-INF/jboss-service.xml
+                        </include>
+                        <include>
+                          deploy/management/console-mgr.sar/META-INF/jboss-service.xml
+                        </include>
+                        <include>
+                          deploy/ejb3.deployer/META-INF/jboss-service.xml
+                        </include>
                         <include>deploy/jms/uil2-service.xml</include>
-                        <include>deploy/jms/jbossmq-httpil.sar/META-INF/jboss-service.xml</include>
+                        <include>
+                          deploy/jms/jbossmq-httpil.sar/META-INF/jboss-service.xml
+                        </include>
                       </includes>
                       <stylesheet>src/main/xsl/jboss-service.xsl</stylesheet>
                       <parameters>
@@ -95,7 +103,9 @@
                     <transformationSet>
                       <dir>${jboss.server}</dir>
                       <includes>
-                        <include>deploy/http-invoker.sar/invoker.war/WEB-INF/web.xml</include>
+                        <include>
+                          deploy/http-invoker.sar/invoker.war/WEB-INF/web.xml
+                        </include>
                       </includes>
                       <stylesheet>src/main/xsl/web-app.xsl</stylesheet>
                       <parameters>
@@ -130,49 +140,53 @@
                         </parameter>
                       </parameters>
                     </transformationSet>
-                    
+
                   </transformationSets>
                 </configuration>
               </execution>
             </executions>
           </plugin>
-	  
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>patch-properties</id>
-            <phase>generate-resources</phase><!-- this phase before generate-resources -->
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                <echo message="Patching nuxeo.properties..." />
-                <!--patch patchfile="src/main/nuxeo.properties.web-patch" originalfile="${jboss.deploy}/nuxeo.ear/config/nuxeo.properties"/-->
-		<concat destfile="${jboss.deploy}/nuxeo.ear/config/nuxeo.properties" append="true">
 
-#################### HTTP Invoker Patch ########################	
-# Uncomment these lines to activate nuxeo runtime remoting over HTTP
-# replace localhost with the name (or IP) of the http server you are using to expose services
-# also comment the nuxeo-client-jndi.* properties defined above
-nuxeo-client-jndi.java.naming.provider.url=http://${nuxeo.jboss.jmx.http.hostname}:${nuxeo.jboss.jmx.http.port}/invoker/JNDIFactory
-nuxeo-client-jndi.java.naming.factory.initial=org.jboss.naming.HttpNamingContextFactory
-org.nuxeo.runtime.server.locator=servlet://${nuxeo.jboss.jmx.http.hostname}:${nuxeo.jboss.jmx.http.port}/nuxeo/NuxeoRuntimeInvokerServlet/?datatype=nuxeo
-################################################################
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>patch-properties</id>
+                <phase>generate-resources</phase><!-- this phase before generate-resources -->
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <tasks>
+                    <echo message="Patching nuxeo.properties..." />
+                    <!--patch patchfile="src/main/nuxeo.properties.web-patch" originalfile="${jboss.deploy}/nuxeo.ear/config/nuxeo.properties"/-->
+                    <concat
+                      destfile="${jboss.deploy}/nuxeo.ear/config/nuxeo.properties"
+                      append="true">
 
-		</concat>
-              </tasks>
-            </configuration>
-          </execution>
-	</executions>
-      </plugin>
+                      #################### HTTP Invoker Patch
+                      ######################## # Uncomment these lines to
+                      activate nuxeo runtime remoting over HTTP # replace
+                      localhost with the name (or IP) of the http server you are
+                      using to expose services # also comment the
+                      nuxeo-client-jndi.* properties defined above
+                      nuxeo-client-jndi.java.naming.provider.url=http://${nuxeo.jboss.jmx.http.hostname}:${nuxeo.jboss.jmx.http.port}/invoker/JNDIFactory
+                      nuxeo-client-jndi.java.naming.factory.initial=org.jboss.naming.HttpNamingContextFactory
+                      org.nuxeo.runtime.server.locator=servlet://${nuxeo.jboss.jmx.http.hostname}:${nuxeo.jboss.jmx.http.port}/nuxeo/NuxeoRuntimeInvokerServlet/?datatype=nuxeo
+                      ################################################################
+
+                    </concat>
+                  </tasks>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
 
         </plugins>
       </build>
     </profile>
   </profiles>
-  
+
 
   <build>
     <plugins>
@@ -191,9 +205,16 @@ org.nuxeo.runtime.server.locator=servlet://${nuxeo.jboss.jmx.http.hostname}:${nu
                 <transformationSet>
                   <dir>${jboss.server}</dir>
                   <includes>
-                    <include>conf/log4j.xml</include>
+                    <include>conf/jboss-log4j.xml</include>
                   </includes>
                   <stylesheet>src/main/xsl/log4j.xsl</stylesheet>
+                </transformationSet>
+                <transformationSet>
+                  <dir>${jboss.server}</dir>
+                  <includes>
+                    <include>conf/jbossjta-properties.xml</include>
+                  </includes>
+                  <stylesheet>src/main/xsl/jbossjta-properties.xsl</stylesheet>
                 </transformationSet>
               </transformationSets>
             </configuration>
@@ -224,9 +245,10 @@ org.nuxeo.runtime.server.locator=servlet://${nuxeo.jboss.jmx.http.hostname}:${nu
             <configuration>
               <tasks>
                 <echo message="Patching XML resources..." />
-                <copy
-                     todir="${jboss.server}" overwrite="true" >
-                  <fileset dir="${project.build.directory}/generated-resources/xml/xslt" />
+                <copy todir="${jboss.server}" overwrite="true"
+                  failonerror="false">
+                  <fileset
+                    dir="${project.build.directory}/generated-resources/xml/xslt" />
                 </copy>
               </tasks>
             </configuration>
@@ -301,7 +323,8 @@ org.nuxeo.runtime.server.locator=servlet://${nuxeo.jboss.jmx.http.hostname}:${nu
             </goals>
             <configuration>
               <artifactItems>
-                <!-- Required by NXThemes - because of class isolation we must deploy them to the common lib dir otherwise tomcat will throw class not found exceptions -->
+                <!-- Required by NXThemes - because of class isolation we must deploy
+                  them to the common lib dir otherwise tomcat will throw class not found exceptions -->
                 <artifactItem>
                   <groupId>javax.el</groupId>
                   <artifactId>el-api</artifactId>
@@ -309,6 +332,21 @@ org.nuxeo.runtime.server.locator=servlet://${nuxeo.jboss.jmx.http.hostname}:${nu
                 <artifactItem>
                   <groupId>javax.el</groupId>
                   <artifactId>el-ri</artifactId>
+                </artifactItem>
+                <!-- Required by rich faces -->
+                <artifactItem>
+                  <groupId>commons-digester</groupId>
+                  <artifactId>commons-digester</artifactId>
+                </artifactItem>
+                <!-- Required by rich faces -->
+                <artifactItem>
+                  <groupId>commons-beanutils</groupId>
+                  <artifactId>commons-beanutils</artifactId>
+                </artifactItem>
+                <!-- Required by tomahawk -->
+                <artifactItem>
+                  <groupId>commons-el</groupId>
+                  <artifactId>commons-el</artifactId>
                 </artifactItem>
                 <!-- jaxen is needed by dom4j 1.6.1 when using XPath -->
                 <artifactItem>

@@ -66,7 +66,7 @@
 
   <target name="install" depends="install-unix,install-windows" description="Run mvn install" />
   <target name="install-unix" if="osfamily-unix">
-    <exec executable="env"/>
+    <exec executable="env" />
     <exec executable="mvn" failonerror="true">
       <arg value="install" />
       <arg value="-Dmaven.test.skip=true" />
@@ -151,35 +151,12 @@
     <delete dir="${jboss.server}/data" />
   </target>
 
-  <target name="patch405" description="Patch a JBoss 4.0.5 for use by Nuxeo-EP">
-    <antcall target="patch">
-      <param name="pom.file" value="jboss-patch/pom-4.0.5.xml" />
-    </antcall>
-  </target>
-  <target name="patch405-2parts" description="Package Nuxeo-EP in two parts">
-    <antcall target="patch405">
-      <param name="jboss.home" value="${jboss1.dir}" />
-    </antcall>
-    <antcall target="patch405">
-      <param name="jboss.home" value="${jboss2.dir}" />
-    </antcall>
-  </target>
-  <target name="patch405-3parts" description="Package Nuxeo-EP in three parts">
-    <antcall target="package">
-      <param name="jboss.home" value="${jboss1.dir}" />
-    </antcall>
-    <antcall target="patch405">
-      <param name="jboss.home" value="${jboss2.dir}" />
-    </antcall>
-    <antcall target="patch405">
-      <param name="jboss.home" value="${jboss3.dir}" />
-    </antcall>
+  <target name="patch405" description="Patch a JBoss 4.0.5 for use by Nuxeo-EP (deprecated : no more 4.0.5 compatibility)">
+    <echo>Jboss 4.0.5 is not supported anymore, user Jboss >= 4.2.2</echo>
   </target>
 
   <target name="patch404" description="Patch a JBoss 4.0.4 for use by Nuxeo-EP (deprecated : no more 4.0.4 compatibility)">
-    <antcall target="patch">
-      <param name="pom.file" value="jboss-patch/pom.xml" />
-    </antcall>
+    <echo>Jboss 4.0.4 is not supported anymore, user Jboss >= 4.2.2</echo>
   </target>
 
   <target name="patch" depends="setproperties,patch-unix,patch-windows" />
@@ -256,6 +233,7 @@
       <fileset dir="${jboss.lib}">
         <include name="nuxeo-runtime-jboss-extensions-*.jar" />
         <include name="nuxeo-common-*.jar" />
+        <include name="derby*.jar" />
       </fileset>
     </delete>
   </target>
@@ -317,30 +295,6 @@
     <copy todir="${jboss.nuxeo.ear}/system/nuxeo-platform-search-compass-plugin-5.2-SNAPSHOT.jar" failonerror="false" overwrite="true">
       <fileset file="${basedir}/${oracle.config}/compass.cfg.xml" />
     </copy>
-  </target>
-
-  <target name="copy-derby" depends="setproperties" description="Deploy default derby config">
-    <property name="derby.config" value="nuxeo-platform/nuxeo-platform-ear/derby-setup" />
-    <copy todir="${jboss.nuxeo.ear}/config" failonerror="false" overwrite="true">
-      <fileset file="${basedir}/${derby.config}/config/*.xml" />
-      <fileset file="${basedir}/${derby.config}/config/*.properties" />
-    </copy>
-    <copy todir="${jboss.nuxeo.ear}/datasources" failonerror="false" overwrite="true">
-      <fileset file="${basedir}/${derby.config}/datasources/*.xml" />
-    </copy>
-    <!-- XXX: find a way not to depend on the version number of nxsearch compass -->
-    <copy todir="${jboss.nuxeo.ear}/system/nuxeo-platform-search-compass-plugin-5.2-SNAPSHOT.jar" failonerror="false" overwrite="true">
-      <fileset file="${basedir}/${derby.config}/compass.cfg.xml" />
-    </copy>
-    <!-- TODO: maven config to get derby lib -->
-    <!--
-    <copy todir="${jboss.deploy}/lib" failonerror="false" overwrite="true">
-      <fileset file="nuxeo-platform/nuxeo-platform-ear/target/derby-jdbc-lib/*.jar" />
-    </copy>
-    -->
-    <echo></echo>
-    <echo>Done: Don't forget to put derby library in ${jboss.lib}</echo>
-    <echo></echo>
   </target>
 
   <target name="test" depends="test-unix,test-windows" description="Run tests" />
