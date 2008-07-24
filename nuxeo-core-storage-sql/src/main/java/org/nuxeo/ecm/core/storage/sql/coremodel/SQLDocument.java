@@ -112,7 +112,7 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public void remove() throws DocumentException {
-        session.removeNode(node);
+        throw new UnsupportedOperationException();
     }
 
     public void save() throws DocumentException {
@@ -307,7 +307,7 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         if (start >= children.size()) {
             return EmptyDocumentIterator.INSTANCE;
         }
-        return new DocumentListIterator(
+        return new SQLDocumentListIterator(
                 children.subList(start, children.size()));
     }
 
@@ -394,13 +394,13 @@ public class SQLDocument extends SQLComplexProperty implements Document {
 
 }
 
-class DocumentListIterator implements DocumentIterator {
+class SQLDocumentListIterator implements DocumentIterator {
 
     private final int size;
 
     private final Iterator<Document> iterator;
 
-    public DocumentListIterator(List<Document> list) {
+    public SQLDocumentListIterator(List<Document> list) {
         size = list.size();
         iterator = list.iterator();
     }

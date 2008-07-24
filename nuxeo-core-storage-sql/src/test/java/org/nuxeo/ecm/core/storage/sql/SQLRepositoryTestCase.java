@@ -19,6 +19,8 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.File;
 import java.io.Serializable;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +45,17 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core");
         deployRepository();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        try {
+            DriverManager.getConnection("jdbc:derby:;shutdown=true");
+            fail("Expected Derby shutdown exception");
+        } catch (SQLException e) {
+            assertEquals("Derby system shutdown.", e.getMessage());
+        }
     }
 
     public void deployRepository() throws Exception {

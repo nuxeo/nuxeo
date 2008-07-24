@@ -42,6 +42,7 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
 
@@ -200,11 +201,15 @@ public class SessionImpl implements Session, XAResource {
 
         // TODO get all non-cached fragments at once using join / union
         FragmentsMap childFragments = new FragmentsMap();
-        for (Schema schema : childType.getSchemas()) {
-            String schemaName = schema.getName();
-            Fragment fragment = context.get(schemaName, id, true);
-            childFragments.put(schemaName, fragment);
+        for (String fragmentName : model.getTypeFragments(childTypeName)) {
+            Fragment fragment = context.get(fragmentName, id, true);
+            childFragments.put(fragmentName, fragment);
         }
+        /*
+         * for (Schema schema : childType.getSchemas()) { String schemaName =
+         * schema.getName(); Fragment fragment = context.get(schemaName, id,
+         * true); childFragments.put(schemaName, fragment); }
+         */
 
         FragmentGroup childGroup = new FragmentGroup(childMain, childHier,
                 childFragments);
@@ -297,12 +302,20 @@ public class SessionImpl implements Session, XAResource {
 
         // find all schemas for this type and create fragment entities
         FragmentsMap fragments = new FragmentsMap();
-        DocumentType type = schemaManager.getDocumentType(typeName);
+        Type type = schemaManager.getDocumentType(typeName);
+        if (type == null) {
+            type = schemaManager.getSchema(typeName);
+            if (type == null) {
+                // happens core "content" which is included each time
+                // but not registered as a toplevel schema
+            }
+        }
+
+        // XXX TODO XXX may not be a document type for complex props
+
         if (false) {
-            // TODO typeName could be a document type or a complex type
-            // XXX don't use schema, ask the model
-            for (Schema schema : type.getSchemas()) {
-                String schemaName = schema.getName();
+            // TODO if non-lazy creation of some fragments, create them here
+            for (String schemaName : model.getTypeFragments(typeName)) {
                 // TODO XXX fill in default values
                 // TODO fill data instead of null XXX or just have fragments
                 // empty
@@ -364,10 +377,9 @@ public class SessionImpl implements Session, XAResource {
 
         // TODO get all non-cached fragments at once using join / union
         FragmentsMap childFragments = new FragmentsMap();
-        for (Schema schema : childType.getSchemas()) {
-            String schemaName = schema.getName();
-            Fragment fragment = context.get(schemaName, childId, true);
-            childFragments.put(schemaName, fragment);
+        for (String fragmentName : model.getTypeFragments(childTypeName)) {
+            Fragment fragment = context.get(fragmentName, childId, true);
+            childFragments.put(fragmentName, fragment);
         }
 
         FragmentGroup childGroup = new FragmentGroup(childMain, childHier,
@@ -383,16 +395,28 @@ public class SessionImpl implements Session, XAResource {
         return context.getChildren(parent.getId(), complexProp).size() > 0;
     }
 
-    public List<Node> getChildren(Node parent, boolean complexProp)
+    public List<Node> getChildren(Node parent, boolean complexProp, String name)
             throws StorageException {
-        assert !complexProp; // no use case for all complex props yet
         checkLive();
         Collection<SimpleFragment> fragments = context.getChildren(
                 parent.getId(), complexProp);
-        List<Node> nodes = new ArrayList<Node>(fragments.size());
+        List<Node> nodes;
+        if (complexProp) {
+            nodes = new LinkedList<Node>();
+        } else {
+            nodes = new ArrayList<Node>(fragments.size());
+        }
         for (SimpleFragment fragment : fragments) {
-            // TODO what if node is null?
-            nodes.add(getNodeById(fragment.getId()));
+            if (complexProp &&
+                    !name.equals(fragment.getString(model.HIER_CHILD_NAME_KEY))) {
+                continue;
+            }
+            Node node = getNodeById(fragment.getId());
+            if (node == null) {
+                // TODO what if node is null?
+                throw new RuntimeException("XXX");
+            }
+            nodes.add(node);
         }
         return nodes;
     }
