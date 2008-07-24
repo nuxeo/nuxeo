@@ -7,9 +7,6 @@
   </assemble>
   <fileSet id="common-resources">
     <directory>src/main/resources_common</directory>
-    <excludes>
-      <exclude>**/.svn</exclude>
-    </excludes>
   </fileSet>
 
   <assemble>
@@ -18,9 +15,6 @@
   </assemble>
   <fileSet id="search-resources">
     <directory>src/main/resources_search</directory>
-    <excludes>
-      <exclude>**/.svn</exclude>
-    </excludes>
   </fileSet>
 
   <!-- ARTIFACTS -->

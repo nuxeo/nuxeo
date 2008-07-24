@@ -7,9 +7,6 @@
   </assemble>
   <fileSet id="common-resources">
     <directory>src/main/resources_common</directory>
-    <excludes>
-      <exclude>**/.svn</exclude>
-    </excludes>
   </fileSet>
 
   <assemble>
@@ -18,9 +15,6 @@
   </assemble>
   <fileSet id="webplatform-resources">
     <directory>src/main/resources_platform-stateful</directory>
-    <excludes>
-      <exclude>**/.svn</exclude>
-    </excludes>
   </fileSet>
 
   <!-- ARTIFACTS -->
