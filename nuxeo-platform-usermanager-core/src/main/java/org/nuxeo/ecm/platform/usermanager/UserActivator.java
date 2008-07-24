@@ -37,14 +37,11 @@ public class UserActivator implements BundleActivator {
     private static final Log log = LogFactory.getLog(UserActivator.class);
 
     public void start(BundleContext context) throws Exception {
-        // TODO Auto-generated method stub
         log.info("bundle started: " + context.getBundle().getSymbolicName());
     }
 
     public void stop(BundleContext context) throws Exception {
-        // TODO Auto-generated method stub
         log.info("bundle stopped: " + context.getBundle().getSymbolicName());
-
     }
 
 }

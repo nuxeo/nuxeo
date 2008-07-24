@@ -76,17 +76,17 @@ public class LockActionsBean implements LockActions {
 
     private static final String EDIT_ACTIONS = "EDIT_ACTIONS";
 
-    @In(required = true)
-    private NavigationContext navigationContext;
+    @In
+    private transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
     protected transient FacesMessages facesMessages;
 
     @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
+    protected transient ResourcesAccessor resourcesAccessor;
 
     @In(create = true)
-    protected WebActions webActions;
+    protected transient WebActions webActions;
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
