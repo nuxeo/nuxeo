@@ -136,7 +136,7 @@ public class SearchActionsBean extends InputController implements
     @In(required = false, create = true)
     private transient ResultsProvidersCache resultsProvidersCache;
 
-    @In(create = true, required = false)
+    @In(required = false, create = true)
     protected transient FacesMessages facesMessages;
 
     @In(create = true)

@@ -307,7 +307,6 @@ public class TestSearchEngine extends NXRuntimeTestCase {
 
         transformer = desc.lookupTransformer("application/x-test-app");
         assertEquals("any2text", transformer);
-
     }
 
     public void testIndexingEventDescriptor() {
@@ -445,7 +444,6 @@ public class TestSearchEngine extends NXRuntimeTestCase {
         // Check if doesn't exist.
         extractor = service.getBlobExtractorByName("fake");
         assertNull(extractor);
-
     }
 
     /*
@@ -477,10 +475,10 @@ public class TestSearchEngine extends NXRuntimeTestCase {
 
         rtype = service.getResourceTypeDescriptorByName("doesnotexist");
         assertNull(rtype);
-
     }
 
     public void testIndexingThreadPoolPT() {
         assertEquals(16, service.getNumberOfIndexingThreads());
     }
+
 }
