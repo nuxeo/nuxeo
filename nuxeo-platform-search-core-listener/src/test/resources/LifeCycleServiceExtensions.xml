@@ -13,8 +13,7 @@
 
    <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
     point="lifecycle">
-    <lifecycle name="default" lifecyclemanager="jcrlifecyclemanager"
-      initial="project">
+    <lifecycle name="default" initial="project">
       <transitions>
         <transition name="back_to_project" destinationState="project">
           <description>Content goes back to initial state</description>
