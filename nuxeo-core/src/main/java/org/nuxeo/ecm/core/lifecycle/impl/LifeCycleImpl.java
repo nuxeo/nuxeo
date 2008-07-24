@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,8 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- * $Id: LifeCycleImpl.java 19002 2007-05-20 15:37:19Z sfermigier $
+ *     Julien Anguenot
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.lifecycle.impl;
@@ -30,15 +30,13 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleTransition;
  *
  * @see org.nuxeo.ecm.core.lifecycle.LifeCycle
  *
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @author Julien Anguenot
+ * @author Florent Guillaume
  */
 public class LifeCycleImpl implements LifeCycle {
 
     /** The name of the life cycle. */
     private final String name;
-
-    /** The life life cycle manager name for the life cycle. */
-    private final String lifeCycleManagerName;
 
     /** The initial state name. */
     private final String initialStateName;
@@ -50,11 +48,10 @@ public class LifeCycleImpl implements LifeCycle {
     private final Collection<LifeCycleTransition> transitions;
 
 
-    public LifeCycleImpl(String name, String lifeCycleManagerName,
-            String initialStateName, Collection<LifeCycleState> states,
+    public LifeCycleImpl(String name, String initialStateName,
+            Collection<LifeCycleState> states,
             Collection<LifeCycleTransition> transitions) {
         this.name = name;
-        this.lifeCycleManagerName = lifeCycleManagerName;
         this.initialStateName = initialStateName;
         this.states = states;
         this.transitions = transitions;
@@ -62,10 +59,6 @@ public class LifeCycleImpl implements LifeCycle {
 
     public String getInitialStateName() {
         return initialStateName;
-    }
-
-    public String getLifeCycleManagerName() {
-        return lifeCycleManagerName;
     }
 
     public String getName() {

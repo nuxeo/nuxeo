@@ -18,31 +18,26 @@
 
 package org.nuxeo.ecm.core.lifecycle;
 
-
 import org.nuxeo.ecm.core.model.Document;
 
 /**
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @author Julien Anguenot
  *
  */
-public class SampleLifeCycleManager extends AbstractLifeCycleManager {
+public class SampleLifeCycleManager implements LifeCycleManager {
 
-    public String getState(Document doc) throws LifeCycleException {
-        // Auto-generated method stub
+    public String getState(Document doc) {
         return null;
     }
 
-    public void setState(Document doc, String stateName) throws LifeCycleException {
-        // Auto-generated method stub
+    public void setState(Document doc, String stateName) {
     }
 
-    public String getPolicy(Document doc) throws LifeCycleException {
-        // Auto-generated method stub
+    public String getPolicy(Document doc) {
         return null;
     }
 
-    public void setPolicy(Document doc, String policy) throws LifeCycleException {
-        // Auto-generated method stub
+    public void setPolicy(Document doc, String policy) {
     }
 
 }

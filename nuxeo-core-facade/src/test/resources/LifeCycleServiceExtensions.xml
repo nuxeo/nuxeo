@@ -13,8 +13,7 @@
 
    <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
     point="lifecycle">
-    <lifecycle name="default" lifecyclemanager="jcrlifecyclemanager"
-      initial="project">
+    <lifecycle name="default" initial="project">
       <transitions>
         <transition name="approve" destinationState="approved">
           <description>Approve the content</description>

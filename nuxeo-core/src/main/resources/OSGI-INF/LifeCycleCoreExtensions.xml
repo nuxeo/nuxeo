@@ -9,21 +9,14 @@
     @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
   </documentation>
 
-  <require>
-    org.nuxeo.ecm.core.repository.jcr.lifecycle.JCRLifeCycleManager
-  </require>
-
   <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
     point="lifecycle">
 
     <documentation>
-
       Nuxeo core default life cycle definition.
-
     </documentation>
 
-    <lifecycle name="default" lifecyclemanager="jcrlifecyclemanager"
-      initial="project">
+    <lifecycle name="default" initial="project">
       <transitions>
         <transition name="approve" destinationState="approved">
           <description>Approve the content</description>
@@ -74,9 +67,7 @@
     point="types">
 
     <documentation>
-
       Nuxeo core default document types to life cycles mapping
-
     </documentation>
 
     <types>

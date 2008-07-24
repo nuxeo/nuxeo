@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.repository.jcr.lifecycle;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.ecm.core.NXCore;
@@ -71,11 +70,9 @@ public class TestLifeCycleService extends RepositoryTestCase {
     }
 
     public void testLifeCycleManagerRegistration() {
-        Collection<LifeCycleManager> managers = lifeCycleService.getLifeCycleManagers();
-        assertEquals(1, managers.size());
-
-        LifeCycleManager manager = lifeCycleService.getLifeCycleManagerByName("jcrlifecyclemanager");
-        assertEquals("jcrlifecyclemanager", manager.getName());
+        LifeCycleManager manager = lifeCycleService.getLifeCycleManager();
+        assertNotNull(manager);
+        assertEquals("JCRLifeCycleManager", manager.getClass().getSimpleName());
     }
 
     public void testGetLifeCycleManagerFor() throws DocumentException {

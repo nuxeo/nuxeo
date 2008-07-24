@@ -4,9 +4,7 @@
 
    <documentation>
       JCR life cycle manager.
-
       <p/>
-
       This is the default Nuxeo core life cycle manager.
 
       @version 1.0
@@ -20,12 +18,9 @@
 
       <documentation>
       JCR life cycle manager contribution.
-
       <p/>
-
       It stores the life cycle properties inside the JCR along with the document.
-
-    </documentation>
+      </documentation>
 
       <lifecyclemanager name="jcrlifecyclemanager"
                         class="org.nuxeo.ecm.core.repository.jcr.JCRLifeCycleManager"
