@@ -69,6 +69,9 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
+ * NOTE: to run these tests in Eclipse, make sure your test runner allocates at
+ * least -Xmx150M to the JVM.
+ *
  * @author Florent Guillaume
  */
 public class TestSQLRepository extends SQLRepositoryTestCase {

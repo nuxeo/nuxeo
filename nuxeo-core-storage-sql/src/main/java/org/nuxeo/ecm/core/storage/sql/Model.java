@@ -17,18 +17,25 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.TypeRef;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.FieldImpl;
 import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 
 /**
  * The {@link Model} is the link between high-level types and SQL-level objects
@@ -89,11 +96,33 @@ public class Model {
 
     public static final String SYSTEM_DIRTY_KEY = "dirty";
 
+    private static TypeRef<? extends Type> STRING_TYPE_REF = StringType.INSTANCE.getRef();
+
+    public static Field SYSTEM_LIFECYCLE_POLICY_FIELD = new FieldImpl(
+            QName.valueOf(SYSTEM_LIFECYCLE_POLICY_PROP), TypeRef.NULL,
+            STRING_TYPE_REF);
+
+    public static Field SYSTEM_LIFECYCLE_STATE_FIELD = new FieldImpl(
+            QName.valueOf(SYSTEM_LIFECYCLE_STATE_PROP), TypeRef.NULL,
+            STRING_TYPE_REF);
+
+    public static Field SYSTEM_DIRTY_FIELD = new FieldImpl(
+            QName.valueOf(SYSTEM_DIRTY_PROP), TypeRef.NULL, STRING_TYPE_REF);
+
+    /**
+     * The fragment for each schema, or {@code null} if the schema doesn't have
+     * a fragment.
+     */
+    private final Map<String, String> schemaFragment;
+
     /** Maps table name to a map of properties to their basic type. */
     protected final Map<String, Map<String, PropertyType>> fragmentsKeysType;
 
     /** Maps collection table names to their type. */
     protected final Map<String, PropertyType> collectionTables;
+
+    /** Maps document type name or schema name to allowed fragments. */
+    protected final Map<String, Set<String>> typeFragments;
 
     /** Maps property name to fragment name. */
     private final Map<String, String> propertyFragment;
@@ -102,16 +131,20 @@ public class Model {
     private final Map<String, String> propertyFragmentKey;
 
     /** Maps of properties to their nuxeo core type. */
-    public final Map<String, Type> propertyCoreType;
-
+    // public final Map<String, Type> propertyCoreType;
     /** Maps of properties to their basic type. */
     public final Map<String, PropertyType> propertyType;
 
+    /** Map of type to the set of properties that are complex lists. */
+    // public final Map<String, Set<String>> complexLists;
     public Model(SchemaManager schemaManager) {
-        propertyCoreType = new HashMap<String, Type>();
+        schemaFragment = new HashMap<String, String>();
+        // propertyCoreType = new HashMap<String, Type>();
         propertyType = new HashMap<String, PropertyType>();
+        // complexLists = new HashMap<String, Set<String>>();
         fragmentsKeysType = new HashMap<String, Map<String, PropertyType>>();
         collectionTables = new HashMap<String, PropertyType>();
+        typeFragments = new HashMap<String, Set<String>>();
         propertyFragment = new HashMap<String, String>();
         propertyFragmentKey = new HashMap<String, String>();
 
@@ -120,9 +153,9 @@ public class Model {
         initModels(schemaManager);
     }
 
-    public Type getPropertyCoreType(String propertyName) {
-        return propertyCoreType.get(propertyName);
-    }
+    // public Type getPropertyCoreType(String propertyName) {
+    // return propertyCoreType.get(propertyName);
+    // }
 
     public PropertyType getPropertyType(String propertyName) {
         return propertyType.get(propertyName);
@@ -136,15 +169,25 @@ public class Model {
         return propertyFragmentKey.get(propertyName);
     }
 
+    public Set<String> getTypeFragments(String typeName) {
+        return typeFragments.get(typeName);
+    }
+
     /**
      * Creates all the models.
      */
     private void initModels(SchemaManager schemaManager) {
         for (DocumentType documentType : schemaManager.getDocumentTypes()) {
+            Set<String> fragmentNames = new HashSet<String>();
+            String typeName = documentType.getName();
+            typeFragments.put(typeName, fragmentNames);
             for (Schema schema : documentType.getSchemas()) {
-                initTypeModel(schema);
+                String fragmentName = initTypeModel(schema);
+                if (fragmentName != null) {
+                    fragmentNames.add(fragmentName);
+                }
             }
-        }
+            log.debug("Fragments for " + typeName + ": " + fragmentNames);        }
     }
 
     /**
@@ -205,20 +248,41 @@ public class Model {
         propertyFragment.put(propertyName, tableName);
         propertyFragmentKey.put(propertyName, key);
         fragmentKeysType.put(key, type);
+
     }
 
     /**
      * Creates the model for one schema or complex type.
+     *
+     * @return the fragment table name for this type, or {@code null} if this
+     *         type doesn't directly hold data
      */
-    private void initTypeModel(ComplexType complexType) {
+    private String initTypeModel(ComplexType complexType) {
         String typeName = complexType.getName();
+        if (schemaFragment.containsKey(typeName)) {
+            return schemaFragment.get(typeName); // may be null
+        }
+
+        /** Initialized if this type has a table associated. */
+        String fragmentName = null;
 
         log.debug("Making model for type " + typeName);
 
         for (Field field : complexType.getFields()) {
             Type fieldType = field.getType();
             if (fieldType.isComplexType()) {
-                initTypeModel((ComplexType) fieldType);
+                /*
+                 * Complex type.
+                 */
+                ComplexType fieldComplexType = (ComplexType) fieldType;
+                String subTypeName = fieldComplexType.getName();
+                String subFragmentName = initTypeModel(fieldComplexType);
+                if (subFragmentName != null && !typeFragments.containsKey(subTypeName)) {
+                    Set<String> fragmentNames = Collections.singleton(subFragmentName);
+                    typeFragments.put(subTypeName, fragmentNames);
+                    log.debug("Fragments for " + subTypeName + ": " +
+                            fragmentNames);
+                }
             } else {
                 String propertyName = field.getName().getPrefixedName();
                 if (fieldType.isListType()) {
@@ -227,43 +291,59 @@ public class Model {
                         /*
                          * Array: use a collection table.
                          */
-                        propertyCoreType.put(propertyName, fieldType);
+                        // propertyCoreType.put(propertyName, fieldType);
                         PropertyType type = PropertyType.fromFieldType(
                                 listFieldType, true);
                         propertyType.put(propertyName, type);
 
-                        String tableName = propertyName;
+                        String tableName = collectionFragmentName(propertyName);
                         propertyFragment.put(propertyName, tableName);
                         collectionTables.put(tableName, type);
                     } else {
                         /*
-                         * List.
+                         * Complex list.
                          */
-                        // TODO list of complex types
-                        // throw new UnsupportedOperationException();
+                        // Set<String> listProperties =
+                        // complexLists.get(typeName);
+                        // if (listProperties == null) {
+                        // listProperties = new HashSet<String>();
+                        // complexLists.put(typeName, listProperties);
+                        // }
+                        // listProperties.add(propertyName);
+                        initTypeModel((ComplexType) listFieldType);
                     }
                 } else {
                     /*
                      * Primitive type.
                      */
-                    propertyCoreType.put(propertyName, fieldType);
+                    // propertyCoreType.put(propertyName, fieldType);
                     PropertyType type = PropertyType.fromFieldType(fieldType,
                             false);
                     propertyType.put(propertyName, type);
-                    String tableName = typeName; // TODO use policy config
-                    propertyFragment.put(propertyName, tableName);
+                    fragmentName = typeFragmentName(complexType);
+                    propertyFragment.put(propertyName, fragmentName);
                     String key = field.getName().getLocalName();
                     propertyFragmentKey.put(propertyName, key);
 
-                    Map<String, PropertyType> fragmentKeysType = fragmentsKeysType.get(tableName);
+                    Map<String, PropertyType> fragmentKeysType = fragmentsKeysType.get(fragmentName);
                     if (fragmentKeysType == null) {
                         fragmentKeysType = new HashMap<String, PropertyType>();
-                        fragmentsKeysType.put(tableName, fragmentKeysType);
+                        fragmentsKeysType.put(fragmentName, fragmentKeysType);
                     }
                     fragmentKeysType.put(key, type);
                 }
             }
         }
+
+        schemaFragment.put(typeName, fragmentName); // may be null
+        return fragmentName;
     }
 
+    private String typeFragmentName(ComplexType type) {
+        return type.getName();
+    }
+
+    private String collectionFragmentName(String propertyName) {
+        return propertyName;
+    }
 }

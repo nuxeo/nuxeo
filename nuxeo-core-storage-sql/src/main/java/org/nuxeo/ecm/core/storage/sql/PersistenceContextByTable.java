@@ -193,13 +193,13 @@ public class PersistenceContextByTable {
      * database, returns {@code null} or an absent fragment.
      *
      * @param id the fragment id
-     * @param createAbsent {@code true} to return an absent fragment as an
-     *            object instead of {@code null}
+     * @param allowAbsent {@code true} to return an absent fragment as an object
+     *            instead of {@code null}
      * @return the fragment, or {@code null} if none is found and {@value
-     *         createAbsent} was {@code false}
+     *         allowAbsent} was {@code false}
      * @throws StorageException
      */
-    public Fragment get(Serializable id, boolean createAbsent)
+    public Fragment get(Serializable id, boolean allowAbsent)
             throws StorageException {
         if (isDeleted(id)) {
             return null;
@@ -221,7 +221,7 @@ public class PersistenceContextByTable {
                 fragment = new CollectionFragment(tableName, id, State.CREATED,
                         this, new Serializable[0]);
             } else {
-                if (createAbsent) {
+                if (allowAbsent) {
                     fragment = new SimpleFragment(tableName, id, State.ABSENT,
                             this, null);
                 } else {
@@ -232,7 +232,7 @@ public class PersistenceContextByTable {
             if (isCollection) {
                 fragment = mapper.readCollectionRows(tableName, id, this);
             } else {
-                fragment = mapper.readSingleRow(tableName, id, createAbsent,
+                fragment = mapper.readSingleRow(tableName, id, allowAbsent,
                         this);
             }
         }
@@ -246,13 +246,13 @@ public class PersistenceContextByTable {
      * database, returns {@code null} or an absent fragment.
      *
      * @param id the fragment id
-     * @param createAbsent {@code true} to return an absent fragment as an
-     *            object instead of {@code null}
+     * @param allowAbsent {@code true} to return an absent fragment as an object
+     *            instead of {@code null}
      * @return the fragment, or {@code null} if none is found and {@value
-     *         createAbsent} was {@code false}
+     *         allowAbsent} was {@code false}
      * @throws StorageException
      */
-    public Fragment getChildById(Serializable id, boolean createAbsent)
+    public Fragment getChildById(Serializable id, boolean allowAbsent)
             throws StorageException {
         if (isDeleted(id)) {
             return null;
@@ -270,14 +270,14 @@ public class PersistenceContextByTable {
         boolean isTemporaryId = id instanceof String &&
                 ((String) id).startsWith("T");
         if (isTemporaryId) {
-            if (createAbsent) {
+            if (allowAbsent) {
                 fragment = new SimpleFragment(tableName, id, State.ABSENT,
                         this, null);
             } else {
                 fragment = null;
             }
         } else {
-            fragment = mapper.readSingleRow(tableName, id, createAbsent, this);
+            fragment = mapper.readSingleRow(tableName, id, allowAbsent, this);
         }
         if (fragment != null) {
             // add as a child of its parent
@@ -384,7 +384,7 @@ public class PersistenceContextByTable {
      * @param parentId the parent id
      * @param name the name
      * @param complexProp whether to get complex properties or regular children
-     * @return the row, or {@code null} if none is found
+     * @return the fragment, or {@code null} if none is found
      * @throws StorageException
      */
     public SimpleFragment getChildByName(Serializable parentId, String name,

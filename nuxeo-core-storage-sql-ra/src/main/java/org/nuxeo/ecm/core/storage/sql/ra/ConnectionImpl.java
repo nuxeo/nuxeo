@@ -141,9 +141,9 @@ public class ConnectionImpl implements Session {
         return session.hasChildren(parent, complexProp);
     }
 
-    public List<Node> getChildren(Node parent, boolean complexProp)
+    public List<Node> getChildren(Node parent, boolean complexProp, String name)
             throws StorageException {
-        return session.getChildren(parent, complexProp);
+        return session.getChildren(parent, complexProp, name);
     }
 
     public Node addChildNode(Node parent, String name, String typeName,

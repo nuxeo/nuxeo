@@ -144,10 +144,11 @@ public interface Session extends Connection {
      * @param parent the parent node
      * @param complexProp whether to check complex properties or regular
      *            children
+     * @param name the children name to get (for lists of complex properties)
      * @return the collection of children
      * @throws StorageException
      */
-    List<Node> getChildren(Node parent, boolean complexProp)
+    List<Node> getChildren(Node parent, boolean complexProp, String name)
             throws StorageException;
 
     /**
