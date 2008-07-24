@@ -19,9 +19,6 @@
 
 package org.nuxeo.ecm.core.api;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * @author bstefanescu
  *
@@ -29,8 +26,6 @@ import org.apache.commons.logging.LogFactory;
 public class ClientException extends Exception {
 
     private static final long serialVersionUID = 829907884555472415L;
-
-    private static final Log log = LogFactory.getLog(ClientException.class);
 
     public ClientException() {
     }
