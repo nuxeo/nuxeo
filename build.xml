@@ -251,6 +251,7 @@
       <arg value="nuxeo-platform/nuxeo-platform-ear/pom.xml" />
       <arg value="-Djboss.lib=${jboss.lib}" />
       <arg value="dependency:copy" />
+      <arg value="-N" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
@@ -263,6 +264,7 @@
       <arg value="nuxeo-platform/nuxeo-platform-ear/pom.xml" />
       <arg value="-Djboss.lib=${jboss.lib}" />
       <arg value="dependency:copy" />
+      <arg value="-N" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
