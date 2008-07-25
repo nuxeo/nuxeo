@@ -665,7 +665,7 @@
         <executions>
           <execution>
             <id>copy-installed</id>
-            <phase>process-resources</phase>
+            <phase>package</phase>
             <goals>
               <goal>copy</goal>
             </goals>
@@ -675,19 +675,19 @@
           </execution>
           <execution>
             <id>copy-postgresql-jdbc-driver</id>
-            <phase>process-resources</phase>
+            <phase>package</phase>
             <goals>
               <goal>copy</goal>
             </goals>
             <configuration>
+              <outputDirectory>
+                ${project.build.directory}/postgresql-jdbc-lib
+              </outputDirectory>
               <artifactItems>
                 <artifactItem>
                   <groupId>postgresql</groupId>
                   <artifactId>postgresql</artifactId>
                   <version>8.2-507.jdbc3</version>
-                  <outputDirectory>
-                    ${project.build.directory}/postgresql-jdbc-lib
-                  </outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
