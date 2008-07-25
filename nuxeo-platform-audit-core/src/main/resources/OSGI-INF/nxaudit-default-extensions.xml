@@ -37,6 +37,7 @@
     <event name="documentSubmitedForPublication"/>
     <event name="documentPublicationRejected"/>
     <event name="documentPublicationApproved"/>
+    <event name="lifecycle_transition_event"/>
   </extension>
 
 </component>
