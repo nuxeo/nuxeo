@@ -29,25 +29,25 @@ case "$1" in
     nuxeo-3parts)
         echo "building 3 JVMs nuxeo distrib"
         mvn -Dnuxeo.ear.assembly=nuxeo-core $MVN_OPTS package
-        mvn -Dnuxeo.ear.assembly=nuxeo-indexing $MVN_OPTS package
-        mvn -Dnuxeo.ear.assembly=nuxeo-webplatform $MVN_OPTS package
+        mvn -Dnuxeo.ear.assembly=nuxeo-indexing $MVN_OPTS package -N
+        mvn -Dnuxeo.ear.assembly=nuxeo-webplatform $MVN_OPTS package -N
   ;;
     old-nuxeo-3parts)
         echo "building 3 JVMs nuxeo distrib"
         mvn -Dnuxeo.ear.assembly=old-nuxeo-core $MVN_OPTS package
-        mvn -Dnuxeo.ear.assembly=old-nuxeo-indexing $MVN_OPTS package
-        mvn -Dnuxeo.ear.assembly=old-nuxeo-webplatform $MVN_OPTS package
+        mvn -Dnuxeo.ear.assembly=old-nuxeo-indexing $MVN_OPTS package -N
+        mvn -Dnuxeo.ear.assembly=old-nuxeo-webplatform $MVN_OPTS package -N
   ;;
 
     nuxeo-2parts)
         echo "building 2 JVMs nuxeo distrib"
         mvn -Dnuxeo.ear.assembly=nuxeo-platform-stateful $MVN_OPTS package
-        mvn -Dnuxeo.ear.assembly=nuxeo-web-stateless $MVN_OPTS package
+        mvn -Dnuxeo.ear.assembly=nuxeo-web-stateless $MVN_OPTS package -N
   ;;
     old-nuxeo-2parts)
         echo "building 2 JVMs nuxeo distrib"
         mvn -Dnuxeo.ear.assembly=old-nuxeo-platform-stateful $MVN_OPTS package
-        mvn -Dnuxeo.ear.assembly=old-nuxeo-web-stateless $MVN_OPTS package
+        mvn -Dnuxeo.ear.assembly=old-nuxeo-web-stateless $MVN_OPTS package -N
   ;;
 
     help)

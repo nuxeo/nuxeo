@@ -3,47 +3,17 @@
   <!-- RESOURCES -->
   <assemble>
     <outputFile>/</outputFile>
-    <set>core-resources</set>
+    <unpack>true</unpack>
+    <unpackInNewDirectory>false</unpackInNewDirectory>
+    <set>resources</set>
   </assemble>
-  <fileSet id="core-resources">
-    <directory>src/main/resources_core</directory>
-    <excludes>
-      <exclude>**/.svn</exclude>
-    </excludes>
-  </fileSet>
-
-  <assemble>
-    <outputFile>/</outputFile>
-    <set>search-resources</set>
-  </assemble>
-  <fileSet id="search-resources">
-    <directory>src/main/resources_search</directory>
-    <excludes>
-      <exclude>**/.svn</exclude>
-    </excludes>
-  </fileSet>
-
-  <assemble>
-    <outputFile>/</outputFile>
-    <set>web-resources</set>
-  </assemble>
-  <fileSet id="web-resources">
-    <directory>src/main/resources_webplatform</directory>
-    <excludes>
-      <exclude>**/.svn</exclude>
-    </excludes>
-  </fileSet>
-
-  <assemble>
-    <outputFile>/</outputFile>
-    <set>common-resources</set>
-  </assemble>
-  <fileSet id="common-resources">
-    <directory>src/main/resources_common</directory>
-    <excludes>
-      <exclude>**/.svn</exclude>
-    </excludes>
-  </fileSet>
+  <artifactSet id="resources">
+    <import>**</import>
+    <includes>
+      <artifact name="nuxeo-platform-ear-resources" classifier="mono"
+        type="zip" />
+    </includes>
+  </artifactSet>
 
   <!-- ARTIFACTS -->
   <assemble>
@@ -175,9 +145,6 @@
     </assemble>
     <fileSet id="custom-resources">
     <directory>src/main/resources_custom</directory>
-    <excludes>
-    <exclude>**/.svn</exclude>
-    </excludes>
     </fileSet>
   -->
 
