@@ -31,6 +31,5 @@ Nuxeo-Component: OSGI-INF/JCRLifeCycleManager.xml
 Require-Bundle: org.apache.jackrabbit,
  org.apache.commons.collections,
  org.apache.lucene,
- org.apache.lucene.analysis,
- org.nuxeo.ecm.core
+ org.apache.lucene.analysis
 Nuxeo-Require: org.nuxeo.ecm.core
