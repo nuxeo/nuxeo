@@ -3,18 +3,16 @@
   <!-- RESOURCES -->
   <assemble>
     <outputFile>/</outputFile>
-    <set>common-resources</set>
+    <unpack>true</unpack>
+    <unpackInNewDirectory>false</unpackInNewDirectory>
+    <set>resources</set>
   </assemble>
-  <fileSet id="common-resources">
-    <directory>src/main/resources_common</directory>
-  </fileSet>
-
-  <assemble>
-    <outputFile>/</outputFile>
-    <set>search-resources</set>
-  </assemble>
-  <fileSet id="search-resources">
-    <directory>src/main/resources_search</directory>
+  <artifactSet id="resources">
+    <import>**</import>
+    <includes>
+      <artifact name="nuxeo-platform-ear-resources" classifier="search" type="zip" />
+    </includes>
+  </artifactSet>
   </fileSet>
 
   <!-- ARTIFACTS -->

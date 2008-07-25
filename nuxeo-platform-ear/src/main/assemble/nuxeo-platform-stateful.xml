@@ -3,19 +3,16 @@
   <!-- RESOURCES -->
   <assemble>
     <outputFile>/</outputFile>
-    <set>common-resources</set>
+    <unpack>true</unpack>
+    <unpackInNewDirectory>false</unpackInNewDirectory>
+    <set>resources</set>
   </assemble>
-  <fileSet id="common-resources">
-    <directory>src/main/resources_common</directory>
-  </fileSet>
-
-  <assemble>
-    <outputFile>/</outputFile>
-    <set>webplatform-resources</set>
-  </assemble>
-  <fileSet id="webplatform-resources">
-    <directory>src/main/resources_platform-stateful</directory>
-  </fileSet>
+  <artifactSet id="resources">
+    <import>**</import>
+    <includes>
+      <artifact name="nuxeo-platform-ear-resources" classifier="platform-stateful" type="zip" />
+    </includes>
+  </artifactSet>
 
   <!-- ARTIFACTS -->
   <assemble>
