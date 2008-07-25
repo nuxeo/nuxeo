@@ -60,13 +60,24 @@ public class UserSession implements Serializable, HttpSessionBindingListener {
 
     public static UserSession getAnonymousSession(UserManager mgr) throws ClientException {
         if (anonymous == null) {
-            String userId = mgr.getAnonymousUserId();
-            if (userId == null) {
-                throw new IllegalStateException("User anonymous cannot be created");
-            }
-            anonymous = new UserSession(mgr.getPrincipal(userId), userId);
+            anonymous = createAnonymousSession(mgr);
         }
         return anonymous;
+    }
+
+    public static UserSession createAnonymousSession(UserManager mgr) throws ClientException {
+        String userId = mgr.getAnonymousUserId();
+        if (userId == null) {
+            throw new IllegalStateException("User anonymous cannot be created");
+        }
+        return new UserSession(mgr.getPrincipal(userId), userId);
+    }
+
+    public static void destroyAnonynousSession() {
+        if (anonymous != null && anonymous.coreSession != null) {
+            anonymous.coreSession.destroy();
+        }
+        anonymous.coreSession = null;
     }
 
     protected final Subject subject;
@@ -102,6 +113,10 @@ public class UserSession implements Serializable, HttpSessionBindingListener {
         return coreSession;
     }
 
+    /**
+     * Whether or not this is the shared anonymous session
+     * @return
+     */
     public boolean isAnonymous() {
         return this == anonymous;
     }

@@ -105,7 +105,7 @@ public abstract class BaseSiteRequestTestCase extends RepositoryOSGITestCase {
     protected FakeResponse execSiteRequest(FakeRequest fReq)
             throws Exception {
         FakeResponse fRes = new FakeResponse();
-        fReq.setAttribute(DefaultWebContext.CORESESSION_KEY, getCoreSession());
+//        fReq.setAttribute(DefaultWebContext.CORESESSION_KEY, getCoreSession());
         siteServlet.service(fReq, fRes);
         return fRes;
     }

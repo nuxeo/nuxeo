@@ -34,7 +34,6 @@ import javax.script.SimpleBindings;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
@@ -46,11 +45,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
+import org.nuxeo.ecm.webengine.login.UserSession;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.util.FormData;
@@ -63,12 +62,6 @@ import org.python.core.PyDictionary;
  *
  */
 public class DefaultWebContext implements WebContext {
-
-    public static final String CORESESSION_KEY = "SiteCoreSession";
-
-    public static boolean USE_CORE_SEARCH = false;
-
-    private static CoreSession anonymousSession; //TODO: this should be relative to the web app
 
     private static final Log log = LogFactory.getLog(WebContext.class);
 
@@ -253,12 +246,25 @@ public class DefaultWebContext implements WebContext {
     public CoreSession getCoreSession() throws WebException {
         if (session == null) {
             try {
-                session = getCoreSession(request);
+                UserSession us = UserSession.getCurrentSession(request.getSession(true));
+                if (us != null) {
+                    session = us.getCoreSession();
+                    if (session == null) {
+                        session = openSession();
+                        us.setCoreSession(session);
+                    }
+                } else {
+                    session = openSession();
+                }
             } catch (Exception e) {
                 throw WebException.wrap(e);
             }
         }
         return session;
+    }
+
+    public void setCoreSession(CoreSession session) {
+        this.session = session;
     }
 
     public WebObject getTargetObject() {
@@ -769,37 +775,6 @@ public class DefaultWebContext implements WebContext {
        return "PathInfo: " + pathInfo.toString();
    }
 
-
-
-    public CoreSession getCoreSession(HttpServletRequest request)
-    throws Exception {
-        CoreSession session = null;
-
-        HttpSession httpSession = request.getSession(true);
-
-        // FIXME: session is alway null here, there is no need to check ?
-        if (session == null) {
-            session = (CoreSession) httpSession.getAttribute(CORESESSION_KEY);
-            if (session != null) {
-                return session;
-            }
-        }
-        Principal principal = request.getUserPrincipal();
-        if (principal instanceof NuxeoPrincipal) {
-            if (((NuxeoPrincipal)principal).isAnonymous()) { // use the anonymous session
-                session = getAnonymousSession();
-            } else {
-                session = openSession();
-            }
-        } else {
-            session = openSession();
-        }
-        if (httpSession != null) {
-            httpSession.setAttribute(CORESESSION_KEY, session);
-        }
-        return session;
-    }
-
     public  CoreSession openSession() throws Exception {
         String repoName = app.getRepositoryName();
         RepositoryManager rm = Framework.getService(RepositoryManager.class);
@@ -824,31 +799,6 @@ public class DefaultWebContext implements WebContext {
         } else {
             return repo.open();
         }
-    }
-
-    public static boolean isAnonymousSession(CoreSession session) {
-        return anonymousSession == session;
-    }
-
-    /**
-     * TODO move this into WebApplication
-     * @deprecated
-     * @return
-     * @throws Exception
-     */
-    @Deprecated
-    public CoreSession getAnonymousSession() throws Exception {
-        if (anonymousSession == null) {
-            anonymousSession = openSession();
-        }
-        return anonymousSession;
-    }
-
-    public static void destroyAnonymousSession() {
-        if (anonymousSession != null) {
-            anonymousSession.destroy();
-        }
-        anonymousSession = null;
     }
 
     /**

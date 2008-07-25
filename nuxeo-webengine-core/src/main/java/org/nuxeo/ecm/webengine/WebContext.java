@@ -169,6 +169,12 @@ public interface WebContext extends Adaptable {
     CoreSession getCoreSession() throws WebException;
 
     /**
+     * A method to be used to change the session durring the current request
+     * @param session the new session to use
+     */
+    void setCoreSession(CoreSession session);
+
+    /**
      * Gets the principal identifying the user that originated the request.
      *
      * @return the current principal. Cannot return null.
@@ -540,8 +546,6 @@ public interface WebContext extends Adaptable {
      * @return the first unresolved segment or null if none
      */
     String getFirstUnresolvedSegment();
-
-
 
     /** --------- Experimental methods - these may change in future ------------ */
 

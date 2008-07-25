@@ -41,15 +41,16 @@ import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebObject;
+import org.nuxeo.ecm.webengine.login.UserSession;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Servlet for publishing SiteObjects
- * 
+ *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
 public class WebServlet extends HttpServlet {
 
@@ -237,7 +238,7 @@ public class WebServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        DefaultWebContext.destroyAnonymousSession();
+        UserSession.destroyAnonynousSession();
     }
 
 }
