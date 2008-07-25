@@ -166,7 +166,7 @@ public class TreeActionsBean implements TreeActions {
         return null;
     }
 
-    @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false)
+    @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED }, create = false)
     public void resetCurrentDocumentData() {
         currentDocumentPath = null;
     }
