@@ -27,9 +27,12 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
+import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
+import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
@@ -165,33 +168,46 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     /*
-     * ----- Lifecycle -----
+     * ----- LifeCycle -----
      */
+
+    public String getLifeCyclePolicy() throws LifeCycleException {
+        LifeCycleService service = NXCore.getLifeCycleService();
+        if (service == null) {
+            throw new LifeCycleException("LifeCycleService not available");
+        }
+        return service.getLifeCyclePolicy(this);
+    }
+
+    public String getCurrentLifeCycleState() throws LifeCycleException {
+        LifeCycleService service = NXCore.getLifeCycleService();
+        if (service == null) {
+            throw new LifeCycleException("LifeCycleService not available");
+        }
+        return service.getCurrentLifeCycleState(this);
+    }
 
     public boolean followTransition(String transition)
             throws LifeCycleException {
-        throw new UnsupportedOperationException();
+        LifeCycleService service = NXCore.getLifeCycleService();
+        if (service == null) {
+            throw new LifeCycleException("LifeCycleService not available");
+        }
+        service.followTransition(this, transition);
+        return true;
     }
 
     public Collection<String> getAllowedStateTransitions()
             throws LifeCycleException {
-        throw new UnsupportedOperationException();
-    }
-
-    public String getCurrentLifeCycleState() throws LifeCycleException {
-        try {
-            return getString(Model.SYSTEM_LIFECYCLE_STATE_PROP);
-        } catch (DocumentException e) {
-            throw new LifeCycleException(e.getMessage(), e);
+        LifeCycleService service = NXCore.getLifeCycleService();
+        if (service == null) {
+            throw new LifeCycleException("LifeCycleService not available");
         }
-    }
-
-    public String getLifeCyclePolicy() throws LifeCycleException {
-        try {
-            return getString(Model.SYSTEM_LIFECYCLE_POLICY_PROP);
-        } catch (DocumentException e) {
-            throw new LifeCycleException(e.getMessage(), e);
+        LifeCycle lifeCycle = service.getLifeCycleFor(this);
+        if (lifeCycle == null) {
+            return Collections.emptyList();
         }
+        return lifeCycle.getAllowedStateTransitionsFrom(service.getCurrentLifeCycleState(this));
     }
 
     /*
@@ -310,8 +326,8 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         if (start >= children.size()) {
             return EmptyDocumentIterator.INSTANCE;
         }
-        return new SQLDocumentListIterator(
-                children.subList(start, children.size()));
+        return new SQLDocumentListIterator(children.subList(start,
+                children.size()));
     }
 
     public List<String> getChildrenIds() throws DocumentException {

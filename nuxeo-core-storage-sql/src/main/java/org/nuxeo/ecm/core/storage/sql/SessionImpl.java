@@ -157,6 +157,10 @@ public class SessionImpl implements Session, XAResource {
      * ----- Session -----
      */
 
+    public boolean isLive() {
+        return live;
+    }
+
     public Model getModel() {
         return model;
     }
@@ -435,10 +439,6 @@ public class SessionImpl implements Session, XAResource {
 
     public String getUserID() {
         return credentials.getUserName();
-    }
-
-    public boolean isLive() {
-        return live;
     }
 
     private void checkLive() throws IllegalStateException {

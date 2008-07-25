@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.NoSuchPropertyException;
 import org.nuxeo.ecm.core.model.Property;
+import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
@@ -49,7 +50,6 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
-import org.nuxeo.ecm.core.storage.sql.SessionImpl;
 import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
 
 /**
@@ -62,31 +62,25 @@ public class SQLSession implements Session {
 
     private static final Log log = LogFactory.getLog(SQLSession.class);
 
-    private final SQLRepository repository;
+    private final Repository repository;
 
     private final Map<String, Serializable> context;
 
-    private final SessionImpl session;
+    private final org.nuxeo.ecm.core.storage.sql.Session session;
 
     private SQLDocument root;
 
     private String userSessionId;
 
-    public SQLSession(SQLRepository repository,
-            Map<String, Serializable> context) throws DocumentException {
+    public SQLSession(org.nuxeo.ecm.core.storage.sql.Session session,
+            Repository repository, Map<String, Serializable> context)
+            throws DocumentException {
+        this.session = session;
         this.repository = repository;
         if (context == null) {
             context = new HashMap<String, Serializable>();
         }
         this.context = context;
-
-        try {
-            // XXX credentials from context
-            session = repository.getConnection();
-        } catch (StorageException e) {
-            throw new DocumentException(e);
-        }
-
         context.put("creationTime", Long.valueOf(System.currentTimeMillis()));
 
         try {
@@ -96,7 +90,6 @@ public class SQLSession implements Session {
         }
 
         userSessionId = (String) context.get("SESSION_ID");
-
     }
 
     /*
@@ -161,7 +154,7 @@ public class SQLSession implements Session {
         return userSessionId;
     }
 
-    public org.nuxeo.ecm.core.model.Repository getRepository() {
+    public Repository getRepository() {
         return repository;
     }
 

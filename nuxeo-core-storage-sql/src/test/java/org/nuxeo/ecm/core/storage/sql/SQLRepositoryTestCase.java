@@ -73,6 +73,7 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         }
         file.delete();
     }
+
     public void openSession() throws ClientException {
         Map<String, Serializable> context = new HashMap<String, Serializable>();
         context.put("username", SecurityConstants.ADMINISTRATOR);
