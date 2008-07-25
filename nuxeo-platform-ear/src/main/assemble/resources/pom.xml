@@ -1,0 +1,50 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-parent</artifactId>
+    <version>5.1.6-SNAPSHOT</version>
+    <relativePath>../../../..</relativePath>
+  </parent>
+
+  <artifactId>nuxeo-platform-ear-resources</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo EP EAR Resources</name>
+  <description>
+    Nuxeo Enterprise Platform: The resources for Nuxeo EAR application.
+  </description>
+
+  <build>
+    <outputDirectory>../../../../target-resources</outputDirectory>
+    <plugins>
+      <!-- build zip artifacts with resources -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <outputDirectory>../../../../target-resources</outputDirectory>
+          <descriptors>
+            <descriptor>common.xml</descriptor>
+            <descriptor>core.xml</descriptor>
+            <descriptor>search.xml</descriptor>
+            <descriptor>webplatform.xml</descriptor>
+            <descriptor>web-stateless.xml</descriptor>
+            <descriptor>platform-stateful.xml</descriptor>
+            <descriptor>mono.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-resources</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attached</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

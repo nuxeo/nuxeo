@@ -3,26 +3,16 @@
   <!-- RESOURCES -->
   <assemble>
     <outputFile>/</outputFile>
-    <set>common-resources</set>
+    <unpack>true</unpack>
+    <unpackInNewDirectory>false</unpackInNewDirectory>
+    <set>resources</set>
   </assemble>
-  <fileSet id="common-resources">
-    <directory>src/main/resources_common</directory>
-    <excludes>
-      <exclude>**/.svn</exclude>
-      <exclude>**/unified-nuxeo-ds.xml</exclude>
-    </excludes>
-  </fileSet>
-
-  <assemble>
-    <outputFile>/</outputFile>
-    <set>webplatform-resources</set>
-  </assemble>
-  <fileSet id="webplatform-resources">
-    <directory>src/main/resources_web-stateless</directory>
-    <excludes>
-      <exclude>**/.svn</exclude>
-    </excludes>
-  </fileSet>
+  <artifactSet id="resources">
+    <import>**</import>
+    <includes>
+      <artifact name="nuxeo-platform-ear-resources" classifier="web-stateless" type="zip" />
+    </includes>
+  </artifactSet>
 
   <!-- ARTIFACTS -->
   <assemble>
@@ -59,22 +49,6 @@
       <artifact name="nuxeo-platform-webapp-core" />
     </excludes>
   </artifactSet>
-
-  <!--
-    <assemble>
-    <outputFile>system</outputFile>
-    <unpack>true</unpack>
-    <unpackInNewDirectory>true</unpackInNewDirectory>
-    <set>nuxeo-platform-unpacked</set>
-    </assemble>
-    <artifactSet id="nuxeo-platform-unpacked">
-    <import>**</import>
-    <includes>
-    <artifact name="nuxeo-platform-audit-facade" />
-    <artifact name="nuxeo-platform-placeful-facade" />
-    </includes>
-    </artifactSet>
-  -->
 
   <!-- third party libraries embedded in the ear -->
   <assemble>
