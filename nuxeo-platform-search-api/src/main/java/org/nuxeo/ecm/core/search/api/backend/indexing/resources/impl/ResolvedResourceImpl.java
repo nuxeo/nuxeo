@@ -102,9 +102,10 @@ public class ResolvedResourceImpl implements ResolvedResource {
     }
 
     public void setIndexableResource(IndexableResource resource) {
-        this.resourceProxy = resource;
+        resourceProxy = resource;
     }
 
+    @Override
     public String toString() {
         String className = getClass().getSimpleName();
         if (resourceProxy == null) {
