@@ -114,9 +114,6 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
     @In(create = true)
     protected WorkflowBeansDelegate workflowBeansDelegate;
 
-    @In
-    protected RepositoryLocation currentServerLocation;
-
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
@@ -349,6 +346,7 @@ public class DocumentWorkflowActionsBean implements DocumentWorkflowActions {
             processVariables.put(
                     WorkflowConstants.WORKFLOW_FORMER_REVIEW_LEVEL, 0);
 
+            RepositoryLocation currentServerLocation = navigationContext.getCurrentServerLocation();
             processVariables.put(WorkflowConstants.DOCUMENT_LOCATION_URI,
                     currentServerLocation.getName());
 
