@@ -234,12 +234,6 @@
             </goals>
             <configuration>
               <artifactItems>
-                <!--  also in parent pom but shouldn't -->
-                <artifactItem>
-                  <groupId>javax.servlet</groupId>
-                  <artifactId>jstl</artifactId>
-                  <version>1.1.0</version>
-                </artifactItem>
                 <artifactItem>
                   <groupId>opensymphony</groupId>
                   <artifactId>oscache</artifactId>
