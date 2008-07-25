@@ -1762,23 +1762,20 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
                 session.getCurrentLifeCycleState(childFile.getRef()));
 
         Collection<String> allowedStateTransitions = session.getAllowedStateTransitions(childFile.getRef());
-        assertEquals(2, allowedStateTransitions.size());
+        assertEquals(3, allowedStateTransitions.size());
         assertTrue(allowedStateTransitions.contains("approve"));
         assertTrue(allowedStateTransitions.contains("obsolete"));
+        assertTrue(allowedStateTransitions.contains("delete"));
 
         assertTrue(session.followTransition(childFile.getRef(), "approve"));
         assertEquals("approved",
                 session.getCurrentLifeCycleState(childFile.getRef()));
         allowedStateTransitions = session.getAllowedStateTransitions(childFile.getRef());
-        assertEquals(0, allowedStateTransitions.size());
-
-        assertEquals("default", session.getLifeCyclePolicy(childFile.getRef()));
-
-        session.cancel();
-        assertFalse(session.exists(childFile.getRef()));
+        assertEquals(2, allowedStateTransitions.size());
+        assertTrue(allowedStateTransitions.contains("delete"));
+        assertTrue(allowedStateTransitions.contains("backToProject"));
     }
 
-    // TODO: fix and reenable SF 2007/05/23
     public void testDataModelLifeCycleAPI() throws ClientException {
         DocumentModel root = session.getRootDocument();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
@@ -1789,19 +1786,17 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         assertEquals("project", childFile.getCurrentLifeCycleState());
 
         Collection<String> allowedStateTransitions = childFile.getAllowedStateTransitions();
-        assertEquals(2, allowedStateTransitions.size());
+        assertEquals(3, allowedStateTransitions.size());
         assertTrue(allowedStateTransitions.contains("approve"));
         assertTrue(allowedStateTransitions.contains("obsolete"));
+        assertTrue(allowedStateTransitions.contains("delete"));
 
         assertTrue(childFile.followTransition("obsolete"));
         assertEquals("obsolete", childFile.getCurrentLifeCycleState());
-
         allowedStateTransitions = childFile.getAllowedStateTransitions();
-        assertEquals(0, allowedStateTransitions.size());
-        assertEquals("default", childFile.getLifeCyclePolicy());
-
-        session.cancel();
-        assertFalse(session.exists(childFile.getRef()));
+        assertEquals(2, allowedStateTransitions.size());
+        assertTrue(allowedStateTransitions.contains("delete"));
+        assertTrue(allowedStateTransitions.contains("backToProject"));
     }
 
     public void testCopy() throws Exception {

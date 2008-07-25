@@ -102,8 +102,7 @@ public class Table implements Serializable {
         char openQuote = dialect.openQuote();
         char closeQuote = dialect.closeQuote();
 
-        buf.append(dialect.getCreateTableString());
-        buf.append(' ');
+        buf.append("CREATE TABLE ");
         buf.append(openQuote);
         buf.append(name);
         buf.append(closeQuote);

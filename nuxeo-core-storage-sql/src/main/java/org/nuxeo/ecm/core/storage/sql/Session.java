@@ -33,6 +33,13 @@ import org.nuxeo.ecm.core.storage.StorageException;
 public interface Session extends Connection {
 
     /**
+     * Checks if the session is live (not closed).
+     *
+     * @return {@code true} if the session is live
+     */
+    public boolean isLive();
+
+    /**
      * Gets the {@link Model} associated to this session.
      *
      * @return the model

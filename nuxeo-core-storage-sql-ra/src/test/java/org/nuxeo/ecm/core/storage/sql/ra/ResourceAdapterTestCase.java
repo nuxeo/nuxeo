@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.embedded.junit.BaseTestCase;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.security.SecurityManager;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.Session;
@@ -106,7 +107,13 @@ public class ResourceAdapterTestCase extends BaseTestCase {
         Node root = session.getRootNode();
         assertNotNull(root);
 
+        /* Now check the core APIs that this also implements */
+        org.nuxeo.ecm.core.model.Repository repo = (org.nuxeo.ecm.core.model.Repository) repository;
+        SecurityManager sm = repo.getSecurityManager();
+        assertNotNull(sm);
+
         tm.commit();
         log.info("End ----------------");
     }
+
 }

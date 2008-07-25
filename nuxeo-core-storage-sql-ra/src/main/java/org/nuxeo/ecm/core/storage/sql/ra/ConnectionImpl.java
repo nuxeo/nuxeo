@@ -106,6 +106,10 @@ public class ConnectionImpl implements Session {
      * ----- org.nuxeo.ecm.core.storage.sql.Session -----
      */
 
+    public boolean isLive() {
+        return session.isLive();
+    }
+
     public Model getModel() {
         return session.getModel();
     }
