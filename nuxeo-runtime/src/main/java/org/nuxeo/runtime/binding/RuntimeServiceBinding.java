@@ -28,9 +28,9 @@ import org.nuxeo.runtime.model.ComponentInstance;
  */
 public class RuntimeServiceBinding implements Binding {
 
-    protected ComponentInstance comp;
-    protected Class<?> serviceClass;
-    protected String bindingKey;
+    protected final ComponentInstance comp;
+    protected final Class<?> serviceClass;
+    protected final String bindingKey;
 
     public RuntimeServiceBinding(String bindingKey, ComponentInstance comp, Class<?> serviceClass) {
         this.comp = comp;

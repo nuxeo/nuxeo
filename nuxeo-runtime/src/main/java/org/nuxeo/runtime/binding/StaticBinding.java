@@ -26,10 +26,10 @@ package org.nuxeo.runtime.binding;
 public class StaticBinding implements Binding {
 
     protected Object obj;
-    protected String bindingKey;
+    protected final String bindingKey;
 
     public StaticBinding(String bindingKey) {
-        this (bindingKey, null);
+        this(bindingKey, null);
     }
 
     public StaticBinding(String bindingKey, Object obj) {

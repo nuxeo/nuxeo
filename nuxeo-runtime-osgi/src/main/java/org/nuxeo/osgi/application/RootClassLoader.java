@@ -25,14 +25,11 @@ package org.nuxeo.osgi.application;
  */
 class RootClassLoader extends ClassLoader {
 
-    private Class<?> loaderClass;
-    private String loaderName;
+    private final Class<?> loaderClass;
+    private final String loaderName;
 
-    /**
-     *
-     */
-    RootClassLoader(ClassLoader parent, Class<?> loaderClass) throws ClassNotFoundException {
-        super (parent);
+    RootClassLoader(ClassLoader parent, Class<?> loaderClass) {
+        super(parent);
         this.loaderClass = loaderClass;
         this.loaderName = loaderClass.getName();
     }

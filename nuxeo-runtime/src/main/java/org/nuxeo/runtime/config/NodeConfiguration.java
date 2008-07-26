@@ -36,8 +36,6 @@ import org.nuxeo.runtime.remoting.RemotingService;
  */
 public class NodeConfiguration implements Serializable, Cloneable {
 
-    private static final long serialVersionUID = 1227680972931266947L;
-
     public static final String NODE_ID = "org.nuxeo.runtime.nodeId";
 
     public static final String SERVER_ENABLED = "org.nuxeo.runtime.server.enabled";
@@ -56,14 +54,15 @@ public class NodeConfiguration implements Serializable, Cloneable {
     public static final String IS_STREAMING_SERVER = "org.nuxeo.runtime.streaming.isServer";
     public static final String STREAMING_LOCATOR = "org.nuxeo.runtime.streaming.serverLocator";
 
-
     private static NodeConfiguration configuration = null;
 
+    private static final long serialVersionUID = 1227680972931266947L;
 
-    private String nodeId;
+    private final String nodeId;
+    private final String serverType;
+
     private InvokerLocator locator;
     private boolean isServer = false;
-    private String serverType;
     //private ServerInstance[] peers;
     private Properties env;
 

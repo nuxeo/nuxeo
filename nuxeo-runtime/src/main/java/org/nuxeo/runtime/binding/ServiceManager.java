@@ -72,8 +72,8 @@ public class ServiceManager implements org.nuxeo.runtime.ServiceManager {
     }
 
     public Object findService(Class<?> serviceClass, String bindingKey) {
-        for (int i=0; i<providers.length; i++) {
-            Object obj = providers[i].getService(serviceClass, bindingKey);
+        for (ServiceProvider provider : providers) {
+            Object obj = provider.getService(serviceClass, bindingKey);
             if (obj != null) {
                 return obj;
             }

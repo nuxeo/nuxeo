@@ -34,7 +34,7 @@ import org.nuxeo.runtime.model.Extension;
  */
 public class ManagedComponent extends DefaultComponent {
 
-    protected static Log log = LogFactory.getLog(ManagedComponent.class);
+    protected static final Log log = LogFactory.getLog(ManagedComponent.class);
 
     protected Map<String, ContributionManager> contributionManagers;
 

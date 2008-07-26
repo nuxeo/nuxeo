@@ -22,15 +22,13 @@ package org.nuxeo.runtime.deploy;
 import java.util.ArrayList;
 import java.util.Collection;
 
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class ContributionManager extends DependencyTree<String, Contribution> {
 
-    private ManagedComponent component;
+    private final ManagedComponent component;
 
     public ContributionManager(ManagedComponent component) {
         this.component = component;

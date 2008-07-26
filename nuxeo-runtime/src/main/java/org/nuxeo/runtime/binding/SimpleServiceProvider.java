@@ -31,12 +31,11 @@ public class SimpleServiceProvider extends AbstractServiceProvider {
 
     protected Map<String, Entry> registry;
 
-
     /**
      * The default constructor is using a {@link HashMap} as the registry
      */
     public SimpleServiceProvider() {
-        this (new HashMap<String, Entry>());
+        this(new HashMap<String, Entry>());
     }
 
     public SimpleServiceProvider(Map<String, Entry> registry) {

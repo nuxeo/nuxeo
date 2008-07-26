@@ -19,14 +19,12 @@
 
 package org.nuxeo.osgi.application;
 
-
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  *
@@ -62,8 +60,8 @@ public class Main {
             args = tmp;
             // reload classes from this JAR using a SharedClassLoader
             Class<?> me = classLoader.loadClass(StandaloneApplication.class.getName());
-            Method main = me.getMethod("main", new Class[] { URL.class, List.class, String[].class });
-            main.invoke(null, new Object[] { systemBundle, cp, args});
+            Method main = me.getMethod("main", URL.class, List.class, String[].class);
+            main.invoke(null, systemBundle, cp, args);
         } catch (Exception e) {
             System.err.println("Failed to create application class loader.");
             e.printStackTrace();
@@ -72,7 +70,7 @@ public class Main {
     }
 
     public static List<File> buildClassPath(SharedClassLoader classLoader, String rawcp) {
-        ArrayList<File> result = new ArrayList<File>();
+        List<File> result = new ArrayList<File>();
         try {
             String[] cp = rawcp.split(":");
             for (String entry : cp) {
@@ -99,16 +97,11 @@ public class Main {
         return result;
     }
 
-
-
     private static class RootClassLoader extends ClassLoader {
 
         private Class<?> loaderClass;
         private String loaderName;
 
-        /**
-         *
-         */
         RootClassLoader(ClassLoader parent, Class<?> loaderClass) throws ClassNotFoundException {
             super (parent);
             this.loaderClass = loaderClass;

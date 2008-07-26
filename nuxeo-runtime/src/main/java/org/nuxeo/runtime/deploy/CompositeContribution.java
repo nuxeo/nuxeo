@@ -31,7 +31,7 @@ import java.util.List;
  */
 public abstract class CompositeContribution extends ExtensibleContribution {
 
-    protected List<CompositeContribution> contributionFragments = new ArrayList<CompositeContribution>();
+    protected final List<CompositeContribution> contributionFragments = new ArrayList<CompositeContribution>();
 
     private boolean isContributionEnabled;
 

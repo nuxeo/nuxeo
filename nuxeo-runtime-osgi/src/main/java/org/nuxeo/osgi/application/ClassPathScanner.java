@@ -36,7 +36,7 @@ import org.nuxeo.osgi.JarBundleFile;
 public class ClassPathScanner {
 
     protected boolean scanForNestedJARs = true;
-    protected Callback callback;
+    protected final Callback callback;
 
     public ClassPathScanner(Callback callback) {
         this.callback = callback;

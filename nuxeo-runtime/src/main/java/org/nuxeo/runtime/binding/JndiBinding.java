@@ -28,9 +28,9 @@ import javax.naming.Name;
  */
 public class JndiBinding implements Binding {
 
-    protected Context ctx;
-    protected Name name;
-    protected String bindingKey;
+    protected final Context ctx;
+    protected final Name name;
+    protected final String bindingKey;
 
     public JndiBinding(String bindingKey, Context ctx, Name name) {
         this.ctx = ctx;

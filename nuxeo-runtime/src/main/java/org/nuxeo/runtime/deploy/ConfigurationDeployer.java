@@ -35,13 +35,13 @@ import org.nuxeo.runtime.model.RuntimeContext;
  */
 public class ConfigurationDeployer implements FileChangeListener {
 
-    protected Map<String, Entry> urls;
-    protected FileChangeNotifier notifier;
+    protected final Map<String, Entry> urls;
+    protected final FileChangeNotifier notifier;
 
-    protected ListenerList listeners = new ListenerList();
+    protected final ListenerList listeners = new ListenerList();
 
     public ConfigurationDeployer() {
-        this (null);
+        this(null);
     }
 
     public ConfigurationDeployer(FileChangeNotifier notifier) {
@@ -140,9 +140,10 @@ public class ConfigurationDeployer implements FileChangeListener {
     }
 
     public static class Entry {
-        RuntimeContext ctx;
-        URL url;
+        final RuntimeContext ctx;
+        final URL url;
         File watchFile;
+
         Entry(RuntimeContext ctx, URL config, File watchFile) throws IOException {
             url = config;
             this.ctx = ctx;

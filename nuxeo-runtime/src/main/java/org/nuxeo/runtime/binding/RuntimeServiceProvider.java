@@ -28,9 +28,6 @@ import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 
-
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -40,9 +37,7 @@ public class RuntimeServiceProvider extends AbstractServiceProvider implements C
     protected RuntimeService runtime;
     protected Map<String, Binding> bindings;
 
-    /**
-     *
-     */
+
     public RuntimeServiceProvider() {
         runtime = Framework.getRuntime();
         runtime.getComponentManager().addComponentListener(this);
@@ -56,7 +51,7 @@ public class RuntimeServiceProvider extends AbstractServiceProvider implements C
     }
 
     /**
-     * Named service lookup is not supported
+     * Named service lookup is not supported.
      */
     public Object getService(Class<?> serviceClass, String bindingKey) {
         ComponentInstance comp = runtime.getComponentManager().getComponentProvidingService(serviceClass);
@@ -86,8 +81,8 @@ public class RuntimeServiceProvider extends AbstractServiceProvider implements C
         if (manager != null && event.id == ComponentEvent.COMPONENT_DEACTIVATED) {
             String[] services = event.registrationInfo.getProvidedServiceNames();
             if (services != null) {
-                for (int i=0; i<services.length; i++) {
-                    Binding binding = bindings.remove(services[i]);
+                for (String service : services) {
+                    Binding binding = bindings.remove(service);
                     if (binding != null) {
                         manager.unregisterBinding(binding.getKey());
                     }

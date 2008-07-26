@@ -37,7 +37,7 @@ public class TraceInterceptor implements org.jboss.aop.advice.Interceptor, java.
 
     private static final long serialVersionUID = 1839232187157414668L;
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+    private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
 
     public Object invoke(Invocation invocation) throws Throwable {
         if (invocation instanceof MethodInvocation) {

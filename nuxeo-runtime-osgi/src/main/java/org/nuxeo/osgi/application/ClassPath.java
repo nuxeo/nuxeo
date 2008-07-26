@@ -39,13 +39,11 @@ import org.osgi.framework.BundleException;
  */
 public class ClassPath implements ClassPathScanner.Callback {
 
-    protected List<BundleFile> bundles;
-    protected List<BundleFile> jars;
-    protected List<BundleFile> nestedJars;
-    protected SharedClassLoader loader;
-    protected File nestedJARsDir;
-
-
+    protected final List<BundleFile> bundles;
+    protected final List<BundleFile> jars;
+    protected final List<BundleFile> nestedJars;
+    protected final SharedClassLoader loader;
+    protected final File nestedJARsDir;
 
     public ClassPath(SharedClassLoader loader, File nestedJARsDir) {
         bundles = new ArrayList<BundleFile>();

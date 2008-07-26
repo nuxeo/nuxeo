@@ -41,13 +41,13 @@ import org.osgi.framework.BundleException;
 public class ApplicationBundleLoader {
 
     protected StandaloneBundleLoader bundleLoader;
-    protected StandaloneApplication app;
+    protected final StandaloneApplication app;
     protected boolean useCache = false;
     protected boolean extractNestedJARs = true;
     protected boolean scanForNestedJARs = true;
 
     public ApplicationBundleLoader(StandaloneApplication app) {
-        this (app, false);
+        this(app, false);
     }
 
     public ApplicationBundleLoader(StandaloneApplication app, boolean useCache) {
@@ -118,14 +118,15 @@ public class ApplicationBundleLoader {
         return bundleLoader.getSharedClassLoader();
     }
 
-    public void scanAndLoad(List<File> classPath, List<BundleFile> bundles, List<BundleFile> jars) throws BundleException {
+    public void scanAndLoad(List<File> classPath, List<BundleFile> bundles, List<BundleFile> jars) {
         bundleLoader.setScanForNestedJARs(scanForNestedJARs);
         bundleLoader.setExtractNestedJARs(extractNestedJARs);
 
         for (File file : classPath) {
             if (file.isFile()) { // a JAR file
                 String name = file.getName();
-                if (!name.endsWith(".jar") || name.endsWith(".rar") || name.endsWith(".zip") || name.endsWith(".sar")) {
+                if (!name.endsWith(".jar") || name.endsWith(".rar")
+                        || name.endsWith(".zip") || name.endsWith(".sar")) {
                     continue;
                 }
                 try {
@@ -190,10 +191,10 @@ public class ApplicationBundleLoader {
     public void fastLoad(File file) throws BundleException {
         Throwable error = null;
         BufferedReader reader = null;
-        ArrayList<BundleFile> bundles = new ArrayList<BundleFile>();
+        List<BundleFile> bundles = new ArrayList<BundleFile>();
         try {
             reader = new BufferedReader(new FileReader(file));
-            ArrayList<BundleFile> list = bundles;
+            List<BundleFile> list = bundles;
             String line = null;
             while (true) {
                 line = reader.readLine();

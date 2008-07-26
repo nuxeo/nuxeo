@@ -59,16 +59,16 @@ public class ServiceBindings implements BundleListener {
 
     // static bindings are used to force the binding to an explicit implementation
     // and it is binding the interface only if it is declared by a bundle in the system
-    protected Properties staticBindings;
-    protected BundleContext bundleContext;
+    protected final Properties staticBindings;
+    protected final BundleContext bundleContext;
     private InitialContext jndiContext;
 
     // the bindings that were done: itf ->  impl
     // this is useful to track duplicated bindings
-    private Properties bindings;
+    private final Properties bindings;
 
     public ServiceBindings(BundleContext ctx) throws NamingException {
-        this (ctx, new InitialContext());
+        this(ctx, new InitialContext());
     }
 
     public ServiceBindings(BundleContext bundleContext, InitialContext jndContext) {

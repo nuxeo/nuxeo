@@ -54,10 +54,10 @@ public class StandaloneApplication extends OSGiAdapter {
         return instance;
     }
 
-    protected SharedClassLoader classLoader;
+    protected final SharedClassLoader classLoader;
+    protected final Environment env;
     protected boolean isStarted;
     protected File home;
-    protected Environment env;
     protected List<File> classPath;
     protected boolean scanForNestedJARs = true; // by default true
 
