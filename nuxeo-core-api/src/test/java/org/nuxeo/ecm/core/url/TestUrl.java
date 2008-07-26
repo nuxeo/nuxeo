@@ -1,9 +1,7 @@
 package org.nuxeo.ecm.core.url;
 
-import java.net.URL;
-import java.net.MalformedURLException;
 import java.io.IOException;
-
+import java.net.URL;
 import junit.framework.TestCase;
 
 public class TestUrl extends TestCase {

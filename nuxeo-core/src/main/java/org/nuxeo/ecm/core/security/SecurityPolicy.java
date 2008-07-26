@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.model.Document;
  * Interface for pluggable core security policy.
  *
  * @author Anahide Tchertchian
- *
  */
 public interface SecurityPolicy {
 
@@ -42,7 +41,7 @@ public interface SecurityPolicy {
      * @param permission permission to check
      * @param resolvedPermissions permissions or groups of permissions
      *            containing permission
-     * @param principalsToCheck principals (groups) to check for principal
+     * @param additionalPrincipals
      * @return access: true, false, or nothing. When nothing is returned,
      *         following policies or default core security are applied.
      * @throws SecurityException

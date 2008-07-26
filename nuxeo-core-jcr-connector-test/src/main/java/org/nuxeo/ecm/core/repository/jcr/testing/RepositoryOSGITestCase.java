@@ -109,7 +109,7 @@ public abstract class RepositoryOSGITestCase extends NXRuntimeTestCase {
         }
     }
 
-    public void releaseCoreSession() throws ClientException {
+    public void releaseCoreSession() {
         if (coreSession != null) {
             CoreInstance.getInstance().close(coreSession);
             coreSession = null;

@@ -102,7 +102,6 @@ final class DocsQueryProviderFactory {
         };
     }
 
-    @SuppressWarnings("unchecked")
     private DocsQueryProvider getDQPQueryFtsResult(String keywords, String startingPath)
             throws ClientException {
 

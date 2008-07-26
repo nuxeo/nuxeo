@@ -171,11 +171,12 @@ public final class NuxeoClient {
                     streamingService.startManager();
                 }
             }
-            // ------------------------------------------------------------------------------
-             // ------------------------------ FIXME TODO workaround for remote services -------------------------------
+            // ------------------------------------------------------------------------
+            // ------------------------------ FIXME TODO workaround for remote services
             schemaRemotingWorkaround(locator.getHost());
             // ------------------------------------------------------------------------------
-            // ---------------- workaround for client login configuration - we need to make it not multi threaded - TODO put an option for this in NuxeoClient
+            // workaround for client login configuration - we need to make it not multithreaded
+            // TODO put an option for this in NuxeoClient
             if (!multiThreadedLogin) {
                 LoginService ls = Framework.getService(LoginService.class);
                 SecurityDomain sysDomain = ls.getSecurityDomain(LoginComponent.SYSTEM_LOGIN);

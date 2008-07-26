@@ -25,7 +25,6 @@ import java.util.Properties;
 import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.Session;
 import javax.jms.Topic;
 import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
@@ -45,8 +44,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class CoreEventPublisher {
 
-    public final static String XA_TOPIC_CONNECTION_FACTORY = "JmsNX";
-    public final static String CORE_EVENTS_TOPIC = "topic/NXCoreEvents";
+    public static final String XA_TOPIC_CONNECTION_FACTORY = "JmsNX";
+    public static final String CORE_EVENTS_TOPIC = "topic/NXCoreEvents";
 
     private static final Log log = LogFactory.getLog(CoreEventPublisher.class);
 

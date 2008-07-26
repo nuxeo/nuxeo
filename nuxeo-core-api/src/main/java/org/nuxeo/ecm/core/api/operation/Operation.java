@@ -169,10 +169,10 @@ public abstract class Operation<T> implements Serializable {
         return name;
     }
 
-    /**
-     * TODO impl this?
-     * @param args
-     */
+//    /**
+//     * TODO impl this?
+//     * @param args
+//     */
 //    public void setArguments(Object ... args) {
 //
 //    }

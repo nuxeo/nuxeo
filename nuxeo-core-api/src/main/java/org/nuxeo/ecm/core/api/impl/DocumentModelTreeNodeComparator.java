@@ -19,9 +19,9 @@
 
 package org.nuxeo.ecm.core.api.impl;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Map;
-import java.io.Serializable;
 
 import org.nuxeo.common.utils.Path;
 
@@ -32,6 +32,8 @@ import org.nuxeo.common.utils.Path;
  */
 public class DocumentModelTreeNodeComparator implements
         Comparator<DocumentModelTreeNodeImpl>, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     protected final Map<String, String> titles;
 

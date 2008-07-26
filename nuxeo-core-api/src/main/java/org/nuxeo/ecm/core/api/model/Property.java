@@ -76,17 +76,20 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * <ul>
  * <li> Root Property (or <code>DocumentPart</code>) - this is a special property that is bound to a schema instead of a field
  * And it is the root of the property tree.
- * <li> Complex Properties - container properties that are bound to complex field types that can be represented as java <code>Map</code> objects.
+ * <li> Complex Properties - container properties that are bound to complex field types
+ * that can be represented as java <code>Map</code> objects.
  * These properties contains a set of schema defined properties.
  * You cannot add new child properties. You can only modify existing child  properties.
  * Complex property values are expressed as java <code>Map</code> objects.
  *      <ul>
- *          <li> Structured Properties - this is a special case of complex properties. The difference is that structured property values
+ *          <li> Structured Properties - this is a special case of complex properties.
+ *          The difference is that structured property values
  *          are expressed as <i>scalar</i> java objects instead of java maps.
  *          By scalar java objects we mean any well structured object which is not a container
  *          like a <code>Map</code> or a <code>Collection</code>.
- *          These objects are usually as scalar values - it doesn't make sense for example to set only some parts of that objects
- *          without creating the object completely. An example os usage are Blob properties that use {@link Blob} values.
+ *          These objects are usually as scalar values - it doesn't make sense for example
+ *          to set only some parts of that objects without creating the object completely.
+ *          An example of usage are Blob properties that use {@link Blob} values.
  *      </ul>
  * <li> List Properties - container properties that are bound to list field types.
  * <li> Scalar Properties - atomic properties that are bound to scalar field types and that are using as values
@@ -133,9 +136,11 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * <p>
  * The combinations not listed above are not permitted.
  * <p>
- * In case of list items the REMOVED flag is not used since the property will be physically removed from the property tree
+ * In case of list items, the REMOVED flag is not used since the property will be physically removed
+ * from the property tree.
  * <p>
- * Also when the dirty flag of a children property changes its parent is informed to update its MODIFIED flag if needed.
+ * Also when the dirty flag of a children property changes, its parent is informed to update
+ * its MODIFIED flag if needed.
  * This way a modification on a children property is propagated to parents in the form of a MODIFIED flag.
  * <p>
  * <p>
@@ -154,7 +159,6 @@ import org.nuxeo.ecm.core.schema.types.Type;
  * @see <code>TestPropertyModel</code> for usage of property API
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface Property extends Cloneable, Serializable, Iterable<Property> {
 
@@ -575,7 +579,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * This method applies only for list item properties.
      * The given index includes removed properties.
      *
-     * @param property the move it before this property
+     * @param index the position in the parent container to move this property
      * @throws UnsupportedOperationException if the operation is not supported by the target property
      */
     void moveTo(int index);
@@ -619,7 +623,6 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      *
      * @param path the path to the property
      * @return the property value
-     * @throws PropertyNotFoundException
      */
     Serializable getValue(String path) throws PropertyException;
 
@@ -635,7 +638,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * @param type the class of the value
      * @param path the java path of the property value
      * @return the value
-     * @throws PropertyNotFoundException
+     * @throws PropertyException
      */
     <T> T getValue(Class<T> type, String path)  throws PropertyException;
 
@@ -646,8 +649,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      *
      * @param path the property path
      * @param value the value
-     * @throws PropertyNotFoundException if the named peroperty doesn't exists
-     * @throws InvalidPropertyValueException if the given value cannot be normalized
+     * @throws PropertyException
      */
     void setValue(String path, Object value) throws PropertyException;
 
@@ -661,8 +663,7 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * <p>
      * If the given value is already normalized it will be returned back.
      *
-     * @param value the value to normalize acordying to the property type
-     *
+     * @param value the value to normalize according to the property type
      * @return the normalized value
      */
     Serializable normalize(Object value) throws PropertyConversionException;

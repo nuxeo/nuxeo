@@ -114,8 +114,6 @@ public interface Property {
      * @param name the property name
      * @return the property
      * @throws DocumentException
-     * @throws NoSuchPropertyException if a property with that name doesn't
-     *             exist in this composite property schema
      * @throws UnsupportedOperationException if this is not a composite property
      */
     Property getProperty(String name) throws DocumentException;

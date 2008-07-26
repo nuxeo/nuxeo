@@ -61,8 +61,6 @@ public class XPathBuilder implements QueryConstants {
     /**
      * Builds the element part of the XPATH query. Example:
      * {@code element(*, ecmdt:Document)} for {@code SELECT * FROM Document}.
-     *
-     * @param builder
      */
     static void buildElementPart(XPathQuery xq, SQLQuery query) {
         if (query.from.elements.size() != 1) {

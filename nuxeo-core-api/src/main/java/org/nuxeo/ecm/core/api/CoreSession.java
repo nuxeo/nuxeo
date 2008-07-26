@@ -916,7 +916,6 @@ public interface CoreSession {
      * Checks out a versioned document.
      *
      * @param docRef the ref to the document
-     * @return the next displayed page
      * @throws ClientException
      */
     void checkOut(DocumentRef docRef) throws ClientException;
@@ -926,7 +925,6 @@ public interface CoreSession {
      *
      * @param docRef the ref to the document
      * @param version the version descriptor
-     * @return the next displayed page
      * @throws ClientException
      */
     void checkIn(DocumentRef docRef, VersionModel version)

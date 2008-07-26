@@ -23,8 +23,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.naming.OperationNotSupportedException;
-
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchPropertyException;
@@ -126,8 +124,7 @@ public class TestProperty extends RepositoryTestCase {
         assertEquals("Stefanescu", name.getProperty("LastName").getValue());
     }
 
-    public void testGetProperties()
-            throws DocumentException, OperationNotSupportedException {
+    public void testGetProperties() throws DocumentException {
         name.getProperty("FirstName").setValue("Bogdan");
         name.getProperty("LastName").setValue("Stefanescu");
 
@@ -148,8 +145,7 @@ public class TestProperty extends RepositoryTestCase {
     }
 
     @SuppressWarnings("unchecked")
-    public void testExportMap()
-            throws DocumentException, OperationNotSupportedException {
+    public void testExportMap() throws DocumentException{
         doc.addChild("subdoc", "Book");
 
         name.getProperty("FirstName").setValue("Bogdan");
@@ -171,8 +167,7 @@ public class TestProperty extends RepositoryTestCase {
         assertEquals("Stefanescu", aname.get("LastName").toString());
     }
 
-    public void testImportMap()
-            throws DocumentException, OperationNotSupportedException {
+    public void testImportMap() throws DocumentException {
         Map<String, String> nameMap = new HashMap<String, String>();
         nameMap.put("FirstName", "NewBogdan");
         nameMap.put("LastName", "NewStefanescu");

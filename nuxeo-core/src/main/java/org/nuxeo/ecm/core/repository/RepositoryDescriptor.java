@@ -109,9 +109,6 @@ public class RepositoryDescriptor {
         }
     }
 
-    /**
-     * @param config the config to set
-     */
     public void setConfigurationFile(String config) {
         this.config = config;
     }
