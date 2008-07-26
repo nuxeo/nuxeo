@@ -58,8 +58,6 @@ public interface ComponentManager {
      * the name given in RegistrationInfo.
      *
      * @param ri the registration info
-     * @return true if the object should be added to the main registry, false
-     *         otherwise
      */
     void register(RegistrationInfo ri);
 
@@ -71,8 +69,6 @@ public interface ComponentManager {
      * If true is returned, the object will be removed from the main registry.
      *
      * @param ri the registration info
-     * @return true if the object should be removed from the main registry,
-     *         false otherwise
      */
     void unregister(RegistrationInfo ri);
 
@@ -80,7 +76,6 @@ public interface ComponentManager {
      * Unregisters a component given its name.
      *
      * @param name the component name
-     * @throws Exception if any error occurs
      */
     void unregister(ComponentName name);
 

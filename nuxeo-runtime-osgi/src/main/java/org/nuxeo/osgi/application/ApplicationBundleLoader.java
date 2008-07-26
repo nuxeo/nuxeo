@@ -235,11 +235,11 @@ public class ApplicationBundleLoader {
         app.installAll(bundles);
     }
 
-    protected void aboutToStartRuntime() throws Exception {
+    protected void aboutToStartRuntime() {
         // do nothing
     }
 
-    protected void runtimeStarted() throws Exception  {
+    protected void runtimeStarted() {
         // do nothing
     }
 

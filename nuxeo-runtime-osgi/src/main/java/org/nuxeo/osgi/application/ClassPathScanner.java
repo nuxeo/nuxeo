@@ -52,14 +52,13 @@ public class ClassPathScanner {
     }
 
     /**
+     * FIXME: this javadoc is not correct.
+     * <p>
      * Scans the given class path and put found OSGi bundles in bundles, regular
      * JARs in jars and append any nested jar or bundle into the given class
      * loader.
      *
      * @param classPath
-     * @param bundles
-     * @param jars
-     * @param classLoader
      */
     public void scan(List<File> classPath) {
         for (File file : classPath) {
@@ -117,6 +116,7 @@ public class ClassPathScanner {
     }
 
     public static interface Callback {
+
         /**
          * A nested JAR was found on the class path. Usually a callback should
          * handle this by adding the JAR to a class loader
@@ -127,8 +127,6 @@ public class ClassPathScanner {
          * The callback may return null to skip nested JAR extraction
          *
          * @param bf the JAR found
-         * @return the folder to be used to extract JARs or null to skip
-         *         extraction
          * @throws IOException
          */
         void handleNestedJar(BundleFile bf) throws IOException;
@@ -165,6 +163,7 @@ public class ClassPathScanner {
          * @throws IOException
          */
         File handleBundle(BundleFile bf) throws IOException;
+
     }
 
 }

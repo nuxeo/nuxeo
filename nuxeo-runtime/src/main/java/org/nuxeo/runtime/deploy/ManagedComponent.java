@@ -62,7 +62,10 @@ public class ManagedComponent extends DefaultComponent {
                 if (mgr != null) {
                     mgr.registerContribution(c);
                 } else {
-                    log.warn("Unable to register contribution: "+c.getContributionId()+" for extension point "+c.getExtensionPoint()+". No manager registered.");
+                    log.warn("Unable to register contribution: "
+                            + c.getContributionId() + " for extension point "
+                            + c.getExtensionPoint()
+                            + ". No manager registered.");
                 }
             } else {
                 registerContribution(contrib, extension.getExtensionPoint(), extension.getComponent());
@@ -84,7 +87,10 @@ public class ManagedComponent extends DefaultComponent {
                 if (mgr != null) {
                     mgr.unregisterContribution(c);
                 } else {
-                    log.warn("Unable to unregister contribution: "+c.getContributionId()+" for extension point "+c.getExtensionPoint()+". No manager registered.");
+                    log.warn("Unable to unregister contribution: "
+                            + c.getContributionId() + " for extension point "
+                            + c.getExtensionPoint()
+                            + ". No manager registered.");
                 }
             } else {
                 unregisterContribution(contrib, extension.getExtensionPoint(), extension.getComponent());

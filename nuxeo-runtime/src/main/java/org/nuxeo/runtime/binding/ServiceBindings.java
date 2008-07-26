@@ -51,11 +51,10 @@ import org.osgi.framework.BundleListener;
  * <code>nxservice/interfaceName/local</code>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ServiceBindings implements BundleListener {
 
-    public final static Log log = LogFactory.getLog(ServiceBindings.class);
+    public static final Log log = LogFactory.getLog(ServiceBindings.class);
 
     // static bindings are used to force the binding to an explicit implementation
     // and it is binding the interface only if it is declared by a bundle in the system
@@ -74,13 +73,14 @@ public class ServiceBindings implements BundleListener {
     public ServiceBindings(BundleContext bundleContext, InitialContext jndContext) {
         this.bundleContext = bundleContext;
         this.bundleContext.addBundleListener(this);
-        this.staticBindings = new Properties();
-        this.bindings = new Properties();
+        staticBindings = new Properties();
+        bindings = new Properties();
         loadStaticBindings();
     }
 
     /**
      * Lazy get the initial context.
+     * <p>
      * The JNDI service may be started after this one so we need to lazy get the initial context.
      * This can be solved by splitting the runtime in 2:  core and server
      * @return
@@ -117,9 +117,10 @@ public class ServiceBindings implements BundleListener {
     }
 
     /**
-     * Static bindings can be used to override bindings deployed from JARs
+     * Static bindings can be used to override bindings deployed from JARs.
      * <p>
-     * The static bindings should be put in the configuration directory in the file <code>service.bindings</code>
+     * The static bindings should be put in the configuration directory in the
+     * file <code>service.bindings</code>.
      */
     protected void loadStaticBindings() {
         Environment env = Environment.getDefault();
@@ -204,7 +205,7 @@ public class ServiceBindings implements BundleListener {
     }
 
     /**
-     * TODO XXX this method is working only on jboss
+     * TODO XXX this method is working only on jboss.
      * @param beanClass
      * @return
      */
@@ -220,7 +221,7 @@ public class ServiceBindings implements BundleListener {
     }
 
     /**
-     * TODO XXX this method is working only on jboss
+     * TODO XXX this method is working only on jboss.
      * @param beanClass
      * @return
      */
@@ -250,25 +251,27 @@ public class ServiceBindings implements BundleListener {
         return null;
     }
 
-    public static void createAlias(InitialContext ctx, String existingName, String aliasName) throws NamingException {
+    public static void createAlias(InitialContext ctx, String existingName,
+            String aliasName) throws NamingException {
         LinkRef link = new LinkRef(existingName);
         Context aliasCtx = ctx;
         Name name = ctx.getNameParser("").parse(aliasName);
-        int len = name.size()-1;
+        int len = name.size() - 1;
         String atom = name.get(len);
-        for(int i = 0; i < len; i ++) {
-           String comp = name.get(i);
-           try {
-              aliasCtx = (Context) aliasCtx.lookup(comp);
-           } catch(NameNotFoundException e) {
-              aliasCtx = aliasCtx.createSubcontext(comp);
-           }
+        for (int i = 0; i < len; i++) {
+            String comp = name.get(i);
+            try {
+                aliasCtx = (Context) aliasCtx.lookup(comp);
+            } catch (NameNotFoundException e) {
+                aliasCtx = aliasCtx.createSubcontext(comp);
+            }
         }
 
         aliasCtx.rebind(atom, link);
 
         if (log.isDebugEnabled()) {
-            log.debug("Created JNDI link [" + aliasName + "] pointing to ["+existingName+"]");
+            log.debug("Created JNDI link [" + aliasName + "] pointing to ["
+                    + existingName + "]");
         }
     }
 

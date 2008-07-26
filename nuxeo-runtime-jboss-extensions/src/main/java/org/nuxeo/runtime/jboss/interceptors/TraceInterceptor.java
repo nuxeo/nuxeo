@@ -19,7 +19,6 @@
 
 package org.nuxeo.runtime.jboss.interceptors;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
