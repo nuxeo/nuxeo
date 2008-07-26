@@ -70,7 +70,7 @@ public class Environment {
 
 
     public Environment(File home) {
-        this (home, null);
+        this(home, null);
     }
 
     public Environment(File home, Properties properties) {
@@ -103,11 +103,11 @@ public class Environment {
     }
 
     public void setHostApplicationName(String name) {
-        this.hostAppName = name;
+        hostAppName = name;
     }
 
     public void setHostApplicationVersion(String version) {
-        this.hostAppVersion = version;
+        hostAppVersion = version;
     }
 
     public File getTemp() {
