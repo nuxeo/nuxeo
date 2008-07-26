@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webengine.login;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashSet;
+import java.util.Set;
 
 import javax.security.auth.Subject;
 import javax.servlet.http.HttpSession;
@@ -97,9 +98,9 @@ public class UserSession implements Serializable, HttpSessionBindingListener {
     public UserSession(Principal principal, Object credentials) {
         this.principal = principal;
         this.credentials = credentials;
-        HashSet<Principal> principals = new HashSet<Principal>();
-        HashSet<Object> publicCredentials = new HashSet<Object>();
-        HashSet<Object> privateCredentials = new HashSet<Object>();
+        Set<Principal> principals = new HashSet<Principal>();
+        Set<Object> publicCredentials = new HashSet<Object>();
+        Set<Object> privateCredentials = new HashSet<Object>();
         principals.add(principal);
         publicCredentials.add(credentials);
         this.subject = new Subject(true, principals, publicCredentials, privateCredentials);
@@ -114,8 +115,7 @@ public class UserSession implements Serializable, HttpSessionBindingListener {
     }
 
     /**
-     * Whether or not this is the shared anonymous session
-     * @return
+     * Whether or not this is the shared anonymous session.
      */
     public boolean isAnonymous() {
         return this == anonymous;

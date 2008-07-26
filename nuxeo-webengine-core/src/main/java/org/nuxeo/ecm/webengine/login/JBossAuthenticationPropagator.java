@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
  */
 public class JBossAuthenticationPropagator implements AuthenticationPropagator {
 
-    protected static HashMap<String,String> NULL_PARAMS = new HashMap<String, String>();
+    protected static HashMap<String, String> NULL_PARAMS = new HashMap<String, String>();
 
     private Method method = null;
 

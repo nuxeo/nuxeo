@@ -29,9 +29,8 @@ import java.util.List;
  */
 public class Path implements Serializable {
 
-    private static final long serialVersionUID = 5008948361159403627L;
-
     public static final char SEP = '/';
+
     protected static final int HAS_LEADING = 1;
     protected static final int HAS_TRAILING = 2;
     protected static final int HASH_MASK = ~HAS_TRAILING;
@@ -39,7 +38,10 @@ public class Path implements Serializable {
     protected static final int USED_BITS = 2;
     protected static final String[] NO_SEGMENTS = new String[0];
 
+    private static final long serialVersionUID = 5008948361159403627L;
+
     public static final Path EMPTY = new Path(new String[0], 0) {
+        private static final long serialVersionUID = -1731993368728652448L;
         @Override
         public String toString() {
             return "";
@@ -47,6 +49,7 @@ public class Path implements Serializable {
     };
 
     public static final Path ROOT = new Path(new String[0], 1) {
+        private static final long serialVersionUID = -6689687769363666578L;
         @Override
         public String toString() {
             return "/";
@@ -55,6 +58,7 @@ public class Path implements Serializable {
 
     protected String[] segments;
     protected int flags;
+
 
     public Path(String path) {
         init(path);
@@ -78,7 +82,8 @@ public class Path implements Serializable {
         flags = path.flags;
     }
 
-    protected void init(String path) {
+
+    private void init(String path) {
         List<String> segments = new ArrayList<String>();
         int slash = 0;
         int off = 0;

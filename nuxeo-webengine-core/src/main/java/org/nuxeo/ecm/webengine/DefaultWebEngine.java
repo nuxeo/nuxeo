@@ -131,7 +131,7 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         }
         // resolve application
         WebApplicationMapping mapping = getApplicationMapping(path);
-        WebApplication app = null;
+        WebApplication app;
         if (mapping != null) {
             // get the application
             app = getApplication(mapping.webApp);

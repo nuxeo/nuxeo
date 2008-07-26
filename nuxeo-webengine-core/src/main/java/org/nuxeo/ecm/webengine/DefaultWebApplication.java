@@ -171,7 +171,6 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
 
     /**
      * Used by tests.
-     * @param defaultPage the defaultPage to set.
      */
     public void setDefaultPage(String defaultPage) {
         this.defaultPage = defaultPage;

@@ -73,7 +73,7 @@ public class DirectoryStack {
     }
 
     public File[] listFiles() {
-        ArrayList<File> result =new ArrayList<File>();
+        List<File> result = new ArrayList<File>();
         for (Entry entry : dirs) {
             File[] files = entry.file.listFiles();
             result.addAll(Arrays.asList(files));
@@ -82,7 +82,7 @@ public class DirectoryStack {
     }
 
     public File[] listFiles(FileFilter filter) {
-        ArrayList<File> result =new ArrayList<File>();
+        List<File> result = new ArrayList<File>();
         for (Entry entry : dirs) {
             File[] files = entry.file.listFiles(filter);
             result.addAll(Arrays.asList(files));

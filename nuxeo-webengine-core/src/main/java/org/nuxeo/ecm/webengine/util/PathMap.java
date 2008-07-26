@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webengine.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.common.utils.Path;
 
@@ -91,7 +92,7 @@ public class PathMap<T> {
     }
 
     public static class Entry<T> {
-        HashMap<String, Entry<T>> entries;
+        Map<String, Entry<T>> entries;
         T value;
 
         public Entry<T> lookup(String[] segments, boolean exactMatch) {
@@ -118,7 +119,7 @@ public class PathMap<T> {
         public void put(String[] segments, T value) {
             Entry<T> entry = this;
             for (String segment : segments) {
-                Entry<T> newEntry = null;
+                Entry<T> newEntry;
                 if (entry.entries == null) {
                     entry.entries = new HashMap<String, Entry<T>>();
                     newEntry = new Entry<T>();
