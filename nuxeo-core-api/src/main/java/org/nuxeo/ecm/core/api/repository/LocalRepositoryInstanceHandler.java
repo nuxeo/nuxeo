@@ -35,15 +35,15 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class LocalRepositoryInstanceHandler extends RepositoryInstanceHandler {
 
-    protected Principal principal;
+    protected final Principal principal;
 
     public LocalRepositoryInstanceHandler(Repository repository, NuxeoPrincipal principal) {
-        super (repository);
+        super(repository);
         this.principal = principal;
     }
 
     public LocalRepositoryInstanceHandler(Repository repository, String username) {
-        super (repository);
+        super(repository);
         this.principal = new UserPrincipal(username);
     }
 
@@ -55,7 +55,7 @@ public class LocalRepositoryInstanceHandler extends RepositoryInstanceHandler {
             repositoryUri = repository.getName();
         }
         HashMap<String, Serializable> ctx = new HashMap<String, Serializable>();
-        ctx.put("principal", (NuxeoPrincipal)principal);
+        ctx.put("principal", (NuxeoPrincipal) principal);
         String sid = session.connect(repositoryUri, ctx);
         // register session on local JVM so it can be used later by doc models
         CoreInstance.getInstance().registerSession(sid, proxy);

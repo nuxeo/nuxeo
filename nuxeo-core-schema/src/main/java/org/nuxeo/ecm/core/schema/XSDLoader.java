@@ -91,7 +91,7 @@ public class XSDLoader {
     // TODO: this type of loading schemas must use a new parser each time
     // a new schema should be loaded.
     // When reusing the parser the SchemaSet is collecting all the schemas.
-    public static final XSSchema getUserSchema(XSSchemaSet schemaSet) {
+    public static XSSchema getUserSchema(XSSchemaSet schemaSet) {
         Collection<XSSchema> schemas = schemaSet.getSchemas();
         for (XSSchema schema : schemas) {
             String ns = schema.getTargetNamespace();

@@ -33,12 +33,10 @@ public class SimpleDocumentModelIterator implements DocumentModelIterator {
 
     private static final long serialVersionUID = 3742039011948504441L;
 
-    protected Iterator<DocumentModel> iterator;
-    protected List<DocumentModel> list;
+    protected final Iterator<DocumentModel> iterator;
+    protected final List<DocumentModel> list;
 
-    /**
-     *
-     */
+
     public SimpleDocumentModelIterator(List<DocumentModel> list) {
         this.iterator = list.iterator();
         this.list = list;

@@ -337,8 +337,7 @@ public class XPathBuilder implements QueryConstants {
         buf.append("T00:00:00.000Z')");
     }
 
-    static void between(XPathQuery xq, Operand lvalue, Operand rvalue)
-            throws QueryException {
+    static void between(XPathQuery xq, Operand lvalue, Operand rvalue) {
         String name = ((Reference) lvalue).name;
         xq.predicate.append(" (").append(name).append(" >= ");
         LiteralList list = (LiteralList) rvalue;

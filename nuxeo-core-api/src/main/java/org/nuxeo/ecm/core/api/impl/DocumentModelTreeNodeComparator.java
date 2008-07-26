@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.api.impl;
 
 import java.util.Comparator;
 import java.util.Map;
+import java.io.Serializable;
 
 import org.nuxeo.common.utils.Path;
 
@@ -30,9 +31,9 @@ import org.nuxeo.common.utils.Path;
  * @author bdelbosc
  */
 public class DocumentModelTreeNodeComparator implements
-        Comparator<DocumentModelTreeNodeImpl> {
+        Comparator<DocumentModelTreeNodeImpl>, Serializable {
 
-    protected Map<String, String> titles;
+    protected final Map<String, String> titles;
 
     /**
      * Expecting a path/title mapping.
