@@ -43,7 +43,7 @@ import org.osgi.framework.FrameworkEvent;
  */
 public class StandaloneApplication extends OSGiAdapter {
 
-    public final static String MAIN_TASK = "org.nuxeo.osgi.application.main.task";
+    public static final String MAIN_TASK = "org.nuxeo.osgi.application.main.task";
 
     private static StandaloneApplication instance;
     private static CommandLineOptions options; // TODO should be remove

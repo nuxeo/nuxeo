@@ -26,7 +26,6 @@ import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.NCSARequestLog;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
-import org.mortbay.jetty.handler.DefaultHandler;
 import org.mortbay.jetty.handler.RequestLogHandler;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.mortbay.xml.XmlConfiguration;
@@ -44,16 +43,14 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class JettyComponent extends DefaultComponent {
 
-    public final static ComponentName NAME = new ComponentName("org.nuxeo.runtime.server");
-
-    public final static String XP_WEB_APP = "webapp";
-    public final static String XP_DATA_SOURCE = "datasource";
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.runtime.server");
+    public static final String XP_WEB_APP = "webapp";
+    public static final String XP_DATA_SOURCE = "datasource";
 
     protected Server server;
     protected ContextHandlerCollection contexts = new ContextHandlerCollection();
     protected File config;
     protected File log;
-
 
     public Server getServer() {
         return server;

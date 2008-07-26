@@ -117,8 +117,9 @@ public class FileChangeNotifier {
         public long lastModified;
 
         FileEntry(File file) throws IOException {
-            this (null, file);
+            this(null, file);
         }
+
         FileEntry(String id, File file) throws IOException {
             this.file = file.getCanonicalFile();
             lastModified = file.lastModified();

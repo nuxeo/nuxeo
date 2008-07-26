@@ -62,7 +62,7 @@ public class BundleImpl implements Bundle {
     protected double startupTime;
 
     public BundleImpl(OSGiAdapter osgi, BundleFile file, ClassLoader loader) {
-        this (osgi, file, loader, false);
+        this(osgi, file, loader, false);
     }
 
     public BundleImpl(OSGiAdapter osgi, BundleFile file, ClassLoader loader,

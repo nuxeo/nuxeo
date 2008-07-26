@@ -51,7 +51,7 @@ public class BundleWalker extends FileWalker.Visitor {
     private final Callback callback;
 
     public BundleWalker(Callback cb) {
-        this (cb, DEFAULT_PATTERNS);
+        this(cb, DEFAULT_PATTERNS);
     }
 
     public BundleWalker(Callback cb, String[] patterns) {

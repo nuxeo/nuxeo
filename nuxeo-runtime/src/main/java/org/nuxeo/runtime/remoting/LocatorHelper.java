@@ -29,17 +29,18 @@ import java.util.StringTokenizer;
 import org.jboss.remoting.InvokerLocator;
 
 /**
- * Helps to create locators for nuxeo runtime nodes
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Helps to create locators for nuxeo runtime nodes.
  *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class LocatorHelper {
 
+    public static final int DEFAULT_PORT = 62474;
     private static final String ANY = "0.0.0.0";
     private static final String SERVER_BIND_ADDRESS = "jboss.bind.address";
-    public final static int DEFAULT_PORT = 62474;
 
-    public final static InvokerLocator getLocator(String protocol, String host, int port, String path, Map parameters) {
+    public static final InvokerLocator getLocator(String protocol, String host,
+            int port, String path, Map parameters) {
         if (protocol == null) {
             protocol = "socket";
         }
@@ -55,29 +56,33 @@ public class LocatorHelper {
         return new InvokerLocator(protocol, host, port, path, parameters);
     }
 
-    public final static InvokerLocator getLocator(String protocol, String host, int port) {
+    public static final InvokerLocator getLocator(String protocol, String host, int port) {
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put(InvokerLocator.DATATYPE, "nuxeo");
         return new InvokerLocator(protocol, host, port, "/", parameters);
     }
 
-    public final static InvokerLocator getLocator(String host, int port) {
+    public static final InvokerLocator getLocator(String host, int port) {
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put(InvokerLocator.DATATYPE, "nuxeo");
         return new InvokerLocator("socket", host, port, "/", parameters);
     }
 
-    public final static InvokerLocator getLocator(String host) {
+    public static final InvokerLocator getLocator(String host) {
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put(InvokerLocator.DATATYPE, "nuxeo");
         return new InvokerLocator("socket", host, 62474, "/", parameters);
     }
 
     /**
-     * Constructs the object used to identify a remoting server via simple uri format string (e.g. socket://myhost:7000).
-     * Note: the uri passed may not always be the one returned via call to getLocatorURI() as may need to change if
-     * port not specified, host is 0.0.0.0, etc.  If need original uri that is passed to this constructor, need to
-     * call getOriginalURI().
+     * Constructs the object used to identify a remoting server via simple uri
+     * format string (e.g. socket://myhost:7000).
+     * <p>
+     * Note: the uri passed may not always be the one returned via call to
+     * getLocatorURI() as may need to change if port not specified, host is
+     * 0.0.0.0, etc. If need original uri that is passed to this constructor,
+     * need to call getOriginalURI().
+     *
      * @param uri
      * @throws MalformedURLException
      */

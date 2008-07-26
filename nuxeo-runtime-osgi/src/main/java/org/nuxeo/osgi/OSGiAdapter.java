@@ -66,7 +66,7 @@ public class OSGiAdapter {
 
 
     public OSGiAdapter(File workingDir) {
-        this (workingDir, new File(workingDir, "data"), new Properties());
+        this(workingDir, new File(workingDir, "data"), new Properties());
     }
 
     public OSGiAdapter(File workingDir, File dataDir, Properties properties) {

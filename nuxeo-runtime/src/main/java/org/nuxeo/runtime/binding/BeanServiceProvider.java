@@ -30,9 +30,9 @@ import javax.naming.NamingException;
  */
 public class BeanServiceProvider extends AbstractServiceProvider {
 
-    public final static String PREFIX = "nxservice";
-    public final static String REMOTE_SUFFIX = "remote";
-    public final static String LOCAL_SUFFIX = "local";
+    public static final String PREFIX = "nxservice";
+    public static final String REMOTE_SUFFIX = "remote";
+    public static final String LOCAL_SUFFIX = "local";
 
     protected Context ctx;
     protected boolean tryLocalFirst = true;
@@ -45,7 +45,7 @@ public class BeanServiceProvider extends AbstractServiceProvider {
      * @throws NamingException
      */
     public BeanServiceProvider() throws NamingException {
-        this (new InitialContext(), false);
+        this(new InitialContext(), false);
     }
 
     /**
@@ -54,7 +54,7 @@ public class BeanServiceProvider extends AbstractServiceProvider {
      * @throws NamingException
      */
     public BeanServiceProvider(InitialContext ctx) throws NamingException {
-        this (ctx, true);
+        this(ctx, true);
     }
 
     /**

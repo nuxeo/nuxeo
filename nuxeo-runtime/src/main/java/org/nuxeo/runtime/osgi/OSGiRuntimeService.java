@@ -367,13 +367,14 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
         } else if (location.startsWith("file:")) { // nuxeo osgi adapter
             try {
                 file = new File(new URI(location));
-            }catch (Exception e) {
+            } catch (Exception e) {
                 return null;
             }
-        } else { // may be a file path - this happens when using JarFileBundle (for ex. in nxshell)
+        } else { // may be a file path - this happens when using JarFileBundle
+                 // (for ex. in nxshell)
             try {
                 file = new File(location);
-            }catch (Exception e) {
+            } catch (Exception e) {
                 return null;
             }
         }

@@ -45,8 +45,6 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
     // of 'e' doesn't depends on it
     private final List<Entry<K, T>> resolved;
 
-
-
     public DependencyTree() {
         registry = new Hashtable<K, Entry<K, T>>();
         resolved = new Vector<Entry<K, T>>();
@@ -187,7 +185,6 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         return list;
     }
 
-
     public List<Entry<K, T>> getPendingEntries() {
         List<Entry<K, T>> result = new ArrayList<Entry<K, T>>();
         for (Map.Entry<K, Entry<K, T>> entry : registry.entrySet()) {
@@ -278,7 +275,6 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         }
     }
 
-
     protected void registered(Entry<K, T> entry) {
     }
 
@@ -291,9 +287,10 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
     protected void unresolved(Entry<K, T> entry) {
     }
 
-    public final static int PHANTOM = 0;
-    public final static int REGISTERED = 1;
-    public final static int RESOLVED = 3;
+    public static final int PHANTOM = 0;
+    public static final int REGISTERED = 1;
+    public static final int RESOLVED = 3;
+
     public static class Entry<K, T> {
         private final K key;
         private T object;
@@ -349,9 +346,6 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
             return dependsOnMe;
         }
 
-        /**
-         * @return Returns the waitsFor.
-         */
         public Set<Entry<K, T>> getWaitsFor() {
             return waitsFor;
         }
@@ -360,9 +354,6 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
             return object;
         }
 
-        /**
-         * @return Returns the key.
-         */
         public K getKey() {
             return key;
         }

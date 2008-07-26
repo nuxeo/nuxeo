@@ -103,9 +103,9 @@ public class Main {
         private String loaderName;
 
         RootClassLoader(ClassLoader parent, Class<?> loaderClass) throws ClassNotFoundException {
-            super (parent);
+            super(parent);
             this.loaderClass = loaderClass;
-            this.loaderName = loaderClass.getName();
+            loaderName = loaderClass.getName();
         }
 
         @Override

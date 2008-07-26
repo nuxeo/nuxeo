@@ -29,15 +29,15 @@ import java.net.URLClassLoader;
 public class SharedClassLoader extends URLClassLoader {
 
     public SharedClassLoader(ClassLoader parent) {
-        this (new URL[0], parent);
+        this(new URL[0], parent);
     }
 
     public SharedClassLoader(URL[] urls) {
-        this (urls, getSystemClassLoader());
+        this(urls, getSystemClassLoader());
     }
 
     public SharedClassLoader(URL[] urls, ClassLoader parent) {
-        super (urls, parent);
+        super(urls, parent);
     }
 
     @Override

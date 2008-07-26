@@ -126,7 +126,7 @@ public class MulticastDetector<T> {
 
     public Peer<T>[] getPeers() {
         synchronized (peers) {
-            return (Peer<T>[]) peers.values().toArray(new Peer[peers.size()]);
+            return peers.values().toArray(new Peer[peers.size()]);
         }
     }
 
@@ -159,7 +159,7 @@ public class MulticastDetector<T> {
         private final Object runLock = new Object();
 
         HeartBeatDetection() {
-            super ("Nuxeo.HeartBeatDetection");
+            super("Nuxeo.HeartBeatDetection");
         }
 
         public void cancel() {
