@@ -65,9 +65,6 @@ public class TransporterServer {
         connector.addInvocationHandler(subsystem, handler);
     }
 
-    /**
-     * @return the connector.
-     */
     public Connector getConnector() {
         return connector;
     }

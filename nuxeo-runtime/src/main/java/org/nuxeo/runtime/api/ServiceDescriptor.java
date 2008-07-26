@@ -108,9 +108,6 @@ public class ServiceDescriptor implements Serializable {
         this.group = ServiceManager.getInstance().getOrCreateGroup(group);
     }
 
-    /**
-     * @return the group.
-     */
     public ServiceGroup getGroup() {
         return group;
     }
@@ -119,23 +116,14 @@ public class ServiceDescriptor implements Serializable {
         return group.getServer();
     }
 
-    /**
-     * @return the name.
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name the name to set.
-     */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return the className.
-     */
     public String getServiceClassName() {
         return serviceClassName;
     }
@@ -162,9 +150,6 @@ public class ServiceDescriptor implements Serializable {
         return name != null ? serviceClassName + '#' + name : serviceClassName;
     }
 
-    /**
-     * @return the locator.
-     */
     public String getLocator() {
         return locator == null ? locatorPattern : locator;
     }

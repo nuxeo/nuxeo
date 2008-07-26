@@ -86,9 +86,6 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         }
     }
 
-    /**
-     * @return the warnings.
-     */
     public List<String> getWarnings() {
         return warnings;
     }

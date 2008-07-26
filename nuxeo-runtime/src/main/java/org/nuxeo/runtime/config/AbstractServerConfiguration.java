@@ -87,16 +87,10 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
         return name + ' ' + version;
     }
 
-    /**
-     * @return the properties.
-     */
     public Properties getProperties() {
         return properties;
     }
 
-    /**
-     * @param properties the properties to set.
-     */
     public void setProperties(Properties properties) {
         this.properties = properties;
     }
@@ -140,9 +134,6 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
         return jndiProperties;
     }
 
-    /**
-     * @param jndiProperties the jndiProperties to set.
-     */
     public void setJndiProperties(Properties jndiProperties) {
         this.jndiProperties = jndiProperties;
     }

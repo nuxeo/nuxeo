@@ -56,51 +56,30 @@ public class ApplicationBundleLoader {
         this.useCache = useCache;
     }
 
-    /**
-     * @param scanForNestedJARs the scanForNestedJARs to set.
-     */
     public void setScanForNestedJARs(boolean scanForNestedJARs) {
         this.scanForNestedJARs = scanForNestedJARs;
     }
 
-    /**
-     * @return the scanForNestedJARs.
-     */
     public boolean getScanForNestedJARs() {
         return scanForNestedJARs;
     }
 
-    /**
-     * @param extractNestedJARs the extractNestedJARs to set.
-     */
     public void setExtractNestedJARs(boolean extractNestedJARs) {
         this.extractNestedJARs = extractNestedJARs;
     }
 
-    /**
-     * @return the extractNestedJARs.
-     */
     public boolean getExtractNestedJARs() {
         return extractNestedJARs;
     }
 
-    /**
-     * @param useCache the useCache to set.
-     */
     public void setUseCache(boolean useCache) {
         this.useCache = useCache;
     }
 
-    /**
-     * @return the useCache.
-     */
     public boolean getUseCache() {
         return useCache;
     }
 
-    /**
-     * @return the bundleLoader.
-     */
     public StandaloneBundleLoader getBundleLoader() {
         return bundleLoader;
     }
@@ -110,7 +89,6 @@ public class ApplicationBundleLoader {
     }
 
     public ClassLoader loadBundles(List<File> classPath) throws Exception {
-
         // create the standalone loader
         bundleLoader = new StandaloneBundleLoader(app, app.getSharedClassLoader());
         Thread.currentThread().setContextClassLoader(bundleLoader.getSharedClassLoader());

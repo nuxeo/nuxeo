@@ -77,9 +77,6 @@ public class BundleImpl implements Bundle {
         state = UNINSTALLED;
     }
 
-    /**
-     * @return the deployment.
-     */
     public BundleFile getBundleFile() {
         return file;
     }

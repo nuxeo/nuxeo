@@ -56,23 +56,14 @@ public class ClassPath implements ClassPathScanner.Callback {
         nestedJARsDir.mkdirs();
     }
 
-    /**
-     * @return the bundles.
-     */
     public List<BundleFile> getBundles() {
         return bundles;
     }
 
-    /**
-     * @return the jars.
-     */
     public List<BundleFile> getJars() {
         return jars;
     }
 
-    /**
-     * @return the nestedJars.
-     */
     public List<BundleFile> getNestedJars() {
         return nestedJars;
     }

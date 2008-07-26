@@ -44,9 +44,6 @@ public abstract class JndiServiceLocator implements ServiceLocator {
         context = null;
     }
 
-    /**
-     * @return the context.
-     */
     public InitialContext getContext() {
         return context;
     }

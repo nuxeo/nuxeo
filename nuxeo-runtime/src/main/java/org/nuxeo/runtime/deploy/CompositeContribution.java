@@ -51,16 +51,10 @@ public abstract class CompositeContribution extends ExtensibleContribution {
         super.unresolve(mgr);
     }
 
-    /**
-     * @return the isEnabled.
-     */
     public boolean isContributionEnabled() {
         return isContributionEnabled;
     }
 
-    /**
-     * @param isEnabled the isEnabled to set.
-     */
     public void setContributionEnabled(boolean isEnabled) {
         isContributionEnabled = isEnabled;
     }
@@ -89,11 +83,10 @@ public abstract class CompositeContribution extends ExtensibleContribution {
 
     public CompositeContribution getRootComposite() {
         if (baseContribution instanceof CompositeContribution) {
-            return ((CompositeContribution)baseContribution).getRootComposite();
+            return ((CompositeContribution) baseContribution).getRootComposite();
         }
         return this;
     }
-
 
     @Override
     protected ExtensibleContribution getMergedContribution() throws Exception {

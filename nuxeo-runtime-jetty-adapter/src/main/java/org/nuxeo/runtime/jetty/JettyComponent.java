@@ -54,12 +54,11 @@ public class JettyComponent extends DefaultComponent {
     protected File config;
     protected File log;
 
-    /**
-     * @return the server.
-     */
+
     public Server getServer() {
         return server;
     }
+
     @Override
     public void activate(ComponentContext context) throws Exception {
         // apply bundled configuration

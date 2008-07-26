@@ -44,23 +44,14 @@ public abstract class ExtensibleContribution extends Contribution {
     protected abstract void copyOver(ExtensibleContribution contrib);
 
 
-    /**
-     * @return the baseContributionId.
-     */
     public String getBaseContributionId() {
         return baseContributionId;
     }
 
-    /**
-     * @param baseContribution the baseContribution to set.
-     */
     public void setBaseContribution(ExtensibleContribution baseContribution) {
         this.baseContribution = baseContribution;
     }
 
-    /**
-     * @param baseContributionId the baseContributionId to set.
-     */
     public void setBaseContributionId(String baseContributionId) {
         this.baseContributionId = baseContributionId;
     }
@@ -77,9 +68,6 @@ public abstract class ExtensibleContribution extends Contribution {
         baseContribution = null;
     }
 
-    /**
-     * @return the base.
-     */
     public ExtensibleContribution getBaseContribution() {
         return baseContribution;
     }
@@ -112,7 +100,6 @@ public abstract class ExtensibleContribution extends Contribution {
     public void uninstall(ManagedComponent comp) throws Exception {
         uninstall(comp, getMergedContribution());
     }
-
 
     /**
      * perform a deep clone to void sharing collection elements between clones

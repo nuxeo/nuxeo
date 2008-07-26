@@ -52,9 +52,6 @@ public class AutoConfigurationService {
         loginMgr = Framework.getLocalService(LoginService.class);
     }
 
-    /**
-     * @return the version.
-     */
     public Version getVersion() {
         return version;
     }

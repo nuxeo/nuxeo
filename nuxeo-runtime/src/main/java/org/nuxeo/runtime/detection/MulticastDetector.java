@@ -120,16 +120,13 @@ public class MulticastDetector<T> {
         processingTimer = null;
     }
 
-    /**
-     * @return the identity.
-     */
     public String getIdentity() {
         return identity;
     }
 
     public Peer<T>[] getPeers() {
         synchronized (peers) {
-            return (Peer<T>[])peers.values().toArray(new Peer[peers.size()]);
+            return (Peer<T>[]) peers.values().toArray(new Peer[peers.size()]);
         }
     }
 
@@ -156,7 +153,6 @@ public class MulticastDetector<T> {
             handler.peerOffline(peer);
         }
     }
-
 
     class HeartBeatDetection extends Thread {
         private boolean running = false;

@@ -38,16 +38,10 @@ public abstract class Contribution implements Cloneable {
     public abstract void uninstall(ManagedComponent comp, Contribution contrib) throws Exception;
 
 
-    /**
-     * @return the contributionId.
-     */
     public String getContributionId() {
         return contributionId;
     }
 
-    /**
-     * @param contributionId the contributionId to set.
-     */
     public void setContributionId(String contributionId) {
         this.contributionId = contributionId;
     }
@@ -68,24 +62,14 @@ public abstract class Contribution implements Cloneable {
         // do nothing
     }
 
-
-    /**
-     * @return the extension.
-     */
     public Extension getExtension() {
         return extension;
     }
 
-    /**
-     * @param extension the extension to set.
-     */
     public void setExtension(Extension extension) {
         this.extension = extension;
     }
 
-    /**
-     * @return the extensionPoint.
-     */
     public String getExtensionPoint() {
         return extension.getExtensionPoint();
     }
@@ -109,7 +93,8 @@ public abstract class Contribution implements Cloneable {
             return false;
         }
         if (obj instanceof Contribution) {
-            return this.getClass() == obj.getClass() && contributionId.equals(((Contribution)obj).contributionId);
+            return this.getClass() == obj.getClass()
+                    && contributionId.equals(((Contribution) obj).contributionId);
         }
         return false;
     }

@@ -51,9 +51,6 @@ public class StandaloneBundleLoader extends ApplicationLoader {
         loader = scl;
     }
 
-    /**
-     * @param loader the loader to set.
-     */
     public void setSharedClassLoader(SharedClassLoader loader) {
         this.loader = loader;
     }

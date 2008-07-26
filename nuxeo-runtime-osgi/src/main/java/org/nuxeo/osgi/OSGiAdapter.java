@@ -147,9 +147,6 @@ public class OSGiAdapter {
         return workingDir;
     }
 
-    /**
-     * @return the dataDir.
-     */
     public File getDataDir() {
         return dataDir;
     }

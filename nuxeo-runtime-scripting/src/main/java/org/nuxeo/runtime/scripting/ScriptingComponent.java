@@ -114,16 +114,10 @@ public class ScriptingComponent extends DefaultComponent implements ScriptingSer
         return scriptMgr;
     }
 
-    /**
-     * @param scriptDir the scriptDir to set.
-     */
     public void setScriptDir(File scriptDir) {
         this.scriptDir = scriptDir;
     }
 
-    /**
-     * @return the scriptDir.
-     */
     public File getScriptDir() {
         return scriptDir;
     }

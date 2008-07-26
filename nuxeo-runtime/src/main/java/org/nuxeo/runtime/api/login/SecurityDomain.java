@@ -66,9 +66,6 @@ public class SecurityDomain implements Serializable {
         this.entries = entries;
     }
 
-    /**
-     * @return the name.
-     */
     public String getName() {
         return name;
     }

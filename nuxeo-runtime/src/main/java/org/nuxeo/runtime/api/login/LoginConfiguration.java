@@ -44,9 +44,6 @@ public class LoginConfiguration extends Configuration {
         this.parent = parent;
     }
 
-    /**
-     * @return the parent.
-     */
     public Configuration getParent() {
         return parent;
     }

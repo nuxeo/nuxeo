@@ -29,7 +29,8 @@ package org.nuxeo.runtime;
 public interface ServiceManager {
 
     /**
-     * Get a service implementation given the interface class
+     * Gets a service implementation given the interface class.
+     *
      * @param <T>
      * @param serviceClass the service interface class
      * @return the implementation
@@ -38,7 +39,7 @@ public interface ServiceManager {
     <T> T getService(Class<T> serviceClass) throws Exception;
 
     /**
-     * Get a service implementation given the interface class and a name.
+     * Gets a service implementation given the interface class and a name.
      * <p>
      * This is useful to lookup services that are not singletons and can be identified
      * using a service name.

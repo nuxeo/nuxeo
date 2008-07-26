@@ -111,9 +111,6 @@ public class RuntimeAdapter extends ListenerServiceMBeanSupport implements Runti
         return null;
     }
 
-    /**
-     * @return the tempDeployDir
-     */
     public File getTempDeployDir() {
         return tempDeployDir;
     }

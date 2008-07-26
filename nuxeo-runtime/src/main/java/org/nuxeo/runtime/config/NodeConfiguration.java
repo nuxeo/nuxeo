@@ -193,37 +193,22 @@ public class NodeConfiguration implements Serializable, Cloneable {
 //        return peers;
 //    }
 
-    /**
-     * @return the productName.
-     */
     public String getProductName() {
         return productName;
     }
 
-    /**
-     * @return the productVersion.
-     */
     public String getProductVersion() {
         return productVersion;
     }
 
-    /**
-     * @return the streamingLocator.
-     */
     public String getStreamingLocator() {
         return streamingLocator;
     }
 
-    /**
-     * @return the isStreamingServer.
-     */
     public boolean isStreamingServer() {
         return isStreamingServer;
     }
 
-    /**
-     * @return the isDetectPeersEnabled.
-     */
     public boolean isAutoDetectingPeers() {
         return isAutoDetectingPeers;
     }

@@ -36,9 +36,6 @@ public class ContributionManager extends DependencyTree<String, Contribution> {
         this.component = component;
     }
 
-    /**
-     * @return the component.
-     */
     public ManagedComponent getComponent() {
         return component;
     }

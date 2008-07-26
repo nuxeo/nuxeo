@@ -93,17 +93,14 @@ public class ServiceManager implements org.nuxeo.runtime.ServiceManager {
         bindings.clear();
     }
 
-    /**
-     * @return the providers.
-     */
     public ServiceProvider[] getProviders() {
         return providers;
     }
 
     protected void destroyProviders() {
         if (this.providers != null) {
-            for (int i=0; i<this.providers.length; i++) {
-                this.providers[i].destroy();
+            for (ServiceProvider provider : this.providers) {
+                provider.destroy();
             }
         }
         bindings = new ConcurrentHashMap<String, Binding>(); // clear bindings
