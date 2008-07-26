@@ -46,6 +46,10 @@ import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 // able to intercept date literals to adapt them
 public class XPathBuilder implements QueryConstants {
 
+    // Utility class
+    private XPathBuilder() {
+    }
+
     public static String fromNXQL(String query) throws QueryException {
         return fromNXQL(SQLQueryParser.parse(query));
     }
@@ -203,16 +207,15 @@ public class XPathBuilder implements QueryConstants {
                 type = TypeAdapter.docType2Jcr(type);
                 xq.predicate.append("@").append(JcrConstants.JCR_PRIMARYTYPE);
                 xq.predicate.append(" ").append(operator(expr.operator)).append(" '")
-                .append(type).append("'");
+                        .append(type).append("'");
                 return true;
             } else if (name.equals(ECM_NAME)) {
                 if (expr.rvalue.getClass() != StringLiteral.class) {
                     throw new QueryException(
                             "Invalid query:  ecm:fulltext can only be compared against string values");
                 }
-                xq.predicate.append("fn:name() ").append(
-                        expr.operator.toString()).append(" '").append(
-                        ((StringLiteral) expr.rvalue).value).append("'");
+                xq.predicate.append("fn:name() ").append(expr.operator.toString())
+                        .append(" '").append(((StringLiteral) expr.rvalue).value).append("'");
                 return true;
             } else if (name.equals(ECM_IS_CHECKED_IN_VERSION)
                     || name.equals(ECM_VERSION)) {
@@ -237,8 +240,7 @@ public class XPathBuilder implements QueryConstants {
                     // versions
                     xq.predicate.append(" @").append(ECM_FROZEN_NODE);
                 } else { // avoid versions
-                    xq.predicate.append(" not(@").append(ECM_FROZEN_NODE).append(
-                            ") ");
+                    xq.predicate.append(" not(@").append(ECM_FROZEN_NODE).append(") ");
                 }
                 return true;
             } else if (expr.rvalue.getClass() == DateLiteral.class) { // dates
@@ -506,7 +508,6 @@ public class XPathBuilder implements QueryConstants {
      * Note: descendants or self is not supported by Jackrabbit.
      * <p>
      * STARTSWITH path is the same as LIKE "path/%"
-     *
      *
      * @param docPath
      * @param buf the buffer to fill with the computed path. The path will

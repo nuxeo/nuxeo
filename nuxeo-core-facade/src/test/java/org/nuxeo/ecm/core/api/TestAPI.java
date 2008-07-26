@@ -2344,6 +2344,7 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("File", docModel.getType());
     }
 
+    @SuppressWarnings("unchecked")
     public void testCopyContent() throws ClientException {
         DocumentModel root = remote.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -2455,7 +2456,7 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(a2_folder, tree.get(5).getDocument());
         assertEquals(a1_folder, tree.get(6).getDocument());
 
-
         remote.cancel();
     }
+
 }

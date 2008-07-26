@@ -94,11 +94,10 @@ public interface Type extends Serializable, ValueConverter {
      */
     Schema getSchema();
 
-
     /**
      * Get the type helper. Must never return null
      * <p>
-     * The type helper is used to handle operations on value of that type
+     * The type helper is used to handle operations on value of that type.
      *
      * @return the type helper
      */
