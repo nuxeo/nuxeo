@@ -336,6 +336,14 @@ public class EditorAction implements EditorActionLocal {
                 null));
     }
 
+    public void updateElementDescription(final String id,
+            final String description) {
+        final Element element = getElementById(id);
+        element.setDescription(description);
+        eventManager.notify(THEME_MODIFIED_EVENT, new EventContext(element,
+                null));
+    }
+
     public void updateElementStyle(final String id, String viewName,
             final String path, final Map<Object, Object> propertyMap) {
         final Element element = getElementById(id);

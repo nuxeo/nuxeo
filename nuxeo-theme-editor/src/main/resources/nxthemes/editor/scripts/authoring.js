@@ -152,6 +152,33 @@ NXThemesEditor.updateElementWidget = function(info) {
        });
 };
 
+
+NXThemesEditor.updateElementDescription = function(info) {
+    var form = Event.findElement(info, "form");
+    var id = null;
+    var description = "";
+    $A(Form.getElements(form)).each(function(i) {
+        var name = i.name;
+        var value = Form.Element.getValue(i);
+        if (name == "id") {
+          id = value;
+        } else if (name == "description") {
+          description = value;
+        }
+    });
+
+    if (!description) {
+      return;
+    }
+    
+    Seam.Component.getInstance("nxthemesEditorAction").updateElementDescription(
+       id, description,
+       function(r) {
+         NXThemesEditor.writeMessage("Description changed.");
+       });
+};
+
+
 NXThemesEditor.updateElementStyle = function() {
     var form = $('nxthemesElementStyle');
     var id, path, viewName;
@@ -530,6 +557,7 @@ NXThemes.addActions({
     'update element widget': NXThemesEditor.updateElementWidget,
     'update element style': NXThemesEditor.updateElementStyle,
     'update element style css': NXThemesEditor.updateElementStyleCss,
+    'update element description': NXThemesEditor.updateElementDescription,
     'set element visibility': NXThemesEditor.setElementVisibility,
     'update element padding': NXThemesEditor.updateElementPadding,
     'copy element': NXThemesEditor.copyElement,

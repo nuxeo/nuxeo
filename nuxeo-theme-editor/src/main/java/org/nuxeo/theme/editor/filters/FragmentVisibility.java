@@ -45,8 +45,7 @@ public class FragmentVisibility extends StandaloneFilter {
             }
 
             final Fragment fragment = (Fragment) element;
-            final PerspectiveType perspective = ThemeManager.getPerspectiveByUrl(
-                    info.getThemeUrl());
+            final PerspectiveType perspective = ThemeManager.getPerspectiveByUrl(info.getThemeUrl());
 
             final FormatType widgetType = (FormatType) Manager.getTypeRegistry().lookup(
                     TypeFamily.FORMAT, "widget");
@@ -59,6 +58,10 @@ public class FragmentVisibility extends StandaloneFilter {
             if ("fragment".equals(viewMode) || "layout".equals(viewMode)) {
                 StringBuilder content = new StringBuilder();
                 content.append("<div class=\"nxthemesFragment\">");
+                String description = fragment.getDescription();
+                if (description != null) {
+                    content.append(String.format("<div><b>%s</b></div>", description));
+                }
                 content.append(String.format("%s / %s",
                         fragment.getFragmentType().getTypeName(),
                         format.getName()));
@@ -71,6 +74,10 @@ public class FragmentVisibility extends StandaloneFilter {
                 if (!fragment.isVisibleInPerspective(perspective)) {
                     StringBuilder content = new StringBuilder();
                     content.append("<div class=\"nxthemesFragment\">");
+                    String description = fragment.getDescription();
+                    if (description != null) {
+                        content.append(String.format("<div><b>%s</b></div>", description));
+                    }
                     content.append(String.format("%s / %s",
                             fragment.getFragmentType().getTypeName(),
                             format.getName()));

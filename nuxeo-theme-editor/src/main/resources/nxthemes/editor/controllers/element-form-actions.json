@@ -4,6 +4,9 @@
        "#nxthemesElementProperties": {
          "submit": "update element properties"
        },
+       "#nxthemesElementDescription": {
+         "submit": "update element description"
+       },       
        "#nxthemesElementWidget": {
          "submit": "update element widget"
        },

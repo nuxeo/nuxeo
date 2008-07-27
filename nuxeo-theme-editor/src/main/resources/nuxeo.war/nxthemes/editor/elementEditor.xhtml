@@ -31,6 +31,8 @@ window.scrollTo(0,0);
     switchTo="element editor perspectives/edit style" label="Style"  />
   <nxthemes:tab
     switchTo="element editor perspectives/set visibility" label="Visibility"  />
+  <nxthemes:tab
+    switchTo="element editor perspectives/set description" label="Description"  />    
 </nxthemes:tabs>
 
 <div class="nxthemesEditorFrame">
@@ -59,6 +61,12 @@ window.scrollTo(0,0);
   url="/nuxeo/nxthemes/editor/elementVisibility.faces"
   controlledBy="element editor perspectives,element form actions"
   visibleInPerspectives="set visibility" />
+
+  <nxthemes:panel
+  identifier="element description"
+  url="/nuxeo/nxthemes/editor/elementDescription.faces"
+  controlledBy="element editor perspectives,element form actions"
+  visibleInPerspectives="set description" />
 
 </div>
 </c:when>

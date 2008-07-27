@@ -850,13 +850,16 @@ img.nxthemesAddSection {
 }
 
 div.nxthemesFragment {
-  border: 1px solid #999;
-  background: #f9f7ef url(/nuxeo/nxthemes/editor/img/fragment-bg.png) top left repeat-x;
-  font: italic 12px Arial, sans-serif;
-  padding: 0.2em 0.4em !important;
+  border: none;
+  background: #f9f7ef;
+  font: italic 13px Arial, sans-serif !important;
+  padding: 7px !important;
   margin: 3px !important;
   color: #333;
-  text-transform: capitalize;
+}
+
+div.nxthemesFragment b {
+  font: bold italic 12px Arial, sans-serif !important;
 }
 
 /* style editor */
@@ -1138,12 +1141,12 @@ form.nxthemesInheritedStyles button:hover {
 }
 
 div.nxthemesUnregisteredWidget {
-  border: 1px solid #900;
   padding: 7px !important;
   font: italic 13px Arial !important;
-  margin: 3px !important;
-  background: #f9f0f0 !important;
-  opacity: 0.6;
-  color: #900;
+  margin: 4px !important;
+  background: #f9f0c0 !important;
+  opacity: 0.7;
+  color: #000 !important;
   cursor: default;
+  border: none;
 }

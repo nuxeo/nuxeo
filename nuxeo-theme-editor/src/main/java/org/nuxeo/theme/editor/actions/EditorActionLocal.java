@@ -70,6 +70,9 @@ public interface EditorActionLocal {
     void updateElementProperties(String id, Map<Object, Object> propertyMap);
 
     @WebRemote
+    void updateElementDescription(String id, String description);
+
+    @WebRemote
     void updateElementStyle(String id, String viewName, String path,
             Map<Object, Object> propertyMap);
 
@@ -77,7 +80,7 @@ public interface EditorActionLocal {
     void updateElementStyleCss(String id, String viewName, String cssSource);
 
     @WebRemote
-    void updateElementLayout(final Map<Object, Object> propertyMap);
+    void updateElementLayout(Map<Object, Object> propertyMap);
 
     @WebRemote
     void setSize(String id, String width);

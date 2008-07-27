@@ -14,6 +14,7 @@
 
 package org.nuxeo.theme.editor.views;
 
+import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.html.filters.layout.DefaultLayoutView;
 import org.nuxeo.theme.rendering.RenderingInfo;
 
@@ -21,8 +22,16 @@ public class UnregisteredWidget extends DefaultLayoutView {
 
     @Override
     public String render(final RenderingInfo info) {
-        return String.format(
-                "<div class=\"nxthemesUnregisteredWidget\">Unregistered widget view: <b>%s</b></div>",
-                info.getFormat().getName());
+        final Element element = info.getElement();
+        final StringBuilder sb = new StringBuilder();
+        sb.append("<div class=\"nxthemesUnregisteredWidget\">");
+        String description = element.getDescription();
+        if (description != null) {
+            sb.append(String.format("<div><b>%s</b></div>", description));
+        }
+        sb.append(String.format("Unregistered widget view: <b>%s</b>",
+                info.getFormat().getName()));
+        sb.append("</div>");
+        return sb.toString();
     }
 }
