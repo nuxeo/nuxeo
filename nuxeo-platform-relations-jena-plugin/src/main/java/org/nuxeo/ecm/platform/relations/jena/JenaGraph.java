@@ -143,14 +143,14 @@ public class JenaGraph implements Graph {
         private final Model graph;
 
         GraphConnection(DBConnection connection, Model graph) {
-            this.baseConnection = null;
+            baseConnection = null;
             this.connection = connection;
             this.graph = graph;
         }
 
         GraphConnection(Connection baseConnection, Model graph) {
             this.baseConnection = baseConnection;
-            this.connection = null;
+            connection = null;
             this.graph = graph;
         }
 
@@ -676,7 +676,6 @@ public class JenaGraph implements Graph {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public List<Node> getSubjects(Node predicate, Node object) {
         Model graph = null;
         GraphConnection graphConnection = null;

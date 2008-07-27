@@ -33,14 +33,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface ResourceAdapter {
 
-    public static final String CORE_SESSION_ID_CONTEXT_KEY = "CoreSession";
+    String CORE_SESSION_ID_CONTEXT_KEY = "CoreSession";
 
     String getNamespace();
 
     void setNamespace(String namespace);
 
     /**
-     * Transform an incoming object into a Resource
+     * Transforms an incoming object into a Resource.
      *
      * @param object TODO Serializable
      * @return the resource
@@ -50,7 +50,7 @@ public interface ResourceAdapter {
     Resource getResource(Object object);
 
     /**
-     * Transform an incoming object into a Resource
+     * Transforms an incoming object into a Resource.
      *
      * @since 5.2-M1
      * @param object the object to transform
@@ -60,8 +60,8 @@ public interface ResourceAdapter {
     Resource getResource(Serializable object, Map<String, Serializable> context);
 
     /**
-     * Resolve the resource to an applicative representation, for instance a
-     * DocumentModel,
+     * Resolves the resource to an applicative representation, for instance a
+     * DocumentModel.
      *
      * @since 5.2-M1
      * @param resource
@@ -72,8 +72,8 @@ public interface ResourceAdapter {
     Object getResourceRepresentation(Resource resource);
 
     /**
-     * Resolve the resource to an applicative representation, for instance a
-     * {@link DocumentModel}
+     * Resolves the resource to an applicative representation, for instance a
+     * {@link DocumentModel}.
      *
      * @param resource
      * @param context a context map (holding for instance a {@link CoreSession}
@@ -87,4 +87,5 @@ public interface ResourceAdapter {
      * @return the class being adapted
      */
     Class<?> getKlass();
+
 }

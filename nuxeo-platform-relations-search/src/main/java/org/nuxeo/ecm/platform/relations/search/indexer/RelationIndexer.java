@@ -54,7 +54,6 @@ import org.nuxeo.ecm.platform.relations.search.resources.indexing.api.ResourceTy
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
  *
  */
-
 public class RelationIndexer {
 
     private static final Log log = LogFactory.getLog(RelationIndexer.class);
@@ -145,7 +144,7 @@ public class RelationIndexer {
         return allIndexableResources;
     }
 
-    private Set<Statement> getStatements(String graphName, Resource r)
+    private static Set<Statement> getStatements(String graphName, Resource r)
             throws ClientException {
         RelationManager relationManager = RelationSearchBusinessDelegate.getRelationManager();
 

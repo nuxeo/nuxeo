@@ -212,7 +212,7 @@ public class RelationIndexableResourceImpl extends
         return null;
     }
 
-    private Serializable extractPropertyValue(IndexableResourceDataConf conf,
+    private static Serializable extractPropertyValue(IndexableResourceDataConf conf,
             Node[] nodes) {
         // TODO handle lists and type according to conf
         if (nodes.length == 0) {
