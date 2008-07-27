@@ -469,10 +469,8 @@ public class LDAPReference extends AbstractReference {
                     targetLdapEntry = targetSession.getLdapEntry(targetId, true);
                 }
                 if (targetLdapEntry == null) {
-                    if (targetLdapEntry == null) {
-                        throw new DirectoryException(targetId
-                                + " does not exist in " + targetDirectoryName);
-                    }
+                    throw new DirectoryException(targetId
+                            + " does not exist in " + targetDirectoryName);
                 }
                 targetDn = pseudoNormalizeDn(targetLdapEntry.getNameInNamespace());
                 Attributes targetAttributes = targetLdapEntry.getAttributes();
@@ -533,7 +531,7 @@ public class LDAPReference extends AbstractReference {
     }
 
     /**
-     * Fetch both statically and dynamically defined references and merge the
+     * Fetches both statically and dynamically defined references and merges the
      * results.
      *
      * @see org.nuxeo.ecm.directory.Reference#getSourceIdsForTarget(String)
@@ -555,7 +553,7 @@ public class LDAPReference extends AbstractReference {
     }
 
     /**
-     * Simple helper that replace ", " by "," in the provided dn and return the
+     * Simple helper that replaces ", " by "," in the provided dn and returns the
      * lower case version of the result for comparison purpose.
      *
      * @param dn the raw unnormalized dn
@@ -569,15 +567,12 @@ public class LDAPReference extends AbstractReference {
     }
 
     /**
-     * Optim method to spare a LDAP request when the caller is a LDAPSession
+     * Optimized method to spare a LDAP request when the caller is a LDAPSession
      * object that has already fetched the LDAP Attribute instances.
      * <p>
      * This method should return the same results as the sister method:
      * org.nuxeo.ecm.directory.Reference#getTargetIdsForSource(java.lang.String)
      *
-     * @param staticAttribute the LDAP attribute with explicit dn references
-     * @param dynamicAttribute the LDAP attribute with implicit ldap url
-     *            references
      * @return target reference ids
      * @throws DirectoryException
      */

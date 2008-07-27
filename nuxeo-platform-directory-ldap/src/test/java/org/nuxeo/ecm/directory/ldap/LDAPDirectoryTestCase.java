@@ -58,9 +58,9 @@ public abstract class LDAPDirectoryTestCase extends NXRuntimeTestCase {
 
     public static final String INTERNAL_SERVER_SETUP = "TestDirectoriesWithInternalApacheDS.xml";
 
-    public String EXTERNAL_SERVER_SETUP_OVERRIDE = "TestDirectoriesWithExternalOpenLDAP-override.xml";
+    public static final String EXTERNAL_SERVER_SETUP_OVERRIDE = "TestDirectoriesWithExternalOpenLDAP-override.xml";
 
-    public String INTERNAL_SERVER_SETUP_OVERRIDE = "TestDirectoriesWithInternalApacheDS-override.xml";
+    public static final String INTERNAL_SERVER_SETUP_OVERRIDE = "TestDirectoriesWithInternalApacheDS-override.xml";
 
     @Override
     protected void setUp() throws Exception {

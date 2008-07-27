@@ -117,6 +117,7 @@ public class LDAPSession implements Session, EntrySource {
         return dirContext;
     }
 
+    @SuppressWarnings("unchecked")
     public DocumentModel createEntry(Map<String, Object> fieldMap)
             throws DirectoryException {
         if (isReadOnly()) {
@@ -270,6 +271,7 @@ public class LDAPSession implements Session, EntrySource {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void updateEntry(DocumentModel docModel) throws DirectoryException {
         List<String> updateList = new ArrayList<String>();
         List<String> referenceFieldList = new LinkedList<String>();
@@ -794,6 +796,7 @@ public class LDAPSession implements Session, EntrySource {
         return directory.getConfig().rdnAttribute.equals(idAttribute);
     }
 
+    @SuppressWarnings("unchecked")
     protected List<String> getMandatoryAttributes() throws DirectoryException {
         try {
             List<String> mandatoryAttributes = new ArrayList<String>();
