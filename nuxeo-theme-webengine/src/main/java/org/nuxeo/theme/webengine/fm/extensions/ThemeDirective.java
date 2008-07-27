@@ -32,8 +32,10 @@ import java.util.Map;
 
 import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriter;
 import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.theme.Manager;
 
 import freemarker.core.Environment;
+import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateDirectiveBody;
@@ -69,17 +71,20 @@ public class ThemeDirective implements TemplateDirectiveModel {
         }
 
         WebContext context = (WebContext) Utils.getWrappedObject("Context", env);
+
         final URL themeUrl = Utils.getThemeUrlAndSetupRequest(context);
+
+        env.setGlobalVariable("nxthemesInfo",
+                BeansWrapper.getDefaultInstance().wrap(Manager.getInfoPool()));
 
         BlockWriter writer = (BlockWriter) env.getOut();
         writer.setSuppressOutput(true);
         body.render(writer);
         writer.setSuppressOutput(false);
 
-        Configuration cfg = env.getConfiguration();
-
         StringReader sr = new StringReader(renderTheme(themeUrl));
         BufferedReader reader = new BufferedReader(sr);
+        Configuration cfg = env.getConfiguration();
         Template temp = new Template(themeUrl.toString(), reader, cfg);
         env.include(temp);
     }
@@ -88,7 +93,7 @@ public class ThemeDirective implements TemplateDirectiveModel {
         if (!needsToBeRefreshed(themeUrl) && cachedThemes.containsKey(themeUrl)) {
             return cachedThemes.get(themeUrl);
         }
-        
+
         String result = null;
         InputStream is = null;
         try {
