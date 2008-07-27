@@ -50,7 +50,7 @@ public class TestHTMLView extends NXRuntimeTestCase {
         viewType.setTemplate("test-template.xml");
         String result = view.render(info).replaceAll("\r?\n", "");
         assertEquals(
-                "<div>#{nxthemesInfo.map.i1.element.uid}#{nxthemesInfo.map.i1.format.properties.charset}#{ (nxthemesInfo.map.i1.test) ? \"on\" : \"off\"}<div>content</div></div>",
+                "<div>#{nxthemesInfo.element.uid}#{nxthemesInfo.format.properties.charset}#{ (nxthemesInfo.test) ? \"on\" : \"off\"}<div>content</div></div>",
                 result);
     }
 
