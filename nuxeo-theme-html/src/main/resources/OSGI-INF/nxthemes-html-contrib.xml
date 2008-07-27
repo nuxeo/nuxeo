@@ -10,7 +10,8 @@
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="template-engines">
     
-    <template-engine name="html" title="Plain HTML" />
+    <template-engine name="html" title="Plain HTML"
+      template-view="org.nuxeo.theme.html.HTMLView" />
 
   </extension>
 

@@ -21,9 +21,9 @@ import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.elements.ElementType;
-import org.nuxeo.theme.engines.EngineType;
 import org.nuxeo.theme.formats.FormatType;
 import org.nuxeo.theme.models.ModelType;
+import org.nuxeo.theme.templates.TemplateEngineType;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
 
@@ -115,9 +115,8 @@ public final class ViewType implements Type {
             return view;
         }
         if (className == null) {
-            EngineType engine = (EngineType) Manager.getTypeRegistry().lookup(
-                    TypeFamily.ENGINE, engineName);
-            className = engine.getTemplateView();
+            className = ((TemplateEngineType) Manager.getTypeRegistry().lookup(
+                    TypeFamily.TEMPLATE_ENGINE, templateEngine)).getTemplateView();
         }
         try {
             view = (View) Class.forName(className).newInstance();

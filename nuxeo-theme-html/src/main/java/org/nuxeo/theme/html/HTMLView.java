@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.theme.models.InfoPool;
 import org.nuxeo.theme.rendering.RenderingInfo;
 import org.nuxeo.theme.views.TemplateView;
 import org.nuxeo.theme.views.ViewType;
@@ -60,14 +59,18 @@ public class HTMLView extends TemplateView {
                     + " not found");
         }
 
-        // place data structure references inside the template
-        final String infoId = InfoPool.computeInfoId(info);
-        result = result.replaceAll("nxthemesInfo.", String.format(
-                "nxthemesInfo.map.%s.", infoId));
+        // replace model expressions
+        result = replaceModelExpressions(info, result);
 
         // replace [nxthemes markup] strings with the actual markup
         result = result.replace("[nxthemes markup]", info.getMarkup());
 
         return result;
     }
+
+    public String replaceModelExpressions(final RenderingInfo info,
+            final String html) {
+        return html;
+    }
+
 }

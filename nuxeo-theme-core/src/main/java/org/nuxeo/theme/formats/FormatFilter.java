@@ -75,7 +75,7 @@ public class FormatFilter extends AbstractFilter {
 
         if (view == null) {
             log.warn(String.format(
-                    "No %s view with name '%s' found for %s element (theme URL is: %s)",
+                    "No %s view named '%s' found for %s element (theme URL is: %s)",
                     formatType.getTypeName(), format.getName(),
                     elementType.getTypeName(), info.getThemeUrl().toString()));
         } else {

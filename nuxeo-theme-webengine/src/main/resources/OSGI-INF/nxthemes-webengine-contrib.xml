@@ -9,11 +9,12 @@
 
   <extension target="org.nuxeo.theme.services.ThemeService" point="template-engines">
     
-    <template-engine name="freemarker" title="Freemarker" />
+    <template-engine name="freemarker" title="Freemarker"
+      template-view="org.nuxeo.theme.webengine.FreemarkerView" />
         
   </extension>
 
-
+ 
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent" point="rendering-extension">
 
     <rendering-extension name="theme" 
@@ -63,36 +64,30 @@
     </view>
 
     <view name="theme view" template-engine="freemarker">
-      <engine>default</engine>
       <element-type>theme</element-type>
       <format-type>widget</format-type>
       <template>nxthemes/webengine/fm/widgets/theme-view.xml</template>
     </view>
 
     <view name="page frame" template-engine="freemarker">
-      <engine>default</engine>
       <element-type>page</element-type>
       <format-type>widget</format-type>
       <template>nxthemes/webengine/fm/widgets/page-frame.xml</template>
     </view>
 
     <view name="section frame" template-engine="freemarker">
-      <engine>default</engine>
       <element-type>section</element-type>
       <format-type>widget</format-type>
       <template>nxthemes/webengine/fm/widgets/section-frame.xml</template>
     </view>
 
     <view name="cell frame" template-engine="freemarker">
-      <engine>default</engine>
       <element-type>cell</element-type>
       <format-type>widget</format-type>
       <template>nxthemes/webengine/fm/widgets/cell-frame.xml</template>
     </view>
     
     <view name="block region" template-engine="freemarker">
-      <engine>default</engine>
-      <element-type>fragment</element-type>
       <format-type>widget</format-type>
       <model-type>region</model-type>
       <icon>/nuxeo/nxthemes/icons/block-region.png</icon>
@@ -100,6 +95,20 @@
         org.nuxeo.theme.webengine.fm.filters.widgets.BlockRegionView
       </class>
     </view>   
+
+    <view name="plain text" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <model-type>text</model-type>
+      <icon>/nuxeo/nxthemes/icons/plain-text.png</icon>
+      <template>nxthemes/webengine/fm/widgets/plain-text.xml</template>
+    </view>
+
+    <view name="plain html" template-engine="freemarker">
+      <format-type>widget</format-type>
+      <model-type>html</model-type>
+      <icon>/nuxeo/nxthemes/icons/plain-html.png</icon>
+      <template>nxthemes/webengine/fm/widgets/plain-html.xml</template>
+    </view>    
 
   </extension>  
   

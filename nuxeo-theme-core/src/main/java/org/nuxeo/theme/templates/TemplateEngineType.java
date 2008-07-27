@@ -28,6 +28,9 @@ public final class TemplateEngineType implements Type {
     @XNode("@title")
     public String title;
     
+    @XNode("@template-view")
+    public String templateView = "org.nuxeo.theme.views.TemplateView";
+    
     public String getTypeName() {
         return name;
     }
@@ -50,6 +53,15 @@ public final class TemplateEngineType implements Type {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+    
+
+    public String getTemplateView() {
+        return templateView;
+    }
+
+    public void setTemplateView(String templateView) {
+        this.templateView = templateView;
     }
 
 }

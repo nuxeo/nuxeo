@@ -52,7 +52,7 @@ public class RenderingInfo implements Info, Identifiable {
         this.element = element;
         this.themeUrl = themeUrl;
         uid = element.getUid();
-        Manager.getInfoPool().register(this);
+        Manager.getInfoPool().register(this);     
     }
 
     public RenderingInfo createCopy() {
