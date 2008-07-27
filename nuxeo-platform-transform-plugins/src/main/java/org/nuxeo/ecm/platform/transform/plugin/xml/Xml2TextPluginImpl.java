@@ -19,13 +19,11 @@
 
 package org.nuxeo.ecm.platform.transform.plugin.xml;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import org.dom4j.DocumentException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.transform.document.TransformDocumentImpl;
@@ -53,7 +51,6 @@ public class Xml2TextPluginImpl extends AbstractPlugin {
 
     public void extractFromXml(List<TransformDocument> results,
             TransformDocument... sources) throws Exception {
-
         for (final TransformDocument source : sources) {
             final InputStream sourceIs = source.getBlob().getStream();
             final Blob result = extractFromXmlSource(sourceIs);
@@ -61,15 +58,7 @@ public class Xml2TextPluginImpl extends AbstractPlugin {
         }
     }
 
-    /**
-     * @param sourceIs
-     * @return
-     * @throws DocumentException
-     * @throws Exception
-     * @throws IOException
-     */
-    private Blob extractFromXmlSource(final InputStream sourceIs)
-            throws DocumentException, Exception, IOException {
+    private Blob extractFromXmlSource(final InputStream sourceIs) {
         String text = "";
         try {
             Xml2Text xml2text = new Xml2Text();

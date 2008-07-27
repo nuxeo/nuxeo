@@ -74,6 +74,7 @@ public class PluginExtensionPointHandler extends
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static void registerOne(PluginExtension pluginExtension,
             Extension extension) throws Exception {
 
@@ -93,7 +94,7 @@ public class PluginExtensionPointHandler extends
             log.warn("Plugin class not specified for plugin extension: " + pluginExtension);
             return;
         }
-        Class<Plugin> pluginClass = (Class<Plugin>)extension.getContext().loadClass(className);
+        Class<Plugin> pluginClass = extension.getContext().loadClass(className);
         if (null == pluginClass) {
             throw new TransformException("Unable to load plugin class: '" + className + "'");
         }

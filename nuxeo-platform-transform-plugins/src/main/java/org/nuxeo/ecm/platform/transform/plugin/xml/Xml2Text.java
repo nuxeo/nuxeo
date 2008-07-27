@@ -113,7 +113,9 @@ public class Xml2Text extends DefaultHandler {
         if (trim) {
             int i = start;
             int end = start + length;
-            while (i < end && Character.isWhitespace(ch[i])) i++;
+            while (i < end && Character.isWhitespace(ch[i])) {
+                i++;
+            }
             buf.append(" ").append(ch, i, length - i + start);
             trim = false;
             //System.out.println("["+new String(ch, i, length - i + start)+"]");
