@@ -27,7 +27,7 @@ public class TestProviderType extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployContrib("org.nuxeo.theme.webwidgets", "OSGI-INF/nxthemes-webwidgets-service.xml");
-        deployContrib("webwidgets-contrib.xml");
+        deployContrib("org.nuxeo.theme.test.webwidgets", "webwidgets-contrib.xml");
         service = (Service) Framework.getRuntime().getComponent(Service.ID);
     }
 

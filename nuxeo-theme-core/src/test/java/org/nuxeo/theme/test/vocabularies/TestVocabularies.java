@@ -33,7 +33,7 @@ public class TestVocabularies extends NXRuntimeTestCase {
         super.setUp();
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
         deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
-        deployContrib("vocabulary-config.xml");
+        deployContrib("org.nuxeo.theme.core.tests", "vocabulary-config.xml");
         typeRegistry = Manager.getTypeRegistry();
         vocabularyManager = Manager.getVocabularyManager();
     }
@@ -50,7 +50,7 @@ public class TestVocabularies extends NXRuntimeTestCase {
         vocabularyManager = null;
         super.tearDown();
     }
-    
+
     public void testClassVocabulary() {
         List<VocabularyItem> items = vocabularyManager.getItems("test vocabulary as class");
         assertTrue(items.size() == 2);
@@ -59,7 +59,7 @@ public class TestVocabularies extends NXRuntimeTestCase {
         assertEquals("value2", items.get(1).getValue());
         assertEquals("label2", items.get(1).getLabel());
     }
-    
+
     public void testResourceVocabulary() {
         List<VocabularyItem> items = vocabularyManager.getItems("test vocabulary as csv resource");
         assertTrue(items.size() == 3);
