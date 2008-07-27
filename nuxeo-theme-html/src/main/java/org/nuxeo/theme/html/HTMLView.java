@@ -21,8 +21,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.theme.models.InfoPool;
 import org.nuxeo.theme.rendering.RenderingInfo;
-import org.nuxeo.theme.views.ViewType;
 import org.nuxeo.theme.views.TemplateView;
+import org.nuxeo.theme.views.ViewType;
 
 public class HTMLView extends TemplateView {
 
@@ -37,9 +37,9 @@ public class HTMLView extends TemplateView {
     @Override
     public String render(final RenderingInfo info) {
         final ViewType viewType = getViewType();
-        final String template = viewType.getTemplate();        
+        final String template = viewType.getTemplate();
         String result = getTemplateContent(template);
-        
+
         // Sanity check
         final Matcher matcher = firstTagPattern.matcher(result);
         if (matcher.find()) {

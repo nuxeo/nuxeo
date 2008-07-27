@@ -65,6 +65,10 @@ public final class Utils {
             "<link.*?rel=\"icon\".*?href=\"([^\"]+)\".*? />", Pattern.DOTALL
                     | Pattern.CASE_INSENSITIVE);
 
+    // Utility class.
+    private Utils() {
+    }
+
     public static String extractBody(String html) {
         Matcher matcher = bodyPattern.matcher(html);
         if (matcher.find()) {

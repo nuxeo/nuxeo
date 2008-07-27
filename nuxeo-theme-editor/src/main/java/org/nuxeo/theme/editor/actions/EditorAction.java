@@ -32,6 +32,8 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.editor.managers.UiManagerLocal;
+import org.nuxeo.theme.editor.states.UiStatesLocal;
 import org.nuxeo.theme.elements.CellElement;
 import org.nuxeo.theme.elements.Element;
 import org.nuxeo.theme.elements.ElementFactory;
@@ -50,8 +52,6 @@ import org.nuxeo.theme.formats.widgets.Widget;
 import org.nuxeo.theme.fragments.Fragment;
 import org.nuxeo.theme.fragments.FragmentFactory;
 import org.nuxeo.theme.html.Utils;
-import org.nuxeo.theme.editor.managers.UiManagerLocal;
-import org.nuxeo.theme.editor.states.UiStatesLocal;
 import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.presets.PresetType;
 import org.nuxeo.theme.properties.FieldIO;
@@ -780,17 +780,18 @@ public class EditorAction implements EditorActionLocal {
     }
 
     /* Private API */
-    private Element getElementById(final String id) {
+
+    private static Element getElementById(final String id) {
         return (Element) uidManager.getObjectByUid(Integer.valueOf(id));
     }
 
-    private Format getFormatById(final String id) {
+    private static Format getFormatById(final String id) {
         return (Format) uidManager.getObjectByUid(Integer.valueOf(id));
     }
 
     @Remove
     public void destroy() {
-        log.debug("Removed SEAM component: nxthemesActions");
+        log.debug("Removed Seam component: nxthemesActions");
     }
 
 }

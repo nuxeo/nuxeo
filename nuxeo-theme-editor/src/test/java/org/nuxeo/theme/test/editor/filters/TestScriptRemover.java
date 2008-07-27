@@ -16,8 +16,8 @@ package org.nuxeo.theme.test.editor.filters;
 
 import junit.framework.TestCase;
 
-import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.editor.filters.ScriptRemover;
+import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.rendering.Filter;
 
 public class TestScriptRemover extends TestCase {

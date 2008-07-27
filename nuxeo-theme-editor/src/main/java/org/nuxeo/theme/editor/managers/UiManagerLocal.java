@@ -19,8 +19,6 @@ import java.util.List;
 import javax.ejb.Local;
 import javax.faces.model.SelectItem;
 
-import org.nuxeo.theme.formats.styles.Style;
-import org.nuxeo.theme.formats.widgets.Widget;
 import org.nuxeo.theme.editor.managers.UiManager.FieldProperty;
 import org.nuxeo.theme.editor.managers.UiManager.FragmentInfo;
 import org.nuxeo.theme.editor.managers.UiManager.PaddingInfo;
@@ -30,15 +28,17 @@ import org.nuxeo.theme.editor.managers.UiManager.StyleCategory;
 import org.nuxeo.theme.editor.managers.UiManager.StyleFieldProperty;
 import org.nuxeo.theme.editor.managers.UiManager.StyleLayer;
 import org.nuxeo.theme.editor.managers.UiManager.ThemeInfo;
+import org.nuxeo.theme.formats.styles.Style;
+import org.nuxeo.theme.formats.widgets.Widget;
 import org.nuxeo.theme.themes.ThemeDescriptor;
 
 @Local
 public interface UiManagerLocal {
 
     String getCurrentPagePath();
-    
+
     String getCurrentThemeName();
-    
+
     String startEditor();
 
     List<FragmentInfo> getAvailableFragments();

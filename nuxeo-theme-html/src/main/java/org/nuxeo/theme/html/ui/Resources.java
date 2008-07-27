@@ -54,14 +54,16 @@ public class Resources {
 
         // styles
         if (hasStyles) {
-            sb.append(String.format("<link type=\"text/css\" rel=\"stylesheet\" media=\"all\" href=\"%s\"></link>", combinedStyles.toString()));
+            sb.append(String.format("<link type=\"text/css\" rel=\"stylesheet\" media=\"all\" href=\"%s\"></link>",
+                    combinedStyles.toString()));
         }
 
         // scripts
         if (hasScripts) {
-            sb.append(String.format("<script type=\"text/javascript\" src=\"%s\"></script>", combinedScripts.toString()));
+            sb.append(String.format("<script type=\"text/javascript\" src=\"%s\"></script>",
+                    combinedScripts.toString()));
         }
-        
+
         return sb.toString();
     }
 

@@ -698,7 +698,7 @@ public class UiManager implements UiManagerLocal {
                 IGNORE_VIEW_NAME, IGNORE_CLASSNAME, INDENT);
     }
 
-    private FieldInfo getFieldInfo(final Class<?> c, final String name) {
+    private static FieldInfo getFieldInfo(final Class<?> c, final String name) {
         try {
             return c.getField(name).getAnnotation(FieldInfo.class);
         } catch (Exception e) {
@@ -955,7 +955,7 @@ public class UiManager implements UiManagerLocal {
 
     /* Private API */
 
-    private String getApplicationPath() {
+    private static String getApplicationPath() {
         final FacesContext facesContext = FacesContext.getCurrentInstance();
         if (facesContext == null) {
             return "/nuxeo";
