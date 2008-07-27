@@ -58,6 +58,10 @@ public class DocumentModelFactory {
 
     private static final SecureRandom random = new SecureRandom();
 
+    // Utility class.
+    private DocumentModelFactory() {
+    }
+
     public static DocumentModel newDocument(DocumentModel parent, String type) {
         DocumentType docType = ((DocumentModelImpl) parent).getClient().getDocumentType(
                 type);

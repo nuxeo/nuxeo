@@ -194,7 +194,8 @@ public class JCRBlob extends StreamBlob {
     }
 
     /**
-     * Get the underlying stream. Use getStream() instead
+     * Get the underlying stream. Use getStream() instead.
+     *
      * @return
      * @throws IOException
      */

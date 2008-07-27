@@ -103,7 +103,9 @@ public abstract class AbstractEventListener implements EventListener {
      * When notifyEvent will be removed remove this default implementation too
      */
     // TODO: remove in 5.2
+    @Deprecated
     public void handleEvent(CoreEvent coreEvent) throws Exception {
         notifyEvent(coreEvent);
     }
+
 }

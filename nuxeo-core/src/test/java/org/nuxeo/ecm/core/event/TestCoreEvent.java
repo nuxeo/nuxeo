@@ -79,7 +79,6 @@ public class TestCoreEvent extends MockObjectTestCase {
     }
 
     // ::FIXME:
-    @SuppressWarnings("unchecked")
     public void testCoreEventWithInfoMap() {
         String eventId = "someEvent";
 

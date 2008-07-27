@@ -126,7 +126,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     // whether the acp was cached
     protected transient boolean isACPLoaded = false;
 
-    // the adapters registered for this document - only vaild on client
+    // the adapters registered for this document - only valid on client
     protected transient ArrayMap<Class, Object> adapters;
 
     // flags : TODO

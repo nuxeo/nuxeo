@@ -1,8 +1,8 @@
 package org.nuxeo.ecm.core.repository.jcr;
 
-import org.nuxeo.ecm.core.query.QueryException;
-
 import junit.framework.TestCase;
+
+import org.nuxeo.ecm.core.query.QueryException;
 
 public class TestXPathBuilder extends TestCase {
 

@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.repository.jcr;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -219,7 +218,7 @@ public class JCRQueryXPathResult implements QueryResult {
         return null;
     }
 
-    public Iterator getDocuments(int start) {
+    public DocumentIterator getDocuments(int start) {
 
         // skip first nodes if required
         for (int i = 0; i < start; i++) {
