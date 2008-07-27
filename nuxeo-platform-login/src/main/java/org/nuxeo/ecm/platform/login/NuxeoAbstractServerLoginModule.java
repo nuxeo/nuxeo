@@ -38,13 +38,17 @@ import sun.security.acl.GroupImpl;
 
 public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
 
+    private static final Log log = LogFactory.getLog(NuxeoAbstractServerLoginModule.class);
+
     protected Subject subject;
-    protected Map sharedState;
-    protected Map options;
+    protected Map<String, ?> sharedState;
+    protected Map<String, ?> options;
 
     protected boolean loginOk;
+
     /** An optional custom Principal class implementation */
     protected String principalClassName;
+
     /** the principal to use when a null username and password are seen */
     protected Principal unauthenticatedIdentity;
 
@@ -53,13 +57,13 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
     /** Flag indicating if the shared credential should be used */
     protected boolean useFirstPass;
 
-    private static final Log log = LogFactory.getLog(NuxeoAbstractServerLoginModule.class);
 
-    abstract protected Principal getIdentity();
+    protected abstract Principal getIdentity();
 
-    abstract protected Group[] getRoleSets() throws LoginException;
+    protected abstract Group[] getRoleSets() throws LoginException;
 
     abstract Principal createIdentity(String username) throws Exception;
+
 
     public boolean abort() throws LoginException {
         log.trace("abort");
@@ -76,8 +80,7 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
         Principal identity = getIdentity();
         principals.add(identity);
         Group[] roleSets = getRoleSets();
-        for (int g = 0; g < roleSets.length; g++) {
-            Group group = roleSets[g];
+        for (Group group : roleSets) {
             String name = group.getName();
             Group subjectGroup = createGroup(name, principals);
 
@@ -98,7 +101,7 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
     }
 
     public void initialize(Subject subject, CallbackHandler callbackHandler,
-            Map sharedState, Map options) {
+            Map<String, ?> sharedState, Map<String, ?> options) {
         this.subject = subject;
         this.callbackHandler = callbackHandler;
         this.sharedState = sharedState;
@@ -144,26 +147,24 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
     }
 
     /**
-     * Find or create a Group with the given name. Subclasses should use this
+     * Finds or creates a Group with the given name. Subclasses should use this
      * method to locate the 'Roles' group or create additional types of groups.
      *
      * @return A named Group from the principals set.
      */
     protected Group createGroup(String name, Set<Principal> principals) {
         Group roles = null;
-        Iterator<Principal> iter = principals.iterator();
-        while (iter.hasNext()) {
-            Object next = iter.next();
-            if (!(next instanceof Group)) {
+        for (Principal principal : principals) {
+            if (!(principal instanceof Group)) {
                 continue;
             }
-            Group grp = (Group) next;
+            Group grp = (Group) principal;
             if (grp.getName().equals(name)) {
                 roles = grp;
                 break;
             }
         }
-        // If we did not find a group create one
+        // If we did not find a group, create one
         if (roles == null) {
             roles = new GroupImpl(name);
             principals.add(roles);

@@ -83,7 +83,7 @@ public class LoginPluginRegistry extends DefaultComponent {
 
     private void registerPlugin(LoginPluginDescriptor pluginExtension) {
         Boolean enabled = pluginExtension.getEnabled();
-        Class className = pluginExtension.getClassName();
+        Class<LoginPlugin> className = pluginExtension.getClassName();
         String pluginName = pluginExtension.getPluginName();
 
         if (loginPluginStack.containsKey(pluginName)) {
@@ -108,7 +108,7 @@ public class LoginPluginRegistry extends DefaultComponent {
         } else {
             LoginPlugin newLoginPlugin = null;
             try {
-                newLoginPlugin = (LoginPlugin) className.newInstance();
+                newLoginPlugin = className.newInstance();
             } catch (InstantiationException e) {
                 log.error("Unable to create LoginPlugin for class "
                         + className.getName() + ":" + e.getMessage());
@@ -167,7 +167,6 @@ public class LoginPluginRegistry extends DefaultComponent {
         if (callbackFactory == null) {
             return null;
         }
-
         return callbackFactory.handleSpecificCallbacks(callbackHandler);
     }
 

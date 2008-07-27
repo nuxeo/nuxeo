@@ -62,10 +62,9 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
 
     private boolean useUserIdentificationInfoCB = false;
 
-    @Override
     @SuppressWarnings("unchecked")
     public void initialize(Subject subject, CallbackHandler callbackHandler,
-            Map sharedState, Map options) {
+            Map<String, ?> sharedState, Map<String, ?> options) {
         // explicit cast to match the direct superclass method declaration
         // (JBoss implementation)
         // rather than the newer (jdk1.5) LoginModule (... Map<String,?>...)
@@ -81,7 +80,6 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         super.initialize(subject, callbackHandler, sharedState,
                 options);
         random = new Random(System.currentTimeMillis());
-
 
         try {
             manager = Framework.getService(UserManager.class);
@@ -118,7 +116,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         Group roleSet = new GroupImpl("Roles");
         log.debug("Getting roles for user=" + username);
         for (String roleName : roles) {
-            PrincipalImpl role = new PrincipalImpl(roleName);
+            Principal role = new PrincipalImpl(roleName);
             log.debug("Found role=" + roleName);
             roleSet.addMember(role);
         }
@@ -283,7 +281,6 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         return identity;
     }
 
-
     @Override
     public Principal createIdentity(String name) throws LoginException {
         log.debug("createIdentity: " + name);
@@ -364,6 +361,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         return (NuxeoPrincipal) createIdentity(username);
     }
 
+    // Not used. Remove ?
     private NuxeoPrincipal validatePrincipal(NuxeoPrincipal principal) throws Exception {
         if (!manager.checkUsernamePassword(principal.getName(), principal.getPassword())) {
             return null;

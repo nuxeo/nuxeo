@@ -27,20 +27,15 @@ import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
  * Simple class to store the result of a jaas callback
  *
  * @author tiry
- *
  */
 public class CallbackResult {
 
-    public boolean cb_handled=false;
+    public boolean cb_handled = false;
 
-    public UserIdentificationInfo userIdent=null;
+    public UserIdentificationInfo userIdent = null;
 
-    public Principal principal=null;
+    public Principal principal = null;
 
-    public Object credential=null;
+    public Object credential = null;
 
-    public CallbackResult()
-    {
-
-    }
 }
