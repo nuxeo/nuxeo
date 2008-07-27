@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@SuppressWarnings("unchecked")
 public class JSonDocumentExporter implements PropertyVisitor {
 
     private JSONObject result;

@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryOSGITestCase;
-import org.nuxeo.ecm.webengine.DefaultWebContext;
 import org.nuxeo.ecm.webengine.WebApplication;
 import org.nuxeo.ecm.webengine.WebApplicationMapping;
 import org.nuxeo.ecm.webengine.WebEngine;

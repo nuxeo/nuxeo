@@ -19,6 +19,10 @@ import java.util.Map;
  */
 public class WikiEntityUtil {
 
+    // Utility class.
+    private WikiEntityUtil() {
+    }
+
     private static class Entity {
 
         public final int fHtmlCode;
@@ -185,4 +189,5 @@ public class WikiEntityUtil {
         Entity entity = fHtmlToWiki.get(htmlEntity);
         return entity != null ? entity.fHtmlSymbol : null;
     }
+
 }

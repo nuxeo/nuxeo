@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.rendering.api;
 import java.io.Writer;
 import java.util.ResourceBundle;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -42,7 +41,6 @@ public interface RenderingEngine {
     /**
      * Starts the rendering for the given document context.
      *
-     * @param ctx
      * @throws RenderingException
      */
     void render(String template, Object input, Writer writer) throws RenderingException;

@@ -103,7 +103,8 @@ public class WebEngineAuthenticationFilter implements Filter {
                     UserSession.setCurrentSession(session, userSession);
                 }
             }
-            propagate(userSession); // propagate session if needed - this can be used to initialize an application server EJB context
+            // propagate session if needed - this can be used to initialize an application server EJB context
+            propagate(userSession);
             WebEngineRequestWrapper reqw = new WebEngineRequestWrapper(req, userSession);
             chain.doFilter(reqw, response);
         } catch (Exception e) {
@@ -111,7 +112,6 @@ public class WebEngineAuthenticationFilter implements Filter {
             e.printStackTrace();
             // do nothing
         }
-
     }
 
     protected UserSession authenticate(String username, String password) throws ClientException {

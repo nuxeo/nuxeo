@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webengine.install;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.xmap.annotation.XNode;

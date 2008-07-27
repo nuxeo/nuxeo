@@ -37,7 +37,7 @@ public class FakeSession implements HttpSession {
 
     static final Random RANDOM = new Random();
 
-    private final Map<String,Object> attrs;
+    private final Map<String, Object> attrs;
     private final String sid;
     private final long ctime = System.currentTimeMillis();
 
@@ -52,7 +52,7 @@ public class FakeSession implements HttpSession {
         return attrs.get(name);
     }
 
-    public Enumeration getAttributeNames() {
+    public Enumeration<String> getAttributeNames() {
         return Collections.enumeration(attrs.keySet());
     }
 

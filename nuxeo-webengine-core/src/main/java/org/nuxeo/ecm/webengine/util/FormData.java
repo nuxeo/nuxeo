@@ -124,6 +124,7 @@ public class FormData {
         return items;
     }
 
+    @SuppressWarnings("unchecked")
     public Collection<String> getKeys() throws WebException {
         if (isMultipart) {
             return getMultiPartItems().keySet();
@@ -257,7 +258,6 @@ public class FormData {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     public String[] getFormListProperty(String key) {
         return request.getParameterValues(key);
     }
@@ -298,6 +298,7 @@ public class FormData {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void fillDocumentFromForm(DocumentModel doc) throws PropertyException, WebException {
         Map<String, String[]> map = request.getParameterMap();
         for (Map.Entry<String,String[]> entry : map.entrySet()) {

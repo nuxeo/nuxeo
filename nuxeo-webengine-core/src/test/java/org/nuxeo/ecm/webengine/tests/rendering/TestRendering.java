@@ -44,22 +44,19 @@ public class TestRendering extends NXRuntimeTestCase {
         deployBundle("nuxeo-platform-rendering");
         deployBundle("nuxeo-webengine-core");
         deployContrib("OSGI-INF/test-rendering-template-contrib.xml");
-
     }
 
     public void testTemplateContribution() throws Exception {
-
         WebEngine web = Framework.getService(WebEngine.class);
         WebApplication app = web.getApplication("test");
         if (app == null) {
             fail("Application test was not defined");
         }
-        FreemarkerEngine rendering = (FreemarkerEngine)app.getRendering();
-        TemplateMethodModelEx tm = (TemplateMethodModelEx)rendering.getConfiguration().getSharedVariable("ext1");
+        FreemarkerEngine rendering = (FreemarkerEngine) app.getRendering();
+        TemplateMethodModelEx tm = (TemplateMethodModelEx) rendering.getConfiguration().getSharedVariable("ext1");
         assertEquals("My Value 1", tm.exec(null));
         SimpleScalar t = (SimpleScalar)rendering.getConfiguration().getSharedVariable("ext2");
         assertEquals("My Value 2", t.getAsString());
-
     }
 
 }

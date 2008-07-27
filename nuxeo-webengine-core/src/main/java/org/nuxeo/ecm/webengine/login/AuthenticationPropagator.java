@@ -27,12 +27,10 @@ package org.nuxeo.ecm.webengine.login;
 public interface AuthenticationPropagator {
 
     /**
-     * Propagate the given principal into the host system
+     * Propagate the given user session into the host system
      * (as for example to initialize a JEE application server context)
      *
-     * @param subject
-     * @param principal the principal to propagate
-     * @credentials the credentials to propagate
+     * @param userSession the user session to propagate
      */
     void propagate(UserSession userSession);
 

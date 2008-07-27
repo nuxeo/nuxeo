@@ -51,11 +51,12 @@ import org.nuxeo.runtime.model.Adaptable;
 public interface WebContext extends Adaptable {
 
     /**
-     * Must be called before using the context
+     * Must be called before using the context.
+     *
      * @throws WebException
      * @throws IllegalStateException if already initialized
      */
-    void initialize() throws WebException, IllegalStateException;
+    void initialize() throws WebException;
 
     /**
      * Gets the web engine instance.
@@ -207,6 +208,7 @@ public interface WebContext extends Adaptable {
      *
      * @deprecated this method will be removed in future versions and PathInfo merged with WebContext
      */
+    @Deprecated
     PathInfo getPathInfo();
 
     /**

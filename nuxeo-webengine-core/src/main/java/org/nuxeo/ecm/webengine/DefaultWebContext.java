@@ -103,7 +103,7 @@ public class DefaultWebContext implements WebContext {
         scriptExecutionStack = new ArrayList<File>();
     }
 
-    public void initialize() throws WebException, IllegalStateException {
+    public void initialize() throws WebException {
         if (isInitialized) {
             throw new IllegalStateException("Context already initialized");
         }
@@ -489,7 +489,6 @@ public class DefaultWebContext implements WebContext {
         render(template, null);
     }
 
-    @SuppressWarnings("unchecked")
     public void render(String template, Object ctx) throws WebException {
         try {
             ScriptFile script = getFile(template);

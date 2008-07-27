@@ -68,7 +68,8 @@ public class WebException extends Exception {
 
     @SuppressWarnings({"ThrowableInstanceNeverThrown"})
     public static WebException wrap(String message, Throwable e) {
-        if (e instanceof DocumentSecurityException || "javax.ejb.EJBAccessException".equals(e.getClass().getName())) { //TODO add EJBAccessException dependency
+        //TODO add EJBAccessException dependency
+        if (e instanceof DocumentSecurityException || "javax.ejb.EJBAccessException".equals(e.getClass().getName())) {
             return new WebSecurityException(message, e);
         } else if (e instanceof WebException) {
             return (WebException)e;
