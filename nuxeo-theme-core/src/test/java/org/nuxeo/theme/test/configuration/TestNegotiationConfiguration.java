@@ -40,7 +40,7 @@ public class TestNegotiationConfiguration extends NXRuntimeTestCase {
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");
     }
 
-    public void testRegisterNegotiation() throws Exception {
+    public void testRegisterNegotiation() {
         // negotiation
         negotiation1 = (NegotiationType) typeRegistry.lookup(
                 TypeFamily.NEGOTIATION, "strategy1/test negotiation");

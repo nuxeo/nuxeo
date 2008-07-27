@@ -38,7 +38,7 @@ public class TestModelConfiguration extends NXRuntimeTestCase {
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");
     }
 
-    public void testRegisterModel() throws Exception {
+    public void testRegisterModel() {
         // model 1
         model1 = (ModelType) typeRegistry.lookup(TypeFamily.MODEL,
                 "test model 1");

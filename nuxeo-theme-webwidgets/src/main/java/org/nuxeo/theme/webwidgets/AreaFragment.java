@@ -15,8 +15,8 @@
 package org.nuxeo.theme.webwidgets;
 
 import org.nuxeo.theme.fragments.AbstractFragment;
-import org.nuxeo.theme.properties.FieldInfo;
 import org.nuxeo.theme.models.Model;
+import org.nuxeo.theme.properties.FieldInfo;
 
 public final class AreaFragment extends AbstractFragment {
 

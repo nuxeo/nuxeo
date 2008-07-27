@@ -14,7 +14,6 @@
 
 package org.nuxeo.theme.test.themes;
 
-import java.io.IOException;
 import java.net.URL;
 
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -43,7 +42,7 @@ public class ThemeIORoundTrip extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    public void testRoundTrip() throws IOException {
+    public void testRoundTrip() {
         final URL url = getClass().getClassLoader().getResource("roundtrip-theme.xml");
         ThemeParser.registerTheme(url);
         final ThemeElement theme = Manager.getThemeManager().getThemeByName("default");

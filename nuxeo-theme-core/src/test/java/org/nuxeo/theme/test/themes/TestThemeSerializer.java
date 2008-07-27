@@ -52,7 +52,7 @@ public class TestThemeSerializer extends NXRuntimeTestCase {
         super.tearDown();
     }
 
-    public void testSerializeTheme() throws Exception {
+    public void testSerializeTheme() {
         Element theme = ElementFactory.create("theme");
         theme.setName("default");
         Element page = ElementFactory.create("page");

@@ -40,7 +40,7 @@ public class TestViewConfiguration extends NXRuntimeTestCase {
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");
     }
 
-    public void testRegisterView() throws Exception {
+    public void testRegisterView() {
         view1 = (ViewType) typeRegistry.lookup(TypeFamily.VIEW,
                 "widget/page/page frame/menu item/default/*/jsf-facelets");
         assertNotNull(view1);

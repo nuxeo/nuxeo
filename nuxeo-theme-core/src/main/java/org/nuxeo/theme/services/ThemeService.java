@@ -209,10 +209,10 @@ public class ThemeService extends DefaultComponent {
                 String templateEngine = application.getTemplateEngine();
                 if (templateEngine == null) {
                     final String defaultTemplateEngine = ThemeManager.getDefaultTemplateEngineName();
-                    log.warn(String.format("Please set the 'template-engine' attribute on <application root=\"%s\" template-engine=\"...\"> (default is '%s')",
-                            application.getRoot(), defaultTemplateEngine));
+                    log.warn(String.format(
+                            "Please set the 'template-engine' attribute on <application root=\"%s\" template-engine=\"...\"> (default is '%s')", application.getRoot(), defaultTemplateEngine));
                     application.setTemplateEngine(defaultTemplateEngine);
-		}
+                }
                 typeRegistry.register(application);
 
             } else {
@@ -221,7 +221,7 @@ public class ThemeService extends DefaultComponent {
                 if (templateEngine != null) {
                     oldApplication.setTemplateEngine(templateEngine);
                 }
-                
+
                 NegotiationDef negotiation = application.getNegotiation();
                 if (negotiation != null) {
                     NegotiationDef oldNegotiation = oldApplication.getNegotiation();

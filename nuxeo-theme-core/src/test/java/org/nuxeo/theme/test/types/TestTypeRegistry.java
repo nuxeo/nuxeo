@@ -41,7 +41,7 @@ public class TestTypeRegistry extends NXRuntimeTestCase {
         preset2 = new PresetType("preset2", "value", "", "category");
     }
 
-    public void testPresetType() throws Exception {
+    public void testPresetType() {
         assertTrue(typeRegistry.getTypes(TypeFamily.PRESET).isEmpty());
         assertTrue(typeRegistry.getTypeNames(TypeFamily.PRESET).isEmpty());
         assertNull(typeRegistry.lookup(TypeFamily.PRESET, "preset1 (group)"));

@@ -15,9 +15,9 @@
 package org.nuxeo.theme.resources;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +63,7 @@ public final class ResourceManager implements Registrable {
             return null;
         }
     }
-    
+
     public List<String> getResourcesFor(URL themeUrl) {
         URI uri;
         try {

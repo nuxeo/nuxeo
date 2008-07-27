@@ -14,7 +14,6 @@
 
 package org.nuxeo.theme.test.themes;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -99,7 +98,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         URL themeUrl = new URL("nxtheme://theme/engine/mode/theme/page/perspective/template-engine");
         assertEquals("theme", ThemeManager.getThemeNameByUrl(themeUrl));
     }
-    
+
     public void testGetThemeOf() {
         Element theme = ElementFactory.create("theme");
         Element page = ElementFactory.create("page");
@@ -133,7 +132,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertFalse(ThemeManager.belongToSameTheme(page12, page22));
     }
 
-    public void testDuplicateElement() throws IOException {
+    public void testDuplicateElement() {
         Element element = ElementFactory.create("page");
         element.setName("page 1");
 
@@ -153,10 +152,9 @@ public class TestThemeManager extends NXRuntimeTestCase {
         // compare formats
         assertSame(widget,
                 ElementFormatter.getFormatsFor(duplicate).iterator().next());
-
     }
 
-    public void testDuplicateFragment() throws IOException {
+    public void testDuplicateFragment() {
         DummyFragment fragment = (DummyFragment) FragmentFactory.create("dummy fragment");
         fragment.setField1("value of field 1");
         fragment.setField2("value of field 2");
@@ -350,27 +348,27 @@ public class TestThemeManager extends NXRuntimeTestCase {
         // test transitivity
         themeManager.makeFormatInherit(ancestor2, ancestor3);
         assertTrue(ThemeManager.listAncestorFormatsOf(style).contains(ancestor3));
-        
+
         assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor1).contains(style));
         assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor2).contains(ancestor1));
         assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor3).contains(ancestor2));
-        
+
         // replace ancestor
         themeManager.makeFormatInherit(style, ancestor2);
         assertEquals(ancestor2, ThemeManager.getAncestorFormatOf(style));
         assertTrue(ThemeManager.listAncestorFormatsOf(style).contains(ancestor2));
         assertFalse(ThemeManager.listAncestorFormatsOf(style).contains(ancestor1));
-        
+
         assertFalse(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor1).contains(style));
         assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor2).contains(style));
         assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor2).contains(ancestor1));
         assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor3).contains(ancestor2));
-        
-        // remove old inheritance relation 
+
+        // remove old inheritance relation
         ThemeManager.removeInheritanceTowards(style);
         assertNull(ThemeManager.getAncestorFormatOf(style));
         assertFalse(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor2).contains(style));
-        
+
         // test common inheritance
         Style ancestor = (Style) FormatFactory.create("style");
         ancestor.setUid(5);
@@ -384,7 +382,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
         assertTrue(ThemeManager.listAncestorFormatsOf(style2).contains(ancestor));
         assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor).contains(style1));
         assertTrue(ThemeManager.listFormatsDirectlyInheritingFrom(ancestor).contains(style2));
-        
+
         // test deleting a format that is inherited
         themeManager.deleteFormat(ancestor);
         assertTrue(ThemeManager.listAncestorFormatsOf(style1).isEmpty());
