@@ -29,8 +29,6 @@ import org.nuxeo.ecm.core.storage.StorageException;
  */
 public class CollectionProperty extends BaseProperty {
 
-    private final static Serializable[] NULL_ARRAY = new Serializable[0];
-
     /** The {@link CollectionFragment} holding the information. */
     private final CollectionFragment fragment;
 
@@ -67,14 +65,7 @@ public class CollectionProperty extends BaseProperty {
 
     public void setValue(Serializable[] value) throws StorageException {
         checkWritable();
-        if (value == null) {
-            value = NULL_ARRAY;
-        } else {
-            for (int i = 0; i < value.length; i++) {
-                value[i] = normalize(value[i]);
-            }
-        }
-        fragment.set(value);
+        fragment.set(type.normalize(value));
         // mark fragment dirty!
     }
 

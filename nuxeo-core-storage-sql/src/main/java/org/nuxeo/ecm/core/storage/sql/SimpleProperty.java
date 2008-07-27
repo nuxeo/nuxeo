@@ -64,7 +64,7 @@ public class SimpleProperty extends BaseProperty {
 
     public void setValue(Serializable value) throws StorageException {
         checkWritable();
-        row.put(key, normalize(value));
+        row.put(key, type.normalize(value));
         // mark fragment dirty!
     }
 

@@ -203,7 +203,6 @@ public class Node {
                 throw new IllegalArgumentException("Unknown field: " + name);
             }
             String tableName = model.getFragmentName(name);
-            // TODO cache collection fragments like we do normal fragments
             Fragment fragment = context.get(tableName, getId(), true);
             property = new CollectionProperty(name, propType, false,
                     (CollectionFragment) fragment);

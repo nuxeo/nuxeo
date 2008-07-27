@@ -277,7 +277,11 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public DocumentVersionIterator getVersions() throws DocumentException {
-        throw new UnsupportedOperationException();
+        log.error("getVersions unimplemented, returning empty list");
+        return new SQLDocumentVersionIterator(
+                Collections.<DocumentVersion> emptyList());
+        // XXX TODO
+        // throw new UnsupportedOperationException();
     }
 
     public DocumentVersion getLastVersion() throws DocumentException {
@@ -285,7 +289,10 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public boolean hasVersions() throws DocumentException {
-        throw new UnsupportedOperationException();
+        log.error("hasVersions unimplemented, returning false");
+        return false;
+        // XXX TODO
+        // throw new UnsupportedOperationException();
     }
 
     /*
@@ -433,6 +440,32 @@ class SQLDocumentListIterator implements DocumentIterator {
     }
 
     public Document next() {
+        return iterator.next();
+    }
+
+    public void remove() {
+        throw new UnsupportedOperationException();
+    }
+
+}
+
+class SQLDocumentVersionIterator implements DocumentVersionIterator {
+
+    private final Iterator<DocumentVersion> iterator;
+
+    public SQLDocumentVersionIterator(List<DocumentVersion> list) {
+        iterator = list.iterator();
+    }
+
+    public boolean hasNext() {
+        return iterator.hasNext();
+    }
+
+    public DocumentVersion next() {
+        return iterator.next();
+    }
+
+    public DocumentVersion nextDocumentVersion() {
         return iterator.next();
     }
 

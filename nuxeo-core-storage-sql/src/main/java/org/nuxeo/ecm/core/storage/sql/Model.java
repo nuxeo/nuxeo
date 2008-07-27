@@ -161,6 +161,10 @@ public class Model {
         return propertyType.get(propertyName);
     }
 
+    public PropertyType getCollectionFragmentType(String tableName) {
+        return collectionTables.get(tableName);
+    }
+
     public String getFragmentName(String propertyName) {
         return propertyFragment.get(propertyName);
     }
@@ -191,7 +195,8 @@ public class Model {
                     fragmentNames.add(fragmentName);
                 }
             }
-            log.debug("Fragments for " + typeName + ": " + fragmentNames);        }
+            log.debug("Fragments for " + typeName + ": " + fragmentNames);
+        }
     }
 
     /**
@@ -281,7 +286,8 @@ public class Model {
                 ComplexType fieldComplexType = (ComplexType) fieldType;
                 String subTypeName = fieldComplexType.getName();
                 String subFragmentName = initTypeModel(fieldComplexType);
-                if (subFragmentName != null && !typeFragments.containsKey(subTypeName)) {
+                if (subFragmentName != null &&
+                        !typeFragments.containsKey(subTypeName)) {
                     Set<String> fragmentNames = Collections.singleton(subFragmentName);
                     typeFragments.put(subTypeName, fragmentNames);
                     log.debug("Fragments for " + subTypeName + ": " +

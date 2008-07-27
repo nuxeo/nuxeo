@@ -218,8 +218,10 @@ public class PersistenceContextByTable {
                 ((String) id).startsWith("T");
         if (isTemporaryId) {
             if (isCollection) {
+                Serializable[] empty = model.getCollectionFragmentType(
+                        tableName).getEmptyArray();
                 fragment = new CollectionFragment(tableName, id, State.CREATED,
-                        this, new Serializable[0]);
+                        this, empty);
             } else {
                 if (allowAbsent) {
                     fragment = new SimpleFragment(tableName, id, State.ABSENT,
