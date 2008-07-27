@@ -65,20 +65,13 @@ public class DefaultLoginHandler implements LoginHandler {
         this.password = password.toCharArray();
     }
 
-    /**
-     * @return the password.
-     */
     public char[] getPassword() {
         return password;
     }
 
-    /**
-     * @return the username.
-     */
     public String getUsername() {
         return username;
     }
-
 
     public synchronized LoginContext getLoginContext() {
         return lc;

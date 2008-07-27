@@ -91,18 +91,16 @@ public class JCRQueryXPathResult implements QueryResult {
                 if (schemas == null) {
                     schemas = getSchemasInSelectClause(doc);
                 }
-                DocumentModel docModel = DocumentModelFactory
-                        .createDocumentModel(doc, schemas);
+                DocumentModel docModel = DocumentModelFactory.createDocumentModel(doc, schemas);
                 list.add(docModel);
             }
             return new DocumentModelListImpl(list);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new QueryException("getDocumentModels failed", e);
         }
     }
 
-    private String[] getSchemasInSelectClause(Document doc) {
+    private static String[] getSchemasInSelectClause(Document doc) {
         /*
          SelectList selectElements = query.sqlQuery.select.elements;
          // if it is an 'select * from', we return all document schemas

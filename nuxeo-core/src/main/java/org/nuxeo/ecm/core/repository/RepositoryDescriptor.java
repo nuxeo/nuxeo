@@ -69,16 +69,10 @@ public class RepositoryDescriptor {
         this.forceReloadTypes = forceReloadTypes;
     }
 
-    /**
-     * @return the name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name the name to set
-     */
     public void setName(String name) {
         this.name = name;
     }
@@ -115,23 +109,14 @@ public class RepositoryDescriptor {
         }
     }
 
-    /**
-     * @param config the config to set
-     */
     public void setConfigurationFile(String config) {
         this.config = config;
     }
 
-    /**
-     * @param factoryClass the factoryClass to set
-     */
     public void setFactoryClass(Class factoryClass) {
         this.factoryClass = factoryClass;
     }
 
-    /**
-     * @return the factoryClass
-     */
     public Class getFactoryClass() {
         return factoryClass;
     }

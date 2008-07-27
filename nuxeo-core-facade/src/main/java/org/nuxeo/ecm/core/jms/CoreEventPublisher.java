@@ -38,17 +38,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class CoreEventPublisher {
 
+    public static final String XA_TOPIC_CONNECTION_FACTORY = "JmsNX";
+    public static final String CORE_EVENTS_TOPIC = "topic/NXCoreEvents";
+
     private static final Log log = LogFactory.getLog(CoreEventPublisher.class);
 
-    public final static String XA_TOPIC_CONNECTION_FACTORY = "JmsNX";
-    public final static String CORE_EVENTS_TOPIC = "topic/NXCoreEvents";
     private boolean transacted;
     private boolean isDeliveryPersistent;
     private boolean isDisableMessageID;
@@ -56,10 +56,12 @@ public class CoreEventPublisher {
     private TopicConnectionFactory topicConnectionFactory;
     private Topic coreEventsTopic;
 
-    private static CoreEventPublisher instance = new CoreEventPublisher();
+    private static final CoreEventPublisher instance = new CoreEventPublisher();
+
     private CoreEventPublisher() {
         configureJMS();
     }
+
     private void configureJMS() {
         Properties runtime = Framework.getRuntime().getProperties();
         transacted = new Boolean(runtime.getProperty("jms.useTransactedConnection"));
@@ -67,6 +69,7 @@ public class CoreEventPublisher {
         isDisableMessageID = new Boolean(runtime.getProperty("jms.isDisableMessageID"));
         isDisableMessageTimestamp = new Boolean(runtime.getProperty("jms.isDisableMessageTimestamp"));
     }
+
     public static CoreEventPublisher getInstance() {
         return instance;
     }
@@ -76,7 +79,7 @@ public class CoreEventPublisher {
         coreEventsTopic = null;
     }
 
-    private final TopicConnectionFactory getTopicConnectionFactory()
+    private TopicConnectionFactory getTopicConnectionFactory()
             throws NamingException {
         if (topicConnectionFactory == null) {
             Context jndi = new InitialContext();
@@ -88,7 +91,7 @@ public class CoreEventPublisher {
         return topicConnectionFactory;
     }
 
-    private final Topic getDefaultTopic() throws NamingException {
+    private Topic getDefaultTopic() throws NamingException {
         if (coreEventsTopic == null) {
             Context jndi = new InitialContext();
             coreEventsTopic = (Topic) jndi.lookup(CORE_EVENTS_TOPIC);
@@ -98,7 +101,6 @@ public class CoreEventPublisher {
         }
         return coreEventsTopic;
     }
-
 
     /**
      * Retrieves a new JMS Connection from the pool
@@ -129,7 +131,7 @@ public class CoreEventPublisher {
     }
 
     public void publish(Object content, Topic topic, MessageFactory factory, String eventId)
-    throws JMSException {
+            throws JMSException {
         TopicConnection connection = null;
         TopicSession session = null;
         TopicPublisher publisher = null;
@@ -142,7 +144,8 @@ public class CoreEventPublisher {
 
             // create the publisher
             publisher = session.createPublisher(topic);
-            publisher.setDeliveryMode(isDeliveryPersistent ? DeliveryMode.PERSISTENT : DeliveryMode.NON_PERSISTENT);
+            publisher.setDeliveryMode(
+                    isDeliveryPersistent ? DeliveryMode.PERSISTENT : DeliveryMode.NON_PERSISTENT);
             publisher.setDisableMessageID(isDisableMessageID);
             publisher.setDisableMessageTimestamp(isDisableMessageTimestamp);
             // create the message using the given factory
@@ -165,7 +168,7 @@ public class CoreEventPublisher {
         }
     }
 
-    public MessagePublisher createPublisher() throws NamingException, JMSException {
+    public MessagePublisher createPublisher() throws NamingException {
         return new MessagePublisher(getDefaultTopic(), getTopicConnectionFactory());
     }
 
