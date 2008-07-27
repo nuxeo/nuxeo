@@ -24,7 +24,6 @@ import javax.ejb.EJBException;
 import javax.ejb.MessageDriven;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
-import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
@@ -68,7 +67,7 @@ public class SearchMessageListener implements MessageListener {
 
     private static final Log log = LogFactory.getLog(SearchMessageListener.class);
 
-    private transient SearchService service;
+    private SearchService service;
 
     private LoginContext loginCtx;
 
@@ -104,8 +103,9 @@ public class SearchMessageListener implements MessageListener {
             }
 
             Object obj = ((ObjectMessage)message).getObject();
-            if(!(obj instanceof DocumentMessage))
+            if(!(obj instanceof DocumentMessage)) {
                 return;
+            }
             DocumentMessage doc = (DocumentMessage) obj;
             String eventId = doc.getEventId();
 

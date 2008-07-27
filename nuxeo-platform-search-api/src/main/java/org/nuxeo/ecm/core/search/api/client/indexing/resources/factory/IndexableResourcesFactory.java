@@ -65,9 +65,12 @@ public final class IndexableResourcesFactory implements Serializable {
 
     private static final Log log = LogFactory.getLog(IndexableResourcesFactory.class);
 
-    private static final Map<String, IndexableResourceConf> resourceConfCache = new ConcurrentHashMap<String, IndexableResourceConf>();
-    private static final Map<String, IndexableResourceConf> fullResourceConfCache = new ConcurrentHashMap<String, IndexableResourceConf>();
-    private static final Map<String, IndexableDocType> indexableDocTypeCache = new ConcurrentHashMap<String, IndexableDocType>();
+    private static final Map<String, IndexableResourceConf> resourceConfCache
+            = new ConcurrentHashMap<String, IndexableResourceConf>();
+    private static final Map<String, IndexableResourceConf> fullResourceConfCache
+            = new ConcurrentHashMap<String, IndexableResourceConf>();
+    private static final Map<String, IndexableDocType> indexableDocTypeCache
+            = new ConcurrentHashMap<String, IndexableDocType>();
 
     private static final IndexableDocType NULL = new IndexableDocTypeDescriptor();
 

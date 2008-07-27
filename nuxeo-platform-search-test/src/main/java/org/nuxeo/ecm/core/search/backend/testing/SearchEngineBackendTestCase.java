@@ -85,7 +85,7 @@ public abstract class SearchEngineBackendTestCase extends NXRuntimeTestCase {
         return (SearchServiceInternals) service;
     }
 
-    public void testRegistration() throws Exception {
+    public void testRegistration() {
         assertEquals(1,
                 getSearchServiceInternals().getSearchEngineBackends().size());
         SearchEngineBackend backend = getBackend();

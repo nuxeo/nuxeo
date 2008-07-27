@@ -105,7 +105,7 @@ public class FieldDescriptor {
         }
     }
 
-    public Object getRawValue(DocumentModel model) throws ClientException {
+    public Object getRawValue(DocumentModel model) {
         return model.getProperty(schema, name);
     }
 

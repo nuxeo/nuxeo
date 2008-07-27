@@ -992,7 +992,7 @@ public class SearchServiceImpl extends DefaultComponent implements
     public void setNumberOfIndexingThreads(int numberOfIndexingThreads) {
         log.info("Setting indexing thread pool size: " +
                 Integer.toString(numberOfIndexingThreads));
-        this.threadPoolSizeMax = numberOfIndexingThreads;
+        threadPoolSizeMax = numberOfIndexingThreads;
     }
 
     public void saveAllSessions() throws IndexingException {

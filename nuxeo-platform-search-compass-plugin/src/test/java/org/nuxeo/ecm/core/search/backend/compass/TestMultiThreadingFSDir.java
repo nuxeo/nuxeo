@@ -36,7 +36,7 @@ public class TestMultiThreadingFSDir extends NXRuntimeTestCase {
 
     protected SearchService service;
 
-    static protected final String ENGINE_NAME = "compass";
+    protected static final String ENGINE_NAME = "compass";
 
     @Override
     public void setUp() throws Exception {

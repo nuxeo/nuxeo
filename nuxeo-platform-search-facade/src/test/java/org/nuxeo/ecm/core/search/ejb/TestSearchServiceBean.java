@@ -45,7 +45,7 @@ public class TestSearchServiceBean extends NXRuntimeTestCase {
         assertNotNull(service);
     }
 
-    public void testBean() throws Exception {
+    public void testBean() {
         //SearchService service = new SearchServiceBean();
         // :XXX: Just checking the logs here for now.
         //service.index(new IndexableResourcesImpl());

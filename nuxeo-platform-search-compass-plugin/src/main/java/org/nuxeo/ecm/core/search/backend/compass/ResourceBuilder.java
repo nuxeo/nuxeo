@@ -23,13 +23,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Calendar;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,7 +63,6 @@ import sun.misc.BASE64Encoder;
  * or for another resource.
  *
  * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
- *
  */
 public class ResourceBuilder {
 
@@ -109,7 +107,7 @@ public class ResourceBuilder {
      */
     // TODO apply converter TODO integrate or drop
     @SuppressWarnings("unused")
-    private Property buildDynamicalProperty(String name, Object value,
+    private static Property buildDynamicalProperty(String name, Object value,
             String analyzer, Store store, Index index) {
 
         Field f = new Field(name, (String) value,
@@ -145,7 +143,6 @@ public class ResourceBuilder {
      * @param stored
      * @param multiple
      * @param sortable
-     * @param properties TODO
      * @param properties optional map of properties. Musn't be null
      * @param sortOption TODO
      * @throws IndexingException

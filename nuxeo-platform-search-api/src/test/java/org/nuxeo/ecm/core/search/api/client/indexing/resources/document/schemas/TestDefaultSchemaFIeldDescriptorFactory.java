@@ -44,7 +44,7 @@ public class TestDefaultSchemaFIeldDescriptorFactory extends NXRuntimeTestCase {
                 "default-fieldfactory-components-test-setup.xml");
     }
 
-    public void testConfiguration() throws Exception {
+    public void testConfiguration() {
         SchemaManager typeManager = TypeManagerServiceDelegate.getRemoteTypeManagerService();
         assertNotNull(typeManager);
         assertNotNull(factory.getSchemaByPrefix("v"));
@@ -58,7 +58,7 @@ public class TestDefaultSchemaFIeldDescriptorFactory extends NXRuntimeTestCase {
         }
     }
 
-    public void testSimpleProperties() throws Exception {
+    public void testSimpleProperties() {
         loadFieldsFromSchema("various");
         IndexableFieldDescriptor field;
 
@@ -80,7 +80,7 @@ public class TestDefaultSchemaFIeldDescriptorFactory extends NXRuntimeTestCase {
         assertFalse(field.isMultiple());
     }
 
-    public void testListProperties() throws Exception {
+    public void testListProperties() {
         loadFieldsFromSchema("lists");
         IndexableFieldDescriptor field;
 
@@ -96,7 +96,7 @@ public class TestDefaultSchemaFIeldDescriptorFactory extends NXRuntimeTestCase {
         assertEquals("date", field.getIndexingType());
     }
 
-    public void testComplexProperty() throws Exception {
+    public void testComplexProperty() {
         loadFieldsFromSchema("complex");
 
         IndexableFieldDescriptor field;

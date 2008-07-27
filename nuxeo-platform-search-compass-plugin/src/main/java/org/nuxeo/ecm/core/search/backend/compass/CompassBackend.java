@@ -336,9 +336,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
      * It's quite possible that Compass could do a better join of handling joins
      * etc by its own concept of MultiResource.
      */
-    @SuppressWarnings("unchecked")
     public void index(ResolvedResources resources) throws IndexingException {
-
 
         boolean activeTxn = false;
         boolean userTxn;
@@ -401,7 +399,8 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         if (optimizerLock.tryLock()) {
             try {
                 optimize_try += 1;
-                if ((optimize_try >= OPTIMIZER_SAVE_INTERVAL) && (getCompass().getSearchEngineOptimizer().needOptimization())) {
+                if ((optimize_try >= OPTIMIZER_SAVE_INTERVAL)
+                        && (getCompass().getSearchEngineOptimizer().needOptimization())) {
                     optimize_try=0;
                     log.debug("Running optimizer");
                     getCompass().getSearchEngineOptimizer().optimize();
@@ -822,7 +821,6 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         return s;
     }
 
-    @SuppressWarnings("unchecked")
     public SearchServiceSession createSession() {
         SearchServiceSession s = new SearchServiceSessionImpl();
         return createSession(s.getSessionId());

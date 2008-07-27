@@ -317,7 +317,7 @@ public final class IndexingHelper {
     }
 
     private static void recursiveIndex(DocumentModel docModel,
-            CoreSession session) throws Exception {
+            CoreSession session) {
         recursiveIndex(docModel, session,
                 SearchServiceDelegate.getRemoteSearchService());
     }

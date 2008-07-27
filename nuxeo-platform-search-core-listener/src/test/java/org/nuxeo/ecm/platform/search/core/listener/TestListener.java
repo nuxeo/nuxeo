@@ -200,10 +200,8 @@ public class TestListener extends RepositoryTestCase {
         prefetchInfo.put("dc.title", "title");
         prefetchInfo.put("dc.modified", new GregorianCalendar());
         prefetchInfo.put("dc.contributors", new String[0]);
-        if (prefetchInfo != null) {
-            for (String k : prefetchInfo.keySet()) {
-                dm.prefetchProperty(k, prefetchInfo.get(k));
-            }
+        for (String k : prefetchInfo.keySet()) {
+            dm.prefetchProperty(k, prefetchInfo.get(k));
         }
 
         assertFalse(dm.getPrefetch().isEmpty());

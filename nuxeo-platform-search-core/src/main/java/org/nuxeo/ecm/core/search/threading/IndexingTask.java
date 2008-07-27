@@ -102,7 +102,7 @@ public class IndexingTask extends AbstractIndexingTask {
         }
     }
 
-    private void recycledIfNeeded() {
+    private static void recycledIfNeeded() {
         boolean needRecycle;
 
         Thread thread = Thread.currentThread();

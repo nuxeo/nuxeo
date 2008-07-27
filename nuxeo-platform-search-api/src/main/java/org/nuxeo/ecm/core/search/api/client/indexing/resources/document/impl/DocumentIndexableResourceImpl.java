@@ -159,6 +159,7 @@ public class DocumentIndexableResourceImpl extends
         return docRef;
     }
 
+    @SuppressWarnings("unchecked")
     protected Serializable extractComplexProperty(Serializable complex,
             String subField) {
         if (complex == null) {
