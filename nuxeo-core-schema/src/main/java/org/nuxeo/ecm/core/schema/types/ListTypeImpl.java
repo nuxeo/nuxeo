@@ -185,7 +185,6 @@ public class ListTypeImpl extends AbstractType implements ListType {
         }
     }
 
-    @Override
     @SuppressWarnings("unchecked")
     public Object convert(Object object) throws TypeException {
         if (object instanceof List) {
