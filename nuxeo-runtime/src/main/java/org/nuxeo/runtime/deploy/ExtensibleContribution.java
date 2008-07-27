@@ -82,7 +82,7 @@ public abstract class ExtensibleContribution extends Contribution {
 
     protected ExtensibleContribution getMergedContribution() throws Exception {
         if (baseContribution == null) {
-            return this.clone();
+            return clone();
         }
         ExtensibleContribution mc = baseContribution.getMergedContribution();
         copyOver(mc);
@@ -114,7 +114,8 @@ public abstract class ExtensibleContribution extends Contribution {
             return clone;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new CloneNotSupportedException("Failed to instantiate the contribution class. Contribution classes must have a trivial constructor");
+            throw new CloneNotSupportedException(
+                    "Failed to instantiate the contribution class. Contribution classes must have a trivial constructor");
         }
     }
 

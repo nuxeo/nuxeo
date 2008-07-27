@@ -86,7 +86,6 @@ public class SystemLoginModule implements LoginModule {
         return false;
     }
 
-    @SuppressWarnings("unchecked")
     public boolean commit() throws LoginException {
         if (trace) {
             log.trace("commit, subject=" + subject);

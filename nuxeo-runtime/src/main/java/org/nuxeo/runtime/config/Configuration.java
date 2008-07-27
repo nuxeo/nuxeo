@@ -225,7 +225,7 @@ public class Configuration {
         }
     }
 
-    private void loadStreamingConfig(String serverLocator) throws Exception {
+    private static void loadStreamingConfig(String serverLocator) throws Exception {
         StreamingService streamingService = (StreamingService) Framework.getRuntime().getComponent(
                 StreamingService.NAME);
         if (!streamingService.isServer()) { // if this host ignores updating

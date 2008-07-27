@@ -39,8 +39,12 @@ public class LocatorHelper {
     private static final String ANY = "0.0.0.0";
     private static final String SERVER_BIND_ADDRESS = "jboss.bind.address";
 
+    // Utility class.
+    private LocatorHelper() {
+    }
+
     public static final InvokerLocator getLocator(String protocol, String host,
-            int port, String path, Map parameters) {
+            int port, String path, Map<String, String> parameters) {
         if (protocol == null) {
             protocol = "socket";
         }

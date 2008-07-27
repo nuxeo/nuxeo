@@ -140,8 +140,8 @@ public class RemotingService extends DefaultComponent {
 
             //TODO: the current version of jboss remoting doesn't support
             // locatorUrl on the servlet impl. - see docs
-            // when this will be supported ignore regitsering the mbean and use locatorUrl to retrieve the invoker
-            // (this aproach is more portable)
+            // when this will be supported ignore registering the mbean and use locatorUrl to retrieve the invoker
+            // (this approach is more portable)
             Iterator<?> it = MBeanServerFactory.findMBeanServer(null).iterator();
             if (it.hasNext()) {
                 MBeanServer mb = (MBeanServer)it.next();
@@ -185,15 +185,12 @@ public class RemotingService extends DefaultComponent {
         return isServer;
     }
 
-
-
     public static void main(String[] args) {
         try {
             Server server = connect("servlet://localhost:8080/nuxeo/ServerInvokerServlet");
             Properties props = server.getProperties();
             System.out.println(props);
         } catch (Exception e) {
-
         }
     }
 
