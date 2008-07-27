@@ -28,8 +28,8 @@ public class TestExtensionPoint extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployContrib("BaseXPoint.xml");
-        deployContrib("OverridingXPoint.xml");
+        deployContrib("org.nuxeo.runtime.test.tests", "BaseXPoint.xml");
+        deployContrib("org.nuxeo.runtime.test.tests", "OverridingXPoint.xml");
     }
 
     public void testOverride() {

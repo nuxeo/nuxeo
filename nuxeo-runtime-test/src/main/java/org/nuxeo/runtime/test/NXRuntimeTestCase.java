@@ -50,7 +50,6 @@ import org.osgi.framework.Bundle;
  * <code>runtime</code> instance variable in derived classes.
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class NXRuntimeTestCase extends MockObjectTestCase {
 
@@ -167,8 +166,9 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
 
     /**
      * Makes sure there is no previous runtime hanging around.
-     * <p>This happens for instance if a previous test had errors in its
-     * <code>setUp()</code>, because tearDown has not been called</p>
+     * <p>
+     * This happens for instance if a previous test had errors in its
+     * <code>setUp()</code>, because <code>tearDown()</code> has not been called.
      *
      * @throws Exception
      */
@@ -183,8 +183,7 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
     }
 
     public static URL getResource(String resource) {
-        return Thread.currentThread().getContextClassLoader()
-                .getResource(resource);
+        return Thread.currentThread().getContextClassLoader().getResource(resource);
     }
 
     /**
@@ -292,7 +291,9 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
         runtime.getContext().undeploy(url);
     }
 
-    protected void undeployContrib(URL url, String contrib) throws Exception {
+    // TODO: Never used. Remove?
+    @Deprecated
+    protected void undeployContrib(URL url, String contrib) {
         assertEquals(runtime, Framework.getRuntime());
         log.info("Undeploying contribution from " + url.toString());
         try {
@@ -301,7 +302,6 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
             e.printStackTrace();
             fail("Failed to undeploy contrib " + url.toString());
         }
-
     }
 
     protected static boolean isVersionSuffix(String s) {
@@ -313,7 +313,8 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
 
     /**
      * Resolves an URL for bundle deployment code.
-     * <p>TODO: Implementation could be finer...</p>
+     * <p>
+     * TODO: Implementation could be finer...
      *
      * @return the resolved url
      */
@@ -403,7 +404,8 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
                 return bundleFile;
             }
         }
-        log.warn(String.format("No bundle with symbolic name '%s'; Falling back to deprecated url lookup scheme", bundleName));
+        log.warn(String.format(
+                "No bundle with symbolic name '%s'; Falling back to deprecated url lookup scheme", bundleName));
         return oldLookupBundle(bundleName);
     }
 
@@ -419,8 +421,7 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
         }
         log.warn(String.format(
                 "URL-based bundle lookup is deprecated. Please use the symbolic name from MANIFEST (%s) instead",
-                readSymbolicName(bundleFile))
-                );
+                readSymbolicName(bundleFile)));
         return bundleFile;
     }
 

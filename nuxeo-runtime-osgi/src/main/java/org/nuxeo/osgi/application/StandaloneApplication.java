@@ -193,10 +193,6 @@ public class StandaloneApplication extends OSGiAdapter {
     /**
      * Creates the system bundle from the jar specified by the
      * nuxeo.osgi.system.bundle property.
-     *
-     * @param properties
-     * @return
-     * @throws IOException
      */
     public static BundleFile createSystemBundle(URL systemBundle) throws URISyntaxException, IOException {
         File file = new File(systemBundle.toURI());
