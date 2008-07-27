@@ -62,9 +62,10 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
 
     private boolean useUserIdentificationInfoCB = false;
 
+    @Override
     @SuppressWarnings("unchecked")
     public void initialize(Subject subject, CallbackHandler callbackHandler,
-            Map<String, ?> sharedState, Map<String, ?> options) {
+            Map sharedState, Map options) {
         // explicit cast to match the direct superclass method declaration
         // (JBoss implementation)
         // rather than the newer (jdk1.5) LoginModule (... Map<String,?>...)

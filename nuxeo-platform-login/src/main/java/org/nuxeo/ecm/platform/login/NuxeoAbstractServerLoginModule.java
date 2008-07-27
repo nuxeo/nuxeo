@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.login;
 import java.security.Principal;
 import java.security.acl.Group;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,8 +40,8 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
     private static final Log log = LogFactory.getLog(NuxeoAbstractServerLoginModule.class);
 
     protected Subject subject;
-    protected Map<String, ?> sharedState;
-    protected Map<String, ?> options;
+    protected Map sharedState;
+    protected Map options;
 
     protected boolean loginOk;
 
@@ -91,9 +90,9 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
              */
 
             // Copy the group members to the Subject group
-            Enumeration members = group.members();
+            Enumeration<? extends Principal> members = group.members();
             while (members.hasMoreElements()) {
-                Principal role = (Principal) members.nextElement();
+                Principal role = members.nextElement();
                 subjectGroup.addMember(role);
             }
         }
@@ -101,7 +100,7 @@ public abstract class NuxeoAbstractServerLoginModule implements LoginModule {
     }
 
     public void initialize(Subject subject, CallbackHandler callbackHandler,
-            Map<String, ?> sharedState, Map<String, ?> options) {
+            Map sharedState, Map options) {
         this.subject = subject;
         this.callbackHandler = callbackHandler;
         this.sharedState = sharedState;
