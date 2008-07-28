@@ -20,14 +20,17 @@
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import javax.faces.event.PhaseId;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.contexts.FacesLifecycle;
 import org.jboss.seam.contexts.Lifecycle;
+import org.jboss.seam.contexts.ServletLifecycle;
+import org.jboss.seam.core.ConversationPropagation;
 import org.jboss.seam.core.Manager;
+import org.jboss.seam.servlet.ServletRequestSessionMap;
+import org.jboss.seam.web.ServletContexts;
 import org.nuxeo.ecm.platform.ui.web.util.SeamComponentCallHelper;
 import org.restlet.Filter;
 import org.restlet.Restlet;
@@ -45,6 +48,7 @@ import com.noelios.restlet.http.HttpRequest;
  * Restlet Filter to initialized Seam context
  *
  * @author <a href="mailto:td@nuxeo.com">Thierry Delprat</a>
+ * @author Florent Guillaume
  */
 
 public class SeamRestletFilter extends Filter {
@@ -65,48 +69,45 @@ public class SeamRestletFilter extends Filter {
     @Override
     protected void beforeHandle(Request request, Response response) {
 
+        FacesLifecycle.setPhaseId(PhaseId.INVOKE_APPLICATION);
         if (useConversation && (request instanceof HttpRequest)) {
              // Complete HTTP call with convesation
-            HttpRequest httpRequest = (HttpRequest) request;
-            HttpCall httpCall = httpRequest.getHttpCall();
+            HttpCall httpCall = ((HttpRequest) request).getHttpCall();
             if (httpCall instanceof ServletCall) {
                 HttpServletRequest httpServletRequest = ((ServletCall) httpCall).getRequest();
-                HttpSession session = httpServletRequest.getSession(false);
-                Lifecycle.setServletRequest(httpServletRequest);
-                Lifecycle.setPhaseId(PhaseId.INVOKE_APPLICATION);
-                // XXX : Hack
-                ServletContext servletContext = Lifecycle.getServletContext();
-                Lifecycle.beginRequest(servletContext, session, httpServletRequest);
 
-                if (useConversation) {
-                    String cId = getConversationId(httpServletRequest);
-                    if (cId != null) {
-                        Manager.instance().restoreConversation(cId);
-                        Lifecycle.resumeConversation(session);
-                    }
-                }
+                // see ContextualHttpServletRequest / SOAPRequestHandler
+                ServletLifecycle.beginRequest(httpServletRequest);
+                ServletContexts.instance().setRequest(httpServletRequest);
+                ConversationPropagation.instance().restoreConversationId(httpServletRequest.getParameterMap());
+                Manager.instance().restoreConversation();
+                ServletLifecycle.resumeConversation(httpServletRequest);
+                Manager.instance().handleConversationPropagation(httpServletRequest.getParameterMap());
+                return;
+
             }
-        } else {
-            // Standard Call without conversation
-            Lifecycle.beginCall();
-            Lifecycle.setPhaseId(PhaseId.INVOKE_APPLICATION);
         }
+        // Standard call without conversation
+        Lifecycle.beginCall();
     }
 
     @Override
     protected void afterHandle(Request request, Response response) {
-        if (useConversation) {
-            // End http request with conversation
-            //Manager.instance().endRequest( ContextAdaptor.getSession(session) );
-            Lifecycle.endRequest();
-            Lifecycle.setPhaseId(null);
-            Lifecycle.setServletRequest(null);
-        } else {
-            // end simple call without conversation
-            Lifecycle.setPhaseId(null);
-            Lifecycle.endCall();
+        FacesLifecycle.setPhaseId(null);
+        if (useConversation && request instanceof HttpRequest) {
+            HttpCall httpCall = ((HttpRequest) request).getHttpCall();
+            if (httpCall instanceof ServletCall) {
+                HttpServletRequest httpServletRequest = ((ServletCall) httpCall).getRequest();
+
+                // see ContextualHttpServletRequest / SOAPRequestHandler
+                Manager.instance().endRequest(new ServletRequestSessionMap(httpServletRequest));
+                ServletLifecycle.endRequest(httpServletRequest);
+                return;
+               }
         }
+        Lifecycle.endCall();
     }
+
 
     @Override
     protected void doHandle(Request request, Response response) {
@@ -131,11 +132,6 @@ public class SeamRestletFilter extends Filter {
         } else {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         }
-    }
-
-    private static String getConversationId(HttpServletRequest request) {
-        String cParam = Manager.instance().getConversationIdParameter();
-        return request.getParameter(cParam);
     }
 
 }

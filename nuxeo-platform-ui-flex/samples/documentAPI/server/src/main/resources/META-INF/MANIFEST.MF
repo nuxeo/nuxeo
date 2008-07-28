@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Flex Simple Sample
+Bundle-SymbolicName: org.nuxeo.ecm.platform.ui.flex.samples.documentAPI;singleton:=true
+Require-Bundle: org.nuxeo.ecm.platform.ui.flex
+Nuxeo-Component: OSGI-INF/flex-actions-contrib.xml
+Nuxeo-RequiredBy: org.nuxeo.ecm.war

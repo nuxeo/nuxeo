@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<services-config>
+    <services>
+        <service
+            id="documentAPI-service"
+            class="flex.messaging.services.RemotingService"
+            messageTypes="flex.messaging.messages.RemotingMessage">
+
+            <!--
+            Note:
+            this value is used on client and server side.
+            this is a Seam component name.
+            -->
+            <destination id="flexRepositoryService"/>
+            <default-channels>
+                <!--
+                Note:
+                this is URL/channel configuration
+                -->
+                <channel ref="seam-amf"/>
+            </default-channels>
+        </service>
+    </services>
+
+    <channels>
+        <channel-definition id="seam-amf" class="mx.messaging.channels.AMFChannel">
+            <endpoint
+                uri="http://{server.name}:{server.port}/nuxeo/seam/resource/nuxeo-amf"
+                class="flex.messaging.endpoints.AMFEndpoint"/>
+        </channel-definition>
+
+        <!--server.port and server.name are resolved dynamically at run time-->
+    </channels>
+
+</services-config>

@@ -4,9 +4,6 @@ import java.io.Serializable;
 
 public class ModifiedDocumentDescriptorPage implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     private final int pageIndex;
@@ -15,11 +12,17 @@ public class ModifiedDocumentDescriptorPage implements Serializable {
 
     private ModifiedDocumentDescriptor[] modifiedDocuments;
 
-    public ModifiedDocumentDescriptorPage(ModifiedDocumentDescriptor[] data, int pageIndex, boolean bHasModePage)
-    {
-        this.pageIndex=pageIndex;
-        this.bHasMorePage=bHasModePage;
-        this.modifiedDocuments=data;
+    public ModifiedDocumentDescriptorPage() {
+        super();
+        pageIndex = 0;
+        bHasMorePage = false;
+    }
+
+    public ModifiedDocumentDescriptorPage(ModifiedDocumentDescriptor[] data,
+            int pageIndex, boolean bHasModePage) {
+        this.pageIndex = pageIndex;
+        this.bHasMorePage = bHasModePage;
+        this.modifiedDocuments = data;
     }
 
     public int getPageIndex() {
@@ -33,7 +36,6 @@ public class ModifiedDocumentDescriptorPage implements Serializable {
     public ModifiedDocumentDescriptor[] getModifiedDocuments() {
         return modifiedDocuments;
     }
-
 
     public boolean getHasMorePage() {
         return bHasMorePage;
