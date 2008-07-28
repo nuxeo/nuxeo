@@ -21,8 +21,6 @@ package org.nuxeo.runtime.api;
 
 import java.util.Hashtable;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * A service provider.
  * <p>
@@ -69,12 +67,12 @@ public class DefaultServiceProvider implements ServiceProvider {
         final Class<?> type;
         Object service;
 
-        public ServiceRef(@NotNull Object service) {
+        public ServiceRef(Object service) {
             this.service = service;
             type = service.getClass();
         }
 
-        public ServiceRef(@NotNull Class<?> type) {
+        public ServiceRef(Class<?> type) {
             service = null;
             this.type = type;
         }
