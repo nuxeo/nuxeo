@@ -23,8 +23,7 @@
       java.naming.factory.initial=org.jnp.interfaces.NamingContextFactory
       java.naming.factory.url.pkgs=org.jnp.interfaces
       java.naming.provider.url=127.0.0.1:1099
-    </attribute>
-    -->
+    </attribute -->
   </mbean>
 
   <!-- mbean code="org.jboss.jms.jndi.JMSProviderLoader"

@@ -28,11 +28,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Abstract Nuxeo Core Validators Rules.
- *
  * <p>
  * Offers Nuxeo Core base API for validators that need to connect on Nuxeo Core
  * to compute validators.
- * </p>
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  *

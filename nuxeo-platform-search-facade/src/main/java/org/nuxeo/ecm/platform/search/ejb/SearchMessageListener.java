@@ -67,7 +67,7 @@ public class SearchMessageListener implements MessageListener {
 
     private static final Log log = LogFactory.getLog(SearchMessageListener.class);
 
-    private transient SearchService service;
+    private SearchService service;
 
     private LoginContext loginCtx;
 
@@ -95,14 +95,6 @@ public class SearchMessageListener implements MessageListener {
 
         try {
             login();
-        } catch (Exception e) {
-            throw new EJBException(e);
-        }
-
-        // :XXX: deal with other events such as audit, relations, etc...
-
-        try {
-
             SearchService service = getSearchService();
 
             // Check if the search service is active
@@ -111,8 +103,9 @@ public class SearchMessageListener implements MessageListener {
             }
 
             Object obj = ((ObjectMessage)message).getObject();
-            if(!(obj instanceof DocumentMessage))
+            if(!(obj instanceof DocumentMessage)) {
                 return;
+            }
             DocumentMessage doc = (DocumentMessage) obj;
             String eventId = doc.getEventId();
 
@@ -139,7 +132,6 @@ public class SearchMessageListener implements MessageListener {
                         + " is desactivated for indexing");
                 return;
             }
-
             boolean recursive = eventConf.isRecursive();
             String action = eventConf.getAction();
 

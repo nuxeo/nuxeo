@@ -91,12 +91,11 @@ public class TestJenaGraphReification extends NXRuntimeTestCase {
         statements.add(st2);
     }
 
-    private String getTestFile() {
+    private static String getTestFile() {
         String filePath = "test-reified.rdf";
         return FileUtils.getResourcePathFromContext(filePath);
     }
 
-    @SuppressWarnings("unchecked")
     private void compareStatements(List<Statement> first, List<Statement> second) {
         // ignore spurious statements representing properties that may be given
         // in the first list -> now useless, see NXP-1559

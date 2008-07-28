@@ -64,7 +64,7 @@ public class DirectoryManagerBean implements DirectoryManager {
 
     private static final Map<Long, String> sessionDirectoryNames = new HashMap<Long, String>();
 
-    private transient DirectoryService directoryService;
+    private DirectoryService directoryService;
 
     private AtomicLong sessionIdCounter = new AtomicLong(0);
 
