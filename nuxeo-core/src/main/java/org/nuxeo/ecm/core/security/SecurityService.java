@@ -124,7 +124,8 @@ public class SecurityService extends DefaultComponent {
         return permissionProvider;
     }
 
-    public void invalidateCache(Session session, String username) {
+    // Never used. Remove ?
+    public static void invalidateCache(Session session, String username) {
         session.getRepository().getSecurityManager().invalidateCache(session);
     }
 
@@ -197,7 +198,7 @@ public class SecurityService extends DefaultComponent {
         }
     }
 
-    protected String[] getPrincipalsToCheck(Principal principal) {
+    protected static String[] getPrincipalsToCheck(Principal principal) {
         List<String> userGroups = null;
         if (principal instanceof NuxeoPrincipal) {
             userGroups = ((NuxeoPrincipal) principal).getAllGroups();
@@ -296,7 +297,7 @@ public class SecurityService extends DefaultComponent {
         return Access.UNKNOWN;
     }
 
-    public List<SecuritySummaryEntry> getSecuritySummary(Document doc,
+    public static List<SecuritySummaryEntry> getSecuritySummary(Document doc,
             Boolean includeParents) {
         List<SecuritySummaryEntry> result = new ArrayList<SecuritySummaryEntry>();
 
@@ -306,20 +307,20 @@ public class SecurityService extends DefaultComponent {
 
         addChildrenToSecuritySummary(doc, result);
         // TODO: change API to use boolean instead
-        if (includeParents.booleanValue()) {
+        if (includeParents) {
             addParentsToSecurirySummary(doc, result);
         }
         return result;
     }
 
-    private SecuritySummaryEntry createSecuritySummaryEntry(Document doc)
+    private static SecuritySummaryEntry createSecuritySummaryEntry(Document doc)
             throws DocumentException {
         return new SecuritySummaryEntryImpl(new IdRef(doc.getUUID()),
                 new PathRef(doc.getPath()),
                 doc.getSession().getSecurityManager().getACP(doc));
     }
 
-    private void addParentsToSecurirySummary(Document doc,
+    private static void addParentsToSecurirySummary(Document doc,
             List<SecuritySummaryEntry> summary) {
 
         Document parent;
@@ -349,7 +350,7 @@ public class SecurityService extends DefaultComponent {
         addParentsToSecurirySummary(parent, summary);
     }
 
-    private void addChildrenToSecuritySummary(Document doc,
+    private static void addChildrenToSecuritySummary(Document doc,
             List<SecuritySummaryEntry> summary) {
         try {
             SecuritySummaryEntry entry = createSecuritySummaryEntry(doc);

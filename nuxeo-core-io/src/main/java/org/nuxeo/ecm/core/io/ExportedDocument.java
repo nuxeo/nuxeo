@@ -24,6 +24,7 @@ import java.util.Map;
 import org.dom4j.Document;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 
 /**
  * A representation for an exported document.
@@ -38,7 +39,7 @@ public interface ExportedDocument {
     /**
      * @return source DocumentLocation
      */
-    org.nuxeo.ecm.core.api.DocumentLocation getSourceLocation();
+    DocumentLocation getSourceLocation();
 
     /**
      * @return the path.

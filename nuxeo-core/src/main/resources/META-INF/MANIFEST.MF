@@ -26,6 +26,7 @@ Export-Package: org.nuxeo.ecm.core,
  org.nuxeo.ecm.core.security,
  org.nuxeo.ecm.core.util
 Eclipse-LazyStart: true
+Eclipse-ExtensibleAPI: true
 Nuxeo-Component: OSGI-INF/CoreService.xml,
  OSGI-INF/RepositoryService.xml,
  OSGI-INF/CoreExtensions.xml,
