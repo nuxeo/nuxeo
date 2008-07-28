@@ -22,7 +22,6 @@ package org.nuxeo.ecm.core.api.model.impl;
 import java.io.Serializable;
 import java.util.Iterator;
 
-import org.jetbrains.annotations.Nullable;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
@@ -296,7 +295,6 @@ public abstract class AbstractProperty implements Property {
         }
     }
 
-    @Nullable
     public <T> T getValue(Class<T> type) throws PropertyException {
         return convertTo(getValue(), type);
     }

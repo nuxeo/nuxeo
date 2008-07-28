@@ -21,8 +21,6 @@ package org.nuxeo.ecm.core.io;
 
 import java.io.IOException;
 
-import org.jetbrains.annotations.Nullable;
-
 /**
  * A document reader. This reader is designed to be accessed remotely (over a
  * network).
@@ -47,7 +45,6 @@ public interface DocumentReader {
      *         documents to read
      * @throws IOException
      */
-    @Nullable
     ExportedDocument[] read(int count) throws IOException;
 
     /**

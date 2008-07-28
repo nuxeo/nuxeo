@@ -23,8 +23,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.jetbrains.annotations.Nullable;
-
 /**
  * A helper class that parses Dates out of Strings with date time in RFC822 and W3CDateTime
  * formats plus the variants Atom (0.3) and RSS (0.9, 0.91, 0.92, 0.93, 0.94, 1.0 and 2.0)
@@ -35,7 +33,6 @@ import org.jetbrains.annotations.Nullable;
  * <p/>
  *
  * @author Alejandro Abdelnur
- *
  */
 public class DateParser {
 
@@ -195,7 +192,6 @@ public class DateParser {
      *         It returns null if it was not possible to parse the given string into a Date.
      *
      */
-    @Nullable
     public static Date parseW3CDateTime(String sDate) {
         if (sDate == null) {
             return null;
@@ -234,9 +230,7 @@ public class DateParser {
      * @param sDate string to parse for a date.
      * @return the Date represented by the given W3C date-time string,
      *         or null if it was not possible to parse the given string into a Date.
-     *
      */
-    @Nullable
     public static Date parseDate(String sDate) {
         if (sDate == null) {
             return null;

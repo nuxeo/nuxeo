@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.listener;
 
 import java.util.Collection;
 
-import org.jetbrains.annotations.Nullable;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.operation.Operation;
 
@@ -90,7 +89,6 @@ public interface CoreEventListenerService {
      *            the name of the event listener used a registration time
      * @return the EventListener instance, or null if none found.
      */
-    @Nullable
     EventListener getEventListenerByName(String name);
 
 }

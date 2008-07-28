@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.jetbrains.annotations.Nullable;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -427,7 +426,6 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      *
      * @return the property value, which may be null
      */
-    @Nullable
     Serializable getValue() throws PropertyException;
 
     /**
@@ -439,7 +437,6 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      *
      * @return the property value, which may be null
      */
-    @Nullable
     <T> T getValue(Class<T> type) throws PropertyException;
 
     /**
@@ -689,10 +686,9 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      * @param toType the conversion type
      * @return the converted value, which may be null
      *
-     * @throws PropertyConversionException If the conversion cannot be made
+     * @throws PropertyConversionException if the conversion cannot be made
      * because of type incompatibilities
      */
-    @Nullable
     <T> T convertTo(Serializable value, Class<T> toType) throws PropertyConversionException;
 
     /**
@@ -729,7 +725,6 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
      *
      * @return the empty instance the empty instance, or null for some implementations
      */
-    @Nullable
     Object newInstance();
 
     /**
