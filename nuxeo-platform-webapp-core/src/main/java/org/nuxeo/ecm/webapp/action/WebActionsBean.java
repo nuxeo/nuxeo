@@ -140,10 +140,13 @@ public class WebActionsBean implements WebActionsLocal, Serializable {
     }
 
     protected ActionContext createActionContext() {
-        if (currentActionContext == null) {
-            currentActionContext = actionContextProvider.createActionContext();
-        }
-        return currentActionContext;
+        // XXX: recreate it because context map holds cache for filters => they
+        // are not evaluated again.
+        // if (currentActionContext == null) {
+        // currentActionContext = actionContextProvider.createActionContext();
+        // }
+        // return currentActionContext;
+        return actionContextProvider.createActionContext();
     }
 
     @Deprecated
