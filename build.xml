@@ -107,6 +107,7 @@
       <arg value="-f" />
       <arg value="${nuxeo.ear.root}/pom.xml" />
       <arg value="-Dnuxeo.ear.assembly=${assembly.name}" />
+      <arg value="-N" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
@@ -118,6 +119,7 @@
       <arg value="-f" />
       <arg value="${nuxeo.ear.root}/pom.xml" />
       <arg value="-Dnuxeo.ear.assembly=${assembly.name}" />
+      <arg value="-N" />
       <arg value="${mvn.opts}" />
     </exec>
   </target>
