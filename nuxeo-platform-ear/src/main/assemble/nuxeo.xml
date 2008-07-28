@@ -134,7 +134,7 @@
       <artifact group="org.jboss.seam" name="jboss-seam-debug"
         version="2.0.3.CR1" />
       <artifact group="org.jboss.el" name="jboss-el" version="2.0.1.GA" />
-      <artifact group="jboss" name="jbpm" version="3.1.2" />
+      <artifact group="jboss" name="jbpm" version="3.1.4" />
       <artifact group="jboss" name="jgroups" version="2.2.9" />
       <artifact group="net.sf.json-lib" name="json-lib" version="0.9" />
       <artifact group="org.apache.lucene" name="lucene-core" version="2.0.0" />
