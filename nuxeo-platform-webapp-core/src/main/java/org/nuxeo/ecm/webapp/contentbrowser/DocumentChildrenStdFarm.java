@@ -32,8 +32,10 @@ import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.DocumentsPageProvider;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
+import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
@@ -42,7 +44,7 @@ import org.nuxeo.ecm.webapp.base.InputController;
 
 /**
  * Creates ResultsProvider for the children of the current document.
- *
+ * 
  * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
 @Name("documentChildrenFarm")
@@ -61,8 +63,8 @@ public class DocumentChildrenStdFarm extends InputController implements
     @In(create = true)
     private DocumentChildrenSearchFarm documentChildrenSearchFarm;
 
-    public PagedDocumentsProvider getResultsProvider(String name, SortInfo sortInfo)
-            throws ClientException {
+    public PagedDocumentsProvider getResultsProvider(String name,
+            SortInfo sortInfo) throws ClientException {
 
         final DocumentModel currentDoc = navigationContext.getCurrentDocument();
 
@@ -72,23 +74,27 @@ public class DocumentChildrenStdFarm extends InputController implements
 
             PagedDocumentsProvider provider;
             if (browseViaSearch) {
-                provider = documentChildrenSearchFarm.getResultsProvider(name, sortInfo);
+                provider = documentChildrenSearchFarm.getResultsProvider(name,
+                        sortInfo);
             } else {
                 provider = getResProviderForDocChildren(currentDoc.getRef());
             }
             provider.setName(name);
             return provider;
         } else {
-            throw new ClientException("Unknown (or not supported) provider: " + name);
+            throw new ClientException("Unknown (or not supported) provider: "
+                    + name);
         }
     }
 
-    private PagedDocumentsProvider getResProviderForDocChildren(DocumentRef docRef)
-            throws ClientException {
+    private PagedDocumentsProvider getResProviderForDocChildren(
+            DocumentRef docRef) throws ClientException {
         FacetFilter facetFilter = new FacetFilter(
                 FacetNames.HIDDEN_IN_NAVIGATION, false);
+        LifeCycleFilter lifeCycleFilter = new LifeCycleFilter("deleted", false);
+        CompoundFilter filter = new CompoundFilter(facetFilter, lifeCycleFilter);
         DocumentModelIterator resultDocsIt = documentManager.getChildrenIterator(
-                docRef, null, SecurityConstants.READ, facetFilter);
+                docRef, null, SecurityConstants.READ, filter);
 
         return new DocumentsPageProvider(resultDocsIt, 10);
     }
