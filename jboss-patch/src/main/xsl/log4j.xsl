@@ -27,7 +27,13 @@
   </xsl:template>
   <xsl:template match="category[@name='org.hibernate']">
   </xsl:template>
+  <xsl:template match="category[@name='org.hibernate.cache.EhCacheProvider']">
+  </xsl:template>
+  <xsl:template match="category[@name='org.hibernate.hql.ast.tree.FromElementType']">
+  </xsl:template>
   <xsl:template match="category[@name='org.jbpm']">
+  </xsl:template>
+  <xsl:template match="category[@name='org.jbpm.jpdl.xml.JpdlXmlReader']">
   </xsl:template>
   <xsl:template match="category[@name='org.compass.core.transaction']">
   </xsl:template>
@@ -75,8 +81,23 @@
     </category>
     <xsl:text>
    </xsl:text>
+    <category name="org.hibernate.cache.EhCacheProvider">
+      <priority value="ERROR"/>
+    </category>
+    <xsl:text>
+   </xsl:text>
+    <category name="org.hibernate.hql.ast.tree.FromElementType">
+      <priority value="ERROR"/>
+    </category>
+    <xsl:text>
+   </xsl:text>
     <category name="org.jbpm">
       <priority value="INFO"/>
+    </category>
+    <xsl:text>
+   </xsl:text>
+    <category name="org.jbpm.jpdl.xml.JpdlXmlReader">
+      <priority value="ERROR"/>
     </category>
     <xsl:text>
    </xsl:text>

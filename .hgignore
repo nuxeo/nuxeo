@@ -10,3 +10,7 @@ bin
 build.properties
 target
 *~
+*.orig
+*.iml
+*.ipr
+*.iws
