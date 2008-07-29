@@ -20,7 +20,7 @@ import java.util.Map;
 import javax.ejb.Local;
 import javax.ejb.Remove;
 
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 
 @Local
 public interface EditorActionLocal {

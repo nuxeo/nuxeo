@@ -2,6 +2,7 @@
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:ui="http://java.sun.com/jsf/facelets">
+  <f:view contentType="text/html" />
   <head>
     <title>
       <ui:insert name="page title">Page title</ui:insert>
@@ -12,7 +13,7 @@
     <nxthemes:resources />
 
     <script type="text/javascript"
-      src="/nuxeo/seam/remoting/interface.js?nxthemesEditorAction">
+      src="/nuxeo/seam/resource/remoting/interface.js?nxthemesEditorAction">
       <!--
         // This space intentionally left blank
         //-->
