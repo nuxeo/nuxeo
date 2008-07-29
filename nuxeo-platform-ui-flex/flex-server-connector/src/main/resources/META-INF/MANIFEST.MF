@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo ECM Flex Platform Fragment
-Bundle-SymbolicName: org.nuxeo.ecm.platform.ui.flex;singleton:=true
-Require-Bundle: org.nuxeo.ecm.platform.ui.api,
- org.nuxeo.ecm.webapp.ui,
- org.nuxeo.ecm.platform.url.api
-Nuxeo-Component: OSGI-INF/authentication-contrib.xml
-Nuxeo-RequiredBy: org.nuxeo.ecm.war
