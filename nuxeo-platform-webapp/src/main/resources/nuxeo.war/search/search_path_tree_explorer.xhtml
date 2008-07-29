@@ -8,9 +8,10 @@
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:rich="http://richfaces.org/rich"
   class="menu">
 
-    <c:if test="#{reducedTreeManager.treeModel != null}">
+    <c:if test="#{reducedTreeActions.treeRoots != null}">
 
       <style type="text/css">
         a.selectedPath { background-color:#CCC; }
@@ -61,58 +62,32 @@
       <a4j:region renderRegionOnly="true">
         <dl>
           <dd class="menuForm">
-            <a4j:outputPanel ajaxRendered="true">
+
             <h:panelGroup id="treeNav">
-              <nxu:lazyTree value="#{reducedTreeManager.treeModel}"
-                showNav="false" showRootNode="true"
-                preserveToggle="false" clientSideToggle="false"
-                var="node" varNodeToggler="t">
-
-                <f:facet name="Document">
-                  <h:panelGroup>
-                    <div id="#{node.nodeCellId}"><a4j:commandLink
-                      immediate="true" rendered="#{node.doc.folder}"
-                      actionListener="#{t.setNodeSelected}"
-                      action="#{t.toggleExpanded}" reRender="treeNav">
-                      <t:graphicImage value="/img/toggle_minus.png"
-                        rendered="#{t.nodeExpanded}" />
-                      <t:graphicImage value="/img/toggle_plus.png"
-                        rendered="#{!t.nodeExpanded}" />
-                    </a4j:commandLink> <span class="popupTarget" docRef="#{node.doc.ref}">
-                    <nxd:restDocumentLink document="#{node.doc}"
-                      actionListener="#{t.setNodeSelected}"
-                      rendered="#{node.doc.folder}"
-                      styleClass="treeLink">
-                      <nxu:graphicImage
-                        value="#{nxd:iconExpandedPath(node.doc)}"
-                        alt="#{node.doc.type}"
-                        rendered="#{t.nodeExpanded}" />
-                      <nxu:graphicImage
-                        value="#{nxd:iconPath(node.doc)}"
-                        alt="#{node.doc.type}"
-                        rendered="#{!t.nodeExpanded}" />
-                    </nxd:restDocumentLink> <a style="cursor:pointer"
-                      onclick="selectElement(this, '#{node.doc.path}')">
-                      <h:outputText value="#{nxd:titleOrId(node.doc)}" />
-                    </a> <t:graphicImage value="/img/transp.gif"
-                      styleClass="iconImage"
-                      rendered="#{!node.doc.folder}" />
-                    <nxd:restDocumentLink document="#{node.doc}"
-                      actionListener="#{t.setNodeSelected}"
-                      action="#{reducedTreeManager.selectNode}"
-                      styleClass="treeLink"
-                      rendered="#{!node.doc.folder}">
-                      <t:graphicImage value="#{node.doc.common.icon}"
-                        styleClass="iconImage"
-                        rendered="#{!node.doc.folder}" />
-                      <h:outputText value="#{nxd:titleOrId(node.doc)}" />
-                    </nxd:restDocumentLink> </span></div>
-                  </h:panelGroup>
-                </f:facet>
-
-              </nxu:lazyTree>
+              <rich:tree
+                adviseNodeOpened="#{reducedTreeActions.adviseNodeOpened}"
+                changeExpandListener="#{reducedTreeActions.changeExpandListener}"
+                icon="#{nodeState.isExpanded(rowKey)?nxd:iconExpandedPath(node.document):nxd:iconPath(node.document)}"
+                iconLeaf="#{nxd:iconPath(node.document)}"
+                iconExpanded="/img/toggle_minus.png"
+                iconCollapsed="/img/toggle_plus.png"
+                rowKeyVar="rowKey"
+                stateVar="nodeState">
+                <rich:recursiveTreeNodesAdaptor
+                  roots="#{reducedTreeActions.treeRoots}"
+                  nodes="#{node.children}"
+                  var="node">
+                  <rich:treeNode
+                    highlightedClass="treeNodeHighlightedClass"
+                    selectedClass="treeNodeSelectedClass">
+                    <a style="cursor:pointer"
+                      onclick="selectElement(this, '#{node.document.path}')">
+                      <h:outputText value="#{nxd:titleOrId(node.document)}" />
+                    </a>
+                  </rich:treeNode>
+                </rich:recursiveTreeNodesAdaptor>
+              </rich:tree>
             </h:panelGroup>
-            </a4j:outputPanel>
 
           </dd>
         </dl>

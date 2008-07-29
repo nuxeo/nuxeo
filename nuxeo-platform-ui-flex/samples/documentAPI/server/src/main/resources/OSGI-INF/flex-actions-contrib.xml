@@ -1,0 +1,18 @@
+<component name="org.nuxeo.ecm.platform.actions.flex.docAPI">
+
+  <require>org.nuxeo.ecm.platform.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+
+    <action id="flexdocAPIeSample"
+      link="/flexsamples/documentAPI.swf" enabled="true"
+      label="flex doc API  sample">
+      <category>FLEX_SAMPLES</category>
+    </action>
+
+  </extension>
+
+
+</component>

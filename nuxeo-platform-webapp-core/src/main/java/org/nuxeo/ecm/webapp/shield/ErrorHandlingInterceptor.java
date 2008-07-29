@@ -33,8 +33,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
-import org.jboss.seam.contexts.Lifecycle;
-import org.jboss.seam.core.Redirect;
+import org.jboss.seam.contexts.FacesLifecycle;
+import  org.jboss.seam.faces.Redirect;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
@@ -75,7 +75,7 @@ public class ErrorHandlingInterceptor implements Serializable {
             // redirect is not allowed during render response phase => throw the
             // error without redirecting
             FacesContext facesContext = FacesContext.getCurrentInstance();
-            if (Lifecycle.getPhaseId() == PhaseId.RENDER_RESPONSE) {
+            if (FacesLifecycle.getPhaseId() == PhaseId.RENDER_RESPONSE) {
                 throw cException;
             }
 
