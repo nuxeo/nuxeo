@@ -41,18 +41,20 @@ public class EventJob implements Job {
 
     private static final Log log = LogFactory.getLog(EventJob.class);
 
-    public void execute(JobExecutionContext context) throws JobExecutionException {
+    public void execute(JobExecutionContext context)
+            throws JobExecutionException {
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         String eventId = dataMap.getString("eventId");
         String eventCategory = dataMap.getString("eventCategory");
         String username = dataMap.getString("username");
 
         // Setup a user session
-        UserSession us = new UserSession(username, dataMap.getString("password"));
+        UserSession us = new UserSession(username,
+                dataMap.getString("password"));
         try {
             us.login();
         } catch (LoginException e) {
-            e.printStackTrace();
+            log.error(e);
             return;
         }
         UserPrincipal principal = new UserPrincipal(username);
@@ -64,8 +66,19 @@ public class EventJob implements Job {
                 eventCategory, comment);
         CoreEventListenerService service = NXCore.getCoreEventListenerService();
         if (service != null) {
-            log.info("Sending scheduled event id=" + eventId + ", category=" + eventCategory);
-            service.notifyEventListeners(event);
+            log.info("Sending scheduled event id=" + eventId + ", category="
+                    + eventCategory);
+
+            // switch to the Nuxeo classloader so that the event listeners work
+            // as usual
+            ClassLoader jbossCL = Thread.currentThread().getContextClassLoader();
+            ClassLoader nuxeoCL = EventJob.class.getClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(nuxeoCL);
+                service.notifyEventListeners(event);
+            } finally {
+                Thread.currentThread().setContextClassLoader(jbossCL);
+            }
         } else {
             log.error("Cannot find EventListenerService");
         }
