@@ -71,6 +71,7 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.F
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.IndexableDocType;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.IndexableDocTypeDescriptor;
 import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.ResourceType;
+import org.nuxeo.ecm.core.search.api.indexingwrapper.DocumentModelIndexingWrapper;
 import org.nuxeo.ecm.core.search.api.internals.IndexingThreadPoolDescriptor;
 import org.nuxeo.ecm.core.search.api.internals.SearchPolicyDescriptor;
 import org.nuxeo.ecm.core.search.api.internals.SearchServiceInternals;
@@ -955,6 +956,8 @@ public class SearchServiceImpl extends DefaultComponent implements
 
     public void indexInThread(DocumentModel dm, Boolean recursive,
             boolean fulltext) throws IndexingException {
+        // get the wrapper if available
+        dm = dm.getAdapter(DocumentModelIndexingWrapper.class);
         IndexingThreadPool.index(dm, recursive, fulltext);
     }
 
