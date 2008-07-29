@@ -28,6 +28,8 @@ import java.sql.Types;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.dialect.Dialect;
 
 /**
@@ -36,6 +38,8 @@ import org.hibernate.dialect.Dialect;
  * @author Florent Guillaume
  */
 public class Column implements Serializable {
+
+    private static final Log log = LogFactory.getLog(Column.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -190,10 +194,8 @@ public class Column implements Serializable {
         Serializable result;
         switch (sqlType) {
         case Types.BIGINT:
-            result = rs.getLong(index);
-            break;
         case Types.INTEGER:
-            result = rs.getInt(index);
+            result = rs.getLong(index);
             break;
         case Types.VARCHAR:
         case Types.CLOB:
@@ -210,6 +212,10 @@ public class Column implements Serializable {
             break;
         case Types.BIT:
             result = rs.getBoolean(index);
+            break;
+        case Types.BLOB:
+            log.error("BLOB fetch unimplemented, returning null");
+            result = null; // XXX TODO
             break;
         default:
             throw new SQLException("Unhandled SQL type: " + sqlType);

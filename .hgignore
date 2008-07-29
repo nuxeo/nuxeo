@@ -6,3 +6,4 @@ bin
 target
 *~
 *.orig
+derby.log

@@ -60,9 +60,9 @@ public class SQLInfo {
 
     private final Database database;
 
-    private final Map<String, List<String>> primaryColumnsMap;
+    private String selectRootIdSql;
 
-    private final Map<String, List<String>> primaryKeysMap;
+    private Column selectRootIdWhatColumn;
 
     private final Map<String, String> selectByIdSqlMap; // statement
 
@@ -139,8 +139,8 @@ public class SQLInfo {
 
         database = new Database();
 
-        primaryColumnsMap = new HashMap<String, List<String>>();
-        primaryKeysMap = new HashMap<String, List<String>>();
+        selectRootIdSql = null;
+        selectRootIdWhatColumn = null;
 
         selectByIdSqlMap = new HashMap<String, String>();
         selectCollectionByIdSqlMap = new HashMap<String, String>();
@@ -197,17 +197,23 @@ public class SQLInfo {
         return sqls;
     }
 
-    // ----- primary keys -----
-
-    public List<String> getPrimaryColumns(String typeName) {
-        return primaryColumnsMap.get(typeName);
-    }
-
-    public List<String> getPrimaryKeys(String typeName) {
-        return primaryKeysMap.get(typeName);
-    }
-
     // ----- select -----
+
+    public String getSelectRootIdSql() {
+        return selectRootIdSql;
+    }
+
+    public Column getSelectRootIdWhatColumn() {
+        return selectRootIdWhatColumn;
+    }
+
+    public String getInsertRootIdSql() {
+        return insertSqlMap.get(model.REPOINFO_TABLE_NAME);
+    }
+
+    public List<Column> getInsertRootIdColumns() {
+        return insertColumnsMap.get(model.REPOINFO_TABLE_NAME);
+    }
 
     /**
      * Gets the SQL statement to select one row.
@@ -382,9 +388,9 @@ public class SQLInfo {
     protected void initRepositorySQL() {
         log.debug("Init repository information");
         TableMaker maker = new TableMaker(model.REPOINFO_TABLE_NAME, false);
-        maker.newPrimaryKey();
-        maker.newColumn(model.REPOINFO_ROOTID_KEY, Types.BIGINT);
-        maker.postProcess();
+        maker.newColumn(model.REPOINFO_REPOID_KEY, Types.INTEGER);
+        maker.newPrimaryKey(); // foreign key to main id
+        maker.postProcessRepository();
     }
 
     /**
@@ -395,7 +401,7 @@ public class SQLInfo {
 
         TableMaker maker = new TableMaker(model.HIER_TABLE_NAME, false);
         maker.newPrimaryKey();
-        maker.newColumn(model.HIER_PARENT_KEY, Types.BIGINT);
+        maker.newMainKey(model.HIER_PARENT_KEY);
         maker.newColumn(model.HIER_CHILD_POS_KEY, Types.INTEGER);
         maker.newColumn(model.HIER_CHILD_NAME_KEY, Types.VARCHAR); // text?
         maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, Types.BIT); // not null
@@ -412,7 +418,7 @@ public class SQLInfo {
     protected void initSimpleFragmentSQL(String tableName) {
         TableMaker maker = new TableMaker(tableName, false);
         if (tableName.equals(model.MAIN_TABLE_NAME)) {
-            maker.newId(); // this is how a new doc id is generated
+            maker.newId(); // global primary key / generation
         } else {
             maker.newPrimaryKey();
         }
@@ -456,15 +462,39 @@ public class SQLInfo {
             database.addTable(table);
         }
 
-        protected void newId() {
-            Column column = newColumn(model.MAIN_KEY, Types.BIGINT);
-            column.setIdentity(true);
-            column.setPrimary(true);
+        protected Column newMainKey(String name) {
+            Column column;
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                column = newColumn(name, Types.VARCHAR);
+                column.setLength(36);
+                break;
+            case DB_IDENTITY:
+                column = newColumn(name, Types.BIGINT);
+                break;
+            default:
+                throw new AssertionError(model.idGenPolicy);
+            }
+            return column;
         }
 
         protected void newPrimaryKey() {
-            Column column = newColumn(model.MAIN_KEY, Types.BIGINT);
+            Column column = newMainKey(model.MAIN_KEY);
             column.setPrimary(true);
+        }
+
+        protected void newId() {
+            Column column = newMainKey(model.MAIN_KEY);
+            column.setPrimary(true);
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                break;
+            case DB_IDENTITY:
+                column.setIdentity(true);
+                break;
+            default:
+                throw new AssertionError(model.idGenPolicy);
+            }
         }
 
         protected void newPrimitiveField(String key, PropertyType type) {
@@ -504,33 +534,56 @@ public class SQLInfo {
 
         // ----------------------- post processing -----------------------
 
+        protected void postProcessRepository() {
+            postProcessRootIdSelect();
+            postProcessInsert();
+        }
+
+        protected void postProcessRootIdSelect() {
+            String what = null;
+            String where = null;
+            for (Column column : table.getColumns()) {
+                String name = column.getName();
+                String qname = column.getQuotedName(dialect);
+                if (name.equals(model.MAIN_KEY)) {
+                    what = qname;
+                    selectRootIdWhatColumn = column;
+                } else if (name.equals(model.REPOINFO_REPOID_KEY)) {
+                    where = qname + " = ?";
+                } else {
+                    throw new AssertionError(column);
+                }
+            }
+            Select select = new Select(dialect);
+            select.setWhat(what);
+            select.setFrom(table.getQuotedName(dialect));
+            select.setWhere(where);
+            selectRootIdSql = select.getStatement();
+        }
+
         /**
-         * Precompute what we can from the information available.
+         * Precompute what we can from the information available for a regular
+         * schema table.
          */
         protected void postProcess() {
-            postProcessPrimary();
             postProcessSelectById(isCollection);
             if (isCollection) {
                 postProcessCollectionInsert();
             } else {
                 postProcessInsert();
             }
-            postProcessIdentityFetch();
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                break;
+            case DB_IDENTITY:
+                postProcessIdentityFetch();
+                break;
+            default:
+                throw new AssertionError(model.idGenPolicy);
+
+            }
             postProcessUpdateById();
             postProcessDelete();
-        }
-
-        protected void postProcessPrimary() {
-            List<String> primaryColumns = new LinkedList<String>();
-            List<String> primaryKeys = new LinkedList<String>();
-            for (Column column : table.getColumns()) {
-                if (column.isPrimary()) {
-                    primaryColumns.add(column.getName());
-                    primaryKeys.add(column.getKey());
-                }
-            }
-            primaryColumnsMap.put(tableName, primaryColumns);
-            primaryKeysMap.put(tableName, primaryKeys);
         }
 
         protected void postProcessSelectById(boolean isCollection) {

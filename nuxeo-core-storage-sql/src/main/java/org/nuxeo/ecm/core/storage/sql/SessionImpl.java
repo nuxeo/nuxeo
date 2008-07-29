@@ -41,7 +41,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -55,8 +54,6 @@ import org.nuxeo.ecm.core.storage.StorageException;
 public class SessionImpl implements Session, XAResource {
 
     private static final Log log = LogFactory.getLog(SessionImpl.class);
-
-    private final Repository repository;
 
     protected final SchemaManager schemaManager;
 
@@ -72,9 +69,8 @@ public class SessionImpl implements Session, XAResource {
 
     private Node rootNode;
 
-    SessionImpl(Repository repository, SchemaManager schemaManager,
-            Mapper mapper, Credentials credentials) throws StorageException {
-        this.repository = repository;
+    SessionImpl(SchemaManager schemaManager, Mapper mapper,
+            Credentials credentials) throws StorageException {
         this.schemaManager = schemaManager;
         this.mapper = mapper;
         this.credentials = credentials;
@@ -295,8 +291,7 @@ public class SessionImpl implements Session, XAResource {
         }
         // XXX do namespace transformations
 
-        // use a temporary id that's guaranteed to not be in the db
-        Serializable id = "T" + repository.getNextTemporaryId();
+        Serializable id = context.generateNewId();
 
         // create the underlying main row
         Map<String, Serializable> map = new HashMap<String, Serializable>();
@@ -448,29 +443,22 @@ public class SessionImpl implements Session, XAResource {
     }
 
     private void computeRootNode() throws StorageException {
-        SimpleFragment repoInfo = (SimpleFragment) context.get(
-                model.REPOINFO_TABLE_NAME, Long.valueOf(0), false);
-        if (repoInfo == null) {
+        Long repositoryId = Long.valueOf(0L); // always 0 for now
+        Serializable rootId = context.getRootId(repositoryId);
+        if (rootId == null) {
             log.debug("Creating root");
             rootNode = addRootNode();
             save();
-
             // record information about the root id
-            Map<String, Serializable> map = new HashMap<String, Serializable>();
-            map.put(model.REPOINFO_ROOTID_KEY, rootNode.getId());
-            repoInfo = (SimpleFragment) context.createSimpleFragment(
-                    model.REPOINFO_TABLE_NAME, Long.valueOf(0L), map);
-            save();
+            context.setRootId(repositoryId, rootNode.getId());
         } else {
-            Serializable rootId = repoInfo.get(model.REPOINFO_ROOTID_KEY);
             rootNode = getNodeById(rootId);
         }
     }
 
     // TODO factor with addChildNode
     private Node addRootNode() throws StorageException {
-        // use a temporary id that's guaranteed to not be in the db
-        Serializable id = "T" + repository.getNextTemporaryId();
+        Serializable id = context.generateNewId();
 
         // create the underlying main row
         Map<String, Serializable> map = new HashMap<String, Serializable>();

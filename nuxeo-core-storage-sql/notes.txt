@@ -1,92 +1,64 @@
-direct run:
+Output of testBasics:
 
-DEBUG [RepositoryImpl] Initializing
-DEBUG [Model] Making model for type testschema
-DEBUG [Model] Making model for type person
-DEBUG [SQLInfo] Init repository information
-DEBUG [SQLInfo] Init hierarchy information
-DEBUG [Mapper] Creating database
-DEBUG [Mapper] SQL: (batch) create table "repositoryinfo" ("id" bigint, "rootid" bigint)
-DEBUG [Mapper] SQL: (batch) create table "hierarchy" ("id" bigint, "parent" bigint, "pos" integer, "name" varchar(255))
-DEBUG [Mapper] SQL: (batch) create table "types" ("id" bigint not null generated always as identity, "primaryType" clob(255))
-DEBUG [Mapper] SQL: (batch) create table "testschema" ("id" bigint, "created" timestamp, "title" clob(255))
-DEBUG [Mapper] SQL: (batch) create table "person" ("id" bigint, "lastname" clob(255), "firstname" clob(255))
-DEBUG [Mapper] SQL: (batch) create table "ARRAY_STRING" ("id" bigint, "pos" integer, "item" clob(255))
-DEBUG [Mapper] SQL: (batch execution)
-DEBUG [Mapper] SQL: SELECT "rootid" FROM "repositoryinfo" WHERE "id" = ?
-DEBUG [Mapper] SQL:   id=0
-DEBUG [SessionImpl] Creating root
-DEBUG [PersistenceContext] Saving persistence context
-DEBUG [Mapper] SQL: INSERT INTO "types" ("primaryType") VALUES (?)
-DEBUG [Mapper] SQL:   primaryType=Root
-DEBUG [Mapper] SQL: values identity_val_local()
-DEBUG [Mapper] SQL:   -> id=1
-DEBUG [Mapper] SQL: INSERT INTO "hierarchy" ("id", "parent", "pos", "name") VALUES (?, ?, ?, ?)
-DEBUG [Mapper] SQL:   id=1, parent=null, pos=null, name=
-DEBUG [PersistenceContext] End of save
-DEBUG [PersistenceContext] Saving persistence context
-DEBUG [Mapper] SQL: INSERT INTO "repositoryinfo" ("id", "rootid") VALUES (?, ?)
-DEBUG [Mapper] SQL:   id=0, rootid=1
-DEBUG [PersistenceContext] End of save
-DEBUG [PersistenceContext] Saving persistence context
-DEBUG [Mapper] SQL: INSERT INTO "types" ("primaryType") VALUES (?)
-DEBUG [Mapper] SQL:   primaryType=TestDoc
-DEBUG [Mapper] SQL: values identity_val_local()
-DEBUG [Mapper] SQL:   -> id=2
-DEBUG [Mapper] SQL: INSERT INTO "types" ("primaryType") VALUES (?)
-DEBUG [Mapper] SQL:   primaryType=TestDoc
-DEBUG [Mapper] SQL: values identity_val_local()
-DEBUG [Mapper] SQL:   -> id=3
-DEBUG [Mapper] SQL: INSERT INTO "hierarchy" ("id", "parent", "pos", "name") VALUES (?, ?, ?, ?)
-DEBUG [Mapper] SQL:   id=2, parent=1, pos=null, name=foo
-DEBUG [Mapper] SQL: INSERT INTO "hierarchy" ("id", "parent", "pos", "name") VALUES (?, ?, ?, ?)
-DEBUG [Mapper] SQL:   id=3, parent=2, pos=null, name=bar
-DEBUG [Mapper] SQL: INSERT INTO "testschema" ("id", "created", "title") VALUES (?, ?, ?)
-DEBUG [Mapper] SQL:   id=2, created=null, title=hello world
-DEBUG [Mapper] SQL: INSERT INTO "testschema" ("id", "created", "title") VALUES (?, ?, ?)
-DEBUG [Mapper] SQL:   id=3, created=null, title=null
-DEBUG [Mapper] SQL: INSERT INTO "ARRAY_STRING" ("id", "pos", "item") VALUES (?, ?, ?)
-DEBUG [Mapper] SQL:   id=2, item=[a, b, c]
-DEBUG [PersistenceContext] End of save
-DEBUG [PersistenceContext] Saving persistence context
-DEBUG [Mapper] SQL: UPDATE "testschema" SET "created" = ?, "title" = ? WHERE "id" = ?
-DEBUG [Mapper] SQL:   created=null, title=another, id=2
-DEBUG [Mapper] SQL:   -> 1 rows
-DEBUG [Mapper] SQL: DELETE FROM "ARRAY_STRING" WHERE "id" = ?
-DEBUG [Mapper] SQL:   id=2
-DEBUG [Mapper] SQL:   -> 3 rows
-DEBUG [Mapper] SQL: INSERT INTO "ARRAY_STRING" ("id", "pos", "item") VALUES (?, ?, ?)
-DEBUG [Mapper] SQL:   id=2, item=[z, c]
-DEBUG [PersistenceContext] End of save
-DEBUG [Mapper] SQL: SELECT "rootid" FROM "repositoryinfo" WHERE "id" = ?
-DEBUG [Mapper] SQL:   id=0
-DEBUG [Mapper] SQL:   -> rootid=1
-DEBUG [Mapper] SQL: SELECT "primaryType" FROM "types" WHERE "id" = ?
-DEBUG [Mapper] SQL:   id=1
-DEBUG [Mapper] SQL:   -> primaryType=Root
-DEBUG [Mapper] SQL: SELECT "parent", "pos", "name" FROM "hierarchy" WHERE "id" = ?
-DEBUG [Mapper] SQL:   id=1
-DEBUG [Mapper] SQL:   -> parent=null, pos=null, name=
-DEBUG [Mapper] SQL: SELECT "id", "pos" FROM "hierarchy" WHERE "parent" = ? AND "name" = ?
-DEBUG [Mapper] SQL:   parent=1, name=foo
-DEBUG [Mapper] SQL:   -> id=2, pos=null
-DEBUG [Mapper] SQL: SELECT "primaryType" FROM "types" WHERE "id" = ?
-DEBUG [Mapper] SQL:   id=2
-DEBUG [Mapper] SQL:   -> primaryType=TestDoc
-DEBUG [Mapper] SQL: SELECT "created", "title" FROM "testschema" WHERE "id" = ?
-DEBUG [Mapper] SQL:   id=2
-DEBUG [Mapper] SQL:   -> created=null, title=another
-DEBUG [Mapper] SQL: SELECT "pos", "item" FROM "ARRAY_STRING" WHERE "id" = ? ORDER BY "pos"
-DEBUG [Mapper] SQL:   id=2
-DEBUG [Mapper] SQL:   -> [z, c]
-DEBUG [PersistenceContext] Saving persistence context
-DEBUG [Mapper] SQL: DELETE FROM "hierarchy" WHERE "id" = ?
-DEBUG [Mapper] SQL:   id=2
-DEBUG [Mapper] SQL:   -> 1 rows
-DEBUG [Mapper] SQL: DELETE FROM "types" WHERE "id" = ?
-DEBUG [Mapper] SQL:   id=2
-DEBUG [Mapper] SQL:   -> 1 rows
-DEBUG [Mapper] SQL: DELETE FROM "testschema" WHERE "id" = ?
-DEBUG [Mapper] SQL:   id=2
-DEBUG [Mapper] SQL:   -> 1 rows
-DEBUG [PersistenceContext] End of save
+[Mapper] SQL: (batch) CREATE TABLE "repositoryinfo" ("repoid" integer, "id" varchar(36))
+[Mapper] SQL: (batch) CREATE TABLE "hierarchy" ("id" varchar(36), "parent" varchar(36), "pos" integer, "name" varchar(255), "isproperty" smallint)
+[Mapper] SQL: (batch) CREATE TABLE "types" ("id" varchar(36), "primarytype" clob(255))
+[Mapper] SQL: (batch) CREATE TABLE "testschema" ("id" varchar(36), "created" timestamp, "title" clob(255))
+[Mapper] SQL: (batch) CREATE TABLE "person" ("id" varchar(36), "lastname" clob(255), "firstname" clob(255))
+[Mapper] SQL: (batch) CREATE TABLE "system" ("id" varchar(36), "lifecyclestate" clob(255), "dirty" smallint, "lifecyclepolicy" clob(255))
+[Mapper] SQL: (batch) CREATE TABLE "tst:subjects" ("id" varchar(36), "pos" integer, "item" clob(255))
+[Mapper] SQL: (batch) CREATE TABLE "tst:tags" ("id" varchar(36), "pos" integer, "item" clob(255))
+[Mapper] SQL: (batch execution)
+[Mapper] SQL: SELECT "id" FROM "repositoryinfo" WHERE "repoid" = 0
+[Mapper] SQL:   -> (none)
+[SessionImpl] Creating root
+[PersistenceContext] Saving persistence context
+[Mapper] SQL: INSERT INTO "types" ("id", "primarytype") VALUES ('10a5024e-bce2-4382-92fc-f85f92824e36', 'Root')
+[Mapper] SQL: INSERT INTO "hierarchy" ("id", "parent", "pos", "name", "isproperty") VALUES ('10a5024e-bce2-4382-92fc-f85f92824e36', NULL, NULL, '', false)
+[PersistenceContext] End of save
+[Mapper] SQL: INSERT INTO "repositoryinfo" ("repoid", "id") VALUES (0, '10a5024e-bce2-4382-92fc-f85f92824e36')
+[PersistenceContext] Saving persistence context
+[Mapper] SQL: INSERT INTO "types" ("id", "primarytype") VALUES ('17499ed8-5a5d-43d3-98f4-887239b2c549', 'TestDoc')
+[Mapper] SQL: INSERT INTO "tst:subjects" ("id", "pos", "item") VALUES ('17499ed8-5a5d-43d3-98f4-887239b2c549', 0, 'a')
+[Mapper] SQL: INSERT INTO "tst:subjects" ("id", "pos", "item") VALUES ('17499ed8-5a5d-43d3-98f4-887239b2c549', 1, 'b')
+[Mapper] SQL: INSERT INTO "tst:subjects" ("id", "pos", "item") VALUES ('17499ed8-5a5d-43d3-98f4-887239b2c549', 2, 'c')
+[Mapper] SQL: INSERT INTO "hierarchy" ("id", "parent", "pos", "name", "isproperty") VALUES ('17499ed8-5a5d-43d3-98f4-887239b2c549', '10a5024e-bce2-4382-92fc-f85f92824e36', NULL, 'foo', false)
+[Mapper] SQL: INSERT INTO "testschema" ("id", "created", "title") VALUES ('17499ed8-5a5d-43d3-98f4-887239b2c549', NULL, 'hello world')
+[Mapper] SQL: INSERT INTO "tst:tags" ("id", "pos", "item") VALUES ('17499ed8-5a5d-43d3-98f4-887239b2c549', 0, '1')
+[Mapper] SQL: INSERT INTO "tst:tags" ("id", "pos", "item") VALUES ('17499ed8-5a5d-43d3-98f4-887239b2c549', 1, '2')
+[PersistenceContext] End of save
+[PersistenceContext] Saving persistence context
+[Mapper] SQL: DELETE FROM "tst:subjects" WHERE "id" = '17499ed8-5a5d-43d3-98f4-887239b2c549'
+[Mapper] SQL:   -> 3 rows
+[Mapper] SQL: INSERT INTO "tst:subjects" ("id", "pos", "item") VALUES ('17499ed8-5a5d-43d3-98f4-887239b2c549', 0, 'z')
+[Mapper] SQL: INSERT INTO "tst:subjects" ("id", "pos", "item") VALUES ('17499ed8-5a5d-43d3-98f4-887239b2c549', 1, 'c')
+[Mapper] SQL: UPDATE "testschema" SET "created" = NULL, "title" = 'another' WHERE "id" = '17499ed8-5a5d-43d3-98f4-887239b2c549'
+[Mapper] SQL:   -> 1 rows
+[Mapper] SQL: DELETE FROM "tst:tags" WHERE "id" = '17499ed8-5a5d-43d3-98f4-887239b2c549'
+[Mapper] SQL:   -> 2 rows
+[Mapper] SQL: INSERT INTO "tst:tags" ("id", "pos", "item") VALUES ('17499ed8-5a5d-43d3-98f4-887239b2c549', 0, '3')
+[PersistenceContext] End of save
+[Mapper] SQL: SELECT "id" FROM "repositoryinfo" WHERE "repoid" = 0
+[Mapper] SQL:   -> id=10a5024e-bce2-4382-92fc-f85f92824e36
+[Mapper] SQL: SELECT "primarytype" FROM "types" WHERE "id" = '10a5024e-bce2-4382-92fc-f85f92824e36'
+[Mapper] SQL:   -> primarytype='Root'
+[Mapper] SQL: SELECT "parent", "pos", "name", "isproperty" FROM "hierarchy" WHERE "id" = '10a5024e-bce2-4382-92fc-f85f92824e36'
+[Mapper] SQL:   -> parent=NULL, pos=NULL, name='', isproperty=false
+[Mapper] SQL: SELECT "id", "pos" FROM "hierarchy" WHERE "parent" = '10a5024e-bce2-4382-92fc-f85f92824e36' AND "name" = 'foo' AND "isproperty" = 0
+[Mapper] SQL:   -> id='17499ed8-5a5d-43d3-98f4-887239b2c549', pos=NULL
+[Mapper] SQL: SELECT "primarytype" FROM "types" WHERE "id" = '17499ed8-5a5d-43d3-98f4-887239b2c549'
+[Mapper] SQL:   -> primarytype='TestDoc'
+[Mapper] SQL: SELECT "created", "title" FROM "testschema" WHERE "id" = '17499ed8-5a5d-43d3-98f4-887239b2c549'
+[Mapper] SQL:   -> created=NULL, title='another'
+[Mapper] SQL: SELECT "pos", "item" FROM "tst:subjects" WHERE "id" = '17499ed8-5a5d-43d3-98f4-887239b2c549' ORDER BY "pos"
+[Mapper] SQL:   -> [z, c]
+[Mapper] SQL: SELECT "pos", "item" FROM "tst:tags" WHERE "id" = '17499ed8-5a5d-43d3-98f4-887239b2c549' ORDER BY "pos"
+[Mapper] SQL:   -> [3]
+[PersistenceContext] Saving persistence context
+[Mapper] SQL: DELETE FROM "hierarchy" WHERE "id" = '17499ed8-5a5d-43d3-98f4-887239b2c549'
+[Mapper] SQL:   -> 1 rows
+[Mapper] SQL: DELETE FROM "types" WHERE "id" = '17499ed8-5a5d-43d3-98f4-887239b2c549'
+[Mapper] SQL:   -> 1 rows
+[Mapper] SQL: DELETE FROM "testschema" WHERE "id" = '17499ed8-5a5d-43d3-98f4-887239b2c549'
+[Mapper] SQL:   -> 1 rows
+[PersistenceContext] End of save

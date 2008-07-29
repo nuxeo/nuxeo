@@ -40,8 +40,9 @@ public abstract class Fragment implements Serializable {
     protected final String tableName;
 
     /**
-     * The id. If the fragment was just created, the initial temporary id will
-     * be changed at save time to its final value.
+     * The id. If the fragment was just created, and database id generation is
+     * used, the initial temporary id will be changed at save time to its final
+     * value.
      */
     private Serializable id;
 

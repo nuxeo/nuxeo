@@ -159,12 +159,19 @@ public class SQLDocument extends SQLComplexProperty implements Document {
 
     public <T extends Serializable> void setSystemProp(String name, T value)
             throws DocumentException {
-        throw new UnsupportedOperationException();
+        return;
+        // TODO XXX
+        // throw new UnsupportedOperationException();
     }
 
     public <T extends Serializable> T getSystemProp(String name, Class<T> type)
             throws DocumentException {
-        throw new UnsupportedOperationException();
+        if (type == Boolean.class) {
+            return (T) Boolean.FALSE;
+        }
+        return null;
+        // TODO XXX
+        // throw new UnsupportedOperationException();
     }
 
     /*

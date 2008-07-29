@@ -172,15 +172,12 @@ public class SQLSession implements Session {
 
     public Document getDocumentByUUID(String uuid) throws DocumentException {
         try {
-            Serializable id;
-            if (uuid.startsWith("T")) { // temporary id
-                id = uuid;
-            } else {
-                // HACK document ids coming from higher level have been turned
-                // into strings (by SQLDocument.getUUID) but are really
-                // longs for the backend
-                id = Long.valueOf(uuid);
-            }
+            /**
+             * Document ids coming from higher level have been turned into
+             * strings (by {@link SQLDocument#getUUID}) but are really Longs for
+             * the backend.
+             */
+            Serializable id = session.getModel().unHackStringId(uuid);
             Node node = session.getNodeById(id);
             if (node == null) {
                 // required by callers such as AbstractSession.exists
