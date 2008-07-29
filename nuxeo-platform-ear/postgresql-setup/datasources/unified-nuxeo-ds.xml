@@ -5,7 +5,7 @@
     <jndi-name>NuxeoDS</jndi-name>
     <connection-url>jdbc:postgresql://localhost:5432/nuxeo</connection-url>
     <driver-class>org.postgresql.Driver</driver-class>
-    <user-name>username</user-name>
+    <user-name>nuxeo</user-name>
     <password>myPr3c1ous</password>
     <check-valid-connection-sql>;</check-valid-connection-sql>
   </local-tx-datasource>
