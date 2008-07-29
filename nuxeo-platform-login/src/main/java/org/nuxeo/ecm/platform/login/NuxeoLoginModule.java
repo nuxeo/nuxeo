@@ -45,7 +45,6 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
-
 import sun.security.acl.GroupImpl;
 import sun.security.acl.PrincipalImpl;
 
@@ -79,10 +78,9 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             useUserIdentificationInfoCB = true;
         }
 
-        super.initialize(subject, callbackHandler, (Map<?, ?>) sharedState,
-                (Map<?, ?>) options);
+        super.initialize(subject, callbackHandler, sharedState,
+                options);
         random = new Random(System.currentTimeMillis());
-
 
         try {
             manager = Framework.getService(UserManager.class);
@@ -102,7 +100,6 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         } catch (Throwable t) {
             log.error("Unable to load Plugin Registry : " + t.getMessage());
         }
-
     }
 
     /**
@@ -120,7 +117,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         Group roleSet = new GroupImpl("Roles");
         log.debug("Getting roles for user=" + username);
         for (String roleName : roles) {
-            PrincipalImpl role = new PrincipalImpl(roleName);
+            Principal role = new PrincipalImpl(roleName);
             log.debug("Found role=" + roleName);
             roleSet.addMember(role);
         }
@@ -131,23 +128,24 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
     }
 
     private NuxeoPrincipal getPrincipal() throws LoginException {
-
         UserIdentificationInfo userIdent = null;
 
         // **** init the callbacks
         // Std login/password callbacks
-        NameCallback nc = new NameCallback("Username: ", SecurityConstants.ANONYMOUS);
+        NameCallback nc = new NameCallback("Username: ",
+                SecurityConstants.ANONYMOUS);
         PasswordCallback pc = new PasswordCallback("Password: ", false);
 
         // Nuxeo specific cb : handle LoginPlugin initialization
         UserIdentificationInfoCallback uic = new UserIdentificationInfoCallback();
 
         // JBoss specific cb : handle web=>ejb propagation
-        //SecurityAssociationCallback ac = new SecurityAssociationCallback();
-        //ObjectCallback oc = new ObjectCallback("UserInfo:");
+        // SecurityAssociationCallback ac = new SecurityAssociationCallback();
+        // ObjectCallback oc = new ObjectCallback("UserInfo:");
 
         // **** handle callbacks
-        // We can't check the callback handler class to know what will be supported
+        // We can't check the callback handler class to know what will be
+        // supported
         // because the cbh is wrapped by JAAS
         // => just try and swalow exceptions
         // => will be externalised to plugins via EP to avoid JBoss dependency
@@ -172,24 +170,19 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         Object credential = null;
 
         if (!cb_handled) {
-
-
-
             CallbackResult result = loginPluginManager.handleSpecifcCallbacks(callbackHandler);
 
-            if (result!=null && result.cb_handled)
-            {
-                if (result.userIdent!=null && result.userIdent.containsValidIdentity())
-                {
+            if (result != null && result.cb_handled) {
+                if (result.userIdent != null
+                        && result.userIdent.containsValidIdentity()) {
                     userIdent = result.userIdent;
-                    cb_handled=true;
-                }
-                else
-                {
-                    principal=result.principal;
+                    cb_handled = true;
+                } else {
+                    principal = result.principal;
                     credential = result.credential;
-                    if (principal!=null)
-                        cb_handled=true;
+                    if (principal != null) {
+                        cb_handled = true;
+                    }
                 }
             }
         }
@@ -216,10 +209,8 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
                 NuxeoPrincipal nxp = validateUserIdentity(userIdent);
 
                 if (nxp != null) {
-                    sharedState.put("javax.security.auth.login.name",
-                            nxp.getName());
-                    sharedState.put("javax.security.auth.login.password",
-                            userIdent);
+                    sharedState.put("javax.security.auth.login.name", nxp.getName());
+                    sharedState.put("javax.security.auth.login.password", userIdent);
                 }
                 return nxp;
             }
@@ -239,14 +230,15 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
                 }
                 return validateUsernamePassword(principal.getName(), password);
             } else { // we don't have a principal - try the username &
-                        // password
+                // password
                 String username = nc.getName();
                 if (username == null) {
                     return null;
                 }
                 char[] password = pc.getPassword();
-                return validateUsernamePassword(username,
-                        password != null ? new String(password) : null);
+                return validateUsernamePassword(username, password != null ? new String(
+                        password)
+                        : null);
             }
         } catch (LoginException e) {
             throw e;
@@ -259,7 +251,6 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             throw le;
         }
     }
-
 
     public boolean login() throws LoginException {
         if (manager == null) {
@@ -291,7 +282,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         return identity;
     }
 
-
+    @Override
     public Principal createIdentity(String name) throws LoginException {
         log.debug("createIdentity: " + name);
         try {
@@ -371,6 +362,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         return (NuxeoPrincipal) createIdentity(username);
     }
 
+    // Not used. Remove ?
     private NuxeoPrincipal validatePrincipal(NuxeoPrincipal principal) throws Exception {
         if (!manager.checkUsernamePassword(principal.getName(), principal.getPassword())) {
             return null;

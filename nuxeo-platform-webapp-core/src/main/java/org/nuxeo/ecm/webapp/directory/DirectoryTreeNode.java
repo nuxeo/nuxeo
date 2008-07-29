@@ -25,10 +25,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.myfaces.custom.tree2.TreeNode;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
-import org.nuxeo.ecm.core.api.AlreadyConnectedException;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -37,7 +35,6 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryHelper;
-import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 
@@ -47,7 +44,7 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
  *
  * @author <a href="mailto:ogrisel@nuxeo.com">Olivier Grisel</a>
  */
-public class DirectoryTreeNode implements TreeNode {
+public class DirectoryTreeNode {
 
     private static final long serialVersionUID = 95125923405389125L;
 
@@ -91,8 +88,7 @@ public class DirectoryTreeNode implements TreeNode {
     }
 
     @SuppressWarnings("unchecked")
-    public String selectNode() throws AlreadyConnectedException,
-            ClientException, ECInvalidParameterException {
+    public String selectNode() throws ClientException {
         lookupQueryModel();
         String fieldName = config.getFieldName();
         String schemaName = config.getSchemaName();
@@ -120,14 +116,39 @@ public class DirectoryTreeNode implements TreeNode {
         lookupQueryModel();
         String fieldName = config.getFieldName();
         String schemaName = config.getSchemaName();
-        String value = path;
         if (config.isMultiselect()) {
             List<Object> values = (List<Object>) queryModel.getProperty(
                     schemaName, fieldName);
-            return values.contains(value);
+            return values.contains(path);
         } else {
-            return value.equals(queryModel.getProperty(schemaName, fieldName));
+            return path.equals(queryModel.getProperty(schemaName, fieldName));
         }
+    }
+
+    /**
+     * Returns true if current node is a parent from selected value(s).
+     */
+    @SuppressWarnings("unchecked")
+    public boolean isOpened() throws ClientException {
+        lookupQueryModel();
+        String fieldName = config.getFieldName();
+        String schemaName = config.getSchemaName();
+        if (config.isMultiselect()) {
+            List<Object> values = (List<Object>) queryModel.getProperty(
+                    schemaName, fieldName);
+            for (Object value : values) {
+                if (value instanceof String
+                        && ((String) value).startsWith(path)) {
+                    return true;
+                }
+            }
+        } else {
+            Object value = queryModel.getProperty(schemaName, fieldName);
+            if (value instanceof String) {
+                return ((String) value).startsWith(path);
+            }
+        }
+        return false;
     }
 
     public int getChildCount() {
@@ -142,7 +163,7 @@ public class DirectoryTreeNode implements TreeNode {
         }
     }
 
-    public List<?> getChildren() {
+    public List<DirectoryTreeNode> getChildren() {
         if (children != null) {
             // return last computed state
             return children;
@@ -205,6 +226,10 @@ public class DirectoryTreeNode implements TreeNode {
         return identifier;
     }
 
+    public String getPath() {
+        return path;
+    }
+
     public String getType() {
         return type;
     }
@@ -231,7 +256,7 @@ public class DirectoryTreeNode implements TreeNode {
 
     protected DirectoryService getDirectoryService() {
         if (directoryService == null) {
-            directoryService=DirectoryHelper.getDirectoryService();
+            directoryService = DirectoryHelper.getDirectoryService();
         }
         return directoryService;
     }
@@ -280,7 +305,8 @@ public class DirectoryTreeNode implements TreeNode {
             for (int b = 0; b < bitsOfPath.length; b++) {
                 String dirName = config.getDirectories()[b];
                 if (dirName == null) {
-                    throw new DirectoryException("Could not find directory name for key="+b);
+                    throw new DirectoryException(
+                            "Could not find directory name for key=" + b);
                 }
                 Session session = getDirectoryService().open(dirName);
                 DocumentModel docMod = session.getEntry(bitsOfPath[b]);
@@ -300,6 +326,6 @@ public class DirectoryTreeNode implements TreeNode {
         } else {
             Events.instance().raiseEvent("PATH_PROCESSED", "");
         }
-
     }
+
 }

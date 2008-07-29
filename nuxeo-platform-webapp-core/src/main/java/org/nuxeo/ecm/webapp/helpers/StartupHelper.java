@@ -64,16 +64,16 @@ public class StartupHelper implements Serializable {
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(StartupHelper.class);
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected transient RepositoryManager repositoryManager;
 
-    @In(required = true, create = true)
+    @In(create = true)
     protected transient NavigationContext navigationContext;
 
     @In
     protected transient Context sessionContext;
 
-    @In(required = true, create = true)
+    @In(create = true)
     ConversationIdGenerator conversationIdGenerator;
 
     @In(create = true, required = false)
@@ -98,7 +98,6 @@ public class StartupHelper implements Serializable {
 
         // we try to select the server to go to the next screen
         if (navigationContext.getCurrentServerLocation() == null) {
-
             // update location
             RepositoryLocation repLoc = new RepositoryLocation(
                     repositoryManager.getRepositories().iterator().next().getName());
@@ -110,12 +109,12 @@ public class StartupHelper implements Serializable {
     }
 
     /**
-     * Initialize the context with the principal id, and try to connect to the
+     * Initializes the context with the principal id, and tries to connect to the
      * default server if any then: - if the server has several domains, redirect
      * to the list of domains - if the server has only one domain, select it and
      * redirect to viewId - if the server is empty, create a new domain with
-     * title 'domainTitle' and redirect to it on viewId
-     *
+     * title 'domainTitle' and redirect to it on viewId.
+     * <p>
      * If several servers are available, let the user choose.
      *
      * @return the view id of the contextually computed startup page
@@ -166,4 +165,5 @@ public class StartupHelper implements Serializable {
         Principal currentUser = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
         sessionContext.set("currentUser", currentUser);
     }
+
 }

@@ -1,7 +1,6 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:s="http://jboss.com/products/seam/taglib">
@@ -22,10 +21,10 @@
                       rowIndexVar="row"
                       rowCountVar="rowCount">
           <h:outputText value=" | " rendered="#{row!=(rowCount-1)}"/>
+          <f:subview rendered="#{row==(rowCount-1)}">
+            <br />
+          </f:subview>
           <nxh:commandLink action="#{action.getLink()}">
-            <f:subview rendered="#{row==(rowCount-1)}">
-              <br />
-            </f:subview>
             <h:outputText value="#{messages[action.label]}" />
           </nxh:commandLink>
         </nxu:dataList>

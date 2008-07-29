@@ -102,7 +102,8 @@ public final class WFVersioningPolicyProvider {
         final String logPrefix = "<getVersioningPolicyFor> ";
 
         try {
-            WorkflowDocumentVersioningPolicyManager wfVersionPolicy = new WorkflowDocumentVersioningPolicyBusinessDelegate().getWorkflowVersioningPolicy();
+            WorkflowDocumentVersioningPolicyManager wfVersionPolicy
+                    = new WorkflowDocumentVersioningPolicyBusinessDelegate().getWorkflowVersioningPolicy();
 
             final String wfpol = wfVersionPolicy.getVersioningPolicyFor(docRef);
 
