@@ -17,11 +17,14 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +39,7 @@ import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
 
 /**
  * The {@link Model} is the link between high-level types and SQL-level objects
@@ -58,7 +62,7 @@ public class Model {
 
     public static final String REPOINFO_TABLE_NAME = "repositoryinfo";
 
-    public static final String REPOINFO_ROOTID_KEY = "rootid";
+    public static final String REPOINFO_REPOID_KEY = "repoid";
 
     public static final String MAIN_KEY = "id";
 
@@ -66,7 +70,7 @@ public class Model {
 
     public static final String MAIN_TABLE_NAME = "types";
 
-    public static final String MAIN_PRIMARY_TYPE_KEY = "primaryType";
+    public static final String MAIN_PRIMARY_TYPE_KEY = "primarytype";
 
     public static final String HIER_TABLE_NAME = "hierarchy";
 
@@ -96,6 +100,22 @@ public class Model {
 
     public static final String SYSTEM_DIRTY_KEY = "dirty";
 
+    public static final String ACL_TABLE_NAME = "acl";
+
+    public static final String ACL_ACPPOS_KEY = "acppos";
+
+    public static final String ACL_ACPNAME_KEY = "acpname";
+
+    public static final String ACL_ACLPOS_KEY = "aclpos";
+
+    public static final String ACL_GRANT_KEY = "grant";
+
+    public static final String ACL_PERMISSION_KEY = "permission";
+
+    public static final String ACL_USER_KEY = "user";
+
+    public static final String ACL_GROUP_KEY = "group";
+
     private static TypeRef<? extends Type> STRING_TYPE_REF = StringType.INSTANCE.getRef();
 
     public static Field SYSTEM_LIFECYCLE_POLICY_FIELD = new FieldImpl(
@@ -108,6 +128,11 @@ public class Model {
 
     public static Field SYSTEM_DIRTY_FIELD = new FieldImpl(
             QName.valueOf(SYSTEM_DIRTY_PROP), TypeRef.NULL, STRING_TYPE_REF);
+
+    /** The id generation policy. */
+    protected final IdGenPolicy idGenPolicy;
+
+    protected final AtomicLong temporaryIdCounter;
 
     /**
      * The fragment for each schema, or {@code null} if the schema doesn't have
@@ -137,7 +162,12 @@ public class Model {
 
     /** Map of type to the set of properties that are complex lists. */
     // public final Map<String, Set<String>> complexLists;
-    public Model(SchemaManager schemaManager) {
+    public Model(RepositoryDescriptor repositoryDescriptor,
+            SchemaManager schemaManager) {
+
+        this.idGenPolicy = repositoryDescriptor.idGenPolicy;
+        temporaryIdCounter = new AtomicLong(0);
+
         schemaFragment = new HashMap<String, String>();
         // propertyCoreType = new HashMap<String, Type>();
         propertyType = new HashMap<String, PropertyType>();
@@ -151,6 +181,50 @@ public class Model {
         initMainModel();
         initSystemModel();
         initModels(schemaManager);
+    }
+
+    /**
+     * Computes a new unique id.
+     * <p>
+     * If actual ids are computed by the database, this will be a temporary id,
+     * otherwise the final one.
+     *
+     * @return a new id, which may be temporary
+     */
+    public Serializable generateNewId() {
+        switch (idGenPolicy) {
+        case APP_UUID:
+            return UUID.randomUUID().toString();
+        case DB_IDENTITY:
+            return "T" + temporaryIdCounter.incrementAndGet();
+        default:
+            throw new AssertionError(idGenPolicy);
+        }
+    }
+
+    /**
+     * Fixup an id that has been turned into a string for high-level Nuxeo APIs.
+     *
+     * @param id the id to fixup
+     * @return the fixed up id
+     */
+    public Serializable unHackStringId(String id) {
+        switch (idGenPolicy) {
+        case APP_UUID:
+            return id;
+        case DB_IDENTITY:
+            if (id.startsWith("T")) {
+                return id;
+            }
+            /*
+             * Document ids coming from higher level have been turned into
+             * strings (by SQLDocument.getUUID) but are really longs for the
+             * backend.
+             */
+            return Long.valueOf(id);
+        default:
+            throw new AssertionError(idGenPolicy);
+        }
     }
 
     // public Type getPropertyCoreType(String propertyName) {
@@ -257,6 +331,19 @@ public class Model {
         propertyFragment.put(propertyName, tableName);
         propertyFragmentKey.put(propertyName, key);
         fragmentKeysType.put(key, type);
+
+    }
+
+    /**
+     * Special model for the ACL table.
+     */
+    private void initAclModel() {
+        String tableName = ACL_TABLE_NAME;
+        Map<String, PropertyType> fragmentKeysType = fragmentsKeysType.get(tableName);
+        if (fragmentKeysType == null) {
+            fragmentKeysType = new HashMap<String, PropertyType>();
+            fragmentsKeysType.put(tableName, fragmentKeysType);
+        }
 
     }
 

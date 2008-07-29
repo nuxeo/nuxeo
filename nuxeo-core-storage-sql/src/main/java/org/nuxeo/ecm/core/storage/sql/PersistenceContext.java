@@ -21,7 +21,9 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,6 +51,12 @@ public class PersistenceContext {
     private final Model model;
 
     /**
+     * Fragment ids generated but not yet saved. We know that any fragment with
+     * one of these ids cannot exist in the database.
+     */
+    private final Set<Serializable> generatedIds;
+
+    /**
      * HACK: if some application code illegally recorded temporary ids (which
      * Nuxeo does), then it's useful to keep around the map to avoid crashing
      * the application.
@@ -64,8 +72,28 @@ public class PersistenceContext {
 
         // avoid doing tests all the time for this known case
         contexts.put(model.HIER_TABLE_NAME, new PersistenceContextByTable(
-                model.HIER_TABLE_NAME, mapper));
+                model.HIER_TABLE_NAME, mapper, this));
+        generatedIds = new HashSet<Serializable>();
         oldIdMap = new HashMap<Serializable, Serializable>();
+    }
+
+    public Serializable generateNewId() {
+        Serializable id = model.generateNewId();
+        generatedIds.add(id);
+        return id;
+    }
+
+    /* Called by PersistenceContextByTable */
+    protected boolean isIdNew(Serializable id) {
+        return generatedIds.contains(id);
+    }
+
+    protected Serializable getRootId(Serializable repositoryId) throws StorageException {
+        return mapper.getRootId(repositoryId);
+    }
+
+    protected void setRootId(Serializable repositoryId, Serializable id) throws StorageException {
+        mapper.setRootId(repositoryId, id);
     }
 
     public void close() {
@@ -93,12 +121,16 @@ public class PersistenceContext {
         } else {
             idMap = Collections.emptyMap();
         }
+        // all generated ids have been saved
+        generatedIds.clear();
+
         /*
          * Then save all other rows, taking the map of ids into account.
          */
         for (PersistenceContextByTable context : contexts.values()) {
             context.save(idMap);
         }
+
         // no need to clear the contexts, they'd get reallocate soon anyway
         log.debug("End of save");
         // HACK: remember the idMap
@@ -115,10 +147,10 @@ public class PersistenceContext {
     }
 
     /**
-     * Creates a new row in the context.
+     * Creates a new row in the context, for a new id (not yet saved).
      *
      * @param tableName the table name
-     * @param id the temporary id
+     * @param id the new id
      * @param map the fragments map, or {@code null}
      * @return the created row
      * @throws StorageException if the row is already in the context
@@ -128,7 +160,7 @@ public class PersistenceContext {
             throws StorageException {
         PersistenceContextByTable context = contexts.get(tableName);
         if (context == null) {
-            context = new PersistenceContextByTable(tableName, mapper);
+            context = new PersistenceContextByTable(tableName, mapper, this);
             contexts.put(tableName, context);
         }
         return context.create(id, map);
@@ -142,8 +174,8 @@ public class PersistenceContext {
      *
      * @param tableName the fragment table name
      * @param id the fragment id
-     * @param allowAbsent {@code true} to return an absent fragment as an
-     *            object instead of {@code null}
+     * @param allowAbsent {@code true} to return an absent fragment as an object
+     *            instead of {@code null}
      * @return the fragment, or {@code null} if none is found and {@value
      *         allowAbsent} was {@code false}
      * @throws StorageException
@@ -152,7 +184,7 @@ public class PersistenceContext {
             throws StorageException {
         PersistenceContextByTable context = contexts.get(tableName);
         if (context == null) {
-            context = new PersistenceContextByTable(tableName, mapper);
+            context = new PersistenceContextByTable(tableName, mapper, this);
             contexts.put(tableName, context);
         }
         return context.get(id, allowAbsent);
@@ -165,16 +197,15 @@ public class PersistenceContext {
      * not in the database, returns {@code null} or an absent fragment.
      *
      * @param id the fragment id
-     * @param allowAbsent {@code true} to return an absent fragment as an
-     *            object instead of {@code null}
+     * @param allowAbsent {@code true} to return an absent fragment as an object
+     *            instead of {@code null}
      * @return the hierarchy fragment, or {@code null} if none is found and
      *         {@value allowAbsent} was {@code false}
      * @throws StorageException
      */
     public Fragment getChildById(Serializable id, boolean allowAbsent)
             throws StorageException {
-        return contexts.get(model.HIER_TABLE_NAME).getChildById(id,
-                allowAbsent);
+        return contexts.get(model.HIER_TABLE_NAME).getChildById(id, allowAbsent);
     }
 
     /**

@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.naming.Reference;
 import javax.resource.ResourceException;
@@ -72,15 +71,12 @@ public class RepositoryImpl implements Repository {
 
     private SQLInfo sqlInfo;
 
-    private final AtomicLong temporaryIdCounter;
-
     public RepositoryImpl(RepositoryDescriptor repositoryDescriptor,
             SchemaManager schemaManager) throws StorageException {
         this.repositoryDescriptor = repositoryDescriptor;
         this.schemaManager = schemaManager;
         sessions = new WeakHashMap<SessionImpl, Object>();
         xadatasource = getXADataSource();
-        temporaryIdCounter = new AtomicLong(0);
     }
 
     /*
@@ -135,7 +131,7 @@ public class RepositoryImpl implements Repository {
             initialized = true;
         }
 
-        SessionImpl session = new SessionImpl(this, schemaManager, mapper,
+        SessionImpl session = new SessionImpl(schemaManager, mapper,
                 credentials);
 
         sessions.put(session, null);
@@ -167,10 +163,6 @@ public class RepositoryImpl implements Repository {
     /*
      * ----- Repository -----
      */
-
-    public long getNextTemporaryId() {
-        return temporaryIdCounter.incrementAndGet();
-    }
 
     public synchronized void close() {
         for (SessionImpl session : sessions.keySet()) {
@@ -251,7 +243,7 @@ public class RepositoryImpl implements Repository {
     private void initialize(XAConnection xaconnection) throws StorageException {
         log.debug("Initializing");
         dialect = getDialect(xaconnection);
-        model = new Model(schemaManager);
+        model = new Model(repositoryDescriptor, schemaManager);
         sqlInfo = new SQLInfo(model, dialect);
     }
 
@@ -280,8 +272,7 @@ public class RepositoryImpl implements Repository {
                 } catch (SQLException e) {
                     throw new StorageException(
                             "Cannot get metadata for class: " +
-                                    repositoryDescriptor.xaDataSourceName,
-                            e);
+                                    repositoryDescriptor.xaDataSourceName, e);
                 }
             }
         }

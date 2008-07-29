@@ -189,10 +189,6 @@ public class ConnectionFactoryImpl implements Repository,
         throw new RuntimeException("Not implemented");
     }
 
-    public long getNextTemporaryId() {
-        throw new RuntimeException("Not implemented");
-    }
-
     /*
      * ----- org.nuxeo.ecm.core.model.Repository -----
      */

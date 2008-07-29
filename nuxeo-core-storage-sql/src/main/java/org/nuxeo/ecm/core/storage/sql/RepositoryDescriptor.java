@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -29,13 +31,66 @@ import org.nuxeo.common.xmap.annotation.XObject;
  *
  * @author Florent Guillaume
  */
-@XObject(value = "repository", order = { "@name" })
+@XObject(value = "repository")
 public class RepositoryDescriptor {
+
+    private static final Log log = LogFactory.getLog(RepositoryDescriptor.class);
 
     @XNode("xa-datasource")
     public String xaDataSourceName;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> properties;
+
+    /** The possible id generation policies. */
+    public static enum IdGenPolicy {
+
+        /**
+         * Let the Nuxeo application generate a random UUID.
+         */
+        APP_UUID("application-uuid"),
+
+        /**
+         * Let the database generate its own integer using sequences or
+         * identity.
+         */
+        DB_IDENTITY("database-identity");
+
+        private String value;
+
+        private IdGenPolicy(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public static IdGenPolicy fromString(String value) {
+            for (IdGenPolicy e : values()) {
+                if (e.value.equals(value)) {
+                    return e;
+                }
+            }
+            throw new IllegalArgumentException(value);
+        }
+    };
+
+    /**
+     * Which id generation policy to use.
+     * <p>
+     * The default is {@link IdGenPolicy#APP_UUID}.
+     */
+    @XNode("id-generation")
+    public void setIdGeneration(String value) {
+        try {
+            idGenPolicy = IdGenPolicy.fromString(value);
+        } catch (IllegalArgumentException e) {
+            log.error("Illegal id generation policy: " + value +
+                    ", using default: " + idGenPolicy.getValue());
+        }
+    }
+
+    public IdGenPolicy idGenPolicy = IdGenPolicy.APP_UUID;
 
 }

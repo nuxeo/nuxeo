@@ -126,6 +126,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // now read from another session
         session = repository.getConnection();
         root = session.getRootNode();
+        assertNotNull(root);
         nodea = session.getChildNode(root, "foo", false);
         assertEquals("another",
                 nodea.getSimpleProperty("tst:title").getString());

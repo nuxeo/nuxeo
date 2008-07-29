@@ -61,6 +61,8 @@ public class PersistenceContextByTable {
 
     private final Model model;
 
+    private final PersistenceContext globalContext;
+
     /**
      * The fragments that have been read and found to be absent in the database.
      * They contain default data (usually {@code null}). Upon modification, they
@@ -116,9 +118,11 @@ public class PersistenceContextByTable {
     private final boolean isCollection;
 
     @SuppressWarnings("unchecked")
-    PersistenceContextByTable(String tableName, Mapper mapper) {
+    PersistenceContextByTable(String tableName, Mapper mapper,
+            PersistenceContext globalContext) {
         this.tableName = tableName;
         this.mapper = mapper;
+        this.globalContext = globalContext;
         model = mapper.getModel();
         absent = new HashMap<Serializable, Fragment>();
         // linked map to keep ids in the same order as creation (cosmetic)
@@ -163,7 +167,7 @@ public class PersistenceContextByTable {
     /**
      * Creates a new row in the context.
      *
-     * @param id the temporary id
+     * @param id the id
      * @param map the fragments map, or {@code null}
      * @return the created row
      * @throws StorageException if the row is already in the context
@@ -214,9 +218,8 @@ public class PersistenceContextByTable {
         }
 
         // read it through the mapper
-        boolean isTemporaryId = id instanceof String &&
-                ((String) id).startsWith("T");
-        if (isTemporaryId) {
+        if (globalContext.isIdNew(id)) {
+            // the id has not been saved, so nothing exists yet in the database
             if (isCollection) {
                 Serializable[] empty = model.getCollectionFragmentType(
                         tableName).getEmptyArray();
@@ -269,9 +272,8 @@ public class PersistenceContextByTable {
         }
 
         // read it through the mapper
-        boolean isTemporaryId = id instanceof String &&
-                ((String) id).startsWith("T");
-        if (isTemporaryId) {
+        if (globalContext.isIdNew(id)) {
+            // the id has not been saved, so nothing exists yet in the database
             if (allowAbsent) {
                 fragment = new SimpleFragment(tableName, id, State.ABSENT,
                         this, null);
@@ -512,7 +514,9 @@ public class PersistenceContextByTable {
             }
             fragment.markPristine();
             pristine.put(newId, fragment);
-            idMap.put(id, newId);
+            if (!newId.equals(id)) {
+                idMap.put(id, newId);
+            }
             // log.debug("mapping temporary id " + id + " to " + newId);
         }
         created.clear();

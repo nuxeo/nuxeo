@@ -56,13 +56,13 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
 
     private static final long serialVersionUID = 1L;
 
+    private final RepositoryDescriptor repositoryDescriptor;
+
     private String name;
 
     private transient ResourceAdapter resourceAdapter;
 
     private transient PrintWriter out;
-
-    private RepositoryDescriptor repositoryDescriptor;
 
     /**
      * The instantiated repository.
@@ -231,7 +231,8 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
                 } catch (Exception e) {
                     throw new StorageException(e);
                 }
-                repository = new RepositoryImpl(repositoryDescriptor, schemaManager);
+                repository = new RepositoryImpl(repositoryDescriptor,
+                        schemaManager);
             }
         }
     }
@@ -244,4 +245,5 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
             throws StorageException {
         return repository.getConnection(connectionSpec);
     }
+
 }
