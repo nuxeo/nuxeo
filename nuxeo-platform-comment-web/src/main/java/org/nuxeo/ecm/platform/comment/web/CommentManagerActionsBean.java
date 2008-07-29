@@ -40,7 +40,7 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -69,44 +69,44 @@ public class CommentManagerActionsBean extends InputController implements
 
     private static final Log log = LogFactory.getLog(CommentManagerActionsBean.class);
 
-    NuxeoPrincipal principal;
+    protected NuxeoPrincipal principal;
 
-    boolean principalIsAdmin;
+    protected boolean principalIsAdmin;
 
-    boolean showCreateForm;
+    protected boolean showCreateForm;
 
     @In(create = true, required = false)
-    transient CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @In(create = true)
     protected transient WebActions webActions;
 
-    String newContent;
+    protected String newContent;
 
-    CommentableDocument commentableDoc;
+    protected CommentableDocument commentableDoc;
 
-    List<UIComment> uiComments;
+    protected List<UIComment> uiComments;
 
-    List<ThreadEntry> commentThread;
+    protected List<ThreadEntry> commentThread;
 
     // the id of the comment to delete
     @RequestParameter
-    String deleteCommentId;
+    protected String deleteCommentId;
 
     // the id of the comment to reply to
     @RequestParameter
-    String replyCommentId;
+    protected String replyCommentId;
 
-    String savedReplyCommentId;
+    protected String savedReplyCommentId;
 
-    private Map<String, UIComment> commentMap;
+    protected Map<String, UIComment> commentMap;
 
-    private boolean commentStarted;
+    protected boolean commentStarted;
 
-    private List<UIComment> flatComments;
+    protected List<UIComment> flatComments;
 
     @In
-    transient UserSession userSession;
+    protected transient UserSession userSession;
 
     @Create
     public void initialize() throws Exception {
@@ -132,7 +132,7 @@ public class CommentManagerActionsBean extends InputController implements
         return principalIsAdmin;
     }
 
-    private DocumentModel initializeComment(DocumentModel comment) {
+    protected DocumentModel initializeComment(DocumentModel comment) {
         if (comment != null) {
             if (comment.getProperty("dublincore", "contributors") == null) {
                 String[] contributors = new String[1];
@@ -144,8 +144,6 @@ public class CommentManagerActionsBean extends InputController implements
                         Calendar.getInstance());
             }
         }
-
-
         return comment;
     }
 
@@ -153,14 +151,14 @@ public class CommentManagerActionsBean extends InputController implements
             throws ClientException {
 
         try {
-
             comment = initializeComment(comment);
             UIComment parentComment = null;
             if (savedReplyCommentId != null) {
                 parentComment = commentMap.get(savedReplyCommentId);
             }
-            if (commentableDoc==null)
+            if (commentableDoc == null) {
                 commentableDoc = getCommentableDoc();
+            }
 
             DocumentModel newComment;
             if (parentComment != null) {
@@ -177,13 +175,12 @@ public class CommentManagerActionsBean extends InputController implements
 
         } catch (Throwable t) {
             log.error("failed to add comment", t);
-            log.error(t.getStackTrace().toString());
+            log.error(t.getStackTrace());
             throw EJBExceptionHandler.wrapException(t);
         }
     }
 
     public String addComment() throws ClientException {
-
         DocumentModel myComment = documentManager.createDocumentModel("Comment");
 
         myComment.setProperty("comment", "author", principal.getName());
@@ -207,11 +204,8 @@ public class CommentManagerActionsBean extends InputController implements
         cleanContextVariable();
     }
 
-
-    private CommentableDocument getCommentableDoc()
-    {
-        if (commentableDoc==null)
-        {
+    protected CommentableDocument getCommentableDoc() {
+        if (commentableDoc == null) {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             commentableDoc = currentDocument.getAdapter(CommentableDocument.class);
         }
@@ -313,7 +307,7 @@ public class CommentManagerActionsBean extends InputController implements
     /**
      * Creates a UIComment wrapping "comment", having "parent" as parent.
      */
-    private UIComment createUIComment(UIComment parent, DocumentModel comment)
+    protected UIComment createUIComment(UIComment parent, DocumentModel comment)
             throws ClientException {
         UIComment wrapper = new UIComment(parent, comment);
         commentMap.put(wrapper.getId(), wrapper);
@@ -326,13 +320,11 @@ public class CommentManagerActionsBean extends InputController implements
     }
 
     public String deleteComment(String commentId) throws ClientException {
-
         if ("".equals(commentId)) {
             log.error("No comment id to delete");
             return null;
         }
         try {
-
             UIComment selectedComment = commentMap.get(commentId);
             UIComment parent = selectedComment.getParent();
             commentableDoc.removeComment(selectedComment.getComment());
@@ -437,14 +429,13 @@ public class CommentManagerActionsBean extends InputController implements
 
     public void setShowCreateForm(boolean flag) {
         showCreateForm = flag;
-
     }
 
     public void toggleCreateForm(ActionEvent event) {
         showCreateForm = !showCreateForm;
     }
 
-    private void cleanContextVariable() {
+    protected void cleanContextVariable() {
         commentableDoc = null;
         uiComments = null;
         commentThread = null;
@@ -453,5 +444,4 @@ public class CommentManagerActionsBean extends InputController implements
         savedReplyCommentId = null;
         newContent = null;
     }
-
 }

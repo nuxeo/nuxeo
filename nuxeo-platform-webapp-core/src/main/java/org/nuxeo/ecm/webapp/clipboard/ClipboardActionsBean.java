@@ -51,12 +51,12 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.core.FacesMessages;
-import org.jboss.seam.core.LocaleSelector;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -128,9 +128,9 @@ public class ClipboardActionsBean extends InputController implements
 
     private transient List<DocumentsListDescriptor> descriptorsForAvailableLists;
 
-    private Boolean canEditSelectedDocs = null;
+    private Boolean canEditSelectedDocs;
 
-    private transient Map<String, List<Action>> actionCache = null;
+    private transient Map<String, List<Action>> actionCache;
 
     // @Observer({EventNames.DOCUMENT_SELECTION_CHANGED})
     public void releaseClipboardableDocuments() {

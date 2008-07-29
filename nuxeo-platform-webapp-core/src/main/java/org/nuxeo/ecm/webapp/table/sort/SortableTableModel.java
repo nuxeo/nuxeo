@@ -72,7 +72,7 @@ public abstract class SortableTableModel implements Serializable {
      * @param event
      * @throws ClientException
      */
-    public void doSort(ActionEvent event) throws ClientException {
+    public void doSort(ActionEvent event) {
 
         //TODO: need to refactor this
         HttpServletRequest request = (HttpServletRequest) FacesContext

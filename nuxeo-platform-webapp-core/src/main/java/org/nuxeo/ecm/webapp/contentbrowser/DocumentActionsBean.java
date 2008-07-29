@@ -44,10 +44,10 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.StringUtils;
@@ -141,7 +141,7 @@ public class DocumentActionsBean extends InputController implements
         return mimetypeService;
     }
 
-    // @Create
+    //@Create
     public void initialize() {
         log.debug("Initializing...");
     }
@@ -261,9 +261,10 @@ public class DocumentActionsBean extends InputController implements
                     bigDownloadURL += "nxbigfile" + "/";
                     bigDownloadURL += doc.getRepositoryName() + "/";
                     bigDownloadURL += doc.getRef().toString() + "/";
-                    bigDownloadURL += docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY)
-                            + "/";
-                    bigDownloadURL += docView.getParameter(DocumentFileCodec.FILENAME_KEY);
+                    bigDownloadURL += docView.getParameter(
+                            DocumentFileCodec.FILE_PROPERTY_PATH_KEY) + "/";
+                    bigDownloadURL += docView.getParameter(
+                            DocumentFileCodec.FILENAME_KEY);
                     try {
                         response.sendRedirect(bigDownloadURL);
                     } catch (IOException e) {
@@ -364,7 +365,6 @@ public class DocumentActionsBean extends InputController implements
         } catch (Throwable t) {
             throw EJBExceptionHandler.wrapException(t);
         }
-
     }
 
     private void setDocumentIconPath(DocumentModel docModel) {
@@ -395,7 +395,6 @@ public class DocumentActionsBean extends InputController implements
         } else {
             docModel.setProperty("common", "icon", currentType.getIcon());
         }
-
     }
 
     /**
@@ -572,13 +571,13 @@ public class DocumentActionsBean extends InputController implements
     @WebRemote
     public String processSelectRow(String docRef, String providerName,
             String listName, Boolean selection) {
-        DocumentModel doc = null;
         PagedDocumentsProvider provider;
         try {
             provider = resultsProvidersCache.get(providerName);
         } catch (ClientException e) {
             return handleError(e.getMessage());
         }
+        DocumentModel doc = null;
         for (DocumentModel pagedDoc : provider.getCurrentPage()) {
             if (pagedDoc.getRef().toString().equals(docRef)) {
                 doc = pagedDoc;

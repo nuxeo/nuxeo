@@ -61,7 +61,6 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.R
  * associated with their configurations beforehand.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public class ResolvedResourcesFactory implements Serializable {
 
@@ -90,15 +89,14 @@ public class ResolvedResourcesFactory implements Serializable {
     }
 
     /**
-     * Computes the fulltext for a givne indexable resource.
+     * Computes the fulltext for a given indexable resource.
      * <p>
      * This should be moved somewhere else where configurable.
      *
-     * @param resource a document indexable resource.
-     * @return a resolved data instance.
+     * @param resources a set of document indexable resources
+     * @return a resolved data instance
      */
-    private static ResolvedData computeFulltext(IndexableResources resources)
-            throws IndexingException {
+    private static ResolvedData computeFulltext(IndexableResources resources) {
 
         String value = "";
         String analyzer = "default";
@@ -132,7 +130,7 @@ public class ResolvedResourcesFactory implements Serializable {
     }
 
     /**
-     * at this point resources cannot be empty any more
+     * At this point, resources cannot be empty any more.
      *
      * @param resources
      * @param desc
@@ -283,15 +281,11 @@ public class ResolvedResourcesFactory implements Serializable {
 
         blob = null;
         return res;
-
     }
 
     public static ResolvedResources computeAggregatedResolvedResourcesFrom(
             IndexableResources resources, boolean fulltext)
             throws IndexingException {
-
-        boolean acpComputed = false;
-        boolean builtinComputed = false;
 
         List<ResolvedData> commonData = new ArrayList<ResolvedData>();
         if (fulltext && !resources.getIndexableResources().isEmpty()) {
@@ -301,6 +295,8 @@ public class ResolvedResourcesFactory implements Serializable {
         ACP acp = null;
         List<ResolvedResource> resolvedResources = new ArrayList<ResolvedResource>();
 
+        boolean acpComputed = false;
+        boolean builtinComputed = false;
         for (IndexableResource resource : resources.getIndexableResources()) {
 
             IndexableResourceConf conf = resource.getConfiguration();
