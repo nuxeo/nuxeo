@@ -26,8 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * Array utils.
  *
@@ -85,7 +83,7 @@ public final class ArrayUtils {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <T> T[] intersect(@NotNull final T[]... arrays) {
+    public static <T> T[] intersect(final T[]... arrays) {
         final Class type = arrays.getClass().getComponentType()
                 .getComponentType();
         if (arrays.length == 0) {

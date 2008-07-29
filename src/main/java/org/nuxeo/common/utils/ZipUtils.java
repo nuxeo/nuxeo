@@ -39,7 +39,6 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * @author bstefanescu
@@ -436,7 +435,6 @@ public final class ZipUtils {
      * @throws IOException
      * @author lgodard <lgodard@nuxeo.com>
      */
-    @Nullable
     public static InputStream getEntryContentAsStream(File file,
             String entryName) throws IOException {
         InputStream result = null;
