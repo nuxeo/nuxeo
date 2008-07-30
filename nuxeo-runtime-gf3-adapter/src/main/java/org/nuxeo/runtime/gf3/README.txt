@@ -66,6 +66,8 @@ whether or not you want domain.xml persistence etc.
 Also, making accessible some private members/methods (like GlassFish.habitat or GFApplication() ctor)
 as protected or public may be useful for those who want to extend the default GlassFish implementation.
 
+I updated GlassFish embedded server so that I can specify the domain.xml and a default web.xml from outside.
+
 I managed to start our application using embedded GF3 which is pretty cool.
 Startup time is ~ 4 seconds on my laptop which is very good
 
