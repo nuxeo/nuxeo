@@ -1,0 +1,91 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.runtime</groupId>
+    <artifactId>nuxeo-runtime-parent</artifactId>
+    <version>1.5-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.runtime</groupId>
+  <artifactId>nuxeo-runtime-gf3-adapter</artifactId>
+  <version>1.5-SNAPSHOT</version>
+  <name>Nuxeo Runtime GlassFish3 Adapter</name>
+  <description>Emebeds GlassFish3 in Nuxeo</description>
+
+  <dependencies>
+
+    <!--dependency>
+      <groupId>org.glassfish.embedded</groupId>
+      <artifactId>gf-embedded-api</artifactId>
+      <version>1.0-alpha-5-SNAPSHOT</version>
+    </dependency-->
+    
+    <dependency>
+      <groupId>org.glassfish.distributions</groupId>
+      <artifactId>web-all</artifactId>
+      <version>10.0-build-20080724</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-osgi</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- TODO: do we need all these dependencies in the jar? -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-installed</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <!--artifactItem>
+                  <groupId>org.glassfish.embedded</groupId>
+                  <artifactId>gf-embedded-api</artifactId>
+                  <version>1.0-alpha-5-SNAPSHOT</version>
+                </artifactItem-->
+                <artifactItem>
+                  <groupId>org.glassfish.distributions</groupId>
+                  <artifactId>web-all</artifactId>
+                  <version>10.0-build-20080724</version>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
