@@ -55,10 +55,10 @@
   <configs>
     <config name="server-config">
       <http-service>
-        <!--http-listener id="http-listener-1" port="8080" address="0.0.0.0" default-virtual-server="server" server-name="" />
+        <http-listener id="http-listener-1" port="8080" address="0.0.0.0" default-virtual-server="server" server-name="" />
         <virtual-server id="server" hosts="${com.sun.aas.hostName}" http-listeners="http-listener-1" log-file="">
-          <property name="docroot" value="." />
-        </virtual-server-->
+          <property name="docroot" value="${com.sun.aas.instanceRoot}/web" />
+        </virtual-server>
         <access-log format="%client.name% %auth-user-name% %datetime% %request% %status% %response.length%" rotation-enabled="true" rotation-interval-in-minutes="15" rotation-policy="time" rotation-suffix="yyyy-MM-dd"/>
         <request-processing header-buffer-length-in-bytes="8192" thread-count="20" initial-thread-count="2" request-timeout-in-seconds="30" thread-increment="1" />
         <keep-alive thread-count="1" timeout-in-seconds="30" max-connections="250" />

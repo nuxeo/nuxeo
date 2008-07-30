@@ -19,14 +19,10 @@
 
 package org.glassfish.embed.impl;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.deployment.Deployer;
-import org.glassfish.api.deployment.MetaData;
 import org.glassfish.internal.data.ContainerInfo;
 import org.glassfish.internal.data.ContainerRegistry;
 import org.jvnet.hk2.annotations.Inject;
@@ -34,7 +30,6 @@ import org.jvnet.hk2.annotations.Inject;
 import com.sun.enterprise.v3.deployment.DeploymentContextImpl;
 import com.sun.enterprise.v3.server.ApplicationLifecycle;
 import com.sun.enterprise.v3.server.ProgressTracker;
-import com.sun.java.swing.plaf.windows.WindowsTreeUI.CollapsedIcon;
 
 /**
  *

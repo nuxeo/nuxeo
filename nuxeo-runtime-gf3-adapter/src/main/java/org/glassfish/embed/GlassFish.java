@@ -39,6 +39,7 @@ package org.glassfish.embed;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -56,6 +57,7 @@ import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.deployment.autodeploy.AutoDeployService;
 import org.glassfish.embed.impl.ApplicationLifecycle2;
 import org.glassfish.embed.impl.DomainXml2;
@@ -93,6 +95,7 @@ import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
 import com.sun.enterprise.v3.server.SnifferManager;
 import com.sun.enterprise.v3.services.impl.LogManagerService;
 import com.sun.enterprise.web.WebDeployer;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.InhabitantsParser;
 import com.sun.web.security.RealmAdapter;
 import com.sun.web.server.DecoratorForJ2EEInstanceListener;
@@ -126,6 +129,9 @@ public class GlassFish {
      */
     private final Document domainXml;
 
+    protected final URL domainXmlUrl;
+    protected URL defaultWebXml;
+
     /**
      * To navigate around {@link #domainXml}.
      */
@@ -138,15 +144,9 @@ public class GlassFish {
     protected /*almost final*/ ArchiveFactory archiveFactory;
     protected /*almost  final*/ ServerEnvironmentImpl env;
 
-    /**
-     * Starts an empty do-nothing GlassFish v3.
-     *
-     * <p>
-     * In particular, no HTTP listener is configured out of the box, so you'd have to add
-     * some programatically via {@link #createHttpListener(int)} and {@link #createVirtualServer(GFHttpListener)}.
-     */
-    public GlassFish() throws GFException {
+    protected GlassFish(URL domainXmlUrl, boolean start) throws GFException {
         try {
+            this.domainXmlUrl = domainXmlUrl;
             domainXml = parseDefaultDomainXml();
         } catch (IOException e) {
             throw new GFException(e);
@@ -155,6 +155,20 @@ public class GlassFish {
         } catch (ParserConfigurationException e) {
             throw new GFException(e);
         }
+        if (start) {
+            start();
+        }
+    }
+
+    /**
+     * Starts an empty do-nothing GlassFish v3.
+     *
+     * <p>
+     * In particular, no HTTP listener is configured out of the box, so you'd have to add
+     * some programatically via {@link #createHttpListener(int)} and {@link #createVirtualServer(GFHttpListener)}.
+     */
+    public GlassFish(URL domainXmlUrl) throws GFException {
+        this (domainXmlUrl, true);
     }
 
     /**
@@ -162,15 +176,37 @@ public class GlassFish {
      * single HTTP listener listening on the given port.
      */
     public GlassFish(int httpPort) throws GFException {
-        this();
+        this(null, false);
         createVirtualServer(createHttpListener(httpPort));
         start();
     }
 
+
     private Document parseDefaultDomainXml() throws ParserConfigurationException, IOException, SAXException {
+        URL url = domainXmlUrl == null ?
+                getClass().getResource("/org/glassfish/embed/domain.xml") : domainXmlUrl;
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 //        dbf.setNamespaceAware(true);  // domain.xml doesn't use namespace
-        return dbf.newDocumentBuilder().parse(getClass().getResource("/org/glassfish/embed/domain.xml").toExternalForm());
+        return dbf.newDocumentBuilder().parse(url.toExternalForm());
+    }
+
+    /**
+     * @return the domainXmlUrl.
+     */
+    public URL getDomainXmlUrl() {
+        return domainXmlUrl;
+    }
+
+    public void setDefaultWebXml(URL url) {
+        this.defaultWebXml = url;
+    }
+
+    public URL getDefaultWebXml() {
+        return defaultWebXml;
+    }
+
+    protected URL getDomainXML() {
+        return domainXmlUrl;
     }
 
     /**
@@ -185,6 +221,9 @@ public class GlassFish {
      * differently from normal stand-alone use.
      */
     protected InhabitantsParser decorateInhabitantsParser(InhabitantsParser parser) {
+        // registering myself
+        parser.habitat.add(new ExistingSingletonInhabitant<GlassFish>(GlassFish.class, this)); // use base class and not current implementation
+
         // register scattered web handler before normal WarHandler kicks in.
         Inhabitant<ScatteredWarHandler> swh = Inhabitants.create(new ScatteredWarHandler());
         parser.habitat.add(swh);
@@ -442,7 +481,6 @@ public class GlassFish {
         Properties params = new Properties();
         params.put(ParameterNames.NAME,a.getName());
         params.put(ParameterNames.ENABLED,"true");
-        params.put(ParameterNames.VIRTUAL_SERVERS, "server");
         final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(Logger.getAnonymousLogger(), a, params, env);
         deploymentContext.setClassLoader(cl);
 

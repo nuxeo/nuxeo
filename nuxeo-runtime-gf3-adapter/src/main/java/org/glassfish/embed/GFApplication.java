@@ -51,7 +51,7 @@ public final class GFApplication {
     private final ApplicationInfo app;
     private final DeploymentContext deploymentContext;
 
-    protected GFApplication(GlassFish owner, ApplicationInfo app, DeploymentContext deploymentContext) {
+    public GFApplication(GlassFish owner, ApplicationInfo app, DeploymentContext deploymentContext) {
         this.owner = owner;
         this.app = app;
         this.deploymentContext = deploymentContext;

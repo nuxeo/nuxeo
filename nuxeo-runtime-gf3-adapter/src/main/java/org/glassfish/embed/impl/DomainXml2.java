@@ -44,6 +44,7 @@ import java.net.URL;
 import javax.xml.stream.XMLStreamException;
 
 import org.glassfish.config.support.ConfigurationPersistence;
+import org.glassfish.embed.GlassFish;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.DomDocument;
 
@@ -59,6 +60,9 @@ public class DomainXml2 extends DomainXml implements ConfigurationPersistence {
     @Inject
     DomainXmlHolder domainXml;
 
+    @Inject
+    protected GlassFish server;
+
     public DomainXml2() {
     }
 
@@ -66,7 +70,11 @@ public class DomainXml2 extends DomainXml implements ConfigurationPersistence {
     protected URL getDomainXml(ServerEnvironmentImpl env) {
 //        return getClass().getResource("/org/glassfish/embed/domain.xml");
         try {
-            return domainXml.writeDomainXml().toURI().toURL();
+            URL domainXmlUrl = server.getDomainXmlUrl();
+            if (domainXmlUrl == null) {
+                domainXmlUrl = domainXml.writeDomainXml().toURI().toURL();
+            }
+            return domainXmlUrl;
         } catch (MalformedURLException e) {
             throw new AssertionError(e);    // impossible
         }

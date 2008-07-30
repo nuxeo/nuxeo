@@ -20,13 +20,9 @@
 package org.nuxeo.runtime.gf3;
 
 import java.io.File;
-import java.util.Arrays;
+import java.net.URL;
 import java.util.Collections;
-import java.util.Properties;
 
-import javax.naming.InitialContext;
-
-import org.glassfish.api.ActionReport;
 import org.glassfish.embed.ScatteredWar;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.server.WebApplication;
@@ -36,8 +32,6 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import com.sun.appserv.management.client.AdminRMISSLClientSocketFactory;
-import com.sun.enterprise.v3.admin.CreateJdbcConnectionPool;
 
 /**
  * BUG:       in InjectionManger                  if (!isOptional(inject)) { return always true - isOptional return always false
@@ -64,28 +58,17 @@ public class GF3Component extends DefaultComponent {
     public void activate(ComponentContext context) throws Exception {
         Environment env = Environment.getDefault();
         System.setProperty(ConnectorConstants.INSTALL_ROOT, env.getHome().getAbsolutePath());
+        System.setProperty("com.sun.aas.instanceRoot", env.getHome().getAbsolutePath());
 //        // in //lib/install/applications we must put the __ds_jdbc_ra
-        server = new GlassFishServer(8080); // TODO port should be configurable
-//
-
-        try {
-        String[] pools = server.listJdbcConnectionPools();
-        if (pools == null) {
-            System.err.println("An error occured");
+        File file = new File(env.getConfig(), "domain.xml");
+        if (file.exists()) {
+            server = new GlassFishServer(file.toURI().toURL());
         } else {
-            System.out.println("JDBC POOLS: "+Arrays.toString(pools));
+            server = new GlassFishServer(8080);
         }
-
-        if (server.pingJdbcConnectionPool("NXSQLDirectoryPool")) {
-            System.out.println("DerbyPools is working!");
-        } else {
-            System.out.println("DerbyPools is not responding!");
-        }
-
-        InitialContext ic = new InitialContext();
-        System.out.println(ic.lookup("jdbc/nxsqldirectory"));
-        } catch (Throwable t) {
-            t.printStackTrace();
+        file = new File(env.getConfig(), "default-web.xml");
+        if (file.exists()) {
+            server.setDefaultWebXml(file.toURI().toURL());
         }
     }
 
@@ -116,7 +99,7 @@ public class GF3Component extends DefaultComponent {
                     webRoot,
                     webXmlFile,
                     Collections.singleton(webClasses.toURI().toURL()));
-            server.deploy(war);
+            server.deployWar(war, app.getContextPath());
         } else if (XP_DATA_SOURCE.equals(extensionPoint)) {
 
         }
