@@ -383,11 +383,20 @@ public class SQLSession implements Session {
      */
 
     /**
-     * Create a property. Node may be null if the parent property hasn't be
-     * created yet.
+     * Creates a property.
      */
-    protected Property makeProperty(Node node, ComplexType complexType,
+    protected Property makeProperty(Node node, ComplexType parentType,
             String name) throws DocumentException {
+
+        if (Model.ACL_PROP.equals(name)) {
+            CollectionProperty property;
+            try {
+                property = node.getCollectionProperty(name);
+            } catch (StorageException e) {
+                throw new DocumentException(e);
+            }
+            return new SQLCollectionProperty(property, null);
+        }
 
         Field field;
         if (Model.SYSTEM_LIFECYCLE_POLICY_PROP.equals(name)) {
@@ -397,7 +406,7 @@ public class SQLSession implements Session {
         } else if (Model.SYSTEM_DIRTY_PROP.equals(name)) {
             field = Model.SYSTEM_DIRTY_FIELD;
         } else {
-            field = complexType.getField(name);
+            field = parentType.getField(name);
             // qualify if necessary (some callers pass unprefixed names)
             name = field.getName().getPrefixedName();
         }
@@ -430,7 +439,7 @@ public class SQLSession implements Session {
             }
         } else {
             // complex type
-            ComplexType fieldComplexType = (ComplexType) type;
+            ComplexType complexType = (ComplexType) type;
             Node childNode;
             try {
                 childNode = session.getChildNode(node, name, true);
@@ -447,9 +456,9 @@ public class SQLSession implements Session {
             }
             // TODO use a better switch
             if (type.getName().equals("content")) {
-                return new SQLContentProperty(childNode, fieldComplexType, this);
+                return new SQLContentProperty(childNode, complexType, this);
             } else {
-                return new SQLComplexProperty(childNode, fieldComplexType, this);
+                return new SQLComplexProperty(childNode, complexType, this);
             }
         }
     }

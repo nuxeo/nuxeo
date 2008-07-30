@@ -42,12 +42,14 @@ public enum PropertyType {
     DOUBLE, //
     DATETIME, //
     BINARY, //
+    ACL, //
     ARRAY_STRING(STRING, new String[0]), //
     ARRAY_BOOLEAN(BOOLEAN, new Boolean[0]), //
     ARRAY_LONG(LONG, new Long[0]), //
     ARRAY_DOUBLE(DOUBLE, new Double[0]), //
     ARRAY_DATETIME(DATETIME, new Calendar[0]), //
-    ARRAY_BINARY(BINARY, new Serializable[0]); // TODO
+    ARRAY_BINARY(BINARY, new Serializable[0]), // TODO
+    COLL_ACL(ACL, new ACLRow[0]);
 
     private final PropertyType arrayBaseType;
 
@@ -124,6 +126,12 @@ public enum PropertyType {
                     value);
         case BINARY:
             throw new RuntimeException("Not implemented");
+        case ACL:
+            if (value instanceof ACLRow) {
+                return value;
+            }
+            throw new IllegalArgumentException("Value is not a ACLRow: " +
+                    value);
         default:
             throw new AssertionError(this);
         }

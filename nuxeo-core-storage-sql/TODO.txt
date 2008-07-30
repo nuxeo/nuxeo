@@ -14,6 +14,8 @@ SQL Storage TODO
 
 - recursive removal on node remove
 
+- cross-cache invalidation
+
 - blob storage GC
 
 - hierarchy management, children optimizations

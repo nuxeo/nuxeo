@@ -18,9 +18,14 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -39,7 +44,9 @@ import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionFragmentMaker;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
+import org.nuxeo.ecm.core.storage.sql.db.Column;
 
 /**
  * The {@link Model} is the link between high-level types and SQL-level objects
@@ -100,7 +107,9 @@ public class Model {
 
     public static final String SYSTEM_DIRTY_KEY = "dirty";
 
-    public static final String ACL_TABLE_NAME = "acl";
+    public static final String ACL_TABLE_NAME = "acls";
+
+    public static final String ACL_PROP = "__acl__";
 
     public static final String ACL_ACPPOS_KEY = "acppos";
 
@@ -143,8 +152,14 @@ public class Model {
     /** Maps table name to a map of properties to their basic type. */
     protected final Map<String, Map<String, PropertyType>> fragmentsKeysType;
 
+    /** Column ordering for collections. */
+    protected final Map<String, List<String>> collectionOrderBy;
+
     /** Maps collection table names to their type. */
     protected final Map<String, PropertyType> collectionTables;
+
+    /** The factories to build collection fragments. */
+    protected final Map<String, CollectionFragmentMaker> collectionMakers;
 
     /** Maps document type name or schema name to allowed fragments. */
     protected final Map<String, Set<String>> typeFragments;
@@ -173,13 +188,16 @@ public class Model {
         propertyType = new HashMap<String, PropertyType>();
         // complexLists = new HashMap<String, Set<String>>();
         fragmentsKeysType = new HashMap<String, Map<String, PropertyType>>();
+        collectionOrderBy = new HashMap<String, List<String>>();
         collectionTables = new HashMap<String, PropertyType>();
+        collectionMakers = new HashMap<String, CollectionFragmentMaker>();
         typeFragments = new HashMap<String, Set<String>>();
         propertyFragment = new HashMap<String, String>();
         propertyFragmentKey = new HashMap<String, String>();
 
         initMainModel();
         initSystemModel();
+        initAclModel();
         initModels(schemaManager);
     }
 
@@ -239,6 +257,28 @@ public class Model {
         return collectionTables.get(tableName);
     }
 
+    /**
+     * Create a collection fragment according to the factories registered.
+     */
+    public CollectionFragment newCollectionFragment(String tableName,
+            Serializable id, ResultSet rs, List<Column> columns,
+            PersistenceContextByTable context) throws SQLException {
+        CollectionFragmentMaker maker = collectionMakers.get(tableName);
+        if (maker == null) {
+            throw new IllegalArgumentException(tableName);
+        }
+        return maker.make(tableName, id, rs, columns, context, this);
+    }
+
+    public CollectionFragment newEmptyCollectionFragment(String tableName,
+            Serializable id, PersistenceContextByTable context) {
+        CollectionFragmentMaker maker = collectionMakers.get(tableName);
+        if (maker == null) {
+            throw new IllegalArgumentException(tableName);
+        }
+        return maker.makeEmpty(tableName, id, context, this);
+    }
+
     public String getFragmentName(String propertyName) {
         return propertyFragment.get(propertyName);
     }
@@ -286,11 +326,8 @@ public class Model {
         propertyFragment.put(propertyName, tableName);
         propertyFragmentKey.put(propertyName, MAIN_PRIMARY_TYPE_KEY);
 
-        Map<String, PropertyType> fragmentKeysType = fragmentsKeysType.get(tableName);
-        if (fragmentKeysType == null) {
-            fragmentKeysType = new HashMap<String, PropertyType>();
-            fragmentsKeysType.put(tableName, fragmentKeysType);
-        }
+        Map<String, PropertyType> fragmentKeysType = new HashMap<String, PropertyType>();
+        fragmentsKeysType.put(tableName, fragmentKeysType);
         fragmentKeysType.put(MAIN_PRIMARY_TYPE_KEY, type);
     }
 
@@ -299,11 +336,8 @@ public class Model {
      */
     private void initSystemModel() {
         String tableName = SYSTEM_TABLE_NAME;
-        Map<String, PropertyType> fragmentKeysType = fragmentsKeysType.get(tableName);
-        if (fragmentKeysType == null) {
-            fragmentKeysType = new HashMap<String, PropertyType>();
-            fragmentsKeysType.put(tableName, fragmentKeysType);
-        }
+        Map<String, PropertyType> fragmentKeysType = new LinkedHashMap<String, PropertyType>();
+        fragmentsKeysType.put(tableName, fragmentKeysType);
 
         String propertyName = SYSTEM_LIFECYCLE_POLICY_PROP;
         String key = SYSTEM_LIFECYCLE_POLICY_KEY;
@@ -331,20 +365,26 @@ public class Model {
         propertyFragment.put(propertyName, tableName);
         propertyFragmentKey.put(propertyName, key);
         fragmentKeysType.put(key, type);
-
     }
 
     /**
-     * Special model for the ACL table.
+     * Special collection-like model for the ACL table.
      */
     private void initAclModel() {
-        String tableName = ACL_TABLE_NAME;
-        Map<String, PropertyType> fragmentKeysType = fragmentsKeysType.get(tableName);
-        if (fragmentKeysType == null) {
-            fragmentKeysType = new HashMap<String, PropertyType>();
-            fragmentsKeysType.put(tableName, fragmentKeysType);
-        }
-
+        Map<String, PropertyType> fragmentKeysType = new LinkedHashMap<String, PropertyType>();
+        fragmentsKeysType.put(ACL_TABLE_NAME, fragmentKeysType);
+        fragmentKeysType.put(ACL_ACPPOS_KEY, PropertyType.LONG);
+        fragmentKeysType.put(ACL_ACPNAME_KEY, PropertyType.STRING);
+        fragmentKeysType.put(ACL_ACLPOS_KEY, PropertyType.LONG);
+        fragmentKeysType.put(ACL_GRANT_KEY, PropertyType.BOOLEAN);
+        fragmentKeysType.put(ACL_PERMISSION_KEY, PropertyType.STRING);
+        fragmentKeysType.put(ACL_USER_KEY, PropertyType.STRING);
+        fragmentKeysType.put(ACL_GROUP_KEY, PropertyType.STRING);
+        collectionTables.put(ACL_TABLE_NAME, PropertyType.COLL_ACL);
+        collectionMakers.put(ACL_TABLE_NAME, ACLsFragment.MAKER);
+        collectionOrderBy.put(ACL_TABLE_NAME, Arrays.asList(ACL_ACPPOS_KEY, ACL_ACLPOS_KEY));
+        propertyFragment.put(ACL_PROP, ACL_TABLE_NAME);
+        propertyType.put(ACL_PROP, PropertyType.COLL_ACL);
     }
 
     /**
@@ -396,6 +436,17 @@ public class Model {
                         String tableName = collectionFragmentName(propertyName);
                         propertyFragment.put(propertyName, tableName);
                         collectionTables.put(tableName, type);
+                        collectionMakers.put(tableName, ArrayFragment.MAKER);
+                        Map<String, PropertyType> fragmentKeysType = fragmentsKeysType.get(tableName);
+                        if (fragmentKeysType == null) {
+                            fragmentKeysType = new LinkedHashMap<String, PropertyType>();
+                            fragmentsKeysType.put(tableName, fragmentKeysType);
+                        }
+                        fragmentKeysType.put(COLL_TABLE_POS_KEY,
+                                PropertyType.LONG); // TODO INT
+                        fragmentKeysType.put(COLL_TABLE_VALUE_KEY,
+                                type.getArrayBaseType());
+                        collectionOrderBy.put(tableName, Collections.singletonList(COLL_TABLE_POS_KEY));
                     } else {
                         /*
                          * Complex list.
@@ -424,7 +475,7 @@ public class Model {
 
                     Map<String, PropertyType> fragmentKeysType = fragmentsKeysType.get(fragmentName);
                     if (fragmentKeysType == null) {
-                        fragmentKeysType = new HashMap<String, PropertyType>();
+                        fragmentKeysType = new LinkedHashMap<String, PropertyType>();
                         fragmentsKeysType.put(fragmentName, fragmentKeysType);
                     }
                     fragmentKeysType.put(key, type);

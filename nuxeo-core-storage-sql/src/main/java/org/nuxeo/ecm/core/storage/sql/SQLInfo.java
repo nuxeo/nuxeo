@@ -66,8 +66,6 @@ public class SQLInfo {
 
     private final Map<String, String> selectByIdSqlMap; // statement
 
-    private final Map<String, String> selectCollectionByIdSqlMap; // statement
-
     private final Map<String, List<Column>> selectByIdColumnsMap; // without ids
 
     private final Map<String, String> identityFetchSqlMap; // statement
@@ -77,10 +75,6 @@ public class SQLInfo {
     private final Map<String, String> insertSqlMap; // statement
 
     private final Map<String, List<Column>> insertColumnsMap;
-
-    private final Map<String, String> collectionInsertSqlMap; // statement
-
-    private final Map<String, List<Column>> collectionInsertColumnsMap;
 
     private final Map<String, String> updateByIdSqlMap; // statement
 
@@ -143,7 +137,6 @@ public class SQLInfo {
         selectRootIdWhatColumn = null;
 
         selectByIdSqlMap = new HashMap<String, String>();
-        selectCollectionByIdSqlMap = new HashMap<String, String>();
         selectByIdColumnsMap = new HashMap<String, List<Column>>();
         identityFetchSqlMap = new HashMap<String, String>();
         identityFetchColumnMap = new HashMap<String, Column>();
@@ -170,8 +163,6 @@ public class SQLInfo {
 
         insertSqlMap = new HashMap<String, String>();
         insertColumnsMap = new HashMap<String, List<Column>>();
-        collectionInsertSqlMap = new HashMap<String, String>();
-        collectionInsertColumnsMap = new HashMap<String, List<Column>>();
 
         updateByIdSqlMap = new HashMap<String, String>();
         updateByIdColumnsMap = new HashMap<String, List<Column>>();
@@ -223,10 +214,6 @@ public class SQLInfo {
      */
     public String getSelectByIdSql(String typeName) {
         return selectByIdSqlMap.get(typeName);
-    }
-
-    public String getSelectCollectionByIdSql(String typeName) {
-        return selectCollectionByIdSqlMap.get(typeName);
     }
 
     // field names to bind
@@ -318,14 +305,6 @@ public class SQLInfo {
         return insertColumnsMap.get(tableName);
     }
 
-    public String getCollectionInsertSql(String tableName) {
-        return collectionInsertSqlMap.get(tableName);
-    }
-
-    public List<Column> getCollectionInsertColumns(String tableName) {
-        return collectionInsertColumnsMap.get(tableName);
-    }
-
     // ----- post insert fetch -----
 
     // statement to fetch all values auto-incremented by an insert
@@ -373,12 +352,8 @@ public class SQLInfo {
         initHierarchySQL();
 
         for (String tableName : model.fragmentsKeysType.keySet()) {
-            initSimpleFragmentSQL(tableName);
+            initFragmentSQL(tableName);
         }
-        for (String tableName : model.collectionTables.keySet()) {
-            initCollectionFragmentSQL(tableName);
-        }
-
     }
 
     /**
@@ -387,7 +362,7 @@ public class SQLInfo {
      */
     protected void initRepositorySQL() {
         log.debug("Init repository information");
-        TableMaker maker = new TableMaker(model.REPOINFO_TABLE_NAME, false);
+        TableMaker maker = new TableMaker(model.REPOINFO_TABLE_NAME);
         maker.newColumn(model.REPOINFO_REPOID_KEY, Types.INTEGER);
         maker.newPrimaryKey(); // foreign key to main id
         maker.postProcessRepository();
@@ -399,25 +374,24 @@ public class SQLInfo {
     protected void initHierarchySQL() {
         log.debug("Init hierarchy information");
 
-        TableMaker maker = new TableMaker(model.HIER_TABLE_NAME, false);
+        TableMaker maker = new TableMaker(model.HIER_TABLE_NAME);
         maker.newPrimaryKey();
         maker.newMainKey(model.HIER_PARENT_KEY);
         maker.newColumn(model.HIER_CHILD_POS_KEY, Types.INTEGER);
         maker.newColumn(model.HIER_CHILD_NAME_KEY, Types.VARCHAR); // text?
         maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, Types.BIT); // not null
         maker.postProcess();
-        maker.postProcessSelectByChildNameAll();
-        maker.postProcessSelectByChildNamePropertiesFlag();
-        maker.postProcessSelectChildrenAll();
-        maker.postProcessSelectChildrenPropertiesFlag();
+        maker.postProcessHierarchy();
     }
 
     /**
-     * Creates the SQL for one fragment.
+     * Creates the SQL for one fragment (simple or collection).
      */
-    protected void initSimpleFragmentSQL(String tableName) {
-        TableMaker maker = new TableMaker(tableName, false);
-        if (tableName.equals(model.MAIN_TABLE_NAME)) {
+    protected void initFragmentSQL(String tableName) {
+        TableMaker maker = new TableMaker(tableName);
+        boolean isMain = tableName.equals(model.MAIN_TABLE_NAME);
+
+        if (isMain) {
             maker.newId(); // global primary key / generation
         } else {
             maker.newPrimaryKey();
@@ -425,24 +399,13 @@ public class SQLInfo {
 
         Map<String, PropertyType> fragmentKeysType = model.fragmentsKeysType.get(tableName);
         for (Entry<String, PropertyType> entry : fragmentKeysType.entrySet()) {
-            String key = entry.getKey();
-            PropertyType type = entry.getValue();
-            maker.newPrimitiveField(key, type);
+            maker.newPrimitiveField(entry.getKey(), entry.getValue());
         }
 
         maker.postProcess();
-
-    }
-
-    protected void initCollectionFragmentSQL(String tableName) {
-        PropertyType type = model.collectionTables.get(tableName);
-        TableMaker maker = new TableMaker(tableName, true);
-        maker.newPrimaryKey();
-
-        maker.newColumn(model.COLL_TABLE_POS_KEY, Types.INTEGER);
-        maker.newPrimitiveField(model.COLL_TABLE_VALUE_KEY,
-                type.getArrayBaseType());
-        maker.postProcess();
+        if (isMain) {
+            maker.postProcessMain();
+        }
     }
 
     // ----- prepare one table -----
@@ -453,13 +416,13 @@ public class SQLInfo {
 
         private final Table table;
 
-        private final boolean isCollection;
+        private final List<String> orderBy;
 
-        protected TableMaker(String tableName, boolean isCollection) {
+        protected TableMaker(String tableName) {
             this.tableName = tableName;
-            this.isCollection = isCollection;
             table = new Table(tableName);
             database.addTable(table);
+            orderBy = model.collectionOrderBy.get(tableName);
         }
 
         protected Column newMainKey(String name) {
@@ -563,15 +526,19 @@ public class SQLInfo {
 
         /**
          * Precompute what we can from the information available for a regular
-         * schema table.
+         * schema table, or a collection table.
          */
         protected void postProcess() {
-            postProcessSelectById(isCollection);
-            if (isCollection) {
-                postProcessCollectionInsert();
-            } else {
-                postProcessInsert();
-            }
+            postProcessSelectById();
+            postProcessInsert();
+            postProcessUpdateById();
+            postProcessDelete();
+        }
+
+        /**
+         * Additional SQL for the main table.
+         */
+        protected void postProcessMain() {
             switch (model.idGenPolicy) {
             case APP_UUID:
                 break;
@@ -580,17 +547,23 @@ public class SQLInfo {
                 break;
             default:
                 throw new AssertionError(model.idGenPolicy);
-
             }
-            postProcessUpdateById();
-            postProcessDelete();
         }
 
-        protected void postProcessSelectById(boolean isCollection) {
+        /**
+         * Additional SQL for the hierarchy table.
+         */
+        protected void postProcessHierarchy() {
+            postProcessSelectByChildNameAll();
+            postProcessSelectByChildNamePropertiesFlag();
+            postProcessSelectChildrenAll();
+            postProcessSelectChildrenPropertiesFlag();
+        }
+
+        protected void postProcessSelectById() {
             List<Column> selectByIdColumns = new LinkedList<Column>();
             List<String> whats = new LinkedList<String>();
             List<String> wheres = new LinkedList<String>();
-            Column posColumn = null;
             for (Column column : table.getColumns()) {
                 String qname = column.getQuotedName(dialect);
                 if (column.isPrimary()) {
@@ -598,23 +571,21 @@ public class SQLInfo {
                 } else {
                     whats.add(qname);
                     selectByIdColumns.add(column);
-                    if (column.getName().equals(model.COLL_TABLE_POS_KEY)) {
-                        posColumn = column;
-                    }
                 }
             }
             Select select = new Select(dialect);
             select.setWhat(StringUtils.join(whats, ", "));
             select.setFrom(table.getQuotedName(dialect));
             select.setWhere(StringUtils.join(wheres, " AND "));
-            if (isCollection) {
-                select.setOrderBy(posColumn.getQuotedName(dialect));
-                selectCollectionByIdSqlMap.put(tableName, select.getStatement());
-                selectByIdColumnsMap.put(tableName, selectByIdColumns);
-            } else {
-                selectByIdSqlMap.put(tableName, select.getStatement());
-                selectByIdColumnsMap.put(tableName, selectByIdColumns);
+            if (orderBy != null) {
+                List<String> order = new LinkedList<String>();
+                for (String name : orderBy) {
+                    order.add(table.getColumn(name).getQuotedName(dialect));
+                }
+                select.setOrderBy(StringUtils.join(order, ", "));
             }
+            selectByIdSqlMap.put(tableName, select.getStatement());
+            selectByIdColumnsMap.put(tableName, selectByIdColumns);
         }
 
         protected void postProcessSelectByChildNameAll() {
@@ -746,6 +717,7 @@ public class SQLInfo {
             selectChildrenPropertiesWhereColumns = whereColumns;
         }
 
+        // TODO optimize multiple inserts into one statement for collections
         protected void postProcessInsert() {
             // insert (implicitly auto-generated sequences not included)
             List<Column> insertColumns = new LinkedList<Column>();
@@ -756,20 +728,6 @@ public class SQLInfo {
             }
             insertSqlMap.put(tableName, insert.getStatement(insertColumns));
             insertColumnsMap.put(tableName, insertColumns);
-        }
-
-        // identical to above for now
-        // TODO optimize multiple inserts into one statement
-        protected void postProcessCollectionInsert() {
-            List<Column> insertColumns = new LinkedList<Column>();
-            Insert insert = new Insert(dialect);
-            insert.setTable(table);
-            for (Column column : table.getColumns()) {
-                insert.addColumn(column);
-            }
-            collectionInsertSqlMap.put(tableName,
-                    insert.getStatement(insertColumns));
-            collectionInsertColumnsMap.put(tableName, insertColumns);
         }
 
         protected void postProcessIdentityFetch() {

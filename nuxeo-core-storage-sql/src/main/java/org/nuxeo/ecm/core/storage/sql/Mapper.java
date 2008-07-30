@@ -42,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.exception.JDBCExceptionHelper;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionFragmentIterator;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 
@@ -402,8 +403,8 @@ public class Mapper {
         String tableName = fragment.getTableName();
         PreparedStatement ps = null;
         try {
-            String sql = sqlInfo.getCollectionInsertSql(tableName);
-            List<Column> columns = sqlInfo.getCollectionInsertColumns(tableName);
+            String sql = sqlInfo.getInsertSql(tableName);
+            List<Column> columns = sqlInfo.getInsertColumns(tableName);
             try {
                 Serializable id = fragment.getId();
                 List<Serializable> debugValues = null;
@@ -411,29 +412,11 @@ public class Mapper {
                     debugValues = new ArrayList<Serializable>(3);
                 }
                 ps = connection.prepareStatement(sql);
-                int pos = -1;
-                for (Serializable value : fragment.get()) {
-                    pos++;
-                    int i = 0;
-                    for (Column column : columns) {
-                        i++;
-                        String key = column.getKey();
-                        Serializable v;
-                        if (key.equals(model.MAIN_KEY)) {
-                            v = id;
-                        } else if (key.equals(model.COLL_TABLE_POS_KEY)) {
-                            v = Long.valueOf(pos);
-                        } else if (key.equals(model.COLL_TABLE_VALUE_KEY)) {
-                            v = value;
-                        } else {
-                            throw new AssertionError(
-                                    "Invalid collection column: " + key);
-                        }
-                        column.setToPreparedStatement(ps, i, v);
-                        if (debugValues != null) {
-                            debugValues.add(v);
-                        }
-                    }
+
+                CollectionFragmentIterator it = fragment.getIterator();
+                while (it.hasNext()) {
+                    Serializable n = it.next();
+                    it.setToPreparedStatement(columns, ps, model, debugValues);
                     if (debugValues != null) {
                         logSQL(sql, debugValues);
                         debugValues.clear();
@@ -722,7 +705,7 @@ public class Mapper {
     public CollectionFragment readCollectionRows(String tableName,
             Serializable id, PersistenceContextByTable context)
             throws StorageException {
-        String sql = sqlInfo.getSelectCollectionByIdSql(tableName);
+        String sql = sqlInfo.getSelectByIdSql(tableName);
         try {
             // XXX statement should be already prepared
             if (log.isDebugEnabled()) {
@@ -730,29 +713,16 @@ public class Mapper {
             }
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
-                ArrayList<Serializable> list = new ArrayList<Serializable>();
                 List<Column> columns = sqlInfo.getSelectByIdColumns(tableName);
                 ps.setObject(1, id); // assumes only one primary column
                 ResultSet rs = ps.executeQuery();
-                // construct the list using each row
-                while (rs.next()) {
-                    int i = 0;
-                    Serializable value = null;
-                    for (Column column : columns) {
-                        i++;
-                        if (model.COLL_TABLE_VALUE_KEY.equals(column.getKey())) {
-                            value = column.getFromResultSet(rs, i);
-                        }
-                    }
-                    list.add(value);
-                }
+
+                // construct the resulting collection using each row
+                CollectionFragment fragment = model.newCollectionFragment(
+                        tableName, id, rs, columns, context);
                 if (log.isDebugEnabled()) {
-                    log.debug("SQL:   -> " + list);
+                    log.debug("SQL:   -> " + fragment.toSimpleString());
                 }
-                // XXX deal with different types
-                String[] array = new String[list.size()];
-                CollectionFragment fragment = new CollectionFragment(tableName,
-                        id, State.PRISTINE, context, list.toArray(array));
                 return fragment;
             } finally {
                 ps.close();

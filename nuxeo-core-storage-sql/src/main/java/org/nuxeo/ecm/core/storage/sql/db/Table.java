@@ -20,10 +20,8 @@
 package org.nuxeo.ecm.core.storage.sql.db;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 
 import org.hibernate.dialect.Dialect;
 
@@ -36,11 +34,9 @@ public class Table implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String name;
+    private final String name;
 
-    private Set<String> columnNames;
-
-    private List<Column> columns;
+    private final LinkedHashMap<String, Column> columns;
 
     private Column primaryColumn;
 
@@ -51,9 +47,8 @@ public class Table implements Serializable {
      */
     public Table(String name) {
         this.name = name;
-        // we use a LinkedHasMap to have deterministic ordering
-        columnNames = new HashSet<String>();
-        columns = new LinkedList<Column>();
+        // we use a LinkedHashMap to have deterministic ordering
+        columns = new LinkedHashMap<String, Column>();
     }
 
     public String getName() {
@@ -64,8 +59,12 @@ public class Table implements Serializable {
         return dialect.openQuote() + name + dialect.closeQuote();
     }
 
-    public List<Column> getColumns() {
-        return columns;
+    public Column getColumn(String name) {
+        return columns.get(name);
+    }
+
+    public Collection<Column> getColumns() {
+        return columns.values();
     }
 
     /**
@@ -75,7 +74,7 @@ public class Table implements Serializable {
      */
     public void addColumn(Column column) throws IllegalArgumentException {
         String name = column.getName();
-        if (columnNames.contains(name)) {
+        if (columns.containsKey(name)) {
             throw new IllegalArgumentException("duplicate column " + column);
         }
         if (column.isPrimary()) {
@@ -84,11 +83,8 @@ public class Table implements Serializable {
                         + primaryColumn + " redefined as " + column);
             }
             primaryColumn = column;
-            // put identity column first // XXX needed?
-            columns.add(0, column);
-        } else {
-            columns.add(column);
         }
+        columns.put(name, column);
     }
 
     /**
@@ -109,7 +105,7 @@ public class Table implements Serializable {
         buf.append(" (");
 
         boolean first = true;
-        for (Column column : columns) {
+        for (Column column : columns.values()) {
             if (first) {
                 first = false;
             } else {

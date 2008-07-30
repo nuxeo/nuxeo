@@ -140,4 +140,23 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
     }
 
+    public void testACLs() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        CollectionProperty prop = root.getCollectionProperty(Model.ACL_PROP);
+        assertNotNull(prop);
+        assertEquals(0, prop.getValue().length);
+        ACLRow acl1 = new ACLRow(0, "local", 1, true, "Write", "steve", null);
+        ACLRow acl2 = new ACLRow(0, "local", 0, true, "Read", null, "Members");
+        prop.setValue(new ACLRow[] { acl1, acl2 });
+        session.save();
+        session.close();
+        session = repository.getConnection();
+        root = session.getRootNode();
+        prop = root.getCollectionProperty(Model.ACL_PROP);
+        ACLRow[] acls = (ACLRow[]) prop.getValue();
+        assertEquals(2, acls.length);
+        assertEquals("Members", acls[0].group);
+        assertEquals("steve", acls[1].user);
+    }
 }

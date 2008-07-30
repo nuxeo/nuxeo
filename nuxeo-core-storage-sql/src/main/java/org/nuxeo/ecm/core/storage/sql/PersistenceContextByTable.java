@@ -221,10 +221,7 @@ public class PersistenceContextByTable {
         if (globalContext.isIdNew(id)) {
             // the id has not been saved, so nothing exists yet in the database
             if (isCollection) {
-                Serializable[] empty = model.getCollectionFragmentType(
-                        tableName).getEmptyArray();
-                fragment = new CollectionFragment(tableName, id, State.CREATED,
-                        this, empty);
+                fragment = model.newEmptyCollectionFragment(tableName, id, this);
             } else {
                 if (allowAbsent) {
                     fragment = new SimpleFragment(tableName, id, State.ABSENT,

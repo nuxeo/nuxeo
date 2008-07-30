@@ -29,12 +29,27 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.core.security.SecurityManager;
+import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 
 /**
  * @author Florent Guillaume
  */
 public class SQLSecurityManager implements SecurityManager {
+
+    public ACP getACP(Document doc) throws SecurityException {
+        Object acl;
+        try {
+            acl = doc.getProperty(Model.ACL_PROP);
+        } catch (DocumentException e) {
+            throw new SecurityException(e.getMessage(), e);
+        }
+        Object o = acl;
+        ACP acp = new ACPImpl();
+        // collectOwners(acp, acpNode);
+        collectACLs(acp, null);
+        return acp;
+    }
 
     /*
      * ----- org.nuxeo.ecm.core.security.SecurityManager -----
@@ -47,13 +62,6 @@ public class SQLSecurityManager implements SecurityManager {
         } else {
             updateACP(doc, acp);
         }
-    }
-
-    public ACP getACP(Document doc) throws SecurityException {
-        ACP acp = new ACPImpl();
-        // collectOwners(acp, acpNode);
-        collectACLs(acp, null);
-        return acp;
     }
 
     public ACP getMergedACP(Document doc) throws SecurityException {
@@ -105,6 +113,32 @@ public class SQLSecurityManager implements SecurityManager {
      * ----- internal methods -----
      */
 
+    protected static void replaceACP(Document doc, ACP acp)
+            throws SecurityException {
+        if (acp == null) {
+            removeACP(doc);
+        } else {
+            // remove old node
+
+            // create an empty ACP node
+
+            // fill the new node with data from the user acp
+            // writeACP(acpNode, acp);
+        }
+    }
+
+    protected static void updateACP(Document doc, ACP acp)
+            throws SecurityException {
+        if (acp == null) {
+            return;
+        }
+        // TODO XXX
+    }
+
+    /*
+     * ----- internal methods -----
+     */
+
     protected ACL getInheritedACLs(Document doc) throws DocumentException {
         ACL inheritedAcls = null;
         Document parent = doc.getParent();
@@ -125,28 +159,6 @@ public class SQLSecurityManager implements SecurityManager {
             parent = parent.getParent();
         }
         return inheritedAcls;
-    }
-
-    protected static void replaceACP(Document doc, ACP acp)
-            throws SecurityException {
-        if (acp == null) {
-            removeACP(doc);
-        } else {
-            // remove old node
-
-            // create an empty ACP node
-
-            // fill the new node with data from the user acp
-            // writeACP(acpNode, acp);
-        }
-    }
-
-    protected static void updateACP(Document doc, ACP acp)
-            throws SecurityException {
-        if (acp == null) {
-            return;
-        }
-        // TODO XZXX
     }
 
     protected static void collectOwners(ACP acp, Node acpNode) {
