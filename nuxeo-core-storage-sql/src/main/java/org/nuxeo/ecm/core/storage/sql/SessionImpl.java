@@ -39,6 +39,8 @@ import javax.transaction.xa.Xid;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -448,6 +450,7 @@ public class SessionImpl implements Session, XAResource {
         if (rootId == null) {
             log.debug("Creating root");
             rootNode = addRootNode();
+            addRootACP();
             save();
             // record information about the root id
             context.setRootId(repositoryId, rootNode.getId());
@@ -479,6 +482,22 @@ public class SessionImpl implements Session, XAResource {
         FragmentGroup rowGroup = new FragmentGroup(mainRow, hierRow, null);
 
         return new Node(type, this, context, rowGroup);
+    }
+
+    private void addRootACP() throws StorageException {
+        ACLRow[] aclrows = new ACLRow[4];
+        // TODO put groups in their proper place. like that now for consistency.
+        aclrows[0] = new ACLRow(0, ACL.LOCAL_ACL, 0, true,
+                SecurityConstants.EVERYTHING, SecurityConstants.ADMINISTRATORS,
+                null);
+        aclrows[1] = new ACLRow(0, ACL.LOCAL_ACL, 1, true,
+                SecurityConstants.EVERYTHING, SecurityConstants.ADMINISTRATOR,
+                null);
+        aclrows[2] = new ACLRow(0, ACL.LOCAL_ACL, 2, true,
+                SecurityConstants.READ, SecurityConstants.MEMBERS, null);
+        aclrows[3] = new ACLRow(0, ACL.LOCAL_ACL, 3, true,
+                SecurityConstants.VERSION, SecurityConstants.MEMBERS, null);
+        rootNode.setCollectionProperty(Model.ACL_PROP, aclrows);
     }
 
     // public Node newNodeInstance() needed ?

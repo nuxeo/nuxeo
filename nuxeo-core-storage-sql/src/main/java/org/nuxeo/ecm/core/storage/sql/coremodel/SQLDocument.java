@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
+import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -396,8 +397,12 @@ public class SQLDocument extends SQLComplexProperty implements Document {
      */
 
     /*
-     * ----- -----
+     * ----- internal for SQLSecurityManager -----
      */
+
+    protected Property getACLProperty() throws DocumentException {
+        return session.makeACLProperty(node);
+    }
 
     @Override
     public String toString() {

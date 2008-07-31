@@ -24,15 +24,15 @@ import java.io.Serializable;
  *
  * @author Florent Guillaume
  */
-class ACLRow implements Serializable {
+public class ACLRow implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public final int acppos;
-
-    public final String acpname;
-
     public final int aclpos;
+
+    public final String aclname;
+
+    public final int pos;
 
     public final boolean grant;
 
@@ -42,11 +42,11 @@ class ACLRow implements Serializable {
 
     public final String group;
 
-    public ACLRow(int acppos, String acpname, int aclpos, boolean grant,
+    public ACLRow(int aclpos, String aclname, int pos, boolean grant,
             String permission, String user, String group) {
-        this.acppos = acppos;
-        this.acpname = acpname;
         this.aclpos = aclpos;
+        this.aclname = aclname;
+        this.pos = pos;
         this.grant = grant;
         this.permission = permission;
         this.user = user;
@@ -55,8 +55,8 @@ class ACLRow implements Serializable {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + '(' + acppos + ',' + acpname +
-                ',' + aclpos + ',' + (grant ? "GRANT" : "DENY") + ',' +
+        return this.getClass().getSimpleName() + '(' + aclpos + ',' + aclname +
+                ',' + pos + ',' + (grant ? "GRANT" : "DENY") + ',' +
                 permission + ',' + user + ',' + group + ')';
     }
 }

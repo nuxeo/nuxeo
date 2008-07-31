@@ -382,21 +382,18 @@ public class SQLSession implements Session {
      * ----- property helpers -----
      */
 
-    /**
-     * Creates a property.
-     */
+    protected Property makeACLProperty(Node node) throws DocumentException {
+        CollectionProperty property;
+        try {
+            property = node.getCollectionProperty(Model.ACL_PROP);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+        return new SQLCollectionProperty(property, null);
+    }
+
     protected Property makeProperty(Node node, ComplexType parentType,
             String name) throws DocumentException {
-
-        if (Model.ACL_PROP.equals(name)) {
-            CollectionProperty property;
-            try {
-                property = node.getCollectionProperty(name);
-            } catch (StorageException e) {
-                throw new DocumentException(e);
-            }
-            return new SQLCollectionProperty(property, null);
-        }
 
         Field field;
         if (Model.SYSTEM_LIFECYCLE_POLICY_PROP.equals(name)) {

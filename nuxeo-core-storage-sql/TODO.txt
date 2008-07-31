@@ -4,17 +4,19 @@ SQL Storage TODO
 
 - checkin/checkout
 
+- copy/move
+
 - proxies
 
 - locking
-
-- copy/move
 
 - transactional blob storage
 
 - recursive removal on node remove
 
 - cross-cache invalidation
+
+Optimizations:
 
 - blob storage GC
 

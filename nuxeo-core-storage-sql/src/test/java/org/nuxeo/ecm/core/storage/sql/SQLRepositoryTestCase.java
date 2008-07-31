@@ -75,13 +75,21 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
     }
 
     public void openSession() throws ClientException {
-        Map<String, Serializable> context = new HashMap<String, Serializable>();
-        context.put("username", SecurityConstants.ADMINISTRATOR);
-        session = CoreInstance.getInstance().open(REPOSITORY_NAME, context);
+        session = openSessionAs(SecurityConstants.ADMINISTRATOR);
         assertNotNull(session);
     }
 
+    public CoreSession openSessionAs(String username) throws ClientException {
+        Map<String, Serializable> context = new HashMap<String, Serializable>();
+        context.put("username", username);
+        return CoreInstance.getInstance().open(REPOSITORY_NAME, context);
+    }
+
     public void closeSession() throws ClientException {
+        closeSession(session);
+    }
+
+    public void closeSession(CoreSession session) throws ClientException {
         CoreInstance.getInstance().close(session);
     }
 
