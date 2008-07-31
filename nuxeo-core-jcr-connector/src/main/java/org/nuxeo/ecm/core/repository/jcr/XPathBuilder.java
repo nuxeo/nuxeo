@@ -214,7 +214,7 @@ public class XPathBuilder implements QueryConstants {
                     throw new QueryException(
                             "Invalid query:  ecm:fulltext can only be compared against string values");
                 }
-                xq.predicate.append("fn:name() ").append(expr.operator.toString())
+                xq.predicate.append("fn:name() ").append(operator(expr.operator))
                         .append(" '").append(((StringLiteral) expr.rvalue).value).append("'");
                 return true;
             } else if (name.equals(ECM_IS_CHECKED_IN_VERSION)
@@ -432,7 +432,7 @@ public class XPathBuilder implements QueryConstants {
     }
 
     static void operator(StringBuilder buf, Operator operator) {
-        buf.append(" ").append(operator.toString()).append(" ");
+        buf.append(" ").append(operator(operator)).append(" ");
     }
 
     static void operand(XPathQuery xq, Operand operand) throws QueryException {
