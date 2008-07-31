@@ -52,7 +52,7 @@ import java.util.jar.Manifest;
 
 /**
  * {@link ReadableArchive} representation of an web application that
- * is not assembled into the canonical war format. 
+ * is not assembled into the canonical war format.
  *
  * @author Kohsuke Kawaguchi
  */

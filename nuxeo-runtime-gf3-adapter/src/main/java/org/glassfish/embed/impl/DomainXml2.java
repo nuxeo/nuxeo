@@ -58,9 +58,6 @@ import com.sun.enterprise.v3.server.ServerEnvironmentImpl;
  */
 public class DomainXml2 extends DomainXml implements ConfigurationPersistence {
     @Inject
-    DomainXmlHolder domainXml;
-
-    @Inject
     protected GlassFish server;
 
     public DomainXml2() {
@@ -69,15 +66,7 @@ public class DomainXml2 extends DomainXml implements ConfigurationPersistence {
     @Override
     protected URL getDomainXml(ServerEnvironmentImpl env) {
 //        return getClass().getResource("/org/glassfish/embed/domain.xml");
-        try {
-            URL domainXmlUrl = server.getDomainXmlUrl();
-            if (domainXmlUrl == null) {
-                domainXmlUrl = domainXml.writeDomainXml().toURI().toURL();
-            }
-            return domainXmlUrl;
-        } catch (MalformedURLException e) {
-            throw new AssertionError(e);    // impossible
-        }
+        return server.getDomainXml();
     }
 
     public void save(DomDocument doc) throws IOException, XMLStreamException {

@@ -20,7 +20,6 @@
 package org.nuxeo.runtime.gf3;
 
 import java.io.File;
-import java.net.URL;
 import java.util.Collections;
 
 import org.glassfish.embed.ScatteredWar;

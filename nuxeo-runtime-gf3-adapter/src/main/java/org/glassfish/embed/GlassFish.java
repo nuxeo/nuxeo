@@ -47,6 +47,11 @@ import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -57,11 +62,9 @@ import org.glassfish.api.admin.ParameterNames;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.deployment.autodeploy.AutoDeployService;
 import org.glassfish.embed.impl.ApplicationLifecycle2;
 import org.glassfish.embed.impl.DomainXml2;
-import org.glassfish.embed.impl.DomainXmlHolder;
 import org.glassfish.embed.impl.EntityResolverImpl;
 import org.glassfish.embed.impl.ProxyModuleDefinition;
 import org.glassfish.embed.impl.ScatteredWarHandler;
@@ -127,9 +130,9 @@ public class GlassFish {
     /**
      * Work around until the live HTTP listener support comes back.
      */
-    private final Document domainXml;
+    private Document domainXml;
 
-    protected final URL domainXmlUrl;
+    protected URL domainXmlUrl;
     protected URL defaultWebXml;
 
     /**
@@ -145,15 +148,12 @@ public class GlassFish {
     protected /*almost  final*/ ServerEnvironmentImpl env;
 
     protected GlassFish(URL domainXmlUrl, boolean start) throws GFException {
-        try {
-            this.domainXmlUrl = domainXmlUrl;
-            domainXml = parseDefaultDomainXml();
-        } catch (IOException e) {
-            throw new GFException(e);
-        } catch (SAXException e) {
-            throw new GFException(e);
-        } catch (ParserConfigurationException e) {
-            throw new GFException(e);
+        this.domainXmlUrl = domainXmlUrl;
+        if (this.domainXmlUrl == null) { // if not defined get the default one
+            this.domainXmlUrl = getClass().getResource("/org/glassfish/embed/domain.xml");
+            if (this.domainXmlUrl == null) {
+                throw new AssertionError("domain.xml is missing from resources");
+            }
         }
         if (start) {
             start();
@@ -177,23 +177,30 @@ public class GlassFish {
      */
     public GlassFish(int httpPort) throws GFException {
         this(null, false);
+        try {
+            domainXml = parseDefaultDomainXml();
+        } catch (IOException e) {
+            throw new GFException(e);
+        } catch (SAXException e) {
+            throw new GFException(e);
+        } catch (ParserConfigurationException e) {
+            throw new GFException(e);
+        }
         createVirtualServer(createHttpListener(httpPort));
         start();
     }
 
 
     private Document parseDefaultDomainXml() throws ParserConfigurationException, IOException, SAXException {
-        URL url = domainXmlUrl == null ?
-                getClass().getResource("/org/glassfish/embed/domain.xml") : domainXmlUrl;
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 //        dbf.setNamespaceAware(true);  // domain.xml doesn't use namespace
-        return dbf.newDocumentBuilder().parse(url.toExternalForm());
+        return dbf.newDocumentBuilder().parse(domainXmlUrl.toExternalForm());
     }
 
     /**
-     * @return the domainXmlUrl.
+     * @return the domainXml URL.
      */
-    public URL getDomainXmlUrl() {
+    public URL getDomainXml() {
         return domainXmlUrl;
     }
 
@@ -221,8 +228,9 @@ public class GlassFish {
      * differently from normal stand-alone use.
      */
     protected InhabitantsParser decorateInhabitantsParser(InhabitantsParser parser) {
-        // registering myself
-        parser.habitat.add(new ExistingSingletonInhabitant<GlassFish>(GlassFish.class, this)); // use base class and not current implementation
+        // registering the server using the base class and not the current instance class
+        // (GlassFish server may be extended by the user)
+        parser.habitat.add(new ExistingSingletonInhabitant<GlassFish>(GlassFish.class, this));
 
         // register scattered web handler before normal WarHandler kicks in.
         Inhabitant<ScatteredWarHandler> swh = Inhabitants.create(new ScatteredWarHandler());
@@ -244,7 +252,6 @@ public class GlassFish {
 
         // we don't really parse domain.xml from disk
         parser.replace(DomainXml.class, DomainXml2.class);
-        parser.habitat.add(Inhabitants.create(new DomainXmlHolder(domainXml)));
 
         // ... and we don't persist it either.
         parser.replace(DomainXmlPersistence.class, DomainXml2.class);
@@ -299,6 +306,21 @@ public class GlassFish {
                 .element("property")
                     .attribute("name","docroot")
                     .attribute("value",".");
+
+        /**
+         * Write domain.xml to a temporary file. UGLY UGLY UGLY.
+         */
+        try {
+            File domainFile = File.createTempFile("domain","xml");
+            domainFile.deleteOnExit();
+            Transformer t = TransformerFactory.newInstance().newTransformer();
+            t.transform(new DOMSource(this.domainXml),new StreamResult(domainFile));
+            domainXmlUrl = domainFile.toURI().toURL();
+        } catch (IOException e) {
+            throw new GFException("Failed to write domain XML",e);
+        } catch (TransformerException e) {
+            throw new GFException("Failed to write domain XML",e);
+        }
 
         return new GFVirtualServer(null);
 
@@ -468,6 +490,22 @@ public class GlassFish {
      *      that exception will be passed through.
      */
     public GFApplication deploy(ReadableArchive a) throws IOException {
+        return deploy(a, null);
+    }
+
+    /**
+     * Deploys a {@link ReadableArchive} to this GlassFish.
+     *
+     * <p>
+     * This overloaded version of the deploy method is for advanced users.
+     * It allows you specifying additional parameters to be passed to the deploy command
+     *
+     * @param a
+     * @param params
+     * @return
+     * @throws IOException
+     */
+    public GFApplication deploy(ReadableArchive a, Properties params) throws IOException {
         start();
 
         ArchiveHandler h = appLife.getArchiveHandler(a);
@@ -478,7 +516,9 @@ public class GlassFish {
         Collection<Sniffer> activeSniffers = snifMan.getSniffers(a, cl);
 
         // TODO: we need to stop this totally type-unsafe way of passing parameters
-        Properties params = new Properties();
+        if (params == null) {
+            params = new Properties();
+        }
         params.put(ParameterNames.NAME,a.getName());
         params.put(ParameterNames.ENABLED,"true");
         final DeploymentContextImpl deploymentContext = new DeploymentContextImpl(Logger.getAnonymousLogger(), a, params, env);
@@ -489,6 +529,47 @@ public class GlassFish {
         r.check();
 
         return new GFApplication(this,appInfo,deploymentContext);
+    }
+
+    /**
+     * Convenience method to deploy a scattered war archive on a given virtual server
+     * and using the specified context root.
+     *
+     * @param war the scattered war
+     * @param contextRoot the context root to use
+     * @param virtualServer the virtual server ID
+     */
+    public GFApplication deployWar(ScatteredWar war, String contextRoot, String virtualServer) throws IOException {
+        Properties params = new Properties();
+        if (virtualServer == null) {
+            virtualServer = "server";
+        }
+        params.put(ParameterNames.VIRTUAL_SERVERS, virtualServer);
+        if (contextRoot != null) {
+            params.put(ParameterNames.CONTEXT_ROOT, contextRoot);
+        }
+        return deploy(war, params);
+    }
+
+    /**
+     * Convenience method to deploy a scattered war archive on the default virtual server.
+     *
+     * @param war the archive
+     * @param contextRoot the context root to use
+     * @throws IOException
+     */
+    public GFApplication deployWar(ScatteredWar war, String contextRoot) throws IOException {
+        return deployWar(war, contextRoot, null);
+    }
+
+    /**
+     * Convenience method to deploy a scattered war archive on the default virtual server
+     * (as defined by the embedded domain.xml) and using the root "/" context.
+     *
+     * @param war the scattered war
+     */
+    public GFApplication deployWar(ScatteredWar war) throws IOException {
+        return deployWar(war, null, null);
     }
 
     /**
