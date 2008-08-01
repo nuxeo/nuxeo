@@ -172,7 +172,7 @@
 
    <documentation>
     GET /nuxeo/restAPI/directoryCacheInvalidate
-    GET /nuxeo/restAPI/directoryCacheInvalidate?directory=userDirectory&directory=groupDirectory
+    GET /nuxeo/restAPI/directoryCacheInvalidate?directory=userDirectory&amp;directory=groupDirectory
 
     Invalidate the cache of the requested directories or of all directories if not directory name is given as parameter.
    </documentation>
