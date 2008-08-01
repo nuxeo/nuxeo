@@ -48,7 +48,7 @@ import com.noelios.restlet.http.HttpRequest;
  */
 
 public class SeamRestletFilter extends Filter {
-    
+
     private static final Log log = LogFactory.getLog(SeamRestletFilter.class);
 
     private Boolean useConversation = false;
