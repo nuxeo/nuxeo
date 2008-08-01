@@ -68,6 +68,7 @@ public class GetFileActionHandler implements ActionHandler {
                 }
             }
             context.getResponse().setHeader("Content-Disposition","inline; filename="+fileName);
+            context.getResponse().setContentType(blob.getMimeType());
             blob.transferTo(context.getResponse().getOutputStream());
             context.cancel(); // avoid the rendering to be able to download the file
         } catch (Exception e) {
