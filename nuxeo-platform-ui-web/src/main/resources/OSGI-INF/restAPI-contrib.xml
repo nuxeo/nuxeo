@@ -170,5 +170,19 @@
      </urlPatterns>
    </restletPlugin>
 
+   <documentation>
+    GET /nuxeo/restAPI/directoryCacheInvalidate
+    GET /nuxeo/restAPI/directoryCacheInvalidate?directory=userDirectory&directory=groupDirectory
+
+    Invalidate the cache of the requested directories or of all directories if not directory name is given as parameter.
+   </documentation>
+   <restletPlugin name="directoryCache"
+     class="org.nuxeo.ecm.platform.ui.web.restAPI.DirectoryCacheRestlet"
+     enabled="true" useSeam="false">
+     <urlPatterns>
+       <urlPattern>/directoryCacheInvalidate</urlPattern>
+     </urlPatterns>
+   </restletPlugin>
+
   </extension>
 </component>
