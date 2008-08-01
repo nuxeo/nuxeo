@@ -58,14 +58,9 @@ public class DocumentAdapterDescriptor {
      * @throws Throwable
      */
     @XNode("@factory")
-    void setFactory(Class factoryClass) throws Throwable {
-        if (!DocumentAdapterFactory.class.isAssignableFrom(factoryClass)) {
-            throw new ClassCastException("Declared factory class "
-                    + factoryClass.getName() + " must implement "
-                    + DocumentAdapterFactory.class + " interface.");
-        }
+    void setFactory(Class<DocumentAdapterFactory> factoryClass) throws Throwable {
         try {
-            factory = (DocumentAdapterFactory) factoryClass.newInstance();
+            factory = factoryClass.newInstance();
         } catch (Throwable e) {
             log.error("ERROR instantiating document adapter factory class!");
             throw e;

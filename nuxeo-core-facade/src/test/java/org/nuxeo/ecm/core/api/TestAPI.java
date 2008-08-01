@@ -2444,7 +2444,7 @@ public abstract class TestAPI extends TestConnection {
         // sort using title
         DocumentModelTreeNodeComparator comp = new DocumentModelTreeNodeComparator(
                 tree.getPathTitles());
-        Collections.sort((ArrayList)tree, comp);
+        Collections.sort((ArrayList) tree, comp);
 
         assertEquals(b_folder, tree.get(0).getDocument());
         assertEquals(b1_folder, tree.get(1).getDocument());
