@@ -22,6 +22,7 @@ package org.nuxeo.ecm.webengine;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -66,6 +67,19 @@ public class WebApplicationDescriptor extends ExtensibleContribution {
     @XNodeList(value="bindings/binding", type=ArrayList.class, componentType=WebObjectBindingDescriptor.class, nullByDefault=true)
     protected List<WebObjectBindingDescriptor> bindings;
 
+    protected static String[] DEFAULT_SCRIPT_EXT = new String[] {".ftl", ".groovy"};
+    protected String[] scriptExtensions = DEFAULT_SCRIPT_EXT;
+    @XNode("scriptExtensions")
+    void setScriptExtensions(String ext) {
+        scriptExtensions = StringUtils.split(ext, ' ', true);
+    }
+
+    /**
+     * @return the scriptExtensions.
+     */
+    public String[] getScriptExtensions() {
+        return scriptExtensions;
+    }
 
     public String getId() {
         return contributionId;
@@ -170,6 +184,9 @@ public class WebApplicationDescriptor extends ExtensibleContribution {
                 desc.mappings = new ArrayList<MappingDescriptor>();
             }
             desc.mappings.addAll(mappings);
+        }
+        if (scriptExtensions != DEFAULT_SCRIPT_EXT) {
+            desc.scriptExtensions = scriptExtensions;
         }
     }
 

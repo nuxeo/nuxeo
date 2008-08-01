@@ -69,6 +69,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
     // object binding cache
     protected ConcurrentMap<String, WebObjectDescriptor> objects;
     protected ConcurrentMap<String, ScriptFile> fileCache;
+    protected ConcurrentMap<String, ScriptFile> actionCache;
 
     public DefaultWebApplication(WebEngine engine, WebApplicationDescriptor desc) throws WebException {
         this.engine = engine;
@@ -116,6 +117,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
             }
             objects = new ConcurrentHashMap<String, WebObjectDescriptor>();
             fileCache = new ConcurrentHashMap<String, ScriptFile>();
+            actionCache = new ConcurrentHashMap<String, ScriptFile>();
             this.desc = desc;
 
             FileChangeNotifier notifier = engine.getFileChangeNotifier();
@@ -244,6 +246,7 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
     public void flushCache() {
         objects.clear();
         fileCache.clear();
+        actionCache.clear();
     }
 
     public ScriptFile getFile(String path) throws IOException {
@@ -277,8 +280,23 @@ public class DefaultWebApplication implements WebApplication, FileChangeListener
     }
 
     public ScriptFile getActionScript(String action, DocumentType docType) throws IOException {
+        String key = new StringBuilder().append(docType.getName()).append("@").append(action).toString();
+        ScriptFile file = actionCache.get(key);
+        if (file == null) {
+            for (String ext : desc.getScriptExtensions()) {
+                file = getActionScript(action, docType, ext);
+                if (file != null) {
+                    actionCache.put(key, file);
+                    break;
+                }
+            }
+        }
+        return file;
+    }
+
+    public ScriptFile getActionScript(String action, DocumentType docType, String ext) throws IOException {
         String type = docType.getName();
-        String path = "/" + type + '/' + action + ".ftl";
+        String path = "/" + type + '/' + action + ext;
         // we avoid passing through WebContext#getFile() since this is always an absolute path
         ScriptFile file = findFile(path);
         if (file == null) {
