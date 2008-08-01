@@ -410,12 +410,18 @@ public class MultiDirectorySession implements Session {
     }
 
     public DocumentModel getEntry(String id) throws DirectoryException {
+        return getEntry(id, true);
+    }
+
+    public DocumentModel getEntry(String id, boolean fetchReferences)
+            throws DirectoryException {
         init();
         source_loop: for (SourceInfo sourceInfo : sourceInfos) {
             final Map<String, Object> map = new HashMap<String, Object>();
 
             for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {
-                final DocumentModel entry = dirInfo.getSession().getEntry(id);
+                final DocumentModel entry = dirInfo.getSession().getEntry(id,
+                        fetchReferences);
                 boolean isOptional = dirInfo.isOptional;
                 if (entry == null && !isOptional) {
                     // not in this source
@@ -658,9 +664,14 @@ public class MultiDirectorySession implements Session {
     public DocumentModelList query(Map<String, Object> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws ClientException {
+        return query(filter, fulltext, orderBy, false);
+    }
 
+    @SuppressWarnings("boxing")
+    public DocumentModelList query(Map<String, Object> filter,
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences) throws ClientException {
         init();
-
         // list of entries
         final DocumentModelList results = new DocumentModelListImpl();
         // entry ids already seen (mapped to the source name)
@@ -711,7 +722,7 @@ public class MultiDirectorySession implements Session {
                 }
                 // make query to subdirectory
                 DocumentModelList l = dirInfo.getSession().query(dirFilter,
-                        dirFulltext);
+                        dirFulltext, null, fetchReferences);
                 for (DocumentModel entry : l) {
                     final String id = entry.getId();
                     Map<String, Object> map = maps.get(id);

@@ -191,15 +191,24 @@ public class LDAPSession implements Session, EntrySource {
         return directory.getCache().getEntry(id, this);
     }
 
+    public DocumentModel getEntry(String id, boolean fetchReferences)
+            throws DirectoryException {
+        return directory.getCache().getEntry(id, this, fetchReferences);
+    }
+
     public DocumentModel getEntryFromSource(String id)
+            throws DirectoryException {
+        return getEntry(id, true);
+    }
+
+    public DocumentModel getEntryFromSource(String id, boolean fetchReferences)
             throws DirectoryException {
         try {
             SearchResult result = getLdapEntry(id);
             if (result == null) {
                 return null;
             }
-            // fetch result with references
-            return ldapResultToDocumentModel(result, id, true);
+            return ldapResultToDocumentModel(result, id, fetchReferences);
         } catch (NamingException e) {
             throw new DirectoryException("getEntry failed: " + e.getMessage(),
                     e);
@@ -466,6 +475,12 @@ public class LDAPSession implements Session, EntrySource {
     }
 
     public DocumentModelList query(Map<String, Object> filter,
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences) throws DirectoryException {
+        return query(filter, fulltext, fetchReferences, orderBy);
+    }
+
+    public DocumentModelList query(Map<String, Object> filter,
             Set<String> fulltext) throws DirectoryException {
         // by default, do not fetch references of result entries
         return query(filter, fulltext, new HashMap<String, String>());
@@ -728,9 +743,10 @@ public class LDAPSession implements Session, EntrySource {
         }
         // check if the idAttribute was returned from the search. If not
         // set it anyway.
-        String fieldId = directory.getFieldMapper().getDirectoryField(idAttribute);
+        String fieldId = directory.getFieldMapper().getDirectoryField(
+                idAttribute);
         Object obj = fieldMap.get(fieldId);
-        if(obj == null) {
+        if (obj == null) {
             fieldMap.put(fieldId, entryId);
         }
         return fieldMapToDocumentModel(fieldMap);

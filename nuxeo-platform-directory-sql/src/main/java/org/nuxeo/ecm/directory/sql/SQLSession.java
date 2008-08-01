@@ -34,8 +34,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -155,17 +155,18 @@ public class SQLSession implements Session, EntrySource {
         }
 
         // first step: insert stored fields
-        //String columnList = StringUtils.join(storedFieldNames.iterator(), ", ");
-        //String valueList = StringUtils.join(Collections.nCopies(
-        //        storedFieldNames.size(), "?").iterator(), ", ");
+        // String columnList = StringUtils.join(storedFieldNames.iterator(), ",
+        // ");
+        // String valueList = StringUtils.join(Collections.nCopies(
+        // storedFieldNames.size(), "?").iterator(), ", ");
 
-        //String sql = String.format("INSERT INTO %s (%s) VALUES (%s)",
-        //        tableName, columnList, valueList);
+        // String sql = String.format("INSERT INTO %s (%s) VALUES (%s)",
+        // tableName, columnList, valueList);
         List<Column> columnList = new ArrayList<Column>(table.getColumns());
-        for(Iterator<Column> i=columnList.iterator(); i.hasNext(); ) {
+        for (Iterator<Column> i = columnList.iterator(); i.hasNext();) {
             Column column = i.next();
             String columnName = column.getName();
-            if(fieldMap.get(columnName) == null) {
+            if (fieldMap.get(columnName) == null) {
                 i.remove();
             }
         }
@@ -191,8 +192,7 @@ public class SQLSession implements Session, EntrySource {
         // second step: add references fields
         String sourceId = entry.getId();
         for (Reference reference : getDirectory().getReferences()) {
-            List<String> targetIds = (List<String>) fieldMap.get(
-                    reference.getFieldName());
+            List<String> targetIds = (List<String>) fieldMap.get(reference.getFieldName());
             if (reference instanceof TableReference) {
                 // optim: reuse the current session
                 // but still initialize the reference if not yet done
@@ -207,18 +207,31 @@ public class SQLSession implements Session, EntrySource {
         return entry;
     }
 
-    public DocumentModel getEntry(String id)  throws DirectoryException {
-        return directory.getCache().getEntry(id, this);
+    public DocumentModel getEntry(String id) throws DirectoryException {
+        return getEntry(id, true);
     }
 
-    public DocumentModel getEntryFromSource(String id) throws DirectoryException {
+    public DocumentModel getEntry(String id, boolean fetchReferences)
+            throws DirectoryException {
+        return directory.getCache().getEntry(id, this, fetchReferences);
+    }
+
+    public DocumentModel getEntryFromSource(String id)
+            throws DirectoryException {
+        return getEntry(id, true);
+    }
+
+    public DocumentModel getEntryFromSource(String id, boolean fetchReferences)
+            throws DirectoryException {
         acquireConnection();
-        //String sql = String.format("SELECT * FROM %s WHERE %s = ?", tableName,
-        //        idField);
+        // String sql = String.format("SELECT * FROM %s WHERE %s = ?",
+        // tableName,
+        // idField);
         Select select = new Select(dialect);
         select.setFrom(table.getQuotedName(dialect));
         select.setWhat("*");
-        select.setWhere(table.getPrimaryColumn().getQuotedName(dialect) + " = ?");
+        select.setWhere(table.getPrimaryColumn().getQuotedName(dialect)
+                + " = ?");
         String sql = select.getStatement();
 
         try {
@@ -236,13 +249,14 @@ public class SQLSession implements Session, EntrySource {
                 fieldMap.put(fieldName, value);
             }
 
-            // fetch the reference fields
             DocumentModel entry = fieldMapToDocumentModel(fieldMap);
-            for (Reference reference : directory.getReferences()) {
-                List<String> targetIds = reference.getTargetIdsForSource(
-                        entry.getId());
-                entry.setProperty(schemaName, reference.getFieldName(),
-                        targetIds);
+            // fetch the reference fields
+            if (fetchReferences) {
+                for (Reference reference : directory.getReferences()) {
+                    List<String> targetIds = reference.getTargetIdsForSource(entry.getId());
+                    entry.setProperty(schemaName, reference.getFieldName(),
+                            targetIds);
+                }
             }
             return entry;
         } catch (SQLException e) {
@@ -279,16 +293,17 @@ public class SQLSession implements Session, EntrySource {
 
         if (!storedColumnList.isEmpty()) {
             // update stored fields
-            //String whereString = StringUtils.join(
-            //        storedFieldPredicateList.iterator(), ", ");
-            //String sql = String.format("UPDATE %s SET %s WHERE %s = ?",
-            //        tableName, whereString,
-            //        primaryColumn);
+            // String whereString = StringUtils.join(
+            // storedFieldPredicateList.iterator(), ", ");
+            // String sql = String.format("UPDATE %s SET %s WHERE %s = ?",
+            // tableName, whereString,
+            // primaryColumn);
 
             Update update = new Update(dialect);
             update.setTable(table);
             update.setColumns(storedColumnList);
-            String whereString = table.getPrimaryColumn().getQuotedName(dialect) + " = ?";
+            String whereString = table.getPrimaryColumn().getQuotedName(dialect)
+                    + " = ?";
             update.setWhere(whereString);
             String sql = update.getStatement();
 
@@ -350,7 +365,8 @@ public class SQLSession implements Session, EntrySource {
         try {
             Delete delete = new Delete(dialect);
             delete.setTable(table);
-            String whereString = table.getPrimaryColumn().getQuotedName(dialect) + " = ?";
+            String whereString = table.getPrimaryColumn().getQuotedName(dialect)
+                    + " = ?";
             delete.setWhere(whereString);
             String sql = delete.getStatement();
             PreparedStatement ps = sqlConnection.prepareStatement(sql);
@@ -405,8 +421,16 @@ public class SQLSession implements Session, EntrySource {
         directory.invalidateCaches();
     }
 
-    public DocumentModelList query(Map<String, Object> filter, Set<String> fulltext,
-            Map<String, String> orderBy) throws ClientException {
+    public DocumentModelList query(Map<String, Object> filter,
+            Set<String> fulltext, Map<String, String> orderBy)
+            throws ClientException {
+        // XXX not fetch references by default: breaks current behavior
+        return query(filter, fulltext, orderBy, false);
+    }
+
+    public DocumentModelList query(Map<String, Object> filter,
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences) throws ClientException {
         acquireConnection();
         Map<String, Object> filterMap = new LinkedHashMap<String, Object>(
                 filter);
@@ -426,8 +450,10 @@ public class SQLSession implements Session, EntrySource {
                 Object value = filterMap.get(columnName);
                 Column column = table.getColumn(columnName);
                 if (null == column) {
-                    // this might happen if we have a case like a chain selection and a directory without parent column
-                    throw new ClientException("cannot find column '" + columnName + "' for table: " + table);
+                    // this might happen if we have a case like a chain
+                    // selection and a directory without parent column
+                    throw new ClientException("cannot find column '"
+                            + columnName + "' for table: " + table);
                 }
                 String leftSide = column.getQuotedName(dialect);
                 String operator;
@@ -435,11 +461,12 @@ public class SQLSession implements Session, EntrySource {
                     if (fulltext != null && fulltext.contains(columnName)) {
                         // NB : remove double % in like query NXGED-833
                         filterMap.put(columnName,
-                                 String.valueOf(value).toLowerCase() + '%');
+                                String.valueOf(value).toLowerCase() + '%');
                         if (dialect instanceof PostgreSQLDialect) {
                             operator = " ILIKE "; // postgresql rules
                         } else {
-                            leftSide = dialect.getLowercaseFunction() + '(' + leftSide + ')';
+                            leftSide = dialect.getLowercaseFunction() + '('
+                                    + leftSide + ')';
                             operator = " LIKE ";
                         }
                     } else {
@@ -462,8 +489,9 @@ public class SQLSession implements Session, EntrySource {
                 try {
                     // create a preparedStatement for counting and bind the
                     // values
-                    //String countQuery = new StringBuilder("SELECT count(*) FROM ")
-                    //        .append(table.getQuotedName(dialect)).append(whereClause).toString();
+                    // String countQuery = new StringBuilder("SELECT count(*)
+                    // FROM ")
+                    // .append(table.getQuotedName(dialect)).append(whereClause).toString();
                     Select select = new Select(dialect);
                     select.setWhat("count(*)");
                     select.setFrom(table.getQuotedName(dialect));
@@ -482,7 +510,8 @@ public class SQLSession implements Session, EntrySource {
                     rs.next();
                     int count = rs.getInt(1);
                     if (count > queryLimitSize) {
-                        throw new SizeLimitExceededException("too many rows in result: " + count);
+                        throw new SizeLimitExceededException(
+                                "too many rows in result: " + count);
                     }
                 } finally {
                     if (ps != null) {
@@ -492,21 +521,24 @@ public class SQLSession implements Session, EntrySource {
             }
 
             // create a preparedStatement and bind the values
-            //String query = new StringBuilder("SELECT * FROM ").append(tableName).append(
-            //        whereClause).toString();
+            // String query = new StringBuilder("SELECT * FROM
+            // ").append(tableName).append(
+            // whereClause).toString();
 
             Select select = new Select(dialect);
             select.setWhat("*");
             select.setFrom(table.getQuotedName(dialect));
             select.setWhere(whereClause.toString());
             StringBuilder orderby = new StringBuilder(128);
-            for (Iterator<Map.Entry<String, String>> it = orderBy.entrySet().iterator(); it.hasNext();) {
-                Entry<String, String> entry = it.next();
-                orderby.append(dialect.openQuote()).append(entry.getKey()).append(
-                        dialect.closeQuote()).append(' ').append(
-                        entry.getValue());
-                if (it.hasNext()) {
-                    orderby.append(',');
+            if (orderBy != null) {
+                for (Iterator<Map.Entry<String, String>> it = orderBy.entrySet().iterator(); it.hasNext();) {
+                    Entry<String, String> entry = it.next();
+                    orderby.append(dialect.openQuote()).append(entry.getKey()).append(
+                            dialect.closeQuote()).append(' ').append(
+                            entry.getValue());
+                    if (it.hasNext()) {
+                        orderby.append(',');
+                    }
                 }
             }
             select.setOrderBy(orderby.toString());
@@ -531,14 +563,16 @@ public class SQLSession implements Session, EntrySource {
                     Object o = getFieldValue(rs, fieldName);
                     map.put(fieldName, o);
                 }
+
                 DocumentModel docModel = fieldMapToDocumentModel(map);
 
                 // fetch the reference fields
-                for (Reference reference : directory.getReferences()) {
-                    List<String> targetIds = reference.getTargetIdsForSource(
-                            docModel.getId());
-                    docModel.setProperty(schemaName, reference.getFieldName(),
-                            targetIds);
+                if (fetchReferences) {
+                    for (Reference reference : directory.getReferences()) {
+                        List<String> targetIds = reference.getTargetIdsForSource(docModel.getId());
+                        docModel.setProperty(schemaName,
+                                reference.getFieldName(), targetIds);
+                    }
                 }
                 list.add(docModel);
             }
@@ -622,7 +656,8 @@ public class SQLSession implements Session, EntrySource {
                 }
             } else if ("date".equals(typeName)) {
                 if (value instanceof Calendar) {
-                    ps.setTimestamp(index,new Timestamp(((Calendar)value).getTimeInMillis()));
+                    ps.setTimestamp(index, new Timestamp(
+                            ((Calendar) value).getTimeInMillis()));
                 } else if (value == null) {
                     ps.setNull(index, Types.TIMESTAMP);
                 } else {

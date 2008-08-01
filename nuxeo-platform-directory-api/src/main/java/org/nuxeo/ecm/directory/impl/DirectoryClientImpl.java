@@ -56,7 +56,7 @@ public class DirectoryClientImpl implements DirectoryClient {
             try {
                 manager = (DirectoryManager) Framework.getService(DirectoryService.class);
             } catch (Exception e) {
-                log.error("Can't get DirectoryService",e);
+                log.error("Can't get DirectoryService", e);
                 return null;
             }
         }
@@ -85,8 +85,7 @@ public class DirectoryClientImpl implements DirectoryClient {
         return getDirectoryManager().createEntry(sessionId, fieldMap);
     }
 
-    public void deleteEntry(DocumentModel docModel)
-            throws DirectoryException {
+    public void deleteEntry(DocumentModel docModel) throws DirectoryException {
         getDirectoryManager().deleteEntry(sessionId, docModel);
     }
 
@@ -107,6 +106,11 @@ public class DirectoryClientImpl implements DirectoryClient {
         return getDirectoryManager().getEntry(sessionId, id);
     }
 
+    public DocumentModel getEntry(String id, boolean fetchReferences)
+            throws DirectoryException {
+        return getDirectoryManager().getEntry(sessionId, id, fetchReferences);
+    }
+
     public String getIdField() throws DirectoryException {
         return getDirectoryManager().getIdField(sessionId);
     }
@@ -117,12 +121,14 @@ public class DirectoryClientImpl implements DirectoryClient {
 
     public List<String> getProjection(Map<String, Object> filter,
             String columnName) throws DirectoryException {
-        return getDirectoryManager().getProjection(sessionId, filter, columnName);
+        return getDirectoryManager().getProjection(sessionId, filter,
+                columnName);
     }
 
     public List<String> getProjection(Map<String, Object> filter,
             Set<String> fulltext, String columnName) throws DirectoryException {
-        return getDirectoryManager().getProjection(sessionId, filter, columnName);
+        return getDirectoryManager().getProjection(sessionId, filter,
+                columnName);
     }
 
     public boolean isAuthenticating() throws DirectoryException {
@@ -147,6 +153,13 @@ public class DirectoryClientImpl implements DirectoryClient {
             Set<String> fulltext, Map<String, String> orderBy)
             throws DirectoryException {
         return getDirectoryManager().query(sessionId, filter, fulltext, orderBy);
+    }
+
+    public DocumentModelList query(Map<String, Object> filter,
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences) throws DirectoryException {
+        return getDirectoryManager().query(sessionId, filter, fulltext,
+                orderBy, fetchReferences);
     }
 
     public void rollback() throws DirectoryException {

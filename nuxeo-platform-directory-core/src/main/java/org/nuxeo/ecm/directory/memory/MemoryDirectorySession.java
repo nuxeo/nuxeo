@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -105,6 +105,12 @@ public class MemoryDirectorySession implements Session {
     }
 
     public DocumentModel getEntry(String id) throws DirectoryException {
+        return getEntry(id, true);
+    }
+
+    public DocumentModel getEntry(String id, boolean fetchReferences)
+            throws DirectoryException {
+        // XXX no references here
         Map<String, Object> map = data.get(id);
         if (map == null) {
             return null;
@@ -115,7 +121,7 @@ public class MemoryDirectorySession implements Session {
         // "user" is the schema name.
         DocumentModelImpl entry = new DocumentModelImpl(null,
                 directory.schemaName, id, null, null, null,
-                new String[]{ directory.schemaName }, null);
+                new String[] { directory.schemaName }, null);
         entry.addDataModel(dataModel);
         return entry;
     }
@@ -193,6 +199,12 @@ public class MemoryDirectorySession implements Session {
     public DocumentModelList query(Map<String, Object> filter,
             Set<String> fulltext, Map<String, String> orderBy)
             throws DirectoryException {
+        return query(filter, fulltext, orderBy, true);
+    }
+
+    public DocumentModelList query(Map<String, Object> filter,
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences) throws DirectoryException {
         DocumentModelList results = new DocumentModelListImpl();
         // canonicalize filter
         Map<String, Object> filt = new HashMap<String, Object>();
@@ -216,7 +228,7 @@ public class MemoryDirectorySession implements Session {
                         continue data_loop;
                     }
                 } else {
-                    if (fulltext.contains(fieldName)) {
+                    if (fulltext != null && fulltext.contains(fieldName)) {
                         if (!value.toString().toLowerCase().startsWith(
                                 expected.toString().toLowerCase())) {
                             continue data_loop;
@@ -232,7 +244,7 @@ public class MemoryDirectorySession implements Session {
             results.add(getEntry(id));
         }
         // order entries
-        if (!orderBy.isEmpty()) {
+        if (orderBy != null && !orderBy.isEmpty()) {
             directory.orderEntries(results, orderBy);
         }
         return results;
