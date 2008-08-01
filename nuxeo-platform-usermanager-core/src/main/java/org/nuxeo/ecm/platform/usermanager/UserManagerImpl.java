@@ -585,7 +585,9 @@ public class UserManagerImpl implements UserManager {
         try {
             groupDir = dirService.open(groupDirectoryName);
 
-            DocumentModelList groupEntries = groupDir.getEntries();
+            // XXX retrieve all entries with references, can be costly.
+            DocumentModelList groupEntries = groupDir.query(
+                    Collections.<String, Object> emptyMap(), null, null, true);
             List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>(
                     groupEntries.size());
             for (DocumentModel entry : groupEntries) {
@@ -606,7 +608,9 @@ public class UserManagerImpl implements UserManager {
         try {
             List<String> topLevelGroups = new LinkedList<String>();
             groupDir = dirService.open(groupDirectoryName);
-            DocumentModelList groups = groupDir.getEntries();
+            // XXX retrieve all entries with references, can be costly.
+            DocumentModelList groups = groupDir.query(
+                    Collections.<String, Object> emptyMap(), null, null, true);
             for (DocumentModel group : groups) {
                 List<String> parents = (List<String>) group.getProperty(
                         groupSchemaName, groupParentGroupsField);
@@ -860,7 +864,9 @@ public class UserManagerImpl implements UserManager {
         Session userDir = null;
         try {
             userDir = dirService.open(userDirectoryName);
-            DocumentModelList entries = userDir.getEntries();
+            // XXX retrieve all entries with references, can be costly.
+            DocumentModelList entries = userDir.query(
+                    Collections.<String, Object> emptyMap(), null, null, true);
 
             List<NuxeoPrincipal> principalList = new ArrayList<NuxeoPrincipal>(
                     entries.size());
