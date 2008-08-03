@@ -47,11 +47,11 @@ public class SimpleProperty extends BaseProperty {
 
     // ----- getters -----
 
-    public Serializable getValue() {
+    public Serializable getValue() throws StorageException {
         return row.get(key);
     }
 
-    public String getString() {
+    public String getString() throws StorageException {
         switch (type) {
         case STRING:
             return (String) row.get(key);

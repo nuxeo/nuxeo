@@ -57,6 +57,8 @@ public class SessionImpl implements Session, XAResource {
 
     private static final Log log = LogFactory.getLog(SessionImpl.class);
 
+    private final RepositoryImpl repository;
+
     protected final SchemaManager schemaManager;
 
     private final Mapper mapper;
@@ -67,17 +69,23 @@ public class SessionImpl implements Session, XAResource {
 
     private final PersistenceContext context;
 
-    private boolean live = true;
+    private boolean live;
+
+    private boolean inTransaction;
 
     private Node rootNode;
 
-    SessionImpl(SchemaManager schemaManager, Mapper mapper,
+    SessionImpl(RepositoryImpl repository, SchemaManager schemaManager,
+            Mapper mapper, RepositoryImpl.Invalidators invalidators,
             Credentials credentials) throws StorageException {
+        this.repository = repository;
         this.schemaManager = schemaManager;
         this.mapper = mapper;
         this.credentials = credentials;
         model = mapper.getModel();
-        context = new PersistenceContext(mapper);
+        context = new PersistenceContext(mapper, invalidators);
+        live = true;
+        inTransaction = false;
         computeRootNode();
     }
 
@@ -85,10 +93,15 @@ public class SessionImpl implements Session, XAResource {
      * ----- javax.resource.cci.Connection -----
      */
 
-    public void close() throws ResourceException {
+    public void close() {
+        closeSession();
+        repository.closeSession(this);
+    }
+
+    protected void closeSession() {
+        live = false;
         // this closes the mapper and therefore the connection
         context.close();
-        live = false;
     }
 
     public Interaction createInteraction() throws ResourceException {
@@ -116,7 +129,15 @@ public class SessionImpl implements Session, XAResource {
     }
 
     public void start(Xid xid, int flags) throws XAException {
+        if (flags == TMNOFLAGS) {
+            context.processInvalidations();
+        }
         mapper.start(xid, flags);
+        inTransaction = true;
+    }
+
+    public void end(Xid xid, int flags) throws XAException {
+        mapper.end(xid, flags);
     }
 
     public int prepare(Xid xid) throws XAException {
@@ -124,15 +145,21 @@ public class SessionImpl implements Session, XAResource {
     }
 
     public void commit(Xid xid, boolean onePhase) throws XAException {
-        mapper.commit(xid, onePhase);
-    }
-
-    public void end(Xid xid, int flags) throws XAException {
-        mapper.end(xid, flags);
+        try {
+            mapper.commit(xid, onePhase);
+        } finally {
+            inTransaction = false;
+            context.notifyInvalidations();
+        }
     }
 
     public void rollback(Xid xid) throws XAException {
-        mapper.rollback(xid);
+        try {
+            mapper.rollback(xid);
+        } finally {
+            inTransaction = false;
+            context.notifyInvalidations();
+        }
     }
 
     public void forget(Xid xid) throws XAException {
@@ -171,6 +198,12 @@ public class SessionImpl implements Session, XAResource {
     public void save() throws StorageException {
         checkLive();
         context.save();
+        if (!inTransaction) {
+            context.notifyInvalidations();
+            // as we don't have a way to know when the next non-transactional
+            // statement will start, process invalidations immediately
+            context.processInvalidations();
+        }
     }
 
     public Node getNodeById(Serializable id) throws StorageException {
@@ -434,8 +467,9 @@ public class SessionImpl implements Session, XAResource {
      * ----- -----
      */
 
-    public String getUserID() {
-        return credentials.getUserName();
+    // returns context or null if missing
+    protected Context getContext(String tableName) {
+        return context.getContextOrNull(tableName);
     }
 
     private void checkLive() throws IllegalStateException {

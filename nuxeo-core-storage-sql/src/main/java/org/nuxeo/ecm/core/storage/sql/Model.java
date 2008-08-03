@@ -44,7 +44,7 @@ import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionFragmentMaker;
+import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionMaker;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 
@@ -159,7 +159,7 @@ public class Model {
     protected final Map<String, PropertyType> collectionTables;
 
     /** The factories to build collection fragments. */
-    protected final Map<String, CollectionFragmentMaker> collectionMakers;
+    protected final Map<String, CollectionMaker> collectionMakers;
 
     /** Maps document type name or schema name to allowed fragments. */
     protected final Map<String, Set<String>> typeFragments;
@@ -190,7 +190,7 @@ public class Model {
         fragmentsKeysType = new HashMap<String, Map<String, PropertyType>>();
         collectionOrderBy = new HashMap<String, List<String>>();
         collectionTables = new HashMap<String, PropertyType>();
-        collectionMakers = new HashMap<String, CollectionFragmentMaker>();
+        collectionMakers = new HashMap<String, CollectionMaker>();
         typeFragments = new HashMap<String, Set<String>>();
         propertyFragment = new HashMap<String, String>();
         propertyFragmentKey = new HashMap<String, String>();
@@ -260,23 +260,31 @@ public class Model {
     /**
      * Create a collection fragment according to the factories registered.
      */
-    public CollectionFragment newCollectionFragment(String tableName,
-            Serializable id, ResultSet rs, List<Column> columns,
-            PersistenceContextByTable context) throws SQLException {
-        CollectionFragmentMaker maker = collectionMakers.get(tableName);
+    public Serializable[] newCollectionArray(Serializable id, ResultSet rs,
+            List<Column> columns, Context context) throws SQLException {
+        CollectionMaker maker = collectionMakers.get(context.getTableName());
         if (maker == null) {
-            throw new IllegalArgumentException(tableName);
+            throw new IllegalArgumentException(context.getTableName());
         }
-        return maker.make(tableName, id, rs, columns, context, this);
+        return maker.makeArray(id, rs, columns, context, this);
     }
 
-    public CollectionFragment newEmptyCollectionFragment(String tableName,
-            Serializable id, PersistenceContextByTable context) {
-        CollectionFragmentMaker maker = collectionMakers.get(tableName);
+    public CollectionFragment newCollectionFragment(Serializable id,
+            Serializable[] array, Context context) {
+        CollectionMaker maker = collectionMakers.get(context.getTableName());
         if (maker == null) {
-            throw new IllegalArgumentException(tableName);
+            throw new IllegalArgumentException(context.getTableName());
         }
-        return maker.makeEmpty(tableName, id, context, this);
+        return maker.makeCollection(id, array, context);
+    }
+
+    public CollectionFragment newEmptyCollectionFragment(Serializable id,
+            Context context) {
+        CollectionMaker maker = collectionMakers.get(context.getTableName());
+        if (maker == null) {
+            throw new IllegalArgumentException(context.getTableName());
+        }
+        return maker.makeEmpty(id, context, this);
     }
 
     public String getFragmentName(String propertyName) {
@@ -382,7 +390,8 @@ public class Model {
         fragmentKeysType.put(ACL_GROUP_KEY, PropertyType.STRING);
         collectionTables.put(ACL_TABLE_NAME, PropertyType.COLL_ACL);
         collectionMakers.put(ACL_TABLE_NAME, ACLsFragment.MAKER);
-        collectionOrderBy.put(ACL_TABLE_NAME, Arrays.asList(ACL_ACLPOS_KEY, ACL_POS_KEY));
+        collectionOrderBy.put(ACL_TABLE_NAME, Arrays.asList(ACL_ACLPOS_KEY,
+                ACL_POS_KEY));
         propertyFragment.put(ACL_PROP, ACL_TABLE_NAME);
         propertyType.put(ACL_PROP, PropertyType.COLL_ACL);
     }
@@ -446,7 +455,8 @@ public class Model {
                                 PropertyType.LONG); // TODO INT
                         fragmentKeysType.put(COLL_TABLE_VALUE_KEY,
                                 type.getArrayBaseType());
-                        collectionOrderBy.put(tableName, Collections.singletonList(COLL_TABLE_POS_KEY));
+                        collectionOrderBy.put(tableName,
+                                Collections.singletonList(COLL_TABLE_POS_KEY));
                     } else {
                         /*
                          * Complex list.

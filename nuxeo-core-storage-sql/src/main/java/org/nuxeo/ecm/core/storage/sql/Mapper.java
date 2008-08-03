@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,6 +32,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.sql.XAConnection;
 import javax.transaction.xa.XAException;
@@ -73,6 +75,12 @@ public class Mapper {
 
     private final XAResource xaresource;
 
+    // for debug
+    private static final AtomicLong instanceCounter = new AtomicLong(0);
+
+    // for debug
+    private final long instanceNumber = instanceCounter.incrementAndGet();
+
     /**
      * Creates a new Mapper.
      *
@@ -114,7 +122,12 @@ public class Mapper {
     }
 
     // for debug
-    protected static void logResultSet(ResultSet rs, List<Column> columns)
+    protected void logDebug(String string) {
+        log.debug("[" + instanceNumber + "] SQL: " + string);
+    }
+
+    // for debug
+    protected void logResultSet(ResultSet rs, List<Column> columns)
             throws SQLException {
         List<String> res = new LinkedList<String>();
         int i = 0;
@@ -123,7 +136,7 @@ public class Mapper {
             Serializable v = column.getFromResultSet(rs, i);
             res.add(column.getKey() + "=" + loggedValue(v));
         }
-        log.debug("SQL:   -> " + StringUtils.join(res, ", "));
+        logDebug("  -> " + StringUtils.join(res, ", "));
     }
 
     // for debug
@@ -131,19 +144,30 @@ public class Mapper {
         List<Serializable> values = new ArrayList<Serializable>(columns.size());
         for (Column column : columns) {
             String key = column.getKey();
-            values.add(key.equals(model.MAIN_KEY) ? row.getId() : row.get(key));
+            Serializable value;
+            if (key.equals(model.MAIN_KEY)) {
+                value = row.getId();
+            } else {
+                try {
+                    value = row.get(key);
+                } catch (StorageException e) {
+                    // cannot happen
+                    value = "ACCESSFAILED";
+                }
+            }
+            values.add(value);
         }
         logSQL(sql, values);
     }
 
     // for debug
-    protected static void logSQL(String sql, List<Serializable> values) {
+    protected void logSQL(String sql, List<Serializable> values) {
         for (Serializable v : values) {
             String value;
             value = loggedValue(v);
             sql = sql.replaceFirst("\\?", value);
         }
-        log.debug("SQL: " + sql);
+        logDebug(sql);
     }
 
     /**
@@ -197,14 +221,13 @@ public class Mapper {
         try {
             for (String sql : sqlInfo.getDatabaseCreateSql()) {
                 try {
-                    log.debug("SQL: (batch) " + sql);
+                    logDebug(sql);
                     s.addBatch(sql);
                 } catch (SQLException e) {
                     throw newStorageException(e, "Could not add batch", sql);
                 }
             }
             try {
-                log.debug("SQL: (batch execution)");
                 s.executeBatch();
             } catch (SQLException e) {
                 throw newStorageException(e, "Could not execute", "batch");
@@ -237,14 +260,14 @@ public class Mapper {
                 ResultSet rs = ps.executeQuery();
                 if (!rs.next()) {
                     if (log.isDebugEnabled()) {
-                        log.debug("SQL:   -> (none)");
+                        logDebug("  -> (none)");
                     }
                     return null;
                 }
                 Column column = sqlInfo.getSelectRootIdWhatColumn();
                 Serializable id = column.getFromResultSet(rs, 1);
                 if (log.isDebugEnabled()) {
-                    log.debug("SQL:   -> " + model.MAIN_KEY + '=' + id);
+                    logDebug("  -> " + model.MAIN_KEY + '=' + id);
                 }
                 // check that we didn't get several rows
                 if (rs.next()) {
@@ -359,7 +382,7 @@ public class Mapper {
                 if (isql != null) {
                     Column icolumn = sqlInfo.getIdentityFetchColumn(tableName);
                     try {
-                        // log.debug("SQL: " + isql);
+                        // logDebug(isql);
                         ps = connection.prepareStatement(isql);
                         ResultSet rs;
                         try {
@@ -372,8 +395,7 @@ public class Mapper {
                         Serializable iv = icolumn.getFromResultSet(rs, 1);
                         row.setId(iv);
                         if (log.isDebugEnabled()) {
-                            log.debug("SQL:   -> " + icolumn.getKey() + '=' +
-                                    iv);
+                            logDebug("  -> " + icolumn.getKey() + '=' + iv);
                         }
                     } catch (SQLException e) {
                         throw newStorageException(e, "Could not fetch", isql);
@@ -439,46 +461,33 @@ public class Mapper {
     }
 
     /**
-     * Gets a {@link SimpleFragment} from the database, given its table name and
-     * id. If the row doesn't exist, an absent row or {@code null} is returned.
+     * Gets the state for a {@link SimpleFragment} from the database, given its
+     * table name and id. If the row doesn't exist, {@code null} is returned.
      *
      * @param tableName the type name
      * @param id the id
-     * @param createAbsent {@code true} if an absent row may be created
      * @param context the persistence context to which the read row is tied
-     * @return the row, or an absent row, or {@code null}
+     * @return the map, or {@code null}
      */
-    public SimpleFragment readSingleRow(String tableName, Serializable id,
-            boolean createAbsent, PersistenceContextByTable context)
-            throws StorageException {
+    public Map<String, Serializable> readSingleRowMap(String tableName,
+            Serializable id, Context context) throws StorageException {
         String sql = sqlInfo.getSelectByIdSql(tableName);
         try {
-            // XXX statement should be already prepared
             if (log.isDebugEnabled()) {
                 logSQL(sql, Collections.singletonList(id));
             }
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
-                // List<String> keys = mapping.getPrimaryKeys(tableName));
                 ps.setObject(1, id); // assumes only one primary column
                 ResultSet rs = ps.executeQuery();
                 if (!rs.next()) {
                     // no match, row doesn't exist
-                    if (createAbsent) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("SQL:   -> (absent)");
-                        }
-                        SimpleFragment row = new SimpleFragment(tableName, id,
-                                State.ABSENT, context, null);
-                        return row;
-                    } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug("SQL:   -> (none)");
-                        }
-                        return null;
+                    if (log.isDebugEnabled()) {
+                        logDebug("  -> (none)");
                     }
+                    return null;
                 }
-                // construct the row
+                // construct the map
                 Map<String, Serializable> map = new HashMap<String, Serializable>();
                 int i = 0;
                 List<Column> columns = sqlInfo.getSelectByIdColumns(tableName);
@@ -486,8 +495,6 @@ public class Mapper {
                     i++;
                     map.put(column.getKey(), column.getFromResultSet(rs, i));
                 }
-                SimpleFragment row = new SimpleFragment(tableName, id,
-                        State.PRISTINE, context, map);
                 if (log.isDebugEnabled()) {
                     logResultSet(rs, columns);
                 }
@@ -496,7 +503,7 @@ public class Mapper {
                     throw new StorageException("Row query for " + id +
                             " returned several rows: " + sql);
                 }
-                return row;
+                return map;
             } finally {
                 ps.close();
             }
@@ -517,8 +524,8 @@ public class Mapper {
      * @return the child hierarchy row, or {@code null}
      */
     public SimpleFragment readChildHierRow(Serializable parentId,
-            String childName, boolean complexProp,
-            PersistenceContextByTable context) throws StorageException {
+            String childName, boolean complexProp, Context context)
+            throws StorageException {
         String sql = sqlInfo.getSelectByChildNameSql(complexProp);
         try {
             // XXX statement should be already prepared
@@ -576,8 +583,8 @@ public class Mapper {
                 map.put(model.HIER_CHILD_NAME_KEY, childName);
                 map.put(model.HIER_CHILD_ISPROPERTY_KEY,
                         Boolean.valueOf(complexProp));
-                SimpleFragment row = new SimpleFragment(model.HIER_TABLE_NAME,
-                        id, State.PRISTINE, context, map);
+                SimpleFragment row = new SimpleFragment(id, State.PRISTINE,
+                        context, map);
                 if (log.isDebugEnabled()) {
                     logResultSet(rs, columns);
                 }
@@ -613,8 +620,7 @@ public class Mapper {
      * @return the child hierarchy rows, or {@code null}
      */
     public Collection<SimpleFragment> readChildHierRows(Serializable parentId,
-            boolean complexProp, PersistenceContextByTable context)
-            throws StorageException {
+            boolean complexProp, Context context) throws StorageException {
         if (parentId == null) {
             throw new IllegalArgumentException("Illegal null parentId");
         }
@@ -654,30 +660,35 @@ public class Mapper {
                             map.put(key, value);
                         }
                     }
-                    if (context.isDeleted(id)) {
-                        // row has been deleted in the persistent context,
-                        // ignore it
-                        if (log.isDebugEnabled()) {
-                            log.debug("SQL:   -> deleted id=" + id);
-                        }
-                        continue;
-                    }
-                    // TODO what if row is "absent" in context?
                     SimpleFragment row = (SimpleFragment) context.getIfPresent(id);
                     if (row == null) {
                         map.put(model.HIER_PARENT_KEY, parentId);
                         map.put(model.HIER_CHILD_ISPROPERTY_KEY,
                                 Boolean.valueOf(complexProp));
-                        row = new SimpleFragment(model.HIER_TABLE_NAME, id,
-                                State.PRISTINE, context, map);
+                        row = new SimpleFragment(id, State.PRISTINE, context,
+                                map);
                         if (log.isDebugEnabled()) {
                             logResultSet(rs, columns);
                         }
                     } else {
                         // row is already known in the persistent context,
                         // use it
+                        State state = row.getState();
+                        if (state == State.DELETED) {
+                            // row has been deleted in the persistent context,
+                            // ignore it
+                            if (log.isDebugEnabled()) {
+                                logDebug("  -> deleted id=" + id);
+                            }
+                            continue;
+                        } else if (state == State.ABSENT ||
+                                state == State.INVALIDATED_MODIFIED ||
+                                state == State.INVALIDATED_DELETED) {
+                            // XXX TODO
+                            throw new RuntimeException(state.toString());
+                        }
                         if (log.isDebugEnabled()) {
-                            log.debug("SQL:   -> known id=" + id);
+                            logDebug("  -> known id=" + id);
                         }
                     }
                     rows.add(row);
@@ -692,20 +703,17 @@ public class Mapper {
     }
 
     /**
-     * Gets a {@link CollectionFragment} from the database, given its table name
-     * and id. If now rows are found, a fragment for an empty collection is
-     * returned.
+     * Gets an array for a {@link CollectionFragment} from the database, given
+     * its table name and id. If now rows are found, an empty array is returned.
      *
-     * @param tableName the type name
      * @param id the id
      * @param context the persistence context to which the read collection is
      *            tied
-     * @return the fragment
+     * @return the array
      */
-    public CollectionFragment readCollectionRows(String tableName,
-            Serializable id, PersistenceContextByTable context)
+    public Serializable[] readCollectionArray(Serializable id, Context context)
             throws StorageException {
-        String sql = sqlInfo.getSelectByIdSql(tableName);
+        String sql = sqlInfo.getSelectByIdSql(context.getTableName());
         try {
             // XXX statement should be already prepared
             if (log.isDebugEnabled()) {
@@ -713,17 +721,17 @@ public class Mapper {
             }
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
-                List<Column> columns = sqlInfo.getSelectByIdColumns(tableName);
+                List<Column> columns = sqlInfo.getSelectByIdColumns(context.getTableName());
                 ps.setObject(1, id); // assumes only one primary column
                 ResultSet rs = ps.executeQuery();
 
                 // construct the resulting collection using each row
-                CollectionFragment fragment = model.newCollectionFragment(
-                        tableName, id, rs, columns, context);
+                Serializable[] array = model.newCollectionArray(id, rs,
+                        columns, context);
                 if (log.isDebugEnabled()) {
-                    log.debug("SQL:   -> " + fragment.toSimpleString());
+                    logDebug("  -> " + Arrays.asList(array));
                 }
-                return fragment;
+                return array;
             } finally {
                 ps.close();
             }
@@ -765,7 +773,7 @@ public class Mapper {
                 }
                 int count = ps.executeUpdate();
                 if (log.isDebugEnabled()) {
-                    log.debug("SQL:   -> " + count + " rows");
+                    logDebug("  -> " + count + " rows");
                 }
                 // XXX check number of changed rows
                 // if 1 -> ok
@@ -811,7 +819,7 @@ public class Mapper {
                 ps.setObject(1, id); // FIXME assumes only one primary column
                 int count = ps.executeUpdate();
                 if (log.isDebugEnabled()) {
-                    log.debug("SQL:   -> " + count + " rows");
+                    logDebug("  -> " + count + " rows");
                 }
             } finally {
                 ps.close();
@@ -829,16 +837,16 @@ public class Mapper {
         xaresource.start(xid, flags);
     }
 
+    protected void end(Xid xid, int flags) throws XAException {
+        xaresource.end(xid, flags);
+    }
+
     protected int prepare(Xid xid) throws XAException {
         return xaresource.prepare(xid);
     }
 
     protected void commit(Xid xid, boolean onePhase) throws XAException {
         xaresource.commit(xid, onePhase);
-    }
-
-    protected void end(Xid xid, int flags) throws XAException {
-        xaresource.end(xid, flags);
     }
 
     protected void rollback(Xid xid) throws XAException {

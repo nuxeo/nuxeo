@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 
 /**
@@ -47,17 +46,16 @@ public class ACLsFragment extends ArrayFragment {
      *            {@code null}
      * @param array the initial acls to use
      */
-    public ACLsFragment(String tableName, Serializable id, State state,
-            PersistenceContextByTable context, ACLRow[] acls) {
-        super(tableName, id, state, context, acls);
+    public ACLsFragment(Serializable id, State state, Context context,
+            Serializable[] acls) {
+        super(id, state, context, acls);
     }
 
     @SuppressWarnings("hiding")
-    public static final CollectionFragmentMaker MAKER = new CollectionFragmentMaker() {
+    protected static final CollectionMaker MAKER = new CollectionMaker() {
 
-        public CollectionFragment make(String tableName, Serializable id,
-                ResultSet rs, List<Column> columns,
-                PersistenceContextByTable context, Model model)
+        public Serializable[] makeArray(Serializable id, ResultSet rs,
+                List<Column> columns, Context context, Model model)
                 throws SQLException {
 
             ArrayList<ACLRow> list = new ArrayList<ACLRow>();
@@ -99,25 +97,29 @@ public class ACLsFragment extends ArrayFragment {
                         permission, user, group);
                 list.add(acl);
             }
-            ACLRow[] array = new ACLRow[list.size()];
-            return new ACLsFragment(tableName, id, State.PRISTINE, context,
-                    list.toArray(array));
+            return list.toArray(new ACLRow[list.size()]);
         }
 
-        public CollectionFragment makeEmpty(String tableName, Serializable id,
-                PersistenceContextByTable context, Model model) {
-            return new ACLsFragment(tableName, id, State.CREATED, context,
-                    new ACLRow[0]);
+        public CollectionFragment makeCollection(Serializable id,
+                Serializable[] array, Context context) {
+            return new ACLsFragment(id, State.PRISTINE, context, array);
+        }
+
+        public final ACLRow[] EMPTY_ACL_ROWS = new ACLRow[0];
+
+        public CollectionFragment makeEmpty(Serializable id, Context context,
+                Model model) {
+            return new ACLsFragment(id, State.CREATED, context, EMPTY_ACL_ROWS);
         }
 
     };
 
     @Override
-    public CollectionFragmentIterator getIterator() {
+    protected CollectionFragmentIterator getIterator() {
         return new ACLsFragmentIterator();
     }
 
-    public class ACLsFragmentIterator extends ArrayFragmentIterator {
+    protected class ACLsFragmentIterator extends ArrayFragmentIterator {
 
         @Override
         public void setToPreparedStatement(List<Column> columns,

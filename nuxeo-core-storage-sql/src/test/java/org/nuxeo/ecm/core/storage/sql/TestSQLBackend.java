@@ -145,9 +145,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node root = session.getRootNode();
         CollectionProperty prop = root.getCollectionProperty(Model.ACL_PROP);
         assertNotNull(prop);
-        assertEquals(0, prop.getValue().length);
-        ACLRow acl1 = new ACLRow(0, "local", 1, true, "Write", "steve", null);
-        ACLRow acl2 = new ACLRow(0, "local", 0, true, "Read", null, "Members");
+        assertEquals(4, prop.getValue().length); // root acls preexist
+        ACLRow acl1 = new ACLRow(0, "test", 1, true, "Write", "steve", null);
+        ACLRow acl2 = new ACLRow(0, "test", 0, true, "Read", null, "Members");
         prop.setValue(new ACLRow[] { acl1, acl2 });
         session.save();
         session.close();
@@ -157,6 +157,46 @@ public class TestSQLBackend extends SQLBackendTestCase {
         ACLRow[] acls = (ACLRow[]) prop.getValue();
         assertEquals(2, acls.length);
         assertEquals("Members", acls[0].group);
+        assertEquals("test", acls[0].aclname);
         assertEquals("steve", acls[1].user);
+        assertEquals("test", acls[1].aclname);
     }
+
+    public void testCrossSessionInvalidations() throws Exception {
+        Session session1 = repository.getConnection();
+        Node root1 = session1.getRootNode();
+        SimpleProperty title1 = root1.getSimpleProperty("tst:title");
+
+        Session session2 = repository.getConnection();
+        Node root2 = session2.getRootNode();
+        SimpleProperty title2 = root2.getSimpleProperty("tst:title");
+
+        // change title1
+        title1.setValue("yo");
+        assertEquals(null, title2.getString());
+        // save session1 and queue its invalidations to others
+        session1.save();
+        // session2 has not saved (committed) yet, so still unmodified
+        assertEquals(null, title2.getString());
+        session2.save();
+        // after commit, invalidations have been processed
+        assertEquals("yo", title2.getString());
+
+        // written properties aren't shared
+        title1.setValue("mama");
+        title2.setValue("glop");
+        session1.save();
+        assertEquals("mama", title1.getString());
+        assertEquals("glop", title2.getString());
+        session2.save(); // and notifies invalidations
+        // in non-transaction mode, session1 has not processed its invalidations
+        // yet, call save() to process them artificially
+        session1.save();
+        // session2 save wins
+        assertEquals("glop", title1.getString());
+        assertEquals("glop", title2.getString());
+
+        // TODO test collections, and children
+    }
+
 }

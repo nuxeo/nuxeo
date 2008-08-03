@@ -21,6 +21,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.storage.StorageException;
+
 /**
  * A type of fragment corresponding to a single row in a table.
  * <p>
@@ -33,7 +35,7 @@ public class SimpleFragment extends Fragment {
 
     private static final long serialVersionUID = 1L;
 
-    public static final SimpleFragment UNKNOWN = new SimpleFragment(null, null,
+    public static final SimpleFragment UNKNOWN = new SimpleFragment(null,
             State.DETACHED, null, null);
 
     /** The map actually holding the data. */
@@ -50,13 +52,27 @@ public class SimpleFragment extends Fragment {
      *            {@code null}
      * @param map the initial row data to use, or {@code null}
      */
-    public SimpleFragment(String tableName, Serializable id, State state,
-            PersistenceContextByTable context, Map<String, Serializable> map) {
-        super(tableName, id, state, context);
+    public SimpleFragment(Serializable id, State state, Context context,
+            Map<String, Serializable> map) {
+        super(id, state, context);
         if (map == null) {
             map = new HashMap<String, Serializable>();
         }
         this.map = map;
+    }
+
+    @Override
+    protected State refetch() throws StorageException {
+        Context context = getContext();
+        Map<String, Serializable> newMap = context.mapper.readSingleRowMap(
+                context.getTableName(), getId(), context);
+        map.clear();
+        if (newMap == null) {
+            return State.ABSENT;
+        } else {
+            map.putAll(newMap);
+            return State.PRISTINE;
+        }
     }
 
     /**
@@ -64,10 +80,12 @@ public class SimpleFragment extends Fragment {
      *
      * @param key the key
      * @param value the value
+     * @throws StorageException
      */
-    public void put(String key, Serializable value) {
+    public void put(String key, Serializable value) throws StorageException {
+        accessed(); // maybe refetch other values
         map.put(key, value);
-        markModified();
+        modified();
     }
 
     /**
@@ -75,8 +93,10 @@ public class SimpleFragment extends Fragment {
      *
      * @param key the key
      * @return the value
+     * @throws StorageException
      */
-    public Serializable get(String key) {
+    public Serializable get(String key) throws StorageException {
+        accessed();
         return map.get(key);
     }
 
@@ -85,15 +105,17 @@ public class SimpleFragment extends Fragment {
      *
      * @param key the key
      * @return the value as a {@code String}
+     * @throws StorageException
      * @throws ClassCastException if the value is not a {@code String}
      */
-    public String getString(String key) {
+    public String getString(String key) throws StorageException {
+        accessed();
         return (String) map.get(key);
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + tableName + ", id=" +
+        return getClass().getSimpleName() + '(' + getTableName() + ", id=" +
                 getId() + ", " + map + ')';
     }
 

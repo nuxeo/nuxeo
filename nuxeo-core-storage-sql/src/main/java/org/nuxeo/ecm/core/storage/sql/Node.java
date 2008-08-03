@@ -69,8 +69,8 @@ public class Node {
      * @param context the persistence context
      * @param rowGroup the group of rows for the node
      */
-    protected Node(Type type, Session session,
-            PersistenceContext context, FragmentGroup rowGroup) {
+    protected Node(Type type, Session session, PersistenceContext context,
+            FragmentGroup rowGroup) {
         this.type = type;
         this.context = context;
         model = session.getModel();
@@ -100,7 +100,12 @@ public class Node {
     }
 
     public String getName() {
-        return hierFragment.getString(model.HIER_CHILD_NAME_KEY);
+        try {
+            return hierFragment.getString(model.HIER_CHILD_NAME_KEY);
+        } catch (StorageException e) {
+            // do not propagate this unlikely exception as a checked one
+            throw new RuntimeException(e);
+        }
     }
 
     public Type getType() {

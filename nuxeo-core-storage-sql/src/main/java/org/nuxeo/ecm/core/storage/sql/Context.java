@@ -20,13 +20,13 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.commons.collections.map.ReferenceMap;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 
@@ -51,85 +51,84 @@ import org.nuxeo.ecm.core.storage.sql.Fragment.State;
  *
  * @author Florent Guillaume
  */
-public class PersistenceContextByTable {
-
-    private static final Log log = LogFactory.getLog(PersistenceContextByTable.class);
+public class Context {
 
     private final String tableName;
 
-    private final Mapper mapper;
+    // also accessed by Fragment
+    protected final Mapper mapper;
 
     private final Model model;
 
-    private final PersistenceContext globalContext;
-
-    /**
-     * The fragments that have been read and found to be absent in the database.
-     * They contain default data (usually {@code null}). Upon modification, they
-     * are moved to {@link #created}.
-     */
-    private final Map<Serializable, Fragment> absent;
-
-    /**
-     * The created fragments, that will be inserted in the database at the next
-     * save. Their id is a temporary one XXX not always.
-     */
-    private final Map<Serializable, Fragment> created;
+    private final PersistenceContext persistenceContext;
 
     /**
      * The pristine fragments. All held data is identical to what is present in
-     * the database and could be refetched if needed. This cache is also managed
-     * externally.
+     * the database and could be refetched if needed.
      * <p>
-     * Upon modification, the fragments are moved to {@link #modified}.
-     * <p>
-     * Upon session save, this cache is updated with new pristine fragments.
-     * After a commit, the data in this cache may be invalidated according to
-     * the other caches (which may be clustered), and conversely changes to this
-     * cache invalidate other caches.
-     * <p>
-     * If an external process modifies the database directly, it has to notify
-     * the clustering mechanism (TODO) so that this cache can be invalidated
-     * appropriately.
+     * This contains fragment that are {@link State#PRISTINE} or
+     * {@link State#ABSENT}, or in some cases {@link State#INVALIDATED_MODIFIED}
+     * or {@link State#INVALIDATED_DELETED}.
      * <p>
      * This cache is memory-sensitive, a fragment can always be refetched if the
      * GC collects it.
      */
-    private final Map<Serializable, Fragment> pristine;
+    protected final Map<Serializable, Fragment> pristine;
 
     /**
-     * The modified fragments.
+     * The fragments changed by the session.
      * <p>
-     * Upon save, the database will be updated and the fragments will be moved
-     * to {@link #pristine}.
+     * This contains fragment that are {@link State#CREATED},
+     * {@link State#MODIFIED} or {@link State#DELETED}.
      */
-    private final Map<Serializable, Fragment> modified;
-
-    /**
-     * The deleted fragments.
-     */
-    private final Map<Serializable, Fragment> deleted;
+    protected final Map<Serializable, Fragment> modified;
 
     /**
      * The children info (only for the hierarchy table).
      */
     private final Map<Serializable, Children> knownChildren;
 
+    /**
+     * The set of modified/created fragments that should be invalidated in other
+     * sessions at post-commit time.
+     */
+    private final Set<Serializable> modifiedInTransaction;
+
+    /**
+     * The set of deleted fragments that should be invalidated in other sessions
+     * at post-commit time.
+     */
+    private final Set<Serializable> deletedInTransaction;
+
+    /**
+     * The set of fragments that have to be invalidated as modified in this
+     * session at post-commit time.
+     */
+    private final Set<Serializable> modifiedInvalidations;
+
+    /**
+     * The set of fragments that have to be invalidated as deleted in this
+     * session at post-commit time.
+     */
+    private final Set<Serializable> deletedInvalidations;
+
     private final boolean isCollection;
 
     @SuppressWarnings("unchecked")
-    PersistenceContextByTable(String tableName, Mapper mapper,
-            PersistenceContext globalContext) {
+    Context(String tableName, Mapper mapper,
+            PersistenceContext persistenceContext) {
         this.tableName = tableName;
         this.mapper = mapper;
-        this.globalContext = globalContext;
+        this.persistenceContext = persistenceContext;
         model = mapper.getModel();
-        absent = new HashMap<Serializable, Fragment>();
-        // linked map to keep ids in the same order as creation (cosmetic)
-        created = new LinkedHashMap<Serializable, Fragment>();
         pristine = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
-        modified = new HashMap<Serializable, Fragment>();
-        deleted = new HashMap<Serializable, Fragment>();
+        // linked map to keep ids in the same order as creation (cosmetic)
+        modified = new LinkedHashMap<Serializable, Fragment>();
+
+        modifiedInTransaction = new HashSet<Serializable>();
+        deletedInTransaction = new HashSet<Serializable>();
+        modifiedInvalidations = new HashSet<Serializable>();
+        deletedInvalidations = new HashSet<Serializable>();
 
         // TODO use a dedicated subclass for the hierarchy table
         if (tableName.equals(model.HIER_TABLE_NAME)) {
@@ -138,6 +137,10 @@ public class PersistenceContextByTable {
             knownChildren = null;
         }
         isCollection = model.collectionTables.containsKey(tableName);
+    }
+
+    public String getTableName() {
+        return tableName;
     }
 
     /**
@@ -150,18 +153,10 @@ public class PersistenceContextByTable {
     }
 
     private void detachAll() {
-        for (Fragment fragment : created.values()) {
-            fragment.detach();
-        }
-        created.clear();
         for (Fragment fragment : modified.values()) {
             fragment.detach();
         }
         modified.clear();
-        for (Fragment fragment : deleted.values()) {
-            fragment.detach();
-        }
-        deleted.clear();
     }
 
     /**
@@ -174,13 +169,11 @@ public class PersistenceContextByTable {
      */
     public SimpleFragment create(Serializable id, Map<String, Serializable> map)
             throws StorageException {
-        if (pristine.containsKey(id) || absent.containsKey(id) ||
-                created.containsKey(id) || modified.containsKey(id) ||
-                deleted.containsKey(id)) {
+        if (pristine.containsKey(id) || modified.containsKey(id)) {
             throw new IllegalStateException("Row already registered: " + id);
         }
-        SimpleFragment fragment = new SimpleFragment(tableName, id,
-                State.CREATED, this, map);
+        SimpleFragment fragment = new SimpleFragment(id, State.CREATED, this,
+                map);
         if (knownChildren != null) {
             // add as a child of its parent
             addChild(fragment);
@@ -205,37 +198,46 @@ public class PersistenceContextByTable {
      */
     public Fragment get(Serializable id, boolean allowAbsent)
             throws StorageException {
-        if (isDeleted(id)) {
-            return null;
-        }
         Fragment fragment = getIfPresent(id);
         if (fragment != null) {
-            return fragment;
-        }
-        fragment = absent.get(id);
-        if (fragment != null) {
+            if (fragment.getState() == State.DELETED) {
+                return null;
+            }
             return fragment;
         }
 
         // read it through the mapper
-        if (globalContext.isIdNew(id)) {
+        if (persistenceContext.isIdNew(id)) {
             // the id has not been saved, so nothing exists yet in the database
             if (isCollection) {
-                fragment = model.newEmptyCollectionFragment(tableName, id, this);
+                fragment = model.newEmptyCollectionFragment(id, this);
             } else {
                 if (allowAbsent) {
-                    fragment = new SimpleFragment(tableName, id, State.ABSENT,
-                            this, null);
+                    fragment = new SimpleFragment(id, State.ABSENT, this, null);
                 } else {
                     fragment = null;
                 }
             }
         } else {
             if (isCollection) {
-                fragment = mapper.readCollectionRows(tableName, id, this);
+                Serializable[] array = mapper.readCollectionArray(id, this);
+                fragment = model.newCollectionFragment(id, array, this);
             } else {
-                fragment = mapper.readSingleRow(tableName, id, allowAbsent,
-                        this);
+                // fragment = mapper.readSingleRow(tableName, id, allowAbsent,
+                // this);
+                Map<String, Serializable> map = mapper.readSingleRowMap(
+                        tableName, id, this);
+                if (map == null) {
+                    if (allowAbsent) {
+                        fragment = new SimpleFragment(id, State.ABSENT, this,
+                                null);
+                    } else {
+                        fragment = null;
+                    }
+                } else {
+                    fragment = new SimpleFragment(id, State.PRISTINE, this, map);
+
+                }
             }
         }
         return fragment;
@@ -256,45 +258,43 @@ public class PersistenceContextByTable {
      */
     public Fragment getChildById(Serializable id, boolean allowAbsent)
             throws StorageException {
-        if (isDeleted(id)) {
-            return null;
-        }
         Fragment fragment = getIfPresent(id);
         if (fragment != null) {
-            return fragment;
-        }
-        fragment = absent.get(id);
-        if (fragment != null) {
+            if (fragment.getState() == State.DELETED) {
+                return null;
+            }
             return fragment;
         }
 
         // read it through the mapper
-        if (globalContext.isIdNew(id)) {
+        if (persistenceContext.isIdNew(id)) {
             // the id has not been saved, so nothing exists yet in the database
             if (allowAbsent) {
-                fragment = new SimpleFragment(tableName, id, State.ABSENT,
-                        this, null);
+                fragment = new SimpleFragment(id, State.ABSENT, this, null);
             } else {
                 fragment = null;
             }
         } else {
-            fragment = mapper.readSingleRow(tableName, id, allowAbsent, this);
+            // fragment = mapper.readSingleRow(tableName, id, allowAbsent,
+            // this);
+            Map<String, Serializable> map = mapper.readSingleRowMap(tableName,
+                    id, this);
+            if (map == null) {
+                if (allowAbsent) {
+                    fragment = new SimpleFragment(id, State.ABSENT, this, null);
+                } else {
+                    fragment = null;
+                }
+            } else {
+                fragment = new SimpleFragment(id, State.PRISTINE, this, map);
+
+            }
         }
         if (fragment != null) {
             // add as a child of its parent
             addChild((SimpleFragment) fragment);
         }
         return fragment;
-    }
-
-    /**
-     * Checks if a fragment is deleted.
-     * <p>
-     * Called by {@link #get}, and by the {@link Mapper} to avoid returning
-     * deleted fragments in lists of children.
-     */
-    protected boolean isDeleted(Serializable id) {
-        return deleted.containsKey(id);
     }
 
     /**
@@ -306,40 +306,12 @@ public class PersistenceContextByTable {
      * hierarchy fragments in lists of children.
      */
     protected Fragment getIfPresent(Serializable id) throws StorageException {
-        // TODO check the row state to find in which map it is
         Fragment fragment;
-        fragment = modified.get(id);
+        fragment = pristine.get(id);
         if (fragment != null) {
             return fragment;
         }
-        fragment = created.get(id);
-        if (fragment != null) {
-            return fragment;
-        }
-        return pristine.get(id);
-    }
-
-    /**
-     * Called by the {@link Fragment} when a new absent fragment is constructed.
-     */
-    protected void newAbsent(Fragment fragment) {
-        absent.put(fragment.getId(), fragment);
-    }
-
-    /**
-     * Called by the {@link Fragment} when a new created fragment is
-     * constructed.
-     */
-    protected void newCreated(Fragment fragment) {
-        created.put(fragment.getId(), fragment);
-    }
-
-    /**
-     * Called by the {@link Fragment} when a new pristine fragment is
-     * constructed.
-     */
-    protected void newPristine(Fragment fragment) {
-        pristine.put(fragment.getId(), fragment);
+        return modified.get(id);
     }
 
     /**
@@ -460,63 +432,34 @@ public class PersistenceContextByTable {
             // remove from parent
             removeChild((SimpleFragment) fragment);
         }
-
-        // TODO check the row state to find in which map it is
-        Serializable id = fragment.getId();
-        Fragment oldRow;
-        oldRow = absent.remove(id);
-        if (oldRow != null) {
-            fragment.markDeleted(); // also detached
-            return;
-        }
-        oldRow = created.remove(id);
-        if (oldRow != null) {
-            fragment.markDeleted(); // also detached
-            return;
-        }
-        oldRow = pristine.remove(id);
-        if (oldRow != null) {
-            deleted.put(id, fragment);
-            fragment.markDeleted();
-            return;
-        }
-        oldRow = modified.remove(id);
-        if (oldRow != null) {
-            deleted.put(id, fragment);
-            fragment.markDeleted();
-            return;
-        }
-        if (deleted.containsKey(id)) {
-            throw new StorageException("Already deleted: " + fragment);
-        } else {
-            throw new StorageException("Already detached: " + fragment);
-        }
+        fragment.markDeleted();
     }
 
     /**
      * Saves the created main rows, and returns the map of temporary ids to
      * final ids.
      *
-     * @return the map of temporary ids to final ids
+     * @param createdIds the created ids to save
+     * @return the map of created ids to final ids (when different)
      * @throws StorageException
      */
-    public Map<Serializable, Serializable> saveMain() throws StorageException {
+    public Map<Serializable, Serializable> saveMainCreated(
+            Set<Serializable> createdIds) throws StorageException {
         assert tableName.equals(model.MAIN_TABLE_NAME);
         Map<Serializable, Serializable> idMap = new HashMap<Serializable, Serializable>();
-        for (Fragment fragment : created.values()) {
-            Serializable id = fragment.getId();
-            Serializable newId = mapper.insertSingleRow((SimpleFragment) fragment);
-            if (pristine.containsKey(id)) {
-                throw new StorageException("Row already in cache: " + fragment);
+        for (Serializable id : createdIds) {
+            Fragment fragment = modified.remove(id);
+            if (fragment == null) {
+                throw new AssertionError(id);
             }
+            Serializable newId = mapper.insertSingleRow((SimpleFragment) fragment);
             fragment.markPristine();
-            pristine.put(newId, fragment);
+            pristine.put(id, fragment);
             if (!newId.equals(id)) {
+                // save in translation map, if different
                 idMap.put(id, newId);
             }
-            // log.debug("mapping temporary id " + id + " to " + newId);
         }
-        created.clear();
         return idMap;
     }
 
@@ -530,56 +473,61 @@ public class PersistenceContextByTable {
      */
     public void save(Map<Serializable, Serializable> idMap)
             throws StorageException {
-        if (!tableName.equals(model.MAIN_TABLE_NAME)) {
-            /*
-             * Map temporary to persistent ids.
-             */
-            for (Fragment fragment : created.values()) {
-                Serializable id = fragment.getId();
+        for (Fragment fragment : modified.values()) {
+            Serializable id = fragment.getId();
+            switch (fragment.getState()) {
+            case CREATED:
+                /*
+                 * Map temporary to persistent ids.
+                 */
                 Serializable newId = idMap.get(id);
                 if (newId != null) {
                     fragment.setId(newId);
                     id = newId;
                 }
+                // hierarchy parent column too
                 if (tableName.equals(model.HIER_TABLE_NAME)) {
-                    /*
-                     * The hierarchy table stores a foreign key to id in the
-                     * parent column, it has to be mapped too.
-                     */
                     SimpleFragment row = (SimpleFragment) fragment;
                     Serializable newParentId = idMap.get(row.get(model.HIER_PARENT_KEY));
                     if (newParentId != null) {
                         row.put(model.HIER_PARENT_KEY, newParentId);
                     }
                 }
+                /*
+                 * Do the creation.
+                 */
                 if (fragment instanceof SimpleFragment) {
                     mapper.insertSingleRow((SimpleFragment) fragment);
                 } else {
                     mapper.insertCollectionRows((CollectionFragment) fragment);
                 }
-                if (pristine.containsKey(id)) {
-                    throw new StorageException("Row already in cache: " +
-                            fragment);
+                fragment.markPristine();
+                // modified map cleared at end of loop
+                pristine.put(id, fragment);
+                modifiedInTransaction.add(id);
+                break;
+            case MODIFIED:
+                if (fragment instanceof SimpleFragment) {
+                    mapper.updateSingleRow((SimpleFragment) fragment);
+                } else {
+                    mapper.updateCollectionRows((CollectionFragment) fragment);
                 }
                 fragment.markPristine();
+                // modified map cleared at end of loop
                 pristine.put(id, fragment);
+                modifiedInTransaction.add(id);
+                break;
+            case DELETED:
+                mapper.deleteFragment(fragment);
+                fragment.detach();
+                // modified map cleared at end of loop
+                deletedInTransaction.add(id);
+                break;
+            default:
+                throw new AssertionError(fragment);
             }
-            created.clear();
-        }
-        for (Fragment fragment : modified.values()) {
-            if (fragment instanceof SimpleFragment) {
-                mapper.updateSingleRow((SimpleFragment) fragment);
-            } else {
-                mapper.updateCollectionRows((CollectionFragment) fragment);
-            }
-            fragment.markPristine();
         }
         modified.clear();
-        for (Fragment fragment : deleted.values()) {
-            mapper.deleteFragment(fragment);
-            fragment.detach();
-        }
-        deleted.clear();
 
         /*
          * Map temporary parent ids for created parents.
@@ -595,34 +543,50 @@ public class PersistenceContextByTable {
     }
 
     /**
-     * Callback from a {@link Fragment}, used when the row changes from the
-     * pristine to the modified state.
+     * Process invalidations notified from other sessions. Called
+     * pre-transaction.
      */
-    protected void markPristineModified(Fragment row) {
-        Serializable id = row.getId();
-        Fragment old = pristine.remove(id);
-        if (old == null) {
-            log.error("Should be pristine: " + row);
+    protected void processInvalidations() {
+        synchronized (modifiedInvalidations) {
+            for (Serializable id : modifiedInvalidations) {
+                Fragment fragment = pristine.remove(id);
+                if (fragment != null) {
+                    fragment.invalidateModified();
+                }
+            }
+            modifiedInvalidations.clear();
         }
-        old = modified.put(id, row);
-        if (old != null) {
-            log.error("Should not be modified: " + row);
+        synchronized (deletedInvalidations) {
+            for (Serializable id : deletedInvalidations) {
+                Fragment fragment = pristine.remove(id);
+                if (fragment != null) {
+                    fragment.invalidateDeleted();
+                }
+            }
+            deletedInvalidations.clear();
         }
     }
 
     /**
-     * Callback from a {@link Fragment}, used when the row changes from the
-     * absent to the created state.
+     * Notify invalidations to other sessions. Called post-transaction.
      */
-    protected void markAbsentCreated(Fragment row) {
-        Serializable id = row.getId();
-        Fragment old = absent.remove(id);
-        if (old == null) {
-            log.error("Should be absent: " + row);
+    protected void notifyInvalidations() {
+        if (!modifiedInTransaction.isEmpty() || !deletedInTransaction.isEmpty()) {
+            persistenceContext.invalidateOthers(this);
+            modifiedInTransaction.clear();
+            deletedInTransaction.clear();
         }
-        old = created.put(id, row);
-        if (old != null) {
-            log.error("Should not be created: " + row);
+    }
+
+    /**
+     * Called by cross-session invalidation when another session just committed.
+     */
+    protected void invalidate(Context other) {
+        synchronized (modifiedInvalidations) {
+            modifiedInvalidations.addAll(other.modifiedInTransaction);
+        }
+        synchronized (deletedInvalidations) {
+            deletedInvalidations.addAll(other.deletedInTransaction);
         }
     }
 

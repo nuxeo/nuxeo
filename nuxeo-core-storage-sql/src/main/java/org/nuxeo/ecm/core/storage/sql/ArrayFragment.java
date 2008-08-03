@@ -24,7 +24,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
+import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 
@@ -51,76 +53,92 @@ public class ArrayFragment extends CollectionFragment {
      *            {@code null}
      * @param array the initial collection data to use, or {@code null}
      */
-    public ArrayFragment(String tableName, Serializable id, State state,
-            PersistenceContextByTable context, Serializable[] array) {
-        super(tableName, id, state, context);
+    public ArrayFragment(Serializable id, State state, Context context,
+            Serializable[] array) {
+        super(id, state, context);
         assert array != null; // for now
         this.array = array;
     }
 
     @Override
-    public void set(Serializable[] value) {
-        array = value.clone();
-        markModified();
+    protected State refetch() throws StorageException {
+        Context context = getContext();
+        array = context.mapper.readCollectionArray(getId(), context);
+        return State.PRISTINE;
     }
 
     @Override
-    public Serializable[] get() {
+    public void set(Serializable[] value) {
+        // no need to call accessed() as we overwrite all
+        array = value.clone();
+        modified();
+    }
+
+    @Override
+    public Serializable[] get() throws StorageException {
+        accessed();
         return array.clone();
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + tableName + ", id=" +
+        return getClass().getSimpleName() + '(' + getTableName() + ", id=" +
                 getId() + ", " + Arrays.asList(array) + ')';
     }
 
-    @Override
-    public String toSimpleString() {
-        return Arrays.asList(array).toString();
-    }
+    protected static final CollectionMaker MAKER = new CollectionMaker() {
 
-    public static final CollectionFragmentMaker MAKER = new CollectionFragmentMaker() {
-
-        public CollectionFragment make(String tableName, Serializable id,
-                ResultSet rs, List<Column> columns,
-                PersistenceContextByTable context, Model model)
+        public Serializable[] makeArray(Serializable id, ResultSet rs,
+                List<Column> columns, Context context, Model model)
                 throws SQLException {
+            // find the column containing the value
+            // (the pos column is ignored, results are ordered)
+            Column column = null;
+            for (Column col : columns) {
+                if (col.getKey().equals(model.COLL_TABLE_VALUE_KEY)) {
+                    column = col;
+                }
+            }
+            if (column == null) {
+                throw new AssertionError(columns);
+            }
             ArrayList<Serializable> list = new ArrayList<Serializable>();
             while (rs.next()) {
                 int i = 0;
                 Serializable value = null;
-                for (Column column : columns) {
+                for (Column col : columns) {
                     i++;
-                    if (column.getKey().equals(model.COLL_TABLE_VALUE_KEY)) {
+                    if (col == column) {
                         value = column.getFromResultSet(rs, i);
                     }
                 }
                 list.add(value);
             }
-            // XXX deal with different types
-            String[] array = new String[list.size()];
-            return new ArrayFragment(tableName, id, State.PRISTINE, context,
-                    list.toArray(array));
+            return column.listToArray(list);
         }
 
-        public CollectionFragment makeEmpty(String tableName, Serializable id,
-                PersistenceContextByTable context, Model model) {
-            Serializable[] empty = model.getCollectionFragmentType(tableName).getEmptyArray();
-            return new ArrayFragment(tableName, id, State.CREATED, context,
-                    empty);
+        public CollectionFragment makeCollection(Serializable id,
+                Serializable[] array, Context context) {
+            return new ArrayFragment(id, State.PRISTINE, context, array);
+        }
+
+        public CollectionFragment makeEmpty(Serializable id, Context context,
+                Model model) {
+            Serializable[] empty = model.getCollectionFragmentType(
+                    context.getTableName()).getEmptyArray();
+            return new ArrayFragment(id, State.CREATED, context, empty);
         }
     };
 
     @Override
-    public CollectionFragmentIterator getIterator() {
+    protected CollectionFragmentIterator getIterator() {
         return new ArrayFragmentIterator();
     }
 
     /**
      * This iterator assumes no concurrent changes to the array.
      */
-    public class ArrayFragmentIterator implements CollectionFragmentIterator {
+    protected class ArrayFragmentIterator implements CollectionFragmentIterator {
 
         protected int i;
 

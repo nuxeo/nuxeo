@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 
 /**
@@ -35,9 +36,8 @@ public abstract class CollectionFragment extends Fragment {
 
     private static final long serialVersionUID = 1L;
 
-    public CollectionFragment(String tableName, Serializable id, State state,
-            PersistenceContextByTable context) {
-        super(tableName, id, state, context);
+    public CollectionFragment(Serializable id, State state, Context context) {
+        super(id, state, context);
     }
 
     /**
@@ -51,36 +51,34 @@ public abstract class CollectionFragment extends Fragment {
      * Gets the value.
      *
      * @return the value
+     * @throws StorageException
      */
-    public abstract Serializable[] get();
+    public abstract Serializable[] get() throws StorageException;
 
     /**
-     * Gets a string representing just the collection (for debug).
+     * Interface for a class that knows how to build an array from a SQL result
+     * set, and build the appropriate collection fragments.
      */
-    public abstract String toSimpleString();
+    protected static interface CollectionMaker {
 
-    /**
-     * Interface for a class that knows how to build collection fragments from a
-     * SQL result set.
-     */
-    public static interface CollectionFragmentMaker {
-
-        CollectionFragment make(String tableName, Serializable id,
-                ResultSet rs, List<Column> columns,
-                PersistenceContextByTable context, Model model)
+        Serializable[] makeArray(Serializable id, ResultSet rs,
+                List<Column> columns, Context context, Model model)
                 throws SQLException;
 
-        CollectionFragment makeEmpty(String tableName, Serializable id,
-                PersistenceContextByTable context, Model model);
+        CollectionFragment makeCollection(Serializable id,
+                Serializable[] array, Context context);
+
+        CollectionFragment makeEmpty(Serializable id, Context context,
+                Model model);
     }
 
     /**
      * Gets a specialized iterator allowing setting of values to a SQL prepared
      * statement.
      */
-    public abstract CollectionFragmentIterator getIterator();
+    protected abstract CollectionFragmentIterator getIterator();
 
-    public static interface CollectionFragmentIterator extends
+    protected static interface CollectionFragmentIterator extends
             Iterator<Serializable> {
 
         /**

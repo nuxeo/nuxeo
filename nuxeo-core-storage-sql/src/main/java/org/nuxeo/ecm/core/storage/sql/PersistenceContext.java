@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,11 +33,11 @@ import org.nuxeo.ecm.core.storage.StorageException;
 /**
  * The persistence context in use by a session.
  * <p>
- * All non-saved modified data is referenced here. At save time, the data is
- * sent to the database by the {@link Mapper}.
- * <p>
  * This class is not thread-safe, it should be tied to a single session and the
  * session itself should not be used concurrently.
+ * <p>
+ * This class mostly delegates all its work to per-fragment {@link Context}s. It
+ * also deals with maintaining information about generated ids.
  *
  * @author Florent Guillaume
  */
@@ -46,7 +47,9 @@ public class PersistenceContext {
 
     private final Mapper mapper;
 
-    private final Map<String, PersistenceContextByTable> contexts;
+    private final RepositoryImpl.Invalidators invalidators;
+
+    private final Map<String, Context> contexts;
 
     private final Model model;
 
@@ -54,7 +57,7 @@ public class PersistenceContext {
      * Fragment ids generated but not yet saved. We know that any fragment with
      * one of these ids cannot exist in the database.
      */
-    private final Set<Serializable> generatedIds;
+    private final Set<Serializable> createdIds;
 
     /**
      * HACK: if some application code illegally recorded temporary ids (which
@@ -65,40 +68,58 @@ public class PersistenceContext {
      */
     private final HashMap<Serializable, Serializable> oldIdMap;
 
-    PersistenceContext(Mapper mapper) {
+    PersistenceContext(Mapper mapper, RepositoryImpl.Invalidators invalidators) {
         this.mapper = mapper;
+        this.invalidators = invalidators;
         model = mapper.getModel();
-        contexts = new HashMap<String, PersistenceContextByTable>();
+        // accessed by invalidator, needs to be concurrent
+        contexts = new ConcurrentHashMap<String, Context>();
 
         // avoid doing tests all the time for this known case
-        contexts.put(model.HIER_TABLE_NAME, new PersistenceContextByTable(
-                model.HIER_TABLE_NAME, mapper, this));
-        generatedIds = new HashSet<Serializable>();
+        getContext(model.HIER_TABLE_NAME);
+        createdIds = new HashSet<Serializable>();
         oldIdMap = new HashMap<Serializable, Serializable>();
+    }
+
+    // get or return null
+    protected Context getContextOrNull(String tableName) {
+        return contexts.get(tableName);
+    }
+
+    // get or create if missing
+    private Context getContext(String tableName) {
+        Context context = contexts.get(tableName);
+        if (context == null) {
+            context = new Context(tableName, mapper, this);
+            contexts.put(tableName, context);
+        }
+        return context;
     }
 
     public Serializable generateNewId() {
         Serializable id = model.generateNewId();
-        generatedIds.add(id);
+        createdIds.add(id);
         return id;
     }
 
-    /* Called by PersistenceContextByTable */
+    /* Called by Context */
     protected boolean isIdNew(Serializable id) {
-        return generatedIds.contains(id);
+        return createdIds.contains(id);
     }
 
-    protected Serializable getRootId(Serializable repositoryId) throws StorageException {
+    protected Serializable getRootId(Serializable repositoryId)
+            throws StorageException {
         return mapper.getRootId(repositoryId);
     }
 
-    protected void setRootId(Serializable repositoryId, Serializable id) throws StorageException {
+    protected void setRootId(Serializable repositoryId, Serializable id)
+            throws StorageException {
         mapper.setRootId(repositoryId, id);
     }
 
     public void close() {
         mapper.close();
-        for (PersistenceContextByTable context : contexts.values()) {
+        for (Context context : contexts.values()) {
             context.close();
         }
         // don't clean the contexts, we keep the pristine cache around
@@ -106,35 +127,59 @@ public class PersistenceContext {
 
     /**
      * Saves all the data to persistent storage.
-     *
-     * @throws StorageException
      */
     public void save() throws StorageException {
         log.debug("Saving persistence context");
         /*
          * First, create the main rows to get final ids for each.
          */
-        PersistenceContextByTable mainContext = contexts.get(model.MAIN_TABLE_NAME);
+        Context mainContext = contexts.get(model.MAIN_TABLE_NAME);
         Map<Serializable, Serializable> idMap;
         if (mainContext != null) {
-            idMap = mainContext.saveMain();
+            idMap = mainContext.saveMainCreated(createdIds);
         } else {
             idMap = Collections.emptyMap();
         }
-        // all generated ids have been saved
-        generatedIds.clear();
+        // all generated ids have now been written
+        createdIds.clear();
 
         /*
          * Then save all other rows, taking the map of ids into account.
          */
-        for (PersistenceContextByTable context : contexts.values()) {
+        for (Context context : contexts.values()) {
             context.save(idMap);
         }
-
         // no need to clear the contexts, they'd get reallocate soon anyway
-        log.debug("End of save");
+
         // HACK: remember the idMap
         oldIdMap.putAll(idMap);
+
+        log.debug("End of save");
+    }
+
+    /**
+     * Pre-transaction invalidations processing.
+     */
+    protected void processInvalidations() {
+        for (Context context : contexts.values()) {
+            context.processInvalidations();
+        }
+    }
+
+    /**
+     * Post-transaction invalidations notification.
+     */
+    protected void notifyInvalidations() {
+        for (Context context : contexts.values()) {
+            context.notifyInvalidations();
+        }
+    }
+
+    /**
+     * Invalidate in other sessions.
+     */
+    protected void invalidateOthers(Context context) {
+        invalidators.getInvalidator(context.getTableName()).invalidate(context);
     }
 
     /**
@@ -158,12 +203,7 @@ public class PersistenceContext {
     public SimpleFragment createSimpleFragment(String tableName,
             Serializable id, Map<String, Serializable> map)
             throws StorageException {
-        PersistenceContextByTable context = contexts.get(tableName);
-        if (context == null) {
-            context = new PersistenceContextByTable(tableName, mapper, this);
-            contexts.put(tableName, context);
-        }
-        return context.create(id, map);
+        return getContext(tableName).create(id, map);
     }
 
     /**
@@ -182,12 +222,7 @@ public class PersistenceContext {
      */
     public Fragment get(String tableName, Serializable id, boolean allowAbsent)
             throws StorageException {
-        PersistenceContextByTable context = contexts.get(tableName);
-        if (context == null) {
-            context = new PersistenceContextByTable(tableName, mapper, this);
-            contexts.put(tableName, context);
-        }
-        return context.get(id, allowAbsent);
+        return getContext(tableName).get(id, allowAbsent);
     }
 
     /**
@@ -246,7 +281,7 @@ public class PersistenceContext {
      */
     public void remove(Fragment row) throws StorageException {
         String tableName = row.getTableName();
-        PersistenceContextByTable context = contexts.get(tableName);
+        Context context = contexts.get(tableName);
         if (context == null) {
             log.error("Removing row not in a context: " + row);
             return;

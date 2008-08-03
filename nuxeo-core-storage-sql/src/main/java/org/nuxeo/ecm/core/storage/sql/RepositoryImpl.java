@@ -17,16 +17,18 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.naming.Reference;
-import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionSpec;
 import javax.resource.cci.RecordFactory;
 import javax.resource.cci.ResourceAdapterMetaData;
@@ -55,11 +57,11 @@ public class RepositoryImpl implements Repository {
 
     private final RepositoryDescriptor repositoryDescriptor;
 
-    // TODO check if really want something weak w.r.t. remoting
-    /** The sessions in a weak hash map. Values are unused. A weak set really. */
-    private final Map<SessionImpl, Object> sessions;
+    private final Collection<SessionImpl> sessions;
 
-    private XADataSource xadatasource;
+    private final XADataSource xadatasource;
+
+    private final Invalidators invalidators;
 
     // initialized at first login
 
@@ -75,7 +77,8 @@ public class RepositoryImpl implements Repository {
             SchemaManager schemaManager) throws StorageException {
         this.repositoryDescriptor = repositoryDescriptor;
         this.schemaManager = schemaManager;
-        sessions = new WeakHashMap<SessionImpl, Object>();
+        sessions = new CopyOnWriteArrayList<SessionImpl>();
+        invalidators = new Invalidators();
         xadatasource = getXADataSource();
     }
 
@@ -131,10 +134,10 @@ public class RepositoryImpl implements Repository {
             initialized = true;
         }
 
-        SessionImpl session = new SessionImpl(schemaManager, mapper,
-                credentials);
+        SessionImpl session = new SessionImpl(this, schemaManager, mapper,
+                invalidators, credentials);
 
-        sessions.put(session, null);
+        sessions.add(session);
         return session;
     }
 
@@ -165,14 +168,11 @@ public class RepositoryImpl implements Repository {
      */
 
     public synchronized void close() {
-        for (SessionImpl session : sessions.keySet()) {
-            if (session.isLive()) {
-                try {
-                    session.close();
-                } catch (ResourceException e) {
-                    log.error("Error closing session", e);
-                }
+        for (SessionImpl session : sessions) {
+            if (!session.isLive()) {
+                continue;
             }
+            session.closeSession();
         }
         sessions.clear();
     }
@@ -180,6 +180,11 @@ public class RepositoryImpl implements Repository {
     /*
      * ----- -----
      */
+
+    // callback by session at close time
+    protected void closeSession(SessionImpl session) {
+        sessions.remove(session);
+    }
 
     private XADataSource getXADataSource() throws StorageException {
 
@@ -281,6 +286,45 @@ public class RepositoryImpl implements Repository {
         } catch (HibernateException e) {
             throw new StorageException("Cannot determine dialect for class: " +
                     repositoryDescriptor.xaDataSourceName, e);
+        }
+    }
+
+    /**
+     * Deals with the invalidation of persistence contexts between sessions.
+     */
+    protected class Invalidators extends ConcurrentHashMap<String, Invalidator> {
+
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Gets an invalidator, or creates one if missing.
+         */
+        public Invalidator getInvalidator(String tableName) {
+            Invalidator invalidator = get(tableName);
+            if (invalidator == null) {
+                // create one if missing, in a concurrent-safe manner
+                putIfAbsent(tableName, new Invalidator());
+                invalidator = get(tableName);
+            }
+            return invalidator;
+        }
+    }
+
+    /**
+     * Class dealing with the cross-session invalidation of modified or deleted
+     * fragments after a session is saved.
+     */
+    protected class Invalidator {
+
+        public void invalidate(Context otherContext) {
+            String tableName = otherContext.getTableName();
+            for (SessionImpl session : sessions) {
+                Context context = session.getContext(tableName);
+                if (context == null || context == otherContext) {
+                    continue;
+                }
+                context.invalidate(otherContext);
+            }
         }
     }
 

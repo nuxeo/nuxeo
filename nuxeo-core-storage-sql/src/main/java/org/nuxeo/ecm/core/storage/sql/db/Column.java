@@ -27,6 +27,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -224,6 +225,27 @@ public class Column implements Serializable {
             result = null;
         }
         return result;
+    }
+
+    public Serializable[] listToArray(List<Serializable> list) {
+        int size = list.size();
+        switch (sqlType) {
+        case Types.BIGINT:
+        case Types.INTEGER:
+            return list.toArray(new Long[size]);
+        case Types.VARCHAR:
+        case Types.CLOB:
+            return list.toArray(new String[size]);
+        case Types.TIMESTAMP:
+            return list.toArray(new Calendar[size]);
+        case Types.BIT:
+            return list.toArray(new Boolean[size]);
+        case Types.BLOB:
+            log.error("BLOB fetch unimplemented, returning null");
+            return new String[0]; // XXX TODO
+        default:
+            throw new RuntimeException("Unhandled SQL type: " + sqlType);
+        }
     }
 
     @Override

@@ -145,7 +145,14 @@ public class Children {
                 newExistingProperties();
             }
             for (SimpleFragment fragment : fragments) {
-                existingProperties.put(fragment.getString(name_key), fragment);
+                String name;
+                try {
+                    name = fragment.getString(name_key);
+                } catch (StorageException e) {
+                    // cannot happen, row is pristine
+                    name = "ACCESSFAILED";
+                }
+                existingProperties.put(name, fragment);
             }
             missingProperties = null; // could check coherence with existing
             completeProperties = true;
@@ -156,7 +163,14 @@ public class Children {
                 newExistingRegular();
             }
             for (SimpleFragment fragment : fragments) {
-                existingRegular.put(fragment.getString(name_key), fragment);
+                String name;
+                try {
+                    name = fragment.getString(name_key);
+                } catch (StorageException e) {
+                    // cannot happen, row is pristine
+                    name = "ACCESSFAILED";
+                }
+                existingRegular.put(name, fragment);
             }
             missingRegular = null; // could check coherence with existing
             completeRegular = true;
