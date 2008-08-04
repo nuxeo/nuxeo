@@ -124,7 +124,7 @@ public final class Framework {
     }
 
     /**
-     * Gets a service given its class and a identifier.
+     * Gets a service given its class and an identifier.
      *
      * @param <T>
      * @param serviceClass
