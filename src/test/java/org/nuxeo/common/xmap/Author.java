@@ -130,10 +130,12 @@ public class Author {
         item3 = true;
     }
 
-    @XNodeList(value = "testNullByDefaultForList", type = ArrayList.class, componentType = String.class, nullByDefault = true)
+    @XNodeList(value = "testNullByDefaultForList", type = ArrayList.class,
+            componentType = String.class, nullByDefault = true)
     List<String> testNullByDefaultForList;
 
-    @XNodeMap(value = "testNullByDefaultForMap", key = "@name", type = HashMap.class, componentType = String.class, nullByDefault = true)
+    @XNodeMap(value = "testNullByDefaultForMap", key = "@name",
+            type = HashMap.class, componentType = String.class, nullByDefault = true)
     Map<String, String> testNullByDefaultForMap;
 
     @Override

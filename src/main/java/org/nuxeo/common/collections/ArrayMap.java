@@ -48,22 +48,21 @@ public class ArrayMap<K, V> {
         elements = new Object[initialCapacity == 0 ? DEFAULT_SIZE : initialCapacity * 2];
     }
 
-    public ArrayMap(Map map) {
+    public ArrayMap(Map<K, V> map) {
         this(map.size());
         putAll(map);
     }
 
-    public ArrayMap(ArrayMap map) {
+    public ArrayMap(ArrayMap<K, V> map) {
         count = map.count;
         elements = new Object[map.elements.length];
         System.arraycopy(map.elements, 0, elements, 0, count * 2);
     }
 
-    public void putAll(Map map) {
-        for (Object o : map.entrySet()) {
-            Map.Entry entry = (Map.Entry) o;
-            K key = (K) entry.getKey();
-            V value = (V) entry.getValue();
+    public void putAll(Map<K, V> map) {
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            K key = entry.getKey();
+            V value = entry.getValue();
             add(key, value);
         }
     }

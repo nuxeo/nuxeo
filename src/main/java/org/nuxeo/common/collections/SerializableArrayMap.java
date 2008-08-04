@@ -66,12 +66,11 @@ public class SerializableArrayMap<K, V>  implements Serializable {
         System.arraycopy(map.elements, 0, elements, 0, count * 2);
     }
 
-    public void putAll(Map map) {
-        for (Object ob : map.entrySet()) {
-            Serializable o = (Serializable) ob;
-            Map.Entry entry = (Map.Entry) o;
-            K key = (K) entry.getKey();
-            V value = (V) entry.getValue();
+    public void putAll(Map<K, V> map) {
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            Serializable o = (Serializable) entry;
+            K key = entry.getKey();
+            V value = entry.getValue();
             add(key, value);
         }
     }

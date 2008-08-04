@@ -30,7 +30,8 @@ import junit.framework.TestCase;
  */
 public class TestURIUtils extends TestCase {
 
-    private static final String URI_QUERY = "currentTab=TAB_CONTENT&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&repositoryName=demo";
+    private static final String URI_QUERY
+            = "currentTab=TAB_CONTENT&documentId=4012a2d7-384e-4735-ab98-b06b598072fa&repositoryName=demo";
 
     private static final String PARTIAL_URI = "nuxeo/view_documents.faces?"
             + URI_QUERY;

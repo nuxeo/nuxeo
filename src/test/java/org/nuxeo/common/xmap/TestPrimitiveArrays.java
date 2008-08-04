@@ -41,8 +41,8 @@ public class TestPrimitiveArrays extends TestCase {
         myColl2 = new Integer[] { 0, 1 };
         Integer[] result1 = (Integer[]) PrimitiveArrays.toObjectArray(myColl2);
         assertEquals(2, result1.length);
-        assertEquals((Integer) 0, result1[0]);
-        assertEquals((Integer) 1, result1[1]);
+        assertEquals(Integer.valueOf(0), result1[0]);
+        assertEquals(Integer.valueOf(1), result1[1]);
     }
 
     public void testLongCase() {
@@ -56,8 +56,8 @@ public class TestPrimitiveArrays extends TestCase {
         myColl2 = new Long[] { 0L, 1L };
         Long[] result1 = (Long[]) PrimitiveArrays.toObjectArray(myColl2);
         assertEquals(2, result1.length);
-        assertEquals((Long) 0L, result1[0]);
-        assertEquals((Long) 1L, result1[1]);
+        assertEquals(Long.valueOf(0), result1[0]);
+        assertEquals(Long.valueOf(1), result1[1]);
     }
 
     public void testDoubleCase() {
