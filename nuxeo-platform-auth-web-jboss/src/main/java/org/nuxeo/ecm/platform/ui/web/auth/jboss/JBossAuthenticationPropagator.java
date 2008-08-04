@@ -34,6 +34,7 @@ public class JBossAuthenticationPropagator implements
         NuxeoAuthenticationPropagator {
 
 
+    @SuppressWarnings("unchecked")
     public void propagateUserIdentificationInformation(
             CachableUserIdentificationInfo cachableUserIdent) {
         // JBoss specific implementation

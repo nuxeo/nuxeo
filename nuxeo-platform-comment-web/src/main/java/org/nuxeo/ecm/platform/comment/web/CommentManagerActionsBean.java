@@ -384,6 +384,7 @@ public class CommentManagerActionsBean extends InputController implements
         flatComments.add(comment);
     }
 
+    @SuppressWarnings("unchecked")
     public List<UIComment> getLastCommentsByDate(String n)
             throws ClientException {
         int number = Integer.parseInt(n);

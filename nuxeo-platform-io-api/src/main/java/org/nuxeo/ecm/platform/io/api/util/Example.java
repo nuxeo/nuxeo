@@ -93,10 +93,7 @@ public class Example {
         IOHelper.copy(src, dest, ioAdapters);
     }
 
-
     public static void main(String[] args) {
-
-
     }
 
 }

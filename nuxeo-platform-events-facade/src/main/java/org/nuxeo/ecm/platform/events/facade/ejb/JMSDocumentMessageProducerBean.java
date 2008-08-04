@@ -46,7 +46,7 @@ public class JMSDocumentMessageProducerBean implements DocumentMessageProducer {
 
     private static final Log log = LogFactory.getLog(JMSDocumentMessageProducerBean.class);
 
-    private transient DocumentMessageProducer service;
+    private DocumentMessageProducer service;
 
     protected DocumentMessageProducer getService() {
         if (service == null) {

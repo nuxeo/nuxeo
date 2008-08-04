@@ -517,6 +517,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return map;
     }
 
+    @SuppressWarnings("unchecked")
     private void createSubMaps(Map<String, Object> map, String[] path,
             String value, int depth) {
         String key = path[depth];
@@ -533,6 +534,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         }
     }
 
+    @SuppressWarnings("unchecked")
     @WebMethod
     public String uploadDocument(String sid, String parentUUID, String type,
             String[] properties) throws ClientException {

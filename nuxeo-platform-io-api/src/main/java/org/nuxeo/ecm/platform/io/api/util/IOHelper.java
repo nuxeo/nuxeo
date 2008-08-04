@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
  */
 public class IOHelper {
 
-
     /**
      * Copy from one location to another. The source and/or target repositories may be the same or may be
      * located on different hosts.
@@ -48,7 +47,8 @@ public class IOHelper {
      * @throws IOException
      * @throws ClientException
      */
-    public static void copy(IOConfiguration src, IOConfiguration dest, Collection<String> ioAdapters) throws IOException, ClientException {
+    public static void copy(IOConfiguration src, IOConfiguration dest,
+            Collection<String> ioAdapters) throws IOException, ClientException {
         String uri = exportAsStream(src, ioAdapters);
         try {
             importFromStream(dest, uri);

@@ -77,7 +77,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
                 // create factory instance : one instance per binding
                 ContentFactoryDescriptor factoryDescriptor = factories.get(descriptor.getFactoryName());
                 try {
-                    ContentFactory factory = (ContentFactory) factoryDescriptor.getClassName().newInstance();
+                    ContentFactory factory = factoryDescriptor.getClassName().newInstance();
                     Boolean factoryOK = factory.initFactory(
                             descriptor.getOptions(), descriptor.getRootAcl(),
                             descriptor.getTemplate());
@@ -87,7 +87,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
                         return;
                     }
 
-                    // store initialied instance
+                    // store initialized instance
                     factoryInstancesByType.put(descriptor.getTargetType(),
                             factory);
                 } catch (InstantiationException e) {

@@ -118,7 +118,6 @@ public class CommentManagerImpl implements CommentManager {
         return Framework.getService(RelationManager.class);
     }
 
-    @SuppressWarnings("unchecked")
     public List<DocumentModel> getComments(DocumentModel docModel)
             throws ClientException {
         RelationManager relationManager;
