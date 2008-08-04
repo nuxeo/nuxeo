@@ -46,7 +46,6 @@ public class TestProperty extends RepositoryTestCase {
     Property author;
     Property name;
 
-    @SuppressWarnings("unchecked")
     @Override
     public void setUp() throws Exception {
         super.setUp();

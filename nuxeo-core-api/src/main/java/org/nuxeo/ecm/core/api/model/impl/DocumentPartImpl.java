@@ -84,7 +84,6 @@ public class DocumentPartImpl extends ComplexProperty implements DocumentPart {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Schema getType() {
         return schema;
     }

@@ -67,7 +67,6 @@ public class ScalarProperty extends AbstractProperty {
         return field.getName().getPrefixedName();
     }
 
-    @SuppressWarnings("unchecked")
     public Type getType() {
         return field.getType();
     }

@@ -115,7 +115,6 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         return field.getName().getPrefixedName();
     }
 
-    @SuppressWarnings("unchecked")
     public ListType getType() {
         return (ListType)field.getType();
     }
@@ -199,7 +198,6 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void setValue(Object value)  throws PropertyException {
         if (isReadOnly()) {
             throw new ReadOnlyPropertyException(getPath());

@@ -113,10 +113,9 @@ public abstract class AbstractProperty implements Property {
         return getChildren().iterator();
     }
 
-    @SuppressWarnings("unchecked")
     public Serializable remove() throws PropertyException {
         Serializable value = getValue();
-        if (parent != null && parent.isList()) { // remove from list is handled separatelly
+        if (parent != null && parent.isList()) { // remove from list is handled separately
             ListProperty list = (ListProperty) parent;
             list.remove(this);
         } else if (!isPhantom()) { // remove from map is easier -> mark the field as removed and remove the value
@@ -125,7 +124,6 @@ public abstract class AbstractProperty implements Property {
         }
         return value;
     }
-
 
     public Property getParent() {
         return parent;
