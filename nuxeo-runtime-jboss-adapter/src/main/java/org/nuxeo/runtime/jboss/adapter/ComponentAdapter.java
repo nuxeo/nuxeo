@@ -33,7 +33,6 @@ import org.jboss.system.ServiceMBeanSupport;
 import org.nuxeo.osgi.jboss.JBossOSGiAdapter;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.ComponentListener;
-import org.nuxeo.runtime.NXRuntime;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
@@ -58,9 +57,8 @@ public class ComponentAdapter extends ServiceMBeanSupport
     protected void createService() throws Exception {
         super.createService();
         // add me as a listener to the current nx runtime service
-        // FIXME: use Framework API instead
-        NXRuntime.addListener(this);
-        if (NXRuntime.isInitialized()) {
+        Framework.addListener(this);
+        if (Framework.isInitialized()) {
             Framework.getRuntime().getComponentManager().addComponentListener(this);
         }
     }
@@ -69,8 +67,7 @@ public class ComponentAdapter extends ServiceMBeanSupport
     protected void destroyService() throws Exception {
         super.destroyService();
         // remove me as a listener to the current nx runtime service
-        // FIXME: use Framework API instead
-        NXRuntime.removeListener(this);
+        Framework.removeListener(this);
     }
 
     public void handleEvent(ComponentEvent event) {

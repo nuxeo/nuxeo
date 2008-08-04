@@ -82,7 +82,7 @@ public class OSGiRuntimeActivator implements BundleActivator {
     }
 
     /**
-     * Gives a chance to derived classes to unitialize them after the runtime
+     * Gives a chance to derived classes to uninitialize them after the runtime
      * is stopped.
      *
      * @param runtime the current runtime

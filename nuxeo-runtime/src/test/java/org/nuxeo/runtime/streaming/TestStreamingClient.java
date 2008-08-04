@@ -22,7 +22,7 @@ package org.nuxeo.runtime.streaming;
 import java.io.File;
 import java.util.Arrays;
 
-import org.nuxeo.runtime.NXRuntime;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.ByteArraySource;
 import org.nuxeo.runtime.services.streaming.FileSource;
 import org.nuxeo.runtime.services.streaming.StreamManager;
@@ -51,7 +51,8 @@ public class TestStreamingClient extends NXRuntimeApplication {
     protected void run() throws Exception {
         System.out.println("Started streaming client");
 
-        StreamingService ss = (StreamingService) NXRuntime.getRuntime().getComponent("org.nuxeo.runtime.remoting.StreamingClient");
+        StreamingService ss = (StreamingService) Framework.getRuntime().getComponent(
+                "org.nuxeo.runtime.remoting.StreamingClient");
         StreamManager sm = ss.getStreamManager();
 
         try {

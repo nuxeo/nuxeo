@@ -27,7 +27,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
- * @deprecated Use {@link Framework} instead.
+ * @deprecated Use {@link Framework} instead. Will be removed in 5.2.
  */
 @Deprecated
 public final class NXRuntime {

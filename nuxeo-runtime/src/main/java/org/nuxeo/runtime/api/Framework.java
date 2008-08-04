@@ -25,8 +25,10 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.nuxeo.runtime.NXRuntime;
+import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.RuntimeService;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.login.LoginService;
 
 /**
@@ -54,7 +56,10 @@ public final class Framework {
      */
     private static RuntimeService runtime;
     private static org.nuxeo.runtime.ServiceManager serviceMgr;
+    private static final ListenerList listeners = new ListenerList();
 
+
+    // Utility class.
     private Framework() { }
 
 
@@ -64,7 +69,6 @@ public final class Framework {
             throw new Exception("Nuxeo Framework was already initialized");
         }
         Framework.runtime = runtimeService;
-        NXRuntime.setRuntime(runtime); // for compatibility with older API
         initServiceManager();
         runtime.start();
     }
@@ -72,9 +76,17 @@ public final class Framework {
     public static void shutdown() throws Exception {
         if (runtime != null) {
             runtime.stop();
-            NXRuntime.setRuntime(null); // for compatibility with older API
             runtime = null;
         }
+    }
+
+    /**
+     * Tests whether or not the runtime was initialized.
+     *
+     * @return true if the runtime was initialized, false otherwise
+     */
+    public static synchronized boolean isInitialized() {
+        return runtime != null;
     }
 
     private static void initServiceManager() {
@@ -129,7 +141,6 @@ public final class Framework {
      * @param <T>
      * @param serviceClass
      * @return
-     * @throws Exception
      */
     public static <T> T getLocalService(Class<T> serviceClass) {
         //TODO: obsolete code remove it
@@ -221,6 +232,33 @@ public final class Framework {
         return null;
     }
 
+    public static void sendEvent(RuntimeServiceEvent event) {
+        Object[] listenersArray = listeners.getListeners();
+        for (Object listener : listenersArray) {
+            ((RuntimeServiceListener) listener).handleEvent(event);
+        }
+    }
+
+    /**
+     * Registers a listener to be notified about runtime events.
+     * <p>
+     * If the listener is already registered, do nothing.
+     *
+     * @param listener the listener to register
+     */
+    public static void addListener(RuntimeServiceListener listener) {
+        listeners.add(listener);
+    }
+
+    /**
+     * Remove the given listener.
+     * <p>
+     * If the listener is not registered do nothing
+     * @param listener
+     */
+    public static void removeListener(RuntimeServiceListener listener) {
+        listeners.remove(listener);
+    }
 
     /**
      * Gets the given property value if any, otherwise null.

@@ -38,7 +38,6 @@ public class Main {
             System.exit(2);
         }
 
-
         // The class name format is: path/ClassName:methodName
         // where the path may be a path to a Jar file or a directory
         // The default method name is 'main'
@@ -63,7 +62,9 @@ public class Main {
             if (file.exists()) {
                 urls[0] = (file.toURI().toURL());
             } else {
-                System.err.println("Could not find main class: "+args[0]+". Make sure you have this class on the boot class path");
+                System.err.println("Could not find main class: "
+                        + args[0]
+                        + ". Make sure you have this class on the boot class path");
                 System.exit(3);
             }
             URLClassLoader classLoader = new URLClassLoader(urls, Main.class.getClassLoader());
@@ -81,31 +82,38 @@ public class Main {
             }
             m.invoke(null, new Object[] { args });
         } catch (IOException e) {
-            System.err.println("Could not find main class: "+args[0]+". Make sure you have this class on the boot class path");
+            System.err.println("Could not find main class: " + args[0]
+                    + ". Make sure you have this class on the boot class path");
             e.printStackTrace();
             System.exit(3);
         } catch (ClassNotFoundException e) {
-            System.err.println("Could not load main class: "+args[0]+". Make sure you have this class on the boot class path");
+            System.err.println("Could not load main class: " + args[0]
+                    + ". Make sure you have this class on the boot class path");
             e.printStackTrace();
             System.exit(4);
         } catch (NoSuchMethodException e) {
-            System.err.println("Could not find main class method: "+mainClassName+"."+method+"(String[] args)");
+            System.err.println("Could not find main class method: "
+                    + mainClassName + "." + method + "(String[] args)");
             e.printStackTrace();
             System.exit(5);
         } catch (SecurityException e) {
-            System.err.println("Failed to access the main class method: "+mainClassName+"."+method+"(String[] args)");
+            System.err.println("Failed to access the main class method: "
+                    + mainClassName + "." + method + "(String[] args)");
             e.printStackTrace();
             System.exit(5);
         } catch (IllegalAccessException e) {
-            System.err.println("Failed to invokde method: "+mainClassName+"."+method+"(String[] args)");
+            System.err.println("Failed to invoke method: " + mainClassName
+                    + "." + method + "(String[] args)");
             e.printStackTrace();
             System.exit(6);
         } catch (IllegalArgumentException e) {
-            System.err.println("Failed to invokde method: "+mainClassName+"."+method+"(String[] args)");
+            System.err.println("Failed to invoke method: " + mainClassName
+                    + "." + method + "(String[] args)");
             e.printStackTrace();
             System.exit(6);
         } catch (InvocationTargetException e) {
-            System.err.println("Failed to invokde method: "+mainClassName+"."+method+"(String[] args)");
+            System.err.println("Failed to invoke method: " + mainClassName
+                    + "." + method + "(String[] args)");
             e.printStackTrace();
             System.exit(6);
         }
