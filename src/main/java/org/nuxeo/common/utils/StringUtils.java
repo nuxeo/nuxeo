@@ -22,6 +22,7 @@ package org.nuxeo.common.utils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Utils for String manipulations.
@@ -229,9 +230,8 @@ public final class StringUtils {
      * @param properties a map containing variables
      * @return
      */
-    // XXX: Never used. Remove?
     public static String expandVars(String expression,
-            Map<String, ?> properties) {
+            Map<?, ?> properties) {
         int p = expression.indexOf("${");
         if (p == -1) {
             return expression; // do not expand if not needed
