@@ -303,7 +303,6 @@ public class TestLocalAPI extends TestAPI {
         assertEquals("at2-modif", dm.getValue("attachments/item[1]/name"));
         dm.setValue("attachments/item[1]/name", "at2-modif2");
         assertEquals("at2-modif2", dm.getValue("attachments/item[1]/name"));
-
     }
 
     public void testGetChildrenRefs() throws Exception {

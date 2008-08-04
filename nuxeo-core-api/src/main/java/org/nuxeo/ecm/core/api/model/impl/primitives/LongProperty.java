@@ -58,6 +58,7 @@ public class LongProperty extends ScalarProperty {
         throw new PropertyConversionException(value.getClass(), Long.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {

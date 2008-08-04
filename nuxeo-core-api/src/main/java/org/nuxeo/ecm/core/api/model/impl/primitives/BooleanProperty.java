@@ -59,6 +59,7 @@ public class BooleanProperty extends ScalarProperty {
         throw new PropertyConversionException(value.getClass(), Boolean.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {

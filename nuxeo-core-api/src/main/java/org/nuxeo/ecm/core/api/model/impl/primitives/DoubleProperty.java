@@ -59,6 +59,7 @@ public class DoubleProperty extends ScalarProperty {
         throw new PropertyConversionException(value.getClass(), Double.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {

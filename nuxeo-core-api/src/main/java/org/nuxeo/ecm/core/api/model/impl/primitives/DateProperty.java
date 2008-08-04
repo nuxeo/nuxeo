@@ -64,6 +64,7 @@ public class DateProperty extends ScalarProperty {
         throw new PropertyConversionException(value.getClass(), Calendar.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {

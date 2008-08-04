@@ -59,23 +59,25 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
     }
 
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setValue(Object value) throws PropertyException {
         if (value instanceof Map) {
-            adapter.setMap(getValue(), (Map<String, Object>)value);
+            adapter.setMap(getValue(), (Map<String, Object>) value);
             setIsModified();
         } else {
             super.setValue(value);
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void init(Serializable value) throws PropertyException {
         if (value == null) { // IGNORE null values - properties will be considered PHANTOMS
             return;
         }
         if (value instanceof Map) {
-            internalSetValue((Serializable)adapter.create((Map<String, Object>)value));
+            internalSetValue((Serializable) adapter.create((Map<String, Object>) value));
         } else {
             internalSetValue(value);
         }
@@ -85,7 +87,7 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
 
     @Override
     public void internalSetValue(Serializable value) throws PropertyException {
-        ObjectAdapter adapter = ((Adaptable)parent).getAdapter();
+        ObjectAdapter adapter = ((Adaptable) parent).getAdapter();
         adapter.setValue(parent.getValue(), getName(), value);
     }
 

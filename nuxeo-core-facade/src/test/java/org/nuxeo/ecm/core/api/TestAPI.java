@@ -2396,6 +2396,7 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("myfile", content);
     }
 
+    @SuppressWarnings("unchecked")
     public void testDocumentModelTreeSort() throws Exception {
         // create a folder tree
         DocumentModel root = getRootDocument();
@@ -2430,7 +2431,6 @@ public abstract class TestAPI extends TestConnection {
         a2_folder = createChildDocument(a2_folder);
         b1_folder = createChildDocument(b1_folder);
         b2_folder = createChildDocument(b2_folder);
-
 
         DocumentModelTreeImpl tree = new DocumentModelTreeImpl();
         tree.add(a_folder, 1);

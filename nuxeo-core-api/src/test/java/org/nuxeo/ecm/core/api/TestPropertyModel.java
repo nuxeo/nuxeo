@@ -186,6 +186,7 @@ public class TestPropertyModel extends TestCase {
         Framework.shutdown();
     }
 
+    @SuppressWarnings("unchecked")
     protected static void clearMap(Map<String, Serializable> map) {
         Iterator<Map.Entry<String, Serializable>> it = map.entrySet().iterator();
         while (it.hasNext()) {
@@ -205,6 +206,7 @@ public class TestPropertyModel extends TestCase {
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected static boolean valueEquals(Object o1, Object o2) {
         if (o1 == null && o2 == null) {
             return true;
@@ -612,6 +614,7 @@ public class TestPropertyModel extends TestCase {
         assertEquals(references1, references2);
     }
 
+    @SuppressWarnings("unchecked")
     public void testDirtyChildren() throws Exception {
         DocumentPartImpl dp = new DocumentPartImpl(schema);
 
@@ -667,6 +670,7 @@ public class TestPropertyModel extends TestCase {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void testInit() throws Exception {
         DocumentPartImpl dp = new DocumentPartImpl(schema);
 
@@ -684,7 +688,9 @@ public class TestPropertyModel extends TestCase {
 
         HashMap<String, Serializable> map = book.getMap();
         // remove name so that it will be a phantom
-        ((Map) ((Map) map.get("book:file")).get("fileName")).remove("name");
+        Map<String, Serializable> map2 = (Map<String, Serializable>) map.get("book:file");
+        Map<String, Serializable> map3 = (Map<String, Serializable>) map2.get("fileName");
+        map3.remove("name");
 
         dp.init(map);
 
