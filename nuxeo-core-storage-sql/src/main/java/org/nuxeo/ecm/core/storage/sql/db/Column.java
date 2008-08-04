@@ -32,6 +32,9 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.dialect.Dialect;
+import org.nuxeo.ecm.core.storage.sql.Binary;
+import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.PropertyType;
 
 /**
  * An SQL {@code column}.
@@ -44,12 +47,17 @@ public class Column implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String name;
+    private final String name;
+
+    /** The backend type */
+    private final PropertyType type;
 
     /** The {@link java.sql.Types} type */
-    private int sqlType;
+    private final int sqlType;
 
-    private String key;
+    private final String key;
+
+    private final Model model;
 
     private boolean identity;
 
@@ -66,16 +74,21 @@ public class Column implements Serializable {
     private String defaultValue;
 
     /**
-     * Creates a new column with the given name and SQL type.
+     * Creates a new column with the given name and type, with a specified SQL
+     * type.
      *
-     * @param name the column name.
-     * @param sqlType the SQL type.
-     * @param key the associated field name.
+     * @param name the column name
+     * @param type the backend type
+     * @param sqlType the SQL type
+     * @param key the associated field name
      */
-    public Column(String name, int sqlType, String key) {
+    public Column(String name, PropertyType type, int sqlType, String key,
+            Model model) {
         this.name = name;
+        this.type = type;
         this.sqlType = sqlType;
         this.key = key;
+        this.model = model;
     }
 
     public String getName() {
@@ -169,6 +182,14 @@ public class Column implements Serializable {
             ps.setInt(index, ((Long) value).intValue());
             return;
         case Types.VARCHAR:
+            String v;
+            if (type == PropertyType.BINARY) {
+                v = ((Binary) value).getDigest();
+            } else {
+                v = (String) value;
+            }
+            ps.setString(index, v);
+            break;
         case Types.CLOB:
             ps.setString(index, (String) value);
             return;
@@ -195,10 +216,19 @@ public class Column implements Serializable {
         Serializable result;
         switch (sqlType) {
         case Types.BIGINT:
+            result = rs.getLong(index);
+            break;
         case Types.INTEGER:
             result = rs.getLong(index);
             break;
         case Types.VARCHAR:
+            String string = rs.getString(index);
+            if (type == PropertyType.BINARY && string != null) {
+                result = model.getBinary(string);
+            } else {
+                result = string;
+            }
+            break;
         case Types.CLOB:
             result = rs.getString(index);
             break;
@@ -214,10 +244,6 @@ public class Column implements Serializable {
         case Types.BIT:
             result = rs.getBoolean(index);
             break;
-        case Types.BLOB:
-            log.error("BLOB fetch unimplemented, returning null");
-            result = null; // XXX TODO
-            break;
         default:
             throw new SQLException("Unhandled SQL type: " + sqlType);
         }
@@ -228,24 +254,7 @@ public class Column implements Serializable {
     }
 
     public Serializable[] listToArray(List<Serializable> list) {
-        int size = list.size();
-        switch (sqlType) {
-        case Types.BIGINT:
-        case Types.INTEGER:
-            return list.toArray(new Long[size]);
-        case Types.VARCHAR:
-        case Types.CLOB:
-            return list.toArray(new String[size]);
-        case Types.TIMESTAMP:
-            return list.toArray(new Calendar[size]);
-        case Types.BIT:
-            return list.toArray(new Boolean[size]);
-        case Types.BLOB:
-            log.error("BLOB fetch unimplemented, returning null");
-            return new String[0]; // XXX TODO
-        default:
-            throw new RuntimeException("Unhandled SQL type: " + sqlType);
-        }
+        return type.listToArray(list);
     }
 
     @Override

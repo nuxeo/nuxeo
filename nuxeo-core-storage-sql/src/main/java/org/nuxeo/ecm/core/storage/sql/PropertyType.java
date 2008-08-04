@@ -18,9 +18,11 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -36,31 +38,35 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
  * @author Florent Guillaume
  */
 public enum PropertyType {
-    STRING, //
-    BOOLEAN, //
-    LONG, //
-    DOUBLE, //
-    DATETIME, //
-    BINARY, //
-    ACL, //
+    STRING(String.class), //
+    BOOLEAN(Boolean.class), //
+    LONG(Long.class), //
+    DOUBLE(Double.class), //
+    DATETIME(Calendar.class), //
+    BINARY(Binary.class), //
+    ACL(ACLRow.class), //
     ARRAY_STRING(STRING, new String[0]), //
     ARRAY_BOOLEAN(BOOLEAN, new Boolean[0]), //
     ARRAY_LONG(LONG, new Long[0]), //
     ARRAY_DOUBLE(DOUBLE, new Double[0]), //
     ARRAY_DATETIME(DATETIME, new Calendar[0]), //
-    ARRAY_BINARY(BINARY, new Serializable[0]), // TODO
+    ARRAY_BINARY(BINARY, new Binary[0]), //
     COLL_ACL(ACL, new ACLRow[0]);
+
+    private final Class<?> klass;
 
     private final PropertyType arrayBaseType;
 
     private final Serializable[] emptyArray;
 
-    private PropertyType() {
+    private PropertyType(Class<?> klass) {
+        this.klass = klass;
         arrayBaseType = null;
         emptyArray = null;
     }
 
     private PropertyType(PropertyType arrayBaseType, Serializable[] emptyArray) {
+        klass = null;
         this.arrayBaseType = arrayBaseType;
         this.emptyArray = emptyArray;
     }
@@ -75,6 +81,18 @@ public enum PropertyType {
 
     public Serializable[] getEmptyArray() {
         return emptyArray;
+    }
+
+    public Serializable[] listToArray(List<Serializable> list) {
+        // contrary to list.toArray(), this creates an array
+        // of the property type instead of an Object[]
+        try {
+            Serializable[] array = (Serializable[]) Array.newInstance(klass,
+                    list.size());
+            return list.toArray(array);
+        } catch (NullPointerException e) {
+            throw e;
+        }
     }
 
     /**
@@ -125,7 +143,11 @@ public enum PropertyType {
             throw new IllegalArgumentException("Value is not a Calendar: " +
                     value);
         case BINARY:
-            throw new RuntimeException("Not implemented");
+            if (value instanceof Binary) {
+                return value;
+            }
+            throw new IllegalArgumentException("Value is not a Binary: " +
+                    value);
         case ACL:
             if (value instanceof ACLRow) {
                 return value;

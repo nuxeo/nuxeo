@@ -17,13 +17,13 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.io.Serializable;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -59,9 +59,11 @@ public class RepositoryImpl implements Repository {
 
     private final Collection<SessionImpl> sessions;
 
-    private final XADataSource xadatasource;
-
     private final Invalidators invalidators;
+
+    private final BinaryManager binaryManager;
+
+    private final XADataSource xadatasource;
 
     // initialized at first login
 
@@ -80,6 +82,19 @@ public class RepositoryImpl implements Repository {
         sessions = new CopyOnWriteArrayList<SessionImpl>();
         invalidators = new Invalidators();
         xadatasource = getXADataSource();
+        try {
+            binaryManager = new BinaryManager(repositoryDescriptor);
+        } catch (IOException e) {
+            throw new StorageException(e);
+        }
+    }
+
+    protected RepositoryDescriptor getRepositoryDescriptor() {
+        return repositoryDescriptor;
+    }
+
+    protected BinaryManager getBinaryManager() {
+        return binaryManager;
     }
 
     /*
@@ -248,7 +263,7 @@ public class RepositoryImpl implements Repository {
     private void initialize(XAConnection xaconnection) throws StorageException {
         log.debug("Initializing");
         dialect = getDialect(xaconnection);
-        model = new Model(repositoryDescriptor, schemaManager);
+        model = new Model(this, schemaManager);
         sqlInfo = new SQLInfo(model, dialect);
     }
 
@@ -287,6 +302,11 @@ public class RepositoryImpl implements Repository {
             throw new StorageException("Cannot determine dialect for class: " +
                     repositoryDescriptor.xaDataSourceName, e);
         }
+    }
+
+    // called by session
+    public Binary getBinary(InputStream in) throws IOException {
+        return binaryManager.getBinary(in);
     }
 
     /**

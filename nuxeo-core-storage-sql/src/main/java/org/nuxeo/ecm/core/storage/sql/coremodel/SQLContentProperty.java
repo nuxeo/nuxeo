@@ -17,24 +17,26 @@
 
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.api.impl.blob.LazyBlob;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.Node;
 
 /**
  * A {@link SQLContentProperty} gives access to a blob, which consists of a
  * {@link Node} of a specialized type: {@code content}. One of the columns of
- * the row stores (indirectly) actual blob data.
+ * the row stores (indirectly) actual blob data using a {@code Binary}.
  *
  * @author Florent Guillaume
  */
 public class SQLContentProperty extends SQLComplexProperty {
+
+    public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
 
     // constants based on core-types.xsd fields. XXX Should be in model
     public static final String ENCODING = "encoding";
@@ -47,6 +49,8 @@ public class SQLContentProperty extends SQLComplexProperty {
 
     public static final String LENGTH = "length";
 
+    public static final String BINARY = "data";
+
     public SQLContentProperty(Node node, ComplexType type, SQLSession session) {
         super(node, type, session);
     }
@@ -55,41 +59,50 @@ public class SQLContentProperty extends SQLComplexProperty {
     @SuppressWarnings("unchecked")
     public Object getValue() throws DocumentException {
         Map<String, Object> map = (Map<String, Object>) super.getValue();
-        String sid = null; // getSession().getUserSessionId();
-        String dataKey = "/XXX/foo/bar/DATA"; // Used for what ? XXX
-        String repositoryName = session.getRepository().getName();
-        InputStream stream = null; // JCRBlobInputStream
-        // XXX TODO stream
-        String encoding = (String) map.get(ENCODING);
-        String mimeType = (String) map.get(MIME_TYPE);
+        Binary binary = (Binary) map.get(BINARY);
         String filename = (String) map.get(FILE_NAME);
+        String mimeType = (String) map.get(MIME_TYPE);
+        String encoding = (String) map.get(ENCODING);
         String digest = (String) map.get(DIGEST);
-        Long llength = (Long) map.get(LENGTH);
-        long length = llength == null ? 0 : llength.longValue();
-        return new LazyBlob(stream, encoding, mimeType, sid, dataKey,
-                repositoryName, filename, digest, length);
+        // length computed from actual binary
+        return new SQLBlob(binary, filename, mimeType, encoding, digest);
     }
 
     @Override
     public void setValue(Object value) throws DocumentException {
-        // XXX AT: set null value insted of HashMap, waiting for NXP-912
         Map<String, Object> map = new HashMap<String, Object>();
-        if (value instanceof Blob) {
+        if (value == null) {
+            // nothing, use empty map
+            // XXX AT: set null value insted of HashMap, waiting for NXP-912
+        } else if (value instanceof Blob) {
             Blob blob = (Blob) value;
-            String encoding = blob.getEncoding();
-            String mimeType = blob.getMimeType();
-            if (mimeType == null) {
-                mimeType = "application/octet-stream";
+            Binary binary;
+            try {
+                if (blob instanceof SQLBlob) {
+                    binary = ((SQLBlob) blob).binary;
+                } else {
+                    binary = session.getBinary(blob.getStream());
+                }
+            } catch (IOException e) {
+                throw new DocumentException(e);
             }
             String filename = blob.getFilename();
+            String mimeType = blob.getMimeType();
+            if (mimeType == null) {
+                mimeType = APPLICATION_OCTET_STREAM;
+            }
+            String encoding = blob.getEncoding();
             String digest = blob.getDigest();
-            Long length = Long.valueOf(blob.getLength());
-            map.put(ENCODING, encoding);
-            map.put(MIME_TYPE, mimeType);
+            // length computed from actual binary
+            Long length = Long.valueOf(binary.getLength());
+            map.put(BINARY, binary);
             map.put(FILE_NAME, filename);
+            map.put(MIME_TYPE, mimeType);
+            map.put(ENCODING, encoding);
             map.put(DIGEST, digest);
             map.put(LENGTH, length);
-            // XXX TODO stream
+        } else {
+            throw new DocumentException("Setting a non-Blob value: " + value);
         }
         super.setValue(map);
     }

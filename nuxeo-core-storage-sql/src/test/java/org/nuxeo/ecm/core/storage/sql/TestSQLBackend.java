@@ -17,6 +17,11 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -138,6 +143,51 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // delete the node
         session.removeNode(nodea);
         session.save();
+    }
+
+    public void testBinary() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node nodea = session.addChildNode(root, "foo", "TestDoc", false);
+
+        InputStream in = new ByteArrayInputStream("abc".getBytes("UTF-8"));
+        Binary bin = session.getBinary(in);
+        assertEquals(3, bin.getLength());
+        assertEquals("900150983cd24fb0d6963f7d28e17f72", bin.getDigest());
+        assertEquals("abc", readAllBytes(bin.getStream()));
+        assertEquals("abc", readAllBytes(bin.getStream())); // readable twice
+        nodea.setSingleProperty("tst:bin", bin);
+        session.save();
+        session.close();
+
+        // now read from another session
+        session = repository.getConnection();
+        root = session.getRootNode();
+        nodea = session.getChildNode(root, "foo", false);
+        SimpleProperty binProp = nodea.getSimpleProperty("tst:bin");
+        assertNotNull(binProp);
+        Serializable value = binProp.getValue();
+        assertTrue(value instanceof Binary);
+        bin = (Binary) value;
+        in = bin.getStream();
+        assertEquals(3, bin.getLength());
+        assertEquals("900150983cd24fb0d6963f7d28e17f72", bin.getDigest());
+        assertEquals("abc", readAllBytes(bin.getStream()));
+        assertEquals("abc", readAllBytes(bin.getStream())); // readable twice
+
+    }
+
+    // assumes one read will read everything
+    protected String readAllBytes(InputStream in) throws IOException {
+        if (!(in instanceof BufferedInputStream)) {
+            in = new BufferedInputStream(in);
+        }
+        int len = in.available();
+        byte[] bytes = new byte[len];
+        int read = in.read(bytes);
+        assertEquals(len, read);
+        assertEquals(-1, in.read()); // EOF
+        return new String(bytes, "ISO-8859-1");
     }
 
     public void testACLs() throws Exception {

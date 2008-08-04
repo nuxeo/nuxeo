@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.core.storage.sql.ra;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 
@@ -30,6 +32,7 @@ import javax.resource.cci.ResultSetInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.Session;
@@ -165,6 +168,10 @@ public class ConnectionImpl implements Session {
 
     public String getPath(Node node) throws StorageException {
         return session.getPath(node);
+    }
+
+    public Binary getBinary(InputStream in) throws IOException {
+        return session.getBinary(in);
     }
 
 }

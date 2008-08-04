@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.security.SecurityManager;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
@@ -458,6 +460,11 @@ public class SQLSession implements Session {
                 return new SQLComplexProperty(childNode, complexType, this);
             }
         }
+    }
+
+    // called by SQLContentProperty
+    protected Binary getBinary(InputStream in) throws IOException {
+        return session.getBinary(in);
     }
 
 }

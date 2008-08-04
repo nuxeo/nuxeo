@@ -18,7 +18,6 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -40,7 +39,6 @@ import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,7 +47,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.Filter;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.ListDiff;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
@@ -58,10 +55,8 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeNodeComparator;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -2034,7 +2029,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
     }
 
     // TODO: Fix this test!
-    public void XXXtestGetContentData() throws ClientException {
+    public void testGetContentData() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
@@ -2051,19 +2046,16 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
 
         session.saveDocument(childFile);
 
-        /*
-         * this block is commented because the exception it generates makes the
-         * next block fail try { session.getContentData(childFile.getRef(),
-         * "title"); fail("Content nodes must be of type: content"); } catch
-         * (ClientException e) { // do nothing }
-         */
+        try {
+            session.getContentData(childFile.getRef(), "title");
+            fail("Content nodes must be of type: content");
+        } catch (ClientException e) {
+            // ok
+        }
 
         byte[] content = session.getContentData(childFile.getRef(), "content");
         assertNotNull(content);
-
-        String strContent = String.valueOf(content);
-
-        assertNotNull(strContent);
+        String strContent = new String(content);
         assertEquals("the content", strContent);
     }
 
@@ -2533,78 +2525,6 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         assertEquals("UTF8", blob.getEncoding());
         assertEquals("java/class", blob.getMimeType());
         assertTrue(Arrays.equals(content, blob.getByteArray()));
-
-    }
-
-    /**
-     * This test should be done on a repo that contains deprecated blob node
-     * types (nt:resource blobs) You should specify the File document UID to
-     * test
-     *
-     * @throws Exception
-     */
-    public void xxx_testBlobCompat() throws Exception {
-        String UID = "6c0f8723-25b2-4a28-a93f-d03096057b92";
-        DocumentModel root = session.getRootDocument();
-
-        String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
-        childFile = createChildDocument(childFile);
-
-        session.save();
-
-        DocumentModel doc = session.getDocument(new IdRef(UID));
-        Blob blob = (Blob) doc.getProperty("file", "content");
-        String digest = blob.getDigest();
-        String filename = blob.getFilename();
-        long length = blob.getLength();
-        String mimetype = blob.getMimeType();
-        String encoding = blob.getEncoding();
-        byte[] content = blob.getByteArray();
-        assertNull(digest);
-        assertNull(filename);
-
-        Blob b2 = StreamingBlob.createFromByteArray(content);
-        b2.setDigest("XXX");
-        b2.setFilename("blob.txt");
-        b2.setMimeType(mimetype);
-        b2.setEncoding(encoding);
-        length = b2.getLength();
-        doc.setProperty("file", "content", b2);
-        session.saveDocument(doc);
-
-        session.getDocument(doc.getRef());
-        b2 = (Blob) doc.getProperty("file", "content");
-        assertEquals("XXX", b2.getDigest());
-        assertEquals("blob.txt", b2.getFilename());
-        assertEquals(length, b2.getLength());
-        assertEquals(encoding, b2.getEncoding());
-        assertTrue(Arrays.equals(content, b2.getByteArray()));
-        assertEquals(mimetype, b2.getMimeType());
-
-    }
-
-    public void xxx__testUploadBigBlob() throws Exception {
-        DocumentModel root = session.getRootDocument();
-
-        String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
-        childFile = createChildDocument(childFile);
-
-        session.save();
-
-        byte[] bytes = FileUtils.readBytes(Blob.class.getResourceAsStream("/blob.mp3"));
-        Blob blob = new ByteArrayBlob(bytes, "audio/mpeg");
-
-        childFile.setProperty("file", "filename", "second name");
-        childFile.setProperty("common", "title", "f1");
-        childFile.setProperty("common", "description", "desc 1");
-        childFile.setProperty("file", "content", blob);
-
-        session.saveDocument(childFile);
-        session.save();
     }
 
     public void testRetrieveSamePropertyInAncestors() throws ClientException {
@@ -3172,7 +3092,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         return bytes;
     }
 
-    @SuppressWarnings("unchecked")
+    // badly named
     public void testLazyBlob() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -3188,12 +3108,11 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         blob = (Blob) doc.getPart("file").get("content").getValue();
         assertTrue(Arrays.equals(bytes, blob.getByteArray()));
 
-        // test that reset works
-        blob.getStream().reset();
+        // reset not implemented (not needed) for SQLBlob's Binary
+        // XXX blob.getStream().reset();
 
         blob = (Blob) doc.getPart("file").get("content").getValue();
         assertTrue(Arrays.equals(bytes, blob.getByteArray()));
-
     }
 
     public void testProxy() throws Exception {

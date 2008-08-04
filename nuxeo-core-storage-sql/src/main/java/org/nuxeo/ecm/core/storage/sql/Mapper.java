@@ -201,6 +201,9 @@ public class Mapper {
                     cal.get(Calendar.SECOND), //
                     sign, offset / 60, offset % 60);
         }
+        if (value instanceof Binary) {
+            return "'" + ((Binary) value).getDigest() + "'";
+        }
         return value.toString();
     }
 

@@ -1,6 +1,6 @@
 SQL Storage TODO
 
-- security
+- use existing db if present
 
 - checkin/checkout
 
@@ -10,11 +10,7 @@ SQL Storage TODO
 
 - locking
 
-- transactional blob storage
-
 - recursive removal on node remove
-
-- cross-cache invalidation
 
 Optimizations:
 

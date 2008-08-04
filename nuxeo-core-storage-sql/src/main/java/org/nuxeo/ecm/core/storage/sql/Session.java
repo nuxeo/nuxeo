@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 
@@ -179,5 +181,14 @@ public interface Session extends Connection {
      * @throws StorageException
      */
     void removeNode(Node node) throws StorageException;
+
+    /**
+     * Creates a binary value given an input stream.
+     *
+     * @param in the input stream
+     * @return the binary value
+     * @throws IOException
+     */
+    Binary getBinary(InputStream in) throws IOException;
 
 }

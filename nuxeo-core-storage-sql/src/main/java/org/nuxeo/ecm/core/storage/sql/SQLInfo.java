@@ -363,7 +363,8 @@ public class SQLInfo {
     protected void initRepositorySQL() {
         log.debug("Init repository information");
         TableMaker maker = new TableMaker(model.REPOINFO_TABLE_NAME);
-        maker.newColumn(model.REPOINFO_REPOID_KEY, Types.INTEGER);
+        maker.newColumn(model.REPOINFO_REPOID_KEY, PropertyType.LONG,
+                Types.INTEGER);
         maker.newPrimaryKey(); // foreign key to main id
         maker.postProcessRepository();
     }
@@ -377,9 +378,12 @@ public class SQLInfo {
         TableMaker maker = new TableMaker(model.HIER_TABLE_NAME);
         maker.newPrimaryKey();
         maker.newMainKey(model.HIER_PARENT_KEY);
-        maker.newColumn(model.HIER_CHILD_POS_KEY, Types.INTEGER);
-        maker.newColumn(model.HIER_CHILD_NAME_KEY, Types.VARCHAR); // text?
-        maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, Types.BIT); // not null
+        maker.newColumn(model.HIER_CHILD_POS_KEY, PropertyType.LONG,
+                Types.INTEGER);
+        maker.newColumn(model.HIER_CHILD_NAME_KEY, PropertyType.STRING,
+                Types.VARCHAR); // text?
+        maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, PropertyType.BOOLEAN,
+                Types.BIT); // not null
         maker.postProcess();
         maker.postProcessHierarchy();
     }
@@ -429,11 +433,11 @@ public class SQLInfo {
             Column column;
             switch (model.idGenPolicy) {
             case APP_UUID:
-                column = newColumn(name, Types.VARCHAR);
+                column = newColumn(name, PropertyType.STRING, Types.VARCHAR);
                 column.setLength(36);
                 break;
             case DB_IDENTITY:
-                column = newColumn(name, Types.BIGINT);
+                column = newColumn(name, PropertyType.LONG, Types.BIGINT);
                 break;
             default:
                 throw new AssertionError(model.idGenPolicy);
@@ -479,18 +483,20 @@ public class SQLInfo {
                 sqlType = Types.TIMESTAMP;
                 break;
             case BINARY:
-                sqlType = Types.BLOB;
+                // TODO depends on repository conf for blob storage, also
+                // depends on Column implementation
+                sqlType = Types.VARCHAR;
                 break;
             default:
                 throw new RuntimeException("Bad type: " + type);
             }
-            newColumn(key, sqlType);
+            newColumn(key, type, sqlType);
             // XXX apply defaults
         }
 
-        protected Column newColumn(String key, int sqlType) {
+        protected Column newColumn(String key, PropertyType type, int sqlType) {
             String columnName = key;
-            Column column = new Column(columnName, sqlType, key);
+            Column column = new Column(columnName, type, sqlType, key, model);
             table.addColumn(column);
             return column;
         }

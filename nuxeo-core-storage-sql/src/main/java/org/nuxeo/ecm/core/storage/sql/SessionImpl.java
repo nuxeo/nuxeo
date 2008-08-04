@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.security.AccessControlException;
 import java.util.ArrayList;
@@ -193,6 +195,10 @@ public class SessionImpl implements Session, XAResource {
     public Node getRootNode() {
         checkLive();
         return rootNode;
+    }
+
+    public Binary getBinary(InputStream in) throws IOException {
+        return repository.getBinary(in);
     }
 
     public void save() throws StorageException {

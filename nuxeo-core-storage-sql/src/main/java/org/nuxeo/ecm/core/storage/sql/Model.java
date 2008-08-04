@@ -138,6 +138,8 @@ public class Model {
     public static Field SYSTEM_DIRTY_FIELD = new FieldImpl(
             QName.valueOf(SYSTEM_DIRTY_PROP), TypeRef.NULL, STRING_TYPE_REF);
 
+    private final BinaryManager binaryManager;
+
     /** The id generation policy. */
     protected final IdGenPolicy idGenPolicy;
 
@@ -170,23 +172,16 @@ public class Model {
     /** Maps property name to fragment key (single-valued). */
     private final Map<String, String> propertyFragmentKey;
 
-    /** Maps of properties to their nuxeo core type. */
-    // public final Map<String, Type> propertyCoreType;
     /** Maps of properties to their basic type. */
     public final Map<String, PropertyType> propertyType;
 
-    /** Map of type to the set of properties that are complex lists. */
-    // public final Map<String, Set<String>> complexLists;
-    public Model(RepositoryDescriptor repositoryDescriptor,
-            SchemaManager schemaManager) {
-
-        this.idGenPolicy = repositoryDescriptor.idGenPolicy;
+    public Model(RepositoryImpl repository, SchemaManager schemaManager) {
+        binaryManager = repository.getBinaryManager();
+        idGenPolicy = repository.getRepositoryDescriptor().idGenPolicy;
         temporaryIdCounter = new AtomicLong(0);
 
         schemaFragment = new HashMap<String, String>();
-        // propertyCoreType = new HashMap<String, Type>();
         propertyType = new HashMap<String, PropertyType>();
-        // complexLists = new HashMap<String, Set<String>>();
         fragmentsKeysType = new HashMap<String, Map<String, PropertyType>>();
         collectionOrderBy = new HashMap<String, List<String>>();
         collectionTables = new HashMap<String, PropertyType>();
@@ -199,6 +194,16 @@ public class Model {
         initSystemModel();
         initAclModel();
         initModels(schemaManager);
+    }
+
+    /**
+     * Gets a binary given its digest.
+     *
+     * @param digest the digest
+     * @return the binary for this digest, or {@code null} if unavailable (error)
+     */
+    public Binary getBinary(String digest) {
+        return binaryManager.getBinary(digest);
     }
 
     /**
