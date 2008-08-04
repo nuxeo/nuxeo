@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,9 +30,11 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.sql.XAConnection;
@@ -47,6 +50,8 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionFragmentIterator;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
+import org.nuxeo.ecm.core.storage.sql.db.Database;
+import org.nuxeo.ecm.core.storage.sql.db.Table;
 
 /**
  * A {@link Mapper} maps objects to and from the database. It is specific to a
@@ -210,37 +215,49 @@ public class Mapper {
     // ---------- low-level JDBC methods ----------
 
     /**
-     * Creates all the tables and sequences in the database.
+     * Creates the necessary structures in the database.
+     * <p>
+     * Preexisting tables are not recreated.
+     * <p>
+     * TODO: emit the necessary alter tables if some columns are missing
      */
-    // TODO make private
     protected void createDatabase() throws StorageException {
-        log.debug("Creating database");
-        Statement s;
         try {
-            s = connection.createStatement();
-        } catch (SQLException e) {
-            throw newStorageException(e, "Could not create statement", "");
-        }
-        try {
-            for (String sql : sqlInfo.getDatabaseCreateSql()) {
+            /*
+             * Find existing tables.
+             */
+            DatabaseMetaData metadata = connection.getMetaData();
+            ResultSet rs = metadata.getTables(null, null, "%",
+                    new String[] { "TABLE" });
+            Set<String> tableNames = new HashSet<String>();
+            while (rs.next()) {
+                String tableName = rs.getString("TABLE_NAME");
+                tableNames.add(tableName);
+                // normalize to uppercase too
+                tableNames.add(tableName.toUpperCase());
+            }
+            /*
+             * Create missing tables.
+             */
+            Database database = sqlInfo.getDatabase();
+            for (Table table : database.getTables()) {
+                String tableName = table.getName();
+                if (tableNames.contains(tableName) ||
+                        tableNames.contains(tableName.toUpperCase())) {
+                    // table already present
+                    continue;
+                }
+                String sql = sqlInfo.getTableCreateSql(tableName);
+                logDebug(sql);
+                Statement s = connection.createStatement();
                 try {
-                    logDebug(sql);
-                    s.addBatch(sql);
-                } catch (SQLException e) {
-                    throw newStorageException(e, "Could not add batch", sql);
+                    s.execute(sql);
+                } finally {
+                    s.close();
                 }
             }
-            try {
-                s.executeBatch();
-            } catch (SQLException e) {
-                throw newStorageException(e, "Could not execute", "batch");
-            }
-        } finally {
-            try {
-                s.close();
-            } catch (SQLException e) {
-                log.error("Cannot close connection", e);
-            }
+        } catch (SQLException e) {
+            throw new StorageException(e);
         }
     }
 

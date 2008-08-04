@@ -180,12 +180,12 @@ public class SQLInfo {
 
     // ----- create whole database -----
 
-    public List<String> getDatabaseCreateSql() {
-        List<String> sqls = new LinkedList<String>();
-        for (Table table : database.getTables()) {
-            sqls.add(table.getCreateSql(dialect));
-        }
-        return sqls;
+    public Database getDatabase() {
+        return database;
+    }
+
+    public String getTableCreateSql(String tableName) {
+        return database.getTable(tableName).getCreateSql(dialect);
     }
 
     // ----- select -----

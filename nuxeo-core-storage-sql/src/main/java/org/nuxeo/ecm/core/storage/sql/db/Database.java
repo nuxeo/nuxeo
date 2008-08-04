@@ -50,6 +50,10 @@ public class Database implements Serializable {
         tables.put(name, table);
     }
 
+    public Table getTable(String tableName) {
+        return tables.get(tableName);
+    }
+
     public Collection<Table> getTables() {
         return tables.values();
     }
@@ -70,4 +74,5 @@ public class Database implements Serializable {
         buf.append(')');
         return buf.toString();
     }
+
 }

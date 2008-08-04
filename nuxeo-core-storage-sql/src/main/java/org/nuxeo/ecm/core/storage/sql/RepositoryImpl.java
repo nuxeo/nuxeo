@@ -143,8 +143,6 @@ public class RepositoryImpl implements Repository {
 
         if (!initialized) {
             // first connection, initialize the database
-            // XXX must check existing tables in the database XXX
-            // XXX create always for now
             mapper.createDatabase();
             initialized = true;
         }

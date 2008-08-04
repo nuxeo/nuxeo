@@ -1,7 +1,5 @@
 SQL Storage TODO
 
-- use existing db if present
-
 - checkin/checkout
 
 - copy/move
