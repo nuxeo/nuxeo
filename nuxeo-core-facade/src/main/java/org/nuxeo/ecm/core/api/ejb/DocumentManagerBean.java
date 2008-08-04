@@ -181,7 +181,7 @@ public class DocumentManagerBean extends AbstractSession {
             }
             return super.connect(repositoryName, sessionContext);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -196,13 +196,13 @@ public class DocumentManagerBean extends AbstractSession {
             try {
                 NXCore.getRepository(repositoryName);
             } catch (Exception e) {
-                throw EJBExceptionHandler.wrapException(e);
+                throw ClientException.wrap(e);
             }
             try {
                 session = createSession(repositoryName, "default",
                         sessionContext);
             } catch (Exception e) {
-                throw EJBExceptionHandler.wrapException(e);
+                throw ClientException.wrap(e);
             }
         }
         return session;
@@ -224,7 +224,7 @@ public class DocumentManagerBean extends AbstractSession {
         try {
             return super.getDocument(docRef);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -235,7 +235,7 @@ public class DocumentManagerBean extends AbstractSession {
         try {
             return super.getDocument(docRef, schemas);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -249,7 +249,7 @@ public class DocumentManagerBean extends AbstractSession {
             }
             return super.getChild(parent, name);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -263,7 +263,7 @@ public class DocumentManagerBean extends AbstractSession {
             }
             return super.getChildren(parent);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -277,7 +277,7 @@ public class DocumentManagerBean extends AbstractSession {
             }
             return super.getChildren(parent, type);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -291,7 +291,7 @@ public class DocumentManagerBean extends AbstractSession {
             }
             return super.getChildren(parent, type, perm);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -307,7 +307,7 @@ public class DocumentManagerBean extends AbstractSession {
         try {
             return super.getSecuritySummary(docModel, includeParents);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 

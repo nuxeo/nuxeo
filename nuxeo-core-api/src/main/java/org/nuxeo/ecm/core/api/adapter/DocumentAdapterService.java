@@ -66,7 +66,7 @@ public class DocumentAdapterService extends DefaultComponent {
         log.info("Registered document adapter factory " + dae);
     }
 
-    public  void unregisterAdapterFactory(Class<?> itf) {
+    public void unregisterAdapterFactory(Class<?> itf) {
         DocumentAdapterDescriptor dae = adapters.remove(itf);
         if (dae != null) {
             log.info("Unregistered document adapter factory: " + dae);
@@ -80,7 +80,7 @@ public class DocumentAdapterService extends DefaultComponent {
                     (PropertyFactory) descriptor.klass.newInstance());
         } catch (Exception e) {
             log.error(
-                    "Failed to instantiate the prioperty type for "
+                    "Failed to instantiate the property type for "
                             + descriptor.schema + ':' + descriptor.type);
         }
     }

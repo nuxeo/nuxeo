@@ -50,4 +50,22 @@ public class ClientException extends Exception {
         super(cause);
     }
 
+    public static ClientException wrap(Throwable exception) {
+        ClientException clientException;
+
+        if (null == exception) {
+            clientException = new ClientException(
+                    "Root exception was null. Please check your code.");
+        } else {
+            if (exception instanceof ClientException) {
+                clientException = (ClientException) exception;
+            } else {
+                clientException = new ClientException(
+                        exception.getLocalizedMessage(), exception);
+            }
+        }
+        return clientException;
+    }
+
+
 }
