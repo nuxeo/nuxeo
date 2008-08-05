@@ -25,7 +25,7 @@ Using this project you can build the following applications:
 
    Build syntax: `mvn package -P jetty`
    
-3. Nuxeo GF3 Server
+4. Nuxeo GF3 Server
    A nuxeo server application embeding a GlassFish3 server. 
    This application can be used to browse repository content via WEB.
    This is also known as Nuxeo WebEngine (based on GF3).
