@@ -26,7 +26,7 @@ public abstract class AbstractNegotiator implements Negotiator {
     private final String strategy;
 
     private final Object context;
-    
+
     public abstract String getTemplateEngineName();
 
     protected AbstractNegotiator(String strategy, Object context) {
@@ -36,8 +36,9 @@ public abstract class AbstractNegotiator implements Negotiator {
 
     public final String getSpec() throws NegotiationException {
         return String.format("%s/%s/%s/%s/%s/%s", SPEC_PREFIX,
-                negotiate("engine"), negotiate("mode"), negotiate("theme"),
-                negotiate("perspective"), getTemplateEngineName());
+                negotiate("engine"), negotiate("mode"),
+                getTemplateEngineName(), negotiate("theme"),
+                negotiate("perspective"));
     }
 
     public final synchronized String negotiate(String object)

@@ -56,7 +56,7 @@ public class TestLayoutFilterView extends NXRuntimeTestCase {
                 ThemeService.ID);
 
         URL themeUrl = new URL(
-                "nxtheme://theme/default/mode/theme/page/perspective/html");
+                "nxtheme://theme/default/mode/html/theme/page/perspective");
 
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");
         formatType = (FormatType) typeRegistry.lookup(TypeFamily.FORMAT,

@@ -6,6 +6,9 @@
     @author Jean-Marc Orliaguet (jmo@chalmers.se)
   </documentation>
 
+  <require>org.nuxeo.theme.core</require>
+  <!-- TODO: remove --> 
+  <require>org.nuxeo.theme.fragments</require>
 
   <extension target="org.nuxeo.theme.services.ThemeService" point="template-engines">
     
@@ -32,6 +35,9 @@
     <rendering-extension name="nxthemes_panel"
       class="org.nuxeo.theme.webengine.fm.extensions.NXThemesPanelDirective"/>
 
+    <rendering-extension name="nxthemes_fragment"
+      class="org.nuxeo.theme.webengine.fm.extensions.NXThemesFragmentDirective"/>
+
     <rendering-extension name="nxthemes_button"
       class="org.nuxeo.theme.webengine.fm.extensions.NXThemesButtonDirective"/>
 
@@ -46,6 +52,18 @@
 
   </extension>
 
+
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="standalone-filters">
+
+    <standalone-filter name="write fragment tag" template-engine="freemarker">
+      <class>
+        org.nuxeo.theme.webengine.fm.filters.standalone.FragmentTag
+      </class>
+    </standalone-filter>
+
+  </extension>
+  
 
   <extension target="org.nuxeo.theme.services.ThemeService" point="views">
 
@@ -181,7 +199,20 @@
   <!-- For testing: to move to the web application -->
   <extension target="org.nuxeo.theme.services.ThemeService" point="applications">
 
-    <application root="/nuxeo/site" template-engine="freemarker">
+    <!-- JBoss server -->
+    <application root="/nuxeo/site/" template-engine="freemarker">
+
+      <negotiation>
+        <strategy>web</strategy>
+        <default-engine>default</default-engine>
+        <default-theme>webengine/default</default-theme>
+        <default-perspective>default</default-perspective>
+      </negotiation>
+    
+    </application>
+    
+    <!-- Jetty server -->
+    <application root="/" template-engine="freemarker">
 
       <negotiation>
         <strategy>web</strategy>

@@ -59,7 +59,7 @@ public class TestElementRenderer extends NXRuntimeTestCase {
     public void testElement() throws MalformedURLException {
 
         URL themeUrl = new URL(
-                "nxtheme://theme/default/mode/theme/page/perspective/jsf-facelets");
+                "nxtheme://theme/default/mode/jsf-facelets/theme/page");
 
         // create the elements to render
         ThemeElement theme = (ThemeElement) ElementFactory.create("theme");

@@ -73,4 +73,8 @@ public class HTMLView extends TemplateView {
         return html;
     }
 
+    public String getFragmentInsertionMarkup(final RenderingInfo info) {
+        return "";
+    }
+
 }

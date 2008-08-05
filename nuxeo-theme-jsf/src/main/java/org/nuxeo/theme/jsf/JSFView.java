@@ -28,4 +28,12 @@ public class JSFView extends HTMLView {
                 "nxthemesInfo\\.map\\.%s.", infoId));
     }
 
+    @Override
+    public String getFragmentInsertionMarkup(final RenderingInfo info) {
+        return String.format(
+                "<nxthemes:fragment xmlns:nxthemes=\"http://nuxeo.org/nxthemes\" uid=\"%s\" engine=\"%s\" mode=\"%s\" />",
+                info.getElement().getUid().toString(),
+                info.getEngine().getTypeName(), info.getViewMode());
+    }
+
 }

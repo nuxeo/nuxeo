@@ -21,9 +21,6 @@ package org.nuxeo.theme.webengine.fm.extensions;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.Date;
@@ -33,6 +30,7 @@ import java.util.Map;
 import org.nuxeo.ecm.platform.rendering.fm.extensions.BlockWriter;
 import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.theme.Manager;
+import org.nuxeo.theme.themes.ThemeManager;
 
 import freemarker.core.Environment;
 import freemarker.ext.beans.BeansWrapper;
@@ -93,40 +91,7 @@ public class ThemeDirective implements TemplateDirectiveModel {
         if (!needsToBeRefreshed(themeUrl) && cachedThemes.containsKey(themeUrl)) {
             return cachedThemes.get(themeUrl);
         }
-
-        String result = null;
-        InputStream is = null;
-        try {
-            is = themeUrl.openStream();
-            Reader in = null;
-            try {
-                in = new BufferedReader(new InputStreamReader(is));
-                StringBuilder rendered = new StringBuilder();
-                int ch;
-                while ((ch = in.read()) > -1) {
-                    rendered.append((char) ch);
-                }
-                result = rendered.toString();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (in != null) {
-                    in.close();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    is = null;
-                }
-            }
-        }
+        String result = ThemeManager.renderElement(themeUrl);
         if (result != null) {
             cachedThemes.put(themeUrl, result);
             lastRefreshedMap.put(themeUrl, new Date().getTime());

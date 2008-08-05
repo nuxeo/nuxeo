@@ -34,6 +34,8 @@ import com.sun.facelets.impl.DefaultResourceResolver;
 
 public class UIFragment extends UIOutput {
 
+    final String templateEngine = "jsf-facelets";
+    
     private String uid;
 
     private String engine;
@@ -66,8 +68,8 @@ public class UIFragment extends UIOutput {
         context.setViewRoot(viewRoot);
 
         // Render the view
-        final String faceletId = String.format("nxtheme://element/%s/%s/%s",
-                engine, mode, uid);
+        final String faceletId = String.format("nxtheme://element/%s/%s/%s/%s",
+                engine, mode, templateEngine, uid);
         final Facelet facelet = faceletFactory.getFacelet(faceletId);
         facelet.apply(context, viewRoot);
         renderChildren(context, viewRoot);

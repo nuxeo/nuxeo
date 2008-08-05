@@ -61,7 +61,7 @@ public class TestStyleFilterView extends NXRuntimeTestCase {
                 "style");
 
         URL themeUrl = new URL(
-                "nxtheme://theme/default/mode/theme/page/perspective/html");
+                "nxtheme://theme/default/mode/html/theme/page/perspective");
 
         info = new DummyRenderingInfo(page, themeUrl);
 

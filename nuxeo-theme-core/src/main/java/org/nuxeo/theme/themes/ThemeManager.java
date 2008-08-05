@@ -14,8 +14,12 @@
 
 package org.nuxeo.theme.themes;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -151,19 +155,6 @@ public final class ThemeManager implements Registrable {
                 engineName);
     }
 
-    public static TemplateEngineType getTemplateEngineByUrl(final URL url) {
-        if (url == null) {
-            return null;
-        }
-        final String[] path = url.getPath().split("/");
-        if (path.length <= 6) {
-            return null;
-        }
-        final String engineName = path[6];
-        return (TemplateEngineType) Manager.getTypeRegistry().lookup(
-                TypeFamily.TEMPLATE_ENGINE, engineName);
-    }
-
     public static String getViewModeByUrl(final URL url) {
         if (url == null) {
             return null;
@@ -175,6 +166,19 @@ public final class ThemeManager implements Registrable {
         return path[2];
     }
 
+    public static TemplateEngineType getTemplateEngineByUrl(final URL url) {
+        if (url == null) {
+            return null;
+        }
+        final String[] path = url.getPath().split("/");
+        if (path.length <= 3) {
+            return null;
+        }
+        final String templateEngineName = path[3];
+        return (TemplateEngineType) Manager.getTypeRegistry().lookup(
+                TypeFamily.TEMPLATE_ENGINE, templateEngineName);
+    }
+    
     public ThemeElement getThemeByUrl(final URL url) {
         String themeName = getThemeNameByUrl(url);
         if (themeName == null) {
@@ -187,27 +191,36 @@ public final class ThemeManager implements Registrable {
         if (url == null) {
             return null;
         }
-        final String[] path = url.getPath().split("/");
-        if (path.length <= 3) {
-            return null;
-        }
-        return path[3];
-    }
-    
-    public String getPagePathByUrl(final URL url) {
-        if (url == null) {
+        if (!url.getHost().equals("theme")) {
             return null;
         }
         final String[] path = url.getPath().split("/");
         if (path.length <= 4) {
             return null;
         }
-        final String pagePath = path[3] + '/' + path[4];
+        return path[4];
+    }
+    
+    public String getPagePathByUrl(final URL url) {
+        if (url == null) {
+            return null;
+        }
+        if (!url.getHost().equals("theme")) {
+            return null;
+        }
+        final String[] path = url.getPath().split("/");
+        if (path.length <= 5) {
+            return null;
+        }
+        final String pagePath = path[4] + '/' + path[5];
         return pagePath;
     }
 
     public PageElement getThemePageByUrl(final URL url) {
         if (url == null) {
+            return null;
+        }
+        if (!url.getHost().equals("theme")) {
             return null;
         }
         final String pagePath = getPagePathByUrl(url);
@@ -224,6 +237,9 @@ public final class ThemeManager implements Registrable {
 
     public static Element getElementByUrl(final URL url) {
         if (url == null) {
+            return null;
+        }
+        if (!url.getHost().equals("element")) {
             return null;
         }
         final String[] path = url.getPath().split("/");
@@ -243,10 +259,10 @@ public final class ThemeManager implements Registrable {
             return null;
         }
         final String[] path = url.getPath().split("/");
-        if (path.length <= 5) {
+        if (path.length <= 6) {
             return null;
         }
-        final String perspectiveName = path[5];
+        final String perspectiveName = path[6];
         return (PerspectiveType) Manager.getTypeRegistry().lookup(
                 TypeFamily.PERSPECTIVE, perspectiveName);
     }
@@ -606,6 +622,43 @@ public final class ThemeManager implements Registrable {
 
     public static void repairTheme(ThemeElement theme) {
         ThemeRepairer.repair(theme);
+    }
+    
+    public static String renderElement(URL url) {
+        String result = null;
+        InputStream is = null;
+        try {
+            is = url.openStream();
+            Reader in = null;
+            try {
+                in = new BufferedReader(new InputStreamReader(is));
+                StringBuilder rendered = new StringBuilder();
+                int ch;
+                while ((ch = in.read()) > -1) {
+                    rendered.append((char) ch);
+                }
+                result = rendered.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (in != null) {
+                    in.close();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    is = null;
+                }
+            }
+        }
+        return result;
     }
 
     public void removeOrphanedFormats() {

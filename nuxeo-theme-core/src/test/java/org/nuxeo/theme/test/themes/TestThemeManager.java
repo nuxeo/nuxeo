@@ -95,7 +95,7 @@ public class TestThemeManager extends NXRuntimeTestCase {
     }
 
     public void testGetThemeNameByUrl() throws MalformedURLException {
-        URL themeUrl = new URL("nxtheme://theme/engine/mode/theme/page/perspective/template-engine");
+        URL themeUrl = new URL("nxtheme://theme/engine/mode/templateEngine/theme/page");
         assertEquals("theme", ThemeManager.getThemeNameByUrl(themeUrl));
     }
 

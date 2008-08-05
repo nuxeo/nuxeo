@@ -6,6 +6,8 @@
     All generic Model and Fragment types are registered here.
     @author Jean-Marc Orliaguet (jmo@chalmers.se)
   </documentation>
+  
+  <require>org.nuxeo.theme.core</require>
 
   <extension target="org.nuxeo.theme.services.ThemeService"
     point="models">
