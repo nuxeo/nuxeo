@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,6 +34,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeRef;
@@ -175,6 +177,8 @@ public class Model {
     /** Maps of properties to their basic type. */
     public final Map<String, PropertyType> propertyType;
 
+    public final Set<String[]> binaryColumns;
+
     public Model(RepositoryImpl repository, SchemaManager schemaManager) {
         binaryManager = repository.getBinaryManager();
         idGenPolicy = repository.getRepositoryDescriptor().idGenPolicy;
@@ -189,18 +193,26 @@ public class Model {
         typeFragments = new HashMap<String, Set<String>>();
         propertyFragment = new HashMap<String, String>();
         propertyFragmentKey = new HashMap<String, String>();
+        binaryColumns = new HashSet<String[]>();
 
         initMainModel();
         initSystemModel();
         initAclModel();
         initModels(schemaManager);
+
+        List<String> bincols = new ArrayList<String>(binaryColumns.size());
+        for (String[] info : binaryColumns) {
+            bincols.add(info[0] + '.' + info[1]);
+        }
+        log.info("Binary columns: " + StringUtils.join(bincols, ", "));
     }
 
     /**
      * Gets a binary given its digest.
      *
      * @param digest the digest
-     * @return the binary for this digest, or {@code null} if unavailable (error)
+     * @return the binary for this digest, or {@code null} if unavailable
+     *         (error)
      */
     public Binary getBinary(String digest) {
         return binaryManager.getBinary(digest);
@@ -482,6 +494,10 @@ public class Model {
                     // propertyCoreType.put(propertyName, fieldType);
                     PropertyType type = PropertyType.fromFieldType(fieldType,
                             false);
+                    if (type == PropertyType.BINARY) {
+                        // to log them, will be useful for GC of binaries
+                        binaryColumns.add(new String[] { typeName, propertyName });
+                    }
                     propertyType.put(propertyName, type);
                     fragmentName = typeFragmentName(complexType);
                     propertyFragment.put(propertyName, fragmentName);

@@ -60,6 +60,9 @@ public class SQLContentProperty extends SQLComplexProperty {
     public Object getValue() throws DocumentException {
         Map<String, Object> map = (Map<String, Object>) super.getValue();
         Binary binary = (Binary) map.get(BINARY);
+        if (binary == null) {
+            return null;
+        }
         String filename = (String) map.get(FILE_NAME);
         String mimeType = (String) map.get(MIME_TYPE);
         String encoding = (String) map.get(ENCODING);
