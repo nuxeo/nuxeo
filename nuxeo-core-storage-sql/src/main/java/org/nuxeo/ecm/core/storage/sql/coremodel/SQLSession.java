@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.resource.ResourceException;
 import javax.transaction.xa.XAResource;
@@ -205,23 +207,45 @@ public class SQLSession implements Session {
         return doc;
     }
 
-    public Document copy(Document source, Document parent, String name)
-            throws DocumentException {
-        assert source instanceof SQLDocument;
-        assert parent instanceof SQLDocument;
-        // XXX TODO
-        throw new UnsupportedOperationException();
-        // Versioning.getService().fixupAfterCopy((SQLDocument) child);
-    }
-
     public Document move(Document source, Document parent, String name)
             throws DocumentException {
         assert source instanceof SQLDocument;
         assert parent instanceof SQLDocument;
         try {
+            if (name == null) {
+                name = source.getName();
+            }
             Node result = session.move(((SQLDocument) source).node,
                     ((SQLDocument) parent).node, name);
             return newDocument(result);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    private static Pattern dotDigitsPattern = Pattern.compile("(.*)\\.[0-9]+$");
+
+    public Document copy(Document source, Document parent, String name)
+            throws DocumentException {
+        assert source instanceof SQLDocument;
+        assert parent instanceof SQLDocument;
+        try {
+            Node parentNode = ((SQLDocument) parent).node;
+            if (name == null) {
+                name = source.getName();
+            }
+            if (session.hasChildNode(parentNode, name, false)) {
+                Matcher m = dotDigitsPattern.matcher(name);
+                if (m.matches()) {
+                    // remove trailing dot and digits
+                    name = m.group(1);
+                }
+                // add dot + unique digits
+                name += "." + System.currentTimeMillis();
+            }
+            Node copy = session.copy(((SQLDocument) source).node, parentNode,
+                    name);
+            return newDocument(copy);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }

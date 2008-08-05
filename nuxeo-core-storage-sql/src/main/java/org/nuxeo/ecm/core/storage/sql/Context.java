@@ -260,9 +260,9 @@ public class Context {
      *         allowAbsent} was {@code false}
      * @throws StorageException
      */
-    public Fragment getChildById(Serializable id, boolean allowAbsent)
+    public SimpleFragment getChildById(Serializable id, boolean allowAbsent)
             throws StorageException {
-        Fragment fragment = getIfPresent(id);
+        SimpleFragment fragment = (SimpleFragment) getIfPresent(id);
         if (fragment != null) {
             if (fragment.getState() == State.DELETED) {
                 return null;
@@ -426,6 +426,39 @@ public class Context {
     }
 
     /**
+     * Checks that we don't move/copy under ourselves.
+     */
+    protected void checkNotUnder(Serializable parentId, Serializable id,
+            String op) throws StorageException {
+        Serializable pid = parentId;
+        do {
+            if (pid.equals(id)) {
+                throw new StorageException("Cannot " + op +
+                        " a node under itself: " + parentId + " is under " + id);
+            }
+            SimpleFragment p = (SimpleFragment) getChildById(pid, false);
+            if (p == null) {
+                // cannot happen
+                throw new StorageException("No parent: " + pid);
+            }
+            pid = p.get(model.HIER_PARENT_KEY);
+        } while (pid != null);
+    }
+
+    /**
+     * Checks that a name is free.
+     */
+    protected void checkFreeName(SimpleFragment row, Serializable parentId,
+            String name) throws StorageException {
+        boolean isComplex = ((Boolean) row.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
+        Fragment prev = getChildByName(parentId, name, isComplex);
+        if (prev != null) {
+            throw new StorageException("Destination name already exists: " +
+                    name);
+        }
+    }
+
+    /**
      * Move a child to a new parent with a new name.
      *
      * @param id the fragment id
@@ -442,36 +475,12 @@ public class Context {
         Serializable oldParentId = row.get(model.HIER_PARENT_KEY);
         String oldName = row.getString(model.HIER_CHILD_NAME_KEY);
         if (!oldParentId.equals(parentId)) {
-            /*
-             * Sanity check to verify that we don't move under ourselves
-             */
-            Serializable pid = parentId;
-            do {
-                if (pid.equals(id)) {
-                    throw new StorageException(
-                            "Cannot move a node under itself: " + parentId +
-                                    " is under " + id);
-                }
-                SimpleFragment p = (SimpleFragment) getChildById(pid, false);
-                if (p == null) {
-                    // cannot happen
-                    throw new StorageException("No parent: " + pid);
-                }
-                pid = p.get(model.HIER_PARENT_KEY);
-            } while (pid != null);
+            checkNotUnder(parentId, id, "move");
         } else if (oldName.equals(name)) {
             // null move
             return;
         }
-        /*
-         * Check that name doesn't already exist.
-         */
-        boolean isComplex = ((Boolean) row.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
-        Fragment prev = getChildByName(parentId, name, isComplex);
-        if (prev != null) {
-            throw new StorageException("Destination name already exists: " +
-                    name);
-        }
+        checkFreeName(row, parentId, name);
         /*
          * Do the move.
          */
@@ -479,6 +488,36 @@ public class Context {
         row.put(model.HIER_PARENT_KEY, parentId);
         row.put(model.HIER_CHILD_NAME_KEY, name);
         addChild(row);
+    }
+
+    /**
+     * Copy a child to a new parent with a new name.
+     *
+     * @param source the source of the copy
+     * @param parentId the destination parent id
+     * @param name the new name
+     * @return the id of the copy
+     * @throws StorageException
+     */
+    public Serializable copyChild(Node source, Serializable parentId,
+            String name) throws StorageException {
+        Serializable id = source.getId();
+        SimpleFragment row = (SimpleFragment) getChildById(id, false);
+        if (row == null) {
+            throw new StorageException("No such document: " + id);
+        }
+        Serializable oldParentId = row.get(model.HIER_PARENT_KEY);
+        if (!oldParentId.equals(parentId)) {
+            checkNotUnder(parentId, id, "copy");
+        }
+        checkFreeName(row, parentId, name);
+        /*
+         * Do the copy.
+         */
+        String typeName = source.mainFragment.getString(model.MAIN_PRIMARY_TYPE_KEY);
+        Serializable newId = mapper.copyHierarchy(id, typeName, parentId, name);
+        getChildById(newId, false); // adds it as a new child of its parent
+        return newId;
     }
 
     /**

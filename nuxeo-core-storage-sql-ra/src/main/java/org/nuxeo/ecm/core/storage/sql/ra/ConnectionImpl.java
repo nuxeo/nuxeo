@@ -109,6 +109,10 @@ public class ConnectionImpl implements Session {
      * ----- org.nuxeo.ecm.core.storage.sql.Session -----
      */
 
+    public Binary getBinary(InputStream in) throws IOException {
+        return session.getBinary(in);
+    }
+
     public boolean isLive() {
         return session.isLive();
     }
@@ -170,13 +174,14 @@ public class ConnectionImpl implements Session {
         return session.getPath(node);
     }
 
-    public Binary getBinary(InputStream in) throws IOException {
-        return session.getBinary(in);
-    }
-
     public Node move(Node source, Node parent, String name)
             throws StorageException {
         return session.move(source, parent, name);
+    }
+
+    public Node copy(Node source, Node parent, String name)
+            throws StorageException {
+        return session.copy(source, parent, name);
     }
 
 }

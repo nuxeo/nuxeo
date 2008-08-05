@@ -288,6 +288,21 @@ public class PersistenceContext {
     }
 
     /**
+     * Copy a hierarchy (and its children) to a new parent with a new name.
+     *
+     * @param id the source of the copy
+     * @param parentId the destination parent id
+     * @param name the new name
+     * @return the id of the copy
+     * @throws StorageException
+     */
+    public Serializable copy(Node id, Serializable parentId, String name)
+            throws StorageException {
+        return contexts.get(model.hierFragmentName).copyChild(id, parentId,
+                name);
+    }
+
+    /**
      * Removes a row.
      *
      * @param row

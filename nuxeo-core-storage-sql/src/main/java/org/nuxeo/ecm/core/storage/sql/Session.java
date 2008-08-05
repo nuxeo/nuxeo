@@ -184,6 +184,8 @@ public interface Session extends Connection {
 
     /**
      * Moves a node to a new location with a new name.
+     * <p>
+     * A {@link #save} is automatically done first.
      *
      * @param source the node to move
      * @param parent the new parent to which the node is moved
@@ -192,6 +194,19 @@ public interface Session extends Connection {
      * @throws StorageException
      */
     Node move(Node source, Node parent, String name) throws StorageException;
+
+    /**
+     * Copies a node to a new location with a new name.
+     * <p>
+     * A {@link #save} is automatically done first.
+     *
+     * @param source the node to copy
+     * @param parent the new parent to which the node is copied
+     * @param name the new node name
+     * @return the copied node
+     * @throws StorageException
+     */
+    Node copy(Node source, Node parent, String name) throws StorageException;
 
     /**
      * Creates a binary value given an input stream.

@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -32,6 +33,7 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.exception.SQLExceptionConverter;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Delete;
@@ -118,6 +120,24 @@ public class SQLInfo {
 
     private List<Column> selectChildrenPropertiesWhereColumns;
 
+    private String selectChildrenIdsAndTypesSql;
+
+    private List<Column> selectChildrenIdsAndTypesWhatColumns;
+
+    private String copyHierSqlExplicitName;
+
+    private String copyHierSql;
+
+    private List<Column> copyHierColumnsExplicitName;
+
+    private List<Column> copyHierColumns;
+
+    private Column copyHierWhereColumn;
+
+    private final Map<String, String> copySqlMap;
+
+    private final Map<String, Column> copyIdColumnMap;
+
     /**
      * Generates and holds the needed SQL statements given a {@link Model} and a
      * {@link Dialect}.
@@ -160,6 +180,8 @@ public class SQLInfo {
         selectChildrenPropertiesSql = null;
         selectChildrenPropertiesWhatColumns = null;
         selectChildrenPropertiesWhereColumns = null;
+        selectChildrenIdsAndTypesSql = null;
+        selectChildrenIdsAndTypesWhatColumns = null;
 
         insertSqlMap = new HashMap<String, String>();
         insertColumnsMap = new HashMap<String, List<Column>>();
@@ -168,6 +190,14 @@ public class SQLInfo {
         updateByIdColumnsMap = new HashMap<String, List<Column>>();
 
         deleteSqlMap = new HashMap<String, String>();
+
+        copyHierSqlExplicitName = null;
+        copyHierSql = null;
+        copyHierColumnsExplicitName = null;
+        copyHierColumns = null;
+        copyHierWhereColumn = null;
+        copySqlMap = new HashMap<String, String>();
+        copyIdColumnMap = new HashMap<String, Column>();
 
         initSQL();
     }
@@ -281,6 +311,14 @@ public class SQLInfo {
         }
     }
 
+    public String getSelectChildrenIdsAndTypesSql() {
+        return selectChildrenIdsAndTypesSql;
+    }
+
+    public List<Column> getSelectChildrenIdsAndTypesWhatColumns() {
+        return selectChildrenIdsAndTypesWhatColumns;
+    }
+
     // ----- insert -----
 
     /**
@@ -338,6 +376,28 @@ public class SQLInfo {
      */
     public String getDeleteSql(String tableName) {
         return deleteSqlMap.get(tableName);
+    }
+
+    // ----- copy -----
+
+    public String getCopyHierSql(boolean explicitName) {
+        return explicitName ? copyHierSqlExplicitName : copyHierSql;
+    }
+
+    public List<Column> getCopyHierColumns(boolean explicitName) {
+        return explicitName ? copyHierColumnsExplicitName : copyHierColumns;
+    }
+
+    public Column getCopyHierWhereColumn() {
+        return copyHierWhereColumn;
+    }
+
+    public String getCopySql(String tableName) {
+        return copySqlMap.get(tableName);
+    }
+
+    public Column getCopyIdColumn(String tableName) {
+        return copyIdColumnMap.get(tableName);
     }
 
     // ----- prepare everything -----
@@ -550,6 +610,7 @@ public class SQLInfo {
             postProcessInsert();
             postProcessUpdateById();
             postProcessDelete();
+            postProcessCopy();
         }
 
         /**
@@ -575,6 +636,8 @@ public class SQLInfo {
             postProcessSelectByChildNamePropertiesFlag();
             postProcessSelectChildrenAll();
             postProcessSelectChildrenPropertiesFlag();
+            postProcessSelectChildrenIdsAndTypes();
+            postProcessCopyHier();
         }
 
         protected void postProcessSelectById() {
@@ -734,16 +797,42 @@ public class SQLInfo {
             selectChildrenPropertiesWhereColumns = whereColumns;
         }
 
+        // children ids and types
+        protected void postProcessSelectChildrenIdsAndTypes() {
+            assert !model.separateHierarchyTable; // otherwise join needed
+            ArrayList<Column> whatColumns = new ArrayList<Column>(2);
+            ArrayList<String> whats = new ArrayList<String>(2);
+            Column column = table.getColumn(model.MAIN_KEY);
+            whatColumns.add(column);
+            whats.add(column.getQuotedName(dialect));
+            column = table.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
+            whatColumns.add(column);
+            whats.add(column.getQuotedName(dialect));
+            Column whereColumn = table.getColumn(model.HIER_PARENT_KEY);
+            Select select = new Select(dialect);
+            select.setWhat(StringUtils.join(whats, ", "));
+            select.setFrom(table.getQuotedName(dialect));
+            select.setWhere(whereColumn.getQuotedName(dialect) + " = ?");
+            selectChildrenIdsAndTypesSql = select.getStatement();
+            selectChildrenIdsAndTypesWhatColumns = whatColumns;
+        }
+
         // TODO optimize multiple inserts into one statement for collections
         protected void postProcessInsert() {
             // insert (implicitly auto-generated sequences not included)
-            List<Column> insertColumns = new LinkedList<Column>();
+            Collection<Column> columns = table.getColumns();
+            List<Column> insertColumns = new ArrayList<Column>(columns.size());
             Insert insert = new Insert(dialect);
             insert.setTable(table);
-            for (Column column : table.getColumns()) {
+            for (Column column : columns) {
+                if (column.isIdentity()) {
+                    // identity column is never inserted
+                    continue;
+                }
+                insertColumns.add(column);
                 insert.addColumn(column);
             }
-            insertSqlMap.put(tableName, insert.getStatement(insertColumns));
+            insertSqlMap.put(tableName, insert.getStatement());
             insertColumnsMap.put(tableName, insertColumns);
         }
 
@@ -798,6 +887,93 @@ public class SQLInfo {
             delete.setWhere(StringUtils.join(wheres, " AND "));
             deleteSqlMap.put(tableName, delete.getStatement());
         }
+
+        // copy, with or without explicit name
+        protected void postProcessCopyHier() {
+            Collection<Column> columns = table.getColumns();
+            List<String> selectWhats = new ArrayList<String>(columns.size());
+            List<String> selectWhatsExplicitName = new ArrayList<String>(
+                    columns.size());
+            copyHierColumns = new ArrayList<Column>(1);
+            copyHierColumnsExplicitName = new ArrayList<Column>(2);
+            Insert insert = new Insert(dialect);
+            insert.setTable(table);
+            for (Column column : columns) {
+                if (column.isIdentity()) {
+                    // identity column is never copied
+                    continue;
+                }
+                insert.addColumn(column);
+                String quotedName = column.getQuotedName(dialect);
+                String key = column.getName();
+                if (key.equals(model.MAIN_KEY)) {
+                    // explicit id value (if not identity column)
+                    selectWhats.add("?");
+                    selectWhatsExplicitName.add("?");
+                    copyHierColumns.add(column);
+                    copyHierColumnsExplicitName.add(column);
+                } else if (key.equals(model.HIER_PARENT_KEY)) {
+                    // explicit parent value
+                    selectWhats.add("?");
+                    selectWhatsExplicitName.add("?");
+                    copyHierColumns.add(column);
+                    copyHierColumnsExplicitName.add(column);
+                } else if (key.equals(model.HIER_CHILD_NAME_KEY)) {
+                    selectWhats.add(quotedName);
+                    // exlicit name value if requested
+                    selectWhatsExplicitName.add("?");
+                    copyHierColumnsExplicitName.add(column);
+                } else {
+                    // otherwise copy value
+                    selectWhats.add(quotedName);
+                    selectWhatsExplicitName.add(quotedName);
+                }
+            }
+            copyHierWhereColumn = table.getColumn(model.MAIN_KEY);
+            Select select = new Select(dialect);
+            select.setFrom(table.getQuotedName(dialect));
+            select.setWhere(copyHierWhereColumn.getQuotedName(dialect) + " = ?");
+            // without explicit name
+            select.setWhat(StringUtils.join(selectWhats, ", "));
+            insert.setValues(select.getStatement());
+            copyHierSql = insert.getStatement();
+            // with explicit name
+            select.setWhat(StringUtils.join(selectWhatsExplicitName, ", "));
+            insert.setValues(select.getStatement());
+            copyHierSqlExplicitName = insert.getStatement();
+        }
+
+        // copy of a fragment
+        protected void postProcessCopy() {
+            String tableName = table.getName();
+            Collection<Column> columns = table.getColumns();
+            List<String> selectWhats = new ArrayList<String>(columns.size());
+            Column copyIdColumn = table.getColumn(model.MAIN_KEY);
+            Insert insert = new Insert(dialect);
+            insert.setTable(table);
+            for (Column column : columns) {
+                if (column.isIdentity()) {
+                    // identity column is never copied
+                    continue;
+                }
+                insert.addColumn(column);
+                if (column == copyIdColumn) {
+                    // explicit value
+                    selectWhats.add("?");
+                } else {
+                    // otherwise copy value
+                    selectWhats.add(column.getQuotedName(dialect));
+                }
+            }
+            Select select = new Select(dialect);
+            select.setWhat(StringUtils.join(selectWhats, ", "));
+            select.setFrom(table.getQuotedName(dialect));
+            select.setWhere(copyIdColumn.getQuotedName(dialect) + " = ?");
+            insert.setValues(select.getStatement());
+            copySqlMap.put(tableName, insert.getStatement());
+            copyIdColumnMap.put(tableName, copyIdColumn);
+        }
+
     }
 
 }

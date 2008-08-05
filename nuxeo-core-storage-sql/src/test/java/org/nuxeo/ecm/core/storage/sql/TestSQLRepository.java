@@ -2279,7 +2279,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         assertTrue(session.getChildren(folder1.getRef()).contains(copy5));
         assertNotSame(copy1.getName(), copy5.getName());
 
-        session.cancel();
+        //session.cancel();
     }
 
     public void testCopyProxyAsDocument() throws Exception {
@@ -2330,7 +2330,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         assertEquals(file.getProperty("dublincore", "title"),
                 copy2.getProperty("dublincore", "title"));
 
-        session.cancel();
+        //session.cancel();
     }
 
     public void testCopyVersionable() throws Exception {

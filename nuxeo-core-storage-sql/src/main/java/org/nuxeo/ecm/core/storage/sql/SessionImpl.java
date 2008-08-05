@@ -246,7 +246,7 @@ public class SessionImpl implements Session, XAResource {
 
         // TODO get all non-cached fragments at once using join / union
         FragmentsMap childFragments = new FragmentsMap();
-        for (String fragmentName : model.getTypeFragments(childTypeName)) {
+        for (String fragmentName : model.getTypeSimpleFragments(childTypeName)) {
             Fragment fragment = context.get(fragmentName, id, true);
             childFragments.put(fragmentName, fragment);
         }
@@ -387,7 +387,7 @@ public class SessionImpl implements Session, XAResource {
 
         if (false) {
             // TODO if non-lazy creation of some fragments, create them here
-            for (String schemaName : model.getTypeFragments(typeName)) {
+            for (String schemaName : model.getTypeSimpleFragments(typeName)) {
                 // TODO XXX fill in default values
                 // TODO fill data instead of null XXX or just have fragments
                 // empty
@@ -444,7 +444,7 @@ public class SessionImpl implements Session, XAResource {
 
         // TODO get all non-cached fragments at once using join / union
         FragmentsMap childFragments = new FragmentsMap();
-        for (String fragmentName : model.getTypeFragments(childTypeName)) {
+        for (String fragmentName : model.getTypeSimpleFragments(childTypeName)) {
             Fragment fragment = context.get(fragmentName, childId, true);
             childFragments.put(fragmentName, fragment);
         }
@@ -491,8 +491,17 @@ public class SessionImpl implements Session, XAResource {
     public Node move(Node source, Node parent, String name)
             throws StorageException {
         checkLive();
+        context.save();
         context.move(source.getId(), parent.getId(), name);
         return source;
+    }
+
+    public Node copy(Node source, Node parent, String name)
+            throws StorageException {
+        checkLive();
+        context.save();
+        Serializable id = context.copy(source, parent.getId(), name);
+        return getNodeById(id);
     }
 
     public void removeNode(Node node) throws StorageException {

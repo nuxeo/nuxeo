@@ -35,11 +35,13 @@ public class Insert implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Dialect dialect;
+    private final Dialect dialect;
 
     private Table table;
 
-    private List<Column> columns;
+    private final List<Column> columns;
+
+    private String insertValues;
 
     public Insert(Dialect dialect) {
         this.dialect = dialect;
@@ -54,14 +56,20 @@ public class Insert implements Serializable {
         columns.add(column);
     }
 
+    public void setValues(String insertValues) {
+        this.insertValues = insertValues;
+    }
+
     /**
-     * Get the insert statement, and fill in {@code keys} with free parameter
-     * names.
+     * Gets the statement to insert a row, or copy it if {@link #setValues} has
+     * been called.
+     * <p>
+     * Example: {@code INSERT INTO foo (a, b, c) SELECT ?, b, c FROM foo WHERE
+     * id = ?}
      *
-     * @param icolumns a returned list of columns bound to free parameters.
-     * @return the SQL insert statement.
+     * @return the SQL insert or copy statement
      */
-    public String getStatement(List<Column> icolumns) {
+    public String getStatement() {
         StringBuilder buf = new StringBuilder(128);
         buf.append("INSERT INTO ");
         buf.append(table.getQuotedName(dialect));
@@ -69,25 +77,7 @@ public class Insert implements Serializable {
 
         List<String> columnNames = new LinkedList<String>();
         List<String> values = new LinkedList<String>();
-        // boolean canInsertIncrementSequences =
-        // Sequence.canInsertIncrementSequences(dialect);
         for (Column column : columns) {
-            if (column.isIdentity()) {
-                // identity column is never inserted
-                continue;
-            }
-            // String value;
-            // Sequence sequence = column.getSequence();
-            // if (sequence != null && canInsertIncrementSequences) {
-            // value = sequence.getAutoIncrementInsertDefaultSql(dialect);
-            // if (value == null) {
-            // // no value needed, skip this column
-            // continue;
-            // }
-            // } else {
-            // value = "?";
-            icolumns.add(column);
-            // }
             columnNames.add(column.getQuotedName(dialect));
             values.add("?");
         }
@@ -97,9 +87,14 @@ public class Insert implements Serializable {
         } else {
             buf.append('(');
             buf.append(StringUtils.join(columnNames, ", "));
-            buf.append(") VALUES (");
-            buf.append(StringUtils.join(values, ", "));
-            buf.append(')');
+            buf.append(") ");
+            if (insertValues == null) {
+                buf.append("VALUES (");
+                buf.append(StringUtils.join(values, ", "));
+                buf.append(')');
+            } else {
+                buf.append(insertValues);
+            }
         }
         return buf.toString();
     }

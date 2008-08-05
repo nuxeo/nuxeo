@@ -118,6 +118,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 nodea.getSimpleProperty("tst:title").getString());
         String[] subjects = nodea.getCollectionProperty("tst:subjects").getStrings();
         String[] tags = nodea.getCollectionProperty("tst:tags").getStrings();
+        assertEquals(Arrays.asList("a", "b", "c"), Arrays.asList(subjects));
         assertEquals(Arrays.asList("1", "2"), Arrays.asList(tags));
 
         session.save();
@@ -298,4 +299,71 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
     }
 
+    public void testCopy() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node foldera = session.addChildNode(root, "folder_a", "TestDoc", false);
+        Serializable prevFolderaId = foldera.getId();
+        Node nodea = session.addChildNode(foldera, "node_a", "TestDoc", false);
+        Serializable prevNodeaId = nodea.getId();
+        Node nodeac = session.addChildNode(nodea, "node_a_complex", "TestDoc",
+                true);
+        Serializable prevNodeacId = nodeac.getId();
+        nodea.setSingleProperty("tst:title", "hello world");
+        nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
+                "c" });
+        assertEquals("/folder_a/node_a/node_a_complex", session.getPath(nodeac));
+        Node folderb = session.addChildNode(root, "folder_b", "TestDoc", false);
+        session.addChildNode(folderb, "node_b", "TestDoc", false);
+        Node folderc = session.addChildNode(root, "folder_c", "TestDoc", false);
+        session.save();
+
+        // cannot copy under itself
+        try {
+            session.copy(foldera, nodea, "abc");
+            fail();
+        } catch (StorageException e) {
+            // ok
+        }
+
+        // cannot copy to name that already exists
+        try {
+            session.copy(foldera, folderb, "node_b");
+            fail();
+        } catch (StorageException e) {
+            // ok
+        }
+
+        // do normal copy
+        Node foldera2 = session.copy(foldera, folderb, "yo");
+        // one children was known (complete), check it was invalidated
+        Node n = session.getChildNode(folderb, "yo", false);
+        assertNotNull(n);
+        assertEquals(foldera2.getId(), n.getId());
+        assertNotSame(prevFolderaId, foldera2.getId());
+        assertEquals("yo", foldera2.getName());
+        assertEquals("/folder_b/yo", session.getPath(foldera2));
+        Node nodea2 = session.getChildNode(foldera2, "node_a", false);
+        assertNotSame(prevNodeaId, nodea2.getId());
+        assertEquals("hello world",
+                nodea2.getSimpleProperty("tst:title").getString());
+        // check that the collection copy is different from the original
+        String[] subjectsa2 = nodea2.getCollectionProperty("tst:subjects").getStrings();
+        nodea.setCollectionProperty("tst:subjects", new String[] { "foo" });
+        String[] subjectsa = nodea.getCollectionProperty("tst:subjects").getStrings();
+        assertEquals(Arrays.asList("foo"), Arrays.asList(subjectsa));
+        assertEquals(Arrays.asList("a", "b", "c"), Arrays.asList(subjectsa2));
+        // complex children are there too
+        Node nodeac2 = session.getChildNode(nodea2, "node_a_complex", true);
+        assertNotNull(nodeac2);
+        assertNotSame(prevNodeacId, nodeac2.getId());
+
+        // copy to a folder that we know has no children
+        // checks proper Children invalidation
+        session.copy(nodea, folderc, "hm");
+        Node nodea3 = session.getChildNode(folderc, "hm", false);
+        assertNotNull(nodea3);
+
+        session.save();
+    }
 }

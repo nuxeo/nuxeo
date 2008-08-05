@@ -2,13 +2,13 @@ SQL Storage TODO
 
 - checkin/checkout
 
-- copy
-
 - proxies
 
 - locking
 
 - recursive removal on node remove
+
+- complex lists
 
 Optimizations:
 

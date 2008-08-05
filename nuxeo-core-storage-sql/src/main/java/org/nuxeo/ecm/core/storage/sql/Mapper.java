@@ -31,10 +31,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.sql.XAConnection;
@@ -403,6 +405,7 @@ public class Mapper {
                     Column icolumn = sqlInfo.getIdentityFetchColumn(tableName);
                     try {
                         // logDebug(isql);
+                        ps.close();
                         ps = connection.prepareStatement(isql);
                         ResultSet rs;
                         try {
@@ -847,6 +850,231 @@ public class Mapper {
         } catch (SQLException e) {
             throw newStorageException(e, "Could not delete", sql);
         }
+    }
+
+    /**
+     * Copy the hierarchy starting from a given fragment to a new parent with a
+     * new name.
+     *
+     * @param sourceId the id of fragment to copy (with children)
+     * @param typeName the type of the fragment to copy (to avoid refetching
+     *            known info)
+     * @param destParentId the new parent id
+     * @parem destName the new name
+     * @return the id of the root of the copy
+     * @throws StorageException
+     */
+    public Serializable copyHierarchy(Serializable sourceId, String typeName,
+            Serializable destParentId, String destName) throws StorageException {
+        assert !model.separateHierarchyTable; // other case not implemented
+        Map<Serializable, Serializable> idMap = new LinkedHashMap<Serializable, Serializable>();
+        Map<Serializable, String> idType = new HashMap<Serializable, String>();
+        try {
+            idType.put(sourceId, typeName);
+            copyHier(sourceId, typeName, destParentId, destName, idMap, idType);
+        } catch (SQLException e) {
+            throw newStorageException(e, "Could not copy", sourceId.toString());
+        }
+        /*
+         * Assemble per-fragment-type sets of ids.
+         */
+
+        Map<String, Set<Serializable>> allFragmentIds = new HashMap<String, Set<Serializable>>();
+        for (Entry<Serializable, String> e : idType.entrySet()) {
+            Serializable id = e.getKey();
+            String type = e.getValue();
+            for (String fragmentName : model.getTypeFragments(type)) {
+                Set<Serializable> fragmentIds = allFragmentIds.get(fragmentName);
+                if (fragmentIds == null) {
+                    fragmentIds = new HashSet<Serializable>();
+                    allFragmentIds.put(fragmentName, fragmentIds);
+                }
+                fragmentIds.add(id);
+            }
+        }
+        /*
+         * Now copy all the fragments. TODO also collections!
+         */
+        for (Entry<String, Set<Serializable>> entry : allFragmentIds.entrySet()) {
+            String fragmentName = entry.getKey();
+            Set<Serializable> ids = entry.getValue();
+            try {
+                copyFragments(fragmentName, ids, idMap);
+            } catch (SQLException e) {
+                throw newStorageException(e, "Could not copy fragments",
+                        fragmentName);
+            }
+        }
+        return idMap.get(sourceId);
+    }
+
+    /**
+     * Copy from id to parentId. If name is {@code null}, then the original name
+     * is kept.
+     * <p>
+     * {@code idMap} is filled with info about the correspondance between
+     * original and copied ids. {@code idType} is filled with the type of each
+     * (source) fragment.
+     * <p>
+     * TODO: Obviously this should be optimized to use a stored procedure.
+     */
+    protected void copyHier(Serializable id, String type,
+            Serializable parentId, String name,
+            Map<Serializable, Serializable> idMap,
+            Map<Serializable, String> idType) throws SQLException {
+        boolean explicitName = name != null;
+        Serializable newId = null;
+
+        String sql = sqlInfo.getCopyHierSql(explicitName);
+        PreparedStatement ps = connection.prepareStatement(sql);
+        try {
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                newId = model.generateNewId();
+                break;
+            case DB_IDENTITY:
+                newId = null;
+                break;
+            }
+
+            List<Serializable> debugValues = null;
+            if (log.isDebugEnabled()) {
+                debugValues = new ArrayList<Serializable>(4);
+            }
+            List<Column> columns = sqlInfo.getCopyHierColumns(explicitName);
+            Column whereColumn = sqlInfo.getCopyHierWhereColumn();
+            ps = connection.prepareStatement(sql);
+            int i = 1;
+            for (Column column : columns) {
+                String key = column.getKey();
+                Serializable v;
+                if (key.equals(model.HIER_PARENT_KEY)) {
+                    v = parentId;
+                } else if (key.equals(model.HIER_CHILD_NAME_KEY)) {
+                    // present if name explicitely set (first iteration)
+                    v = name;
+                } else if (key.equals(model.MAIN_KEY)) {
+                    // present if APP_UUID generation
+                    v = newId;
+                } else {
+                    throw new AssertionError(column);
+                }
+                column.setToPreparedStatement(ps, i++, v);
+                if (debugValues != null) {
+                    debugValues.add(v);
+                }
+            }
+            // last parameter is for 'WHERE "id" = ?'
+            whereColumn.setToPreparedStatement(ps, i, id);
+            if (debugValues != null) {
+                debugValues.add(id);
+                logSQL(sql, debugValues);
+            }
+            ps.execute();
+
+            if (newId == null) {
+                // post insert fetch idrow
+                // TODO PG 8.2 has INSERT ... RETURNING ... which can avoid this
+                // separate query
+                String isql = sqlInfo.getIdentityFetchSql(model.hierFragmentName);
+                Column icolumn = sqlInfo.getIdentityFetchColumn(model.hierFragmentName);
+                ps.close();
+                ps = connection.prepareStatement(isql);
+                ResultSet rs = ps.executeQuery();
+                rs.next();
+                newId = icolumn.getFromResultSet(rs, 1);
+                if (log.isDebugEnabled()) {
+                    logDebug("  -> " + icolumn.getKey() + '=' + newId);
+                }
+            }
+
+            idMap.put(id, newId);
+        } finally {
+            ps.close();
+        }
+
+        /*
+         * Recurse on children.
+         */
+
+        for (Serializable[] info : getChildrenIds(id)) {
+            Serializable childId = info[0];
+            String childType = (String) info[1];
+            idType.put(childId, childType);
+            copyHier(childId, childType, newId, null, idMap, idType);
+        }
+    }
+
+    protected List<Serializable[]> getChildrenIds(Serializable id)
+            throws SQLException {
+        List<Serializable[]> childrenIds = new LinkedList<Serializable[]>();
+        String sql = sqlInfo.getSelectChildrenIdsAndTypesSql();
+        if (log.isDebugEnabled()) {
+            logSQL(sql, Collections.singletonList(id));
+        }
+        List<Column> columns = sqlInfo.getSelectChildrenIdsAndTypesWhatColumns();
+        PreparedStatement ps = connection.prepareStatement(sql);
+        try {
+            List<String> debugValues = null;
+            if (log.isDebugEnabled()) {
+                debugValues = new LinkedList<String>();
+            }
+            ps.setObject(1, id); // parent id
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Serializable childId = null;
+                Serializable childType = null;
+                int i = 1;
+                for (Column column : columns) {
+                    String key = column.getKey();
+                    Serializable value = column.getFromResultSet(rs, i++);
+                    if (key.equals(model.MAIN_KEY)) {
+                        childId = value;
+                    } else if (key.equals(model.MAIN_PRIMARY_TYPE_KEY)) {
+                        childType = value;
+                    }
+                }
+                childrenIds.add(new Serializable[] { childId, childType });
+                if (debugValues != null) {
+                    debugValues.add(String.valueOf(childId) + "/" + childType);
+                }
+            }
+            if (debugValues != null) {
+                logDebug("  -> " + debugValues);
+            }
+            return childrenIds;
+        } finally {
+            ps.close();
+        }
+    }
+
+    /**
+     * Copy the rows from tableName with ids in fragmentIds into new ones with
+     * new ids given by idMap.
+     *
+     * @throws SQLException
+     */
+    protected void copyFragments(String tableName, Set<Serializable> ids,
+            Map<Serializable, Serializable> idMap) throws SQLException {
+        String sql = sqlInfo.getCopySql(tableName);
+        Column column = sqlInfo.getCopyIdColumn(tableName);
+        PreparedStatement ps = connection.prepareStatement(sql);
+        try {
+            for (Serializable id : ids) {
+                column.setToPreparedStatement(ps, 1, idMap.get(id)); // col
+                column.setToPreparedStatement(ps, 2, id); // WHERE "id" = ?
+                if (log.isDebugEnabled()) {
+                    logSQL(sql, Arrays.asList(idMap.get(id), id));
+                }
+                int count = ps.executeUpdate();
+                if (log.isDebugEnabled() && count != 0) {
+                    logDebug("  -> " + count + " rows");
+                }
+            }
+        } finally {
+            ps.close();
+        }
+
     }
 
     /*

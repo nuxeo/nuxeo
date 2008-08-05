@@ -172,7 +172,13 @@ public class Model {
     /** The factories to build collection fragments. */
     protected final Map<String, CollectionMaker> collectionMakers;
 
-    /** Maps document type name or schema name to allowed fragments. */
+    /** Maps document type name or schema name to allowed simple fragments. */
+    protected final Map<String, Set<String>> typeSimpleFragments;
+
+    /** Maps schema name to allowed collection fragments. */
+    protected final Map<String, Set<String>> typeCollectionFragments;
+
+    /** Maps schema name to allowed simple+collection fragments. */
     protected final Map<String, Set<String>> typeFragments;
 
     /** Maps property name to fragment name. */
@@ -203,6 +209,8 @@ public class Model {
         collectionTables = new HashMap<String, PropertyType>();
         collectionMakers = new HashMap<String, CollectionMaker>();
         typeFragments = new HashMap<String, Set<String>>();
+        typeSimpleFragments = new HashMap<String, Set<String>>();
+        typeCollectionFragments = new HashMap<String, Set<String>>();
         propertyFragment = new HashMap<String, String>();
         propertyFragmentKey = new HashMap<String, String>();
         binaryColumns = new HashSet<String[]>();
@@ -324,12 +332,52 @@ public class Model {
         return propertyFragmentKey.get(propertyName);
     }
 
+    protected void addTypeSimpleFragment(String typeName, String fragmentName) {
+        Set<String> fragments = typeSimpleFragments.get(typeName);
+        if (fragments == null) {
+            fragments = new HashSet<String>();
+            typeSimpleFragments.put(typeName, fragments);
+        }
+        if (fragmentName != null) {
+            fragments.add(fragmentName);
+            addTypeFragment(typeName, fragmentName);
+        }
+    }
+
+    protected void addTypeCollectionFragment(String typeName,
+            String fragmentName) {
+        Set<String> fragments = typeCollectionFragments.get(typeName);
+        if (fragments == null) {
+            fragments = new HashSet<String>();
+            typeCollectionFragments.put(typeName, fragments);
+        }
+        fragments.add(fragmentName);
+        addTypeFragment(typeName, fragmentName);
+    }
+
+    protected void addTypeFragment(String typeName, String fragmentName) {
+        Set<String> fragments = typeFragments.get(typeName);
+        if (fragments == null) {
+            fragments = new HashSet<String>();
+            typeFragments.put(typeName, fragments);
+        }
+        fragments.add(fragmentName);
+    }
+
+    public Set<String> getTypeSimpleFragments(String typeName) {
+        return typeSimpleFragments.get(typeName);
+    }
+
+    public Set<String> getTypeCollectionFragments(String typeName) {
+        return typeCollectionFragments.get(typeName);
+    }
+
     public Set<String> getTypeFragments(String typeName) {
         return typeFragments.get(typeName);
     }
 
     public boolean isComplexType(String typeName) {
-        return typeFragments.containsKey(typeName);
+        return typeSimpleFragments.containsKey(typeName);
     }
 
     /**
@@ -337,16 +385,23 @@ public class Model {
      */
     private void initModels(SchemaManager schemaManager) {
         for (DocumentType documentType : schemaManager.getDocumentTypes()) {
-            Set<String> fragmentNames = new HashSet<String>();
             String typeName = documentType.getName();
-            typeFragments.put(typeName, fragmentNames);
+            addTypeSimpleFragment(typeName, null); // create entry
             for (Schema schema : documentType.getSchemas()) {
                 String fragmentName = initTypeModel(schema);
-                if (fragmentName != null) {
-                    fragmentNames.add(fragmentName);
+                addTypeSimpleFragment(typeName, fragmentName); // may be null
+                // collection fragments too for this schema
+                Set<String> cols = typeCollectionFragments.get(schema.getName());
+                if (cols != null) {
+                    for (String colFrag : cols) {
+                        addTypeCollectionFragment(typeName, colFrag);
+                    }
                 }
             }
-            log.debug("Fragments for " + typeName + ": " + fragmentNames);
+            // all documents have ACLs too
+            addTypeCollectionFragment(typeName, ACL_TABLE_NAME);
+            log.debug("Fragments for " + typeName + ": " +
+                    getTypeFragments(typeName));
         }
     }
 
@@ -455,12 +510,8 @@ public class Model {
                 ComplexType fieldComplexType = (ComplexType) fieldType;
                 String subTypeName = fieldComplexType.getName();
                 String subFragmentName = initTypeModel(fieldComplexType);
-                if (subFragmentName != null &&
-                        !typeFragments.containsKey(subTypeName)) {
-                    Set<String> fragmentNames = Collections.singleton(subFragmentName);
-                    typeFragments.put(subTypeName, fragmentNames);
-                    log.debug("Fragments for " + subTypeName + ": " +
-                            fragmentNames);
+                if (subFragmentName != null) {
+                    addTypeSimpleFragment(subTypeName, subFragmentName);
                 }
             } else {
                 String propertyName = field.getName().getPrefixedName();
@@ -490,6 +541,7 @@ public class Model {
                                 type.getArrayBaseType());
                         collectionOrderBy.put(tableName,
                                 Collections.singletonList(COLL_TABLE_POS_KEY));
+                        addTypeCollectionFragment(typeName, tableName);
                     } else {
                         /*
                          * Complex list.
