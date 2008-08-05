@@ -1,0 +1,117 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-application-distribution</artifactId>
+    <version>5.2-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-server-gf3</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo Application Template</name>
+  <description>Defines the skeleton of a glassfish3 nuxeo application</description>
+
+  <properties>
+    <gf3.version>10.0-SNAPSHOT</gf3.version>
+  </properties>
+  
+  
+  <dependencies>
+    
+    <dependency>
+      <groupId>org.glassfish.jdbc.jdbc-ra.jdbc-core</groupId>
+      <artifactId>jdbc-core</artifactId>
+      <version>${gf3.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.glassfish.jdbc.jdbc-ra.jdbc40</groupId>
+      <artifactId>jdbc40</artifactId>
+      <version>${gf3.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.glassfish.jdbc.jdbc-ra.jdbc30</groupId>
+      <artifactId>jdbc30</artifactId>
+      <version>${gf3.version}</version>
+    </dependency>
+    
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
+        <artifactId>maven-antrun-extended-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <configuration>
+              <tasks>
+                <!-- Resolving jdbc-core, jdbc30 and jdbc40 artifacts -->
+                <resolveArtifact artifactId="jdbc-core" groupId="org.glassfish.jdbc.jdbc-ra.jdbc-core" property="core.jar"/>
+                <resolveArtifact artifactId="jdbc30" groupId="org.glassfish.jdbc.jdbc-ra.jdbc30" property="30.jar"/>
+                <resolveArtifact artifactId="jdbc40" groupId="org.glassfish.jdbc.jdbc-ra.jdbc40" property="40.jar"/>
+                
+                <unjar src="${core.jar}" dest="target/classes"/>
+                <unjar src="${30.jar}" dest="target/classes"/>
+                <unjar src="${40.jar}" dest="target/classes"/>
+                
+                <!-- Creating jars/rars done using ant build.xml -->
+                <property name="compile_classpath" refid="maven.compile.classpath"/>
+                <property name="build.compiler" value="extJavac"/>
+                <ant dir="." antfile="build.xml" target="all"/>
+                
+                <!-- TODO: Kohsuke to come back here and make sure mvn install puts a zip file, not .distribution-fragment -->
+                <!--attachArtifact file="target/jdbc-ra.zip" /-->
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-nuxeo-plugin</artifactId>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <id>assemble-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>assembly</goal>
+            </goals>
+            <configuration>
+              <runPreprocessor>false</runPreprocessor>
+              <!--format>directory</format-->
+              <format>zip</format>
+	            <zipRoot>nxserver</zipRoot>
+              <outputDirectory>target</outputDirectory>
+              <targetFile>${application.name}</targetFile>
+              <descriptor>
+                ${basedir}/src/main/assemble/assembly.xml
+              </descriptor>
+            </configuration>
+          </execution>
+          <execution>
+            <id>attach-app</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach</goal>
+            </goals>
+            <configuration>
+              <file>${basedir}/target/${application.name}.zip</file>
+              <type>zip</type>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    
+  </build>
+
+</project>
