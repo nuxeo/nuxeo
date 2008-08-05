@@ -101,7 +101,9 @@ public class Node {
 
     public String getName() {
         try {
-            return hierFragment.getString(model.HIER_CHILD_NAME_KEY);
+            SimpleFragment fragment = hierFragment == null ? mainFragment
+                    : hierFragment;
+            return fragment.getString(model.HIER_CHILD_NAME_KEY);
         } catch (StorageException e) {
             // do not propagate this unlikely exception as a checked one
             throw new RuntimeException(e);
@@ -121,7 +123,9 @@ public class Node {
      */
     protected void remove() throws StorageException {
         context.remove(mainFragment);
-        context.remove(hierFragment);
+        if (hierFragment != null) {
+            context.remove(hierFragment);
+        }
         for (Fragment fragment : fragments.values()) {
             context.remove(fragment);
             // XXX TODO must remove all fragments, even unfetched ones

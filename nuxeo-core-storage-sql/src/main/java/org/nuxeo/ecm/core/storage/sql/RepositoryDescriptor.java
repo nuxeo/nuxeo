@@ -93,4 +93,16 @@ public class RepositoryDescriptor {
 
     public IdGenPolicy idGenPolicy = IdGenPolicy.APP_UUID;
 
+    /**
+     * Is the "main" table (containing type information and from which ids are
+     * generated) separate from the "hierarchy" table.
+     * <p>
+     * Having it separate is only needed if a node can be in several places of
+     * the hierarchy at the same time (shared nodes) -- this is not implemented
+     * anyway for now.
+     * <p>
+     * Having it <em>not</em> separate improves performance.
+     */
+    public boolean separateHierarchyTable = false;
+
 }

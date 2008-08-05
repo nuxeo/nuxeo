@@ -112,7 +112,9 @@ public class Context {
      */
     private final Set<Serializable> deletedInvalidations;
 
-    private final boolean isCollection;
+    protected final boolean isCollection;
+
+    protected final boolean isHierarchy;
 
     @SuppressWarnings("unchecked")
     Context(String tableName, Mapper mapper,
@@ -122,7 +124,8 @@ public class Context {
         this.persistenceContext = persistenceContext;
         model = mapper.getModel();
         pristine = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
-        // linked map to keep ids in the same order as creation (cosmetic)
+        // linked map to create children after parents (needed if ids are
+        // generated)
         modified = new LinkedHashMap<Serializable, Fragment>();
 
         modifiedInTransaction = new HashSet<Serializable>();
@@ -131,7 +134,8 @@ public class Context {
         deletedInvalidations = new HashSet<Serializable>();
 
         // TODO use a dedicated subclass for the hierarchy table
-        if (tableName.equals(model.HIER_TABLE_NAME)) {
+        isHierarchy = tableName.equals(model.hierFragmentName);
+        if (isHierarchy) {
             knownChildren = new HashMap<Serializable, Children>();
         } else {
             knownChildren = null;
@@ -465,7 +469,8 @@ public class Context {
         boolean isComplex = ((Boolean) row.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
         Fragment prev = getChildByName(parentId, name, isComplex);
         if (prev != null) {
-            throw new StorageException("Destination name already exists: " + name);
+            throw new StorageException("Destination name already exists: " +
+                    name);
         }
         /*
          * Do the move.
@@ -493,6 +498,11 @@ public class Context {
     /**
      * Saves the created main rows, and returns the map of temporary ids to
      * final ids.
+     * <p>
+     * If hierarchy and main are not separate, then the parent ids of created
+     * children have to be mapped on-the-fly, from previously generated parent
+     * ids. This means that parents have to be created before children, which is
+     * the case because "modified" is a linked hashmap.
      *
      * @param createdIds the created ids to save
      * @return the map of created ids to final ids (when different)
@@ -500,16 +510,22 @@ public class Context {
      */
     public Map<Serializable, Serializable> saveMainCreated(
             Set<Serializable> createdIds) throws StorageException {
-        assert tableName.equals(model.MAIN_TABLE_NAME);
         Map<Serializable, Serializable> idMap = new HashMap<Serializable, Serializable>();
         for (Serializable id : createdIds) {
-            Fragment fragment = modified.remove(id);
-            if (fragment == null) {
+            SimpleFragment row = (SimpleFragment) modified.remove(id);
+            if (row == null) {
                 throw new AssertionError(id);
             }
-            Serializable newId = mapper.insertSingleRow((SimpleFragment) fragment);
-            fragment.markPristine();
-            pristine.put(id, fragment);
+            // map hierarchy parent column
+            if (isHierarchy) {
+                Serializable newParentId = idMap.get(row.get(model.HIER_PARENT_KEY));
+                if (newParentId != null) {
+                    row.put(model.HIER_PARENT_KEY, newParentId);
+                }
+            }
+            Serializable newId = mapper.insertSingleRow(row);
+            row.markPristine();
+            pristine.put(id, row);
             if (!newId.equals(id)) {
                 // save in translation map, if different
                 idMap.put(id, newId);
@@ -540,8 +556,8 @@ public class Context {
                     fragment.setId(newId);
                     id = newId;
                 }
-                // hierarchy parent column too
-                if (tableName.equals(model.HIER_TABLE_NAME)) {
+                // map hierarchy parent column
+                if (isHierarchy) {
                     SimpleFragment row = (SimpleFragment) fragment;
                     Serializable newParentId = idMap.get(row.get(model.HIER_PARENT_KEY));
                     if (newParentId != null) {

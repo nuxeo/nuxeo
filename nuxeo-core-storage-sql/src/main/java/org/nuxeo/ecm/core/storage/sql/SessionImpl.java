@@ -220,15 +220,15 @@ public class SessionImpl implements Session, XAResource {
 
         // get main row
         SimpleFragment childMain = (SimpleFragment) context.get(
-                model.MAIN_TABLE_NAME, id, false);
+                model.mainFragmentName, id, false);
         if (childMain == null) {
             // HACK try old id
             id = context.getOldId(id);
             if (id == null) {
                 return null;
             }
-            childMain = (SimpleFragment) context.get(model.MAIN_TABLE_NAME, id,
-                    false);
+            childMain = (SimpleFragment) context.get(model.mainFragmentName,
+                    id, false);
             if (childMain == null) {
                 return null;
             }
@@ -236,9 +236,13 @@ public class SessionImpl implements Session, XAResource {
         String childTypeName = (String) childMain.get(model.MAIN_PRIMARY_TYPE_KEY);
         DocumentType childType = schemaManager.getDocumentType(childTypeName);
 
-        // find hier row
-        SimpleFragment childHier = (SimpleFragment) context.getChildById(id,
-                false);
+        // find hier row if separate
+        SimpleFragment childHier;
+        if (model.separateHierarchyTable) {
+            childHier = (SimpleFragment) context.getChildById(id, false);
+        } else {
+            childHier = null;
+        }
 
         // TODO get all non-cached fragments at once using join / union
         FragmentsMap childFragments = new FragmentsMap();
@@ -263,7 +267,9 @@ public class SessionImpl implements Session, XAResource {
         if (node == null) {
             throw new IllegalArgumentException("Illegal null node");
         }
-        Serializable id = node.hierFragment.get(model.HIER_PARENT_KEY);
+        SimpleFragment hierFragment = model.separateHierarchyTable ? node.hierFragment
+                : node.mainFragment;
+        Serializable id = hierFragment.get(model.HIER_PARENT_KEY);
         if (id == null) {
             // root
             return null;
@@ -334,11 +340,35 @@ public class SessionImpl implements Session, XAResource {
 
         Serializable id = context.generateNewId();
 
-        // create the underlying main row
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
-        map.put(model.MAIN_PRIMARY_TYPE_KEY, typeName);
+        // main info
+        Map<String, Serializable> mainMap = new HashMap<String, Serializable>();
+        mainMap.put(model.MAIN_PRIMARY_TYPE_KEY, typeName);
+
+        // hierarchy info
+        // TODO if folder is ordered, we have to compute the pos as max+1...
+        Map<String, Serializable> hierMap;
+        if (model.separateHierarchyTable) {
+            hierMap = new HashMap<String, Serializable>();
+        } else {
+            hierMap = mainMap;
+        }
+        hierMap.put(model.HIER_PARENT_KEY, parent.mainFragment.getId());
+        hierMap.put(model.HIER_CHILD_POS_KEY, null);
+        hierMap.put(model.HIER_CHILD_NAME_KEY, name);
+        hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY,
+                Boolean.valueOf(complexProp));
+
         SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
-                model.MAIN_TABLE_NAME, id, map);
+                model.mainFragmentName, id, mainMap);
+
+        SimpleFragment hierRow;
+        if (model.separateHierarchyTable) {
+            // TODO put it in a collection context instead
+            hierRow = (SimpleFragment) context.createSimpleFragment(
+                    model.hierFragmentName, id, hierMap);
+        } else {
+            hierRow = null;
+        }
 
         // find all schemas for this type and create fragment entities
         FragmentsMap fragments = new FragmentsMap();
@@ -366,17 +396,6 @@ public class SessionImpl implements Session, XAResource {
                 fragments.put(schemaName, fragment);
             }
         }
-
-        // add to hierarchy table
-        // TODO if folder is ordered, we have to compute the pos as max+1...
-        map = new HashMap<String, Serializable>();
-        map.put(model.HIER_PARENT_KEY, parent.mainFragment.getId());
-        map.put(model.HIER_CHILD_NAME_KEY, name);
-        map.put(model.HIER_CHILD_POS_KEY, null);
-        map.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.valueOf(complexProp));
-        SimpleFragment hierRow = (SimpleFragment) context.createSimpleFragment(
-                model.HIER_TABLE_NAME, id, map);
-        // TODO put it in a collection context instead
 
         FragmentGroup rowGroup = new FragmentGroup(mainRow, hierRow, fragments);
 
@@ -412,8 +431,14 @@ public class SessionImpl implements Session, XAResource {
         Serializable childId = childHier.getId();
 
         // get main row
-        SimpleFragment childMain = (SimpleFragment) context.get(
-                model.MAIN_TABLE_NAME, childId, false);
+        SimpleFragment childMain;
+        if (model.separateHierarchyTable) {
+            childMain = (SimpleFragment) context.get(model.mainFragmentName,
+                    childId, false);
+        } else {
+            childMain = childHier;
+            childHier = null;
+        }
         String childTypeName = (String) childMain.get(model.MAIN_PRIMARY_TYPE_KEY);
         DocumentType childType = schemaManager.getDocumentType(childTypeName);
 
@@ -510,20 +535,32 @@ public class SessionImpl implements Session, XAResource {
     private Node addRootNode() throws StorageException {
         Serializable id = context.generateNewId();
 
-        // create the underlying main row
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
-        map.put(model.MAIN_PRIMARY_TYPE_KEY, model.ROOT_TYPE);
-        SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
-                model.MAIN_TABLE_NAME, id, map);
+        // main info
+        Map<String, Serializable> mainMap = new HashMap<String, Serializable>();
+        mainMap.put(model.MAIN_PRIMARY_TYPE_KEY, model.ROOT_TYPE);
 
-        // add to hierarchy table
-        map = new HashMap<String, Serializable>();
-        map.put(model.HIER_PARENT_KEY, null);
-        map.put(model.HIER_CHILD_POS_KEY, null);
-        map.put(model.HIER_CHILD_NAME_KEY, "");
-        map.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.FALSE);
-        SimpleFragment hierRow = (SimpleFragment) context.createSimpleFragment(
-                model.HIER_TABLE_NAME, id, map);
+        // hierarchy info
+        Map<String, Serializable> hierMap;
+        if (model.separateHierarchyTable) {
+            hierMap = new HashMap<String, Serializable>();
+        } else {
+            hierMap = mainMap;
+        }
+        hierMap.put(model.HIER_PARENT_KEY, null);
+        hierMap.put(model.HIER_CHILD_POS_KEY, null);
+        hierMap.put(model.HIER_CHILD_NAME_KEY, "");
+        hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.FALSE);
+
+        SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
+                model.mainFragmentName, id, mainMap);
+
+        SimpleFragment hierRow;
+        if (model.separateHierarchyTable) {
+            hierRow = (SimpleFragment) context.createSimpleFragment(
+                    model.hierFragmentName, id, hierMap);
+        } else {
+            hierRow = null;
+        }
 
         DocumentType type = schemaManager.getDocumentType(model.ROOT_TYPE);
         FragmentGroup rowGroup = new FragmentGroup(mainRow, hierRow, null);

@@ -375,8 +375,12 @@ public class SQLInfo {
     protected void initHierarchySQL() {
         log.debug("Init hierarchy information");
 
-        TableMaker maker = new TableMaker(model.HIER_TABLE_NAME);
-        maker.newPrimaryKey();
+        TableMaker maker = new TableMaker(model.hierFragmentName);
+        if (model.separateHierarchyTable) {
+            maker.newPrimaryKey();
+        } else {
+            maker.newId(); // global primary key / generation
+        }
         maker.newMainKey(model.HIER_PARENT_KEY);
         maker.newColumn(model.HIER_CHILD_POS_KEY, PropertyType.LONG,
                 Types.INTEGER);
@@ -384,8 +388,15 @@ public class SQLInfo {
                 Types.VARCHAR); // text?
         maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, PropertyType.BOOLEAN,
                 Types.BIT); // not null
+        if (!model.separateHierarchyTable) {
+            maker.newColumn(model.MAIN_PRIMARY_TYPE_KEY, PropertyType.STRING,
+                    Types.VARCHAR);
+        }
         maker.postProcess();
         maker.postProcessHierarchy();
+        if (!model.separateHierarchyTable) {
+            maker.postProcessIdGeneration();
+        }
     }
 
     /**
@@ -393,7 +404,7 @@ public class SQLInfo {
      */
     protected void initFragmentSQL(String tableName) {
         TableMaker maker = new TableMaker(tableName);
-        boolean isMain = tableName.equals(model.MAIN_TABLE_NAME);
+        boolean isMain = tableName.equals(model.mainFragmentName);
 
         if (isMain) {
             maker.newId(); // global primary key / generation
@@ -408,7 +419,7 @@ public class SQLInfo {
 
         maker.postProcess();
         if (isMain) {
-            maker.postProcessMain();
+            maker.postProcessIdGeneration();
         }
     }
 
@@ -544,7 +555,7 @@ public class SQLInfo {
         /**
          * Additional SQL for the main table.
          */
-        protected void postProcessMain() {
+        protected void postProcessIdGeneration() {
             switch (model.idGenPolicy) {
             case APP_UUID:
                 break;

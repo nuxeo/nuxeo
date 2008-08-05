@@ -375,13 +375,16 @@ class FragmentsMap extends HashMap<String, Fragment> {
  * Utility class grouping a main {@link Fragment} with a related hierarchy
  * {@link Fragment} and additional fragments.
  * <p>
+ * If the main and hierarchy tables are not separate, then the hierarchy
+ * fragment is unused.
+ * <p>
  * This is all the data needed to describe a {@link Node}.
  */
 class FragmentGroup {
 
-    public final SimpleFragment hier;
-
     public final SimpleFragment main;
+
+    public final SimpleFragment hier;
 
     public final FragmentsMap fragments;
 

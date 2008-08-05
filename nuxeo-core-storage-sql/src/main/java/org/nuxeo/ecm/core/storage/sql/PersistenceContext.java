@@ -76,7 +76,7 @@ public class PersistenceContext {
         contexts = new ConcurrentHashMap<String, Context>();
 
         // avoid doing tests all the time for this known case
-        getContext(model.HIER_TABLE_NAME);
+        getContext(model.hierFragmentName);
         createdIds = new HashSet<Serializable>();
         oldIdMap = new HashMap<Serializable, Serializable>();
     }
@@ -133,7 +133,7 @@ public class PersistenceContext {
         /*
          * First, create the main rows to get final ids for each.
          */
-        Context mainContext = contexts.get(model.MAIN_TABLE_NAME);
+        Context mainContext = contexts.get(model.mainFragmentName);
         Map<Serializable, Serializable> idMap;
         if (mainContext != null) {
             idMap = mainContext.saveMainCreated(createdIds);
@@ -240,7 +240,8 @@ public class PersistenceContext {
      */
     public Fragment getChildById(Serializable id, boolean allowAbsent)
             throws StorageException {
-        return contexts.get(model.HIER_TABLE_NAME).getChildById(id, allowAbsent);
+        return contexts.get(model.hierFragmentName).getChildById(id,
+                allowAbsent);
     }
 
     /**
@@ -255,7 +256,7 @@ public class PersistenceContext {
      */
     public SimpleFragment getChildByName(Serializable parentId, String name,
             boolean complexProp) throws StorageException {
-        return contexts.get(model.HIER_TABLE_NAME).getChildByName(parentId,
+        return contexts.get(model.hierFragmentName).getChildByName(parentId,
                 name, complexProp);
     }
 
@@ -269,7 +270,7 @@ public class PersistenceContext {
      */
     public Collection<SimpleFragment> getChildren(Serializable parentId,
             boolean complexProp) throws StorageException {
-        return contexts.get(model.HIER_TABLE_NAME).getChildren(parentId,
+        return contexts.get(model.hierFragmentName).getChildren(parentId,
                 complexProp);
     }
 
@@ -283,7 +284,7 @@ public class PersistenceContext {
      */
     public void move(Serializable id, Serializable parentId, String name)
             throws StorageException {
-        contexts.get(model.HIER_TABLE_NAME).moveChild(id, parentId, name);
+        contexts.get(model.hierFragmentName).moveChild(id, parentId, name);
     }
 
     /**

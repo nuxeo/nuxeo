@@ -75,13 +75,17 @@ public class Model {
 
     public static final String MAIN_KEY = "id";
 
+    public final String hierFragmentName;
+
+    public final String mainFragmentName;
+
     public static final String MAIN_PRIMARY_TYPE_PROP = "ecm:primaryType";
 
-    public static final String MAIN_TABLE_NAME = "types";
+    private static final String MAIN_TABLE_NAME = "types";
 
     public static final String MAIN_PRIMARY_TYPE_KEY = "primarytype";
 
-    public static final String HIER_TABLE_NAME = "hierarchy";
+    private static final String HIER_TABLE_NAME = "hierarchy";
 
     public static final String HIER_PARENT_KEY = "parent";
 
@@ -145,6 +149,9 @@ public class Model {
     /** The id generation policy. */
     protected final IdGenPolicy idGenPolicy;
 
+    /** Is the hierarchy table separate from the main table. */
+    protected final boolean separateHierarchyTable;
+
     protected final AtomicLong temporaryIdCounter;
 
     /**
@@ -181,8 +188,13 @@ public class Model {
 
     public Model(RepositoryImpl repository, SchemaManager schemaManager) {
         binaryManager = repository.getBinaryManager();
-        idGenPolicy = repository.getRepositoryDescriptor().idGenPolicy;
+        RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
+        idGenPolicy = repositoryDescriptor.idGenPolicy;
+        separateHierarchyTable = repositoryDescriptor.separateHierarchyTable;
         temporaryIdCounter = new AtomicLong(0);
+        hierFragmentName = HIER_TABLE_NAME;
+        mainFragmentName = separateHierarchyTable ? MAIN_TABLE_NAME
+                : HIER_TABLE_NAME;
 
         schemaFragment = new HashMap<String, String>();
         propertyType = new HashMap<String, PropertyType>();
@@ -343,6 +355,9 @@ public class Model {
      * information).
      */
     private void initMainModel() {
+        if (!separateHierarchyTable) {
+            return;
+        }
         String tableName = MAIN_TABLE_NAME;
         String propertyName = MAIN_PRIMARY_TYPE_PROP;
         PropertyType type = PropertyType.STRING;
@@ -354,6 +369,7 @@ public class Model {
         Map<String, PropertyType> fragmentKeysType = new HashMap<String, PropertyType>();
         fragmentsKeysType.put(tableName, fragmentKeysType);
         fragmentKeysType.put(MAIN_PRIMARY_TYPE_KEY, type);
+
     }
 
     /**
