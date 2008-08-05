@@ -59,33 +59,35 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
     }
 
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setValue(Object value) throws PropertyException {
         if (value instanceof Map) {
-            adapter.setMap(getValue(), (Map<String, Object>)value);
+            adapter.setMap(getValue(), (Map<String, Object>) value);
             setIsModified();
         } else {
             super.setValue(value);
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void init(Serializable value) throws PropertyException {
         if (value == null) { // IGNORE null values - properties will be considered PHANTOMS
             return;
         }
         if (value instanceof Map) {
-            internalSetValue((Serializable)adapter.create((Map<String, Object>)value));
+            internalSetValue((Serializable) adapter.create((Map<String, Object>) value));
         } else {
             internalSetValue(value);
         }
-        clearFlags(IS_PHANTOM);
+        removePhantomFlag();
     }
 
 
     @Override
     public void internalSetValue(Serializable value) throws PropertyException {
-        ObjectAdapter adapter = ((Adaptable)parent).getAdapter();
+        ObjectAdapter adapter = ((Adaptable) parent).getAdapter();
         adapter.setValue(parent.getValue(), getName(), value);
     }
 
@@ -97,8 +99,7 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
 
 
     @Override
-    protected Property internalGetChild(Field field)
-            throws UnsupportedOperationException {
+    protected Property internalGetChild(Field field) {
         try {
             ObjectAdapter subAdapter = adapter.getAdapter(field.getName().getPrefixedName());
             if (subAdapter == null) { // a simple property
@@ -126,7 +127,7 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
         if (property == null) {
             return false;
         }
-        ScalarProperty sp = (ScalarProperty)property;
+        ScalarProperty sp = (ScalarProperty) property;
         Object v1 = getValue();
         Object v2 = sp.getValue();
         if (v1 == null) {

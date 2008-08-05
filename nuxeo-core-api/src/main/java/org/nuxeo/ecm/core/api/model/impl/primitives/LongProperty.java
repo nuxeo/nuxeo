@@ -58,38 +58,38 @@ public class LongProperty extends ScalarProperty {
         throw new PropertyConversionException(value.getClass(), Long.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {
         if (value == null || Long.class == toType) {
-            return (T)value;
+            return (T) value;
         }
-        Long v = (Long)value;
+        Long v = (Long) value;
         if (toType == Integer.class) {
-            return (T)new Integer(v.intValue());
+            return (T) new Integer(v.intValue());
         }
         if (toType == String.class) {
-            return (T)v.toString();
+            return (T) v.toString();
         }
         if (toType == Double.class) {
-            return (T)new Double(v.doubleValue());
+            return (T) new Double(v.doubleValue());
         }
         if (toType == Float.class) {
-            return (T)new Float(v.floatValue());
+            return (T) new Float(v.floatValue());
         }
         if (toType == Short.class) {
-            return (T)new Short(v.shortValue());
+            return (T) new Short(v.shortValue());
         }
         if (toType == Byte.class) {
-            return (T)new Byte(v.byteValue());
+            return (T) new Byte(v.byteValue());
         }
         throw new PropertyConversionException(value.getClass(), toType);
     }
 
     @Override
-    public Object newInstance() throws InstantiationException,
-            IllegalAccessException {
-        return new Long(0);
+    public Object newInstance() {
+        return (long) 0;
     }
 
 }
