@@ -94,7 +94,6 @@ public final class CompositionHandler extends TagHandler implements
 
     }
 
-    @SuppressWarnings("unchecked")
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, ELException {
         final VariableMapper orig = ctx.getVariableMapper();

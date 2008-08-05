@@ -33,7 +33,6 @@ public abstract class BaseMVCTag extends UIComponentELTag {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void setProperties(UIComponent component) {
         super.setProperties(component);
 

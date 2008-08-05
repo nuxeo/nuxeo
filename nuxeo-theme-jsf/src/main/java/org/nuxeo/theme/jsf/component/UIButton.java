@@ -42,13 +42,13 @@ public class UIButton extends UIOutput {
     public void encodeAll(final FacesContext context) throws IOException {
         final ResponseWriter writer = context.getResponseWriter();
         Map<String, String> params = new HashMap<String, String>();
-	Map<String, Object> attributes = getAttributes();
-	params.put("identifier", (String) attributes.get("identifier"));
-	params.put("controlledBy", (String) attributes.get("controlledBy"));
-	params.put("switchTo", (String) attributes.get("switchTo"));
-	params.put("link", (String) attributes.get("link"));
-	params.put("label", (String) attributes.get("label"));
-	params.put("classNames", (String) attributes.get("classNames"));
+        Map<String, Object> attributes = getAttributes();
+        params.put("identifier", (String) attributes.get("identifier"));
+        params.put("controlledBy", (String) attributes.get("controlledBy"));
+        params.put("switchTo", (String) attributes.get("switchTo"));
+        params.put("link", (String) attributes.get("link"));
+        params.put("label", (String) attributes.get("label"));
+        params.put("classNames", (String) attributes.get("classNames"));
         writer.write(Button.render(params));
     }
 
