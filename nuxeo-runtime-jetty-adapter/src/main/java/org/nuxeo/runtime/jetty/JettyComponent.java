@@ -144,7 +144,7 @@ public class JettyComponent extends DefaultComponent {
                 File file = new File(home, root);
                 ctx.setDescriptor(file.getAbsolutePath());
             }
-            File defWebXml = new File(Environment.getDefault().getConfig(), "webdefault.xml");
+            File defWebXml = new File(Environment.getDefault().getConfig(), "default-web.xml");
             if (defWebXml.isFile()) {
               ctx.setDefaultsDescriptor(defWebXml.getAbsolutePath());
             }
