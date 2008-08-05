@@ -12,7 +12,7 @@ Using this project you can build the following applications:
     Build syntax: `mvn package` or `mvn package -P shell`
     
 2. Nuxeo Core Server 
-    A minimal server application. An embeded repository will be started. No other platform services are available
+    A minimal server application. An embedded repository will be started. No other platform services are available
     This application can be used to debug, test ot develop nuxeo components that needs a reposiotry connection.
     Remoting will be also available in future via Nuxeo Runtime.
     
