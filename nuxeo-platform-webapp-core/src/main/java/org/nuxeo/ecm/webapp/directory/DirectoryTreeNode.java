@@ -46,8 +46,6 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
  */
 public class DirectoryTreeNode {
 
-    private static final long serialVersionUID = 95125923405389125L;
-
     private static final Log log = LogFactory.getLog(DirectoryTreeNode.class);
 
     private static final String PARENT_FIELD_ID = "parent";

@@ -51,13 +51,12 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.R
  * DocumentModel.
  * <p>
  * This factory is specific to a Nuxeo core <code>DocumentModel</code>. Let's
- * see if we need another kind of non document centric factory in the future.
+ * see if we need another kind of non document-centric factory in the future.
  * This use case may appear if <code>org.nuxeo.ecm.search</code> aims at being
  * an enterprise search standalone engine in the future. Right now, this is not
  * aimed at being the case.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 public final class IndexableResourcesFactory implements Serializable {
 
@@ -125,7 +124,7 @@ public final class IndexableResourcesFactory implements Serializable {
         String docType = dm.getType();
         IndexableDocType docTypeConf = getIndexableDocType(docType);
 
-        // Compute base resources configuration (including automatique schema
+        // Compute base resources configuration (including automatic schema
         // setup)
         List<String> resourceNames = null;
         List<String> autoSchemas = new ArrayList<String>();

@@ -115,7 +115,7 @@ public class AuditIndexableResourceImpl extends AbstractIndexableResource
     }
 
     public String computeId() {
-        return ((Long) logUUID).toString();
+        return Long.toString(logUUID);
     }
 
     @Override

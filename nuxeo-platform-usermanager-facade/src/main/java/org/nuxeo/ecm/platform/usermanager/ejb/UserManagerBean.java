@@ -49,7 +49,7 @@ public class UserManagerBean implements UserManager {
 
     private static final Log log = LogFactory.getLog(UserManagerBean.class);
 
-    private transient UserManager userManager;
+    private UserManager userManager;
 
     @PostConstruct
     public void initialize() {

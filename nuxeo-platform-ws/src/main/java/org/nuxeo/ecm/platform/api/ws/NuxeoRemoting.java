@@ -35,7 +35,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      *
      * @param sid the session id
      * @return the repository name
-     * @throws Exception
+     * @throws ClientException
      */
     String getRepositoryName(String sid) throws ClientException;
 

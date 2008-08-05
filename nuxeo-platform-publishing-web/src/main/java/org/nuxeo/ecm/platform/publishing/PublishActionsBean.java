@@ -40,10 +40,10 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
-import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.remoting.WebRemote;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -229,7 +229,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
      *
      * @author Florent Guillaume
      */
-    protected static abstract class UnrestrictedSessionRunner {
+    protected abstract static class UnrestrictedSessionRunner {
 
         protected String repositoryName;
 

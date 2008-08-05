@@ -59,7 +59,7 @@ public final class DirectoryHelper {
     private final DirectoryService service;
 
     private DirectoryHelper() {
-        DirectoryService dirService= Framework.getLocalService(DirectoryService.class);
+        DirectoryService dirService = Framework.getLocalService(DirectoryService.class);
         if (dirService==null) {
             try {
                 dirService= Framework.getService(DirectoryService.class);
@@ -234,7 +234,7 @@ public final class DirectoryHelper {
     /**
      * Returns the entry with given id from specified directory.
      * <p>
-     * <ethod to use from components, since JSF base class that we extend don't allow
+     * Method to use from components, since JSF base class that we extend don't allow
      * to throw proper exceptions.
      *
      * @param directoryName

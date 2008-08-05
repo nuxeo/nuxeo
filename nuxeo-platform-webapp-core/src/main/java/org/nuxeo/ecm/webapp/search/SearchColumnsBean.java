@@ -133,7 +133,7 @@ public class SearchColumnsBean extends InputController implements SearchColumns,
         ref = ref.replace(ChainSelect.DEFAULT_KEY_SEPARATOR, ":");
         FieldWidget uiField = fieldMap.get(ref);
         if (uiField == null){
-        	return null;
+            return null;
         }
         if (resultColumns.contains(uiField)) {
             FacesContext context = FacesContext.getCurrentInstance();
@@ -294,7 +294,7 @@ public class SearchColumnsBean extends InputController implements SearchColumns,
     }
 
     public void setDefaultResultColumnList(String[] resultColumnList) {
-        this.defaultResultColumns = new ArrayList<FieldWidget>();
+        defaultResultColumns = new ArrayList<FieldWidget>();
         for(String fullName: resultColumnList) {
             defaultResultColumns.add(fieldMap.get(fullName));
         }

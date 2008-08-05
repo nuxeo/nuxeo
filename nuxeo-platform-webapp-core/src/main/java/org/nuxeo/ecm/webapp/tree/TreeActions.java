@@ -40,7 +40,7 @@ import org.richfaces.event.NodeExpandedEvent;
 @Remote
 public interface TreeActions {
 
-    public static final String DEFAULT_TREE_PLUGIN_NAME = "navigation";
+    String DEFAULT_TREE_PLUGIN_NAME = "navigation";
 
     /**
      * Returns tree roots according to current document first accessible parent.

@@ -36,7 +36,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.DialectFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.schema.NXSchema;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -276,7 +275,7 @@ public class SQLDirectory extends AbstractDirectory {
         return table;
     }
 
-    public Dialect getDialect() throws DirectoryException {
+    public Dialect getDialect() {
         return dialect;
     }
 
@@ -284,7 +283,7 @@ public class SQLDirectory extends AbstractDirectory {
      * Gets the dialect, by connecting to the datasource if needed to check what
      * database is used.
      *
-     * @throws DocumentException if a SQL connection problem occurs.
+     * @throws DirectoryException if a SQL connection problem occurs.
      */
     private Dialect buildDialect() throws DirectoryException {
         String dialectName = config.getDialectName();

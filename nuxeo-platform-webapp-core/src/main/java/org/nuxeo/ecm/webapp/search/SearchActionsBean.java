@@ -81,7 +81,6 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
  * @author DM
  *
  */
-
 @Name("searchActions")
 @Scope(ScopeType.CONVERSATION)
 @Transactional
@@ -190,23 +189,23 @@ public class SearchActionsBean extends InputController implements
     }
 
     public void setSimpleSearchKeywords(String k) {
-        this.simpleSearchKeywords = k;
+        simpleSearchKeywords = k;
     }
 
     public String getNxql() {
-        return this.nxql;
+        return nxql;
     }
 
     public void setNxql(String k) {
-        this.nxql = k;
+        nxql = k;
     }
 
     public String getSearchTypeId() {
-        return this.searchTypeId.name();
+        return searchTypeId.name();
     }
 
     public void setSearchTypeId(String type) {
-        this.searchTypeId = SearchType.valueOf(type);
+        searchTypeId = SearchType.valueOf(type);
     }
 
     public String getReindexPath() {
@@ -229,21 +228,21 @@ public class SearchActionsBean extends InputController implements
             // param not set
             return;
         }
-        this.searchTypeId = SearchType.valueOf(type);
+        searchTypeId = SearchType.valueOf(type);
     }
 
     @Observer(value = EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, create = false)
     public void resetSearchField() {
-        this.simpleSearchKeywords = "";
-        this.searchTypeId = SearchType.KEYWORDS;
+        simpleSearchKeywords = "";
+        searchTypeId = SearchType.KEYWORDS;
     }
 
     public String getQueryErrorMsg() {
-        return this.queryErrorMsg;
+        return queryErrorMsg;
     }
 
     public void setQueryErrorMsg(String msg) {
-        this.queryErrorMsg = msg;
+        queryErrorMsg = msg;
     }
 
     @Begin(join = true)
@@ -251,7 +250,7 @@ public class SearchActionsBean extends InputController implements
         // clear the form...
         // TODO add this to CONVERSATION
 
-        this.queryErrorMsg = "";
+        queryErrorMsg = "";
         // this.resultDocuments = null;
 
         return ACTION_PAGE_SEARCH_FORM;
@@ -365,7 +364,8 @@ public class SearchActionsBean extends InputController implements
 
     public SelectDataModel getResultsSelectModel(String providerName)
             throws ClientException {
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(SEARCH_DOCUMENT_LIST,
                 getResultDocuments(providerName), selectedDocuments);
         model.addSelectModelListener(this);

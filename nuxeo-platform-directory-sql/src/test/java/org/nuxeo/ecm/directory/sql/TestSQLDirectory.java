@@ -239,7 +239,6 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void testGetEntries() throws Exception {
         Session session = getSession();
         try {
