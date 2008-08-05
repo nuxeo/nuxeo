@@ -174,4 +174,9 @@ public class ConnectionImpl implements Session {
         return session.getBinary(in);
     }
 
+    public Node move(Node source, Node parent, String name)
+            throws StorageException {
+        return session.move(source, parent, name);
+    }
+
 }

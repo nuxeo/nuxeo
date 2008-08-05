@@ -463,6 +463,13 @@ public class SessionImpl implements Session, XAResource {
         return nodes;
     }
 
+    public Node move(Node source, Node parent, String name)
+            throws StorageException {
+        checkLive();
+        context.move(source.getId(), parent.getId(), name);
+        return source;
+    }
+
     public void removeNode(Node node) throws StorageException {
         checkLive();
         node.remove();
@@ -550,13 +557,6 @@ public class SessionImpl implements Session, XAResource {
     }
 
     public boolean hasPendingChanges() throws StorageException {
-        checkLive();
-        // TODO Auto-generated method stub
-        throw new RuntimeException("Not implemented");
-    }
-
-    public String move(String srcAbsPath, String destAbsPath)
-            throws StorageException {
         checkLive();
         // TODO Auto-generated method stub
         throw new RuntimeException("Not implemented");

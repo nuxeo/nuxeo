@@ -2,7 +2,7 @@ SQL Storage TODO
 
 - checkin/checkout
 
-- copy/move
+- copy
 
 - proxies
 

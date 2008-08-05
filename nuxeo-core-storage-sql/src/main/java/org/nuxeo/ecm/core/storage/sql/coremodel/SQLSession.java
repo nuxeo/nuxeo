@@ -176,8 +176,9 @@ public class SQLSession implements Session {
         try {
             /**
              * Document ids coming from higher level have been turned into
-             * strings (by {@link SQLDocument#getUUID}) but are really Longs for
-             * the backend.
+             * strings (by {@link SQLDocument#getUUID}) but the backend may
+             * actually expect them to be Longs (for database-generated integer
+             * ids).
              */
             Serializable id = session.getModel().unHackStringId(uuid);
             Node node = session.getNodeById(id);
@@ -217,8 +218,13 @@ public class SQLSession implements Session {
             throws DocumentException {
         assert source instanceof SQLDocument;
         assert parent instanceof SQLDocument;
-        // XXX TODO
-        throw new UnsupportedOperationException();
+        try {
+            Node result = session.move(((SQLDocument) source).node,
+                    ((SQLDocument) parent).node, name);
+            return newDocument(result);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
     }
 
     public Document createProxyForVersion(Document parent, Document document,

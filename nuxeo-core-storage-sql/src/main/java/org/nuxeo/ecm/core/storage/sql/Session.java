@@ -183,6 +183,17 @@ public interface Session extends Connection {
     void removeNode(Node node) throws StorageException;
 
     /**
+     * Moves a node to a new location with a new name.
+     *
+     * @param source the node to move
+     * @param parent the new parent to which the node is moved
+     * @param name the new node name
+     * @return the moved node
+     * @throws StorageException
+     */
+    Node move(Node source, Node parent, String name) throws StorageException;
+
+    /**
      * Creates a binary value given an input stream.
      *
      * @param in the input stream

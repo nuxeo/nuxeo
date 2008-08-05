@@ -422,6 +422,61 @@ public class Context {
     }
 
     /**
+     * Move a child to a new parent with a new name.
+     *
+     * @param id the fragment id
+     * @param parentId the destination parent id
+     * @param name the new name
+     * @throws StorageException
+     */
+    public void moveChild(Serializable id, Serializable parentId, String name)
+            throws StorageException {
+        SimpleFragment row = (SimpleFragment) getChildById(id, false);
+        if (row == null) {
+            throw new StorageException("No such document: " + id);
+        }
+        Serializable oldParentId = row.get(model.HIER_PARENT_KEY);
+        String oldName = row.getString(model.HIER_CHILD_NAME_KEY);
+        if (!oldParentId.equals(parentId)) {
+            /*
+             * Sanity check to verify that we don't move under ourselves
+             */
+            Serializable pid = parentId;
+            do {
+                if (pid.equals(id)) {
+                    throw new StorageException(
+                            "Cannot move a node under itself: " + parentId +
+                                    " is under " + id);
+                }
+                SimpleFragment p = (SimpleFragment) getChildById(pid, false);
+                if (p == null) {
+                    // cannot happen
+                    throw new StorageException("No parent: " + pid);
+                }
+                pid = p.get(model.HIER_PARENT_KEY);
+            } while (pid != null);
+        } else if (oldName.equals(name)) {
+            // null move
+            return;
+        }
+        /*
+         * Check that name doesn't already exist.
+         */
+        boolean isComplex = ((Boolean) row.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
+        Fragment prev = getChildByName(parentId, name, isComplex);
+        if (prev != null) {
+            throw new StorageException("Destination name already exists: " + name);
+        }
+        /*
+         * Do the move.
+         */
+        removeChild(row);
+        row.put(model.HIER_PARENT_KEY, parentId);
+        row.put(model.HIER_CHILD_NAME_KEY, name);
+        addChild(row);
+    }
+
+    /**
      * Removes a row from the context.
      *
      * @param fragment

@@ -274,6 +274,19 @@ public class PersistenceContext {
     }
 
     /**
+     * Move a hierarchy fragment to a new parent with a new name.
+     *
+     * @param id the fragment id
+     * @param parentId the destination parent id
+     * @param name the new name
+     * @throws StorageException
+     */
+    public void move(Serializable id, Serializable parentId, String name)
+            throws StorageException {
+        contexts.get(model.HIER_TABLE_NAME).moveChild(id, parentId, name);
+    }
+
+    /**
      * Removes a row.
      *
      * @param row

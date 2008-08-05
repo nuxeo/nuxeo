@@ -25,6 +25,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
+import org.nuxeo.ecm.core.storage.StorageException;
+
 /**
  * @author Florent Guillaume
  */
@@ -247,6 +249,53 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("glop", title2.getString());
 
         // TODO test collections, and children
+    }
+
+    public void testMove() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node foldera = session.addChildNode(root, "folder_a", "TestDoc", false);
+        Serializable prevId = foldera.getId();
+        Node nodea = session.addChildNode(foldera, "node_a", "TestDoc", false);
+        Node nodeac = session.addChildNode(nodea, "node_a_complex", "TestDoc",
+                true);
+        assertEquals("/folder_a/node_a/node_a_complex", session.getPath(nodeac));
+        Node folderb = session.addChildNode(root, "folder_b", "TestDoc", false);
+        session.addChildNode(folderb, "node_b", "TestDoc", false);
+        session.save();
+
+        // cannot move under itself
+        try {
+            session.move(foldera, nodea, "abc");
+            fail();
+        } catch (StorageException e) {
+            // ok
+        }
+
+        // cannot move to name that already exists
+        try {
+            session.move(foldera, folderb, "node_b");
+            fail();
+        } catch (StorageException e) {
+            // ok
+        }
+
+        // do normal move
+        Node node = session.move(foldera, folderb, "yo");
+        assertEquals(prevId, node.getId());
+        assertEquals("yo", node.getName());
+        assertEquals("/folder_b/yo", session.getPath(node));
+        assertEquals("/folder_b/yo/node_a/node_a_complex",
+                session.getPath(nodeac));
+
+        // move higher is allowed
+        node = session.move(node, root, "underr");
+        assertEquals(prevId, node.getId());
+        assertEquals("underr", node.getName());
+        assertEquals("/underr", session.getPath(node));
+        assertEquals("/underr/node_a/node_a_complex", session.getPath(nodeac));
+
+        session.save();
     }
 
 }

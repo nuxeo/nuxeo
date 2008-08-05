@@ -2448,7 +2448,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         assertTrue(session.exists(new PathRef("folder2/file2")));
         assertTrue(session.exists(new PathRef("folder2/" + newName)));
 
-        session.cancel();
+        //session.cancel();
     }
 
     // TODO: fix this test
