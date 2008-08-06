@@ -6,7 +6,7 @@
   
   <artifactSet id="launcher-lib">
     <artifacts>
-      <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-launcher" />
+      <artifact group="org.nuxeo.runtime" name="nuxeo-runtime-launcher" version="${nuxeo.runtime.version}" />
     </artifacts>
   </artifactSet>
 
