@@ -65,70 +65,49 @@ public class FakeSession implements HttpSession {
     }
 
     public long getLastAccessedTime() {
-        // TODO Auto-generated method stub
         return 0;
     }
 
     public int getMaxInactiveInterval() {
-        // TODO Auto-generated method stub
         return 0;
     }
 
     public ServletContext getServletContext() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public HttpSessionContext getSessionContext() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public Object getValue(String name) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public String[] getValueNames() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     public void invalidate() {
-        // TODO Auto-generated method stub
-
     }
 
     public boolean isNew() {
-        // TODO Auto-generated method stub
         return false;
     }
 
     public void putValue(String name, Object value) {
-        // TODO Auto-generated method stub
-
     }
 
     public void removeAttribute(String name) {
-        // TODO Auto-generated method stub
-
     }
 
     public void removeValue(String name) {
-        // TODO Auto-generated method stub
-
     }
 
     public void setAttribute(String name, Object value) {
-        // TODO Auto-generated method stub
-
     }
 
     public void setMaxInactiveInterval(int interval) {
-        // TODO Auto-generated method stub
-
     }
-
-
 
 }

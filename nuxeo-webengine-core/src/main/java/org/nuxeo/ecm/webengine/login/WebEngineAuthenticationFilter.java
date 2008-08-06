@@ -144,7 +144,8 @@ public class WebEngineAuthenticationFilter implements Filter {
         }
     }
 
-    public void clientAuthenticationError(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void clientAuthenticationError(HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
         // ajax request
         if (request.getParameter("caller") != null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed");
@@ -154,7 +155,8 @@ public class WebEngineAuthenticationFilter implements Filter {
         }
     }
 
-    public void basicAuthenticationError(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void basicAuthenticationError(HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
       //***We weren't sent a valid username/password in the header, so ask for one***
       response.setHeader("WWW-Authenticate","Basic realm=\"WebEngine Authentication\"");
       response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication Failed");
@@ -186,7 +188,8 @@ public class WebEngineAuthenticationFilter implements Filter {
 
     /**
      * If a request contains the "nuxeo@@login" parameter a login will be performed using
-     * 'userid' and 'password' parameters. If the 'userid' is null (not specified by the client) a logout will be performed.
+     * 'userid' and 'password' parameters. If the 'userid' is null (not specified by the client),
+     * a logout will be performed.
      *
      * @param httpRequest
      * @return

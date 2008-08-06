@@ -63,13 +63,12 @@ public class ActionDescriptor {
 
 
     public ActionDescriptor() {
-        // TODO Auto-generated constructor stub
     }
 
     public ActionDescriptor(String id, String path, Class<ActionHandler> handler, Guard guard) {
         this.id = id;
-        this.script = path;
-        this.handlerClass = handler;
+        script = path;
+        handlerClass = handler;
         this.guard = guard;
     }
 
