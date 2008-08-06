@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.Principal;
 
+import javax.security.auth.Subject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -34,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -111,6 +113,10 @@ public class WebEngineAuthenticationFilter implements Filter {
 //            throw new ServletException("Failed to perform authentication", e);
             e.printStackTrace();
             // do nothing
+        } finally {
+            if (propagator == null) { // remove login information
+                ClientLoginModule.getThreadLocalLogin().clear();
+            }
         }
     }
 
@@ -129,6 +135,11 @@ public class WebEngineAuthenticationFilter implements Filter {
         // if any propagator was registered propagate now the authentication
         if (propagator != null) {
             propagator.propagate(userSession);
+        } else { //default propagator - initialize the core LocalSession
+            Principal principal = userSession.getPrincipal();
+            Object credentials = userSession.getCredentials();
+            Subject subject = userSession.getSubject();
+            ClientLoginModule.getThreadLocalLogin().push(principal, credentials, subject);
         }
     }
 
