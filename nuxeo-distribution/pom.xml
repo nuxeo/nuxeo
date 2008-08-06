@@ -33,23 +33,23 @@
       </activation>
       <modules>
         <module>nuxeo-application-base</module>
-	      <module>nuxeo-shell-template</module>
+        <module>nuxeo-shell-template</module>
       </modules>      
     </profile>
     <profile>
       <id>jetty</id>
       <modules>
         <module>nuxeo-application-base</module>
-	<module>nuxeo-server-template</module>
-	<module>nuxeo-jetty-template</module>
+        <module>nuxeo-server-template</module>
+        <module>nuxeo-jetty-template</module>
       </modules>
     </profile>
     <profile>
       <id>gf3</id>
       <modules>
         <module>nuxeo-application-base</module>
-	      <module>nuxeo-server-template</module>
-	      <module>nuxeo-gf3-template</module>
+        <module>nuxeo-server-template</module>
+        <module>nuxeo-gf3-template</module>
       </modules>
     </profile>
     <profile>
@@ -231,11 +231,11 @@
         <version>${nuxeo.core.version}</version>
       </dependency>
 
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>osgi-core</artifactId>
-      <version>4.1</version>
-    </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>osgi-core</artifactId>
+        <version>4.1</version>
+      </dependency>
 
       <!-- jboss client -->
       <dependency>
