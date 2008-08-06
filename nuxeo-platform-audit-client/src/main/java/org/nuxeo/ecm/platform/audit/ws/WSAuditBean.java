@@ -160,6 +160,52 @@ public class WSAuditBean extends AbstractNuxeoWebService implements WSAudit {
     }
 
     @WebMethod
+    public ModifiedDocumentDescriptorPage listDeletedDocumentsByPage(
+            @WebParam(name = "sessionId")
+            String sessionId, @WebParam(name = "dataRangeQuery")
+            String dateRangeQuery, @WebParam(name = "docPath")
+            String path, @WebParam(name = "pageIndex")
+            int page, @WebParam(name = "pageSize")
+            int pageSize) throws AuditException {
+
+        try {
+            initSession(sessionId);
+        } catch (ClientException ce) {
+            throw new AuditException(ce.getMessage(), ce);
+        }
+
+        String[] eventIds = new String[0];
+
+        eventIds[0]="documentRemoved";
+
+        List<LogEntry> logEntries = getLogsBean().queryLogsByPage(eventIds,
+                dateRangeQuery, "eventDocumentCategory", path, page, pageSize);
+
+        boolean hasMorePage = false;
+        if (logEntries.size() < pageSize) {
+            hasMorePage = false;
+        } else {
+            hasMorePage = true;
+        }
+
+        List<ModifiedDocumentDescriptor> ldocs = new ArrayList<ModifiedDocumentDescriptor>();
+        Set<String> uuids = new HashSet<String>();
+        for (LogEntry logEntry : logEntries) {
+            if (!uuids.contains(logEntry.getDocUUID())) {
+                uuids.add(logEntry.getDocUUID());
+                ldocs.add(new ModifiedDocumentDescriptor(
+                        logEntry.getEventDate(), logEntry.getDocType(),
+                        logEntry.getDocUUID()));
+            }
+        }
+
+        ModifiedDocumentDescriptor[] docs = new ModifiedDocumentDescriptor[ldocs.size()];
+        ldocs.toArray(docs);
+
+        return new ModifiedDocumentDescriptorPage(docs, page, hasMorePage);
+    }
+
+    @WebMethod
     public EventDescriptorPage listEventsByPage(@WebParam(name = "sessionId")
     String sessionId, @WebParam(name = "dataRangeQuery")
     String dateRangeQuery, @WebParam(name = "pageIndex")
