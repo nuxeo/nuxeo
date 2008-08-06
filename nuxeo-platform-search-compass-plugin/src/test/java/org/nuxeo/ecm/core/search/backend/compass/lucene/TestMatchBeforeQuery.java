@@ -42,7 +42,7 @@ public class TestMatchBeforeQuery extends TestCase {
      * @author <a href="mailto:gracinet@nuxeo.com">Georges Racinet</a>
      *
      */
-    class TP {
+    private static class TP {
         private final int doc;
         private final int pos;
         private boolean used;
@@ -55,7 +55,7 @@ public class TestMatchBeforeQuery extends TestCase {
 
         public int nextPosition() {
             if (used) {
-                throw new RuntimeException("Already used !");
+                throw new IllegalStateException("Already used !");
             }
             used = true;
             return pos;
@@ -173,7 +173,6 @@ public class TestMatchBeforeQuery extends TestCase {
                 required, excluded);
         return query.new MatchBeforeScorer(allowedTps,
                 excludedTps, null);
-
     }
 
     @Override

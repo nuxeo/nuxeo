@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0"?>
 <datasources>
   <!-- 
   Link datasource to point to NuxeoDS.
@@ -11,4 +10,3 @@
     <attribute name="FromName">java:/nxworkflowdocument</attribute>
   </mbean>
 </datasources>
-

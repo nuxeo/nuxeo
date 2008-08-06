@@ -36,7 +36,7 @@ public class TestMultiThreadingFSDir extends NXRuntimeTestCase {
 
     protected SearchService service;
 
-    static protected final String ENGINE_NAME = "compass";
+    protected static final String ENGINE_NAME = "compass";
 
     @Override
     public void setUp() throws Exception {
@@ -94,7 +94,7 @@ public class TestMultiThreadingFSDir extends NXRuntimeTestCase {
         return (SearchServiceInternals) service;
     }
 
-    public SearchEngineBackend getBackend() throws Exception {
+    public SearchEngineBackend getBackend() {
         return getSearchServiceInternals().getSearchEngineBackendByName(
                 ENGINE_NAME);
     }
@@ -129,7 +129,6 @@ public class TestMultiThreadingFSDir extends NXRuntimeTestCase {
         System.out.println((NB_DOCS * 1000) / timer.getDuration() + " resources/sec");
 
         System.out.println("DONE............................... !");
-
     }
 
 }

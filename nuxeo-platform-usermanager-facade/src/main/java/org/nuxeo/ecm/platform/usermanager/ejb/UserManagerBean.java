@@ -49,9 +49,7 @@ public class UserManagerBean implements UserManager {
 
     private static final Log log = LogFactory.getLog(UserManagerBean.class);
 
-    private static final EJBExceptionHandler exceptionHandler = new EJBExceptionHandler();
-
-    private transient UserManager userManager;
+    private UserManager userManager;
 
     @PostConstruct
     public void initialize() {
@@ -62,6 +60,7 @@ public class UserManagerBean implements UserManager {
         if (userManager == null) {
             userManager = Framework.getLocalService(UserManager.class);
         }
+
         return userManager;
     }
 
@@ -72,7 +71,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().checkUsernamePassword(username, password);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -81,7 +80,7 @@ public class UserManagerBean implements UserManager {
             return getUserManager().validatePassword(password);
         } catch (Throwable e) {
             log.error("getAvailablePrincipals failed", e);
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -90,7 +89,7 @@ public class UserManagerBean implements UserManager {
             return getUserManager().getAvailablePrincipals();
         } catch (Throwable e) {
             log.error("getAvailablePrincipals failed", e);
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -98,7 +97,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getPrincipal(username);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -108,7 +107,7 @@ public class UserManagerBean implements UserManager {
         try {
             getUserManager().createGroup(group);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -117,7 +116,7 @@ public class UserManagerBean implements UserManager {
         try {
             getUserManager().createPrincipal(principal);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -126,7 +125,7 @@ public class UserManagerBean implements UserManager {
         try {
             getUserManager().updatePrincipal(principal);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -134,7 +133,7 @@ public class UserManagerBean implements UserManager {
         try {
             getUserManager().deleteGroup(group);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -143,7 +142,7 @@ public class UserManagerBean implements UserManager {
         try {
             getUserManager().deletePrincipal(principal);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -151,7 +150,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getAvailableGroups();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -159,7 +158,7 @@ public class UserManagerBean implements UserManager {
         try {
             getUserManager().updateGroup(group);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -168,7 +167,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().searchPrincipals(name);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -177,7 +176,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().searchByMap(filter, pattern);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -185,7 +184,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().searchGroups(pattern);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -193,7 +192,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getGroup(groupName);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -201,7 +200,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getModelForUser(name);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -210,7 +209,6 @@ public class UserManagerBean implements UserManager {
     }
 
     public void setDefaultGroup(String defaultGroup) {
-
         getUserManager().setDefaultGroup(defaultGroup);
     }
 
@@ -218,7 +216,7 @@ public class UserManagerBean implements UserManager {
         try {
             getUserManager().setRootLogin(defaultRootLogin);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -226,7 +224,7 @@ public class UserManagerBean implements UserManager {
         try {
             getUserManager().setUserSortField(sortField);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -234,7 +232,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getUserSortField();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -242,7 +240,7 @@ public class UserManagerBean implements UserManager {
         try {
             getUserManager().setGroupSortField(sortField);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -250,7 +248,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getUserListingMode();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -259,7 +257,7 @@ public class UserManagerBean implements UserManager {
         try {
             getUserManager().setUserListingMode(userListingMode);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -267,7 +265,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getGroupListingMode();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -276,7 +274,7 @@ public class UserManagerBean implements UserManager {
         try {
             getUserManager().setGroupListingMode(groupListingMode);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -285,7 +283,7 @@ public class UserManagerBean implements UserManager {
         try {
             getUserManager().setUserDirectoryName(userDirectoryName);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -293,7 +291,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getUserDirectoryName();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -301,7 +299,7 @@ public class UserManagerBean implements UserManager {
         try {
             getUserManager().setUserEmailField(userEmailField);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -309,7 +307,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getUserEmailField();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -318,7 +316,7 @@ public class UserManagerBean implements UserManager {
         try {
             getUserManager().setUserSearchFields(userSearchFields);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -326,7 +324,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getUserSearchFields();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -335,7 +333,7 @@ public class UserManagerBean implements UserManager {
         try {
             getUserManager().setGroupDirectoryName(groupDirectoryName);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -343,7 +341,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getGroupDirectoryName();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -352,7 +350,7 @@ public class UserManagerBean implements UserManager {
         try {
             getUserManager().setGroupMembersField(groupMembersField);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -360,7 +358,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getGroupMembersField();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -369,7 +367,7 @@ public class UserManagerBean implements UserManager {
         try {
             getUserManager().setGroupSubGroupsField(groupSubGroupsField);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -377,7 +375,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getGroupSubGroupsField();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -386,7 +384,7 @@ public class UserManagerBean implements UserManager {
         try {
             getUserManager().setGroupParentGroupsField(groupParentGroupsField);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -394,7 +392,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getGroupParentGroupsField();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -403,7 +401,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getGroupsInGroup(parentId);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -411,7 +409,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getTopLevelGroups();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -419,7 +417,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getUsersInGroup(groupId);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -427,7 +425,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().areGroupsReadOnly();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -435,7 +433,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().areUsersReadOnly();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -443,23 +441,25 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getUserPasswordPattern();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
-    public void setUserPasswordPattern(Pattern userPasswordPattern) throws ClientException {
+    public void setUserPasswordPattern(Pattern userPasswordPattern)
+            throws ClientException {
         try {
             getUserManager().setUserPasswordPattern(userPasswordPattern);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
-    public void setAnonymousUser(Map<String, String> anonymousUser) throws ClientException {
+    public void setAnonymousUser(Map<String, String> anonymousUser)
+            throws ClientException {
         try {
             getUserManager().setAnonymousUser(anonymousUser);
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
 
@@ -467,8 +467,7 @@ public class UserManagerBean implements UserManager {
         try {
             return getUserManager().getAnonymousUserId();
         } catch (Throwable e) {
-            throw exceptionHandler.wrapException(e);
+            throw EJBExceptionHandler.wrapException(e);
         }
     }
-
 }

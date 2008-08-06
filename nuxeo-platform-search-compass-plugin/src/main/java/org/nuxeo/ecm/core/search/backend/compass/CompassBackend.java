@@ -114,7 +114,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
 
     private static final Object PT_CONNECTION = "connection";
 
-    private static Lock optimizerLock = new ReentrantLock();
+    private static final Lock optimizerLock = new ReentrantLock();
 
     private static final int OPTIMIZER_SAVE_INTERVAL = 20;
 
@@ -129,7 +129,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
 
     // @SuppressWarnings("unchecked")
     // protected final Map sessions = new ReferenceMap();
-    protected final Map sessions = new ConcurrentHashMap<String, CompassBackendSession>();
+    protected final Map<String, CompassBackendSession> sessions = new ConcurrentHashMap<String, CompassBackendSession>();
 
     // :XXX: move this to Nuxeo runtime to be sure it's loaded before any
     // modules that may initialze Lucene before this one. Though, we need to
@@ -241,7 +241,6 @@ public class CompassBackend extends AbstractSearchEngineBackend {
                     new HashMap<String, Serializable>(), null);
         }
         return builder.toResource();
-
     }
 
     /**
@@ -306,7 +305,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
             }
             if (!userTxn || mustCommitNow(session.countWaitingResources())) {
                 session.saveAndCommit(userTxn);
-                if (userTxn) {
+                if (userTxn){
                     doOptimize();
                     markForRecycling();
                 }
@@ -337,10 +336,8 @@ public class CompassBackend extends AbstractSearchEngineBackend {
      * It's quite possible that Compass could do a better join of handling joins
      * etc by its own concept of MultiResource.
      */
-    @SuppressWarnings("unchecked")
     public void index(ResolvedResources resources) throws IndexingException {
 
-        boolean newTxn = false;
         boolean activeTxn = false;
         boolean userTxn;
         CompassBackendSession session;
@@ -363,17 +360,17 @@ public class CompassBackend extends AbstractSearchEngineBackend {
                 throw new IndexingException(e);
             }
 
-            session = (CompassBackendSession) sessions.get(sid);
+            session = sessions.get(sid);
 
-            if (session == null)
+            if (session == null) {
                 throw new IndexingException(
                         "CompassBackend session is null for thread "
                                 + thread.toString());
+            }
 
             try {
                 if (!activeTxn) {
                     Transactions.getUserTransaction().begin();
-                    newTxn = true;
                 }
                 session.begin(getCompass());
             } catch (Exception e) {
@@ -396,7 +393,6 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         } finally {
             // Nothing to do
         }
-
     }
 
     private void doOptimize() {
@@ -405,7 +401,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
                 optimize_try += 1;
                 if ((optimize_try >= OPTIMIZER_SAVE_INTERVAL)
                         && (getCompass().getSearchEngineOptimizer().needOptimization())) {
-                    optimize_try = 0;
+                    optimize_try=0;
                     log.debug("Running optimizer");
                     getCompass().getSearchEngineOptimizer().optimize();
                     log.debug("Optimizer ended");
@@ -794,8 +790,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         }
     }
 
-    protected NativeQuery convertToNativeQuery(ComposedNXQuery query)
-            throws SearchException {
+    protected NativeQuery convertToNativeQuery(ComposedNXQuery query) {
         return new CompassNativeQuery(query.getQuery(), name,
                 query.getSearchPrincipal());
     }
@@ -826,7 +821,6 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         return s;
     }
 
-    @SuppressWarnings("unchecked")
     public SearchServiceSession createSession() {
         SearchServiceSession s = new SearchServiceSessionImpl();
         return createSession(s.getSessionId());
@@ -847,12 +841,11 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         // Hack for IndexManager to not be created to avoid thread leak
         // conf.getSettings().setFloatSetting(LuceneEnvironment.SearchEngineIndex.INDEX_MANAGER_SCHEDULE_INTERVAL,
         // -1f);
-        Compass cps = conf.buildCompass();
 
-        return cps;
+        return conf.buildCompass();
     }
 
-    protected boolean isBoundToIndexingThread() {
+    protected static boolean isBoundToIndexingThread() {
         return Thread.currentThread() instanceof IndexingThread;
     }
 
@@ -869,11 +862,10 @@ public class CompassBackend extends AbstractSearchEngineBackend {
     protected void saveSession(CompassBackendSession cs)
             throws IndexingException {
 
-        boolean userTxn = false;
-
         try {
             boolean activeTxn = Transactions.isTransactionActiveOrMarkedRollback();
-            if ((!activeTxn)) {
+            boolean userTxn = false;
+            if (!activeTxn) {
                 Transactions.getUserTransaction().begin();
                 userTxn = true;
             } else if (activeTxn && isBoundToIndexingThread()) {
@@ -891,17 +883,18 @@ public class CompassBackend extends AbstractSearchEngineBackend {
         } catch (Exception e) {
             throw new IndexingException(e);
         }
-
     }
 
     protected boolean mustCommitNow(int queuedNonComitedResources) {
         int configuredSize = getIndexingDocBatchSize();
 
         // max batch size reached => comit
-        if (queuedNonComitedResources >= configuredSize)
+        if (queuedNonComitedResources >= configuredSize) {
             return true;
+        }
 
         long nbThreads = searchService.getNumberOfIndexingThreads();
+
         if (nbThreads == 0) {
             log.debug("reducing batch size to " + queuedNonComitedResources);
             return true;
@@ -925,7 +918,6 @@ public class CompassBackend extends AbstractSearchEngineBackend {
             log.debug("reducing batch size to " + queuedNonComitedResources);
             return true;
         }
-
         return false;
     }
 
