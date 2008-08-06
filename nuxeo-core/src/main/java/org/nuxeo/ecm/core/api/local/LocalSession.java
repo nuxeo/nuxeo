@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -56,6 +57,20 @@ public class LocalSession extends AbstractSession {
                 }
             } else {
                 sessionContext = new HashMap<String, Serializable>();
+            }
+            if (principal == null) {
+                LoginStack.Entry entry = ClientLoginModule.getCurrentLogin();
+                if (entry != null) {
+                    Principal p = entry.getPrincipal();
+                    if (p instanceof NuxeoPrincipal) {
+                        principal = (NuxeoPrincipal)p;
+                    } else if (LoginComponent.isSystemLogin(p)) {
+                     // TODO: must use SystemPrincipal from nuxeo-platform-login
+                        principal = new UserPrincipal("system");
+                    } else {
+                        throw new Error("Unsupported principal: "+p.getClass());
+                    }
+                }
             }
             // store the principal in the core session context so that other core tools may retrieve it
             sessionContext.put("principal", principal);
