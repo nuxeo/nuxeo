@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.edit.vocabularies;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
+import java.io.Serializable;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,7 +52,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -117,7 +118,7 @@ public class VocabularyActionsBean implements VocabularyActions {
     protected transient FacesMessages facesMessages;
 
     @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
+    protected transient ResourcesAccessor resourcesAccessor;
 
     @Begin(join = true)
     @Create
@@ -168,7 +169,6 @@ public class VocabularyActionsBean implements VocabularyActions {
                 resourcesAccessor.getMessages().get(message));
         showAddEntryForm = false;
         return "view_vocabularies";
-
     }
 
     public String addVocabularyEntry() throws ClientException {
@@ -317,7 +317,9 @@ public class VocabularyActionsBean implements VocabularyActions {
         return "view_vocabularies";
     }
 
-    static class VocabularyComparator implements Comparator<String> {
+    private static class VocabularyComparator implements Comparator<String>, Serializable {
+
+        private static final long serialVersionUID = -3178630590907764894L;
 
         // use locale?
         static final Collator collator = Collator.getInstance();

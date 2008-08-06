@@ -41,26 +41,23 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
  *
  */
 public interface ECServer {
+
     /**
      * Removes the instance from the container once the client has no more
      * business with it. It will also disconnect the session.
-     * @throws DocumentException
      *
+     * @throws ClientException
      */
     void remove() throws ClientException;
 
     /**
      * Returns the available repository locations.
-     *
-     * @return
      */
     List<RepositoryLocation> getAvailableRepositoryLocations();
 
     /**
      * Returns the list of authorized principals that can make modifications to
      * the storage associated with the server.
-     *
-     * @return
      */
     List<Principal> getAuthorizedPrincipals();
 
@@ -77,4 +74,5 @@ public interface ECServer {
      *  there's no repository available for that name
      */
     RepositoryLocation getRepositoryLocationForName(String repName);
+
 }

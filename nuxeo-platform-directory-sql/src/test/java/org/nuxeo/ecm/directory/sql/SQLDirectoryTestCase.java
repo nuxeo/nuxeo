@@ -59,11 +59,6 @@ public abstract class SQLDirectoryTestCase extends NXRuntimeTestCase {
                 "test-sql-directories-bundle.xml");
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     protected static Session getSession(String dirName)
             throws ClientException {
         DirectoryService dirService =

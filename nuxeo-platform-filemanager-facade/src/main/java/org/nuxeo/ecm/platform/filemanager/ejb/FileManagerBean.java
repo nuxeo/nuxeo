@@ -78,10 +78,7 @@ public class FileManagerBean implements FileManager {
     }
 
     private CoreSession validateSession(CoreSession dm) throws Exception {
-        String sid = null;
-
-        sid = dm.getSessionId();
-
+        String sid = dm.getSessionId();
 
         if (CoreInstance.getInstance().isSessionStarted(sid)) {
             // session exists locally : use it :)
@@ -180,7 +177,6 @@ public class FileManagerBean implements FileManager {
         } catch (QueryException e) {
             throw new QueryException(e);
         }
-
     }
 
     public boolean isFileAlreadyPresentInPath(String path, String digest,
@@ -209,8 +205,7 @@ public class FileManagerBean implements FileManager {
                 docType);
     }
 
-    public String getDigestAlgorithm()
-    {
+    public String getDigestAlgorithm() {
         try {
             return getFileManagerService().getDigestAlgorithm();
         } catch (ClientException e) {
@@ -218,12 +213,12 @@ public class FileManagerBean implements FileManager {
         }
     }
 
-    public boolean isDigestComputingEnabled()
-    {
+    public boolean isDigestComputingEnabled() {
         try {
             return getFileManagerService().isDigestComputingEnabled();
         } catch (ClientException e) {
             return false;
         }
     }
+
 }
