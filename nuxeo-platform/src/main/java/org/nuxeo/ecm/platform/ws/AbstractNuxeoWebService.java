@@ -76,14 +76,22 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
 
     @PermitAll
     @WebMethod
-    public String connect(String username, String password)
-            throws ClientException {
+    public String connectOnRepository(String username, String password, String repositoryName) throws ClientException
+    {
         String sid = null;
         try {
             // :FIXME: won't work all the time...
             LoginContext loginContext = Framework.login();
             RepositoryManager mgr = Framework.getService(RepositoryManager.class);
-            Repository repository = mgr.getDefaultRepository();
+            Repository repository=null;
+            if (repositoryName==null)
+            {
+                repository = mgr.getDefaultRepository();
+            }
+            else
+            {
+                repository = mgr.getRepository(repositoryName);
+            }
             loginContext.logout();
             sid = _connect(username, password, repository);
         } catch (Exception e) {
@@ -91,6 +99,14 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
         }
         return sid;
     }
+
+    @PermitAll
+    @WebMethod
+    public String connect(String username, String password)
+            throws ClientException {
+        return connectOnRepository(username, password, null);
+    }
+
 
     /*
      * @PermitAll @WebMethod public String connect(String username, String

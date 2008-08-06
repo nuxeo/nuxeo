@@ -160,7 +160,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
             String uuid) throws ClientException;
 
     /**
-     * Returns the document blobs only.
+     * Returns the document blobs only using byte[] format
      *
      * @param uuid the uuid of the document.
      * @return an array of document blob instances.
@@ -168,6 +168,17 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      */
     DocumentBlob[] getDocumentBlobs(String sid, String uuid)
             throws ClientException;
+
+    /**
+     * Returns the document blobs only.
+     *
+     * @param uuid the uuid of the document.
+     * @param useDownloadUrl defines if blob are exported as download url or as byte|[]
+     * @return an array of document blob instances.
+     * @throws ClientException
+     */
+    DocumentBlob[] getDocumentBlobsExt(String sid, String uuid, boolean useDownloadUrl)
+    throws ClientException;
 
     /**
      * Returns the merged ACL of the document (contains all ACEs defined on the
@@ -263,6 +274,7 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
 
     /**
      * Gets all properties and ACLs from a document
+     * uses byte[] format to export blob
      * @param sid the session id
      * @param uuid the doc uuid
      * @return
@@ -270,4 +282,13 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      */
     DocumentSnapshot getDocumentSnapshot(String sid, String uuid) throws ClientException;
 
+    /**
+     * Gets all properties and ACLs from a document
+     * @param sid the session id
+     * @param uuid the doc uuid
+     * @param useDownloadUrl define blob export format
+     * @return
+     * @throws ClientException
+     */
+    DocumentSnapshot getDocumentSnapshotExt(String sid, String uuid, boolean useDownloadUrl) throws ClientException;
 }
