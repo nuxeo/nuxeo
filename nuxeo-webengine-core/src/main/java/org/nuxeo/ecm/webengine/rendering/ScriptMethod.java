@@ -27,6 +27,7 @@ import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.servlet.WebServlet;
 
+import freemarker.ext.beans.StringModel;
 import freemarker.template.AdapterTemplateModel;
 import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateCollectionModel;
@@ -56,27 +57,31 @@ public class ScriptMethod implements TemplateMethodModelEx {
         }
         src = val.getAsString();
 
-        Map<String,Object> args = null;
+        Map<String,Object> args = new HashMap<String, Object>();
         if (arguments.size() > 1) {
             Object o = arguments.get(1);
-            if (!(o instanceof TemplateHashModelEx)) {
+            if (o instanceof SimpleScalar) {
+                String arg = ((SimpleScalar)o).getAsString();
+                args.put("_args", new String[] {arg});
+            } else if (!(o instanceof TemplateHashModelEx)) {
                 throw new TemplateModelException("second argument should be a map");
-            }
-            TemplateHashModelEx t = (TemplateHashModelEx)o;
-            TemplateCollectionModel keys = t.keys();
-            TemplateModelIterator it = keys.iterator();
-            args = new HashMap<String, Object>();
-            while (it.hasNext()) {
-                TemplateModel k = it.next();
-                String kk = k.toString();
-                TemplateModel v = t.get(kk);
-                Object vv = null;
-                if (v instanceof AdapterTemplateModel) {
-                    vv = ((AdapterTemplateModel)v).getAdaptedObject(null);
-                } else {
-                    vv = v.toString();
+            } else {
+                TemplateHashModelEx t = (TemplateHashModelEx)o;
+                TemplateCollectionModel keys = t.keys();
+                TemplateModelIterator it = keys.iterator();
+
+                while (it.hasNext()) {
+                    TemplateModel k = it.next();
+                    String kk = k.toString();
+                    TemplateModel v = t.get(kk);
+                    Object vv = null;
+                    if (v instanceof AdapterTemplateModel) {
+                        vv = ((AdapterTemplateModel)v).getAdaptedObject(null);
+                    } else {
+                        vv = v.toString();
+                    }
+                    args.put(kk, vv);
                 }
-                args.put(kk, vv);
             }
         }
 
