@@ -17,7 +17,7 @@ Using this project you can build the following applications:
   This application can be used to connect to remote nuxeo servers for debugging,
   browsing or administration stuff.
 
-  Build syntax: `mvn package` or `mvn package -P shell`
+  Build syntax: `mvn install package` or `mvn install package -P shell`
     
 2. Nuxeo Core Server 
 
@@ -29,7 +29,7 @@ Using this project you can build the following applications:
   
   Remoting will be also available in the future via Nuxeo Runtime.
   
-  Build syntax: `mvn package -P core`
+  Build syntax: `mvn install package -P core`
     
 3. Nuxeo Jetty Server
   
@@ -39,7 +39,7 @@ Using this project you can build the following applications:
   
   This is also known as Nuxeo WebEngine (based on Jetty).
 
-  Build syntax: `mvn package -P jetty`
+  Build syntax: `mvn install package -P jetty`
    
 4. Nuxeo GF3 Server
   
@@ -52,7 +52,7 @@ Using this project you can build the following applications:
   In the future, this application will provide a full installation of Nuxeo
   (including EJBs, JMS, etc).
 
-  Build syntax: `mvn package -P gf3`
+  Build syntax: `mvn install package -P gf3`
   
 Extending
 ---------
