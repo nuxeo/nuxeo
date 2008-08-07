@@ -114,7 +114,7 @@
       <artifact group="org.richfaces.framework" name="richfaces-api"
         version="3.2.1.GA" />
       <artifact group="org.richfaces.framework" name="richfaces-impl"
-        version="3.2.1.GA" />
+        version="3.2.1.GA-NX" />
       <artifact group="org.richfaces.ui" name="richfaces-ui" version="3.2.1.GA" />
       <artifact group="org.apache.directory.server"
         name="apacheds-protocol-shared" version="1.5.1" />
