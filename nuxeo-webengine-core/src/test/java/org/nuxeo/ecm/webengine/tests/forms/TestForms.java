@@ -75,6 +75,22 @@ public class TestForms extends NXRuntimeTestCase {
         data.setField("my:age", ""); // age is not required
         assertTrue(form.getField("my:age").validate(data).isOk());
 
+        data.setField("dc:title", ""); // title is required
+        assertFalse(form.getField("dc:title").validate(data).isOk());
+        data.setField("dc:title", (String)null); // title is required
+        assertFalse(form.getField("dc:title").validate(data).isOk());
+
+        data.setField("dc:title", "My little title");
+        assertTrue(form.getField("dc:title").validate(data).isOk());
+        data.setField("dc:title", "My    little     title");
+        assertTrue(form.getField("dc:title").validate(data).isOk());
+        data.setField("dc:title", "My very little title");
+        assertFalse(form.getField("dc:title").validate(data).isOk());
+        data.setField("dc:title", "My title");
+        assertFalse(form.getField("dc:title").validate(data).isOk());
+        data.setField("dc:title", "My title 2");
+        assertFalse(form.getField("dc:title").validate(data).isOk());
+
 
     }
 
