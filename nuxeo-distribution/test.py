@@ -69,6 +69,8 @@ def waitForServer(timeout=60):
             ok = False
             break
     assert ok
+    # Just in case...
+    time.sleep(5)
 
 # Test scripts 
 
