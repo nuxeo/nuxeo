@@ -12,10 +12,9 @@
   -->
 
   <service>
-    <provide
-      interface="org.nuxeo.ecm.webengine.WebEngine" />
-      <provide
-      interface="org.nuxeo.ecm.webengine.util.FileChangeNotifier" />
+  	<provide interface="org.nuxeo.ecm.webengine.WebEngine" />
+  	<provide
+  		interface="org.nuxeo.ecm.webengine.util.FileChangeNotifier" />
   </service>
 
   <extension-point name="rendering-extension">
@@ -149,6 +148,52 @@
 
     <object
       class="org.nuxeo.ecm.webengine.ConfigurationFileDescriptor" />
+  </extension-point>
+
+  <extension-point name="form">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Defines form templates to be used to validate web forms.
+    <code>
+      <form id="MyForm">
+        <!-- a simple regex constraint -->
+        <field id="dc:title" required="true" min-length="3">
+          <label>Title</label>
+          <constraints>
+            <like>regex</like>
+          </constraints>
+        </field>
+        <!-- example of composite constraints -->
+        <field id="my:age" required="false" type="integer">
+          <label>Age</label>
+          <constraints>
+            <lt>70</lt>
+            <gteq>20</gteq>
+            <or>
+              <not><eq>50</eq></not>
+            </or>
+          </constraints>
+        </field>
+        <!-- example of enumerations-->
+        <field id="my:country" required="false" type="string">
+          <label>Country</label>
+          <constraints>
+            <enum>France Belgium USA Romania</enum>
+          </constraints>
+        </field>
+        <!-- example of references to other fields -->
+        <field id="confirm_email" required="false" type="string">
+          <label>Confirm E-Mail</label>
+          <constraints>
+            <eq ref="my:email" />
+          </constraints>
+        </field>
+      </form>
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.forms.validation.Form" />
   </extension-point>
 
 </component>

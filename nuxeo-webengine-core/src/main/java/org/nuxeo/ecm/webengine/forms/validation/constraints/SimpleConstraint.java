@@ -36,6 +36,34 @@ public abstract class SimpleConstraint extends AbstractConstraint {
     protected String ref;
     protected int index = 0;
 
+    /**
+     * @return the ref.
+     */
+    public String getRef() {
+        return ref;
+    }
+
+    /**
+     * @return the index.
+     */
+    public int getIndex() {
+        return index;
+    }
+
+    /**
+     * @param ref the ref to set.
+     */
+    public void setRef(String ref) {
+        this.ref = ref;
+    }
+
+    /**
+     * @param index the index to set.
+     */
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
     @Override
     public void init(Field field, String value) {
         if (ref == null) {

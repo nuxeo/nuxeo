@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.webengine.forms.FormManager;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
 
@@ -111,5 +112,11 @@ public interface WebEngine {
     FileChangeNotifier getFileChangeNotifier();
 
     void destroy();
+
+    /**
+     * Get the form manager
+     * @return the form manager instance. cannot be null
+     */
+    FormManager getFormManager();
 
 }

@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
+import org.nuxeo.ecm.webengine.forms.FormManager;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.servlet.WebConst;
 import org.nuxeo.ecm.webengine.util.PathMap;
@@ -73,6 +74,8 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
     protected long lastMessagesUpdate = 0;
     protected Scripting scripting;
 
+    protected FormManager formMgr;
+
 
     public DefaultWebEngine(File root, FileChangeNotifier notifier) throws IOException {
         this.root = root;
@@ -82,6 +85,7 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         }
         registry = new ConcurrentHashMap<String, WebObjectDescriptor>();
         bindings = new HashMap<String, String>();
+        formMgr = new FormManager();
         env = new HashMap<String, Object>();
         apps = new ConcurrentHashMap<String, WebApplication>();
         this.pathMap =new PathMap<WebApplicationMapping>();
@@ -285,6 +289,10 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         return apps.get(name);
     }
 
+    public FormManager getFormManager() {
+        return formMgr;
+    }
+
     public WebApplication getApplicationByPath(Path path) {
         WebApplicationMapping mapping = pathMap.match(path);
         if (mapping != null) {
@@ -364,7 +372,6 @@ public class DefaultWebEngine implements WebEngine, FileChangeListener {
         lastMessagesUpdate = now;
         loadMessageBundle(false);
     }
-
 
 
 }

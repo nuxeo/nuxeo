@@ -25,6 +25,8 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.webengine.forms.FormManager;
+import org.nuxeo.ecm.webengine.forms.validation.Form;
 import org.nuxeo.ecm.webengine.install.Installer;
 import org.nuxeo.ecm.webengine.rendering.RenderingExtensionDescriptor;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
@@ -60,6 +62,7 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
     public static final String INSTALL_XP = "install";
     public static final String CONFIG_XP = "configuration";
     public static final String APP_MAPPING_XP = "application-mapping";
+    public static final String FORM_XP = "form";
 
 
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
@@ -180,6 +183,9 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
             } else {
                 log.error("Neither path neither entry attribute was defined in the configuration extension. Ignoring");
             }
+        } else if (extensionPoint.endsWith(FORM_XP)) {
+            Form form = (Form)contribution;
+            engine.getFormManager().registerForm(form);
         }
     }
 
@@ -211,6 +217,9 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
             } else {
                 log.error("Neither path neither entry attribute was defined in the configuration extension. Ignoring");
             }
+        } else if (extensionPoint.endsWith(FORM_XP)) {
+            Form form = (Form)contribution;
+            engine.getFormManager().unregisterForm(form.getId());
         }
     }
 

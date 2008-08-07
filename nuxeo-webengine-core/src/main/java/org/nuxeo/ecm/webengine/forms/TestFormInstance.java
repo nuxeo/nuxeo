@@ -60,6 +60,9 @@ public class TestFormInstance implements FormInstance {
         }
     }
 
+    public void setField(String key, String ... values) {
+        params.put(key, values);
+    }
 
     public void addField(String key, String ... values) {
         String[] ar = params.get(key);
@@ -71,6 +74,10 @@ public class TestFormInstance implements FormInstance {
             System.arraycopy(values, 0, tmp, ar.length, values.length);
             params.put(key, tmp);
         }
+    }
+
+    public void setField(String key, Blob ... values) {
+        blobs.put(key, values);
     }
 
     public void addField(String key, Blob ... values) {

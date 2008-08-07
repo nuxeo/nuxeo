@@ -22,10 +22,13 @@ package org.nuxeo.ecm.webengine.forms.validation;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormInstance;
 import org.nuxeo.ecm.webengine.forms.validation.constraints.And;
+import org.nuxeo.ecm.webengine.forms.validation.constraints.SimpleConstraint;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -198,6 +201,11 @@ public class Field {
         return handler.decode(value);
     }
 
+    public Status validate(FormInstance form) throws WebException {
+        String value = form.getString(id);
+        return validate(form, value);
+    }
+
     public Status validate(FormInstance form, String value) {
         if (value == null) {
             value = "";
@@ -249,8 +257,24 @@ public class Field {
         if (constraint.isContainer()) {
             loadChildren(field, body, constraint);
         } else {
-            String value = body.getTextContent();
-            constraint.init(field, value);
+            NamedNodeMap attrs = body.getAttributes();
+            Node ref = attrs.getNamedItem("ref");
+            if (ref != null) {
+                if (constraint instanceof SimpleConstraint) {
+                    SimpleConstraint sc = (SimpleConstraint)constraint;
+                    sc.setRef(ref.getNodeValue());
+                    Node index = attrs.getNamedItem("index");
+                    if (index != null) {
+                        int i = Integer.parseInt(index.getNodeValue());
+                        sc.setIndex(i);
+                    }
+                } else {
+                    throw new IllegalArgumentException("Constraint "+name+" doesn't support 'ref' attribute");
+                }
+            } else {
+                String value = body.getTextContent();
+                constraint.init(field, value);
+            }
         }
         root.add(constraint);
     }
