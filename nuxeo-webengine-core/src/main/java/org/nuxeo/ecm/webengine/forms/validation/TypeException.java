@@ -17,34 +17,25 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.validation.constraints;
-
-import org.nuxeo.ecm.webengine.validation.Constraint;
-import org.nuxeo.ecm.webengine.validation.Field;
-import org.nuxeo.ecm.webengine.validation.ValidationStatus;
+package org.nuxeo.ecm.webengine.forms.validation;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class True extends AbstractConstraint {
+public class TypeException extends Exception {
 
-    public final static Constraint INSTANCE = new True();
+    private static final long serialVersionUID = -7278027648077598245L;
 
-    private True() {}
-
-    @Override
-    public void init(Field field, String value) {
+    /**
+     *
+     */
+    public TypeException() {
+        // TODO Auto-generated constructor stub
     }
 
-    @Override
-    public ValidationStatus validate(Field field, String rawValue, Object value) {
-        return ValidationStatus.OK;
-    }
-
-    @Override
-    public String toString() {
-        return "TRUE";
+    public TypeException(String message) {
+        super (message);
     }
 
 }

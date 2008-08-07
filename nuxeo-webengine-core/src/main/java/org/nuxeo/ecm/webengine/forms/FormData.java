@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.util;
+package org.nuxeo.ecm.webengine.forms;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class FormData {
+public class FormData implements FormInstance {
 
     public static final String PROPERTY = "property";
     public static final String TITLE = "dc:title";
@@ -71,6 +71,9 @@ public class FormData {
 
     // Multi part items cache
     protected Map<String, List<FileItem>> items;
+    // para,eter map cache - used in Multipart forms to convert to ServletRequest#getParameterMap
+    // format
+    //protected Map<String, String[]> parameterMap;
 
     public FormData(HttpServletRequest request) {
         this.request = request;
@@ -96,6 +99,31 @@ public class FormData {
 
     public boolean isMultipartContent() {
         return isMultipart;
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public Map<String, String[]> getFormFields() throws WebException {
+        if (isMultipart) {
+            return getMultiPartFormFields();
+        } else {
+            return ((Map<String, String[]>) request.getParameterMap());
+        }
+    }
+
+
+    public Map<String, String[]> getMultiPartFormFields() throws WebException {
+        Map<String, List<FileItem>> items = getMultiPartItems();
+        Map<String, String[]> result = new HashMap<String, String[]>();
+        for (Map.Entry<String,List<FileItem>> entry : items.entrySet()) {
+            List<FileItem> list = entry.getValue();
+            String[] ar = new String[list.size()];
+            for (int i=0; i<ar.length; i++) {
+                ar[i++] = list.get(i).getString();
+            }
+            result.put(entry.getKey(), ar);
+        }
+        return result;
     }
 
     @SuppressWarnings("unchecked")
@@ -148,6 +176,13 @@ public class FormData {
             }
         }
         return ar;
+    }
+
+    /**
+     * XXX TODO implement it
+     */
+    public Map<String, Blob[]> getBlobFields() throws WebException {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public Blob getFirstBlob() throws WebException {

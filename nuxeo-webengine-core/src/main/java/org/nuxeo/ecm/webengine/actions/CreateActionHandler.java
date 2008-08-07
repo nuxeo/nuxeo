@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebObject;
-import org.nuxeo.ecm.webengine.util.FormData;
+import org.nuxeo.ecm.webengine.forms.FormData;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

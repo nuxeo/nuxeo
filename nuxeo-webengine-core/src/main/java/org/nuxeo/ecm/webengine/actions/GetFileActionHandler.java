@@ -27,8 +27,8 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.webengine.WebContext;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.WebObject;
+import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.servlet.WebConst;
-import org.nuxeo.ecm.webengine.util.FormData;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

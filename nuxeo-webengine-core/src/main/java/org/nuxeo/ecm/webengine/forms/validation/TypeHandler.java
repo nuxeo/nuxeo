@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.validation;
+package org.nuxeo.ecm.webengine.forms.validation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,8 +30,10 @@ public abstract class TypeHandler {
 
     protected static Map<String, TypeHandler> handlers = new HashMap<String, TypeHandler>();
 
+    protected String type;
 
     public TypeHandler(String type) {
+        this.type = type;
         handlers.put(type, this);
     }
 
@@ -39,10 +41,19 @@ public abstract class TypeHandler {
         return handlers.get(type);
     }
 
-    public abstract Object decode(String value);
+    /**
+     * @return the type.
+     */
+    public String getType() {
+        return type;
+    }
+
+    public abstract Object decode(String value) throws TypeException;
 
     public static final TypeHandler STRING = new TypeHandler("string") {
-        public Object decode(String value) { return value; }
+        public Object decode(String value) throws TypeException {
+            return value;
+        }
     };
 
     public static final TypeHandler INTEGER = new TypeHandler("integer") {

@@ -17,41 +17,42 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.validation.constraints;
+package org.nuxeo.ecm.webengine.forms.validation.constraints;
 
-import org.nuxeo.ecm.webengine.validation.Field;
-import org.nuxeo.ecm.webengine.validation.ValidationStatus;
+import org.nuxeo.ecm.webengine.forms.FormInstance;
+import org.nuxeo.ecm.webengine.forms.validation.ErrorStatus;
+import org.nuxeo.ecm.webengine.forms.validation.Field;
+import org.nuxeo.ecm.webengine.forms.validation.Status;
 
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class GtEq extends AbstractConstraint {
+public class LtEq extends SimpleConstraint {
 
     protected Comparable value;
 
     @Override
-    public void init(Field field, String value) {
-        Object c = field.decode(value);
-        if (!(c instanceof Comparable)) {
+    public void doInit(Field field, String value, Object decodedValue) {
+        if (!(decodedValue instanceof Comparable)) {
             throw new IllegalArgumentException("Only Comparable objects are supported: "+this.value.getClass());
         }
-        this.value = (Comparable)c;
+        this.value = (Comparable)decodedValue;
     }
 
 
     @Override
     @SuppressWarnings("unchecked")
-    public ValidationStatus validate(Field field, String rawValue, Object value) {
+    public Status doValidate(FormInstance form, Field field, String rawValue, Object value) {
         assert this.value != null;
-        return this.value.compareTo((Comparable)value) <= 0 ? ValidationStatus.OK
-                : new ValidationStatus(false, field.getId());
+        return this.value.compareTo((Comparable)value) >= 0 ? Status.OK
+                : new ErrorStatus(field.getId());
     }
 
     @Override
     public String toString() {
-        return ">="+value;
+        return "<="+value;
     }
 
 }

@@ -17,37 +17,38 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.validation;
+package org.nuxeo.ecm.webengine.forms;
 
 import java.util.Collection;
+import java.util.Map;
 
-import edu.emory.mathcs.backport.java.util.Collections;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class FormValidationException extends Exception {
+public interface FormInstance {
 
-    private static final long serialVersionUID = 531665422854150881L;
+    Collection<String> getKeys() throws WebException;
 
-    protected Collection<ValidationStatus> errors;
+    Object[] get(String key) throws WebException;
 
-    public FormValidationException(Collection<ValidationStatus> errors) {
-        this.errors = errors;
-    }
+    String getString(String key) throws WebException;
 
-    @SuppressWarnings("unchecked")
-    public FormValidationException(ValidationStatus error) {
-        this.errors = Collections.singleton(error);
-    }
+    String[] getList(String key) throws WebException;
 
-    /**
-     * @return the errors.
-     */
-    public Collection<ValidationStatus> getErrors() {
-        return errors;
-    }
+    Blob getBlob(String key) throws WebException;
 
+    Blob[] getBlobs(String key) throws WebException;
 
+    Map<String, String[]> getFormFields() throws WebException;
+
+    Map<String, Blob[]> getBlobFields() throws WebException;
+
+    void fillDocument(DocumentModel doc) throws WebException;
 }
+
+

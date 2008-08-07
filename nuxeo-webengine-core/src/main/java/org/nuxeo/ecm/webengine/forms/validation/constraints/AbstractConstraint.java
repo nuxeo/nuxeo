@@ -17,11 +17,12 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.validation.constraints;
+package org.nuxeo.ecm.webengine.forms.validation.constraints;
 
-import org.nuxeo.ecm.webengine.validation.Constraint;
-import org.nuxeo.ecm.webengine.validation.Field;
-import org.nuxeo.ecm.webengine.validation.ValidationStatus;
+import org.nuxeo.ecm.webengine.forms.FormInstance;
+import org.nuxeo.ecm.webengine.forms.validation.Constraint;
+import org.nuxeo.ecm.webengine.forms.validation.Field;
+import org.nuxeo.ecm.webengine.forms.validation.Status;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -41,9 +42,16 @@ public class AbstractConstraint implements Constraint {
         return false;
     }
 
-    public ValidationStatus validate(Field field, String rawValue, Object value) {
-        return ValidationStatus.OK;
+    public Status validate(FormInstance form, Field field, String rawValue, Object value) {
+        return Status.OK;
     }
 
+    public Constraint newInstance() {
+        try {
+            return (Constraint)getClass().newInstance();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
 }

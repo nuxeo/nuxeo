@@ -17,7 +17,9 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.validation;
+package org.nuxeo.ecm.webengine.forms.validation;
+
+import org.nuxeo.ecm.webengine.forms.FormInstance;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -25,12 +27,14 @@ package org.nuxeo.ecm.webengine.validation;
  */
 public interface Constraint {
 
+    public Constraint newInstance();
+
     public void init(Field field, String value);
 
     public void add(Constraint constraint);
 
     public boolean isContainer();
 
-    public ValidationStatus validate(Field field, String rawValue, Object value);
+    public Status validate(FormInstance form,  Field field, String rawValue, Object value);
 
 }

@@ -17,11 +17,13 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.validation.constraints;
+package org.nuxeo.ecm.webengine.forms.validation.constraints;
 
-import org.nuxeo.ecm.webengine.validation.Constraint;
-import org.nuxeo.ecm.webengine.validation.Field;
-import org.nuxeo.ecm.webengine.validation.ValidationStatus;
+import org.nuxeo.ecm.webengine.forms.FormInstance;
+import org.nuxeo.ecm.webengine.forms.validation.Constraint;
+import org.nuxeo.ecm.webengine.forms.validation.ErrorStatus;
+import org.nuxeo.ecm.webengine.forms.validation.Field;
+import org.nuxeo.ecm.webengine.forms.validation.Status;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -31,16 +33,19 @@ public class Or extends ContainerConstraint {
 
 
     @Override
-    public ValidationStatus validate(Field field, String rawValue, Object value) {
+    public Status validate(FormInstance form, Field field, String rawValue, Object value) {
         if (children.isEmpty()) {
             throw new IllegalStateException("Or constraint have no content");
         }
         for (Constraint child : children) {
-            if (child.validate(field, rawValue, value) == ValidationStatus.OK) {
-                return ValidationStatus.OK;
+            Status status = child.validate(form, field, rawValue, value);
+            if (status.isOk()) {
+                return Status.OK;
+            } else {
+                return status;
             }
         }
-        return new ValidationStatus(false, field.getId());
+        return new ErrorStatus(field.getId()); // should never reach this
     }
 
     @Override

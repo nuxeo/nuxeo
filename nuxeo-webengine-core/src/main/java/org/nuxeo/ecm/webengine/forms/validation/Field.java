@@ -17,21 +17,17 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.validation;
+package org.nuxeo.ecm.webengine.forms.validation;
 
-import java.net.URL;
-
-import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.webengine.validation.constraints.And;
+import org.nuxeo.ecm.webengine.forms.FormInstance;
+import org.nuxeo.ecm.webengine.forms.validation.constraints.And;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import com.sun.java_cup.internal.sym;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -41,11 +37,12 @@ import com.sun.java_cup.internal.sym;
 public class Field {
 
     @XNode("@id") protected String id;
+    @XNode("label") protected String label;
     @XNode("@required") protected boolean required = false;
     @XNode("@min-length") protected int minLength = -1;
-    @XNode("@max-length") protected int maxLength = -1;
-    @XNode("@length") protected int maxCount = -1;
-    @XNode("@length") protected int minCount = -1;
+    @XNode("@max-length") protected int maxLength = Integer.MAX_VALUE;
+    @XNode("@max-count") protected int maxCount = 1;
+    @XNode("@min-count") protected int minCount = 1;
 
     protected Form form;
 
@@ -92,6 +89,14 @@ public class Field {
     public String getId() {
         return id;
     }
+
+    /**
+     * @return the form.
+     */
+    public Form getForm() {
+        return form;
+    }
+
 
     /**
      * @return the maxCount.
@@ -158,6 +163,20 @@ public class Field {
     }
 
     /**
+     * @return the label.
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * @param label the label to set.
+     */
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    /**
      * @param required the required to set.
      */
     public void setRequired(boolean required) {
@@ -175,13 +194,38 @@ public class Field {
         this.form = form;
     }
 
-    public Object decode(String value) {
+    public Object decode(String value) throws TypeException {
         return handler.decode(value);
     }
 
-    public ValidationStatus validate(String value) {
-        //TODO check common constraints
-        return root.validate(this, value, handler.decode(value));
+    public Status validate(FormInstance form, String value) {
+        if (value == null) {
+            value = "";
+        }
+        int len = value.length();
+        if (len == 0) {
+            if (required) {
+                return new ErrorStatus(id, "Field '"+label+"' is required");
+            } else {
+                return Status.OK; // accept null values
+            }
+        }
+        // value is not null decode it
+        Object decodedValue = null;
+        try {
+            decodedValue = handler.decode(value);
+        } catch (TypeException e) {
+            return new ErrorStatus(id, "Field '"+label+"' must be a "+handler.getType());
+        }
+        // check common constraints
+        if (minLength > len) {
+            return new ErrorStatus(id, "Field '"+label+"' must have at least "+minLength+" characters");
+        }
+        if (maxLength < len) {
+            return new ErrorStatus(id, "Field '"+label+"' must have at most "+maxLength+" characters");
+        }
+
+        return root.validate(form, this, value, decodedValue);
     }
 
     @Override
@@ -215,46 +259,6 @@ public class Field {
         return root;
     }
 
-    public static void main(String[] args) throws Exception {
 
-        XMap xmap = new XMap();
-        URL url = Field.class.getResource("test.xml");
-        xmap.register(Field.class);
-        Object[] objects = xmap.loadAll(url);
-
-        for (Object obj : objects) {
-            Field f = (Field)obj;
-            System.out.println(f.getConstraints());
-        }
-
-        Field f = (Field)objects[0];
-        System.out.println("--------------");
-        System.out.println(f.validate("12"));
-        System.out.println(f.validate("35"));
-        System.out.println(f.validate("40"));
-        System.out.println(f.validate("41"));
-
-        f = (Field)objects[1];
-        System.out.println("--------------");
-        System.out.println(f.validate("AC@dc"));
-        System.out.println(f.validate("AC@Dc"));
-
-        f = (Field)objects[2];
-        System.out.println("--------------");
-        System.out.println(f.validate("abc"));
-        System.out.println(f.validate("def"));
-        System.out.println(f.validate("abcdef"));
-        System.out.println(f.validate("abc def"));
-        System.out.println(f.validate("ab"));
-
-        f = (Field)objects[3];
-        System.out.println("--------------");
-        System.out.println(f.validate("abc"));
-        System.out.println(f.validate("def"));
-        System.out.println(f.validate("abcdef"));
-        System.out.println(f.validate("abc def"));
-        System.out.println(f.validate("ab"));
-
-    }
 
 }

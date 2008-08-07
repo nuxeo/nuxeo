@@ -17,35 +17,29 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.validation.constraints;
+package org.nuxeo.ecm.webengine.forms.validation.constraints;
 
-import org.nuxeo.ecm.webengine.validation.Field;
-import org.nuxeo.ecm.webengine.validation.ValidationStatus;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.nuxeo.ecm.webengine.forms.validation.Constraint;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Eq extends AbstractConstraint {
+public abstract class ContainerConstraint extends AbstractConstraint {
 
-    protected Object value;
+    protected List<Constraint> children = new ArrayList<Constraint>();
 
     @Override
-    public void init(Field field, String value) {
-        this.value = field.decode(value);
+    public void add(Constraint constraint) {
+        children.add(constraint);
     }
 
     @Override
-    public ValidationStatus validate(Field field, String rawValue, Object value) {
-        assert this.value != null;
-        return this.value.equals(value) ? ValidationStatus.OK
-                : new ValidationStatus(false, field.getId(), "Not equals with '"+this.value+"'") ;
-    }
-
-    @Override
-    public String toString() {
-        return "="+value;
+    public boolean isContainer() {
+        return true;
     }
 
 }

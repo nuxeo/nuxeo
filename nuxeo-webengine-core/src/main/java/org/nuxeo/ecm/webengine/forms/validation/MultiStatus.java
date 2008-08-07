@@ -17,61 +17,68 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.validation;
+package org.nuxeo.ecm.webengine.forms.validation;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ValidationStatus {
+public class MultiStatus implements Status, Iterable<Status>{
 
-    public static final ValidationStatus OK = new ValidationStatus(true, null, null);
-
-    protected boolean isOk;
+    protected List<Status> children;
     protected String message;
-    protected String field;
+    protected boolean isOk = true;
 
-    public ValidationStatus(boolean isOk, String field) {
-        this (isOk, field, "");
+    public MultiStatus() {
+        this (null);
     }
 
-    public ValidationStatus(boolean isOk, String field, String message) {
-        this.isOk = isOk;
-        this.field = field;
+    public MultiStatus(String message) {
         this.message = message;
+        children = new ArrayList<Status>();
     }
 
-    /**
-     * @return the isOk.
-     */
-    public boolean isOk() {
-        return isOk;
+    public void add(Status status) {
+        children.add(status);
+        if (!status.isOk()) {
+            isOk = false;
+        }
     }
 
-    /**
-     * @return the field.
-     */
+    public int size() {
+        return children.size();
+    }
+
+    public Iterator<Status> iterator() {
+        return children.iterator();
+    }
+
+    public Status[] getChildren() {
+        return children.toArray(new Status[children.size()]);
+    }
+
     public String getField() {
-        return field;
+        return null;
     }
 
-    /**
-     * @return the message.
-     */
     public String getMessage() {
         return message;
     }
 
-    /**
-     * @param message the message to set.
-     */
-    public void setMessage(String message) {
-        this.message = message;
+    public boolean isMultiStatus() {
+        return true;
+    }
+
+    public boolean isOk() {
+        return isOk;
     }
 
     @Override
     public String toString() {
-        return isOk ? "OK" : "KO "+message;
+        return isOk ? "OK" : "Error: "+message;
     }
 }

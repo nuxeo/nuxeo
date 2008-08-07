@@ -17,26 +17,28 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.validation.constraints;
+package org.nuxeo.ecm.webengine.forms.validation.constraints;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.nuxeo.ecm.webengine.validation.Field;
-import org.nuxeo.ecm.webengine.validation.ValidationStatus;
+import org.nuxeo.ecm.webengine.forms.FormInstance;
+import org.nuxeo.ecm.webengine.forms.validation.ErrorStatus;
+import org.nuxeo.ecm.webengine.forms.validation.Field;
+import org.nuxeo.ecm.webengine.forms.validation.Status;
 
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Enumeration extends AbstractConstraint {
+public class Enumeration extends SimpleConstraint {
 
     protected Set<String> set;
 
     @Override
-    public void init(Field field, String value) {
+    public void doInit(Field field, String value, Object decodedValue) {
         set = new HashSet<String>();
         StringTokenizer tokenizer = new StringTokenizer(value);
         while (tokenizer.hasMoreTokens()) {
@@ -45,10 +47,10 @@ public class Enumeration extends AbstractConstraint {
     }
 
     @Override
-    public ValidationStatus validate(Field field, String rawValue, Object value) {
+    public Status doValidate(FormInstance form, Field field, String rawValue, Object value) {
         assert set != null;
-        return set.contains(rawValue) ? ValidationStatus.OK
-                : new ValidationStatus(false, field.getId());
+        return set.contains(rawValue) ? Status.OK
+                : new ErrorStatus(field.getId());
     }
 
     @Override

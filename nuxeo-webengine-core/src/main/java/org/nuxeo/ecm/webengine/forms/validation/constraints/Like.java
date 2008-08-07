@@ -17,34 +17,36 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.validation.constraints;
+package org.nuxeo.ecm.webengine.forms.validation.constraints;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.nuxeo.ecm.webengine.validation.Field;
-import org.nuxeo.ecm.webengine.validation.ValidationStatus;
+import org.nuxeo.ecm.webengine.forms.FormInstance;
+import org.nuxeo.ecm.webengine.forms.validation.ErrorStatus;
+import org.nuxeo.ecm.webengine.forms.validation.Field;
+import org.nuxeo.ecm.webengine.forms.validation.Status;
 
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Like extends AbstractConstraint {
+public class Like extends SimpleConstraint {
 
     protected Pattern pattern;
 
     @Override
-    public void init(Field field, String value) {
+    public void doInit(Field field, String value, Object decodedValue) {
         pattern = Pattern.compile(value);
     }
 
     @Override
-    public ValidationStatus validate(Field field, String rawValue, Object value) {
+    public Status doValidate(FormInstance form, Field field, String rawValue, Object value) {
         assert pattern != null;
         Matcher m = pattern.matcher(rawValue);
-        return m.matches() ? ValidationStatus.OK
-                : new ValidationStatus(false, field.getId());
+        return m.matches() ? Status.OK
+                : new ErrorStatus(field.getId());
     }
 
     @Override

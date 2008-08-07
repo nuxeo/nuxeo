@@ -17,24 +17,36 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.validation;
+package org.nuxeo.ecm.webengine.forms.validation;
+
+import java.util.Collection;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class FormValidator {
+public class ValidationException extends Exception {
 
-    public void loadConstraints() {
+    private static final long serialVersionUID = 531665422854150881L;
 
+    protected Collection<ErrorStatus> errors;
+
+    public ValidationException(Collection<ErrorStatus> errors) {
+        this.errors = errors;
     }
 
-    public boolean validate(String key, String value) {
-        return false;
+    @SuppressWarnings("unchecked")
+    public ValidationException(ErrorStatus error) {
+        this.errors = Collections.singleton(error);
     }
 
-    public void addConstraint(Constraints constraint) {
-
+    /**
+     * @return the errors.
+     */
+    public Collection<ErrorStatus> getErrors() {
+        return errors;
     }
 
 

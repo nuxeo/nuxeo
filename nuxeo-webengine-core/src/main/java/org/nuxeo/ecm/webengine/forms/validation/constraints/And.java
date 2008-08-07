@@ -17,11 +17,12 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.validation.constraints;
+package org.nuxeo.ecm.webengine.forms.validation.constraints;
 
-import org.nuxeo.ecm.webengine.validation.Constraint;
-import org.nuxeo.ecm.webengine.validation.Field;
-import org.nuxeo.ecm.webengine.validation.ValidationStatus;
+import org.nuxeo.ecm.webengine.forms.FormInstance;
+import org.nuxeo.ecm.webengine.forms.validation.Constraint;
+import org.nuxeo.ecm.webengine.forms.validation.Field;
+import org.nuxeo.ecm.webengine.forms.validation.Status;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -31,17 +32,17 @@ public class And extends ContainerConstraint {
 
 
     @Override
-    public ValidationStatus validate(Field field, String rawValue,  Object value) {
+    public Status validate(FormInstance form, Field field, String rawValue,  Object value) {
         if (children.isEmpty()) {
             throw new IllegalStateException("And constraint have no content");
         }
         for (Constraint child : children) {
-            ValidationStatus status = child.validate(field, rawValue, value);
-            if (status != ValidationStatus.OK) {
+            Status status = child.validate(form, field, rawValue, value);
+            if (!status.isOk()) {
                 return status;
             }
         }
-        return ValidationStatus.OK;
+        return Status.OK;
     }
 
 

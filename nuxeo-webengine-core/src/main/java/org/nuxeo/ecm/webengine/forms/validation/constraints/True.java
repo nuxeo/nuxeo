@@ -17,29 +17,31 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.validation.constraints;
+package org.nuxeo.ecm.webengine.forms.validation.constraints;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.nuxeo.ecm.webengine.validation.Constraint;
+import org.nuxeo.ecm.webengine.forms.FormInstance;
+import org.nuxeo.ecm.webengine.forms.validation.Constraint;
+import org.nuxeo.ecm.webengine.forms.validation.Field;
+import org.nuxeo.ecm.webengine.forms.validation.Status;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class ContainerConstraint extends AbstractConstraint {
+public class True extends AbstractConstraint {
 
-    protected List<Constraint> children = new ArrayList<Constraint>();
+    public final static Constraint INSTANCE = new True();
 
-    @Override
-    public void add(Constraint constraint) {
-        children.add(constraint);
+    private True() {}
+
+
+    public Status validate(FormInstance form, Field field, String rawValue, Object value) {
+        return Status.OK;
     }
 
     @Override
-    public boolean isContainer() {
-        return true;
+    public String toString() {
+        return "TRUE";
     }
 
 }
