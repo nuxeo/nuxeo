@@ -1,8 +1,17 @@
 #!/usr/bin/python
 
-import os, sys, pexpect, urllib, time
-# import curl
+import os, sys, pexpect, urllib, time, getopt
 
+# Use a local copy as it is not included in Debian
+import curl
+
+VERBOSE = False
+
+opts, args = getopt.getopt(sys.argv[1:], "v")
+for k, v in opts:
+    if k == '-v':
+        VERBOSE = True
+        
 # Some utility methods
 
 def flush():
@@ -16,7 +25,10 @@ def system(cmd):
         sys.exit(1)
 
 def mvn(args):
-    system("mvn -q " + args)
+    if VERBOSE:
+        system("mvn " + args)
+    else:
+        system("mvn -q " + args)
 
 def clean():
     mvn("clean")
@@ -42,6 +54,22 @@ def consoleTest(p):
     p.sendline("quit")
     p.close(force=True)
     
+def waitForServer(timeout=60):
+    t0 = time.time()
+    while True:
+        time.sleep(1)
+        try:
+            log = open("server.log").read()
+        except IOError:
+            log = ""
+        if "Framework started in" in log:
+            ok = True
+            break
+        if time.time() - t0 > timeout:
+            ok = False
+            break
+    assert ok
+
 # Test scripts 
 
 def testCore():
@@ -102,33 +130,32 @@ def testJetty():
     p = pexpect.spawn("sh nxserver.sh -console", timeout=120)
     consoleTest(p)
 
-    #print "Starting server"
-    #flush()
+    print "Starting server"
+    flush()
     
-    #p = pexpect.spawn("sh nxserver.sh -console")
-    #p.logfile = sys.stdout
-    #p.expect("Framework started in", 240)
-
-    #c = curl.Curl()
-    #c.set_timeout(60)
-    #data = c.get("http://localhost:8080/")
-    #print data
+    cmd = "sh nxserver.sh -console > server.log 2>&1"
+    p = pexpect.spawn("sh", ["-c", cmd], timeout=120)
+    waitForServer(timeout=120)
     
-    #system("curl -m 10 http://localhost:8080/ > curl.res &")
-    #p.read()
+    print "Browsing a few pages"
+    flush()
+
+    c = curl.Curl()
+    c.set_timeout(60)
+
+    data = c.get("http://localhost:8080/")
+    assert "Welcome to Nuxeo WebEngine!" in data
+
+    data = c.get("http://localhost:8080/docs/index.ftl")
+    assert "Nuxeo WebEngine Documentation" in data
+
+    data = c.get("http://localhost:8080/docs/about.ftl")
+    assert "License:" in data
+    assert "Team:" in data
+    assert "Modules:" in data
     
-    #c = pexpect.spawn("curl -m 10 http://localhost:8080/")
-    #c.close()
-
-    #c = pexpect.spawn("curl -m 10 http://localhost:8080/docs/index.ftl")
-    #c.expect("Nuxeo WebEngine")
-    #c.close()
-
-    #data = urllib.urlopen("http://localhost:8080/").read()
-    #data = urllib.urlopen("http://localhost:8080/docs/index.ftl").read()
-    #assert "Nuxeo WebEngine" in data
-    #p.sendline("quit")
-    #p.close(force=True)
+    p.sendline("quit")
+    p.close(force=True)
 
     os.chdir("../..")
 
@@ -148,15 +175,32 @@ def testGF3():
     p = pexpect.spawn("sh nxserver.sh -console", timeout=120)
     consoleTest(p)
 
-    #print "Starting server"
-    #p = pexpect.spawn("sh nxserver.sh -console")
-    #p.expect("Framework started in", 120)
-    #data = urllib.urlopen("http://localhost:8080/").read()
-    #data = urllib.urlopen("http://localhost:8080/docs/index.ftl").read()
-    #assert "Nuxeo WebEngine" in data
-    #p.sendline("quit")
-    #p.close(force=True)
+    print "Starting server"
+    flush()
 
+    cmd = "sh nxserver.sh -console > server.log 2>&1"
+    p = pexpect.spawn("sh", ["-c", cmd], timeout=120)
+    waitForServer(timeout=120)
+    
+    print "Browsing a few pages"
+    flush()
+
+    c = curl.Curl()
+    c.set_timeout(60)
+
+    data = c.get("http://localhost:8080/")
+    assert "Welcome to Nuxeo WebEngine!" in data
+
+    data = c.get("http://localhost:8080/docs/index.ftl")
+    assert "Nuxeo WebEngine Documentation" in data
+
+    data = c.get("http://localhost:8080/docs/about.ftl")
+    assert "License:" in data
+    assert "Team:" in data
+    assert "Modules:" in data
+    
+    p.sendline("quit")
+    p.close(force=True)
     os.chdir("../..")
 
 #
