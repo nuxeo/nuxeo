@@ -555,13 +555,16 @@
           <descriptors>
             <descriptor>src/main/assemble/resources/common.xml</descriptor>
             <descriptor>src/main/assemble/resources/core.xml</descriptor>
+            <descriptor>
+              src/main/assemble/resources/core-sync-index.xml
+            </descriptor>
+            <descriptor>
+              src/main/assemble/resources/platform-stateful.xml
+            </descriptor>
             <descriptor>src/main/assemble/resources/search.xml</descriptor>
             <descriptor>src/main/assemble/resources/webplatform.xml</descriptor>
             <descriptor>
               src/main/assemble/resources/web-stateless.xml
-            </descriptor>
-            <descriptor>
-              src/main/assemble/resources/platform-stateful.xml
             </descriptor>
             <descriptor>src/main/assemble/resources/mono.xml</descriptor>
           </descriptors>
