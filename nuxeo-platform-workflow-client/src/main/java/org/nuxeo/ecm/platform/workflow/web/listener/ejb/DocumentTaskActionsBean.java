@@ -198,13 +198,41 @@ public class DocumentTaskActionsBean extends InputController implements
                     principalName));
 
         } catch (WMWorkflowException we) {
-            // :XXX
+            log.error(we); // XXX: why not just let is throw?
         }
 
         // Notify
         Events.instance().raiseEvent(
                 EventNames.WORKFLOW_USER_ASSIGNMENT_CHANGED);
-        String comment = "=> " + principalName + " ( " + userComment + " )";
+        StringBuilder comment = new StringBuilder();
+        if (isGroup) {
+            comment.append(resourcesAccessor.getMessages().get("label.log.comment.assignedToGroup"));
+            comment.append(" ");
+            comment.append(principalName);
+        } else {
+            comment.append(resourcesAccessor.getMessages().get("label.log.comment.assignedToUser"));
+            comment.append(" ");
+            NuxeoPrincipal user;
+            try {
+                user = userManager.getPrincipal(principalName);
+            } catch (ClientException e) {
+                throw new WMWorkflowException(e);
+            }
+            if (user == null) {
+                comment.append(principalName);
+            } else {
+                comment.append(user.getFirstName());
+                comment.append(" ");
+                comment.append(user.getLastName());
+                comment.append(" (");
+                comment.append(principalName);
+                comment.append(")");
+            }
+        }
+        if (userComment != null && userComment.trim().length() > 0) {
+            comment.append(": ");
+            comment.append(userComment);
+        }
 
         Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
 
@@ -213,7 +241,7 @@ public class DocumentTaskActionsBean extends InputController implements
         // directive
         eventInfo.put("directive", taskInstance.getDirective());
 
-        notifyEvent(WorkflowEventTypes.WORKFLOW_TASK_ASSIGNED, comment,
+        notifyEvent(WorkflowEventTypes.WORKFLOW_TASK_ASSIGNED, comment.toString(),
                 reviewModel.getProcessInstanceName(), eventInfo);
         Events.instance().raiseEvent(AuditEventTypes.HISTORY_CHANGED);
 
