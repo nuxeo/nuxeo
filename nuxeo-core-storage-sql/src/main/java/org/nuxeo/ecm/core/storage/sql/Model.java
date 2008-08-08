@@ -45,6 +45,8 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionMaker;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
@@ -81,9 +83,25 @@ public class Model {
 
     public static final String MAIN_PRIMARY_TYPE_PROP = "ecm:primaryType";
 
-    private static final String MAIN_TABLE_NAME = "types";
+    public static final String MAIN_TABLE_NAME = "types";
 
     public static final String MAIN_PRIMARY_TYPE_KEY = "primarytype";
+
+    public static final String MAIN_BASE_VERSION_PROP = "ecm:baseVersion";
+
+    public static final String MAIN_BASE_VERSION_KEY = "baseversion";
+
+    public static final String MAIN_CHECKED_IN_PROP = "ecm:isCheckedIn";
+
+    public static final String MAIN_CHECKED_IN_KEY = "ischeckedin";
+
+    public static final String MAIN_MAJOR_VERSION_PROP = "ecm:majorVersion";
+
+    public static final String MAIN_MAJOR_VERSION_KEY = "majorversion";
+
+    public static final String MAIN_MINOR_VERSION_PROP = "ecm:minorVersion";
+
+    public static final String MAIN_MINOR_VERSION_KEY = "minorversion";
 
     private static final String HIER_TABLE_NAME = "hierarchy";
 
@@ -131,7 +149,29 @@ public class Model {
 
     public static final String ACL_GROUP_KEY = "group";
 
+    public static final String VERSION_TABLE_NAME = "versions";
+
+    public static final String VERSION_VERSIONABLE_PROP = "ecm:versionableId";
+
+    public static final String VERSION_VERSIONABLE_KEY = "versionableid";
+
+    public static final String VERSION_CREATED_PROP = "ecm:versionCreated";
+
+    public static final String VERSION_CREATED_KEY = "created";
+
+    public static final String VERSION_LABEL_PROP = "ecm:versionLabel";
+
+    public static final String VERSION_LABEL_KEY = "label";
+
+    public static final String VERSION_DESCRIPTION_PROP = "ecm:versionDescription";
+
+    public static final String VERSION_DESCRIPTION_KEY = "description";
+
     private static TypeRef<? extends Type> STRING_TYPE_REF = StringType.INSTANCE.getRef();
+
+    private static TypeRef<? extends Type> DATE_TYPE_REF = DateType.INSTANCE.getRef();
+
+    private static TypeRef<? extends Type> BOOLEAN_TYPE_REF = BooleanType.INSTANCE.getRef();
 
     public static Field SYSTEM_LIFECYCLE_POLICY_FIELD = new FieldImpl(
             QName.valueOf(SYSTEM_LIFECYCLE_POLICY_PROP), TypeRef.NULL,
@@ -144,21 +184,32 @@ public class Model {
     public static Field SYSTEM_DIRTY_FIELD = new FieldImpl(
             QName.valueOf(SYSTEM_DIRTY_PROP), TypeRef.NULL, STRING_TYPE_REF);
 
+    public static Field VERSION_VERSIONABLE_FIELD = new FieldImpl(
+            QName.valueOf(VERSION_VERSIONABLE_PROP), TypeRef.NULL,
+            STRING_TYPE_REF); // TODO convert from long to string in some cases
+
+    public static Field VERSION_LABEL_FIELD = new FieldImpl(
+            QName.valueOf(VERSION_LABEL_PROP), TypeRef.NULL, STRING_TYPE_REF);
+
+    public static Field VERSION_DESCRIPTION_FIELD = new FieldImpl(
+            QName.valueOf(VERSION_DESCRIPTION_PROP), TypeRef.NULL,
+            STRING_TYPE_REF);
+
+    public static Field VERSION_CREATED_FIELD = new FieldImpl(
+            QName.valueOf(VERSION_CREATED_PROP), TypeRef.NULL, DATE_TYPE_REF);
+
+    public static Field MAIN_CHECKED_IN_FIELD = new FieldImpl(
+            QName.valueOf(MAIN_CHECKED_IN_PROP), TypeRef.NULL, BOOLEAN_TYPE_REF);
+
     private final BinaryManager binaryManager;
 
     /** The id generation policy. */
     protected final IdGenPolicy idGenPolicy;
 
     /** Is the hierarchy table separate from the main table. */
-    protected final boolean separateHierarchyTable;
+    protected final boolean separateMainTable;
 
     protected final AtomicLong temporaryIdCounter;
-
-    /**
-     * The fragment for each schema, or {@code null} if the schema doesn't have
-     * a fragment.
-     */
-    private final Map<String, String> schemaFragment;
 
     /** Maps table name to a map of properties to their basic type. */
     protected final Map<String, Map<String, PropertyType>> fragmentsKeysType;
@@ -171,6 +222,12 @@ public class Model {
 
     /** The factories to build collection fragments. */
     protected final Map<String, CollectionMaker> collectionMakers;
+
+    /**
+     * The fragment for each schema, or {@code null} if the schema doesn't have
+     * a fragment.
+     */
+    private final Map<String, String> schemaFragment;
 
     /** Maps document type name or schema name to allowed simple fragments. */
     protected final Map<String, Set<String>> typeSimpleFragments;
@@ -190,20 +247,23 @@ public class Model {
     /** Maps of properties to their basic type. */
     public final Map<String, PropertyType> propertyType;
 
+    public final Set<String> readOnlyProperties;
+
     public final Set<String[]> binaryColumns;
 
     public Model(RepositoryImpl repository, SchemaManager schemaManager) {
         binaryManager = repository.getBinaryManager();
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
         idGenPolicy = repositoryDescriptor.idGenPolicy;
-        separateHierarchyTable = repositoryDescriptor.separateHierarchyTable;
+        separateMainTable = repositoryDescriptor.separateMainTable;
         temporaryIdCounter = new AtomicLong(0);
         hierFragmentName = HIER_TABLE_NAME;
-        mainFragmentName = separateHierarchyTable ? MAIN_TABLE_NAME
+        mainFragmentName = separateMainTable ? MAIN_TABLE_NAME
                 : HIER_TABLE_NAME;
 
         schemaFragment = new HashMap<String, String>();
         propertyType = new HashMap<String, PropertyType>();
+        readOnlyProperties = new HashSet<String>();
         fragmentsKeysType = new HashMap<String, Map<String, PropertyType>>();
         collectionOrderBy = new HashMap<String, List<String>>();
         collectionTables = new HashMap<String, PropertyType>();
@@ -217,6 +277,7 @@ public class Model {
 
         initMainModel();
         initSystemModel();
+        initVersionsModel();
         initAclModel();
         initModels(schemaManager);
 
@@ -288,6 +349,10 @@ public class Model {
 
     public PropertyType getPropertyType(String propertyName) {
         return propertyType.get(propertyName);
+    }
+
+    public boolean isPropertyReadOnly(String propertyName) {
+        return readOnlyProperties.contains(propertyName);
     }
 
     public PropertyType getCollectionFragmentType(String tableName) {
@@ -380,6 +445,16 @@ public class Model {
         return typeSimpleFragments.containsKey(typeName);
     }
 
+    private PropertyType mainIdType() {
+        switch (idGenPolicy) {
+        case APP_UUID:
+            return PropertyType.STRING;
+        case DB_IDENTITY:
+            return PropertyType.LONG;
+        }
+        throw new AssertionError(idGenPolicy);
+    }
+
     /**
      * Creates all the models.
      */
@@ -408,59 +483,56 @@ public class Model {
     /**
      * Special model for the main table (the one containing the primary type
      * information).
+     * <p>
+     * If the main table is not separate from the hierarchy table, then it's
+     * will not really be instantiated by itself but merged into the hierarchy
+     * table.
      */
     private void initMainModel() {
-        if (!separateHierarchyTable) {
-            return;
-        }
-        String tableName = MAIN_TABLE_NAME;
-        String propertyName = MAIN_PRIMARY_TYPE_PROP;
-        PropertyType type = PropertyType.STRING;
-        // XXX propertyCoreType ?
-        propertyType.put(propertyName, type);
-        propertyFragment.put(propertyName, tableName);
-        propertyFragmentKey.put(propertyName, MAIN_PRIMARY_TYPE_KEY);
-
-        Map<String, PropertyType> fragmentKeysType = new HashMap<String, PropertyType>();
-        fragmentsKeysType.put(tableName, fragmentKeysType);
-        fragmentKeysType.put(MAIN_PRIMARY_TYPE_KEY, type);
-
+        Map<String, PropertyType> fragmentKeysType = new LinkedHashMap<String, PropertyType>();
+        fragmentsKeysType.put(MAIN_TABLE_NAME, fragmentKeysType);
+        initSimpleROProperty(mainFragmentName, MAIN_PRIMARY_TYPE_PROP,
+                MAIN_PRIMARY_TYPE_KEY, PropertyType.STRING, fragmentKeysType);
+        initSimpleROProperty(mainFragmentName, MAIN_CHECKED_IN_PROP,
+                MAIN_CHECKED_IN_KEY, PropertyType.BOOLEAN, fragmentKeysType);
+        initSimpleROProperty(mainFragmentName, MAIN_BASE_VERSION_PROP,
+                MAIN_BASE_VERSION_KEY, mainIdType(), fragmentKeysType);
+        initSimpleROProperty(mainFragmentName, MAIN_MAJOR_VERSION_PROP,
+                MAIN_MAJOR_VERSION_KEY, PropertyType.LONG, fragmentKeysType);
+        initSimpleROProperty(mainFragmentName, MAIN_MINOR_VERSION_PROP,
+                MAIN_MINOR_VERSION_KEY, PropertyType.LONG, fragmentKeysType);
     }
 
     /**
      * Special model for the system table (lifecycle, etc.).
      */
     private void initSystemModel() {
-        String tableName = SYSTEM_TABLE_NAME;
         Map<String, PropertyType> fragmentKeysType = new LinkedHashMap<String, PropertyType>();
-        fragmentsKeysType.put(tableName, fragmentKeysType);
+        fragmentsKeysType.put(SYSTEM_TABLE_NAME, fragmentKeysType);
+        initSimpleProperty(SYSTEM_TABLE_NAME, SYSTEM_LIFECYCLE_POLICY_PROP,
+                SYSTEM_LIFECYCLE_POLICY_KEY, PropertyType.STRING,
+                fragmentKeysType);
+        initSimpleProperty(SYSTEM_TABLE_NAME, SYSTEM_LIFECYCLE_STATE_PROP,
+                SYSTEM_LIFECYCLE_STATE_KEY, PropertyType.STRING,
+                fragmentKeysType);
+        initSimpleProperty(SYSTEM_TABLE_NAME, SYSTEM_DIRTY_PROP,
+                SYSTEM_DIRTY_KEY, PropertyType.BOOLEAN, fragmentKeysType);
+    }
 
-        String propertyName = SYSTEM_LIFECYCLE_POLICY_PROP;
-        String key = SYSTEM_LIFECYCLE_POLICY_KEY;
-        PropertyType type = PropertyType.STRING;
-        // XXX propertyCoreType needed ?
-        propertyType.put(propertyName, type);
-        propertyFragment.put(propertyName, tableName);
-        propertyFragmentKey.put(propertyName, key);
-        fragmentKeysType.put(key, type);
-
-        propertyName = SYSTEM_LIFECYCLE_STATE_PROP;
-        key = SYSTEM_LIFECYCLE_STATE_KEY;
-        type = PropertyType.STRING;
-        // XXX propertyCoreType needed ?
-        propertyType.put(propertyName, type);
-        propertyFragment.put(propertyName, tableName);
-        propertyFragmentKey.put(propertyName, key);
-        fragmentKeysType.put(key, type);
-
-        propertyName = SYSTEM_DIRTY_PROP;
-        key = SYSTEM_DIRTY_KEY;
-        type = PropertyType.BOOLEAN;
-        // XXX propertyCoreType needed ?
-        propertyType.put(propertyName, type);
-        propertyFragment.put(propertyName, tableName);
-        propertyFragmentKey.put(propertyName, key);
-        fragmentKeysType.put(key, type);
+    /**
+     * Special model for the versions table.
+     */
+    private void initVersionsModel() {
+        Map<String, PropertyType> fragmentKeysType = new LinkedHashMap<String, PropertyType>();
+        fragmentsKeysType.put(VERSION_TABLE_NAME, fragmentKeysType);
+        initSimpleROProperty(VERSION_TABLE_NAME, VERSION_VERSIONABLE_PROP,
+                VERSION_VERSIONABLE_KEY, mainIdType(), fragmentKeysType);
+        initSimpleROProperty(VERSION_TABLE_NAME, VERSION_CREATED_PROP,
+                VERSION_CREATED_KEY, PropertyType.DATETIME, fragmentKeysType);
+        initSimpleROProperty(VERSION_TABLE_NAME, VERSION_LABEL_PROP,
+                VERSION_LABEL_KEY, PropertyType.STRING, fragmentKeysType);
+        initSimpleROProperty(VERSION_TABLE_NAME, VERSION_DESCRIPTION_PROP,
+                VERSION_DESCRIPTION_KEY, PropertyType.STRING, fragmentKeysType);
     }
 
     /**
@@ -482,6 +554,22 @@ public class Model {
                 ACL_POS_KEY));
         propertyFragment.put(ACL_PROP, ACL_TABLE_NAME);
         propertyType.put(ACL_PROP, PropertyType.COLL_ACL);
+    }
+
+    private void initSimpleProperty(String tableName, String propertyName,
+            String key, PropertyType type,
+            Map<String, PropertyType> fragmentKeysType) {
+        propertyType.put(propertyName, type);
+        propertyFragment.put(propertyName, tableName);
+        propertyFragmentKey.put(propertyName, key);
+        fragmentKeysType.put(key, type);
+    }
+
+    private void initSimpleROProperty(String tableName, String propertyName,
+            String key, PropertyType type,
+            Map<String, PropertyType> fragmentKeysType) {
+        initSimpleProperty(tableName, propertyName, key, type, fragmentKeysType);
+        readOnlyProperties.add(propertyName);
     }
 
     /**

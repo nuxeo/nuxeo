@@ -277,28 +277,28 @@ public class PersistenceContext {
     /**
      * Move a hierarchy fragment to a new parent with a new name.
      *
-     * @param id the fragment id
+     * @param source the source
      * @param parentId the destination parent id
      * @param name the new name
      * @throws StorageException
      */
-    public void move(Serializable id, Serializable parentId, String name)
+    public void move(Node source, Serializable parentId, String name)
             throws StorageException {
-        contexts.get(model.hierFragmentName).moveChild(id, parentId, name);
+        contexts.get(model.hierFragmentName).moveChild(source, parentId, name);
     }
 
     /**
      * Copy a hierarchy (and its children) to a new parent with a new name.
      *
-     * @param id the source of the copy
+     * @param source the source of the copy
      * @param parentId the destination parent id
      * @param name the new name
      * @return the id of the copy
      * @throws StorageException
      */
-    public Serializable copy(Node id, Serializable parentId, String name)
+    public Serializable copy(Node source, Serializable parentId, String name)
             throws StorageException {
-        return contexts.get(model.hierFragmentName).copyChild(id, parentId,
+        return contexts.get(model.hierFragmentName).copyChild(source, parentId,
                 name);
     }
 
@@ -316,6 +316,37 @@ public class PersistenceContext {
             return;
         }
         context.remove(row);
+    }
+
+    /**
+     * Checks in a node.
+     *
+     * @param node the node to check in
+     * @param label the version label
+     * @param description the version description
+     * @return the created version id
+     * @throws StorageException
+     */
+    public Serializable checkIn(Node node, String label, String description)
+            throws StorageException {
+        return contexts.get(model.hierFragmentName).checkIn(node, label,
+                description);
+    }
+
+    /**
+     * Checks out a node.
+     *
+     * @param node the node to check out
+     * @throws StorageException
+     */
+    public void checkOut(Node node) throws StorageException {
+        contexts.get(model.hierFragmentName).checkOut(node);
+    }
+
+    public Serializable getVersionByLabel(Serializable versionableId,
+            String label) throws StorageException {
+        return contexts.get(model.hierFragmentName).getVersionByLabel(
+                versionableId, label);
     }
 
 }

@@ -366,4 +366,55 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         session.save();
     }
+
+    public void testVersioning() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node foldera = session.addChildNode(root, "folder_a", "TestDoc", false);
+        Node nodea = session.addChildNode(foldera, "node_a", "TestDoc", false);
+        Node nodeac = session.addChildNode(nodea, "node_a_complex", "TestDoc",
+                true);
+        nodea.setSingleProperty("tst:title", "hello world");
+        nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
+                "c" });
+        // nodea.setSingleProperty("ecm:majorVersion", Long.valueOf(1));
+        // nodea.setSingleProperty("ecm:minorVersion", Long.valueOf(0));
+
+        /*
+         * Check in.
+         */
+        Node version = session.checkIn(nodea, "foolab", "bardesc");
+        assertNotNull(version);
+        assertNotSame(version.getId(), nodea.getId());
+        // doc is now checked in
+        assertEquals(Boolean.TRUE,
+                nodea.getSimpleProperty("ecm:isCheckedIn").getValue());
+        assertEquals(version.getId(),
+                nodea.getSimpleProperty("ecm:baseVersion").getString());
+        // the version info
+        assertEquals("node_a", version.getName()); // keeps name
+        assertNull(session.getParentNode(version));
+        assertEquals("hello world",
+                version.getSimpleProperty("tst:title").getString());
+        assertNull(version.getSimpleProperty("ecm:baseVersion").getString());
+        assertNull(version.getSimpleProperty("ecm:isCheckedIn").getValue());
+        assertEquals(nodea.getId(), version.getSimpleProperty(
+                "ecm:versionableId").getString());
+        // assertEquals(Long.valueOf(1), version.getSimpleProperty(
+        // "ecm:majorVersion").getLong());
+        // assertEquals(Long.valueOf(0), version.getSimpleProperty(
+        // "ecm:minorVersion").getLong());
+        assertNotNull(version.getSimpleProperty("ecm:versionCreated").getValue());
+        assertEquals("foolab", version.getSimpleProperty("ecm:versionLabel").getValue());
+        assertEquals("bardesc", version.getSimpleProperty("ecm:versionDescription").getValue());
+
+        /*
+         * Check out.
+         */
+        session.checkOut(nodea);
+        assertEquals(Boolean.FALSE,
+                nodea.getSimpleProperty("ecm:isCheckedIn").getValue());
+        assertEquals(version.getId(),
+                nodea.getSimpleProperty("ecm:baseVersion").getString());
+    }
 }

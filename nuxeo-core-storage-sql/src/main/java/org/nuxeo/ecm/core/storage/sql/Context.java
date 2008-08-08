@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -323,6 +324,10 @@ public class Context {
      */
     private void addChild(SimpleFragment row) throws StorageException {
         Serializable parentId = row.get(model.HIER_PARENT_KEY);
+        if (parentId == null) {
+            // don't maintain all versions
+            return;
+        }
         Children children = knownChildren.get(parentId);
         if (children == null) {
             children = new Children(false);
@@ -461,33 +466,31 @@ public class Context {
     /**
      * Move a child to a new parent with a new name.
      *
-     * @param id the fragment id
+     * @param source the source
      * @param parentId the destination parent id
      * @param name the new name
      * @throws StorageException
      */
-    public void moveChild(Serializable id, Serializable parentId, String name)
+    public void moveChild(Node source, Serializable parentId, String name)
             throws StorageException {
-        SimpleFragment row = (SimpleFragment) getChildById(id, false);
-        if (row == null) {
-            throw new StorageException("No such document: " + id);
-        }
-        Serializable oldParentId = row.get(model.HIER_PARENT_KEY);
-        String oldName = row.getString(model.HIER_CHILD_NAME_KEY);
+        Serializable id = source.getId();
+        SimpleFragment hierFragment = source.getHierFragment();
+        Serializable oldParentId = hierFragment.get(model.HIER_PARENT_KEY);
+        String oldName = hierFragment.getString(model.HIER_CHILD_NAME_KEY);
         if (!oldParentId.equals(parentId)) {
             checkNotUnder(parentId, id, "move");
         } else if (oldName.equals(name)) {
             // null move
             return;
         }
-        checkFreeName(row, parentId, name);
+        checkFreeName(hierFragment, parentId, name);
         /*
          * Do the move.
          */
-        removeChild(row);
-        row.put(model.HIER_PARENT_KEY, parentId);
-        row.put(model.HIER_CHILD_NAME_KEY, name);
-        addChild(row);
+        removeChild(hierFragment);
+        hierFragment.put(model.HIER_PARENT_KEY, parentId);
+        hierFragment.put(model.HIER_CHILD_NAME_KEY, name);
+        addChild(hierFragment);
     }
 
     /**
@@ -502,15 +505,12 @@ public class Context {
     public Serializable copyChild(Node source, Serializable parentId,
             String name) throws StorageException {
         Serializable id = source.getId();
-        SimpleFragment row = (SimpleFragment) getChildById(id, false);
-        if (row == null) {
-            throw new StorageException("No such document: " + id);
-        }
-        Serializable oldParentId = row.get(model.HIER_PARENT_KEY);
+        SimpleFragment hierFragment = source.getHierFragment();
+        Serializable oldParentId = hierFragment.get(model.HIER_PARENT_KEY);
         if (!oldParentId.equals(parentId)) {
             checkNotUnder(parentId, id, "copy");
         }
-        checkFreeName(row, parentId, name);
+        checkFreeName(hierFragment, parentId, name);
         /*
          * Do the copy.
          */
@@ -532,6 +532,72 @@ public class Context {
             removeChild((SimpleFragment) fragment);
         }
         fragment.markDeleted();
+    }
+
+    /**
+     * Checks in a node.
+     *
+     * @param node the node to check in
+     * @param label the version label
+     * @param description the version description
+     * @return the created version id
+     * @throws StorageException
+     */
+    public Serializable checkIn(Node node, String label, String description)
+            throws StorageException {
+        Boolean checkedIn = (Boolean) node.mainFragment.get(model.MAIN_CHECKED_IN_KEY);
+        if (Boolean.TRUE.equals(checkedIn)) {
+            throw new StorageException("Already checked in");
+        }
+        /*
+         * Do the copy without children, with null parent.
+         */
+        Serializable id = node.getId();
+        String typeName = node.mainFragment.getString(model.MAIN_PRIMARY_TYPE_KEY);
+        Serializable newId = mapper.copyHierarchy(id, typeName, null, null);
+        /*
+         * Create a "version" row for our new version.
+         */
+        HashMap<String, Serializable> map = new HashMap<String, Serializable>();
+        map.put(model.VERSION_VERSIONABLE_KEY, id);
+        map.put(model.VERSION_CREATED_KEY, new GregorianCalendar()); // now
+        map.put(model.VERSION_LABEL_KEY, label);
+        map.put(model.VERSION_DESCRIPTION_KEY, description);
+        SimpleFragment versionRow = (SimpleFragment) persistenceContext.createSimpleFragment(
+                model.VERSION_TABLE_NAME, newId, map);
+        getChildById(newId, false); // adds version as a new child of its parent
+        /*
+         * Update the original node to reflect that it's checked in.
+         */
+        node.mainFragment.put(model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
+        node.mainFragment.put(model.MAIN_BASE_VERSION_KEY, newId);
+        /*
+         * Save to reflect changes immediately in database.
+         */
+        persistenceContext.save();
+        return newId;
+    }
+
+    /**
+     * Checks out a node
+     *
+     * @param node the node to check out
+     * @throws StorageException
+     */
+    public void checkOut(Node node) throws StorageException {
+        Boolean checkedIn = (Boolean) node.mainFragment.get(model.MAIN_CHECKED_IN_KEY);
+        if (!Boolean.TRUE.equals(checkedIn)) {
+            throw new StorageException("Already checked out");
+        }
+        /*
+         * Update the node to reflect that it's checked out.
+         */
+        node.mainFragment.put(model.MAIN_CHECKED_IN_KEY, Boolean.FALSE);
+    }
+
+    public Serializable getVersionByLabel(Serializable versionableId,
+            String label) throws StorageException {
+        return mapper.getVersionByLabel(versionableId, label);
     }
 
     /**

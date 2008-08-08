@@ -60,6 +60,15 @@ public class SimpleProperty extends BaseProperty {
         }
     }
 
+    public Long getLong() throws StorageException {
+        switch (type) {
+        case LONG:
+            return (Long) row.get(key);
+        default:
+            throw new RuntimeException("Not a Long property: " + type);
+        }
+    }
+
     // ----- setters -----
 
     public void setValue(Serializable value) throws StorageException {

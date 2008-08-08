@@ -209,6 +209,39 @@ public interface Session extends Connection {
     Node copy(Node source, Node parent, String name) throws StorageException;
 
     /**
+     * Checks in a checked-out node: creates a new version with a copy of its
+     * information.
+     * <p>
+     * A {@link #save} is automatically done first.
+     *
+     * @param node the node to check in
+     * @param label the label for the version
+     * @param description the description for the version
+     * @return the created version
+     * @throws StorageException
+     */
+    Node checkIn(Node node, String label, String description)
+            throws StorageException;
+
+    /**
+     * Checks out a checked-in node.
+     *
+     * @param node the node to check out
+     * @throws StorageException
+     */
+    void checkOut(Node node) throws StorageException;
+
+    /**
+     * Gets a version of a node given its label.
+     *
+     * @param node the node
+     * @param label the label
+     * @return the version node, or {@code null} if not found
+     * @throws StorageException
+     */
+    Node getVersionByLabel(Node node, String label) throws StorageException;
+
+    /**
      * Creates a binary value given an input stream.
      *
      * @param in the input stream

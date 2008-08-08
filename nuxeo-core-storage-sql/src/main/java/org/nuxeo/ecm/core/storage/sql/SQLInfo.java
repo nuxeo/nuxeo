@@ -122,13 +122,19 @@ public class SQLInfo {
 
     private String selectChildrenIdsAndTypesSql;
 
+    private String selectComplexChildrenIdsAndTypesSql;
+
     private List<Column> selectChildrenIdsAndTypesWhatColumns;
 
     private String copyHierSqlExplicitName;
 
+    private String copyHierSqlCreateVersion;
+
     private String copyHierSql;
 
     private List<Column> copyHierColumnsExplicitName;
+
+    private List<Column> copyHierColumnsCreateVersion;
 
     private List<Column> copyHierColumns;
 
@@ -137,6 +143,12 @@ public class SQLInfo {
     private final Map<String, String> copySqlMap;
 
     private final Map<String, Column> copyIdColumnMap;
+
+    private String selectVersionIdByLabelSql;
+
+    private final List<Column> selectVersionIdByLabelWhereColumns;
+
+    private Column selectVersionIdByLabelWhatColumn;
 
     /**
      * Generates and holds the needed SQL statements given a {@link Model} and a
@@ -182,6 +194,7 @@ public class SQLInfo {
         selectChildrenPropertiesWhereColumns = null;
         selectChildrenIdsAndTypesSql = null;
         selectChildrenIdsAndTypesWhatColumns = null;
+        selectComplexChildrenIdsAndTypesSql = null;
 
         insertSqlMap = new HashMap<String, String>();
         insertColumnsMap = new HashMap<String, List<Column>>();
@@ -192,12 +205,18 @@ public class SQLInfo {
         deleteSqlMap = new HashMap<String, String>();
 
         copyHierSqlExplicitName = null;
+        copyHierSqlCreateVersion = null;
         copyHierSql = null;
         copyHierColumnsExplicitName = null;
+        copyHierColumnsCreateVersion = null;
         copyHierColumns = null;
         copyHierWhereColumn = null;
         copySqlMap = new HashMap<String, String>();
         copyIdColumnMap = new HashMap<String, Column>();
+
+        selectVersionIdByLabelSql = null;
+        selectVersionIdByLabelWhereColumns = new ArrayList<Column>(2);
+        selectVersionIdByLabelWhatColumn = null;
 
         initSQL();
     }
@@ -311,8 +330,9 @@ public class SQLInfo {
         }
     }
 
-    public String getSelectChildrenIdsAndTypesSql() {
-        return selectChildrenIdsAndTypesSql;
+    public String getSelectChildrenIdsAndTypesSql(boolean onlyComplex) {
+        return onlyComplex ? selectComplexChildrenIdsAndTypesSql
+                : selectChildrenIdsAndTypesSql;
     }
 
     public List<Column> getSelectChildrenIdsAndTypesWhatColumns() {
@@ -380,12 +400,18 @@ public class SQLInfo {
 
     // ----- copy -----
 
-    public String getCopyHierSql(boolean explicitName) {
-        return explicitName ? copyHierSqlExplicitName : copyHierSql;
+    public String getCopyHierSql(boolean explicitName, boolean createVersion) {
+        assert !(explicitName && createVersion);
+        return explicitName ? copyHierSqlExplicitName
+                : createVersion ? copyHierSqlCreateVersion : copyHierSql;
     }
 
-    public List<Column> getCopyHierColumns(boolean explicitName) {
-        return explicitName ? copyHierColumnsExplicitName : copyHierColumns;
+    public List<Column> getCopyHierColumns(boolean explicitName,
+            boolean createVersion) {
+        assert !(explicitName && createVersion);
+        return explicitName ? copyHierColumnsExplicitName
+                : createVersion ? copyHierColumnsCreateVersion
+                        : copyHierColumns;
     }
 
     public Column getCopyHierWhereColumn() {
@@ -400,6 +426,18 @@ public class SQLInfo {
         return copyIdColumnMap.get(tableName);
     }
 
+    public String getVersionIdByLabelSql() {
+        return selectVersionIdByLabelSql;
+    }
+
+    public List<Column> getVersionIdByLabelWhereColumns() {
+        return selectVersionIdByLabelWhereColumns;
+    }
+
+    public Column getVersionIdByLabelWhatColumn() {
+        return selectVersionIdByLabelWhatColumn;
+    }
+
     // ----- prepare everything -----
 
     /**
@@ -412,6 +450,11 @@ public class SQLInfo {
         initHierarchySQL();
 
         for (String tableName : model.fragmentsKeysType.keySet()) {
+            if (tableName.equals(model.MAIN_TABLE_NAME) &&
+                    !model.separateMainTable) {
+                // merged into already-generated hierarchy
+                continue;
+            }
             initFragmentSQL(tableName);
         }
     }
@@ -436,7 +479,7 @@ public class SQLInfo {
         log.debug("Init hierarchy information");
 
         TableMaker maker = new TableMaker(model.hierFragmentName);
-        if (model.separateHierarchyTable) {
+        if (model.separateMainTable) {
             maker.newPrimaryKey();
         } else {
             maker.newId(); // global primary key / generation
@@ -448,13 +491,15 @@ public class SQLInfo {
                 Types.VARCHAR); // text?
         maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, PropertyType.BOOLEAN,
                 Types.BIT); // not null
-        if (!model.separateHierarchyTable) {
-            maker.newColumn(model.MAIN_PRIMARY_TYPE_KEY, PropertyType.STRING,
-                    Types.VARCHAR);
+        if (!model.separateMainTable) {
+            Map<String, PropertyType> fragmentKeysType = model.fragmentsKeysType.get(model.MAIN_TABLE_NAME);
+            for (Entry<String, PropertyType> entry : fragmentKeysType.entrySet()) {
+                maker.newPrimitiveField(entry.getKey(), entry.getValue());
+            }
         }
         maker.postProcess();
         maker.postProcessHierarchy();
-        if (!model.separateHierarchyTable) {
+        if (!model.separateMainTable) {
             maker.postProcessIdGeneration();
         }
     }
@@ -480,6 +525,9 @@ public class SQLInfo {
         maker.postProcess();
         if (isMain) {
             maker.postProcessIdGeneration();
+        }
+        if (tableName.equals(model.VERSION_TABLE_NAME)) {
+            maker.postProcessSelectVersionIdByLabel();
         }
     }
 
@@ -536,10 +584,21 @@ public class SQLInfo {
         }
 
         protected void newPrimitiveField(String key, PropertyType type) {
+            if (tableName.equals(model.VERSION_TABLE_NAME) &&
+                    key.equals(model.VERSION_VERSIONABLE_KEY)) {
+                newMainKey(key); // not a foreign key though
+                return;
+            }
             int sqlType;
             switch (type) {
             case STRING:
-                sqlType = Types.CLOB; // or VARCHAR for system tables?
+                // hack, make this more configurable
+                if (tableName.equals(model.VERSION_TABLE_NAME) &&
+                        key.equals(model.VERSION_LABEL_KEY)) {
+                    sqlType = Types.VARCHAR;
+                } else {
+                    sqlType = Types.CLOB; // or VARCHAR for system tables?
+                }
                 break;
             case BOOLEAN:
                 sqlType = Types.BIT;
@@ -799,7 +858,7 @@ public class SQLInfo {
 
         // children ids and types
         protected void postProcessSelectChildrenIdsAndTypes() {
-            assert !model.separateHierarchyTable; // otherwise join needed
+            assert !model.separateMainTable; // otherwise join needed
             ArrayList<Column> whatColumns = new ArrayList<Column>(2);
             ArrayList<String> whats = new ArrayList<String>(2);
             Column column = table.getColumn(model.MAIN_KEY);
@@ -808,13 +867,22 @@ public class SQLInfo {
             column = table.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
             whatColumns.add(column);
             whats.add(column.getQuotedName(dialect));
-            Column whereColumn = table.getColumn(model.HIER_PARENT_KEY);
             Select select = new Select(dialect);
             select.setWhat(StringUtils.join(whats, ", "));
             select.setFrom(table.getQuotedName(dialect));
-            select.setWhere(whereColumn.getQuotedName(dialect) + " = ?");
+            String where = table.getColumn(model.HIER_PARENT_KEY).getQuotedName(
+                    dialect) +
+                    " = ?";
+            select.setWhere(where);
             selectChildrenIdsAndTypesSql = select.getStatement();
             selectChildrenIdsAndTypesWhatColumns = whatColumns;
+            // now only complex properties
+            where += " AND " +
+                    table.getColumn(model.HIER_CHILD_ISPROPERTY_KEY).getQuotedName(
+                            dialect) + " = " +
+                    dialect.toBooleanValueString(true);
+            select.setWhere(where);
+            selectComplexChildrenIdsAndTypesSql = select.getStatement();
         }
 
         // TODO optimize multiple inserts into one statement for collections
@@ -894,8 +962,11 @@ public class SQLInfo {
             List<String> selectWhats = new ArrayList<String>(columns.size());
             List<String> selectWhatsExplicitName = new ArrayList<String>(
                     columns.size());
-            copyHierColumns = new ArrayList<Column>(1);
-            copyHierColumnsExplicitName = new ArrayList<Column>(2);
+            List<String> selectWhatsCreateVersion = new ArrayList<String>(
+                    columns.size());
+            copyHierColumns = new ArrayList<Column>(2);
+            copyHierColumnsExplicitName = new ArrayList<Column>(3);
+            copyHierColumnsCreateVersion = new ArrayList<Column>(3);
             Insert insert = new Insert(dialect);
             insert.setTable(table);
             for (Column column : columns) {
@@ -906,34 +977,41 @@ public class SQLInfo {
                 insert.addColumn(column);
                 String quotedName = column.getQuotedName(dialect);
                 String key = column.getName();
-                if (key.equals(model.MAIN_KEY)) {
-                    // explicit id value (if not identity column)
+                if (key.equals(model.MAIN_KEY) ||
+                        key.equals(model.HIER_PARENT_KEY)) {
+                    // explicit id/parent value (id if not identity column)
                     selectWhats.add("?");
-                    selectWhatsExplicitName.add("?");
                     copyHierColumns.add(column);
-                    copyHierColumnsExplicitName.add(column);
-                } else if (key.equals(model.HIER_PARENT_KEY)) {
-                    // explicit parent value
-                    selectWhats.add("?");
                     selectWhatsExplicitName.add("?");
-                    copyHierColumns.add(column);
                     copyHierColumnsExplicitName.add(column);
+                    selectWhatsCreateVersion.add("?");
+                    copyHierColumnsCreateVersion.add(column);
                 } else if (key.equals(model.HIER_CHILD_NAME_KEY)) {
                     selectWhats.add(quotedName);
                     // exlicit name value if requested
                     selectWhatsExplicitName.add("?");
                     copyHierColumnsExplicitName.add(column);
+                    // version creation copies name
+                    selectWhatsCreateVersion.add(quotedName);
+                } else if (key.equals(model.MAIN_BASE_VERSION_KEY) ||
+                        key.equals(model.MAIN_CHECKED_IN_KEY)) {
+                    selectWhats.add(quotedName);
+                    selectWhatsExplicitName.add(quotedName);
+                    // version creation sets those null
+                    selectWhatsCreateVersion.add("?");
+                    copyHierColumnsCreateVersion.add(column);
                 } else {
                     // otherwise copy value
                     selectWhats.add(quotedName);
                     selectWhatsExplicitName.add(quotedName);
+                    selectWhatsCreateVersion.add(quotedName);
                 }
             }
             copyHierWhereColumn = table.getColumn(model.MAIN_KEY);
             Select select = new Select(dialect);
             select.setFrom(table.getQuotedName(dialect));
             select.setWhere(copyHierWhereColumn.getQuotedName(dialect) + " = ?");
-            // without explicit name
+            // without explicit name nor version creation (normal)
             select.setWhat(StringUtils.join(selectWhats, ", "));
             insert.setValues(select.getStatement());
             copyHierSql = insert.getStatement();
@@ -941,6 +1019,10 @@ public class SQLInfo {
             select.setWhat(StringUtils.join(selectWhatsExplicitName, ", "));
             insert.setValues(select.getStatement());
             copyHierSqlExplicitName = insert.getStatement();
+            // with version creation
+            select.setWhat(StringUtils.join(selectWhatsCreateVersion, ", "));
+            insert.setValues(select.getStatement());
+            copyHierSqlCreateVersion = insert.getStatement();
         }
 
         // copy of a fragment
@@ -972,6 +1054,23 @@ public class SQLInfo {
             insert.setValues(select.getStatement());
             copySqlMap.put(tableName, insert.getStatement());
             copyIdColumnMap.put(tableName, copyIdColumn);
+        }
+
+        protected void postProcessSelectVersionIdByLabel() {
+            Select select = new Select(dialect);
+            Column whatColumn = table.getColumn(model.MAIN_KEY);
+            List<String> wheres = new ArrayList<String>(2);
+            Column column = table.getColumn(model.VERSION_VERSIONABLE_KEY);
+            wheres.add(column.getQuotedName(dialect) + " = ?");
+            selectVersionIdByLabelWhereColumns.add(column);
+            column = table.getColumn(model.VERSION_LABEL_KEY);
+            wheres.add(column.getQuotedName(dialect) + " = ?");
+            selectVersionIdByLabelWhereColumns.add(column);
+            select.setWhat(whatColumn.getQuotedName(dialect));
+            select.setFrom(table.getQuotedName(dialect));
+            select.setWhere(StringUtils.join(wheres, " AND "));
+            selectVersionIdByLabelSql = select.getStatement();
+            selectVersionIdByLabelWhatColumn = whatColumn;
         }
 
     }

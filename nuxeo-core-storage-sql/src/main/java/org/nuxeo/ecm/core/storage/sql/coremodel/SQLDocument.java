@@ -248,25 +248,25 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         return false;
     }
 
-    public Document getSourceDocument() {
+    public Document getSourceDocument() throws DocumentException {
         return this;
     }
 
     public void checkIn(String label) throws DocumentException {
-        throw new UnsupportedOperationException();
+        checkIn(label, null);
     }
 
     public void checkIn(String label, String description)
             throws DocumentException {
-        throw new UnsupportedOperationException();
+        session.checkIn(node, label, description);
     }
 
     public void checkOut() throws DocumentException {
-        throw new UnsupportedOperationException();
+        session.checkOut(node);
     }
 
     public boolean isCheckedOut() throws DocumentException {
-        throw new UnsupportedOperationException();
+        return !getBoolean(Model.MAIN_CHECKED_IN_PROP);
     }
 
     public void restore(String label) throws DocumentException {
@@ -281,7 +281,7 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public Document getVersion(String label) throws DocumentException {
-        throw new UnsupportedOperationException();
+        return session.getVersionByLabel(node, label);
     }
 
     public DocumentVersionIterator getVersions() throws DocumentException {

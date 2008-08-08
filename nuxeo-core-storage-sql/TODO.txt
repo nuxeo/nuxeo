@@ -1,6 +1,6 @@
 SQL Storage TODO
 
-- checkin/checkout
+- major/minor version management
 
 - proxies
 
@@ -11,6 +11,8 @@ SQL Storage TODO
 - complex lists
 
 Optimizations:
+
+- indexes
 
 - blob storage GC
 

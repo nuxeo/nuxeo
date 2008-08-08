@@ -855,18 +855,21 @@ public class Mapper {
     /**
      * Copy the hierarchy starting from a given fragment to a new parent with a
      * new name.
+     * <p>
+     * If the new parent is {@code null}, then this is a version creation, which
+     * doesn't recurse in regular children.
      *
      * @param sourceId the id of fragment to copy (with children)
      * @param typeName the type of the fragment to copy (to avoid refetching
      *            known info)
-     * @param destParentId the new parent id
+     * @param destParentId the new parent id, or {@code null}
      * @parem destName the new name
      * @return the id of the root of the copy
      * @throws StorageException
      */
     public Serializable copyHierarchy(Serializable sourceId, String typeName,
             Serializable destParentId, String destName) throws StorageException {
-        assert !model.separateHierarchyTable; // other case not implemented
+        assert !model.separateMainTable; // other case not implemented
         Map<Serializable, Serializable> idMap = new LinkedHashMap<Serializable, Serializable>();
         Map<Serializable, String> idType = new HashMap<Serializable, String>();
         try {
@@ -922,10 +925,11 @@ public class Mapper {
             Serializable parentId, String name,
             Map<Serializable, Serializable> idMap,
             Map<Serializable, String> idType) throws SQLException {
+        boolean createVersion = parentId == null;
         boolean explicitName = name != null;
         Serializable newId = null;
 
-        String sql = sqlInfo.getCopyHierSql(explicitName);
+        String sql = sqlInfo.getCopyHierSql(explicitName, createVersion);
         PreparedStatement ps = connection.prepareStatement(sql);
         try {
             switch (model.idGenPolicy) {
@@ -941,7 +945,8 @@ public class Mapper {
             if (log.isDebugEnabled()) {
                 debugValues = new ArrayList<Serializable>(4);
             }
-            List<Column> columns = sqlInfo.getCopyHierColumns(explicitName);
+            List<Column> columns = sqlInfo.getCopyHierColumns(explicitName,
+                    createVersion);
             Column whereColumn = sqlInfo.getCopyHierWhereColumn();
             ps = connection.prepareStatement(sql);
             int i = 1;
@@ -956,6 +961,9 @@ public class Mapper {
                 } else if (key.equals(model.MAIN_KEY)) {
                     // present if APP_UUID generation
                     v = newId;
+                } else if (createVersion &&
+                        (key.equals(model.MAIN_BASE_VERSION_KEY) || key.equals(model.MAIN_CHECKED_IN_KEY))) {
+                    v = null;
                 } else {
                     throw new AssertionError(column);
                 }
@@ -970,7 +978,10 @@ public class Mapper {
                 debugValues.add(id);
                 logSQL(sql, debugValues);
             }
-            ps.execute();
+            int count = ps.executeUpdate();
+            if (log.isDebugEnabled() && count != 0) {
+                logDebug("  -> " + count + " rows");
+            }
 
             if (newId == null) {
                 // post insert fetch idrow
@@ -997,7 +1008,7 @@ public class Mapper {
          * Recurse on children.
          */
 
-        for (Serializable[] info : getChildrenIds(id)) {
+        for (Serializable[] info : getChildrenIds(id, createVersion)) {
             Serializable childId = info[0];
             String childType = (String) info[1];
             idType.put(childId, childType);
@@ -1005,10 +1016,10 @@ public class Mapper {
         }
     }
 
-    protected List<Serializable[]> getChildrenIds(Serializable id)
-            throws SQLException {
+    protected List<Serializable[]> getChildrenIds(Serializable id,
+            boolean onlyComplex) throws SQLException {
         List<Serializable[]> childrenIds = new LinkedList<Serializable[]>();
-        String sql = sqlInfo.getSelectChildrenIdsAndTypesSql();
+        String sql = sqlInfo.getSelectChildrenIdsAndTypesSql(onlyComplex);
         if (log.isDebugEnabled()) {
             logSQL(sql, Collections.singletonList(id));
         }
@@ -1075,6 +1086,73 @@ public class Mapper {
             ps.close();
         }
 
+    }
+
+    /**
+     * Gets the id of a version given a versionableId and a label.
+     *
+     * @param versionableId the versionable id
+     * @param label the label
+     * @return the id of the version, or {@code null}
+     * @throws StorageException
+     */
+    public Serializable getVersionByLabel(Serializable versionableId,
+            String label) throws StorageException {
+
+        String sql = sqlInfo.getVersionIdByLabelSql();
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            try {
+                List<Serializable> debugValues = null;
+                if (log.isDebugEnabled()) {
+                    debugValues = new ArrayList<Serializable>(2);
+                }
+                int i = 1;
+                for (Column column : sqlInfo.getVersionIdByLabelWhereColumns()) {
+                    String key = column.getKey();
+                    Serializable v;
+                    if (key.equals(model.VERSION_VERSIONABLE_KEY)) {
+                        v = versionableId;
+                    } else if (key.equals(model.VERSION_LABEL_KEY)) {
+                        v = label;
+                    } else {
+                        throw new AssertionError(key);
+                    }
+                    if (v == null) {
+                        throw new RuntimeException("Null value for key: " + key);
+                    }
+                    column.setToPreparedStatement(ps, i++, v);
+                    if (debugValues != null) {
+                        debugValues.add(v);
+                    }
+                }
+                if (debugValues != null) {
+                    logSQL(sql, debugValues);
+                }
+                ResultSet rs = ps.executeQuery();
+                if (!rs.next()) {
+                    // no match, no version found
+                    return null;
+                }
+                // construct the row from the results
+                Column column = sqlInfo.getVersionIdByLabelWhatColumn();
+                Serializable id = column.getFromResultSet(rs, 1);
+                if (log.isDebugEnabled()) {
+                    logResultSet(rs, Collections.singletonList(column));
+                }
+                // check that we didn't get several rows
+                if (rs.next()) {
+                    // just emit a warning
+                    log.warn("Id " + versionableId +
+                            " has several versions with label: " + label);
+                }
+                return id;
+            } finally {
+                ps.close();
+            }
+        } catch (SQLException e) {
+            throw newStorageException(e, "Could not select", sql);
+        }
     }
 
     /*

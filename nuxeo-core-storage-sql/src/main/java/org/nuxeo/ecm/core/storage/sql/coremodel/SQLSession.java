@@ -295,10 +295,12 @@ public class SQLSession implements Session {
             // root's parent
             return null;
         }
-
-        // TODO proxies / versions
-
-        return new SQLDocument(node, this);
+        // TODO proxies
+        if (node.isVersion()) {
+            return new SQLDocumentVersion(node, this);
+        } else {
+            return new SQLDocument(node, this);
+        }
     }
 
     /**
@@ -410,6 +412,40 @@ public class SQLSession implements Session {
         }
     }
 
+    protected void checkIn(Node node, String label, String description)
+            throws DocumentException {
+        try {
+            session.checkIn(node, label, description);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected void checkOut(Node node) throws DocumentException {
+        try {
+            session.checkOut(node);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected Document getVersionByLabel(Node node, String label)
+            throws DocumentException {
+        try {
+            return newDocument(session.getVersionByLabel(node, label));
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected Node getNodeById(Serializable id) throws DocumentException {
+        try {
+            return session.getNodeById(id);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
     /*
      * ----- property helpers -----
      */
@@ -434,14 +470,23 @@ public class SQLSession implements Session {
             field = Model.SYSTEM_LIFECYCLE_STATE_FIELD;
         } else if (Model.SYSTEM_DIRTY_PROP.equals(name)) {
             field = Model.SYSTEM_DIRTY_FIELD;
+        } else if (Model.VERSION_VERSIONABLE_PROP.equals(name)) {
+            field = Model.VERSION_VERSIONABLE_FIELD;
+        } else if (Model.VERSION_LABEL_PROP.equals(name)) {
+            field = Model.VERSION_LABEL_FIELD;
+        } else if (Model.VERSION_DESCRIPTION_PROP.equals(name)) {
+            field = Model.VERSION_DESCRIPTION_FIELD;
+        } else if (Model.VERSION_CREATED_PROP.equals(name)) {
+            field = Model.VERSION_CREATED_FIELD;
+        } else if (Model.MAIN_CHECKED_IN_PROP.equals(name)) {
+            field = Model.MAIN_CHECKED_IN_FIELD;
         } else {
             field = parentType.getField(name);
+            if (field == null) {
+                throw new NoSuchPropertyException(name);
+            }
             // qualify if necessary (some callers pass unprefixed names)
             name = field.getName().getPrefixedName();
-        }
-
-        if (field == null) {
-            throw new NoSuchPropertyException(name);
         }
 
         Type type = field.getType();

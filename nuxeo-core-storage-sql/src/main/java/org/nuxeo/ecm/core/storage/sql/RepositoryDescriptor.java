@@ -103,6 +103,6 @@ public class RepositoryDescriptor {
      * <p>
      * Having it <em>not</em> separate improves performance.
      */
-    public boolean separateHierarchyTable = false;
+    public boolean separateMainTable = false;
 
 }
