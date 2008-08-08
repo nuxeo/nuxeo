@@ -148,7 +148,7 @@ public final class FrenchAnalyzer extends Analyzer {
     result = new StopFilter(result, stoptable);
     result = new FrenchStemFilter(result, excltable, true);
     // Convert to lower case after stemming!
-    result = new LowerCaseFilter(result);
+    result = new FrenchLowerCaseFilter(result);
     return result;
   }
 }
