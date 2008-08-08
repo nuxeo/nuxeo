@@ -22,7 +22,7 @@ import java.util.Calendar;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;
@@ -32,9 +32,8 @@ import org.nuxeo.ecm.core.versioning.DocumentVersion;
  */
 public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
 
-    public SQLDocumentVersion(Node node, SQLSession session)
-            throws StorageException {
-        super(node, session);
+    public SQLDocumentVersion(Node node, ComplexType type, SQLSession session) {
+        super(node, type, session);
     }
 
     @Override

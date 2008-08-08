@@ -63,7 +63,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // root doc /foo
         Node nodefoo = session.addChildNode(root, "foo", "TestDoc", false);
         assertEquals(root.getId(), session.getParentNode(nodefoo).getId());
-        assertEquals("TestDoc", nodefoo.getType().getName());
+        assertEquals("TestDoc", nodefoo.getPrimaryType());
         assertEquals("/foo", session.getPath(nodefoo));
         Node nodeabis = session.getChildNode(root, "foo", false);
         assertEquals(nodefoo.getId(), nodeabis.getId());

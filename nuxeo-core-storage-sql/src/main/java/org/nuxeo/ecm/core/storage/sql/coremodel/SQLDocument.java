@@ -64,12 +64,13 @@ public class SQLDocument extends SQLComplexProperty implements Document {
      * Do not use this ctor from outside!! Use JCRSession.newDocument instead -
      * otherwise proxy docs will not work.
      *
-     * @param session the current session
      * @param node the JCR node to wrap
+     * @param type the document type
+     * @param session the current session
      * @throws StorageException if any JCR exception occurs
      */
-    SQLDocument(Node node, SQLSession session) {
-        super(node, (ComplexType) node.getType(), session);
+    SQLDocument(Node node, ComplexType type, SQLSession session) {
+        super(node, type, session);
     }
 
     /*

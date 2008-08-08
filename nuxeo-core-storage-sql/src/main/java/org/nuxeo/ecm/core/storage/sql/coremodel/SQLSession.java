@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
+import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -87,11 +88,13 @@ public class SQLSession implements Session {
         this.context = context;
         context.put("creationTime", Long.valueOf(System.currentTimeMillis()));
 
+        Node rootNode;
         try {
-            root = newDocument(session.getRootNode());
+            rootNode = session.getRootNode();
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
+        root = newDocument(rootNode);
 
         userSessionId = (String) context.get("SESSION_ID");
     }
@@ -195,12 +198,13 @@ public class SQLSession implements Session {
     }
 
     public Document resolvePath(String path) throws DocumentException {
-        Document doc;
+        Node node;
         try {
-            doc = newDocument(session.getNodeByPath(path, session.getRootNode()));
+            node = session.getNodeByPath(path, session.getRootNode());
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
+        Document doc = newDocument(node);
         if (doc == null) {
             throw new NoSuchDocumentException("No such document: " + path);
         }
@@ -290,16 +294,21 @@ public class SQLSession implements Session {
      * ----- called by SQLDocument -----
      */
 
-    private SQLDocument newDocument(Node node) throws StorageException {
+    private SQLDocument newDocument(Node node) throws DocumentException {
         if (node == null) {
             // root's parent
             return null;
         }
+        String typeName = node.getPrimaryType();
+        DocumentType type = getTypeManager().getDocumentType(typeName);
+        if (type == null) {
+            throw new DocumentException("Unknown document type: " + typeName);
+        }
         // TODO proxies
         if (node.isVersion()) {
-            return new SQLDocumentVersion(node, this);
+            return new SQLDocumentVersion(node, type, this);
         } else {
-            return new SQLDocument(node, this);
+            return new SQLDocument(node, type, this);
         }
     }
 
@@ -334,12 +343,13 @@ public class SQLSession implements Session {
 
     protected Document getChild(Node node, String name)
             throws DocumentException {
-        Document doc;
+        Node childNode;
         try {
-            doc = newDocument(session.getChildNode(node, name, false));
+            childNode = session.getChildNode(node, name, false);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
+        Document doc = newDocument(childNode);
         if (doc == null) {
             throw new NoSuchDocumentException("No such document: " + name);
         }
@@ -356,13 +366,7 @@ public class SQLSession implements Session {
         }
         List<Document> children = new ArrayList<Document>(nodes.size());
         for (Node n : nodes) {
-            Document doc;
-            try {
-                doc = newDocument(n);
-            } catch (StorageException e) {
-                throw new DocumentException(e);
-            }
-            children.add(doc);
+            children.add(newDocument(n));
         }
         return children;
     }

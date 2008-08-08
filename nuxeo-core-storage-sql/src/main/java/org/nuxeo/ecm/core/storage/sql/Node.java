@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -31,13 +30,6 @@ import org.nuxeo.ecm.core.storage.StorageException;
  * @author Florent Guillaume
  */
 public class Node {
-
-    /**
-     * The "core" type. This is kept in the node so that when a SQLDocument or a
-     * complex property is created for it we are able to get proper core type
-     * information for the document and its properties.
-     */
-    protected final Type type;
 
     /** The persistence context used. */
     protected final PersistenceContext context;
@@ -66,14 +58,12 @@ public class Node {
     /**
      * Creates a Node.
      *
-     * @param type the node type
      * @param session the session
      * @param context the persistence context
      * @param rowGroup the group of rows for the node
      */
-    protected Node(Type type, Session session, PersistenceContext context,
+    protected Node(Session session, PersistenceContext context,
             FragmentGroup rowGroup) {
-        this.type = type;
         this.context = context;
         model = session.getModel();
         mainFragment = rowGroup.main;
@@ -110,8 +100,13 @@ public class Node {
         }
     }
 
-    public Type getType() {
-        return type;
+    public String getPrimaryType() {
+        try {
+            return mainFragment.getString(model.MAIN_PRIMARY_TYPE_KEY);
+        } catch (StorageException e) {
+            // do not propagate this unlikely exception as a checked one
+            throw new RuntimeException(e);
+        }
     }
 
     protected SimpleFragment getHierFragment() {

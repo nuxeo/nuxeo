@@ -43,9 +43,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
 
@@ -234,7 +232,6 @@ public class SessionImpl implements Session, XAResource {
             }
         }
         String childTypeName = (String) childMain.get(model.MAIN_PRIMARY_TYPE_KEY);
-        DocumentType childType = schemaManager.getDocumentType(childTypeName);
 
         // find hier row if separate
         SimpleFragment childHier;
@@ -256,7 +253,7 @@ public class SessionImpl implements Session, XAResource {
         FragmentGroup childGroup = new FragmentGroup(childMain, childHier,
                 childFragments);
 
-        return new Node(childType, this, context, childGroup);
+        return new Node(this, context, childGroup);
     }
 
     protected FragmentsMap getFragments(Serializable id, String typeName,
@@ -383,21 +380,7 @@ public class SessionImpl implements Session, XAResource {
             hierRow = null;
         }
 
-        // find all schemas for this type and create fragment entities
         FragmentsMap fragments = new FragmentsMap();
-        Type type = schemaManager.getDocumentType(typeName);
-        if (type == null) {
-            type = schemaManager.getSchema(typeName);
-            if (type == null && !model.isComplexType(typeName)) {
-                throw new StorageException("Unknown type: " + typeName);
-            }
-            // happens for any complex type not registered directly as a
-            // toplevel schema, like "content", or "Name" in unit tests.
-            // => no high level Type info for them
-        }
-
-        // XXX TODO XXX may not be a document type for complex props
-
         if (false) {
             // TODO if non-lazy creation of some fragments, create them here
             for (String schemaName : model.getTypeSimpleFragments(typeName)) {
@@ -412,7 +395,7 @@ public class SessionImpl implements Session, XAResource {
 
         FragmentGroup rowGroup = new FragmentGroup(mainRow, hierRow, fragments);
 
-        return new Node(type, this, context, rowGroup);
+        return new Node(this, context, rowGroup);
     }
 
     public boolean hasChildNode(Node parent, String name, boolean complexProp)
@@ -453,7 +436,6 @@ public class SessionImpl implements Session, XAResource {
             childHier = null;
         }
         String childTypeName = (String) childMain.get(model.MAIN_PRIMARY_TYPE_KEY);
-        DocumentType childType = schemaManager.getDocumentType(childTypeName);
 
         FragmentsMap childFragments = getFragments(childId, childTypeName,
                 parentId, name);
@@ -461,7 +443,7 @@ public class SessionImpl implements Session, XAResource {
         FragmentGroup childGroup = new FragmentGroup(childMain, childHier,
                 childFragments);
 
-        return new Node(childType, this, context, childGroup);
+        return new Node(this, context, childGroup);
     }
 
     // TODO optimize with dedicated backend call
@@ -600,10 +582,9 @@ public class SessionImpl implements Session, XAResource {
             hierRow = null;
         }
 
-        DocumentType type = schemaManager.getDocumentType(model.ROOT_TYPE);
         FragmentGroup rowGroup = new FragmentGroup(mainRow, hierRow, null);
 
-        return new Node(type, this, context, rowGroup);
+        return new Node(this, context, rowGroup);
     }
 
     private void addRootACP() throws StorageException {
