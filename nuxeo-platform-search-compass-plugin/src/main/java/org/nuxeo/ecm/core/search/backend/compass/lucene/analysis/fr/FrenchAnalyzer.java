@@ -24,7 +24,6 @@ import java.util.Hashtable;
 import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.LetterTokenizer;
 import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.StopFilter;
 import org.apache.lucene.analysis.TokenStream;
@@ -144,11 +143,11 @@ public final class FrenchAnalyzer extends Analyzer {
     if (reader == null) throw new IllegalArgumentException("reader must not be null");
 
 
-    TokenStream result = new LetterTokenizer(reader);
+    TokenStream result = new FrenchTokenizer(reader);
     result = new FrenchFilter( result );
     result = new StopFilter(result, stoptable);
     result = new FrenchStemFilter(result, excltable, true);
-    // Convert to lowercase after stemming!
+    // Convert to lower case after stemming!
     result = new LowerCaseFilter(result);
     return result;
   }
