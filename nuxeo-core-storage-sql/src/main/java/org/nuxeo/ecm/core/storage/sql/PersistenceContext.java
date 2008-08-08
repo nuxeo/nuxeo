@@ -21,7 +21,10 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,11 +33,11 @@ import org.nuxeo.ecm.core.storage.StorageException;
 /**
  * The persistence context in use by a session.
  * <p>
- * All non-saved modified data is referenced here. At save time, the data is
- * sent to the database by the {@link Mapper}.
- * <p>
  * This class is not thread-safe, it should be tied to a single session and the
  * session itself should not be used concurrently.
+ * <p>
+ * This class mostly delegates all its work to per-fragment {@link Context}s. It
+ * also deals with maintaining information about generated ids.
  *
  * @author Florent Guillaume
  */
@@ -44,9 +47,17 @@ public class PersistenceContext {
 
     private final Mapper mapper;
 
-    private final Map<String, PersistenceContextByTable> contexts;
+    private final RepositoryImpl.Invalidators invalidators;
+
+    private final Map<String, Context> contexts;
 
     private final Model model;
+
+    /**
+     * Fragment ids generated but not yet saved. We know that any fragment with
+     * one of these ids cannot exist in the database.
+     */
+    private final Set<Serializable> createdIds;
 
     /**
      * HACK: if some application code illegally recorded temporary ids (which
@@ -57,20 +68,58 @@ public class PersistenceContext {
      */
     private final HashMap<Serializable, Serializable> oldIdMap;
 
-    PersistenceContext(Mapper mapper) {
+    PersistenceContext(Mapper mapper, RepositoryImpl.Invalidators invalidators) {
         this.mapper = mapper;
+        this.invalidators = invalidators;
         model = mapper.getModel();
-        contexts = new HashMap<String, PersistenceContextByTable>();
+        // accessed by invalidator, needs to be concurrent
+        contexts = new ConcurrentHashMap<String, Context>();
 
         // avoid doing tests all the time for this known case
-        contexts.put(model.HIER_TABLE_NAME, new PersistenceContextByTable(
-                model.HIER_TABLE_NAME, mapper));
+        getContext(model.hierFragmentName);
+        createdIds = new HashSet<Serializable>();
         oldIdMap = new HashMap<Serializable, Serializable>();
+    }
+
+    // get or return null
+    protected Context getContextOrNull(String tableName) {
+        return contexts.get(tableName);
+    }
+
+    // get or create if missing
+    private Context getContext(String tableName) {
+        Context context = contexts.get(tableName);
+        if (context == null) {
+            context = new Context(tableName, mapper, this);
+            contexts.put(tableName, context);
+        }
+        return context;
+    }
+
+    public Serializable generateNewId() {
+        Serializable id = model.generateNewId();
+        createdIds.add(id);
+        return id;
+    }
+
+    /* Called by Context */
+    protected boolean isIdNew(Serializable id) {
+        return createdIds.contains(id);
+    }
+
+    protected Serializable getRootId(Serializable repositoryId)
+            throws StorageException {
+        return mapper.getRootId(repositoryId);
+    }
+
+    protected void setRootId(Serializable repositoryId, Serializable id)
+            throws StorageException {
+        mapper.setRootId(repositoryId, id);
     }
 
     public void close() {
         mapper.close();
-        for (PersistenceContextByTable context : contexts.values()) {
+        for (Context context : contexts.values()) {
             context.close();
         }
         // don't clean the contexts, we keep the pristine cache around
@@ -78,31 +127,59 @@ public class PersistenceContext {
 
     /**
      * Saves all the data to persistent storage.
-     *
-     * @throws StorageException
      */
     public void save() throws StorageException {
         log.debug("Saving persistence context");
         /*
          * First, create the main rows to get final ids for each.
          */
-        PersistenceContextByTable mainContext = contexts.get(model.MAIN_TABLE_NAME);
+        Context mainContext = contexts.get(model.mainFragmentName);
         Map<Serializable, Serializable> idMap;
         if (mainContext != null) {
-            idMap = mainContext.saveMain();
+            idMap = mainContext.saveMainCreated(createdIds);
         } else {
             idMap = Collections.emptyMap();
         }
+        // all generated ids have now been written
+        createdIds.clear();
+
         /*
          * Then save all other rows, taking the map of ids into account.
          */
-        for (PersistenceContextByTable context : contexts.values()) {
+        for (Context context : contexts.values()) {
             context.save(idMap);
         }
         // no need to clear the contexts, they'd get reallocate soon anyway
-        log.debug("End of save");
+
         // HACK: remember the idMap
         oldIdMap.putAll(idMap);
+
+        log.debug("End of save");
+    }
+
+    /**
+     * Pre-transaction invalidations processing.
+     */
+    protected void processInvalidations() {
+        for (Context context : contexts.values()) {
+            context.processInvalidations();
+        }
+    }
+
+    /**
+     * Post-transaction invalidations notification.
+     */
+    protected void notifyInvalidations() {
+        for (Context context : contexts.values()) {
+            context.notifyInvalidations();
+        }
+    }
+
+    /**
+     * Invalidate in other sessions.
+     */
+    protected void invalidateOthers(Context context) {
+        invalidators.getInvalidator(context.getTableName()).invalidate(context);
     }
 
     /**
@@ -115,10 +192,10 @@ public class PersistenceContext {
     }
 
     /**
-     * Creates a new row in the context.
+     * Creates a new row in the context, for a new id (not yet saved).
      *
      * @param tableName the table name
-     * @param id the temporary id
+     * @param id the new id
      * @param map the fragments map, or {@code null}
      * @return the created row
      * @throws StorageException if the row is already in the context
@@ -126,12 +203,7 @@ public class PersistenceContext {
     public SimpleFragment createSimpleFragment(String tableName,
             Serializable id, Map<String, Serializable> map)
             throws StorageException {
-        PersistenceContextByTable context = contexts.get(tableName);
-        if (context == null) {
-            context = new PersistenceContextByTable(tableName, mapper);
-            contexts.put(tableName, context);
-        }
-        return context.create(id, map);
+        return getContext(tableName).create(id, map);
     }
 
     /**
@@ -142,20 +214,15 @@ public class PersistenceContext {
      *
      * @param tableName the fragment table name
      * @param id the fragment id
-     * @param createAbsent {@code true} to return an absent fragment as an
-     *            object instead of {@code null}
+     * @param allowAbsent {@code true} to return an absent fragment as an object
+     *            instead of {@code null}
      * @return the fragment, or {@code null} if none is found and {@value
-     *         createAbsent} was {@code false}
+     *         allowAbsent} was {@code false}
      * @throws StorageException
      */
-    public Fragment get(String tableName, Serializable id, boolean createAbsent)
+    public Fragment get(String tableName, Serializable id, boolean allowAbsent)
             throws StorageException {
-        PersistenceContextByTable context = contexts.get(tableName);
-        if (context == null) {
-            context = new PersistenceContextByTable(tableName, mapper);
-            contexts.put(tableName, context);
-        }
-        return context.get(id, createAbsent);
+        return getContext(tableName).get(id, allowAbsent);
     }
 
     /**
@@ -165,15 +232,16 @@ public class PersistenceContext {
      * not in the database, returns {@code null} or an absent fragment.
      *
      * @param id the fragment id
-     * @param createAbsent {@code true} to return an absent fragment as an
-     *            object instead of {@code null}
-     * @return the fragment, or {@code null} if none is found and {@value
-     *         createAbsent} was {@code false}
+     * @param allowAbsent {@code true} to return an absent fragment as an object
+     *            instead of {@code null}
+     * @return the hierarchy fragment, or {@code null} if none is found and
+     *         {@value allowAbsent} was {@code false}
      * @throws StorageException
      */
-    public Fragment getChildById(Serializable id, boolean createAbsent)
+    public Fragment getChildById(Serializable id, boolean allowAbsent)
             throws StorageException {
-        return contexts.get(model.HIER_TABLE_NAME).getChildById(id, createAbsent);
+        return contexts.get(model.hierFragmentName).getChildById(id,
+                allowAbsent);
     }
 
     /**
@@ -183,12 +251,12 @@ public class PersistenceContext {
      * @param parentId the parent id
      * @param name the name
      * @param complexProp whether to get complex properties or real children
-     * @return the row, or {@code null} if none is found
+     * @return the hierarchy fragment, or {@code null} if none is found
      * @throws StorageException
      */
     public SimpleFragment getChildByName(Serializable parentId, String name,
             boolean complexProp) throws StorageException {
-        return contexts.get(model.HIER_TABLE_NAME).getChildByName(parentId,
+        return contexts.get(model.hierFragmentName).getChildByName(parentId,
                 name, complexProp);
     }
 
@@ -197,13 +265,41 @@ public class PersistenceContext {
      *
      * @param parentId the parent id
      * @param complexProp whether to get complex properties or real children
-     * @return the collection of rows
+     * @return the collection of hierarchy fragments
      * @throws StorageException
      */
     public Collection<SimpleFragment> getChildren(Serializable parentId,
             boolean complexProp) throws StorageException {
-        return contexts.get(model.HIER_TABLE_NAME).getChildren(parentId,
+        return contexts.get(model.hierFragmentName).getChildren(parentId,
                 complexProp);
+    }
+
+    /**
+     * Move a hierarchy fragment to a new parent with a new name.
+     *
+     * @param source the source
+     * @param parentId the destination parent id
+     * @param name the new name
+     * @throws StorageException
+     */
+    public void move(Node source, Serializable parentId, String name)
+            throws StorageException {
+        contexts.get(model.hierFragmentName).moveChild(source, parentId, name);
+    }
+
+    /**
+     * Copy a hierarchy (and its children) to a new parent with a new name.
+     *
+     * @param source the source of the copy
+     * @param parentId the destination parent id
+     * @param name the new name
+     * @return the id of the copy
+     * @throws StorageException
+     */
+    public Serializable copy(Node source, Serializable parentId, String name)
+            throws StorageException {
+        return contexts.get(model.hierFragmentName).copyChild(source, parentId,
+                name);
     }
 
     /**
@@ -214,12 +310,43 @@ public class PersistenceContext {
      */
     public void remove(Fragment row) throws StorageException {
         String tableName = row.getTableName();
-        PersistenceContextByTable context = contexts.get(tableName);
+        Context context = contexts.get(tableName);
         if (context == null) {
             log.error("Removing row not in a context: " + row);
             return;
         }
         context.remove(row);
+    }
+
+    /**
+     * Checks in a node.
+     *
+     * @param node the node to check in
+     * @param label the version label
+     * @param description the version description
+     * @return the created version id
+     * @throws StorageException
+     */
+    public Serializable checkIn(Node node, String label, String description)
+            throws StorageException {
+        return contexts.get(model.hierFragmentName).checkIn(node, label,
+                description);
+    }
+
+    /**
+     * Checks out a node.
+     *
+     * @param node the node to check out
+     * @throws StorageException
+     */
+    public void checkOut(Node node) throws StorageException {
+        contexts.get(model.hierFragmentName).checkOut(node);
+    }
+
+    public Serializable getVersionByLabel(Serializable versionableId,
+            String label) throws StorageException {
+        return contexts.get(model.hierFragmentName).getVersionByLabel(
+                versionableId, label);
     }
 
 }

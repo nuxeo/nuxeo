@@ -54,11 +54,4 @@ public interface Repository extends ConnectionFactory {
      */
     void close() throws StorageException;
 
-    /**
-     * Computes a new unique id suitable for use as a temporary node id.
-     *
-     * @return a new temporary id
-     */
-    long getNextTemporaryId();
-
 }

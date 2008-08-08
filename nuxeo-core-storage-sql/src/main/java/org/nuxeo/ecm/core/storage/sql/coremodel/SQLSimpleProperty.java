@@ -68,7 +68,11 @@ public class SQLSimpleProperty implements Property {
     }
 
     public Serializable getValue() throws DocumentException {
-        return property.getValue();
+        try {
+            return property.getValue();
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
     }
 
     public void setValue(Object value) throws DocumentException {

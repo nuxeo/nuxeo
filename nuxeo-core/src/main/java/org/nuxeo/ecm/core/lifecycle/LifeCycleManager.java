@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,9 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: LifeCycleManager.java 19491 2007-05-27 13:51:18Z sfermigier $
+ *     Julien Anguenot
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.lifecycle;
@@ -26,26 +25,12 @@ import org.nuxeo.ecm.core.model.Document;
  * <p>
  * Responsible of the life cycle properties storage abstraction.
  *
- * @see org.nuxeo.ecm.jcr.JCRLifeCycleManager
+ * @see org.nuxeo.ecm.core.repository.jcr.JCRLifeCycleManager
  *
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @author Julien Anguenot
+ * @author Florent Guillaume
  */
 public interface LifeCycleManager {
-
-    /**
-     * Returns the name of the manager.
-     *
-     * @return the name of the manager as a string.
-     */
-    String getName();
-
-    /**
-     * Sets the name of the life cycle manager.
-     *
-     * @param name
-     *            of the life cycle manager
-     */
-    void setName(String name);
 
     /**
      * Returns the state of a given document.

@@ -25,25 +25,31 @@ import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.ecm.core.repository.RepositoryDescriptor;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.security.SecurityManager;
-import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * This class is the bridge between the high-level Nuxeo view of the repository,
- * and the low-level SQL-specific implementation.
+ * This is the {@link Session} factory when the repository is used outside of a
+ * datasource.
  * <p>
- * It is also the factory for {@link Session}s.
+ * (When repositories are looked up through JNDI, the class
+ * {@link ConnectionFactoryImpl} is used instead of this one.)
  * <p>
- * This class knows about all open sessions, and can retrieve them by id.
+ * This class is constructed by {@link SQLRepositoryFactory}.
  *
  * @author Florent Guillaume
  */
-public class SQLRepository extends RepositoryImpl implements Repository {
+public class SQLRepository implements Repository {
 
     private static final long serialVersionUID = 1L;
+
+    private final RepositoryImpl repository;
+
+    private final SchemaManager schemaManager;
 
     private final SecurityManager securityManager;
 
@@ -51,10 +57,10 @@ public class SQLRepository extends RepositoryImpl implements Repository {
 
     private boolean initialized;
 
-    public SQLRepository(
-            org.nuxeo.ecm.core.repository.RepositoryDescriptor descriptor)
-            throws Exception {
-        super(getDescriptor(descriptor), getSchemaManager());
+    public SQLRepository(RepositoryDescriptor descriptor) throws Exception {
+        schemaManager = Framework.getService(SchemaManager.class);
+        repository = new RepositoryImpl(getDescriptor(descriptor),
+                schemaManager);
         if (descriptor.getSecurityManagerClass() == null) {
             securityManager = new SQLSecurityManager();
         } else {
@@ -66,17 +72,13 @@ public class SQLRepository extends RepositoryImpl implements Repository {
     /**
      * Fetch SQL-level descriptor from Nuxeo repository descriptor.
      */
-    private static RepositoryDescriptor getDescriptor(
-            org.nuxeo.ecm.core.repository.RepositoryDescriptor descriptor)
-            throws Exception {
+    private static org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor getDescriptor(
+            RepositoryDescriptor descriptor) throws Exception {
         String filename = descriptor.getConfigurationFile();
         XMap xmap = new XMap();
-        xmap.register(RepositoryDescriptor.class);
-        return (RepositoryDescriptor) xmap.load(new FileInputStream(filename));
-    }
-
-    private static SchemaManager getSchemaManager() throws Exception {
-        return Framework.getService(SchemaManager.class);
+        xmap.register(org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.class);
+        return (org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor) xmap.load(new FileInputStream(
+                filename));
     }
 
     /*
@@ -90,8 +92,8 @@ public class SQLRepository extends RepositoryImpl implements Repository {
     /*
      * Called by LocalSession.createSession
      */
-    public org.nuxeo.ecm.core.model.Session getSession(
-            Map<String, Serializable> context) throws DocumentException {
+    public Session getSession(Map<String, Serializable> context)
+            throws DocumentException {
         synchronized (this) {
             if (!initialized) {
                 initialized = true;
@@ -102,7 +104,13 @@ public class SQLRepository extends RepositoryImpl implements Repository {
                 }
             }
         }
-        return new SQLSession(this, context);
+        org.nuxeo.ecm.core.storage.sql.Session session;
+        try {
+            session = repository.getConnection();
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+        return new SQLSession(session, this, context);
     }
 
     public SchemaManager getTypeManager() {
@@ -135,7 +143,7 @@ public class SQLRepository extends RepositoryImpl implements Repository {
     }
 
     public void shutdown() {
-        super.close();
+        repository.close();
     }
 
     public int getStartedSessionsCount() {

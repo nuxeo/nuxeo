@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,8 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- * $Id: LifeCycleServiceImpl.java 28980 2008-01-11 22:55:02Z sfermigier $
+ *     Julien Anguenot
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.lifecycle.impl;
@@ -42,7 +42,8 @@ import org.nuxeo.runtime.model.Extension;
  *
  * @see org.nuxeo.ecm.core.lifecycle.LifeCycleService
  *
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
+ * @author Julien Anguenot
+ * @author Florent Guillaume
  */
 public class LifeCycleServiceImpl extends DefaultComponent implements
         LifeCycleService {
@@ -52,8 +53,8 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(LifeCycleServiceImpl.class);
 
-    /** Lifecycle manager name -> life cycle manager instance. */
-    private Map<String, LifeCycleManager> lifeCycleManagers;
+    /** Lifecycle manager instance. */
+    private LifeCycleManager lifeCycleManager;
 
     /** Lifecycle name -> life cycle descriptor instance. */
     private Map<String, LifeCycle> lifeCycles;
@@ -62,7 +63,6 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
     private Map<String, String> typesMapping;
 
     public LifeCycleServiceImpl() {
-        lifeCycleManagers = new HashMap<String, LifeCycleManager>();
         lifeCycles = new HashMap<String, LifeCycle>();
         typesMapping = new HashMap<String, String>();
     }
@@ -76,28 +76,12 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
         return getLifeCycleByName(lifeCycleName);
     }
 
-    public LifeCycleManager getLifeCycleManagerByName(String name) {
-        return lifeCycleManagers.get(name);
-    }
-
     public LifeCycleManager getLifeCycleManagerFor(Document doc) {
-
-        LifeCycleManager lifeCycleManager;
-
-        // Try if a life cycle is associated to this given document.
-        LifeCycle lifeCycle = getLifeCycleFor(doc);
-        if (lifeCycle != null) {
-            lifeCycleManager = getLifeCycleManagerByName(lifeCycle
-                    .getLifeCycleManagerName());
-        } else {
-            lifeCycleManager = null;
-        }
-
         return lifeCycleManager;
     }
 
-    public Collection<LifeCycleManager> getLifeCycleManagers() {
-        return lifeCycleManagers.values();
+    public LifeCycleManager getLifeCycleManager() {
+        return lifeCycleManager;
     }
 
     public String getLifeCycleNameFor(String typeName) {
@@ -143,10 +127,6 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
 
     public void setLifeCycles(Map<String, LifeCycle> lifeCycles) {
         this.lifeCycles = lifeCycles;
-    }
-
-    public void setLifeCycleManagers(Map<String, LifeCycleManager> lifeCycleManagers) {
-        this.lifeCycleManagers = lifeCycleManagers;
     }
 
     public void initialize(Document doc) throws LifeCycleException {
@@ -212,23 +192,19 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
         Object[] contributions = extension.getContributions();
         if (contributions != null) {
             if (extension.getExtensionPoint().equals("lifecycle")) {
-                for (Object lifeCycle : contributions) {
-                    LifeCycleDescriptor lifeCycleDescriptor = (LifeCycleDescriptor) lifeCycle;
-                    log.info("Registering lifecycle: " +
-                            lifeCycleDescriptor.getName());
-                    lifeCycles.put(lifeCycleDescriptor.getName(),
-                            lifeCycleDescriptor.getLifeCycle());
+                for (Object contribution : contributions) {
+                    LifeCycleDescriptor desc = (LifeCycleDescriptor) contribution;
+                    log.info("Registering lifecycle: " + desc.getName());
+                    lifeCycles.put(desc.getName(), desc.getLifeCycle());
                 }
             }
             if (extension.getExtensionPoint().equals("lifecyclemanager")) {
-                for (Object lifeCycleManager : contributions) {
-                    LifeCycleManagerDescriptor desc = (LifeCycleManagerDescriptor) lifeCycleManager;
-                    LifeCycleManager manager = (LifeCycleManager) extension.getContext().loadClass(
-                                    desc.getClassName()).newInstance();
-                    manager.setName(desc.getName());
-                    log.info("Registering lifecycle manager: " +
-                            manager.getName());
-                    lifeCycleManagers.put(manager.getName(), manager);
+                for (Object contribution : contributions) {
+                    LifeCycleManagerDescriptor desc = (LifeCycleManagerDescriptor) contribution;
+                    String className = desc.getClassName();
+                    lifeCycleManager = (LifeCycleManager) extension.getContext().loadClass(
+                            className).newInstance();
+                    log.info("Registering lifecycle manager: " + className);
                 }
             }
             if (extension.getExtensionPoint().equals("types")) {
@@ -300,10 +276,10 @@ public class LifeCycleServiceImpl extends DefaultComponent implements
                 }
             }
             if (extension.getExtensionPoint().equals("lifecyclemanager")) {
-                for (Object lifeCycleManager : contributions) {
-                    LifeCycleManagerDescriptor desc = (LifeCycleManagerDescriptor) lifeCycleManager;
-                    log.debug("Unregister lifecycle manager: " + desc.getName());
-                    lifeCycleManagers.remove(desc.getName());
+                for (Object contribution : contributions) {
+                    LifeCycleManagerDescriptor desc = (LifeCycleManagerDescriptor) contribution;
+                    log.debug("Unregister lifecycle manager: " + desc.getClassName());
+                    lifeCycleManager = null;
                 }
 
             }

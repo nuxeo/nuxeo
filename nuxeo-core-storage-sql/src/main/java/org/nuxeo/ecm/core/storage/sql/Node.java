@@ -61,6 +61,8 @@ public class Node {
      */
     protected transient final Map<String, BaseProperty> propertyCache;
 
+    protected transient Boolean isVersion;
+
     /**
      * Creates a Node.
      *
@@ -69,8 +71,8 @@ public class Node {
      * @param context the persistence context
      * @param rowGroup the group of rows for the node
      */
-    protected Node(Type type, Session session,
-            PersistenceContext context, FragmentGroup rowGroup) {
+    protected Node(Type type, Session session, PersistenceContext context,
+            FragmentGroup rowGroup) {
         this.type = type;
         this.context = context;
         model = session.getModel();
@@ -100,11 +102,38 @@ public class Node {
     }
 
     public String getName() {
-        return hierFragment.getString(model.HIER_CHILD_NAME_KEY);
+        try {
+            return getHierFragment().getString(model.HIER_CHILD_NAME_KEY);
+        } catch (StorageException e) {
+            // do not propagate this unlikely exception as a checked one
+            throw new RuntimeException(e);
+        }
     }
 
     public Type getType() {
         return type;
+    }
+
+    protected SimpleFragment getHierFragment() {
+        return hierFragment == null ? mainFragment : hierFragment;
+    }
+
+    // cache the isVersion computation
+    public boolean isVersion() {
+        if (isVersion == null) {
+            SimpleFragment hier = getHierFragment();
+            Serializable parentId;
+            String name;
+            try {
+                parentId = hier.get(model.HIER_PARENT_KEY);
+                name = hier.getString(model.HIER_CHILD_NAME_KEY);
+            } catch (StorageException e) {
+                throw new RuntimeException(e);
+            }
+            isVersion = Boolean.valueOf(parentId == null && name != null &&
+                    name.length() > 0);
+        }
+        return isVersion.booleanValue();
     }
 
     // ----- modification -----
@@ -116,7 +145,9 @@ public class Node {
      */
     protected void remove() throws StorageException {
         context.remove(mainFragment);
-        context.remove(hierFragment);
+        if (hierFragment != null) {
+            context.remove(hierFragment);
+        }
         for (Fragment fragment : fragments.values()) {
             context.remove(fragment);
             // XXX TODO must remove all fragments, even unfetched ones
@@ -135,42 +166,21 @@ public class Node {
      */
     public SimpleProperty getSimpleProperty(String name)
             throws StorageException {
-        if (name == null || name.contains("/") || name.equals(".") ||
-                name.equals("..")) {
-            // XXX real parsing
-            throw new StorageException("Illegal name: " + name);
-        }
-
-        // XXX namespace transformations
-
         SimpleProperty property = (SimpleProperty) propertyCache.get(name);
         if (property == null) {
-            PropertyType propType;
-            Fragment row;
-            String fragmentKey;
-            boolean readonly;
-            if (model.MAIN_PRIMARY_TYPE_PROP.equals(name)) {
-                propType = PropertyType.STRING;
-                fragmentKey = model.MAIN_PRIMARY_TYPE_KEY;
-                row = mainFragment;
-                readonly = true;
-            } else {
-                propType = model.getPropertyType(name);
-                if (propType == null) {
-                    throw new IllegalArgumentException("Unknown field: " + name);
-                }
-                String tableName = model.getFragmentName(name);
-                fragmentKey = model.getFragmentKey(name);
-                // localName = field.getName().getLocalName();
-                // String schemaName = field.getDeclaringType().getName();
-                row = fragments.get(tableName);
-                if (row == null) {
-                    // lazy fragment, fetch from context
-                    row = context.get(tableName, getId(), true);
-                    fragments.put(tableName, row);
-                }
-                readonly = false;
+            PropertyType propType = model.getPropertyType(name);
+            if (propType == null) {
+                throw new IllegalArgumentException("Unknown field: " + name);
             }
+            String tableName = model.getFragmentName(name);
+            String fragmentKey = model.getFragmentKey(name);
+            Fragment row = fragments.get(tableName);
+            if (row == null) {
+                // lazy fragment, fetch from context
+                row = context.get(tableName, getId(), true);
+                fragments.put(tableName, row);
+            }
+            boolean readonly = model.isPropertyReadOnly(name);
             property = new SimpleProperty(name, propType, readonly,
                     (SimpleFragment) row, fragmentKey);
             propertyCache.put(name, property);
@@ -188,14 +198,6 @@ public class Node {
      */
     public CollectionProperty getCollectionProperty(String name)
             throws StorageException {
-        if (name == null || name.contains("/") || name.equals(".") ||
-                name.equals("..")) {
-            // XXX real parsing
-            throw new StorageException("Illegal name: " + name);
-        }
-
-        // XXX namespace transformations
-
         CollectionProperty property = (CollectionProperty) propertyCache.get(name);
         if (property == null) {
             PropertyType propType = model.getPropertyType(name);
@@ -203,7 +205,6 @@ public class Node {
                 throw new IllegalArgumentException("Unknown field: " + name);
             }
             String tableName = model.getFragmentName(name);
-            // TODO cache collection fragments like we do normal fragments
             Fragment fragment = context.get(tableName, getId(), true);
             property = new CollectionProperty(name, propType, false,
                     (CollectionFragment) fragment);

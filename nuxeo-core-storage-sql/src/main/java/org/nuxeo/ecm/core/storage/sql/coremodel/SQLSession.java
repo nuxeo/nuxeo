@@ -17,21 +17,29 @@
 
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.resource.ResourceException;
 import javax.transaction.xa.XAResource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
+import org.nuxeo.ecm.core.model.NoSuchPropertyException;
 import org.nuxeo.ecm.core.model.Property;
+import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.Query;
 import org.nuxeo.ecm.core.query.QueryException;
@@ -42,9 +50,10 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.security.SecurityManager;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
+import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
-import org.nuxeo.ecm.core.storage.sql.SessionImpl;
 import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
 
 /**
@@ -55,31 +64,27 @@ import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
  */
 public class SQLSession implements Session {
 
-    private final SQLRepository repository;
+    private static final Log log = LogFactory.getLog(SQLSession.class);
+
+    private final Repository repository;
 
     private final Map<String, Serializable> context;
 
-    private final SessionImpl session;
+    private final org.nuxeo.ecm.core.storage.sql.Session session;
 
     private SQLDocument root;
 
     private String userSessionId;
 
-    public SQLSession(SQLRepository repository,
-            Map<String, Serializable> context) throws DocumentException {
+    public SQLSession(org.nuxeo.ecm.core.storage.sql.Session session,
+            Repository repository, Map<String, Serializable> context)
+            throws DocumentException {
+        this.session = session;
         this.repository = repository;
         if (context == null) {
             context = new HashMap<String, Serializable>();
         }
         this.context = context;
-
-        try {
-            // XXX credentials from context
-            session = repository.getConnection();
-        } catch (StorageException e) {
-            throw new DocumentException(e);
-        }
-
         context.put("creationTime", Long.valueOf(System.currentTimeMillis()));
 
         try {
@@ -89,7 +94,6 @@ public class SQLSession implements Session {
         }
 
         userSessionId = (String) context.get("SESSION_ID");
-
     }
 
     /*
@@ -154,7 +158,7 @@ public class SQLSession implements Session {
         return userSessionId;
     }
 
-    public org.nuxeo.ecm.core.model.Repository getRepository() {
+    public Repository getRepository() {
         return repository;
     }
 
@@ -172,16 +176,18 @@ public class SQLSession implements Session {
 
     public Document getDocumentByUUID(String uuid) throws DocumentException {
         try {
-            Serializable id;
-            if (uuid.startsWith("T")) { // temporary id
-                id = uuid;
-            } else {
-                // HACK document ids coming from higher level have been turned
-                // into strings (by SQLDocument.getUUID) but are really
-                // longs for the backend
-                id = Long.valueOf(uuid);
-            }
+            /**
+             * Document ids coming from higher level have been turned into
+             * strings (by {@link SQLDocument#getUUID}) but the backend may
+             * actually expect them to be Longs (for database-generated integer
+             * ids).
+             */
+            Serializable id = session.getModel().unHackStringId(uuid);
             Node node = session.getNodeById(id);
+            if (node == null) {
+                // required by callers such as AbstractSession.exists
+                throw new NoSuchDocumentException(uuid);
+            }
             return newDocument(node);
         } catch (StorageException e) {
             throw new DocumentException("Failed to get document by UUID", e);
@@ -201,21 +207,48 @@ public class SQLSession implements Session {
         return doc;
     }
 
-    public Document copy(Document source, Document parent, String name)
-            throws DocumentException {
-        assert source instanceof SQLDocument;
-        assert parent instanceof SQLDocument;
-        // XXX TODO
-        throw new UnsupportedOperationException();
-        // Versioning.getService().fixupAfterCopy((SQLDocument) child);
-    }
-
     public Document move(Document source, Document parent, String name)
             throws DocumentException {
         assert source instanceof SQLDocument;
         assert parent instanceof SQLDocument;
-        // XXX TODO
-        throw new UnsupportedOperationException();
+        try {
+            if (name == null) {
+                name = source.getName();
+            }
+            Node result = session.move(((SQLDocument) source).node,
+                    ((SQLDocument) parent).node, name);
+            return newDocument(result);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    private static Pattern dotDigitsPattern = Pattern.compile("(.*)\\.[0-9]+$");
+
+    public Document copy(Document source, Document parent, String name)
+            throws DocumentException {
+        assert source instanceof SQLDocument;
+        assert parent instanceof SQLDocument;
+        try {
+            Node parentNode = ((SQLDocument) parent).node;
+            if (name == null) {
+                name = source.getName();
+            }
+            if (session.hasChildNode(parentNode, name, false)) {
+                Matcher m = dotDigitsPattern.matcher(name);
+                if (m.matches()) {
+                    // remove trailing dot and digits
+                    name = m.group(1);
+                }
+                // add dot + unique digits
+                name += "." + System.currentTimeMillis();
+            }
+            Node copy = session.copy(((SQLDocument) source).node, parentNode,
+                    name);
+            return newDocument(copy);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
     }
 
     public Document createProxyForVersion(Document parent, Document document,
@@ -236,8 +269,10 @@ public class SQLSession implements Session {
 
     public Collection<Document> getProxies(Document document, Document parent)
             throws DocumentException {
+        log.error("getProxies unimplemented, returning empty list");
+        return Collections.emptyList();
         // XXX TODO
-        throw new UnsupportedOperationException();
+        // throw new UnsupportedOperationException();
     }
 
     public InputStream getDataStream(String key) throws DocumentException {
@@ -260,10 +295,12 @@ public class SQLSession implements Session {
             // root's parent
             return null;
         }
-
-        // TODO proxies / versions
-
-        return new SQLDocument(node, this);
+        // TODO proxies
+        if (node.isVersion()) {
+            return new SQLDocumentVersion(node, this);
+        } else {
+            return new SQLDocument(node, this);
+        }
     }
 
     /**
@@ -313,7 +350,7 @@ public class SQLSession implements Session {
     protected List<Document> getChildren(Node node) throws DocumentException {
         List<Node> nodes;
         try {
-            nodes = session.getChildren(node, false);
+            nodes = session.getChildren(node, false, null);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -356,17 +393,102 @@ public class SQLSession implements Session {
         }
     }
 
-    protected void removeNode(Node node) throws DocumentException {
-        throw new UnsupportedOperationException();
+    protected List<Node> getComplexList(Node node, String name)
+            throws DocumentException {
+        List<Node> nodes;
+        try {
+            nodes = session.getChildren(node, true, name);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+        return nodes;
+    }
+
+    protected void remove(Node node) throws DocumentException {
+        try {
+            session.removeNode(node);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected void checkIn(Node node, String label, String description)
+            throws DocumentException {
+        try {
+            session.checkIn(node, label, description);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected void checkOut(Node node) throws DocumentException {
+        try {
+            session.checkOut(node);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected Document getVersionByLabel(Node node, String label)
+            throws DocumentException {
+        try {
+            return newDocument(session.getVersionByLabel(node, label));
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected Node getNodeById(Serializable id) throws DocumentException {
+        try {
+            return session.getNodeById(id);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
     }
 
     /*
      * ----- property helpers -----
      */
 
-    protected Property getProperty(Node node, Field field)
-            throws DocumentException {
-        String name = field.getName().getPrefixedName();
+    protected Property makeACLProperty(Node node) throws DocumentException {
+        CollectionProperty property;
+        try {
+            property = node.getCollectionProperty(Model.ACL_PROP);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+        return new SQLCollectionProperty(property, null);
+    }
+
+    protected Property makeProperty(Node node, ComplexType parentType,
+            String name) throws DocumentException {
+
+        Field field;
+        if (Model.SYSTEM_LIFECYCLE_POLICY_PROP.equals(name)) {
+            field = Model.SYSTEM_LIFECYCLE_POLICY_FIELD;
+        } else if (Model.SYSTEM_LIFECYCLE_STATE_PROP.equals(name)) {
+            field = Model.SYSTEM_LIFECYCLE_STATE_FIELD;
+        } else if (Model.SYSTEM_DIRTY_PROP.equals(name)) {
+            field = Model.SYSTEM_DIRTY_FIELD;
+        } else if (Model.VERSION_VERSIONABLE_PROP.equals(name)) {
+            field = Model.VERSION_VERSIONABLE_FIELD;
+        } else if (Model.VERSION_LABEL_PROP.equals(name)) {
+            field = Model.VERSION_LABEL_FIELD;
+        } else if (Model.VERSION_DESCRIPTION_PROP.equals(name)) {
+            field = Model.VERSION_DESCRIPTION_FIELD;
+        } else if (Model.VERSION_CREATED_PROP.equals(name)) {
+            field = Model.VERSION_CREATED_FIELD;
+        } else if (Model.MAIN_CHECKED_IN_PROP.equals(name)) {
+            field = Model.MAIN_CHECKED_IN_FIELD;
+        } else {
+            field = parentType.getField(name);
+            if (field == null) {
+                throw new NoSuchPropertyException(name);
+            }
+            // qualify if necessary (some callers pass unprefixed names)
+            name = field.getName().getPrefixedName();
+        }
+
         Type type = field.getType();
         if (type.isSimpleType()) {
             SimpleProperty property;
@@ -387,7 +509,7 @@ public class SQLSession implements Session {
                 }
                 return new SQLCollectionProperty(property, listType);
             } else {
-                throw new UnsupportedOperationException("list");
+                return new SQLComplexListProperty(node, listType, name, this);
             }
         } else {
             // complex type
@@ -395,15 +517,29 @@ public class SQLSession implements Session {
             Node childNode;
             try {
                 childNode = session.getChildNode(node, name, true);
+                if (childNode == null) {
+                    // Create the needed complex property. This could also be
+                    // done lazily when an actual write is done -- this would
+                    // mean refactoring the various SQL*Property classes to hold
+                    // parent information.
+                    childNode = session.addChildNode(node, name,
+                            type.getName(), true);
+                }
             } catch (StorageException e) {
                 throw new DocumentException(e);
             }
-            // TODO XXX childNode may be null!
-            if (childNode == null) {
-                throw new RuntimeException("TODO");
+            // TODO use a better switch
+            if (type.getName().equals("content")) {
+                return new SQLContentProperty(childNode, complexType, this);
+            } else {
+                return new SQLComplexProperty(childNode, complexType, this);
             }
-            return new SQLComplexProperty(childNode, complexType, this);
         }
+    }
+
+    // called by SQLContentProperty
+    protected Binary getBinary(InputStream in) throws IOException {
+        return session.getBinary(in);
     }
 
 }

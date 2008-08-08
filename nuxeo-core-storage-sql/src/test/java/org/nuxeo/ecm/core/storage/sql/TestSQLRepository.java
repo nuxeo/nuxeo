@@ -18,7 +18,6 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -33,12 +32,13 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import junit.framework.Assert;
+
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.Filter;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.ListDiff;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
@@ -56,19 +55,25 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelTreeNodeComparator;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.UserEntry;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 
 /**
+ * NOTE: to run these tests in Eclipse, make sure your test runner allocates at
+ * least -Xmx200M to the JVM.
+ *
  * @author Florent Guillaume
  */
 public class TestSQLRepository extends SQLRepositoryTestCase {
@@ -76,11 +81,14 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
+                "OSGI-INF/test-repo-core-types-contrib.xml");
         openSession();
     }
 
     @Override
     protected void tearDown() throws Exception {
+        // session.cancel();
         closeSession();
         super.tearDown();
     }
@@ -115,6 +123,421 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         Calendar modified = (Calendar) child.getProperty("dublincore",
                 "modified");
         assertEquals(cal, modified);
+    }
+
+    //
+    //
+    // ---------------------------------------------------------
+    // ----- copied from TestSecurity in nuxeo-core-facade -----
+    // ---------------------------------------------------------
+    //
+    //
+
+    // assumes that the global "session" belongs to an Administrator
+    protected void setPermissionToAnonymous(String perm) throws ClientException {
+        DocumentModel doc = session.getRootDocument();
+        ACP acp = doc.getACP();
+        if (acp == null) {
+            acp = new ACPImpl();
+        }
+        UserEntryImpl userEntry = new UserEntryImpl("anonymous");
+        userEntry.addPrivilege(perm, true, false);
+        acp.setRules("test", new UserEntry[] { userEntry });
+        doc.setACP(acp, true);
+        session.save();
+    }
+
+    protected void setPermissionToEveryone(String... perms)
+            throws ClientException {
+        DocumentModel doc = session.getRootDocument();
+        ACP acp = doc.getACP();
+        if (acp == null) {
+            acp = new ACPImpl();
+        }
+        UserEntryImpl userEntry = new UserEntryImpl(SecurityConstants.EVERYONE);
+        for (String perm : perms) {
+            userEntry.addPrivilege(perm, true, false);
+        }
+        acp.setRules("test", new UserEntry[] { userEntry });
+        doc.setACP(acp, true);
+        session.save();
+    }
+
+    protected void removePermissionToAnonymous() throws ClientException {
+        DocumentModel doc = session.getRootDocument();
+        ACP acp = doc.getACP();
+        acp.removeACL("test");
+        doc.setACP(acp, true);
+        session.save();
+    }
+
+    protected void removePermissionToEveryone() throws ClientException {
+        DocumentModel doc = session.getRootDocument();
+        ACP acp = doc.getACP();
+        acp.removeACL("test");
+        doc.setACP(acp, true);
+        session.save();
+    }
+
+    public void testSecurity() throws ClientException {
+        // temporary set an Everything privileges on the root for anonymous
+        // so that we can create a folder
+        setPermissionToAnonymous(SecurityConstants.EVERYTHING);
+
+        CoreSession anonSession = openSessionAs("anonymous");
+        try {
+            DocumentModel root = anonSession.getRootDocument();
+
+            DocumentModel folder = new DocumentModelImpl(
+                    root.getPathAsString(), "folder#1", "Folder");
+            folder = anonSession.createDocument(folder);
+
+            ACP acp = folder.getACP();
+            assertNotNull(acp); // the acp inherited from root is returned
+
+            acp = new ACPImpl();
+
+            ACL acl = new ACLImpl();
+            acl.add(new ACE("a", "Read", true));
+            acl.add(new ACE("b", "Write", true));
+            acp.addACL(acl);
+
+            folder.setACP(acp, true);
+
+            acp = folder.getACP();
+
+            assertNotNull(acp);
+
+            assertEquals("a", acp.getACL(ACL.LOCAL_ACL).get(0).getUsername());
+            assertEquals("b", acp.getACL(ACL.LOCAL_ACL).get(1).getUsername());
+
+            assertEquals(Access.GRANT, acp.getAccess("a", "Read"));
+            assertEquals(Access.UNKNOWN, acp.getAccess("a", "Write"));
+            assertEquals(Access.GRANT, acp.getAccess("b", "Write"));
+            assertEquals(Access.UNKNOWN, acp.getAccess("b", "Read"));
+            assertEquals(Access.UNKNOWN, acp.getAccess("c", "Read"));
+            assertEquals(Access.UNKNOWN, acp.getAccess("c", "Write"));
+
+            // insert a deny ACE before the GRANT
+
+            acp.getACL(ACL.LOCAL_ACL).add(0, new ACE("b", "Write", false));
+            // store changes
+            folder.setACP(acp, true);
+            // refetch ac
+            acp = folder.getACP();
+            // check perms now
+            assertEquals(Access.GRANT, acp.getAccess("a", "Read"));
+            assertEquals(Access.UNKNOWN, acp.getAccess("a", "Write"));
+            assertEquals(Access.DENY, acp.getAccess("b", "Write"));
+            assertEquals(Access.UNKNOWN, acp.getAccess("b", "Read"));
+            assertEquals(Access.UNKNOWN, acp.getAccess("c", "Read"));
+            assertEquals(Access.UNKNOWN, acp.getAccess("c", "Write"));
+
+            // create a child document and grant on it the write for b
+
+            // remove anonymous Everything privileges on the root
+            // so that it not influence test results
+            removePermissionToAnonymous();
+
+            try {
+                DocumentModel folder2 = new DocumentModelImpl(
+                        folder.getPathAsString(), "folder#2", "Folder");
+                folder2 = anonSession.createDocument(folder2);
+                fail("privilege is granted but should not be");
+            } catch (DocumentSecurityException e) {
+                // ok
+            }
+
+            setPermissionToAnonymous(SecurityConstants.EVERYTHING);
+
+            root = anonSession.getRootDocument();
+
+            // and try again - this time it should work
+            DocumentModel folder2 = new DocumentModelImpl(
+                    folder.getPathAsString(), "folder#2", "Folder");
+            folder2 = anonSession.createDocument(folder2);
+
+            ACP acp2 = new ACPImpl();
+            acl = new ACLImpl();
+            acl.add(new ACE("b", "Write", true));
+            acp2.addACL(acl);
+
+            folder2.setACP(acp2, true);
+            acp2 = folder2.getACP();
+
+            assertEquals(Access.GRANT, acp2.getAccess("a", "Read"));
+            assertEquals(Access.UNKNOWN, acp2.getAccess("a", "Write"));
+            assertEquals(Access.GRANT, acp2.getAccess("b", "Write"));
+            assertEquals(Access.UNKNOWN, acp2.getAccess("b", "Read"));
+            assertEquals(Access.UNKNOWN, acp2.getAccess("c", "Read"));
+            assertEquals(Access.UNKNOWN, acp2.getAccess("c", "Write"));
+
+            // remove anonymous Everything privileges on the root
+            // so that it not influence test results
+            removePermissionToAnonymous();
+
+            setPermissionToEveryone(SecurityConstants.WRITE,
+                    SecurityConstants.REMOVE, SecurityConstants.ADD_CHILDREN,
+                    SecurityConstants.REMOVE_CHILDREN, SecurityConstants.READ);
+            root = anonSession.getRootDocument();
+
+            DocumentModel folder3 = new DocumentModelImpl(
+                    folder.getPathAsString(), "folder#3", "Folder");
+            folder3 = anonSession.createDocument(folder3);
+
+            anonSession.removeDocument(folder3.getRef());
+
+            removePermissionToEveryone();
+            setPermissionToEveryone(SecurityConstants.REMOVE);
+
+            try {
+                folder3 = new DocumentModelImpl(folder.getPathAsString(),
+                        "folder#3", "Folder");
+                folder3 = anonSession.createDocument(folder3);
+                Assert.fail();
+            } catch (Exception e) {
+
+            }
+        } finally {
+            closeSession(anonSession);
+        }
+    }
+
+    public void testACLEscaping() throws ClientException {
+        // temporary set an Everything privileges on the root for anonymous
+        // so that we can create a folder
+        setPermissionToAnonymous(SecurityConstants.EVERYTHING);
+
+        DocumentModel root = session.getRootDocument();
+
+        DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
+                "folder1", "Folder");
+        folder = session.createDocument(folder);
+
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("xyz", "Read", true));
+        acl.add(new ACE("abc@def<&>/ ", "Read", true));
+        acl.add(new ACE("caf\u00e9", "Read", true));
+        acl.add(new ACE("o'hara", "Read", true)); // name to quote
+        acl.add(new ACE("A_x1234_", "Read", true)); // name to quote
+        acp.addACL(acl);
+        folder.setACP(acp, true);
+
+        // check what we read
+        acp = folder.getACP();
+        assertNotNull(acp);
+        acl = acp.getACL(ACL.LOCAL_ACL);
+        assertEquals("xyz", acl.get(0).getUsername());
+        assertEquals("abc@def<&>/ ", acl.get(1).getUsername());
+        assertEquals("caf\u00e9", acl.get(2).getUsername());
+        assertEquals("o'hara", acl.get(3).getUsername());
+        assertEquals("A_x1234_", acl.get(4).getUsername());
+    }
+
+    public void testGetParentDocuments() throws ClientException {
+
+        setPermissionToAnonymous(SecurityConstants.EVERYTHING);
+
+        DocumentModel root = session.getRootDocument();
+
+        String name = "Workspaces#1";
+        DocumentModel workspaces = new DocumentModelImpl(
+                root.getPathAsString(), name, "Workspace");
+        session.createDocument(workspaces);
+        String name2 = "repositoryWorkspace2#";
+        DocumentModel repositoryWorkspace = new DocumentModelImpl(
+                workspaces.getPathAsString(), name2, "Workspace");
+        session.createDocument(repositoryWorkspace);
+
+        String name3 = "ws#3";
+        DocumentModel ws1 = new DocumentModelImpl(
+                repositoryWorkspace.getPathAsString(), name3, "Workspace");
+        session.createDocument(ws1);
+        String name4 = "ws#4";
+        DocumentModel ws2 = new DocumentModelImpl(ws1.getPathAsString(), name4,
+                "Workspace");
+        session.createDocument(ws2);
+
+        ACP acp = new ACPImpl();
+        ACE denyRead = new ACE("test", SecurityConstants.READ, false);
+        ACL acl = new ACLImpl();
+        acl.setACEs(new ACE[] { denyRead });
+        acp.addACL(acl);
+        // TODO this produces a stack trace
+        repositoryWorkspace.setACP(acp, true);
+        ws1.setACP(acp, true);
+
+        session.save();
+
+        List<DocumentModel> ws2ParentsUnderAdministrator = session.getParentDocuments(ws2.getRef());
+        assertTrue("list parents for" + ws2.getName() + "under " +
+                session.getPrincipal().getName() + " is not empty:",
+                !ws2ParentsUnderAdministrator.isEmpty());
+
+        CoreSession testSession = openSessionAs("test");
+        List<DocumentModel> ws2ParentsUnderTest = testSession.getParentDocuments(ws2.getRef());
+        assertTrue("list parents for" + ws2.getName() + "under " +
+                testSession.getPrincipal().getName() + " is empty:",
+                ws2ParentsUnderTest.isEmpty());
+        closeSession(testSession);
+    }
+
+    // copied from TestAPI (see below)
+
+    public void testPermissionChecks() throws Throwable {
+
+        CoreSession joeReaderSession = null;
+        CoreSession joeContributorSession = null;
+        CoreSession joeLocalManagerSession = null;
+
+        DocumentRef ref = createDocumentModelWithSamplePermissions("docWithPerms");
+
+        try {
+            // reader only has the right to consult the document
+            joeReaderSession = openSessionAs("joe_reader");
+            DocumentModel joeReaderDoc = joeReaderSession.getDocument(ref);
+            try {
+                joeReaderSession.saveDocument(joeReaderDoc);
+                fail("should have raised a security exception");
+            } catch (DocumentSecurityException e) {
+            }
+
+            try {
+                joeReaderSession.createDocument(new DocumentModelImpl(
+                        joeReaderDoc.getPathAsString(), "child", "File"));
+                fail("should have raised a security exception");
+            } catch (DocumentSecurityException e) {
+            }
+
+            try {
+                joeReaderSession.removeDocument(ref);
+                fail("should have raised a security exception");
+            } catch (DocumentSecurityException e) {
+            }
+            joeReaderSession.save();
+
+            // contributor only has the right to write the properties of
+            // document
+            joeContributorSession = openSessionAs("joe_contributor");
+            DocumentModel joeContributorDoc = joeContributorSession.getDocument(ref);
+
+            joeContributorSession.saveDocument(joeContributorDoc);
+
+            DocumentRef childRef = joeContributorSession.createDocument(
+                    new DocumentModelImpl(joeContributorDoc.getPathAsString(),
+                            "child", "File")).getRef();
+            joeContributorSession.save();
+
+            // joe contributor can copy the newly created doc
+            joeContributorSession.copy(childRef, ref, "child_copy");
+
+            // joe contributor cannot move the doc
+            try {
+                joeContributorSession.move(childRef, ref, "child_move");
+                fail("should have raised a security exception");
+            } catch (DocumentSecurityException e) {
+            }
+
+            // joe contributor cannot remove the folder either
+            try {
+                joeContributorSession.removeDocument(ref);
+                fail("should have raised a security exception");
+            } catch (DocumentSecurityException e) {
+            }
+
+            joeContributorSession.save();
+
+            // local manager can read, write, create and remove
+            joeLocalManagerSession = openSessionAs("joe_localmanager");
+            DocumentModel joeLocalManagerDoc = joeLocalManagerSession.getDocument(ref);
+
+            joeLocalManagerSession.saveDocument(joeLocalManagerDoc);
+
+            childRef = joeLocalManagerSession.createDocument(
+                    new DocumentModelImpl(joeLocalManagerDoc.getPathAsString(),
+                            "child2", "File")).getRef();
+            joeLocalManagerSession.save();
+
+            // joe local manager can copy the newly created doc
+            joeLocalManagerSession.copy(childRef, ref, "child2_copy");
+
+            // joe local manager cannot move the doc
+            joeLocalManagerSession.move(childRef, ref, "child2_move");
+
+            joeLocalManagerSession.removeDocument(ref);
+            joeLocalManagerSession.save();
+
+        } finally {
+            Throwable rethrow = null;
+            if (joeReaderSession != null) {
+                try {
+                    closeSession(joeReaderSession);
+                } catch (Throwable t) {
+                    rethrow = t;
+                }
+            }
+            if (joeContributorSession != null) {
+                try {
+                    closeSession(joeContributorSession);
+                } catch (Throwable t) {
+                    if (rethrow == null) {
+                        rethrow = t;
+                    }
+                }
+            }
+            if (joeLocalManagerSession != null) {
+                try {
+                    closeSession(joeLocalManagerSession);
+                } catch (Throwable t) {
+                    if (rethrow == null) {
+                        rethrow = t;
+                    }
+                }
+            }
+            if (rethrow != null) {
+                throw rethrow;
+            }
+        }
+    }
+
+    protected DocumentRef createDocumentModelWithSamplePermissions(String name)
+            throws ClientException {
+        DocumentModel root = session.getRootDocument();
+        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), name,
+                "Folder");
+        doc = session.createDocument(doc);
+
+        ACP acp = doc.getACP();
+        ACL localACL = acp.getOrCreateACL();
+
+        localACL.add(new ACE("joe_reader", SecurityConstants.READ, true));
+
+        localACL.add(new ACE("joe_contributor", SecurityConstants.READ, true));
+        localACL.add(new ACE("joe_contributor",
+                SecurityConstants.WRITE_PROPERTIES, true));
+        localACL.add(new ACE("joe_contributor", SecurityConstants.ADD_CHILDREN,
+                true));
+
+        localACL.add(new ACE("joe_localmanager", SecurityConstants.READ, true));
+        localACL.add(new ACE("joe_localmanager", SecurityConstants.WRITE, true));
+        localACL.add(new ACE("joe_localmanager",
+                SecurityConstants.WRITE_SECURITY, true));
+
+        acp.addACL(localACL);
+        doc.setACP(acp, true);
+
+        // add the permission to remove children on the root
+        ACP rootACP = root.getACP();
+        ACL rootACL = rootACP.getOrCreateACL();
+        rootACL.add(new ACE("joe_localmanager",
+                SecurityConstants.REMOVE_CHILDREN, true));
+        rootACP.addACL(rootACL);
+        root.setACP(rootACP, true);
+
+        // make it visible for others
+        session.save();
+        return doc.getRef();
     }
 
     //
@@ -929,7 +1352,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         assertFalse(session.exists(returnedChildDocs.get(0).getRef()));
     }
 
-    public void testQuery() throws ClientException {
+    public void TODOtestQuery() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -1020,7 +1443,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         session.removeDocument(returnedChildDocs.get(1).getRef());
     }
 
-    public void testQueryAfterEdit() throws ClientException, IOException {
+    public void TODOtestQueryAfterEdit() throws ClientException, IOException {
         DocumentModel root = session.getRootDocument();
 
         String fname1 = "file1#" + generateUnique();
@@ -1606,7 +2029,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
     }
 
     // TODO: Fix this test!
-    public void XXXtestGetContentData() throws ClientException {
+    public void testGetContentData() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
@@ -1623,19 +2046,16 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
 
         session.saveDocument(childFile);
 
-        /*
-         * this block is commented because the exception it generates makes the
-         * next block fail try { session.getContentData(childFile.getRef(),
-         * "title"); fail("Content nodes must be of type: content"); } catch
-         * (ClientException e) { // do nothing }
-         */
+        try {
+            session.getContentData(childFile.getRef(), "title");
+            fail("Content nodes must be of type: content");
+        } catch (ClientException e) {
+            // ok
+        }
 
         byte[] content = session.getContentData(childFile.getRef(), "content");
         assertNotNull(content);
-
-        String strContent = String.valueOf(content);
-
-        assertNotNull(strContent);
+        String strContent = new String(content);
         assertEquals("the content", strContent);
     }
 
@@ -1756,23 +2176,20 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
                 session.getCurrentLifeCycleState(childFile.getRef()));
 
         Collection<String> allowedStateTransitions = session.getAllowedStateTransitions(childFile.getRef());
-        assertEquals(2, allowedStateTransitions.size());
+        assertEquals(3, allowedStateTransitions.size());
         assertTrue(allowedStateTransitions.contains("approve"));
         assertTrue(allowedStateTransitions.contains("obsolete"));
+        assertTrue(allowedStateTransitions.contains("delete"));
 
         assertTrue(session.followTransition(childFile.getRef(), "approve"));
         assertEquals("approved",
                 session.getCurrentLifeCycleState(childFile.getRef()));
         allowedStateTransitions = session.getAllowedStateTransitions(childFile.getRef());
-        assertEquals(0, allowedStateTransitions.size());
-
-        assertEquals("default", session.getLifeCyclePolicy(childFile.getRef()));
-
-        session.cancel();
-        assertFalse(session.exists(childFile.getRef()));
+        assertEquals(2, allowedStateTransitions.size());
+        assertTrue(allowedStateTransitions.contains("delete"));
+        assertTrue(allowedStateTransitions.contains("backToProject"));
     }
 
-    // TODO: fix and reenable SF 2007/05/23
     public void testDataModelLifeCycleAPI() throws ClientException {
         DocumentModel root = session.getRootDocument();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
@@ -1783,19 +2200,17 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         assertEquals("project", childFile.getCurrentLifeCycleState());
 
         Collection<String> allowedStateTransitions = childFile.getAllowedStateTransitions();
-        assertEquals(2, allowedStateTransitions.size());
+        assertEquals(3, allowedStateTransitions.size());
         assertTrue(allowedStateTransitions.contains("approve"));
         assertTrue(allowedStateTransitions.contains("obsolete"));
+        assertTrue(allowedStateTransitions.contains("delete"));
 
         assertTrue(childFile.followTransition("obsolete"));
         assertEquals("obsolete", childFile.getCurrentLifeCycleState());
-
         allowedStateTransitions = childFile.getAllowedStateTransitions();
-        assertEquals(0, allowedStateTransitions.size());
-        assertEquals("default", childFile.getLifeCyclePolicy());
-
-        session.cancel();
-        assertFalse(session.exists(childFile.getRef()));
+        assertEquals(2, allowedStateTransitions.size());
+        assertTrue(allowedStateTransitions.contains("delete"));
+        assertTrue(allowedStateTransitions.contains("backToProject"));
     }
 
     public void testCopy() throws Exception {
@@ -1864,7 +2279,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         assertTrue(session.getChildren(folder1.getRef()).contains(copy5));
         assertNotSame(copy1.getName(), copy5.getName());
 
-        session.cancel();
+        //session.cancel();
     }
 
     public void testCopyProxyAsDocument() throws Exception {
@@ -1915,7 +2330,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         assertEquals(file.getProperty("dublincore", "title"),
                 copy2.getProperty("dublincore", "title"));
 
-        session.cancel();
+        //session.cancel();
     }
 
     public void testCopyVersionable() throws Exception {
@@ -2033,7 +2448,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         assertTrue(session.exists(new PathRef("folder2/file2")));
         assertTrue(session.exists(new PathRef("folder2/" + newName)));
 
-        session.cancel();
+        //session.cancel();
     }
 
     // TODO: fix this test
@@ -2086,7 +2501,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
 
         session.save();
 
-        byte[] bytes = FileUtils.readBytes(Blob.class.getResourceAsStream("TestAPI.class"));
+        byte[] bytes = FileUtils.readBytes(Blob.class.getResourceAsStream("Blob.class"));
         Blob blob = new ByteArrayBlob(bytes, "java/class");
         blob.setDigest("XXX");
         blob.setFilename("blob.txt");
@@ -2110,78 +2525,6 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         assertEquals("UTF8", blob.getEncoding());
         assertEquals("java/class", blob.getMimeType());
         assertTrue(Arrays.equals(content, blob.getByteArray()));
-
-    }
-
-    /**
-     * This test should be done on a repo that contains deprecated blob node
-     * types (nt:resource blobs) You should specify the File document UID to
-     * test
-     *
-     * @throws Exception
-     */
-    public void xxx_testBlobCompat() throws Exception {
-        String UID = "6c0f8723-25b2-4a28-a93f-d03096057b92";
-        DocumentModel root = session.getRootDocument();
-
-        String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
-        childFile = createChildDocument(childFile);
-
-        session.save();
-
-        DocumentModel doc = session.getDocument(new IdRef(UID));
-        Blob blob = (Blob) doc.getProperty("file", "content");
-        String digest = blob.getDigest();
-        String filename = blob.getFilename();
-        long length = blob.getLength();
-        String mimetype = blob.getMimeType();
-        String encoding = blob.getEncoding();
-        byte[] content = blob.getByteArray();
-        assertNull(digest);
-        assertNull(filename);
-
-        Blob b2 = StreamingBlob.createFromByteArray(content);
-        b2.setDigest("XXX");
-        b2.setFilename("blob.txt");
-        b2.setMimeType(mimetype);
-        b2.setEncoding(encoding);
-        length = b2.getLength();
-        doc.setProperty("file", "content", b2);
-        session.saveDocument(doc);
-
-        session.getDocument(doc.getRef());
-        b2 = (Blob) doc.getProperty("file", "content");
-        assertEquals("XXX", b2.getDigest());
-        assertEquals("blob.txt", b2.getFilename());
-        assertEquals(length, b2.getLength());
-        assertEquals(encoding, b2.getEncoding());
-        assertTrue(Arrays.equals(content, b2.getByteArray()));
-        assertEquals(mimetype, b2.getMimeType());
-
-    }
-
-    public void xxx__testUploadBigBlob() throws Exception {
-        DocumentModel root = session.getRootDocument();
-
-        String name2 = "file#" + generateUnique();
-        DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(),
-                name2, "File");
-        childFile = createChildDocument(childFile);
-
-        session.save();
-
-        byte[] bytes = FileUtils.readBytes(Blob.class.getResourceAsStream("/blob.mp3"));
-        Blob blob = new ByteArrayBlob(bytes, "audio/mpeg");
-
-        childFile.setProperty("file", "filename", "second name");
-        childFile.setProperty("common", "title", "f1");
-        childFile.setProperty("common", "description", "desc 1");
-        childFile.setProperty("file", "content", blob);
-
-        session.saveDocument(childFile);
-        session.save();
     }
 
     public void testRetrieveSamePropertyInAncestors() throws ClientException {
@@ -2317,7 +2660,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
                 name2, "File");
         childFile = createChildDocument(childFile);
         assertNotNull(childFile.getRepositoryName());
-        assertEquals("default", childFile.getRepositoryName());
+        assertEquals("test", childFile.getRepositoryName());
     }
 
     // TODO: fix and reenable, is this a bug?
@@ -2517,7 +2860,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
 
         doc = session.createDocument(doc);
 
-        DocumentPart dp = doc.getPart("MySchema");
+        DocumentPart dp = doc.getPart("myschema");
         Property p = dp.get("long");
 
         assertTrue(p.isPhantom());
@@ -2526,7 +2869,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         assertEquals(new Long(12), p.getValue());
         session.saveDocument(doc);
 
-        dp = doc.getPart("MySchema");
+        dp = doc.getPart("myschema");
         p = dp.get("long");
         assertFalse(p.isPhantom());
         assertEquals(new Long(12), p.getValue());
@@ -2536,7 +2879,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
 
         session.saveDocument(doc);
 
-        dp = doc.getPart("MySchema");
+        dp = doc.getPart("myschema");
         p = dp.get("long");
         // assertTrue(p.isPhantom());
         assertNull(p.getValue());
@@ -2547,7 +2890,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
 
         session.saveDocument(doc);
 
-        dp = doc.getPart("MySchema");
+        dp = doc.getPart("myschema");
         p = dp.get("long");
         assertTrue(p.isPhantom());
         assertNull(p.getValue());
@@ -2749,7 +3092,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         return bytes;
     }
 
-    @SuppressWarnings("unchecked")
+    // badly named
     public void testLazyBlob() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -2765,12 +3108,11 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         blob = (Blob) doc.getPart("file").get("content").getValue();
         assertTrue(Arrays.equals(bytes, blob.getByteArray()));
 
-        // test that reset works
-        blob.getStream().reset();
+        // reset not implemented (not needed) for SQLBlob's Binary
+        // XXX blob.getStream().reset();
 
         blob = (Blob) doc.getPart("file").get("content").getValue();
         assertTrue(Arrays.equals(bytes, blob.getByteArray()));
-
     }
 
     public void testProxy() throws Exception {
@@ -2856,148 +3198,6 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         session.save();
         assertEquals(2, session.getChildrenRefs(folder.getRef(), null).size());
         assertEquals(3, session.getChildrenRefs(root.getRef(), null).size());
-    }
-
-    public void testPermissionChecks() throws Exception {
-
-        CoreSession joeReaderSession = null;
-        CoreSession joeContributorSession = null;
-        CoreSession joeLocalManagerSession = null;
-
-        DocumentRef ref = createDocumentModelWithSamplePermissions("docWithPerms");
-
-        try {
-            // reader only has the right to consult the document
-            joeReaderSession = openSession("joe_reader");
-            DocumentModel joeReaderDoc = joeReaderSession.getDocument(ref);
-            try {
-                joeReaderSession.saveDocument(joeReaderDoc);
-                fail("should have raised a security exception");
-            } catch (DocumentSecurityException e) {
-            }
-
-            try {
-                joeReaderSession.createDocument(new DocumentModelImpl(
-                        joeReaderDoc.getPathAsString(), "child", "File"));
-                fail("should have raised a security exception");
-            } catch (DocumentSecurityException e) {
-            }
-
-            try {
-                joeReaderSession.removeDocument(ref);
-                fail("should have raised a security exception");
-            } catch (DocumentSecurityException e) {
-            }
-            joeReaderSession.save();
-
-            // contributor only has the right to write the properties of
-            // document
-            joeContributorSession = openSession("joe_contributor");
-            DocumentModel joeContributorDoc = joeContributorSession.getDocument(ref);
-
-            joeContributorSession.saveDocument(joeContributorDoc);
-
-            DocumentRef childRef = joeContributorSession.createDocument(
-                    new DocumentModelImpl(joeContributorDoc.getPathAsString(),
-                            "child", "File")).getRef();
-            joeContributorSession.save();
-
-            // joe contributor can copy the newly created doc
-            joeContributorSession.copy(childRef, ref, "child_copy");
-
-            // joe contributor cannot move the doc
-            try {
-                joeContributorSession.move(childRef, ref, "child_move");
-                fail("should have raised a security exception");
-            } catch (DocumentSecurityException e) {
-            }
-
-            // joe contributor cannot remove the folder either
-            try {
-                joeContributorSession.removeDocument(ref);
-                fail("should have raised a security exception");
-            } catch (DocumentSecurityException e) {
-            }
-
-            joeContributorSession.save();
-
-            // local manager can read, write, create and remove
-            joeLocalManagerSession = openSession("joe_localmanager");
-            DocumentModel joeLocalManagerDoc = joeLocalManagerSession.getDocument(ref);
-
-            joeLocalManagerSession.saveDocument(joeLocalManagerDoc);
-
-            childRef = joeLocalManagerSession.createDocument(
-                    new DocumentModelImpl(joeLocalManagerDoc.getPathAsString(),
-                            "child2", "File")).getRef();
-            joeLocalManagerSession.save();
-
-            // joe local manager can copy the newly created doc
-            joeLocalManagerSession.copy(childRef, ref, "child2_copy");
-
-            // joe local manager cannot move the doc
-            joeLocalManagerSession.move(childRef, ref, "child2_move");
-
-            joeLocalManagerSession.removeDocument(ref);
-            joeLocalManagerSession.save();
-
-        } finally {
-            if (joeReaderSession != null) {
-                CoreInstance.getInstance().close(joeReaderSession);
-            }
-            if (joeContributorSession != null) {
-                CoreInstance.getInstance().close(joeContributorSession);
-            }
-            if (joeLocalManagerSession != null) {
-                CoreInstance.getInstance().close(joeLocalManagerSession);
-            }
-        }
-    }
-
-    protected CoreSession openSession(String userName) throws ClientException {
-        Map<String, Serializable> ctx = new HashMap<String, Serializable>();
-        ctx.put("username", userName);
-        ctx.put("principal", new UserPrincipal(userName));
-        return CoreInstance.getInstance().open("default", ctx);
-    }
-
-    protected DocumentRef createDocumentModelWithSamplePermissions(String name)
-            throws ClientException {
-        DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), name,
-                "Folder");
-        doc = session.createDocument(doc);
-
-        ACP acp = doc.getACP();
-        ACL localACL = acp.getOrCreateACL();
-
-        localACL.add(new ACE("joe_reader", SecurityConstants.READ, true));
-
-        localACL.add(new ACE("joe_contributor", SecurityConstants.READ, true));
-        localACL.add(new ACE("joe_contributor",
-                SecurityConstants.WRITE_PROPERTIES, true));
-        localACL.add(new ACE("joe_contributor", SecurityConstants.ADD_CHILDREN,
-                true));
-
-        localACL.add(new ACE("joe_localmanager", SecurityConstants.READ, true));
-        localACL.add(new ACE("joe_localmanager", SecurityConstants.WRITE, true));
-        localACL.add(new ACE("joe_localmanager",
-                SecurityConstants.WRITE_SECURITY, true));
-
-        acp.addACL(localACL);
-        doc.setACP(acp, true);
-
-        // add the permission to remove children on the root
-        ACP rootACP = root.getACP();
-        ACL rootACL = rootACP.getOrCreateACL();
-        rootACL.add(new ACE("joe_localmanager",
-                SecurityConstants.REMOVE_CHILDREN, true));
-        rootACP.addACL(rootACL);
-        root.setACP(rootACP, true);
-
-        // make it visible for others
-        session.save();
-        return doc.getRef();
     }
 
 }

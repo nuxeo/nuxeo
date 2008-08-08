@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 
@@ -31,6 +33,13 @@ import org.nuxeo.ecm.core.storage.StorageException;
  * @author Florent Guillaume
  */
 public interface Session extends Connection {
+
+    /**
+     * Checks if the session is live (not closed).
+     *
+     * @return {@code true} if the session is live
+     */
+    public boolean isLive();
 
     /**
      * Gets the {@link Model} associated to this session.
@@ -144,10 +153,11 @@ public interface Session extends Connection {
      * @param parent the parent node
      * @param complexProp whether to check complex properties or regular
      *            children
+     * @param name the children name to get (for lists of complex properties)
      * @return the collection of children
      * @throws StorageException
      */
-    List<Node> getChildren(Node parent, boolean complexProp)
+    List<Node> getChildren(Node parent, boolean complexProp, String name)
             throws StorageException;
 
     /**
@@ -171,5 +181,73 @@ public interface Session extends Connection {
      * @throws StorageException
      */
     void removeNode(Node node) throws StorageException;
+
+    /**
+     * Moves a node to a new location with a new name.
+     * <p>
+     * A {@link #save} is automatically done first.
+     *
+     * @param source the node to move
+     * @param parent the new parent to which the node is moved
+     * @param name the new node name
+     * @return the moved node
+     * @throws StorageException
+     */
+    Node move(Node source, Node parent, String name) throws StorageException;
+
+    /**
+     * Copies a node to a new location with a new name.
+     * <p>
+     * A {@link #save} is automatically done first.
+     *
+     * @param source the node to copy
+     * @param parent the new parent to which the node is copied
+     * @param name the new node name
+     * @return the copied node
+     * @throws StorageException
+     */
+    Node copy(Node source, Node parent, String name) throws StorageException;
+
+    /**
+     * Checks in a checked-out node: creates a new version with a copy of its
+     * information.
+     * <p>
+     * A {@link #save} is automatically done first.
+     *
+     * @param node the node to check in
+     * @param label the label for the version
+     * @param description the description for the version
+     * @return the created version
+     * @throws StorageException
+     */
+    Node checkIn(Node node, String label, String description)
+            throws StorageException;
+
+    /**
+     * Checks out a checked-in node.
+     *
+     * @param node the node to check out
+     * @throws StorageException
+     */
+    void checkOut(Node node) throws StorageException;
+
+    /**
+     * Gets a version of a node given its label.
+     *
+     * @param node the node
+     * @param label the label
+     * @return the version node, or {@code null} if not found
+     * @throws StorageException
+     */
+    Node getVersionByLabel(Node node, String label) throws StorageException;
+
+    /**
+     * Creates a binary value given an input stream.
+     *
+     * @param in the input stream
+     * @return the binary value
+     * @throws IOException
+     */
+    Binary getBinary(InputStream in) throws IOException;
 
 }

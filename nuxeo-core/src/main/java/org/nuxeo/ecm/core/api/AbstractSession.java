@@ -763,19 +763,15 @@ public abstract class AbstractSession implements CoreSession,
     public abstract boolean isSessionAlive();
 
     public void disconnect() throws ClientException {
-        try {
-            if (isSessionAlive()) {
-                getSession().close();
-            }
-            if (sessionId != null) {
-                CoreInstance.getInstance().unregisterSession(sessionId);
-            }
-            sessionContext = null;
-            sessionId = null;
-            repositoryName = null;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to close session", e);
+        if (isSessionAlive()) {
+            getSession().dispose();
         }
+        if (sessionId != null) {
+            CoreInstance.getInstance().unregisterSession(sessionId);
+        }
+        sessionContext = null;
+        sessionId = null;
+        repositoryName = null;
     }
 
     public boolean exists(DocumentRef docRef) throws ClientException {

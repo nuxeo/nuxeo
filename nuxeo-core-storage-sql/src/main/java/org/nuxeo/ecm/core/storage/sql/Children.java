@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -137,17 +138,43 @@ public class Children {
      */
     public void addComplete(Collection<SimpleFragment> fragments,
             boolean complexProp, Model model) {
-        assert !complexProp; // no use case for complex props yet
-        assert !completeRegular;
-        if (existingRegular == null) {
-            newExistingRegular();
-        }
         String name_key = model.HIER_CHILD_NAME_KEY;
-        for (SimpleFragment fragment : fragments) {
-            existingRegular.put(fragment.getString(name_key), fragment);
+        if (complexProp) {
+            assert !completeProperties;
+            if (existingProperties == null) {
+                newExistingProperties();
+            }
+            for (SimpleFragment fragment : fragments) {
+                String name;
+                try {
+                    name = fragment.getString(name_key);
+                } catch (StorageException e) {
+                    // cannot happen, row is pristine
+                    name = "ACCESSFAILED";
+                }
+                existingProperties.put(name, fragment);
+            }
+            missingProperties = null; // could check coherence with existing
+            completeProperties = true;
+
+        } else {
+            assert !completeRegular;
+            if (existingRegular == null) {
+                newExistingRegular();
+            }
+            for (SimpleFragment fragment : fragments) {
+                String name;
+                try {
+                    name = fragment.getString(name_key);
+                } catch (StorageException e) {
+                    // cannot happen, row is pristine
+                    name = "ACCESSFAILED";
+                }
+                existingRegular.put(name, fragment);
+            }
+            missingRegular = null; // could check coherence with existing
+            completeRegular = true;
         }
-        missingRegular = null; // could check coherence with existing
-        completeRegular = true;
     }
 
     /**
@@ -246,10 +273,18 @@ public class Children {
      * @return all the fragments, or {@code null}
      */
     public Collection<SimpleFragment> getFragments(boolean complexProp) {
-        assert !complexProp; // no use case for complex props yet
-        if (!completeRegular) {
-            return null;
+        if (complexProp) {
+            if (!completeProperties) {
+                return null;
+            }
+            return existingProperties == null ? Collections.<SimpleFragment> emptyList()
+                    : existingProperties.values();
+        } else {
+            if (!completeRegular) {
+                return null;
+            }
+            return existingRegular == null ? Collections.<SimpleFragment> emptyList()
+                    : existingRegular.values();
         }
-        return existingRegular.values();
     }
 }

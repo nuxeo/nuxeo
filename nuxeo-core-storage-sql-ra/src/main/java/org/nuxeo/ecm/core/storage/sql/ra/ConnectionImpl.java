@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.core.storage.sql.ra;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 
@@ -30,6 +32,7 @@ import javax.resource.cci.ResultSetInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.Session;
@@ -106,6 +109,14 @@ public class ConnectionImpl implements Session {
      * ----- org.nuxeo.ecm.core.storage.sql.Session -----
      */
 
+    public Binary getBinary(InputStream in) throws IOException {
+        return session.getBinary(in);
+    }
+
+    public boolean isLive() {
+        return session.isLive();
+    }
+
     public Model getModel() {
         return session.getModel();
     }
@@ -141,9 +152,9 @@ public class ConnectionImpl implements Session {
         return session.hasChildren(parent, complexProp);
     }
 
-    public List<Node> getChildren(Node parent, boolean complexProp)
+    public List<Node> getChildren(Node parent, boolean complexProp, String name)
             throws StorageException {
-        return session.getChildren(parent, complexProp);
+        return session.getChildren(parent, complexProp, name);
     }
 
     public Node addChildNode(Node parent, String name, String typeName,
@@ -161,6 +172,16 @@ public class ConnectionImpl implements Session {
 
     public String getPath(Node node) throws StorageException {
         return session.getPath(node);
+    }
+
+    public Node move(Node source, Node parent, String name)
+            throws StorageException {
+        return session.move(source, parent, name);
+    }
+
+    public Node copy(Node source, Node parent, String name)
+            throws StorageException {
+        return session.copy(source, parent, name);
     }
 
 }

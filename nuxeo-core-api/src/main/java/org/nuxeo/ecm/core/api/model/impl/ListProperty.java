@@ -198,7 +198,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
             property.init(obj);
             children.add(property);
         }
-        clearFlags(IS_PHANTOM);
+        removePhantomFlag();
     }
 
     @Override

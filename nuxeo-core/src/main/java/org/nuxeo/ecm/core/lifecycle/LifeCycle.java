@@ -47,13 +47,6 @@ public interface LifeCycle {
     String getInitialStateName();
 
     /**
-     * Gets the life cycle manager name.
-     *
-     * @return the life cycle manager name
-     */
-    String getLifeCycleManagerName();
-
-    /**
      * Gets the life cycle name.
      *
      * @return the life cycle name

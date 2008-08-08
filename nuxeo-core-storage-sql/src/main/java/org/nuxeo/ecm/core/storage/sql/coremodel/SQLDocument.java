@@ -27,12 +27,16 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
+import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
+import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
+import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -112,7 +116,7 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public void remove() throws DocumentException {
-        session.removeNode(node);
+        session.remove(node);
     }
 
     public void save() throws DocumentException {
@@ -156,42 +160,62 @@ public class SQLDocument extends SQLComplexProperty implements Document {
 
     public <T extends Serializable> void setSystemProp(String name, T value)
             throws DocumentException {
-        throw new UnsupportedOperationException();
+        return;
+        // TODO XXX
+        // throw new UnsupportedOperationException();
     }
 
     public <T extends Serializable> T getSystemProp(String name, Class<T> type)
             throws DocumentException {
-        throw new UnsupportedOperationException();
+        if (type == Boolean.class) {
+            return (T) Boolean.FALSE;
+        }
+        return null;
+        // TODO XXX
+        // throw new UnsupportedOperationException();
     }
 
     /*
-     * ----- Lifecycle -----
+     * ----- LifeCycle -----
      */
+
+    public String getLifeCyclePolicy() throws LifeCycleException {
+        LifeCycleService service = NXCore.getLifeCycleService();
+        if (service == null) {
+            throw new LifeCycleException("LifeCycleService not available");
+        }
+        return service.getLifeCyclePolicy(this);
+    }
+
+    public String getCurrentLifeCycleState() throws LifeCycleException {
+        LifeCycleService service = NXCore.getLifeCycleService();
+        if (service == null) {
+            throw new LifeCycleException("LifeCycleService not available");
+        }
+        return service.getCurrentLifeCycleState(this);
+    }
 
     public boolean followTransition(String transition)
             throws LifeCycleException {
-        throw new UnsupportedOperationException();
+        LifeCycleService service = NXCore.getLifeCycleService();
+        if (service == null) {
+            throw new LifeCycleException("LifeCycleService not available");
+        }
+        service.followTransition(this, transition);
+        return true;
     }
 
     public Collection<String> getAllowedStateTransitions()
             throws LifeCycleException {
-        throw new UnsupportedOperationException();
-    }
-
-    public String getCurrentLifeCycleState() throws LifeCycleException {
-        try {
-            return getString(Model.SYSTEM_LIFECYCLE_STATE_PROP);
-        } catch (DocumentException e) {
-            throw new LifeCycleException(e.getMessage(), e);
+        LifeCycleService service = NXCore.getLifeCycleService();
+        if (service == null) {
+            throw new LifeCycleException("LifeCycleService not available");
         }
-    }
-
-    public String getLifeCyclePolicy() throws LifeCycleException {
-        try {
-            return getString(Model.SYSTEM_LIFECYCLE_POLICY_PROP);
-        } catch (DocumentException e) {
-            throw new LifeCycleException(e.getMessage(), e);
+        LifeCycle lifeCycle = service.getLifeCycleFor(this);
+        if (lifeCycle == null) {
+            return Collections.emptyList();
         }
+        return lifeCycle.getAllowedStateTransitionsFrom(service.getCurrentLifeCycleState(this));
     }
 
     /*
@@ -224,25 +248,25 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         return false;
     }
 
-    public Document getSourceDocument() {
+    public Document getSourceDocument() throws DocumentException {
         return this;
     }
 
     public void checkIn(String label) throws DocumentException {
-        throw new UnsupportedOperationException();
+        checkIn(label, null);
     }
 
     public void checkIn(String label, String description)
             throws DocumentException {
-        throw new UnsupportedOperationException();
+        session.checkIn(node, label, description);
     }
 
     public void checkOut() throws DocumentException {
-        throw new UnsupportedOperationException();
+        session.checkOut(node);
     }
 
     public boolean isCheckedOut() throws DocumentException {
-        throw new UnsupportedOperationException();
+        return !getBoolean(Model.MAIN_CHECKED_IN_PROP);
     }
 
     public void restore(String label) throws DocumentException {
@@ -250,15 +274,22 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public List<String> getVersionsIds() throws DocumentException {
-        throw new UnsupportedOperationException();
+        log.error("getProxies unimplemented, returning empty list");
+        return Collections.emptyList();
+        // XXX TODO
+        // throw new UnsupportedOperationException();
     }
 
     public Document getVersion(String label) throws DocumentException {
-        throw new UnsupportedOperationException();
+        return session.getVersionByLabel(node, label);
     }
 
     public DocumentVersionIterator getVersions() throws DocumentException {
-        throw new UnsupportedOperationException();
+        log.error("getVersions unimplemented, returning empty list");
+        return new SQLDocumentVersionIterator(
+                Collections.<DocumentVersion> emptyList());
+        // XXX TODO
+        // throw new UnsupportedOperationException();
     }
 
     public DocumentVersion getLastVersion() throws DocumentException {
@@ -266,7 +297,10 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public boolean hasVersions() throws DocumentException {
-        throw new UnsupportedOperationException();
+        log.error("hasVersions unimplemented, returning false");
+        return false;
+        // XXX TODO
+        // throw new UnsupportedOperationException();
     }
 
     /*
@@ -307,8 +341,8 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         if (start >= children.size()) {
             return EmptyDocumentIterator.INSTANCE;
         }
-        return new DocumentListIterator(
-                children.subList(start, children.size()));
+        return new SQLDocumentListIterator(children.subList(start,
+                children.size()));
     }
 
     public List<String> getChildrenIds() throws DocumentException {
@@ -363,8 +397,12 @@ public class SQLDocument extends SQLComplexProperty implements Document {
      */
 
     /*
-     * ----- -----
+     * ----- internal for SQLSecurityManager -----
      */
+
+    protected Property getACLProperty() throws DocumentException {
+        return session.makeACLProperty(node);
+    }
 
     @Override
     public String toString() {
@@ -394,13 +432,13 @@ public class SQLDocument extends SQLComplexProperty implements Document {
 
 }
 
-class DocumentListIterator implements DocumentIterator {
+class SQLDocumentListIterator implements DocumentIterator {
 
     private final int size;
 
     private final Iterator<Document> iterator;
 
-    public DocumentListIterator(List<Document> list) {
+    public SQLDocumentListIterator(List<Document> list) {
         size = list.size();
         iterator = list.iterator();
     }
@@ -414,6 +452,32 @@ class DocumentListIterator implements DocumentIterator {
     }
 
     public Document next() {
+        return iterator.next();
+    }
+
+    public void remove() {
+        throw new UnsupportedOperationException();
+    }
+
+}
+
+class SQLDocumentVersionIterator implements DocumentVersionIterator {
+
+    private final Iterator<DocumentVersion> iterator;
+
+    public SQLDocumentVersionIterator(List<DocumentVersion> list) {
+        iterator = list.iterator();
+    }
+
+    public boolean hasNext() {
+        return iterator.hasNext();
+    }
+
+    public DocumentVersion next() {
+        return iterator.next();
+    }
+
+    public DocumentVersion nextDocumentVersion() {
         return iterator.next();
     }
 

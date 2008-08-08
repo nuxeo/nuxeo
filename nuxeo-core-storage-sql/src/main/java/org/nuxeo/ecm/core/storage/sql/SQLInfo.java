@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -32,6 +33,7 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.exception.SQLExceptionConverter;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Delete;
@@ -60,13 +62,11 @@ public class SQLInfo {
 
     private final Database database;
 
-    private final Map<String, List<String>> primaryColumnsMap;
+    private String selectRootIdSql;
 
-    private final Map<String, List<String>> primaryKeysMap;
+    private Column selectRootIdWhatColumn;
 
     private final Map<String, String> selectByIdSqlMap; // statement
-
-    private final Map<String, String> selectCollectionByIdSqlMap; // statement
 
     private final Map<String, List<Column>> selectByIdColumnsMap; // without ids
 
@@ -77,10 +77,6 @@ public class SQLInfo {
     private final Map<String, String> insertSqlMap; // statement
 
     private final Map<String, List<Column>> insertColumnsMap;
-
-    private final Map<String, String> collectionInsertSqlMap; // statement
-
-    private final Map<String, List<Column>> collectionInsertColumnsMap;
 
     private final Map<String, String> updateByIdSqlMap; // statement
 
@@ -124,6 +120,36 @@ public class SQLInfo {
 
     private List<Column> selectChildrenPropertiesWhereColumns;
 
+    private String selectChildrenIdsAndTypesSql;
+
+    private String selectComplexChildrenIdsAndTypesSql;
+
+    private List<Column> selectChildrenIdsAndTypesWhatColumns;
+
+    private String copyHierSqlExplicitName;
+
+    private String copyHierSqlCreateVersion;
+
+    private String copyHierSql;
+
+    private List<Column> copyHierColumnsExplicitName;
+
+    private List<Column> copyHierColumnsCreateVersion;
+
+    private List<Column> copyHierColumns;
+
+    private Column copyHierWhereColumn;
+
+    private final Map<String, String> copySqlMap;
+
+    private final Map<String, Column> copyIdColumnMap;
+
+    private String selectVersionIdByLabelSql;
+
+    private final List<Column> selectVersionIdByLabelWhereColumns;
+
+    private Column selectVersionIdByLabelWhatColumn;
+
     /**
      * Generates and holds the needed SQL statements given a {@link Model} and a
      * {@link Dialect}.
@@ -139,11 +165,10 @@ public class SQLInfo {
 
         database = new Database();
 
-        primaryColumnsMap = new HashMap<String, List<String>>();
-        primaryKeysMap = new HashMap<String, List<String>>();
+        selectRootIdSql = null;
+        selectRootIdWhatColumn = null;
 
         selectByIdSqlMap = new HashMap<String, String>();
-        selectCollectionByIdSqlMap = new HashMap<String, String>();
         selectByIdColumnsMap = new HashMap<String, List<Column>>();
         identityFetchSqlMap = new HashMap<String, String>();
         identityFetchColumnMap = new HashMap<String, Column>();
@@ -167,16 +192,31 @@ public class SQLInfo {
         selectChildrenPropertiesSql = null;
         selectChildrenPropertiesWhatColumns = null;
         selectChildrenPropertiesWhereColumns = null;
+        selectChildrenIdsAndTypesSql = null;
+        selectChildrenIdsAndTypesWhatColumns = null;
+        selectComplexChildrenIdsAndTypesSql = null;
 
         insertSqlMap = new HashMap<String, String>();
         insertColumnsMap = new HashMap<String, List<Column>>();
-        collectionInsertSqlMap = new HashMap<String, String>();
-        collectionInsertColumnsMap = new HashMap<String, List<Column>>();
 
         updateByIdSqlMap = new HashMap<String, String>();
         updateByIdColumnsMap = new HashMap<String, List<Column>>();
 
         deleteSqlMap = new HashMap<String, String>();
+
+        copyHierSqlExplicitName = null;
+        copyHierSqlCreateVersion = null;
+        copyHierSql = null;
+        copyHierColumnsExplicitName = null;
+        copyHierColumnsCreateVersion = null;
+        copyHierColumns = null;
+        copyHierWhereColumn = null;
+        copySqlMap = new HashMap<String, String>();
+        copyIdColumnMap = new HashMap<String, Column>();
+
+        selectVersionIdByLabelSql = null;
+        selectVersionIdByLabelWhereColumns = new ArrayList<Column>(2);
+        selectVersionIdByLabelWhatColumn = null;
 
         initSQL();
     }
@@ -189,25 +229,31 @@ public class SQLInfo {
 
     // ----- create whole database -----
 
-    public List<String> getDatabaseCreateSql() {
-        List<String> sqls = new LinkedList<String>();
-        for (Table table : database.getTables()) {
-            sqls.add(table.getCreateSql(dialect));
-        }
-        return sqls;
+    public Database getDatabase() {
+        return database;
     }
 
-    // ----- primary keys -----
-
-    public List<String> getPrimaryColumns(String typeName) {
-        return primaryColumnsMap.get(typeName);
-    }
-
-    public List<String> getPrimaryKeys(String typeName) {
-        return primaryKeysMap.get(typeName);
+    public String getTableCreateSql(String tableName) {
+        return database.getTable(tableName).getCreateSql(dialect);
     }
 
     // ----- select -----
+
+    public String getSelectRootIdSql() {
+        return selectRootIdSql;
+    }
+
+    public Column getSelectRootIdWhatColumn() {
+        return selectRootIdWhatColumn;
+    }
+
+    public String getInsertRootIdSql() {
+        return insertSqlMap.get(model.REPOINFO_TABLE_NAME);
+    }
+
+    public List<Column> getInsertRootIdColumns() {
+        return insertColumnsMap.get(model.REPOINFO_TABLE_NAME);
+    }
 
     /**
      * Gets the SQL statement to select one row.
@@ -217,10 +263,6 @@ public class SQLInfo {
      */
     public String getSelectByIdSql(String typeName) {
         return selectByIdSqlMap.get(typeName);
-    }
-
-    public String getSelectCollectionByIdSql(String typeName) {
-        return selectCollectionByIdSqlMap.get(typeName);
     }
 
     // field names to bind
@@ -288,6 +330,15 @@ public class SQLInfo {
         }
     }
 
+    public String getSelectChildrenIdsAndTypesSql(boolean onlyComplex) {
+        return onlyComplex ? selectComplexChildrenIdsAndTypesSql
+                : selectChildrenIdsAndTypesSql;
+    }
+
+    public List<Column> getSelectChildrenIdsAndTypesWhatColumns() {
+        return selectChildrenIdsAndTypesWhatColumns;
+    }
+
     // ----- insert -----
 
     /**
@@ -310,14 +361,6 @@ public class SQLInfo {
      */
     public List<Column> getInsertColumns(String tableName) {
         return insertColumnsMap.get(tableName);
-    }
-
-    public String getCollectionInsertSql(String tableName) {
-        return collectionInsertSqlMap.get(tableName);
-    }
-
-    public List<Column> getCollectionInsertColumns(String tableName) {
-        return collectionInsertColumnsMap.get(tableName);
     }
 
     // ----- post insert fetch -----
@@ -355,6 +398,46 @@ public class SQLInfo {
         return deleteSqlMap.get(tableName);
     }
 
+    // ----- copy -----
+
+    public String getCopyHierSql(boolean explicitName, boolean createVersion) {
+        assert !(explicitName && createVersion);
+        return explicitName ? copyHierSqlExplicitName
+                : createVersion ? copyHierSqlCreateVersion : copyHierSql;
+    }
+
+    public List<Column> getCopyHierColumns(boolean explicitName,
+            boolean createVersion) {
+        assert !(explicitName && createVersion);
+        return explicitName ? copyHierColumnsExplicitName
+                : createVersion ? copyHierColumnsCreateVersion
+                        : copyHierColumns;
+    }
+
+    public Column getCopyHierWhereColumn() {
+        return copyHierWhereColumn;
+    }
+
+    public String getCopySql(String tableName) {
+        return copySqlMap.get(tableName);
+    }
+
+    public Column getCopyIdColumn(String tableName) {
+        return copyIdColumnMap.get(tableName);
+    }
+
+    public String getVersionIdByLabelSql() {
+        return selectVersionIdByLabelSql;
+    }
+
+    public List<Column> getVersionIdByLabelWhereColumns() {
+        return selectVersionIdByLabelWhereColumns;
+    }
+
+    public Column getVersionIdByLabelWhatColumn() {
+        return selectVersionIdByLabelWhatColumn;
+    }
+
     // ----- prepare everything -----
 
     /**
@@ -367,12 +450,13 @@ public class SQLInfo {
         initHierarchySQL();
 
         for (String tableName : model.fragmentsKeysType.keySet()) {
-            initSimpleFragmentSQL(tableName);
+            if (tableName.equals(model.MAIN_TABLE_NAME) &&
+                    !model.separateMainTable) {
+                // merged into already-generated hierarchy
+                continue;
+            }
+            initFragmentSQL(tableName);
         }
-        for (String tableName : model.collectionTables.keySet()) {
-            initCollectionFragmentSQL(tableName);
-        }
-
     }
 
     /**
@@ -381,10 +465,11 @@ public class SQLInfo {
      */
     protected void initRepositorySQL() {
         log.debug("Init repository information");
-        TableMaker maker = new TableMaker(model.REPOINFO_TABLE_NAME, false);
-        maker.newPrimaryKey();
-        maker.newColumn(model.REPOINFO_ROOTID_KEY, Types.BIGINT);
-        maker.postProcess();
+        TableMaker maker = new TableMaker(model.REPOINFO_TABLE_NAME);
+        maker.newColumn(model.REPOINFO_REPOID_KEY, PropertyType.LONG,
+                Types.INTEGER);
+        maker.newPrimaryKey(); // foreign key to main id
+        maker.postProcessRepository();
     }
 
     /**
@@ -393,50 +478,57 @@ public class SQLInfo {
     protected void initHierarchySQL() {
         log.debug("Init hierarchy information");
 
-        TableMaker maker = new TableMaker(model.HIER_TABLE_NAME, false);
-        maker.newPrimaryKey();
-        maker.newColumn(model.HIER_PARENT_KEY, Types.BIGINT);
-        maker.newColumn(model.HIER_CHILD_POS_KEY, Types.INTEGER);
-        maker.newColumn(model.HIER_CHILD_NAME_KEY, Types.VARCHAR); // text?
-        maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, Types.BIT); // not null
+        TableMaker maker = new TableMaker(model.hierFragmentName);
+        if (model.separateMainTable) {
+            maker.newPrimaryKey();
+        } else {
+            maker.newId(); // global primary key / generation
+        }
+        maker.newMainKey(model.HIER_PARENT_KEY);
+        maker.newColumn(model.HIER_CHILD_POS_KEY, PropertyType.LONG,
+                Types.INTEGER);
+        maker.newColumn(model.HIER_CHILD_NAME_KEY, PropertyType.STRING,
+                Types.VARCHAR); // text?
+        maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, PropertyType.BOOLEAN,
+                Types.BIT); // not null
+        if (!model.separateMainTable) {
+            Map<String, PropertyType> fragmentKeysType = model.fragmentsKeysType.get(model.MAIN_TABLE_NAME);
+            for (Entry<String, PropertyType> entry : fragmentKeysType.entrySet()) {
+                maker.newPrimitiveField(entry.getKey(), entry.getValue());
+            }
+        }
         maker.postProcess();
-        maker.postProcessSelectByChildNameAll();
-        maker.postProcessSelectByChildNamePropertiesFlag();
-        maker.postProcessSelectChildrenAll();
-        maker.postProcessSelectChildrenPropertiesFlag();
+        maker.postProcessHierarchy();
+        if (!model.separateMainTable) {
+            maker.postProcessIdGeneration();
+        }
     }
 
     /**
-     * Creates the SQL for one fragment.
+     * Creates the SQL for one fragment (simple or collection).
      */
-    protected void initSimpleFragmentSQL(String tableName) {
-        TableMaker maker = new TableMaker(tableName, false);
-        if (tableName.equals(model.MAIN_TABLE_NAME)) {
-            maker.newId(); // this is how a new doc id is generated
+    protected void initFragmentSQL(String tableName) {
+        TableMaker maker = new TableMaker(tableName);
+        boolean isMain = tableName.equals(model.mainFragmentName);
+
+        if (isMain) {
+            maker.newId(); // global primary key / generation
         } else {
             maker.newPrimaryKey();
         }
 
         Map<String, PropertyType> fragmentKeysType = model.fragmentsKeysType.get(tableName);
         for (Entry<String, PropertyType> entry : fragmentKeysType.entrySet()) {
-            String key = entry.getKey();
-            PropertyType type = entry.getValue();
-            maker.newPrimitiveField(key, type);
+            maker.newPrimitiveField(entry.getKey(), entry.getValue());
         }
 
         maker.postProcess();
-
-    }
-
-    protected void initCollectionFragmentSQL(String tableName) {
-        PropertyType type = model.collectionTables.get(tableName);
-        TableMaker maker = new TableMaker(tableName, true);
-        maker.newPrimaryKey();
-
-        maker.newColumn(model.COLL_TABLE_POS_KEY, Types.INTEGER);
-        maker.newPrimitiveField(model.COLL_TABLE_VALUE_KEY,
-                type.getArrayBaseType());
-        maker.postProcess();
+        if (isMain) {
+            maker.postProcessIdGeneration();
+        }
+        if (tableName.equals(model.VERSION_TABLE_NAME)) {
+            maker.postProcessSelectVersionIdByLabel();
+        }
     }
 
     // ----- prepare one table -----
@@ -447,94 +539,170 @@ public class SQLInfo {
 
         private final Table table;
 
-        private final boolean isCollection;
+        private final List<String> orderBy;
 
-        protected TableMaker(String tableName, boolean isCollection) {
+        protected TableMaker(String tableName) {
             this.tableName = tableName;
-            this.isCollection = isCollection;
             table = new Table(tableName);
             database.addTable(table);
+            orderBy = model.collectionOrderBy.get(tableName);
         }
 
-        protected void newId() {
-            Column column = newColumn(model.MAIN_KEY, Types.BIGINT);
-            column.setIdentity(true);
-            column.setPrimary(true);
+        protected Column newMainKey(String name) {
+            Column column;
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                column = newColumn(name, PropertyType.STRING, Types.VARCHAR);
+                column.setLength(36);
+                break;
+            case DB_IDENTITY:
+                column = newColumn(name, PropertyType.LONG, Types.BIGINT);
+                break;
+            default:
+                throw new AssertionError(model.idGenPolicy);
+            }
+            return column;
         }
 
         protected void newPrimaryKey() {
-            Column column = newColumn(model.MAIN_KEY, Types.BIGINT);
+            Column column = newMainKey(model.MAIN_KEY);
             column.setPrimary(true);
         }
 
+        protected void newId() {
+            Column column = newMainKey(model.MAIN_KEY);
+            column.setPrimary(true);
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                break;
+            case DB_IDENTITY:
+                column.setIdentity(true);
+                break;
+            default:
+                throw new AssertionError(model.idGenPolicy);
+            }
+        }
+
         protected void newPrimitiveField(String key, PropertyType type) {
+            if (tableName.equals(model.VERSION_TABLE_NAME) &&
+                    key.equals(model.VERSION_VERSIONABLE_KEY)) {
+                newMainKey(key); // not a foreign key though
+                return;
+            }
             int sqlType;
             switch (type) {
             case STRING:
-                sqlType = Types.CLOB; // or VARCHAR for system tables?
+                // hack, make this more configurable
+                if (tableName.equals(model.VERSION_TABLE_NAME) &&
+                        key.equals(model.VERSION_LABEL_KEY)) {
+                    sqlType = Types.VARCHAR;
+                } else {
+                    sqlType = Types.CLOB; // or VARCHAR for system tables?
+                }
+                break;
+            case BOOLEAN:
+                sqlType = Types.BIT;
                 break;
             case LONG:
                 sqlType = Types.INTEGER;
                 break;
-            case BOOLEAN:
-                sqlType = Types.BIT;
+            case DOUBLE:
+                sqlType = Types.DOUBLE;
                 break;
             case DATETIME:
                 sqlType = Types.TIMESTAMP;
                 break;
             case BINARY:
-                sqlType = Types.BLOB;
+                // TODO depends on repository conf for blob storage, also
+                // depends on Column implementation
+                sqlType = Types.VARCHAR;
                 break;
             default:
                 throw new RuntimeException("Bad type: " + type);
             }
-            newColumn(key, sqlType);
+            newColumn(key, type, sqlType);
             // XXX apply defaults
         }
 
-        protected Column newColumn(String key, int sqlType) {
+        protected Column newColumn(String key, PropertyType type, int sqlType) {
             String columnName = key;
-            Column column = new Column(columnName, sqlType, key);
+            Column column = new Column(columnName, type, sqlType, key, model);
             table.addColumn(column);
             return column;
         }
 
         // ----------------------- post processing -----------------------
 
-        /**
-         * Precompute what we can from the information available.
-         */
-        protected void postProcess() {
-            postProcessPrimary();
-            postProcessSelectById(isCollection);
-            if (isCollection) {
-                postProcessCollectionInsert();
-            } else {
-                postProcessInsert();
-            }
-            postProcessIdentityFetch();
-            postProcessUpdateById();
-            postProcessDelete();
+        protected void postProcessRepository() {
+            postProcessRootIdSelect();
+            postProcessInsert();
         }
 
-        protected void postProcessPrimary() {
-            List<String> primaryColumns = new LinkedList<String>();
-            List<String> primaryKeys = new LinkedList<String>();
+        protected void postProcessRootIdSelect() {
+            String what = null;
+            String where = null;
             for (Column column : table.getColumns()) {
-                if (column.isPrimary()) {
-                    primaryColumns.add(column.getName());
-                    primaryKeys.add(column.getKey());
+                String name = column.getName();
+                String qname = column.getQuotedName(dialect);
+                if (name.equals(model.MAIN_KEY)) {
+                    what = qname;
+                    selectRootIdWhatColumn = column;
+                } else if (name.equals(model.REPOINFO_REPOID_KEY)) {
+                    where = qname + " = ?";
+                } else {
+                    throw new AssertionError(column);
                 }
             }
-            primaryColumnsMap.put(tableName, primaryColumns);
-            primaryKeysMap.put(tableName, primaryKeys);
+            Select select = new Select(dialect);
+            select.setWhat(what);
+            select.setFrom(table.getQuotedName(dialect));
+            select.setWhere(where);
+            selectRootIdSql = select.getStatement();
         }
 
-        protected void postProcessSelectById(boolean isCollection) {
+        /**
+         * Precompute what we can from the information available for a regular
+         * schema table, or a collection table.
+         */
+        protected void postProcess() {
+            postProcessSelectById();
+            postProcessInsert();
+            postProcessUpdateById();
+            postProcessDelete();
+            postProcessCopy();
+        }
+
+        /**
+         * Additional SQL for the main table.
+         */
+        protected void postProcessIdGeneration() {
+            switch (model.idGenPolicy) {
+            case APP_UUID:
+                break;
+            case DB_IDENTITY:
+                postProcessIdentityFetch();
+                break;
+            default:
+                throw new AssertionError(model.idGenPolicy);
+            }
+        }
+
+        /**
+         * Additional SQL for the hierarchy table.
+         */
+        protected void postProcessHierarchy() {
+            postProcessSelectByChildNameAll();
+            postProcessSelectByChildNamePropertiesFlag();
+            postProcessSelectChildrenAll();
+            postProcessSelectChildrenPropertiesFlag();
+            postProcessSelectChildrenIdsAndTypes();
+            postProcessCopyHier();
+        }
+
+        protected void postProcessSelectById() {
             List<Column> selectByIdColumns = new LinkedList<Column>();
             List<String> whats = new LinkedList<String>();
             List<String> wheres = new LinkedList<String>();
-            Column posColumn = null;
             for (Column column : table.getColumns()) {
                 String qname = column.getQuotedName(dialect);
                 if (column.isPrimary()) {
@@ -542,23 +710,21 @@ public class SQLInfo {
                 } else {
                     whats.add(qname);
                     selectByIdColumns.add(column);
-                    if (column.getName().equals(model.COLL_TABLE_POS_KEY)) {
-                        posColumn = column;
-                    }
                 }
             }
             Select select = new Select(dialect);
             select.setWhat(StringUtils.join(whats, ", "));
             select.setFrom(table.getQuotedName(dialect));
             select.setWhere(StringUtils.join(wheres, " AND "));
-            if (isCollection) {
-                select.setOrderBy(posColumn.getQuotedName(dialect));
-                selectCollectionByIdSqlMap.put(tableName, select.getStatement());
-                selectByIdColumnsMap.put(tableName, selectByIdColumns);
-            } else {
-                selectByIdSqlMap.put(tableName, select.getStatement());
-                selectByIdColumnsMap.put(tableName, selectByIdColumns);
+            if (orderBy != null) {
+                List<String> order = new LinkedList<String>();
+                for (String name : orderBy) {
+                    order.add(table.getColumn(name).getQuotedName(dialect));
+                }
+                select.setOrderBy(StringUtils.join(order, ", "));
             }
+            selectByIdSqlMap.put(tableName, select.getStatement());
+            selectByIdColumnsMap.put(tableName, selectByIdColumns);
         }
 
         protected void postProcessSelectByChildNameAll() {
@@ -690,30 +856,52 @@ public class SQLInfo {
             selectChildrenPropertiesWhereColumns = whereColumns;
         }
 
-        protected void postProcessInsert() {
-            // insert (implicitly auto-generated sequences not included)
-            List<Column> insertColumns = new LinkedList<Column>();
-            Insert insert = new Insert(dialect);
-            insert.setTable(table);
-            for (Column column : table.getColumns()) {
-                insert.addColumn(column);
-            }
-            insertSqlMap.put(tableName, insert.getStatement(insertColumns));
-            insertColumnsMap.put(tableName, insertColumns);
+        // children ids and types
+        protected void postProcessSelectChildrenIdsAndTypes() {
+            assert !model.separateMainTable; // otherwise join needed
+            ArrayList<Column> whatColumns = new ArrayList<Column>(2);
+            ArrayList<String> whats = new ArrayList<String>(2);
+            Column column = table.getColumn(model.MAIN_KEY);
+            whatColumns.add(column);
+            whats.add(column.getQuotedName(dialect));
+            column = table.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
+            whatColumns.add(column);
+            whats.add(column.getQuotedName(dialect));
+            Select select = new Select(dialect);
+            select.setWhat(StringUtils.join(whats, ", "));
+            select.setFrom(table.getQuotedName(dialect));
+            String where = table.getColumn(model.HIER_PARENT_KEY).getQuotedName(
+                    dialect) +
+                    " = ?";
+            select.setWhere(where);
+            selectChildrenIdsAndTypesSql = select.getStatement();
+            selectChildrenIdsAndTypesWhatColumns = whatColumns;
+            // now only complex properties
+            where += " AND " +
+                    table.getColumn(model.HIER_CHILD_ISPROPERTY_KEY).getQuotedName(
+                            dialect) + " = " +
+                    dialect.toBooleanValueString(true);
+            select.setWhere(where);
+            selectComplexChildrenIdsAndTypesSql = select.getStatement();
         }
 
-        // identical to above for now
-        // TODO optimize multiple inserts into one statement
-        protected void postProcessCollectionInsert() {
-            List<Column> insertColumns = new LinkedList<Column>();
+        // TODO optimize multiple inserts into one statement for collections
+        protected void postProcessInsert() {
+            // insert (implicitly auto-generated sequences not included)
+            Collection<Column> columns = table.getColumns();
+            List<Column> insertColumns = new ArrayList<Column>(columns.size());
             Insert insert = new Insert(dialect);
             insert.setTable(table);
-            for (Column column : table.getColumns()) {
+            for (Column column : columns) {
+                if (column.isIdentity()) {
+                    // identity column is never inserted
+                    continue;
+                }
+                insertColumns.add(column);
                 insert.addColumn(column);
             }
-            collectionInsertSqlMap.put(tableName,
-                    insert.getStatement(insertColumns));
-            collectionInsertColumnsMap.put(tableName, insertColumns);
+            insertSqlMap.put(tableName, insert.getStatement());
+            insertColumnsMap.put(tableName, insertColumns);
         }
 
         protected void postProcessIdentityFetch() {
@@ -767,6 +955,124 @@ public class SQLInfo {
             delete.setWhere(StringUtils.join(wheres, " AND "));
             deleteSqlMap.put(tableName, delete.getStatement());
         }
+
+        // copy, with or without explicit name
+        protected void postProcessCopyHier() {
+            Collection<Column> columns = table.getColumns();
+            List<String> selectWhats = new ArrayList<String>(columns.size());
+            List<String> selectWhatsExplicitName = new ArrayList<String>(
+                    columns.size());
+            List<String> selectWhatsCreateVersion = new ArrayList<String>(
+                    columns.size());
+            copyHierColumns = new ArrayList<Column>(2);
+            copyHierColumnsExplicitName = new ArrayList<Column>(3);
+            copyHierColumnsCreateVersion = new ArrayList<Column>(3);
+            Insert insert = new Insert(dialect);
+            insert.setTable(table);
+            for (Column column : columns) {
+                if (column.isIdentity()) {
+                    // identity column is never copied
+                    continue;
+                }
+                insert.addColumn(column);
+                String quotedName = column.getQuotedName(dialect);
+                String key = column.getName();
+                if (key.equals(model.MAIN_KEY) ||
+                        key.equals(model.HIER_PARENT_KEY)) {
+                    // explicit id/parent value (id if not identity column)
+                    selectWhats.add("?");
+                    copyHierColumns.add(column);
+                    selectWhatsExplicitName.add("?");
+                    copyHierColumnsExplicitName.add(column);
+                    selectWhatsCreateVersion.add("?");
+                    copyHierColumnsCreateVersion.add(column);
+                } else if (key.equals(model.HIER_CHILD_NAME_KEY)) {
+                    selectWhats.add(quotedName);
+                    // exlicit name value if requested
+                    selectWhatsExplicitName.add("?");
+                    copyHierColumnsExplicitName.add(column);
+                    // version creation copies name
+                    selectWhatsCreateVersion.add(quotedName);
+                } else if (key.equals(model.MAIN_BASE_VERSION_KEY) ||
+                        key.equals(model.MAIN_CHECKED_IN_KEY)) {
+                    selectWhats.add(quotedName);
+                    selectWhatsExplicitName.add(quotedName);
+                    // version creation sets those null
+                    selectWhatsCreateVersion.add("?");
+                    copyHierColumnsCreateVersion.add(column);
+                } else {
+                    // otherwise copy value
+                    selectWhats.add(quotedName);
+                    selectWhatsExplicitName.add(quotedName);
+                    selectWhatsCreateVersion.add(quotedName);
+                }
+            }
+            copyHierWhereColumn = table.getColumn(model.MAIN_KEY);
+            Select select = new Select(dialect);
+            select.setFrom(table.getQuotedName(dialect));
+            select.setWhere(copyHierWhereColumn.getQuotedName(dialect) + " = ?");
+            // without explicit name nor version creation (normal)
+            select.setWhat(StringUtils.join(selectWhats, ", "));
+            insert.setValues(select.getStatement());
+            copyHierSql = insert.getStatement();
+            // with explicit name
+            select.setWhat(StringUtils.join(selectWhatsExplicitName, ", "));
+            insert.setValues(select.getStatement());
+            copyHierSqlExplicitName = insert.getStatement();
+            // with version creation
+            select.setWhat(StringUtils.join(selectWhatsCreateVersion, ", "));
+            insert.setValues(select.getStatement());
+            copyHierSqlCreateVersion = insert.getStatement();
+        }
+
+        // copy of a fragment
+        protected void postProcessCopy() {
+            String tableName = table.getName();
+            Collection<Column> columns = table.getColumns();
+            List<String> selectWhats = new ArrayList<String>(columns.size());
+            Column copyIdColumn = table.getColumn(model.MAIN_KEY);
+            Insert insert = new Insert(dialect);
+            insert.setTable(table);
+            for (Column column : columns) {
+                if (column.isIdentity()) {
+                    // identity column is never copied
+                    continue;
+                }
+                insert.addColumn(column);
+                if (column == copyIdColumn) {
+                    // explicit value
+                    selectWhats.add("?");
+                } else {
+                    // otherwise copy value
+                    selectWhats.add(column.getQuotedName(dialect));
+                }
+            }
+            Select select = new Select(dialect);
+            select.setWhat(StringUtils.join(selectWhats, ", "));
+            select.setFrom(table.getQuotedName(dialect));
+            select.setWhere(copyIdColumn.getQuotedName(dialect) + " = ?");
+            insert.setValues(select.getStatement());
+            copySqlMap.put(tableName, insert.getStatement());
+            copyIdColumnMap.put(tableName, copyIdColumn);
+        }
+
+        protected void postProcessSelectVersionIdByLabel() {
+            Select select = new Select(dialect);
+            Column whatColumn = table.getColumn(model.MAIN_KEY);
+            List<String> wheres = new ArrayList<String>(2);
+            Column column = table.getColumn(model.VERSION_VERSIONABLE_KEY);
+            wheres.add(column.getQuotedName(dialect) + " = ?");
+            selectVersionIdByLabelWhereColumns.add(column);
+            column = table.getColumn(model.VERSION_LABEL_KEY);
+            wheres.add(column.getQuotedName(dialect) + " = ?");
+            selectVersionIdByLabelWhereColumns.add(column);
+            select.setWhat(whatColumn.getQuotedName(dialect));
+            select.setFrom(table.getQuotedName(dialect));
+            select.setWhere(StringUtils.join(wheres, " AND "));
+            selectVersionIdByLabelSql = select.getStatement();
+            selectVersionIdByLabelWhatColumn = whatColumn;
+        }
+
     }
 
 }

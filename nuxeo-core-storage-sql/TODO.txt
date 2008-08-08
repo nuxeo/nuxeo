@@ -1,12 +1,22 @@
 SQL Storage TODO
 
+- major/minor version management
+
+- proxies
+
+- locking
+
+- recursive removal on node remove
+
+- complex lists
+
+Optimizations:
+
+- indexes
+
+- blob storage GC
+
 - hierarchy management, children optimizations
-
-- refactor core document apis
-
-- implement core sql adapter
-
-- transactional file storage
 
 - table aggregation and optimization
 

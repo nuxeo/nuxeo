@@ -19,6 +19,8 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.File;
 import java.io.Serializable;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,11 +47,22 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         deployRepository();
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        try {
+            DriverManager.getConnection("jdbc:derby:;shutdown=true");
+            fail("Expected Derby shutdown exception");
+        } catch (SQLException e) {
+            assertEquals("Derby system shutdown.", e.getMessage());
+        }
+    }
+
     public void deployRepository() throws Exception {
         File dbdir = new File("target/test/repository");
         deleteRecursive(dbdir);
         deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
-                "OSGI-INF/test-repository-contrib.xml");
+                "OSGI-INF/test-repo-repository-contrib.xml");
     }
 
     protected static void deleteRecursive(File file) {
@@ -60,14 +73,23 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
         }
         file.delete();
     }
+
     public void openSession() throws ClientException {
-        Map<String, Serializable> context = new HashMap<String, Serializable>();
-        context.put("username", SecurityConstants.ADMINISTRATOR);
-        session = CoreInstance.getInstance().open(REPOSITORY_NAME, context);
+        session = openSessionAs(SecurityConstants.ADMINISTRATOR);
         assertNotNull(session);
     }
 
+    public CoreSession openSessionAs(String username) throws ClientException {
+        Map<String, Serializable> context = new HashMap<String, Serializable>();
+        context.put("username", username);
+        return CoreInstance.getInstance().open(REPOSITORY_NAME, context);
+    }
+
     public void closeSession() throws ClientException {
+        closeSession(session);
+    }
+
+    public void closeSession(CoreSession session) throws ClientException {
         CoreInstance.getInstance().close(session);
     }
 

@@ -181,7 +181,7 @@ public abstract class ComplexProperty extends AbstractProperty implements
             Property property = get(entry.getKey());
             property.init(entry.getValue());
         }
-        clearFlags(IS_PHANTOM);
+        removePhantomFlag();
     }
 
     @Override

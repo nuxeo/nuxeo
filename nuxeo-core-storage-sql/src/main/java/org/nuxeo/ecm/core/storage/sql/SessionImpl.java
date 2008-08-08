@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.security.AccessControlException;
 import java.util.ArrayList;
@@ -39,9 +41,11 @@ import javax.transaction.xa.Xid;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
 
@@ -55,7 +59,7 @@ public class SessionImpl implements Session, XAResource {
 
     private static final Log log = LogFactory.getLog(SessionImpl.class);
 
-    private final Repository repository;
+    private final RepositoryImpl repository;
 
     protected final SchemaManager schemaManager;
 
@@ -67,18 +71,23 @@ public class SessionImpl implements Session, XAResource {
 
     private final PersistenceContext context;
 
-    private boolean live = true;
+    private boolean live;
+
+    private boolean inTransaction;
 
     private Node rootNode;
 
-    SessionImpl(Repository repository, SchemaManager schemaManager,
-            Mapper mapper, Credentials credentials) throws StorageException {
+    SessionImpl(RepositoryImpl repository, SchemaManager schemaManager,
+            Mapper mapper, RepositoryImpl.Invalidators invalidators,
+            Credentials credentials) throws StorageException {
         this.repository = repository;
         this.schemaManager = schemaManager;
         this.mapper = mapper;
         this.credentials = credentials;
         model = mapper.getModel();
-        context = new PersistenceContext(mapper);
+        context = new PersistenceContext(mapper, invalidators);
+        live = true;
+        inTransaction = false;
         computeRootNode();
     }
 
@@ -86,10 +95,15 @@ public class SessionImpl implements Session, XAResource {
      * ----- javax.resource.cci.Connection -----
      */
 
-    public void close() throws ResourceException {
+    public void close() {
+        closeSession();
+        repository.closeSession(this);
+    }
+
+    protected void closeSession() {
+        live = false;
         // this closes the mapper and therefore the connection
         context.close();
-        live = false;
     }
 
     public Interaction createInteraction() throws ResourceException {
@@ -117,7 +131,15 @@ public class SessionImpl implements Session, XAResource {
     }
 
     public void start(Xid xid, int flags) throws XAException {
+        if (flags == TMNOFLAGS) {
+            context.processInvalidations();
+        }
         mapper.start(xid, flags);
+        inTransaction = true;
+    }
+
+    public void end(Xid xid, int flags) throws XAException {
+        mapper.end(xid, flags);
     }
 
     public int prepare(Xid xid) throws XAException {
@@ -125,15 +147,21 @@ public class SessionImpl implements Session, XAResource {
     }
 
     public void commit(Xid xid, boolean onePhase) throws XAException {
-        mapper.commit(xid, onePhase);
-    }
-
-    public void end(Xid xid, int flags) throws XAException {
-        mapper.end(xid, flags);
+        try {
+            mapper.commit(xid, onePhase);
+        } finally {
+            inTransaction = false;
+            context.notifyInvalidations();
+        }
     }
 
     public void rollback(Xid xid) throws XAException {
-        mapper.rollback(xid);
+        try {
+            mapper.rollback(xid);
+        } finally {
+            inTransaction = false;
+            context.notifyInvalidations();
+        }
     }
 
     public void forget(Xid xid) throws XAException {
@@ -156,6 +184,10 @@ public class SessionImpl implements Session, XAResource {
      * ----- Session -----
      */
 
+    public boolean isLive() {
+        return live;
+    }
+
     public Model getModel() {
         return model;
     }
@@ -165,9 +197,19 @@ public class SessionImpl implements Session, XAResource {
         return rootNode;
     }
 
+    public Binary getBinary(InputStream in) throws IOException {
+        return repository.getBinary(in);
+    }
+
     public void save() throws StorageException {
         checkLive();
         context.save();
+        if (!inTransaction) {
+            context.notifyInvalidations();
+            // as we don't have a way to know when the next non-transactional
+            // statement will start, process invalidations immediately
+            context.processInvalidations();
+        }
     }
 
     public Node getNodeById(Serializable id) throws StorageException {
@@ -178,15 +220,15 @@ public class SessionImpl implements Session, XAResource {
 
         // get main row
         SimpleFragment childMain = (SimpleFragment) context.get(
-                model.MAIN_TABLE_NAME, id, false);
+                model.mainFragmentName, id, false);
         if (childMain == null) {
             // HACK try old id
             id = context.getOldId(id);
             if (id == null) {
                 return null;
             }
-            childMain = (SimpleFragment) context.get(model.MAIN_TABLE_NAME, id,
-                    false);
+            childMain = (SimpleFragment) context.get(model.mainFragmentName,
+                    id, false);
             if (childMain == null) {
                 return null;
             }
@@ -194,17 +236,22 @@ public class SessionImpl implements Session, XAResource {
         String childTypeName = (String) childMain.get(model.MAIN_PRIMARY_TYPE_KEY);
         DocumentType childType = schemaManager.getDocumentType(childTypeName);
 
-        // find hier row
-        SimpleFragment childHier = (SimpleFragment) context.getChildById(id,
-                false);
-
-        // TODO get all non-cached fragments at once using join / union
-        FragmentsMap childFragments = new FragmentsMap();
-        for (Schema schema : childType.getSchemas()) {
-            String schemaName = schema.getName();
-            Fragment fragment = context.get(schemaName, id, true);
-            childFragments.put(schemaName, fragment);
+        // find hier row if separate
+        SimpleFragment childHier;
+        Serializable parentId;
+        String name;
+        if (model.separateMainTable) {
+            childHier = (SimpleFragment) context.getChildById(id, false);
+            parentId = childHier.get(model.HIER_PARENT_KEY);
+            name = childHier.getString(model.HIER_CHILD_NAME_KEY);
+        } else {
+            childHier = null;
+            parentId = childMain.get(model.HIER_PARENT_KEY);
+            name = childMain.getString(model.HIER_CHILD_NAME_KEY);
         }
+
+        FragmentsMap childFragments = getFragments(id, childTypeName, parentId,
+                name);
 
         FragmentGroup childGroup = new FragmentGroup(childMain, childHier,
                 childFragments);
@@ -212,14 +259,32 @@ public class SessionImpl implements Session, XAResource {
         return new Node(childType, this, context, childGroup);
     }
 
+    protected FragmentsMap getFragments(Serializable id, String typeName,
+            Serializable parentId, String name) throws StorageException {
+        // TODO get all non-cached fragments at once using join / union
+        FragmentsMap fragments = new FragmentsMap();
+        for (String fragmentName : model.getTypeSimpleFragments(typeName)) {
+            Fragment fragment = context.get(fragmentName, id, true);
+            fragments.put(fragmentName, fragment);
+        }
+        // check version too
+        if (parentId == null && name != null && name.length() > 0) {
+            // this is a version, fetch the version fragment too
+            String fragmentName = model.VERSION_TABLE_NAME;
+            Fragment fragment = context.get(fragmentName, id, true);
+            fragments.put(fragmentName, fragment);
+        }
+        return fragments;
+    }
+
     public Node getParentNode(Node node) throws StorageException {
         checkLive();
         if (node == null) {
             throw new IllegalArgumentException("Illegal null node");
         }
-        Serializable id = node.hierFragment.get(model.HIER_PARENT_KEY);
+        Serializable id = node.getHierFragment().get(model.HIER_PARENT_KEY);
         if (id == null) {
-            // root
+            // root or version
             return null;
         }
         return getNodeById(id);
@@ -286,23 +351,56 @@ public class SessionImpl implements Session, XAResource {
         }
         // XXX do namespace transformations
 
-        // use a temporary id that's guaranteed to not be in the db
-        Serializable id = "T" + repository.getNextTemporaryId();
+        Serializable id = context.generateNewId();
 
-        // create the underlying main row
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
-        map.put(model.MAIN_PRIMARY_TYPE_KEY, typeName);
+        // main info
+        Map<String, Serializable> mainMap = new HashMap<String, Serializable>();
+        mainMap.put(model.MAIN_PRIMARY_TYPE_KEY, typeName);
+
+        // hierarchy info
+        // TODO if folder is ordered, we have to compute the pos as max+1...
+        Map<String, Serializable> hierMap;
+        if (model.separateMainTable) {
+            hierMap = new HashMap<String, Serializable>();
+        } else {
+            hierMap = mainMap;
+        }
+        hierMap.put(model.HIER_PARENT_KEY, parent.mainFragment.getId());
+        hierMap.put(model.HIER_CHILD_POS_KEY, null);
+        hierMap.put(model.HIER_CHILD_NAME_KEY, name);
+        hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY,
+                Boolean.valueOf(complexProp));
+
         SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
-                model.MAIN_TABLE_NAME, id, map);
+                model.mainFragmentName, id, mainMap);
+
+        SimpleFragment hierRow;
+        if (model.separateMainTable) {
+            // TODO put it in a collection context instead
+            hierRow = (SimpleFragment) context.createSimpleFragment(
+                    model.hierFragmentName, id, hierMap);
+        } else {
+            hierRow = null;
+        }
 
         // find all schemas for this type and create fragment entities
         FragmentsMap fragments = new FragmentsMap();
-        DocumentType type = schemaManager.getDocumentType(typeName);
+        Type type = schemaManager.getDocumentType(typeName);
+        if (type == null) {
+            type = schemaManager.getSchema(typeName);
+            if (type == null && !model.isComplexType(typeName)) {
+                throw new StorageException("Unknown type: " + typeName);
+            }
+            // happens for any complex type not registered directly as a
+            // toplevel schema, like "content", or "Name" in unit tests.
+            // => no high level Type info for them
+        }
+
+        // XXX TODO XXX may not be a document type for complex props
+
         if (false) {
-            // TODO typeName could be a document type or a complex type
-            // XXX don't use schema, ask the model
-            for (Schema schema : type.getSchemas()) {
-                String schemaName = schema.getName();
+            // TODO if non-lazy creation of some fragments, create them here
+            for (String schemaName : model.getTypeSimpleFragments(typeName)) {
                 // TODO XXX fill in default values
                 // TODO fill data instead of null XXX or just have fragments
                 // empty
@@ -311,17 +409,6 @@ public class SessionImpl implements Session, XAResource {
                 fragments.put(schemaName, fragment);
             }
         }
-
-        // add to hierarchy table
-        // TODO if folder is ordered, we have to compute the pos as max+1...
-        map = new HashMap<String, Serializable>();
-        map.put(model.HIER_PARENT_KEY, parent.mainFragment.getId());
-        map.put(model.HIER_CHILD_NAME_KEY, name);
-        map.put(model.HIER_CHILD_POS_KEY, null);
-        map.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.valueOf(complexProp));
-        SimpleFragment hierRow = (SimpleFragment) context.createSimpleFragment(
-                model.HIER_TABLE_NAME, id, map);
-        // TODO put it in a collection context instead
 
         FragmentGroup rowGroup = new FragmentGroup(mainRow, hierRow, fragments);
 
@@ -357,18 +444,19 @@ public class SessionImpl implements Session, XAResource {
         Serializable childId = childHier.getId();
 
         // get main row
-        SimpleFragment childMain = (SimpleFragment) context.get(
-                model.MAIN_TABLE_NAME, childId, false);
+        SimpleFragment childMain;
+        if (model.separateMainTable) {
+            childMain = (SimpleFragment) context.get(model.mainFragmentName,
+                    childId, false);
+        } else {
+            childMain = childHier;
+            childHier = null;
+        }
         String childTypeName = (String) childMain.get(model.MAIN_PRIMARY_TYPE_KEY);
         DocumentType childType = schemaManager.getDocumentType(childTypeName);
 
-        // TODO get all non-cached fragments at once using join / union
-        FragmentsMap childFragments = new FragmentsMap();
-        for (Schema schema : childType.getSchemas()) {
-            String schemaName = schema.getName();
-            Fragment fragment = context.get(schemaName, childId, true);
-            childFragments.put(schemaName, fragment);
-        }
+        FragmentsMap childFragments = getFragments(childId, childTypeName,
+                parentId, name);
 
         FragmentGroup childGroup = new FragmentGroup(childMain, childHier,
                 childFragments);
@@ -383,36 +471,81 @@ public class SessionImpl implements Session, XAResource {
         return context.getChildren(parent.getId(), complexProp).size() > 0;
     }
 
-    public List<Node> getChildren(Node parent, boolean complexProp)
+    public List<Node> getChildren(Node parent, boolean complexProp, String name)
             throws StorageException {
-        assert !complexProp; // no use case for all complex props yet
         checkLive();
         Collection<SimpleFragment> fragments = context.getChildren(
                 parent.getId(), complexProp);
-        List<Node> nodes = new ArrayList<Node>(fragments.size());
+        List<Node> nodes;
+        if (complexProp) {
+            nodes = new LinkedList<Node>();
+        } else {
+            nodes = new ArrayList<Node>(fragments.size());
+        }
         for (SimpleFragment fragment : fragments) {
-            // TODO what if node is null?
-            nodes.add(getNodeById(fragment.getId()));
+            if (complexProp &&
+                    !name.equals(fragment.getString(model.HIER_CHILD_NAME_KEY))) {
+                continue;
+            }
+            Node node = getNodeById(fragment.getId());
+            if (node == null) {
+                // TODO what if node is null?
+                throw new RuntimeException("XXX");
+            }
+            nodes.add(node);
         }
         return nodes;
     }
 
-    // TODO XXX remove recursively the children
+    public Node move(Node source, Node parent, String name)
+            throws StorageException {
+        checkLive();
+        context.save();
+        context.move(source, parent.getId(), name);
+        return source;
+    }
+
+    public Node copy(Node source, Node parent, String name)
+            throws StorageException {
+        checkLive();
+        context.save();
+        Serializable id = context.copy(source, parent.getId(), name);
+        return getNodeById(id);
+    }
+
     public void removeNode(Node node) throws StorageException {
         checkLive();
         node.remove();
+        // TODO XXX remove recursively the children
+    }
+
+    public Node checkIn(Node node, String label, String description)
+            throws StorageException {
+        checkLive();
+        context.save();
+        Serializable id = context.checkIn(node, label, description);
+        return getNodeById(id);
+    }
+
+    public void checkOut(Node node) throws StorageException {
+        checkLive();
+        context.checkOut(node);
+    }
+
+    public Node getVersionByLabel(Node node, String label)
+            throws StorageException {
+        checkLive();
+        Serializable id = context.getVersionByLabel(node.getId(), label);
+        return getNodeById(id);
     }
 
     /*
      * ----- -----
      */
 
-    public String getUserID() {
-        return credentials.getUserName();
-    }
-
-    public boolean isLive() {
-        return live;
+    // returns context or null if missing
+    protected Context getContext(String tableName) {
+        return context.getContextOrNull(tableName);
     }
 
     private void checkLive() throws IllegalStateException {
@@ -422,49 +555,71 @@ public class SessionImpl implements Session, XAResource {
     }
 
     private void computeRootNode() throws StorageException {
-        SimpleFragment repoInfo = (SimpleFragment) context.get(
-                model.REPOINFO_TABLE_NAME, Long.valueOf(0), false);
-        if (repoInfo == null) {
+        Long repositoryId = Long.valueOf(0L); // always 0 for now
+        Serializable rootId = context.getRootId(repositoryId);
+        if (rootId == null) {
             log.debug("Creating root");
             rootNode = addRootNode();
+            addRootACP();
             save();
-
             // record information about the root id
-            Map<String, Serializable> map = new HashMap<String, Serializable>();
-            map.put(model.REPOINFO_ROOTID_KEY, rootNode.getId());
-            repoInfo = (SimpleFragment) context.createSimpleFragment(
-                    model.REPOINFO_TABLE_NAME, Long.valueOf(0L), map);
-            save();
+            context.setRootId(repositoryId, rootNode.getId());
         } else {
-            Serializable rootId = repoInfo.get(model.REPOINFO_ROOTID_KEY);
             rootNode = getNodeById(rootId);
         }
     }
 
     // TODO factor with addChildNode
     private Node addRootNode() throws StorageException {
-        // use a temporary id that's guaranteed to not be in the db
-        Serializable id = "T" + repository.getNextTemporaryId();
+        Serializable id = context.generateNewId();
 
-        // create the underlying main row
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
-        map.put(model.MAIN_PRIMARY_TYPE_KEY, model.ROOT_TYPE);
+        // main info
+        Map<String, Serializable> mainMap = new HashMap<String, Serializable>();
+        mainMap.put(model.MAIN_PRIMARY_TYPE_KEY, model.ROOT_TYPE);
+
+        // hierarchy info
+        Map<String, Serializable> hierMap;
+        if (model.separateMainTable) {
+            hierMap = new HashMap<String, Serializable>();
+        } else {
+            hierMap = mainMap;
+        }
+        hierMap.put(model.HIER_PARENT_KEY, null);
+        hierMap.put(model.HIER_CHILD_POS_KEY, null);
+        hierMap.put(model.HIER_CHILD_NAME_KEY, "");
+        hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.FALSE);
+
         SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
-                model.MAIN_TABLE_NAME, id, map);
+                model.mainFragmentName, id, mainMap);
 
-        // add to hierarchy table
-        map = new HashMap<String, Serializable>();
-        map.put(model.HIER_PARENT_KEY, null);
-        map.put(model.HIER_CHILD_POS_KEY, null);
-        map.put(model.HIER_CHILD_NAME_KEY, "");
-        map.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.FALSE);
-        SimpleFragment hierRow = (SimpleFragment) context.createSimpleFragment(
-                model.HIER_TABLE_NAME, id, map);
+        SimpleFragment hierRow;
+        if (model.separateMainTable) {
+            hierRow = (SimpleFragment) context.createSimpleFragment(
+                    model.hierFragmentName, id, hierMap);
+        } else {
+            hierRow = null;
+        }
 
         DocumentType type = schemaManager.getDocumentType(model.ROOT_TYPE);
         FragmentGroup rowGroup = new FragmentGroup(mainRow, hierRow, null);
 
         return new Node(type, this, context, rowGroup);
+    }
+
+    private void addRootACP() throws StorageException {
+        ACLRow[] aclrows = new ACLRow[4];
+        // TODO put groups in their proper place. like that now for consistency.
+        aclrows[0] = new ACLRow(0, ACL.LOCAL_ACL, 0, true,
+                SecurityConstants.EVERYTHING, SecurityConstants.ADMINISTRATORS,
+                null);
+        aclrows[1] = new ACLRow(0, ACL.LOCAL_ACL, 1, true,
+                SecurityConstants.EVERYTHING, SecurityConstants.ADMINISTRATOR,
+                null);
+        aclrows[2] = new ACLRow(0, ACL.LOCAL_ACL, 2, true,
+                SecurityConstants.READ, SecurityConstants.MEMBERS, null);
+        aclrows[3] = new ACLRow(0, ACL.LOCAL_ACL, 3, true,
+                SecurityConstants.VERSION, SecurityConstants.MEMBERS, null);
+        rootNode.setCollectionProperty(Model.ACL_PROP, aclrows);
     }
 
     // public Node newNodeInstance() needed ?
@@ -477,20 +632,6 @@ public class SessionImpl implements Session, XAResource {
     }
 
     public boolean hasPendingChanges() throws StorageException {
-        checkLive();
-        // TODO Auto-generated method stub
-        throw new RuntimeException("Not implemented");
-    }
-
-    public String move(String srcAbsPath, String destAbsPath)
-            throws StorageException {
-        checkLive();
-        // TODO Auto-generated method stub
-        throw new RuntimeException("Not implemented");
-    }
-
-    public String copy(Node sourceNode, String parentNode)
-            throws StorageException {
         checkLive();
         // TODO Auto-generated method stub
         throw new RuntimeException("Not implemented");

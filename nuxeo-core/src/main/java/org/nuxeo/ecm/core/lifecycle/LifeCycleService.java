@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,8 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- * $Id:LifeCycleService.java 4171 2006-10-15 20:05:21Z janguenot $
+ *     Julien Anguenot
+ *     Florent Guillaume
  */
 
 package org.nuxeo.ecm.core.lifecycle;
@@ -28,8 +28,8 @@ import org.nuxeo.ecm.core.model.Document;
  *
  * @see org.nuxeo.ecm.core.lifecycle.impl.LifeCycleServiceImpl
  *
- * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
+ * @author Julien Anguenot
+ * @author Florent Guillaume
  */
 public interface LifeCycleService {
 
@@ -92,19 +92,11 @@ public interface LifeCycleService {
             throws LifeCycleException;
 
     /**
-     * Returns the life cycle managers.
+     * Returns the life cycle manager.
      *
-     * @return a LifeCycleManager collection
+     * @return a LifeCycleManager
      */
-    Collection<LifeCycleManager> getLifeCycleManagers();
-
-    /**
-     * Returns the life cycle manager given its name.
-     *
-     * @param name the life cycle manager's name
-     * @return a LifeCycleManager instance.
-     */
-    LifeCycleManager getLifeCycleManagerByName(String name);
+    LifeCycleManager getLifeCycleManager();
 
     /**
      * Returns a life cycle given its name.
@@ -150,15 +142,6 @@ public interface LifeCycleService {
      * @param typesMapping a mapping from types to life cycle names
      */
     void setTypesMapping(Map<String, String> typesMapping);
-
-    /**
-     * Sets the mapping from life cycle names to life cycle instances.
-     *
-     * @param lifeCycleManagers
-     *            a mapping from life cycle names to life cycle instances
-     */
-    void setLifeCycleManagers(
-            Map<String, LifeCycleManager> lifeCycleManagers);
 
     /**
      * Sets the mapping from life cycle names to life cycle instances.

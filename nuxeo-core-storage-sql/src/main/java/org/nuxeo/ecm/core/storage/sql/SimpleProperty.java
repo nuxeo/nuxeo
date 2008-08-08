@@ -47,11 +47,11 @@ public class SimpleProperty extends BaseProperty {
 
     // ----- getters -----
 
-    public Serializable getValue() {
+    public Serializable getValue() throws StorageException {
         return row.get(key);
     }
 
-    public String getString() {
+    public String getString() throws StorageException {
         switch (type) {
         case STRING:
             return (String) row.get(key);
@@ -60,11 +60,20 @@ public class SimpleProperty extends BaseProperty {
         }
     }
 
+    public Long getLong() throws StorageException {
+        switch (type) {
+        case LONG:
+            return (Long) row.get(key);
+        default:
+            throw new RuntimeException("Not a Long property: " + type);
+        }
+    }
+
     // ----- setters -----
 
     public void setValue(Serializable value) throws StorageException {
         checkWritable();
-        row.put(key, normalize(value));
+        row.put(key, type.normalize(value));
         // mark fragment dirty!
     }
 

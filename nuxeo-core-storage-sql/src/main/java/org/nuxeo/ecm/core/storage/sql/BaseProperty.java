@@ -17,11 +17,6 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -56,41 +51,6 @@ public abstract class BaseProperty {
 
     public String getName() {
         return name;
-    }
-
-    /**
-     * Normalize a value to its storage format.
-     * <p>
-     * Note: date-based values are normalized to a java {@link Calendar}.
-     */
-    public Serializable normalize(Serializable value) throws StorageException {
-        if (value == null) {
-            return null;
-        }
-        switch (type.isArray() ? type.getArrayBaseType() : type) {
-        case STRING:
-            if (value instanceof String) {
-                return value;
-            }
-            throw new StorageException("Value is not a String: " + value);
-        case BOOLEAN:
-            if (value instanceof Boolean) {
-                return value;
-            }
-            throw new StorageException("Value is not a Boolean: " + value);
-        case DATETIME:
-            if (value instanceof Calendar) {
-                return value;
-            }
-            if (value instanceof Date) {
-                Calendar cal = new GregorianCalendar(); // XXX timezone
-                cal.setTime((Date) value);
-                return cal;
-            }
-            throw new StorageException("Value is not a Calendar: " + value);
-        default:
-            throw new UnsupportedOperationException(type.toString());
-        }
     }
 
     // ----- modification -----
