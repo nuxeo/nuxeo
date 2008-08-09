@@ -27,7 +27,9 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.DocsQueryProviderDef;
+import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.operation.Operation;
+import org.nuxeo.ecm.core.api.operation.ProgressMonitor;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecuritySummaryEntry;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -36,7 +38,6 @@ import org.nuxeo.ecm.core.schema.DocumentType;
  *
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public interface CoreSession {
 
@@ -915,7 +916,6 @@ public interface CoreSession {
      * Checks out a versioned document.
      *
      * @param docRef the ref to the document
-     * @return the next displayed page
      * @throws ClientException
      */
     void checkOut(DocumentRef docRef) throws ClientException;
@@ -925,7 +925,6 @@ public interface CoreSession {
      *
      * @param docRef the ref to the document
      * @param version the version descriptor
-     * @return the next displayed page
      * @throws ClientException
      */
     void checkIn(DocumentRef docRef, VersionModel version)
@@ -1225,9 +1224,7 @@ public interface CoreSession {
     /**
      * Publishes the document in a section overwriting any existing proxy to the
      * same document. This is simmilar to publishDocument(docToPublish, section,
-     * true).
-     * <p>
-     * If the document is already a proxy, then it's simply copied.
+     * true);
      *
      * @param docToPublish
      * @param section
@@ -1262,14 +1259,7 @@ public interface CoreSession {
     VersionModel isPublished(DocumentModel document, DocumentModel section);
 
     /**
-     * Gets all proxies to document docRef. If folderRef is not null, the search
-     * will be limited to its children.
-     * <p>
-     * If the document is a version, then only proxies to that version will be
-     * looked up.
-     * <p>
-     * If the document is a proxy, then all similar proxies (pointing to any
-     * version of the same base document) are retrieved.
+     * Gets all proxies to document docRef inside folder folderRef.
      *
      * @param docRef the target document for the proxies
      * @param folderRef the folder where proxies are located
@@ -1390,6 +1380,53 @@ public interface CoreSession {
      * @return the command result
      * @throws ClientException if any error occurs
      */
-    public <T> T run(Operation<T> cmd) throws ClientException;
+    <T> T run(Operation<T> cmd) throws ClientException;
+
+    /**
+     * Run a command and notify the given monitor about the execution progress
+     *
+     * @param <T>
+     * @param op
+     * @param monitor
+     * @return
+     * @throws ClientException
+     */
+    <T> T run(Operation<T> op, ProgressMonitor monitor) throws ClientException;
+
+    /**
+     * Internal method - it is used internally by
+     * {@link DocumentModel#refresh()}
+     * <p>
+     * Get fresh data from a document given a description of what kind of data
+     * should be refecthed.
+     * <p>
+     * The refresh information is specified using a bit mask. See
+     * {@link DocumentModel} for all accepted flags.
+     * <p>
+     * When the flag {@link DocumentModel#REFRESH_CONTENT_IF_LOADED} is
+     * specified a third argument must be passed representing the schema names
+     * for document parts to refresh. This argument is ignored if the flag is
+     * not specified or no schema names are provided
+     * <p>
+     * The result is an array defined as follows:
+     * <ul>
+     * <li> on index 0 - the prefetch data
+     * <li> on index 1 - the lock state info
+     * <li> on index 2 - the life cycle state info
+     * <li> on index 3 - the life cycle policy
+     * <li> on index 4 - hte ACP
+     * <li> on index 5 - an array of {@link DocumentPart} objects
+     * </ul>
+     *
+     * @param ref the document reference
+     * @param refreshFlags refresh flags as defined in {@link DocumentModel}
+     * @param schemas the schema names if a partial content refresh is required
+     * @return an array containing the refreshed data - this array will always
+     *         have 5 elements.
+     *
+     * @throws ClientException
+     */
+    Object[] refreshDocument(DocumentRef ref, int refreshFlags, String[] schemas)
+            throws ClientException;
 
 }

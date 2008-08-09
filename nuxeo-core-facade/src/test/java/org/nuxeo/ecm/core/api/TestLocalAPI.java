@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
@@ -50,8 +48,6 @@ import org.nuxeo.runtime.RuntimeService;
 public class TestLocalAPI extends TestAPI {
 
     protected RuntimeService runtime;
-
-    private static final Log log = LogFactory.getLog(TestLocalAPI.class);
 
     protected void doDeployments() throws Exception {
         deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
@@ -307,7 +303,6 @@ public class TestLocalAPI extends TestAPI {
         assertEquals("at2-modif", dm.getValue("attachments/item[1]/name"));
         dm.setValue("attachments/item[1]/name", "at2-modif2");
         assertEquals("at2-modif2", dm.getValue("attachments/item[1]/name"));
-
     }
 
     public void testGetChildrenRefs() throws Exception {
@@ -336,7 +331,6 @@ public class TestLocalAPI extends TestAPI {
         return bytes;
     }
 
-    @SuppressWarnings("unchecked")
     public void testLazyBlob() throws Exception {
         DocumentModel root = getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -357,7 +351,6 @@ public class TestLocalAPI extends TestAPI {
 
         blob = (Blob) doc.getPart("file").get("content").getValue();
         assertTrue(Arrays.equals(bytes, blob.getByteArray()));
-
     }
 
     public void testProxy() throws Exception {
@@ -504,8 +497,6 @@ public class TestLocalAPI extends TestAPI {
                 fail("should have raised a security exception");
             } catch (DocumentSecurityException e) {
             }
-
-
             joeContributorSession.save();
 
             // local manager can read, write, create and remove
@@ -540,7 +531,7 @@ public class TestLocalAPI extends TestAPI {
         }
     }
 
-    protected CoreSession openSession(String userName) throws ClientException {
+    protected static CoreSession openSession(String userName) throws ClientException {
         Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("username", userName);
         ctx.put("principal", new UserPrincipal(userName));

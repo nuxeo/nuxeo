@@ -66,7 +66,7 @@ public class TestSession extends RepositoryTestCase {
         assertNotNull(root.getSession());
     }
 
-    public void testGetXAResource() throws Exception {
+    public void testGetXAResource() {
         assertNotNull(session.getXAResource());
     }
 

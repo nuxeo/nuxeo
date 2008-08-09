@@ -25,6 +25,7 @@ package org.nuxeo.ecm.core.api.ejb;
  * Next step in refactoring: we need to load these from a configuration file.
  *
  * @author Razvan Caraghin
+ * @deprecated remove in 5.2
  */
 @Deprecated
 public interface JNDILocationsLoader {
