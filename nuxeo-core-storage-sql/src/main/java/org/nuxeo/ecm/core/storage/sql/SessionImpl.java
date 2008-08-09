@@ -41,11 +41,13 @@ import javax.transaction.xa.Xid;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocument;
 
 /**
  * The session is the main high level access point to data from the underlying
@@ -338,15 +340,6 @@ public class SessionImpl implements Session, XAResource {
         return node;
     }
 
-// public Node addProxy(Node parent, String name, Serializable targetId,
-// Serializable versionableId) throws StorageException {
-// Node proxy = addChildNode(parent, name, Model.PROXY_TYPE, false);
-// proxy.setSingleProperty(Model.PROXY_TARGET_PROP, versionNode.getId());
-// proxy.setSingleProperty(Model.PROXY_VERSIONABLE_PROP,
-// versionableNode.getId());
-//
-// }
-//
     public Node addChildNode(Node parent, String name, String typeName,
             boolean complexProp) throws StorageException {
         checkLive();
@@ -405,6 +398,14 @@ public class SessionImpl implements Session, XAResource {
         FragmentGroup rowGroup = new FragmentGroup(mainRow, hierRow, fragments);
 
         return new Node(this, context, rowGroup);
+    }
+
+    public Node addProxy(Serializable targetId, Serializable versionableId,
+            Node parent, String name) throws StorageException {
+        Node proxy = addChildNode(parent, name, Model.PROXY_TYPE, false);
+        proxy.setSingleProperty(model.PROXY_TARGET_PROP, targetId);
+        proxy.setSingleProperty(model.PROXY_VERSIONABLE_PROP, versionableId);
+        return proxy;
     }
 
     public boolean hasChildNode(Node parent, String name, boolean complexProp)
@@ -543,11 +544,11 @@ public class SessionImpl implements Session, XAResource {
         return getNodeById(id);
     }
 
-    public Collection<Node> getVersions(Node versionableNode)
+    public List<Node> getVersions(Node versionableNode)
             throws StorageException {
         checkLive();
         context.save();
-        Collection<SimpleFragment> fragments = context.getVersions(versionableNode.getId());
+        List<SimpleFragment> fragments = context.getVersions(versionableNode.getId());
         List<Node> nodes = new ArrayList<Node>(fragments.size());
         for (SimpleFragment fragment : fragments) {
             nodes.add(getNodeById(fragment.getId()));
@@ -555,11 +556,11 @@ public class SessionImpl implements Session, XAResource {
         return nodes;
     }
 
-    public Collection<Node> getProxies(Node document, Node parent)
+    public List<Node> getProxies(Node document, Node parent)
             throws StorageException {
         checkLive();
         context.save();
-        Collection<SimpleFragment> fragments = context.getProxies(document,
+        List<SimpleFragment> fragments = context.getProxies(document,
                 parent);
         List<Node> nodes = new ArrayList<Node>(fragments.size());
         for (SimpleFragment fragment : fragments) {

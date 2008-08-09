@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.PropertyContainer;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
-import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.sql.Node;
 
 /**
@@ -49,7 +48,7 @@ public class SQLComplexProperty extends SQLBaseProperty implements
 
     private static final Log log = LogFactory.getLog(SQLComplexProperty.class);
 
-    protected final Node node;
+    private final Node node;
 
     protected final SQLSession session;
 
@@ -61,6 +60,22 @@ public class SQLComplexProperty extends SQLBaseProperty implements
         super(type, readonly);
         this.node = node;
         this.session = session;
+    }
+
+    /**
+     * Returns the node with info about the object's data.
+     */
+    protected Node getDataNode() {
+        return node;
+    }
+
+    /**
+     * Returns the node with info about the hierarchy location.
+     * <p>
+     * It's only different from the {@link #getDataNode} for proxies.
+     */
+    protected Node getHierarchyNode() {
+        return node;
     }
 
     /*

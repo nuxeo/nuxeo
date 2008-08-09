@@ -238,6 +238,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
             // remove anonymous Everything privileges on the root
             // so that it not influence test results
             removePermissionToAnonymous();
+            anonSession.save(); // process invalidations
 
             try {
                 DocumentModel folder2 = new DocumentModelImpl(
@@ -249,6 +250,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
             }
 
             setPermissionToAnonymous(SecurityConstants.EVERYTHING);
+            anonSession.save(); // process invalidations
 
             root = anonSession.getRootDocument();
 
@@ -275,6 +277,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
             // remove anonymous Everything privileges on the root
             // so that it not influence test results
             removePermissionToAnonymous();
+            anonSession.save(); // process invalidations
 
             setPermissionToEveryone(SecurityConstants.WRITE,
                     SecurityConstants.REMOVE, SecurityConstants.ADD_CHILDREN,
@@ -289,6 +292,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
 
             removePermissionToEveryone();
             setPermissionToEveryone(SecurityConstants.REMOVE);
+            anonSession.save(); // process invalidations
 
             try {
                 folder3 = new DocumentModelImpl(folder.getPathAsString(),
@@ -2846,7 +2850,7 @@ public class TestSQLRepository extends SQLRepositoryTestCase {
         assertEquals(a2_folder, tree.get(5).getDocument());
         assertEquals(a1_folder, tree.get(6).getDocument());
 
-        session.cancel();
+        // session.cancel();
     }
 
     // ------------------------------------

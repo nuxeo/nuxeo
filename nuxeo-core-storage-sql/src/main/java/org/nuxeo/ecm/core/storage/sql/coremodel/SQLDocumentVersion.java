@@ -287,12 +287,12 @@ public class SQLDocumentVersion extends SQLDocument implements DocumentVersion {
     }
 
     private boolean equals(SQLDocumentVersion other) {
-        return node.getId() == other.node.getId();
+        return getHierarchyNode().getId() == other.getHierarchyNode().getId();
     }
 
     @Override
     public int hashCode() {
-        return node.getId().hashCode();
+        return getHierarchyNode().getId().hashCode();
     }
 
 }

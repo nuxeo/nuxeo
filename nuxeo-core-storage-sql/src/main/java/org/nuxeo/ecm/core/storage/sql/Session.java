@@ -176,6 +176,19 @@ public interface Session extends Connection {
             boolean complexProp) throws StorageException;
 
     /**
+     * Creates a proxy for a version node.
+     *
+     * @param targetId the target id
+     * @param versionableId the versionable id
+     * @param parent the parent to which the proxy is added
+     * @param name the proxy name
+     * @return the new proxy node
+     * @throws StorageException
+     */
+    Node addProxy(Serializable targetId, Serializable versionableId,
+            Node parent, String name) throws StorageException;
+
+    /**
      * Removes a node from the storage.
      *
      * @param node the node to remove
@@ -292,7 +305,7 @@ public interface Session extends Connection {
      * @return the list of proxies
      * @throws StorageException
      */
-    Collection<Node> getProxies(Node document, Node parent)
+    List<Node> getProxies(Node document, Node parent)
             throws StorageException;
 
 }

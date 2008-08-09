@@ -485,20 +485,14 @@ public class Mapper {
     }
 
     /**
-     * Generic method to fetch one row for a select of fragments with fixed
-     * criteria given as a map.
-     *
-     * @param select the select information
-     * @param whereMap the criteria
-     * @param context the fragment context
-     * @return the fragment, or {@code null} if not found
-     * @throws StorageException
+     * Fetch one row for a select of fragments with fixed criteria.
      */
     protected SimpleFragment getSelectRow(SQLInfoSelect select,
-            Map<String, Serializable> whereMap, Context context)
+            Map<String, Serializable> criteriaMap, Context context)
             throws StorageException {
-        List<SimpleFragment> rows = getSelectRows(select, whereMap, true,
-                context);
+        Map<String, Serializable> joinMap = Collections.emptyMap();
+        List<SimpleFragment> rows = getSelectRows(select, criteriaMap, joinMap,
+                true, context);
         if (rows == null) {
             return null;
         } else {
@@ -507,19 +501,24 @@ public class Mapper {
     }
 
     /**
-     * Generic method to fetch the rows for a select of fragments with fixed
-     * criteria given as a map.
-     *
-     * @param select the select information
-     * @param whereMap the criteria
-     * @param context the fragment context
-     * @return the list of fragments
-     * @throws StorageException
+     * Fetch the rows for a select of fragments with fixed criteria.
      */
     protected List<SimpleFragment> getSelectRows(SQLInfoSelect select,
-            Map<String, Serializable> whereMap, Context context)
+            Map<String, Serializable> criteriaMap, Context context)
             throws StorageException {
-        return getSelectRows(select, whereMap, false, context);
+        Map<String, Serializable> joinMap = Collections.emptyMap();
+        return getSelectRows(select, criteriaMap, joinMap, false, context);
+    }
+
+    /**
+     * Fetch the rows for a JOINed select of fragments with fixed criteria and a
+     * joined condition.
+     */
+    protected List<SimpleFragment> getSelectRows(SQLInfoSelect select,
+            Map<String, Serializable> criteriaMap,
+            Map<String, Serializable> joinMap, Context context)
+            throws StorageException {
+        return getSelectRows(select, criteriaMap, joinMap, false, context);
     }
 
     /**
@@ -527,7 +526,8 @@ public class Mapper {
      * map.
      */
     protected List<SimpleFragment> getSelectRows(SQLInfoSelect select,
-            Map<String, Serializable> whereMap, boolean limitToOne,
+            Map<String, Serializable> criteriaMap,
+            Map<String, Serializable> joinMap, boolean limitToOne,
             Context context) throws StorageException {
         PreparedStatement ps = null;
         try {
@@ -544,8 +544,10 @@ public class Mapper {
             for (Column column : select.whereColumns) {
                 String key = column.getKey();
                 Serializable v;
-                if (whereMap.containsKey(key)) {
-                    v = whereMap.get(key);
+                if (criteriaMap.containsKey(key)) {
+                    v = criteriaMap.get(key);
+                } else if (joinMap.containsKey(key)) {
+                    v = joinMap.get(key);
                 } else {
                     throw new AssertionError(key);
                 }
@@ -585,7 +587,7 @@ public class Mapper {
                 }
                 SimpleFragment fragment = (SimpleFragment) context.getIfPresent(id);
                 if (fragment == null) {
-                    map.putAll(whereMap);
+                    map.putAll(criteriaMap);
                     fragment = new SimpleFragment(id, State.PRISTINE, context,
                             map);
                     if (log.isDebugEnabled()) {
@@ -799,11 +801,11 @@ public class Mapper {
             throw new IllegalArgumentException("Illegal null parentId");
         }
         SQLInfoSelect select = sqlInfo.selectChildrenByIsProperty;
-        Map<String, Serializable> whereMap = new HashMap<String, Serializable>();
-        whereMap.put(model.HIER_PARENT_KEY, parentId);
-        whereMap.put(model.HIER_CHILD_ISPROPERTY_KEY,
+        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
+        criteriaMap.put(model.HIER_PARENT_KEY, parentId);
+        criteriaMap.put(model.HIER_CHILD_ISPROPERTY_KEY,
                 Boolean.valueOf(complexProp));
-        return getSelectRows(select, whereMap, context);
+        return getSelectRows(select, criteriaMap, context);
     }
 
     /**
@@ -1181,10 +1183,10 @@ public class Mapper {
     public Serializable getVersionByLabel(Serializable versionableId,
             String label, Context context) throws StorageException {
         SQLInfoSelect select = sqlInfo.selectVersionsByLabel;
-        Map<String, Serializable> whereMap = new HashMap<String, Serializable>();
-        whereMap.put(model.VERSION_VERSIONABLE_KEY, versionableId);
-        whereMap.put(model.VERSION_LABEL_KEY, label);
-        List<SimpleFragment> selectRows = getSelectRows(select, whereMap,
+        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
+        criteriaMap.put(model.VERSION_VERSIONABLE_KEY, versionableId);
+        criteriaMap.put(model.VERSION_LABEL_KEY, label);
+        List<SimpleFragment> selectRows = getSelectRows(select, criteriaMap,
                 context);
         if (selectRows.isEmpty()) {
             return null;
@@ -1205,9 +1207,9 @@ public class Mapper {
             Context context) throws StorageException {
 
         SQLInfoSelect select = sqlInfo.selectVersionsByVersionableLastFirst;
-        Map<String, Serializable> whereMap = new HashMap<String, Serializable>();
-        whereMap.put(model.VERSION_VERSIONABLE_KEY, versionableId);
-        return getSelectRow(select, whereMap, context);
+        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
+        criteriaMap.put(model.VERSION_VERSIONABLE_KEY, versionableId);
+        return getSelectRow(select, criteriaMap, context);
     }
 
     /**
@@ -1219,12 +1221,12 @@ public class Mapper {
      * @return the list of version fragments
      * @throws StorageException
      */
-    public Collection<SimpleFragment> getVersions(Serializable versionableId,
+    public List<SimpleFragment> getVersions(Serializable versionableId,
             Context context) throws StorageException {
         SQLInfoSelect select = sqlInfo.selectVersionsByVersionable;
-        Map<String, Serializable> whereMap = new HashMap<String, Serializable>();
-        whereMap.put(model.VERSION_VERSIONABLE_KEY, versionableId);
-        return getSelectRows(select, whereMap, context);
+        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
+        criteriaMap.put(model.VERSION_VERSIONABLE_KEY, versionableId);
+        return getSelectRows(select, criteriaMap, context);
     }
 
     /**
@@ -1238,22 +1240,22 @@ public class Mapper {
      * @return the list of proxies fragments
      * @throws StorageException
      */
-    public Collection<SimpleFragment> getProxies(Serializable searchId,
+    public List<SimpleFragment> getProxies(Serializable searchId,
             boolean byTarget, Serializable parentId, Context context)
             throws StorageException {
-        Map<String, Serializable> whereMap = new HashMap<String, Serializable>();
-        whereMap.put(byTarget ? model.PROXY_TARGET_KEY
+        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
+        criteriaMap.put(byTarget ? model.PROXY_TARGET_KEY
                 : model.PROXY_VERSIONABLE_KEY, searchId);
         if (parentId == null) {
             SQLInfoSelect select = byTarget ? sqlInfo.selectProxiesByTarget
                     : sqlInfo.selectProxiesByVersionable;
-            return getSelectRows(select, whereMap, context);
+            return getSelectRows(select, criteriaMap, context);
         } else {
             SQLInfoSelect select = byTarget ? sqlInfo.selectProxiesByTargetAndParent
                     : sqlInfo.selectProxiesByVersionableAndParent;
-            Map<String, Serializable> joinedMap = new HashMap<String, Serializable>();
-            joinedMap.put(model.HIER_PARENT_KEY, parentId);
-            return getSelectRows(select, whereMap, joinedMap, context);
+            Map<String, Serializable> joinMap = new HashMap<String, Serializable>();
+            joinMap.put(model.HIER_PARENT_KEY, parentId);
+            return getSelectRows(select, criteriaMap, joinMap, context);
         }
     }
 

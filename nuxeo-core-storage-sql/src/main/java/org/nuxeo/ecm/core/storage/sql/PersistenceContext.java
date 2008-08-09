@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -414,7 +415,7 @@ public class PersistenceContext {
      * @return the list of version fragments
      * @throws StorageException
      */
-    public Collection<SimpleFragment> getVersions(Serializable versionableId)
+    public List<SimpleFragment> getVersions(Serializable versionableId)
             throws StorageException {
         Context versionsContext = getContext(model.VERSION_TABLE_NAME);
         return mapper.getVersions(versionableId, versionsContext);
@@ -435,7 +436,7 @@ public class PersistenceContext {
      * @return the list of proxies fragments
      * @throws StorageException
      */
-    public Collection<SimpleFragment> getProxies(Node document, Node parent)
+    public List<SimpleFragment> getProxies(Node document, Node parent)
             throws StorageException {
         /*
          * Find the versionable id.

@@ -23,9 +23,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocument;
 
 /**
  * @author Florent Guillaume
@@ -405,8 +407,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // assertEquals(Long.valueOf(0), version.getSimpleProperty(
         // "ecm:minorVersion").getLong());
         assertNotNull(version.getSimpleProperty("ecm:versionCreated").getValue());
-        assertEquals("foolab", version.getSimpleProperty("ecm:versionLabel").getValue());
-        assertEquals("bardesc", version.getSimpleProperty("ecm:versionDescription").getValue());
+        assertEquals("foolab",
+                version.getSimpleProperty("ecm:versionLabel").getValue());
+        assertEquals("bardesc", version.getSimpleProperty(
+                "ecm:versionDescription").getValue());
 
         /*
          * Check out.
@@ -416,5 +420,60 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 nodea.getSimpleProperty("ecm:isCheckedIn").getValue());
         assertEquals(version.getId(),
                 nodea.getSimpleProperty("ecm:baseVersion").getString());
+    }
+
+    public void testProxies() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node foldera = session.addChildNode(root, "foldera", "TestDoc", false);
+        Node nodea = session.addChildNode(foldera, "nodea", "TestDoc", false);
+        Node folderb = session.addChildNode(root, "folderb", "TestDoc", false);
+
+        /*
+         * Check in.
+         */
+        Node version = session.checkIn(nodea, "v1", "");
+        assertNotNull(version);
+        session.checkOut(nodea);
+        Node version2 = session.checkIn(nodea, "v2", "");
+        /*
+         * Make proxy (by hand).
+         */
+        Node proxy = session.addProxy(version.getId(), nodea.getId(), folderb, "proxy1");
+        session.save();
+        assertNotSame(version.getId(), proxy.getId());
+        assertNotSame(nodea.getId(), proxy.getId());
+        assertEquals("/folderb/proxy1", session.getPath(proxy));
+        assertEquals(folderb.getId(), session.getParentNode(proxy).getId());
+        /*
+         * Searches.
+         */
+        // from versionable
+        List<Node> proxies = session.getProxies(nodea, null);
+        assertEquals(1, proxies.size());
+        assertEquals(proxy, proxies.get(0));
+        proxies = session.getProxies(nodea, folderb);
+        assertEquals(1, proxies.size());
+        proxies = session.getProxies(nodea, foldera);
+        assertEquals(0, proxies.size());
+        // from version
+        proxies = session.getProxies(version, null);
+        assertEquals(1, proxies.size());
+        assertEquals(proxy, proxies.get(0));
+        proxies = session.getProxies(version, folderb);
+        assertEquals(1, proxies.size());
+        proxies = session.getProxies(version, foldera);
+        assertEquals(0, proxies.size());
+        // from other version (which has no proxy)
+        proxies = session.getProxies(version2, null);
+        assertEquals(0, proxies.size());
+        // from proxy
+        proxies = session.getProxies(proxy, null);
+        assertEquals(1, proxies.size());
+        assertEquals(proxy, proxies.get(0));
+        proxies = session.getProxies(proxy, folderb);
+        assertEquals(1, proxies.size());
+        proxies = session.getProxies(proxy, foldera);
+        assertEquals(0, proxies.size());
     }
 }

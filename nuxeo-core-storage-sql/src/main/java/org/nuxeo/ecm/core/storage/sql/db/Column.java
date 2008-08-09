@@ -29,8 +29,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -43,9 +41,9 @@ import org.nuxeo.ecm.core.storage.sql.PropertyType;
  */
 public class Column implements Serializable {
 
-    private static final Log log = LogFactory.getLog(Column.class);
-
     private static final long serialVersionUID = 1L;
+
+    private final Table table;
 
     private final String name;
 
@@ -77,13 +75,16 @@ public class Column implements Serializable {
      * Creates a new column with the given name and type, with a specified SQL
      * type.
      *
+     * @param table the column's table
      * @param name the column name
      * @param type the backend type
      * @param sqlType the SQL type
      * @param key the associated field name
+     * @param model the model (to fetch binaries)
      */
-    public Column(String name, PropertyType type, int sqlType, String key,
-            Model model) {
+    public Column(Table table, String name, PropertyType type, int sqlType,
+            String key, Model model) {
+        this.table = table;
         this.name = name;
         this.type = type;
         this.sqlType = sqlType;
@@ -97,6 +98,10 @@ public class Column implements Serializable {
 
     public String getQuotedName(Dialect dialect) {
         return dialect.openQuote() + name + dialect.closeQuote();
+    }
+
+    public String getFullQuotedName(Dialect dialect) {
+        return table.getQuotedName(dialect) + '.' + getQuotedName(dialect);
     }
 
     public int getSqlType() {

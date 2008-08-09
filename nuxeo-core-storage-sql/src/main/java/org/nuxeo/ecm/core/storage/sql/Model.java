@@ -173,11 +173,11 @@ public class Model {
 
     public static final String PROXY_TARGET_PROP = "ecm:proxyTargetId";
 
-    public static final String PROXY_TARGET_KEY = "proxytarget";
+    public static final String PROXY_TARGET_KEY = "target";
 
     public static final String PROXY_VERSIONABLE_PROP = "ecm:proxyVersionableId";
 
-    public static final String PROXY_VERSIONABLE_KEY = "proxyversionable";
+    public static final String PROXY_VERSIONABLE_KEY = "versionable";
 
     private static TypeRef<? extends Type> STRING_TYPE_REF = StringType.INSTANCE.getRef();
 
@@ -261,8 +261,6 @@ public class Model {
 
     public final Set<String> readOnlyProperties;
 
-    public final Set<String[]> binaryColumns;
-
     public Model(RepositoryImpl repository, SchemaManager schemaManager) {
         binaryManager = repository.getBinaryManager();
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
@@ -285,7 +283,6 @@ public class Model {
         typeCollectionFragments = new HashMap<String, Set<String>>();
         propertyFragment = new HashMap<String, String>();
         propertyFragmentKey = new HashMap<String, String>();
-        binaryColumns = new HashSet<String[]>();
 
         initMainModel();
         initVersionsModel();
@@ -293,12 +290,6 @@ public class Model {
         initAclModel();
         initMiscModel();
         initModels(schemaManager);
-
-        List<String> bincols = new ArrayList<String>(binaryColumns.size());
-        for (String[] info : binaryColumns) {
-            bincols.add(info[0] + '.' + info[1]);
-        }
-        log.info("Binary columns: " + StringUtils.join(bincols, ", "));
     }
 
     /**
@@ -675,10 +666,6 @@ public class Model {
                     // propertyCoreType.put(propertyName, fieldType);
                     PropertyType type = PropertyType.fromFieldType(fieldType,
                             false);
-                    if (type == PropertyType.BINARY) {
-                        // to log them, will be useful for GC of binaries
-                        binaryColumns.add(new String[] { typeName, propertyName });
-                    }
                     propertyType.put(propertyName, type);
                     fragmentName = typeFragmentName(complexType);
                     propertyFragment.put(propertyName, fragmentName);

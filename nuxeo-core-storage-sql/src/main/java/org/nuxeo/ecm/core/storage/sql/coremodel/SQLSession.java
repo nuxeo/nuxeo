@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +50,6 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.security.SecurityManager;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.BaseProperty;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -221,8 +219,9 @@ public class SQLSession implements Session {
             if (name == null) {
                 name = source.getName();
             }
-            Node result = session.move(((SQLDocument) source).node,
-                    ((SQLDocument) parent).node, name);
+            Node result = session.move(
+                    ((SQLDocument) source).getHierarchyNode(),
+                    ((SQLDocument) parent).getHierarchyNode(), name);
             return newDocument(result);
         } catch (StorageException e) {
             throw new DocumentException(e);
@@ -253,10 +252,10 @@ public class SQLSession implements Session {
             if (name == null) {
                 name = source.getName();
             }
-            Node parentNode = ((SQLDocument) parent).node;
+            Node parentNode = ((SQLDocument) parent).getHierarchyNode();
             name = findFreeName(parentNode, name);
-            Node copy = session.copy(((SQLDocument) source).node, parentNode,
-                    name);
+            Node copy = session.copy(((SQLDocument) source).getHierarchyNode(),
+                    parentNode, name);
             return newDocument(copy);
         } catch (StorageException e) {
             throw new DocumentException(e);
@@ -266,19 +265,15 @@ public class SQLSession implements Session {
     public Document createProxyForVersion(Document parent, Document document,
             String label) throws DocumentException {
         try {
-            Node versionableNode = ((SQLDocument) document).node;
+            Node versionableNode = ((SQLDocument) document).getHierarchyNode();
             Node versionNode = session.getVersionByLabel(versionableNode, label);
             if (versionNode == null) {
                 throw new DocumentException("Unknown version: " + label);
             }
-            Node parentNode = ((SQLDocument) parent).node;
+            Node parentNode = ((SQLDocument) parent).getHierarchyNode();
             String name = findFreeName(parentNode, document.getName());
-            Node proxy = session.addChildNode(parentNode, name,
-                    Model.PROXY_TYPE, false);
-            proxy.setSingleProperty(Model.PROXY_TARGET_PROP,
-                    versionNode.getId());
-            proxy.setSingleProperty(Model.PROXY_VERSIONABLE_PROP,
-                    versionableNode.getId());
+            Node proxy = session.addProxy(versionNode.getId(),
+                    versionableNode.getId(), parentNode, name);
             return newDocument(proxy);
         } catch (StorageException e) {
             throw new DocumentException(e);
@@ -290,8 +285,10 @@ public class SQLSession implements Session {
         Collection<Node> proxyNodes;
         try {
 
-            proxyNodes = session.getProxies(((SQLDocument) document).node,
-                    parent == null ? null : ((SQLDocument) parent).node);
+            proxyNodes = session.getProxies(
+                    ((SQLDocument) document).getHierarchyNode(),
+                    parent == null ? null
+                            : ((SQLDocument) parent).getHierarchyNode());
         } catch (StorageException e) {
             throw new DocumentException(e);
         }

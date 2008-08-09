@@ -76,8 +76,8 @@ public class SQLDocumentProxy extends SQLDocumentVersion implements
     }
 
     @Override
-    public String getUUID() {
-        return proxyNode.getId().toString();
+    protected Node getHierarchyNode() {
+        return proxyNode;
     }
 
     @Override
@@ -94,18 +94,6 @@ public class SQLDocumentProxy extends SQLDocumentVersion implements
     public Document getParent() throws DocumentException {
         return session.getParent(proxyNode);
     }
-
-    @Override
-    protected Property getACLProperty() throws DocumentException {
-        return session.makeACLProperty(proxyNode);
-    }
-
-    @Override
-    public void remove() throws DocumentException {
-        session.remove(proxyNode);
-    }
-
-
 
     /*
      * ----- equals/hashcode -----

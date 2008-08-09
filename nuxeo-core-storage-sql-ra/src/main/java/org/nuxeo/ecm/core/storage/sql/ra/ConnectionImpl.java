@@ -199,7 +199,7 @@ public class ConnectionImpl implements Session {
         return session.getVersionByLabel(node, label);
     }
 
-    public Collection<Node> getVersions(Node node) throws StorageException {
+    public List<Node> getVersions(Node node) throws StorageException {
         return session.getVersions(node);
     }
 
@@ -207,9 +207,14 @@ public class ConnectionImpl implements Session {
         return session.getLastVersion(node);
     }
 
-    public Collection<Node> getProxies(Node document, Node parent)
+    public List<Node> getProxies(Node document, Node parent)
             throws StorageException {
         return session.getProxies(document, parent);
+    }
+
+    public Node addProxy(Serializable targetId, Serializable versionableId,
+            Node parent, String name) throws StorageException {
+        return session.addProxy(targetId, versionableId, parent, name);
     }
 
 }
