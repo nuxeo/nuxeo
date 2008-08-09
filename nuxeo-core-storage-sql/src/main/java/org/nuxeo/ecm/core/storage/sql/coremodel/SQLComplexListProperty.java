@@ -18,18 +18,13 @@
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.ListDiff;
 import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.ListType;
-import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.sql.Node;
 
 /**
@@ -38,13 +33,9 @@ import org.nuxeo.ecm.core.storage.sql.Node;
  *
  * @author Florent Guillaume
  */
-public class SQLComplexListProperty implements Property {
-
-    private static final Log log = LogFactory.getLog(SQLComplexListProperty.class);
+public class SQLComplexListProperty extends SQLBaseProperty {
 
     protected final Node node;
-
-    protected final ListType type;
 
     protected final String name;
 
@@ -57,9 +48,9 @@ public class SQLComplexListProperty implements Property {
      * {@link Node}s.
      */
     public SQLComplexListProperty(Node node, ListType type, String name,
-            SQLSession session) {
+            SQLSession session, boolean readonly) {
+        super(type, readonly);
         this.node = node;
-        this.type = type;
         this.name = name;
         this.session = session;
         elementType = (ComplexType) type.getFieldType();
@@ -73,18 +64,6 @@ public class SQLComplexListProperty implements Property {
         return node.getName();
     }
 
-    public Type getType() {
-        return type;
-    }
-
-    public boolean isNull() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public void setNull() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
     public List<Property> getValue() throws DocumentException {
 
         // TODO special case if (elType.getName().equals(TypeConstants.CONTENT))
@@ -93,13 +72,15 @@ public class SQLComplexListProperty implements Property {
         List<Node> nodes = session.getComplexList(node, name);
         List<Property> properties = new ArrayList<Property>(nodes.size());
         for (Node node : nodes) {
-            Property property = session.makeProperty(node, elementType, name);
+            Property property = session.makeProperty(node, elementType, name,
+                    readonly);
             properties.add(property);
         }
         return properties;
     }
 
     public void setValue(Object value) throws DocumentException {
+        checkWritable();
         // TODO
         if (value instanceof ListDiff) {
             setList((ListDiff) value);
@@ -110,26 +91,6 @@ public class SQLComplexListProperty implements Property {
                     "Unsupported value object for a complex list: " +
                             value.getClass().getName());
         }
-    }
-
-    /*
-     * ----- Property & PropertyContainer -----
-     */
-
-    public boolean isPropertySet(String name) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public Property getProperty(String name) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public Collection<Property> getProperties() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public Iterator<Property> getPropertyIterator() throws DocumentException {
-        throw new UnsupportedOperationException();
     }
 
     /*

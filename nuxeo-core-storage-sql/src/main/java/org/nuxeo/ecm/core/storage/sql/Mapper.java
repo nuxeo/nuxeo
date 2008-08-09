@@ -51,6 +51,7 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.CollectionFragment.CollectionFragmentIterator;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
+import org.nuxeo.ecm.core.storage.sql.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
@@ -484,6 +485,156 @@ public class Mapper {
     }
 
     /**
+     * Generic method to fetch one row for a select of fragments with fixed
+     * criteria given as a map.
+     *
+     * @param select the select information
+     * @param whereMap the criteria
+     * @param context the fragment context
+     * @return the fragment, or {@code null} if not found
+     * @throws StorageException
+     */
+    protected SimpleFragment getSelectRow(SQLInfoSelect select,
+            Map<String, Serializable> whereMap, Context context)
+            throws StorageException {
+        List<SimpleFragment> rows = getSelectRows(select, whereMap, true,
+                context);
+        if (rows == null) {
+            return null;
+        } else {
+            return rows.get(0);
+        }
+    }
+
+    /**
+     * Generic method to fetch the rows for a select of fragments with fixed
+     * criteria given as a map.
+     *
+     * @param select the select information
+     * @param whereMap the criteria
+     * @param context the fragment context
+     * @return the list of fragments
+     * @throws StorageException
+     */
+    protected List<SimpleFragment> getSelectRows(SQLInfoSelect select,
+            Map<String, Serializable> whereMap, Context context)
+            throws StorageException {
+        return getSelectRows(select, whereMap, false, context);
+    }
+
+    /**
+     * Fetch the rows for a select of fragments with fixed criteria given as a
+     * map.
+     */
+    protected List<SimpleFragment> getSelectRows(SQLInfoSelect select,
+            Map<String, Serializable> whereMap, boolean limitToOne,
+            Context context) throws StorageException {
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(select.sql);
+
+            /*
+             * Compute where part.
+             */
+            List<Serializable> debugValues = null;
+            if (log.isDebugEnabled()) {
+                debugValues = new LinkedList<Serializable>();
+            }
+            int i = 1;
+            for (Column column : select.whereColumns) {
+                String key = column.getKey();
+                Serializable v;
+                if (whereMap.containsKey(key)) {
+                    v = whereMap.get(key);
+                } else {
+                    throw new AssertionError(key);
+                }
+                if (v == null) {
+                    throw new StorageException("Null value for key: " + key);
+                }
+                column.setToPreparedStatement(ps, i++, v);
+                if (debugValues != null) {
+                    debugValues.add(v);
+                }
+            }
+            if (debugValues != null) {
+                logSQL(select.sql, debugValues);
+            }
+
+            /*
+             * Execute query.
+             */
+            ResultSet rs = ps.executeQuery();
+
+            /*
+             * Construct the rows from the result set.
+             */
+            List<SimpleFragment> rows = new LinkedList<SimpleFragment>();
+            while (rs.next()) {
+                Serializable id = null;
+                Map<String, Serializable> map = new HashMap<String, Serializable>();
+                i = 1;
+                for (Column column : select.whatColumns) {
+                    String key = column.getKey();
+                    Serializable value = column.getFromResultSet(rs, i++);
+                    if (key.equals(model.MAIN_KEY)) {
+                        id = value;
+                    } else {
+                        map.put(key, value);
+                    }
+                }
+                SimpleFragment fragment = (SimpleFragment) context.getIfPresent(id);
+                if (fragment == null) {
+                    map.putAll(whereMap);
+                    fragment = new SimpleFragment(id, State.PRISTINE, context,
+                            map);
+                    if (log.isDebugEnabled()) {
+                        logResultSet(rs, select.whatColumns);
+                    }
+                } else {
+                    // row is already known in the persistent context,
+                    // use it
+                    State state = fragment.getState();
+                    if (state == State.DELETED) {
+                        // row has been deleted in the persistent context,
+                        // ignore it
+                        if (log.isDebugEnabled()) {
+                            logDebug("  -> deleted id=" + id);
+                        }
+                        continue;
+                    } else if (state == State.ABSENT ||
+                            state == State.INVALIDATED_MODIFIED ||
+                            state == State.INVALIDATED_DELETED) {
+                        // XXX TODO
+                        throw new RuntimeException(state.toString());
+                    }
+                    if (log.isDebugEnabled()) {
+                        logDebug("  -> known id=" + id);
+                    }
+                }
+                rows.add(fragment);
+                if (limitToOne) {
+                    return rows;
+                }
+            }
+            if (limitToOne) {
+                return null;
+            }
+            return rows;
+        } catch (SQLException e) {
+            throw newStorageException(e, "Could not select", select.sql);
+        } finally {
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                    log.error(e.getMessage());
+                }
+            }
+        }
+    }
+
+    /**
      * Gets the state for a {@link SimpleFragment} from the database, given its
      * table name and id. If the row doesn't exist, {@code null} is returned.
      *
@@ -647,82 +798,12 @@ public class Mapper {
         if (parentId == null) {
             throw new IllegalArgumentException("Illegal null parentId");
         }
-        String sql = sqlInfo.getSelectChildrenSql(complexProp);
-        try {
-            // XXX statement should be already prepared
-            if (log.isDebugEnabled()) {
-                logSQL(sql, Collections.singletonList(parentId));
-            }
-            PreparedStatement ps = connection.prepareStatement(sql);
-            try {
-                // compute where part
-                int i = 0;
-                for (Column column : sqlInfo.getSelectChildrenWhereColumns(complexProp)) {
-                    i++;
-                    String key = column.getKey();
-                    if (!key.equals(model.HIER_PARENT_KEY)) {
-                        throw new AssertionError("Invalid hier column: " + key);
-                    }
-                    column.setToPreparedStatement(ps, i, parentId);
-                }
-                ResultSet rs = ps.executeQuery();
-                List<SimpleFragment> rows = new LinkedList<SimpleFragment>();
-                while (rs.next()) {
-                    // construct the row from the results
-                    Serializable id = null;
-                    Map<String, Serializable> map = new HashMap<String, Serializable>();
-                    i = 0;
-                    List<Column> columns = sqlInfo.getSelectChildrenWhatColumns(complexProp);
-                    for (Column column : columns) {
-                        i++;
-                        String key = column.getKey();
-                        Serializable value = column.getFromResultSet(rs, i);
-                        if (key.equals(model.MAIN_KEY)) {
-                            id = value;
-                        } else {
-                            map.put(key, value);
-                        }
-                    }
-                    SimpleFragment row = (SimpleFragment) context.getIfPresent(id);
-                    if (row == null) {
-                        map.put(model.HIER_PARENT_KEY, parentId);
-                        map.put(model.HIER_CHILD_ISPROPERTY_KEY,
-                                Boolean.valueOf(complexProp));
-                        row = new SimpleFragment(id, State.PRISTINE, context,
-                                map);
-                        if (log.isDebugEnabled()) {
-                            logResultSet(rs, columns);
-                        }
-                    } else {
-                        // row is already known in the persistent context,
-                        // use it
-                        State state = row.getState();
-                        if (state == State.DELETED) {
-                            // row has been deleted in the persistent context,
-                            // ignore it
-                            if (log.isDebugEnabled()) {
-                                logDebug("  -> deleted id=" + id);
-                            }
-                            continue;
-                        } else if (state == State.ABSENT ||
-                                state == State.INVALIDATED_MODIFIED ||
-                                state == State.INVALIDATED_DELETED) {
-                            // XXX TODO
-                            throw new RuntimeException(state.toString());
-                        }
-                        if (log.isDebugEnabled()) {
-                            logDebug("  -> known id=" + id);
-                        }
-                    }
-                    rows.add(row);
-                }
-                return rows;
-            } finally {
-                ps.close();
-            }
-        } catch (SQLException e) {
-            throw newStorageException(e, "Could not select", sql);
-        }
+        SQLInfoSelect select = sqlInfo.selectChildrenByIsProperty;
+        Map<String, Serializable> whereMap = new HashMap<String, Serializable>();
+        whereMap.put(model.HIER_PARENT_KEY, parentId);
+        whereMap.put(model.HIER_CHILD_ISPROPERTY_KEY,
+                Boolean.valueOf(complexProp));
+        return getSelectRows(select, whereMap, context);
     }
 
     /**
@@ -1093,71 +1174,88 @@ public class Mapper {
      *
      * @param versionableId the versionable id
      * @param label the label
-     * @return the id of the version, or {@code null}
+     * @param context the versions context
+     * @return the id of the version, or {@code null} if not found
      * @throws StorageException
      */
     public Serializable getVersionByLabel(Serializable versionableId,
-            String label) throws StorageException {
-
-        String sql = sqlInfo.getVersionIdByLabelSql();
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            try {
-                List<Serializable> debugValues = null;
-                if (log.isDebugEnabled()) {
-                    debugValues = new ArrayList<Serializable>(2);
-                }
-                int i = 1;
-                for (Column column : sqlInfo.getVersionIdByLabelWhereColumns()) {
-                    String key = column.getKey();
-                    Serializable v;
-                    if (key.equals(model.VERSION_VERSIONABLE_KEY)) {
-                        v = versionableId;
-                    } else if (key.equals(model.VERSION_LABEL_KEY)) {
-                        v = label;
-                    } else {
-                        throw new AssertionError(key);
-                    }
-                    if (v == null) {
-                        throw new RuntimeException("Null value for key: " + key);
-                    }
-                    column.setToPreparedStatement(ps, i++, v);
-                    if (debugValues != null) {
-                        debugValues.add(v);
-                    }
-                }
-                if (debugValues != null) {
-                    logSQL(sql, debugValues);
-                }
-                ResultSet rs = ps.executeQuery();
-                if (!rs.next()) {
-                    // no match, no version found
-                    return null;
-                }
-                // construct the row from the results
-                Column column = sqlInfo.getVersionIdByLabelWhatColumn();
-                Serializable id = column.getFromResultSet(rs, 1);
-                if (log.isDebugEnabled()) {
-                    logResultSet(rs, Collections.singletonList(column));
-                }
-                // check that we didn't get several rows
-                if (rs.next()) {
-                    // just emit a warning
-                    log.warn("Id " + versionableId +
-                            " has several versions with label: " + label);
-                }
-                return id;
-            } finally {
-                ps.close();
-            }
-        } catch (SQLException e) {
-            throw newStorageException(e, "Could not select", sql);
+            String label, Context context) throws StorageException {
+        SQLInfoSelect select = sqlInfo.selectVersionsByLabel;
+        Map<String, Serializable> whereMap = new HashMap<String, Serializable>();
+        whereMap.put(model.VERSION_VERSIONABLE_KEY, versionableId);
+        whereMap.put(model.VERSION_LABEL_KEY, label);
+        List<SimpleFragment> selectRows = getSelectRows(select, whereMap,
+                context);
+        if (selectRows.isEmpty()) {
+            return null;
+        } else {
+            return selectRows.get(0).getId();
         }
     }
 
-    /*
-     * ----- part of javax.transaction.xa.XAResource -----
+    /**
+     * Gets id of the last version given a versionable id.
+     *
+     * @param versionableId the versionable id
+     * @param context the version fragment context
+     * @return the id of the last version, or {@code null} if not found
+     * @throws StorageException
      */
+    public SimpleFragment getLastVersion(Serializable versionableId,
+            Context context) throws StorageException {
+
+        SQLInfoSelect select = sqlInfo.selectVersionsByVersionableLastFirst;
+        Map<String, Serializable> whereMap = new HashMap<String, Serializable>();
+        whereMap.put(model.VERSION_VERSIONABLE_KEY, versionableId);
+        return getSelectRow(select, whereMap, context);
+    }
+
+    /**
+     * Gets the list of version fragments for all the versions having a given
+     * versionable id.
+     *
+     * @param versionableId the versionable id
+     * @param context the version fragment context
+     * @return the list of version fragments
+     * @throws StorageException
+     */
+    public Collection<SimpleFragment> getVersions(Serializable versionableId,
+            Context context) throws StorageException {
+        SQLInfoSelect select = sqlInfo.selectVersionsByVersionable;
+        Map<String, Serializable> whereMap = new HashMap<String, Serializable>();
+        whereMap.put(model.VERSION_VERSIONABLE_KEY, versionableId);
+        return getSelectRows(select, whereMap, context);
+    }
+
+    /**
+     * Finds proxies, maybe restricted to the children of a given parent.
+     *
+     * @param searchId the id to look for
+     * @param byTarget {@code true} if the searchId is a proxy target id,
+     *            {@code false} if the searchId is a versionable id
+     * @param parentId the parent to which to restrict, if not {@code null}
+     * @param context the proxies fragment context
+     * @return the list of proxies fragments
+     * @throws StorageException
+     */
+    public Collection<SimpleFragment> getProxies(Serializable searchId,
+            boolean byTarget, Serializable parentId, Context context)
+            throws StorageException {
+        Map<String, Serializable> whereMap = new HashMap<String, Serializable>();
+        whereMap.put(byTarget ? model.PROXY_TARGET_KEY
+                : model.PROXY_VERSIONABLE_KEY, searchId);
+        if (parentId == null) {
+            SQLInfoSelect select = byTarget ? sqlInfo.selectProxiesByTarget
+                    : sqlInfo.selectProxiesByVersionable;
+            return getSelectRows(select, whereMap, context);
+        } else {
+            SQLInfoSelect select = byTarget ? sqlInfo.selectProxiesByTargetAndParent
+                    : sqlInfo.selectProxiesByVersionableAndParent;
+            Map<String, Serializable> joinedMap = new HashMap<String, Serializable>();
+            joinedMap.put(model.HIER_PARENT_KEY, parentId);
+            return getSelectRows(select, whereMap, joinedMap, context);
+        }
+    }
 
     protected void start(Xid xid, int flags) throws XAException {
         xaresource.start(xid, flags);

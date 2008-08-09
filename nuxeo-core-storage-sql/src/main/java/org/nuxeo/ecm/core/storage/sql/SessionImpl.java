@@ -338,6 +338,15 @@ public class SessionImpl implements Session, XAResource {
         return node;
     }
 
+// public Node addProxy(Node parent, String name, Serializable targetId,
+// Serializable versionableId) throws StorageException {
+// Node proxy = addChildNode(parent, name, Model.PROXY_TYPE, false);
+// proxy.setSingleProperty(Model.PROXY_TARGET_PROP, versionNode.getId());
+// proxy.setSingleProperty(Model.PROXY_VERSIONABLE_PROP,
+// versionableNode.getId());
+//
+// }
+//
     public Node addChildNode(Node parent, String name, String typeName,
             boolean complexProp) throws StorageException {
         checkLive();
@@ -518,12 +527,46 @@ public class SessionImpl implements Session, XAResource {
             throws StorageException {
         checkLive();
         Serializable id = context.getVersionByLabel(node.getId(), label);
+        if (id == null) {
+            return null;
+        }
         return getNodeById(id);
     }
 
-    /*
-     * ----- -----
-     */
+    public Node getLastVersion(Node node) throws StorageException {
+        checkLive();
+        context.save();
+        Serializable id = context.getLastVersion(node.getId());
+        if (id == null) {
+            return null;
+        }
+        return getNodeById(id);
+    }
+
+    public Collection<Node> getVersions(Node versionableNode)
+            throws StorageException {
+        checkLive();
+        context.save();
+        Collection<SimpleFragment> fragments = context.getVersions(versionableNode.getId());
+        List<Node> nodes = new ArrayList<Node>(fragments.size());
+        for (SimpleFragment fragment : fragments) {
+            nodes.add(getNodeById(fragment.getId()));
+        }
+        return nodes;
+    }
+
+    public Collection<Node> getProxies(Node document, Node parent)
+            throws StorageException {
+        checkLive();
+        context.save();
+        Collection<SimpleFragment> fragments = context.getProxies(document,
+                parent);
+        List<Node> nodes = new ArrayList<Node>(fragments.size());
+        for (SimpleFragment fragment : fragments) {
+            nodes.add(getNodeById(fragment.getId()));
+        }
+        return nodes;
+    }
 
     // returns context or null if missing
     protected Context getContext(String tableName) {

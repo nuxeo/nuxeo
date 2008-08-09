@@ -51,11 +51,13 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.security.SecurityManager;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.BaseProperty;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
+import org.nuxeo.ecm.core.versioning.DocumentVersion;
 
 /**
  * This class is the bridge between the Nuxeo SPI Session and the actual
@@ -229,24 +231,30 @@ public class SQLSession implements Session {
 
     private static Pattern dotDigitsPattern = Pattern.compile("(.*)\\.[0-9]+$");
 
+    protected String findFreeName(Node parentNode, String name)
+            throws StorageException {
+        if (session.hasChildNode(parentNode, name, false)) {
+            Matcher m = dotDigitsPattern.matcher(name);
+            if (m.matches()) {
+                // remove trailing dot and digits
+                name = m.group(1);
+            }
+            // add dot + unique digits
+            name += "." + System.currentTimeMillis();
+        }
+        return name;
+    }
+
     public Document copy(Document source, Document parent, String name)
             throws DocumentException {
         assert source instanceof SQLDocument;
         assert parent instanceof SQLDocument;
         try {
-            Node parentNode = ((SQLDocument) parent).node;
             if (name == null) {
                 name = source.getName();
             }
-            if (session.hasChildNode(parentNode, name, false)) {
-                Matcher m = dotDigitsPattern.matcher(name);
-                if (m.matches()) {
-                    // remove trailing dot and digits
-                    name = m.group(1);
-                }
-                // add dot + unique digits
-                name += "." + System.currentTimeMillis();
-            }
+            Node parentNode = ((SQLDocument) parent).node;
+            name = findFreeName(parentNode, name);
             Node copy = session.copy(((SQLDocument) source).node, parentNode,
                     name);
             return newDocument(copy);
@@ -256,27 +264,42 @@ public class SQLSession implements Session {
     }
 
     public Document createProxyForVersion(Document parent, Document document,
-            String versionLabel) throws DocumentException {
-        // Document frozenDoc = document.getVersion(versionLabel);
-        // String name = document.getName() + '_' + System.currentTimeMillis();
-        // // TODO
-        // Node node = pnode.addNode(ModelAdapter.getChildPath(name),
-        // NodeConstants.ECM_NT_DOCUMENT_PROXY.rawname);
-        // node.setProperty(NodeConstants.ECM_REF_FROZEN_NODE.rawname,
-        // ((SQLDocument) frozenDoc).getNode());
-        // node.setProperty(NodeConstants.ECM_REF_UUID.rawname,
-        // document.getUUID());
-        // return new NuxeoSQLDocumentProxy(this, node);
-        // XXX TODO
-        throw new UnsupportedOperationException();
+            String label) throws DocumentException {
+        try {
+            Node versionableNode = ((SQLDocument) document).node;
+            Node versionNode = session.getVersionByLabel(versionableNode, label);
+            if (versionNode == null) {
+                throw new DocumentException("Unknown version: " + label);
+            }
+            Node parentNode = ((SQLDocument) parent).node;
+            String name = findFreeName(parentNode, document.getName());
+            Node proxy = session.addChildNode(parentNode, name,
+                    Model.PROXY_TYPE, false);
+            proxy.setSingleProperty(Model.PROXY_TARGET_PROP,
+                    versionNode.getId());
+            proxy.setSingleProperty(Model.PROXY_VERSIONABLE_PROP,
+                    versionableNode.getId());
+            return newDocument(proxy);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
     }
 
     public Collection<Document> getProxies(Document document, Document parent)
             throws DocumentException {
-        log.error("getProxies unimplemented, returning empty list");
-        return Collections.emptyList();
-        // XXX TODO
-        // throw new UnsupportedOperationException();
+        Collection<Node> proxyNodes;
+        try {
+
+            proxyNodes = session.getProxies(((SQLDocument) document).node,
+                    parent == null ? null : ((SQLDocument) parent).node);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+        List<Document> proxies = new ArrayList<Document>(proxyNodes.size());
+        for (Node proxyNode : proxyNodes) {
+            proxies.add(newDocument(proxyNode));
+        }
+        return proxies;
     }
 
     public InputStream getDataStream(String key) throws DocumentException {
@@ -299,16 +322,34 @@ public class SQLSession implements Session {
             // root's parent
             return null;
         }
+
+        Node versionNode = null;
         String typeName = node.getPrimaryType();
+        if (node.isProxy()) {
+            try {
+                Serializable targetId = node.getSimpleProperty(
+                        Model.PROXY_TARGET_PROP).getValue();
+                if (targetId == null) {
+                    throw new DocumentException("Proxy has null target");
+                }
+                versionNode = session.getNodeById(targetId);
+                typeName = versionNode.getPrimaryType();
+            } catch (StorageException e) {
+                throw new DocumentException(e);
+            }
+        }
+
         DocumentType type = getTypeManager().getDocumentType(typeName);
         if (type == null) {
             throw new DocumentException("Unknown document type: " + typeName);
         }
-        // TODO proxies
-        if (node.isVersion()) {
+
+        if (node.isProxy()) {
+            return new SQLDocumentProxy(node, versionNode, type, this);
+        } else if (node.isVersion()) {
             return new SQLDocumentVersion(node, type, this);
         } else {
-            return new SQLDocument(node, type, this);
+            return new SQLDocument(node, type, this, false);
         }
     }
 
@@ -436,7 +477,39 @@ public class SQLSession implements Session {
     protected Document getVersionByLabel(Node node, String label)
             throws DocumentException {
         try {
-            return newDocument(session.getVersionByLabel(node, label));
+            Node versionNode = session.getVersionByLabel(node, label);
+            if (versionNode == null) {
+                return null;
+            }
+            return newDocument(versionNode);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
+    protected Collection<DocumentVersion> getVersions(Node node)
+            throws DocumentException {
+        Collection<Node> versionNodes;
+        try {
+            versionNodes = session.getVersions(node);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+        List<DocumentVersion> versions = new ArrayList<DocumentVersion>(
+                versionNodes.size());
+        for (Node versionNode : versionNodes) {
+            versions.add((DocumentVersion) newDocument(versionNode));
+        }
+        return versions;
+    }
+
+    public DocumentVersion getLastVersion(Node node) throws DocumentException {
+        try {
+            Node versionNode = session.getLastVersion(node);
+            if (versionNode == null) {
+                return null;
+            }
+            return (DocumentVersion) newDocument(versionNode);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -461,18 +534,18 @@ public class SQLSession implements Session {
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
-        return new SQLCollectionProperty(property, null);
+        return new SQLCollectionProperty(property, null, false);
     }
 
     protected Property makeProperty(Node node, ComplexType parentType,
-            String name) throws DocumentException {
+            String name, boolean readonly) throws DocumentException {
 
         Field field;
-        if (Model.SYSTEM_LIFECYCLE_POLICY_PROP.equals(name)) {
+        if (Model.MISC_LIFECYCLE_POLICY_PROP.equals(name)) {
             field = Model.SYSTEM_LIFECYCLE_POLICY_FIELD;
-        } else if (Model.SYSTEM_LIFECYCLE_STATE_PROP.equals(name)) {
+        } else if (Model.MISC_LIFECYCLE_STATE_PROP.equals(name)) {
             field = Model.SYSTEM_LIFECYCLE_STATE_FIELD;
-        } else if (Model.SYSTEM_DIRTY_PROP.equals(name)) {
+        } else if (Model.MISC_DIRTY_PROP.equals(name)) {
             field = Model.SYSTEM_DIRTY_FIELD;
         } else if (Model.VERSION_VERSIONABLE_PROP.equals(name)) {
             field = Model.VERSION_VERSIONABLE_FIELD;
@@ -501,7 +574,7 @@ public class SQLSession implements Session {
             } catch (StorageException e) {
                 throw new DocumentException(e);
             }
-            return new SQLSimpleProperty(property, type);
+            return new SQLSimpleProperty(property, type, readonly);
         } else if (type.isListType()) {
             ListType listType = (ListType) type;
             if (listType.getFieldType().isSimpleType()) {
@@ -511,9 +584,10 @@ public class SQLSession implements Session {
                 } catch (StorageException e) {
                     throw new DocumentException(e);
                 }
-                return new SQLCollectionProperty(property, listType);
+                return new SQLCollectionProperty(property, listType, readonly);
             } else {
-                return new SQLComplexListProperty(node, listType, name, this);
+                return new SQLComplexListProperty(node, listType, name, this,
+                        readonly);
             }
         } else {
             // complex type
@@ -534,9 +608,11 @@ public class SQLSession implements Session {
             }
             // TODO use a better switch
             if (type.getName().equals("content")) {
-                return new SQLContentProperty(childNode, complexType, this);
+                return new SQLContentProperty(childNode, complexType, this,
+                        readonly);
             } else {
-                return new SQLComplexProperty(childNode, complexType, this);
+                return new SQLComplexProperty(childNode, complexType, this,
+                        readonly);
             }
         }
     }

@@ -44,22 +44,22 @@ import org.nuxeo.ecm.core.storage.sql.Node;
  *
  * @author Florent Guillaume
  */
-public class SQLComplexProperty implements Property, PropertyContainer {
+public class SQLComplexProperty extends SQLBaseProperty implements
+        PropertyContainer {
 
     private static final Log log = LogFactory.getLog(SQLComplexProperty.class);
 
     protected final Node node;
-
-    protected final ComplexType type;
 
     protected final SQLSession session;
 
     /**
      * Creates a {@link SQLComplexProperty} to wrap a {@link Node}.
      */
-    public SQLComplexProperty(Node node, ComplexType type, SQLSession session) {
+    public SQLComplexProperty(Node node, ComplexType type, SQLSession session,
+            boolean readonly) {
+        super(type, readonly);
         this.node = node;
-        this.type = type;
         this.session = session;
     }
 
@@ -69,18 +69,6 @@ public class SQLComplexProperty implements Property, PropertyContainer {
 
     public String getName() {
         return node.getName();
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public boolean isNull() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public void setNull() throws DocumentException {
-        throw new UnsupportedOperationException();
     }
 
     public Object getValue() throws DocumentException {
@@ -94,6 +82,7 @@ public class SQLComplexProperty implements Property, PropertyContainer {
 
     @SuppressWarnings("unchecked")
     public void setValue(Object value) throws DocumentException {
+        checkWritable();
         Map<String, Object> map = (Map<String, Object>) value;
         if (map == null) {
             // XXX should delete the node?
@@ -110,24 +99,27 @@ public class SQLComplexProperty implements Property, PropertyContainer {
      * ----- Property & PropertyContainer -----
      */
 
+    @Override
     public boolean isPropertySet(String name) throws DocumentException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Property getProperty(String name) throws DocumentException {
-        return session.makeProperty(node, type, name);
+        return session.makeProperty(node, (ComplexType) type, name, readonly);
     }
 
+    @Override
     public Collection<Property> getProperties() throws DocumentException {
-        Collection<Field> fields = type.getFields();
+        Collection<Field> fields = ((ComplexType) type).getFields();
         List<Property> properties = new ArrayList<Property>(fields.size());
         for (Field field : fields) {
-            String name = field.getName().getPrefixedName();
-            properties.add(session.makeProperty(node, type, name));
+            properties.add(getProperty(field.getName().getPrefixedName()));
         }
         return properties;
     }
 
+    @Override
     public Iterator<Property> getPropertyIterator() throws DocumentException {
         return getProperties().iterator();
     }
@@ -153,11 +145,13 @@ public class SQLComplexProperty implements Property, PropertyContainer {
     }
 
     public void importFlatMap(Map<String, Object> map) throws DocumentException {
+        checkWritable();
         throw new UnsupportedOperationException();
     }
 
     public void importMap(Map<String, Map<String, Object>> map)
             throws DocumentException {
+        checkWritable();
         throw new UnsupportedOperationException();
     }
 

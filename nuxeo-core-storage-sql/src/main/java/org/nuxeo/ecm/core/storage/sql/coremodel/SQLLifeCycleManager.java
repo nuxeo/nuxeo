@@ -32,7 +32,7 @@ public class SQLLifeCycleManager implements LifeCycleManager {
 
     public String getPolicy(Document document) throws LifeCycleException {
         try {
-            return document.getString(Model.SYSTEM_LIFECYCLE_POLICY_PROP);
+            return document.getString(Model.MISC_LIFECYCLE_POLICY_PROP);
         } catch (DocumentException e) {
             throw new LifeCycleException("Failed to get policy", e);
         }
@@ -41,7 +41,7 @@ public class SQLLifeCycleManager implements LifeCycleManager {
     public void setPolicy(Document document, String policy)
             throws LifeCycleException {
         try {
-            document.setString(Model.SYSTEM_LIFECYCLE_POLICY_PROP, policy);
+            document.setString(Model.MISC_LIFECYCLE_POLICY_PROP, policy);
         } catch (DocumentException e) {
             throw new LifeCycleException("Failed to set policy", e);
         }
@@ -49,7 +49,7 @@ public class SQLLifeCycleManager implements LifeCycleManager {
 
     public String getState(Document document) throws LifeCycleException {
         try {
-            return document.getString(Model.SYSTEM_LIFECYCLE_STATE_PROP);
+            return document.getString(Model.MISC_LIFECYCLE_STATE_PROP);
         } catch (DocumentException e) {
             throw new LifeCycleException("Failed to get state", e);
         }
@@ -58,7 +58,7 @@ public class SQLLifeCycleManager implements LifeCycleManager {
     public void setState(Document document, String state)
             throws LifeCycleException {
         try {
-            document.setString(Model.SYSTEM_LIFECYCLE_STATE_PROP, state);
+            document.setString(Model.MISC_LIFECYCLE_STATE_PROP, state);
         } catch (DocumentException e) {
             throw new LifeCycleException("Failed to set state", e);
         }

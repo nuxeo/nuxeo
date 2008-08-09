@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -329,8 +330,37 @@ public class PersistenceContext {
      */
     public Serializable checkIn(Node node, String label, String description)
             throws StorageException {
-        return contexts.get(model.hierFragmentName).checkIn(node, label,
-                description);
+        Boolean checkedIn = (Boolean) node.mainFragment.get(model.MAIN_CHECKED_IN_KEY);
+        if (Boolean.TRUE.equals(checkedIn)) {
+            throw new StorageException("Already checked in");
+        }
+        /*
+         * Do the copy without children, with null parent.
+         */
+        Serializable id = node.getId();
+        String typeName = node.getPrimaryType();
+        Serializable newId = mapper.copyHierarchy(id, typeName, null, null);
+        /*
+         * Create a "version" row for our new version.
+         */
+        HashMap<String, Serializable> map = new HashMap<String, Serializable>();
+        map.put(model.VERSION_VERSIONABLE_KEY, id);
+        map.put(model.VERSION_CREATED_KEY, new GregorianCalendar()); // now
+        map.put(model.VERSION_LABEL_KEY, label);
+        map.put(model.VERSION_DESCRIPTION_KEY, description);
+        SimpleFragment versionRow = (SimpleFragment) createSimpleFragment(
+                model.VERSION_TABLE_NAME, newId, map);
+        getChildById(newId, false); // adds version as a new child of its parent
+        /*
+         * Update the original node to reflect that it's checked in.
+         */
+        node.mainFragment.put(model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
+        node.mainFragment.put(model.MAIN_BASE_VERSION_KEY, newId);
+        /*
+         * Save to reflect changes immediately in database.
+         */
+        save();
+        return newId;
     }
 
     /**
@@ -340,13 +370,98 @@ public class PersistenceContext {
      * @throws StorageException
      */
     public void checkOut(Node node) throws StorageException {
-        contexts.get(model.hierFragmentName).checkOut(node);
+        Boolean checkedIn = (Boolean) node.mainFragment.get(model.MAIN_CHECKED_IN_KEY);
+        if (!Boolean.TRUE.equals(checkedIn)) {
+            throw new StorageException("Already checked out");
+        }
+        /*
+         * Update the node to reflect that it's checked out.
+         */
+        node.mainFragment.put(model.MAIN_CHECKED_IN_KEY, Boolean.FALSE);
     }
 
+    /**
+     * Gets a version id given a versionable id and a version label.
+     *
+     * @param versionableId the versionable id
+     * @param label the version label
+     * @return the version id, or {@code null} if not found
+     * @throws StorageException
+     */
     public Serializable getVersionByLabel(Serializable versionableId,
             String label) throws StorageException {
-        return contexts.get(model.hierFragmentName).getVersionByLabel(
-                versionableId, label);
+        Context versionsContext = getContext(model.VERSION_TABLE_NAME);
+        return mapper.getVersionByLabel(versionableId, label, versionsContext);
+    }
+
+    /**
+     * Gets the the last version id given a versionable id.
+     *
+     * @param versionableId the versionabel id
+     * @return the version id, or {@code null} if not found
+     * @throws StorageException
+     */
+    public Serializable getLastVersion(Serializable versionableId)
+            throws StorageException {
+        Context versionsContext = getContext(model.VERSION_TABLE_NAME);
+        return mapper.getLastVersion(versionableId, versionsContext).getId();
+    }
+
+    /**
+     * Gets all the versions given a versionable id.
+     *
+     * @param versionableId the versionable id
+     * @return the list of version fragments
+     * @throws StorageException
+     */
+    public Collection<SimpleFragment> getVersions(Serializable versionableId)
+            throws StorageException {
+        Context versionsContext = getContext(model.VERSION_TABLE_NAME);
+        return mapper.getVersions(versionableId, versionsContext);
+    }
+
+    /**
+     * Finds the proxies for a document. If the parent is not {@code null}, the
+     * search will be limited to its direct children.
+     * <p>
+     * If the document is a version, then only proxies to that version will be
+     * looked up.
+     * <p>
+     * If the document is a proxy, then all similar proxies (pointing to any
+     * version of the same versionable) are retrieved.
+     *
+     * @param document the document
+     * @param parent the parent, or {@code null}
+     * @return the list of proxies fragments
+     * @throws StorageException
+     */
+    public Collection<SimpleFragment> getProxies(Node document, Node parent)
+            throws StorageException {
+        /*
+         * Find the versionable id.
+         */
+        boolean byTarget;
+        Serializable searchId;
+        if (document.isVersion()) {
+            byTarget = true;
+            searchId = document.getId();
+        } else {
+            byTarget = false;
+            if (document.isProxy()) {
+                searchId = document.getSimpleProperty(
+                        model.PROXY_VERSIONABLE_PROP).getString();
+            } else {
+                searchId = document.getId();
+            }
+        }
+        Serializable parentId;
+        if (parent == null) {
+            parentId = null;
+        } else {
+            parentId = parent.getId();
+        }
+        Context proxiesContext = getContext(model.PROXY_TABLE_NAME);
+        return mapper.getProxies(searchId, byTarget, parentId, proxiesContext);
     }
 
 }

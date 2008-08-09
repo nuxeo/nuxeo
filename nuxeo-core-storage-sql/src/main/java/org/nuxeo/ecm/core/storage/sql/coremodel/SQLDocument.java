@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.ecm.core.versioning.DocumentVersion;
@@ -54,23 +53,9 @@ public class SQLDocument extends SQLComplexProperty implements Document {
 
     private static final Log log = LogFactory.getLog(SQLDocument.class);
 
-    // we store lock state on the document because it is frequently used
-    // (on each permission check)
-    // private String lock;
-
-    /**
-     * Constructs a document that wraps the given JCR node.
-     * <p>
-     * Do not use this ctor from outside!! Use JCRSession.newDocument instead -
-     * otherwise proxy docs will not work.
-     *
-     * @param node the JCR node to wrap
-     * @param type the document type
-     * @param session the current session
-     * @throws StorageException if any JCR exception occurs
-     */
-    SQLDocument(Node node, ComplexType type, SQLSession session) {
-        super(node, type, session);
+    protected SQLDocument(Node node, ComplexType type, SQLSession session,
+            boolean readonly) {
+        super(node, type, session, readonly);
     }
 
     /*
@@ -129,7 +114,7 @@ public class SQLDocument extends SQLComplexProperty implements Document {
      * made since the last time a snapshot of it was done (for publishing).
      */
     public boolean isDirty() throws DocumentException {
-        return getBoolean(Model.SYSTEM_DIRTY_PROP);
+        return getBoolean(Model.MISC_DIRTY_PROP);
     }
 
     /**
@@ -137,16 +122,10 @@ public class SQLDocument extends SQLComplexProperty implements Document {
      * since the last time a snapshot of it was done (for publishing).
      */
     public void setDirty(boolean value) throws DocumentException {
-        setBoolean(Model.SYSTEM_DIRTY_PROP, value);
+        setBoolean(Model.MISC_DIRTY_PROP, value);
     }
 
     public void readDocumentPart(DocumentPart dp) throws Exception {
-
-        // proxy document is forwarding props to refered doc
-        // Node parent = isProxy() ? ((JCRDocumentProxy)doc).getTargetNode() :
-        // getNode();
-
-        String schemaName = dp.getSchema().getName();
         for (org.nuxeo.ecm.core.api.model.Property property : dp) {
             property.init((Serializable) getPropertyValue(property.getName()));
         }
@@ -275,10 +254,12 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public List<String> getVersionsIds() throws DocumentException {
-        log.error("getProxies unimplemented, returning empty list");
-        return Collections.emptyList();
-        // XXX TODO
-        // throw new UnsupportedOperationException();
+        Collection<DocumentVersion> versions = session.getVersions(node);
+        List<String> ids = new ArrayList<String>(versions.size());
+        for (DocumentVersion version : versions) {
+            ids.add(version.getUUID());
+        }
+        return ids;
     }
 
     public Document getVersion(String label) throws DocumentException {
@@ -286,15 +267,11 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public DocumentVersionIterator getVersions() throws DocumentException {
-        log.error("getVersions unimplemented, returning empty list");
-        return new SQLDocumentVersionIterator(
-                Collections.<DocumentVersion> emptyList());
-        // XXX TODO
-        // throw new UnsupportedOperationException();
+        return new SQLDocumentVersionIterator(session.getVersions(node));
     }
 
     public DocumentVersion getLastVersion() throws DocumentException {
-        throw new UnsupportedOperationException();
+        return session.getLastVersion(node);
     }
 
     public boolean hasVersions() throws DocumentException {
@@ -405,6 +382,10 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         return session.makeACLProperty(node);
     }
 
+    /*
+     * ----- toString/equals/hashcode -----
+     */
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + '(' + getName() + ',' + getUUID() +
@@ -466,7 +447,7 @@ class SQLDocumentVersionIterator implements DocumentVersionIterator {
 
     private final Iterator<DocumentVersion> iterator;
 
-    public SQLDocumentVersionIterator(List<DocumentVersion> list) {
+    public SQLDocumentVersionIterator(Collection<DocumentVersion> list) {
         iterator = list.iterator();
     }
 

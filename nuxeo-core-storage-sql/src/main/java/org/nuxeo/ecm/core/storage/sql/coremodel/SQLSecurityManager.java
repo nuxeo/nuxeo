@@ -38,9 +38,7 @@ import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.core.security.SecurityManager;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ACLRow;
-import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
 
 /**
  * @author Florent Guillaume

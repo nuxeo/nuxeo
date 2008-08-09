@@ -117,19 +117,19 @@ public class Model {
 
     public static final String COLL_TABLE_VALUE_KEY = "item";
 
-    public static final String SYSTEM_TABLE_NAME = "system";
+    public static final String MISC_TABLE_NAME = "misc";
 
-    public static final String SYSTEM_LIFECYCLE_POLICY_PROP = "ecm:lifeCyclePolicy";
+    public static final String MISC_LIFECYCLE_POLICY_PROP = "ecm:lifeCyclePolicy";
 
-    public static final String SYSTEM_LIFECYCLE_POLICY_KEY = "lifecyclepolicy";
+    public static final String MISC_LIFECYCLE_POLICY_KEY = "lifecyclepolicy";
 
-    public static final String SYSTEM_LIFECYCLE_STATE_PROP = "ecm:lifeCycleState";
+    public static final String MISC_LIFECYCLE_STATE_PROP = "ecm:lifeCycleState";
 
-    public static final String SYSTEM_LIFECYCLE_STATE_KEY = "lifecyclestate";
+    public static final String MISC_LIFECYCLE_STATE_KEY = "lifecyclestate";
 
-    public static final String SYSTEM_DIRTY_PROP = "ecm:dirty";
+    public static final String MISC_DIRTY_PROP = "ecm:dirty";
 
-    public static final String SYSTEM_DIRTY_KEY = "dirty";
+    public static final String MISC_DIRTY_KEY = "dirty";
 
     public static final String ACL_TABLE_NAME = "acls";
 
@@ -167,6 +167,18 @@ public class Model {
 
     public static final String VERSION_DESCRIPTION_KEY = "description";
 
+    public static final String PROXY_TYPE = "ecm:proxy";
+
+    public static final String PROXY_TABLE_NAME = "proxies";
+
+    public static final String PROXY_TARGET_PROP = "ecm:proxyTargetId";
+
+    public static final String PROXY_TARGET_KEY = "proxytarget";
+
+    public static final String PROXY_VERSIONABLE_PROP = "ecm:proxyVersionableId";
+
+    public static final String PROXY_VERSIONABLE_KEY = "proxyversionable";
+
     private static TypeRef<? extends Type> STRING_TYPE_REF = StringType.INSTANCE.getRef();
 
     private static TypeRef<? extends Type> DATE_TYPE_REF = DateType.INSTANCE.getRef();
@@ -174,15 +186,15 @@ public class Model {
     private static TypeRef<? extends Type> BOOLEAN_TYPE_REF = BooleanType.INSTANCE.getRef();
 
     public static Field SYSTEM_LIFECYCLE_POLICY_FIELD = new FieldImpl(
-            QName.valueOf(SYSTEM_LIFECYCLE_POLICY_PROP), TypeRef.NULL,
+            QName.valueOf(MISC_LIFECYCLE_POLICY_PROP), TypeRef.NULL,
             STRING_TYPE_REF);
 
     public static Field SYSTEM_LIFECYCLE_STATE_FIELD = new FieldImpl(
-            QName.valueOf(SYSTEM_LIFECYCLE_STATE_PROP), TypeRef.NULL,
+            QName.valueOf(MISC_LIFECYCLE_STATE_PROP), TypeRef.NULL,
             STRING_TYPE_REF);
 
     public static Field SYSTEM_DIRTY_FIELD = new FieldImpl(
-            QName.valueOf(SYSTEM_DIRTY_PROP), TypeRef.NULL, STRING_TYPE_REF);
+            QName.valueOf(MISC_DIRTY_PROP), TypeRef.NULL, STRING_TYPE_REF);
 
     public static Field VERSION_VERSIONABLE_FIELD = new FieldImpl(
             QName.valueOf(VERSION_VERSIONABLE_PROP), TypeRef.NULL,
@@ -276,9 +288,10 @@ public class Model {
         binaryColumns = new HashSet<String[]>();
 
         initMainModel();
-        initSystemModel();
         initVersionsModel();
+        initProxiesModel();
         initAclModel();
+        initMiscModel();
         initModels(schemaManager);
 
         List<String> bincols = new ArrayList<String>(binaryColumns.size());
@@ -504,19 +517,18 @@ public class Model {
     }
 
     /**
-     * Special model for the system table (lifecycle, etc.).
+     * Special model for the "misc" table (lifecycle, dirty.).
      */
-    private void initSystemModel() {
+    private void initMiscModel() {
         Map<String, PropertyType> fragmentKeysType = new LinkedHashMap<String, PropertyType>();
-        fragmentsKeysType.put(SYSTEM_TABLE_NAME, fragmentKeysType);
-        initSimpleProperty(SYSTEM_TABLE_NAME, SYSTEM_LIFECYCLE_POLICY_PROP,
-                SYSTEM_LIFECYCLE_POLICY_KEY, PropertyType.STRING,
+        fragmentsKeysType.put(MISC_TABLE_NAME, fragmentKeysType);
+        initSimpleProperty(MISC_TABLE_NAME, MISC_LIFECYCLE_POLICY_PROP,
+                MISC_LIFECYCLE_POLICY_KEY, PropertyType.STRING,
                 fragmentKeysType);
-        initSimpleProperty(SYSTEM_TABLE_NAME, SYSTEM_LIFECYCLE_STATE_PROP,
-                SYSTEM_LIFECYCLE_STATE_KEY, PropertyType.STRING,
-                fragmentKeysType);
-        initSimpleProperty(SYSTEM_TABLE_NAME, SYSTEM_DIRTY_PROP,
-                SYSTEM_DIRTY_KEY, PropertyType.BOOLEAN, fragmentKeysType);
+        initSimpleProperty(MISC_TABLE_NAME, MISC_LIFECYCLE_STATE_PROP,
+                MISC_LIFECYCLE_STATE_KEY, PropertyType.STRING, fragmentKeysType);
+        initSimpleProperty(MISC_TABLE_NAME, MISC_DIRTY_PROP, MISC_DIRTY_KEY,
+                PropertyType.BOOLEAN, fragmentKeysType);
     }
 
     /**
@@ -533,6 +545,19 @@ public class Model {
                 VERSION_LABEL_KEY, PropertyType.STRING, fragmentKeysType);
         initSimpleROProperty(VERSION_TABLE_NAME, VERSION_DESCRIPTION_PROP,
                 VERSION_DESCRIPTION_KEY, PropertyType.STRING, fragmentKeysType);
+    }
+
+    /**
+     * Special model for the proxies table.
+     */
+    private void initProxiesModel() {
+        Map<String, PropertyType> fragmentKeysType = new LinkedHashMap<String, PropertyType>();
+        fragmentsKeysType.put(PROXY_TABLE_NAME, fragmentKeysType);
+        initSimpleProperty(PROXY_TABLE_NAME, PROXY_TARGET_PROP,
+                PROXY_TARGET_KEY, mainIdType(), fragmentKeysType);
+        initSimpleProperty(PROXY_TABLE_NAME, PROXY_VERSIONABLE_PROP,
+                PROXY_VERSIONABLE_KEY, mainIdType(), fragmentKeysType);
+        addTypeSimpleFragment(PROXY_TYPE, PROXY_TABLE_NAME);
     }
 
     /**

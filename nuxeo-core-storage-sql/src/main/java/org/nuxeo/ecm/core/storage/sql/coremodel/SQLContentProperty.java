@@ -51,8 +51,9 @@ public class SQLContentProperty extends SQLComplexProperty {
 
     public static final String BINARY = "data";
 
-    public SQLContentProperty(Node node, ComplexType type, SQLSession session) {
-        super(node, type, session);
+    public SQLContentProperty(Node node, ComplexType type, SQLSession session,
+            boolean readonly) {
+        super(node, type, session, readonly);
     }
 
     @Override
@@ -73,6 +74,7 @@ public class SQLContentProperty extends SQLComplexProperty {
 
     @Override
     public void setValue(Object value) throws DocumentException {
+        checkWritable();
         Map<String, Object> map = new HashMap<String, Object>();
         if (value == null) {
             // nothing, use empty map

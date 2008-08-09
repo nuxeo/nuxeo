@@ -310,7 +310,7 @@ public class Context {
      * Called by {@link #get}, and by the {@link Mapper} to reuse known
      * hierarchy fragments in lists of children.
      */
-    protected Fragment getIfPresent(Serializable id) throws StorageException {
+    protected Fragment getIfPresent(Serializable id) {
         Fragment fragment;
         fragment = pristine.get(id);
         if (fragment != null) {
@@ -514,7 +514,7 @@ public class Context {
         /*
          * Do the copy.
          */
-        String typeName = source.mainFragment.getString(model.MAIN_PRIMARY_TYPE_KEY);
+        String typeName = source.getPrimaryType();
         Serializable newId = mapper.copyHierarchy(id, typeName, parentId, name);
         getChildById(newId, false); // adds it as a new child of its parent
         return newId;
@@ -532,72 +532,6 @@ public class Context {
             removeChild((SimpleFragment) fragment);
         }
         fragment.markDeleted();
-    }
-
-    /**
-     * Checks in a node.
-     *
-     * @param node the node to check in
-     * @param label the version label
-     * @param description the version description
-     * @return the created version id
-     * @throws StorageException
-     */
-    public Serializable checkIn(Node node, String label, String description)
-            throws StorageException {
-        Boolean checkedIn = (Boolean) node.mainFragment.get(model.MAIN_CHECKED_IN_KEY);
-        if (Boolean.TRUE.equals(checkedIn)) {
-            throw new StorageException("Already checked in");
-        }
-        /*
-         * Do the copy without children, with null parent.
-         */
-        Serializable id = node.getId();
-        String typeName = node.mainFragment.getString(model.MAIN_PRIMARY_TYPE_KEY);
-        Serializable newId = mapper.copyHierarchy(id, typeName, null, null);
-        /*
-         * Create a "version" row for our new version.
-         */
-        HashMap<String, Serializable> map = new HashMap<String, Serializable>();
-        map.put(model.VERSION_VERSIONABLE_KEY, id);
-        map.put(model.VERSION_CREATED_KEY, new GregorianCalendar()); // now
-        map.put(model.VERSION_LABEL_KEY, label);
-        map.put(model.VERSION_DESCRIPTION_KEY, description);
-        SimpleFragment versionRow = (SimpleFragment) persistenceContext.createSimpleFragment(
-                model.VERSION_TABLE_NAME, newId, map);
-        getChildById(newId, false); // adds version as a new child of its parent
-        /*
-         * Update the original node to reflect that it's checked in.
-         */
-        node.mainFragment.put(model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
-        node.mainFragment.put(model.MAIN_BASE_VERSION_KEY, newId);
-        /*
-         * Save to reflect changes immediately in database.
-         */
-        persistenceContext.save();
-        return newId;
-    }
-
-    /**
-     * Checks out a node
-     *
-     * @param node the node to check out
-     * @throws StorageException
-     */
-    public void checkOut(Node node) throws StorageException {
-        Boolean checkedIn = (Boolean) node.mainFragment.get(model.MAIN_CHECKED_IN_KEY);
-        if (!Boolean.TRUE.equals(checkedIn)) {
-            throw new StorageException("Already checked out");
-        }
-        /*
-         * Update the node to reflect that it's checked out.
-         */
-        node.mainFragment.put(model.MAIN_CHECKED_IN_KEY, Boolean.FALSE);
-    }
-
-    public Serializable getVersionByLabel(Serializable versionableId,
-            String label) throws StorageException {
-        return mapper.getVersionByLabel(versionableId, label);
     }
 
     /**

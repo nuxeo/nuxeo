@@ -18,11 +18,8 @@
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Iterator;
 
 import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
@@ -33,18 +30,17 @@ import org.nuxeo.ecm.core.storage.sql.SimpleProperty;
  *
  * @author Florent Guillaume
  */
-public class SQLSimpleProperty implements Property {
+public class SQLSimpleProperty extends SQLBaseProperty {
 
     private final SimpleProperty property;
-
-    private final Type type;
 
     /**
      * Creates a {@link SQLSimpleProperty} to wrap a {@link SimpleProperty}.
      */
-    public SQLSimpleProperty(SimpleProperty property, Type type) {
+    public SQLSimpleProperty(SimpleProperty property, Type type,
+            boolean readonly) {
+        super(type, readonly);
         this.property = property;
-        this.type = type;
     }
 
     /*
@@ -53,18 +49,6 @@ public class SQLSimpleProperty implements Property {
 
     public String getName() {
         return property.getName();
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public boolean isNull() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public void setNull() throws DocumentException {
-        throw new UnsupportedOperationException();
     }
 
     public Serializable getValue() throws DocumentException {
@@ -76,6 +60,7 @@ public class SQLSimpleProperty implements Property {
     }
 
     public void setValue(Object value) throws DocumentException {
+        checkWritable();
         if (value != null && !(value instanceof Serializable)) {
             throw new DocumentException("Value is not Serializable: " + value);
         }
@@ -84,22 +69,6 @@ public class SQLSimpleProperty implements Property {
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
-    }
-
-    public boolean isPropertySet(String name) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public Property getProperty(String name) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public Collection<Property> getProperties() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public Iterator<Property> getPropertyIterator() throws DocumentException {
-        throw new UnsupportedOperationException();
     }
 
 }

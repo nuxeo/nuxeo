@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.sql.ra;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 import javax.resource.ResourceException;
@@ -182,6 +183,33 @@ public class ConnectionImpl implements Session {
     public Node copy(Node source, Node parent, String name)
             throws StorageException {
         return session.copy(source, parent, name);
+    }
+
+    public Node checkIn(Node node, String label, String description)
+            throws StorageException {
+        return session.checkIn(node, label, description);
+    }
+
+    public void checkOut(Node node) throws StorageException {
+        session.checkOut(node);
+    }
+
+    public Node getVersionByLabel(Node node, String label)
+            throws StorageException {
+        return session.getVersionByLabel(node, label);
+    }
+
+    public Collection<Node> getVersions(Node node) throws StorageException {
+        return session.getVersions(node);
+    }
+
+    public Node getLastVersion(Node node) throws StorageException {
+        return session.getLastVersion(node);
+    }
+
+    public Collection<Node> getProxies(Node document, Node parent)
+            throws StorageException {
+        return session.getProxies(document, parent);
     }
 
 }

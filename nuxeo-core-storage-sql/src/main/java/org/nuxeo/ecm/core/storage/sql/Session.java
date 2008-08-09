@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 import javax.resource.cci.Connection;
@@ -233,6 +234,8 @@ public interface Session extends Connection {
 
     /**
      * Gets a version of a node given its label.
+     * <p>
+     * A {@link #save} is automatically done first.
      *
      * @param node the node
      * @param label the label
@@ -242,6 +245,28 @@ public interface Session extends Connection {
     Node getVersionByLabel(Node node, String label) throws StorageException;
 
     /**
+     * Gets all the versions for a given versionable node.
+     * <p>
+     * A {@link #save} is automatically done first.
+     *
+     * @param node the versionable node
+     * @return the list of versions
+     * @throws StorageException
+     */
+    Collection<Node> getVersions(Node node) throws StorageException;
+
+    /**
+     * Gets the last version for a given versionable node.
+     * <p>
+     * A {@link #save} is automatically done first.
+     *
+     * @param node the versionable node
+     * @return the last version, or {@code null} if no versions exist
+     * @throws StorageException
+     */
+    Node getLastVersion(Node node) throws StorageException;
+
+    /**
      * Creates a binary value given an input stream.
      *
      * @param in the input stream
@@ -249,5 +274,25 @@ public interface Session extends Connection {
      * @throws IOException
      */
     Binary getBinary(InputStream in) throws IOException;
+
+    /**
+     * Finds the proxies for a document. If the parent is not null, the search
+     * will be limited to its direct children.
+     * <p>
+     * If the document is a version, then only proxies to that version will be
+     * looked up.
+     * <p>
+     * If the document is a proxy, then all similar proxies (pointing to any
+     * version of the same versionable) are retrieved.
+     * <p>
+     * A {@link #save} is automatically done first.
+     *
+     * @param document the document
+     * @param parent the parent, or {@code null}
+     * @return the list of proxies
+     * @throws StorageException
+     */
+    Collection<Node> getProxies(Node document, Node parent)
+            throws StorageException;
 
 }

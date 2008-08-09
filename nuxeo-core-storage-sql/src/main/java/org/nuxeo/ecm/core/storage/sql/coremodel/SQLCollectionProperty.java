@@ -18,11 +18,8 @@
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Iterator;
 
 import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.model.Property;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
@@ -33,19 +30,18 @@ import org.nuxeo.ecm.core.storage.sql.CollectionProperty;
  *
  * @author Florent Guillaume
  */
-public class SQLCollectionProperty implements Property {
+public class SQLCollectionProperty extends SQLBaseProperty {
 
     private final CollectionProperty property;
-
-    private final ListType type;
 
     /**
      * Creates a {@link SQLCollectionProperty} to wrap a
      * {@link CollectionProperty}.
      */
-    public SQLCollectionProperty(CollectionProperty property, ListType type) {
+    public SQLCollectionProperty(CollectionProperty property, ListType type,
+            boolean readonly) {
+        super(type, readonly);
         this.property = property;
-        this.type = type;
     }
 
     /*
@@ -54,18 +50,6 @@ public class SQLCollectionProperty implements Property {
 
     public String getName() {
         return property.getName();
-    }
-
-    public ListType getType() {
-        return type;
-    }
-
-    public boolean isNull() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public void setNull() throws DocumentException {
-        throw new UnsupportedOperationException();
     }
 
     public Serializable[] getValue() throws DocumentException {
@@ -77,6 +61,7 @@ public class SQLCollectionProperty implements Property {
     }
 
     public void setValue(Object value) throws DocumentException {
+        checkWritable();
         if (value != null && !(value instanceof Serializable[])) {
             throw new DocumentException("Value is not Serializable[]: " + value);
         }
@@ -85,22 +70,6 @@ public class SQLCollectionProperty implements Property {
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
-    }
-
-    public boolean isPropertySet(String name) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public Property getProperty(String name) throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public Collection<Property> getProperties() throws DocumentException {
-        throw new UnsupportedOperationException();
-    }
-
-    public Iterator<Property> getPropertyIterator() throws DocumentException {
-        throw new UnsupportedOperationException();
     }
 
 }

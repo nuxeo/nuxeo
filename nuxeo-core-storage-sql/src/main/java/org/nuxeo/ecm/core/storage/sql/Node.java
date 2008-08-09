@@ -32,18 +32,18 @@ import org.nuxeo.ecm.core.storage.StorageException;
 public class Node {
 
     /** The persistence context used. */
-    protected final PersistenceContext context;
+    private final PersistenceContext context;
 
-    protected final Model model;
+    private final Model model;
 
     /** The main row. */
     protected final SimpleFragment mainFragment;
 
     /** The hierarchy row, if applicable. */
-    protected final SimpleFragment hierFragment;
+    private final SimpleFragment hierFragment;
 
     /** Fragment information for each additional mixin or inherited row. */
-    protected final FragmentsMap fragments;
+    private final FragmentsMap fragments;
 
     /**
      * Cache of property objects already retrieved. They are dumb objects, just
@@ -51,9 +51,9 @@ public class Node {
      *
      * TODO make this a memory-sensitive cache.
      */
-    protected transient final Map<String, BaseProperty> propertyCache;
+    private transient final Map<String, BaseProperty> propertyCache;
 
-    protected transient Boolean isVersion;
+    private transient Boolean isVersion;
 
     /**
      * Creates a Node.
@@ -129,6 +129,10 @@ public class Node {
                     name.length() > 0);
         }
         return isVersion.booleanValue();
+    }
+
+    public boolean isProxy() {
+        return getPrimaryType().equals(model.PROXY_TYPE);
     }
 
     // ----- modification -----
@@ -247,5 +251,29 @@ public class Node {
     // ----- shared nodes -----
 
     // ----- retention -----
+
+    /*
+     * ----- equals/hashcode -----
+     */
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+        if (other instanceof Node) {
+            return equals((Node) other);
+        }
+        return false;
+    }
+
+    private boolean equals(Node other) {
+        return getId() == other.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return getId().hashCode();
+    }
 
 }
