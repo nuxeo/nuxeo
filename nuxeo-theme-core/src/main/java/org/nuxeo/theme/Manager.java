@@ -32,6 +32,7 @@ import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.TypeRegistry;
 import org.nuxeo.theme.uids.UidManager;
+import org.nuxeo.theme.vocabularies.VocabularyManager;
 
 public final class Manager {
 
@@ -87,6 +88,10 @@ public final class Manager {
 
     public static PerspectiveManager getPerspectiveManager() {
         return (PerspectiveManager) getRegistry("perspectives");
+    }
+
+    public static VocabularyManager getVocabularyManager() {
+        return (VocabularyManager) getRegistry("vocabularies");
     }
 
     @SuppressWarnings({"ResultOfObjectAllocationIgnored"})

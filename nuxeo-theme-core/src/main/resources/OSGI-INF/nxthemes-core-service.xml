@@ -155,6 +155,10 @@
     <object class="org.nuxeo.theme.engines.EngineType" />
   </extension-point>
 
+  <extension-point name="template-engines">
+    <object class="org.nuxeo.theme.templates.TemplateEngineType" />
+  </extension-point>
+
   <extension-point name="negotiations">
     <object class="org.nuxeo.theme.negotiation.NegotiationType" />
   </extension-point>
@@ -228,6 +232,10 @@
       - *.gpl (Gimp palettes)
     </documentation>
     <object class="org.nuxeo.theme.presets.PaletteType" />
+  </extension-point>
+
+  <extension-point name="vocabularies">
+    <object class="org.nuxeo.theme.vocabularies.VocabularyType" />
   </extension-point>
 
 </component>

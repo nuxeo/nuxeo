@@ -14,8 +14,12 @@
 
 package org.nuxeo.theme.themes;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -24,6 +28,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +62,8 @@ import org.nuxeo.theme.relations.DyadicRelation;
 import org.nuxeo.theme.relations.Predicate;
 import org.nuxeo.theme.relations.Relation;
 import org.nuxeo.theme.relations.RelationStorage;
+import org.nuxeo.theme.templates.TemplateEngineType;
+import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
 import org.nuxeo.theme.uids.Identifiable;
@@ -74,11 +81,11 @@ public final class ThemeManager implements Registrable {
 
     private final Map<String, PageElement> pages = new HashMap<String, PageElement>();
 
-    private final Map<String, List<Integer>> formatsByTypeName = new HashMap<String, List<Integer>>();
+    private final Map<String, List<Integer>> formatsByTypeName = new LinkedHashMap<String, List<Integer>>();
 
     private final Map<String, Map<String, Integer>> namedObjects = new HashMap<String, Map<String, Integer>>();
 
-    private final Predicate PREDICATE_FORMAT_INHERIT = new DefaultPredicate(
+    private static final Predicate PREDICATE_FORMAT_INHERIT = new DefaultPredicate(
             "_ inherits from _");
 
     private String cachedStyles;
@@ -93,7 +100,7 @@ public final class ThemeManager implements Registrable {
     }
 
     public Set<String> getThemeNames() {
-        return themes.keySet();
+        return new HashSet<String>(themes.keySet());
     }
 
     public Set<String> getPageNames(final String themeName) {
@@ -159,7 +166,7 @@ public final class ThemeManager implements Registrable {
         return path[2];
     }
 
-    public ThemeElement getThemeByUrl(final URL url) {
+    public static TemplateEngineType getTemplateEngineByUrl(final URL url) {
         if (url == null) {
             return null;
         }
@@ -167,19 +174,56 @@ public final class ThemeManager implements Registrable {
         if (path.length <= 3) {
             return null;
         }
-        final String themeName = path[3];
+        final String templateEngineName = path[3];
+        return (TemplateEngineType) Manager.getTypeRegistry().lookup(
+                TypeFamily.TEMPLATE_ENGINE, templateEngineName);
+    }
+    
+    public ThemeElement getThemeByUrl(final URL url) {
+        String themeName = getThemeNameByUrl(url);
+        if (themeName == null) {
+            return null;
+        }
         return getThemeByName(themeName);
     }
 
-    public PageElement getThemePageByUrl(final URL url) {
+    public static String getThemeNameByUrl(final URL url) {
         if (url == null) {
+            return null;
+        }
+        if (!url.getHost().equals("theme")) {
             return null;
         }
         final String[] path = url.getPath().split("/");
         if (path.length <= 4) {
             return null;
         }
-        final String pagePath = path[3] + '/' + path[4];
+        return path[4];
+    }
+    
+    public String getPagePathByUrl(final URL url) {
+        if (url == null) {
+            return null;
+        }
+        if (!url.getHost().equals("theme")) {
+            return null;
+        }
+        final String[] path = url.getPath().split("/");
+        if (path.length <= 5) {
+            return null;
+        }
+        final String pagePath = path[4] + '/' + path[5];
+        return pagePath;
+    }
+
+    public PageElement getThemePageByUrl(final URL url) {
+        if (url == null) {
+            return null;
+        }
+        if (!url.getHost().equals("theme")) {
+            return null;
+        }
+        final String pagePath = getPagePathByUrl(url);
         return getPageByPath(pagePath);
     }
 
@@ -193,6 +237,9 @@ public final class ThemeManager implements Registrable {
 
     public static Element getElementByUrl(final URL url) {
         if (url == null) {
+            return null;
+        }
+        if (!url.getHost().equals("element")) {
             return null;
         }
         final String[] path = url.getPath().split("/");
@@ -212,10 +259,10 @@ public final class ThemeManager implements Registrable {
             return null;
         }
         final String[] path = url.getPath().split("/");
-        if (path.length <= 5) {
+        if (path.length <= 6) {
             return null;
         }
-        final String perspectiveName = path[5];
+        final String perspectiveName = path[6];
         return (PerspectiveType) Manager.getTypeRegistry().lookup(
                 TypeFamily.PERSPECTIVE, perspectiveName);
     }
@@ -238,7 +285,7 @@ public final class ThemeManager implements Registrable {
     public void setNamedObject(final String themeName, final String realm,
             final Identifiable object) {
         if (!namedObjects.containsKey(themeName)) {
-            namedObjects.put(themeName, new HashMap<String, Integer>());
+            namedObjects.put(themeName, new LinkedHashMap<String, Integer>());
         }
         final String name = object.getName();
         if (name == null) {
@@ -266,6 +313,12 @@ public final class ThemeManager implements Registrable {
             }
         }
         return objects;
+    }
+
+    public void removeNamedObject(final String themeName, final String realm,
+            final String name) {
+        final String key = String.format("%s/%s", realm, name);
+        namedObjects.get(themeName).remove(key);
     }
 
     public void removeNamedObjects(final String themeName) {
@@ -383,7 +436,7 @@ public final class ThemeManager implements Registrable {
     }
 
     public Set<String> getFormatTypeNames() {
-        return formatsByTypeName.keySet();
+        return new LinkedHashSet<String>(formatsByTypeName.keySet());
     }
 
     public List<Format> getFormatsByTypeName(final String formatTypeName) {
@@ -521,7 +574,8 @@ public final class ThemeManager implements Registrable {
         }
     }
 
-    public static void saveTheme(final String src) throws ThemeIOException {
+    public static void saveTheme(final String src, final int indent)
+            throws ThemeIOException {
         TypeRegistry typeRegistry = Manager.getTypeRegistry();
         ThemeDescriptor themeDescriptor = (ThemeDescriptor) typeRegistry.lookup(
                 TypeFamily.THEME, src);
@@ -546,7 +600,7 @@ public final class ThemeManager implements Registrable {
         ThemeSerializer serializer = new ThemeSerializer();
         String themeName = themeDescriptor.getName();
         ThemeElement theme = Manager.getThemeManager().getThemeByName(themeName);
-        final String xml = serializer.serializeToXml(theme);
+        final String xml = serializer.serializeToXml(theme, indent);
 
         if (os != null) {
             try {
@@ -568,6 +622,43 @@ public final class ThemeManager implements Registrable {
 
     public static void repairTheme(ThemeElement theme) {
         ThemeRepairer.repair(theme);
+    }
+    
+    public static String renderElement(URL url) {
+        String result = null;
+        InputStream is = null;
+        try {
+            is = url.openStream();
+            Reader in = null;
+            try {
+                in = new BufferedReader(new InputStreamReader(is));
+                StringBuilder rendered = new StringBuilder();
+                int ch;
+                while ((ch = in.read()) > -1) {
+                    rendered.append((char) ch);
+                }
+                result = rendered.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (in != null) {
+                    in.close();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    is = null;
+                }
+            }
+        }
+        return result;
     }
 
     public void removeOrphanedFormats() {
@@ -626,7 +717,8 @@ public final class ThemeManager implements Registrable {
     public void makeFormatInherit(Format format, Format ancestor) {
         if (format.equals(ancestor)) {
             FormatType formatType = format.getFormatType();
-            String formatName = formatType != null ? formatType.getTypeName() : "unknown";
+            String formatName = formatType != null ? formatType.getTypeName()
+                    : "unknown";
             log.error(String.format(
                     "A format ('%s' with type '%s') cannot inherit from itself, aborting",
                     format.getName(), formatName));
@@ -636,12 +728,25 @@ public final class ThemeManager implements Registrable {
             log.error("Cycle detected.in format inheritance, aborting.");
             return;
         }
+        // remove old inheritance relations
+        removeInheritanceTowards(format);
+        // set new ancestor
         DyadicRelation relation = new DyadicRelation(PREDICATE_FORMAT_INHERIT,
                 format, ancestor);
         Manager.getRelationStorage().add(relation);
     }
 
-    public Format getAncestorFormatOf(Format format) {
+    public static void removeInheritanceTowards(Format format) {
+        Collection<Relation> relations = Manager.getRelationStorage().search(
+                PREDICATE_FORMAT_INHERIT, format, null);
+        Iterator<Relation> it = relations.iterator();
+        if (it.hasNext()) {
+            Relation relation = it.next();
+            Manager.getRelationStorage().remove(relation);
+        }
+    }
+
+    public static Format getAncestorFormatOf(Format format) {
         Collection<Relation> relations = Manager.getRelationStorage().search(
                 PREDICATE_FORMAT_INHERIT, format, null);
         Iterator<Relation> it = relations.iterator();
@@ -651,7 +756,7 @@ public final class ThemeManager implements Registrable {
         return null;
     }
 
-    public List<Format> listAncestorFormatsOf(Format format) {
+    public static List<Format> listAncestorFormatsOf(Format format) {
         List<Format> ancestors = new ArrayList<Format>();
         Format current = format;
         while (current != null) {
@@ -666,6 +771,24 @@ public final class ThemeManager implements Registrable {
             ancestors.add(current);
         }
         return ancestors;
+    }
+
+    public static List<Format> listFormatsDirectlyInheritingFrom(Format format) {
+        List<Format> formats = new ArrayList<Format>();
+        Collection<Relation> relations = Manager.getRelationStorage().search(
+                PREDICATE_FORMAT_INHERIT, null, format);
+        Iterator<Relation> it = relations.iterator();
+        while (it.hasNext()) {
+            formats.add((Format) it.next().getRelate(1));
+        }
+        return formats;
+    }
+
+    public void deleteFormat(Format format) {
+        for (Format f : ThemeManager.listFormatsDirectlyInheritingFrom(format)) {
+            ThemeManager.removeInheritanceTowards(f);
+        }
+        unregisterFormat(format);
     }
 
     // Cached styles
@@ -683,6 +806,20 @@ public final class ThemeManager implements Registrable {
 
     public synchronized void setResource(String name, String content) {
         cachedResources.put(name, content);
+    }
+    
+    // Template engines
+    public static List<String> getTemplateEngineNames() {
+        List<String> types = new ArrayList<String>();
+        for (Type type : Manager.getTypeRegistry().getTypes(TypeFamily.TEMPLATE_ENGINE)) {
+            types.add(type.getTypeName());
+        }
+        return types;
+    }
+    
+    public static String getDefaultTemplateEngineName() {
+        // TODO use XML configuration
+        return "jsf-facelets";
     }
 
 }

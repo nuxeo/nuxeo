@@ -33,15 +33,15 @@ public class TestElementConfiguration extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "element-config.xml");
         ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
                 ThemeService.ID);
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");
     }
 
-    public void testRegisterElement1() throws Exception {
+    public void testRegisterElement1() {
         // element 1
         element1 = (ElementType) typeRegistry.lookup(TypeFamily.ELEMENT,
                 "test element 1");
@@ -52,7 +52,7 @@ public class TestElementConfiguration extends NXRuntimeTestCase {
                 element1.getClassName());
     }
 
-    public void testRegisterElement2() throws Exception {
+    public void testRegisterElement2() {
         // element 2
         element2 = (ElementType) typeRegistry.lookup(TypeFamily.ELEMENT,
                 "test element 2");

@@ -27,18 +27,22 @@ public abstract class AbstractNegotiator implements Negotiator {
 
     private final Object context;
 
+    public abstract String getTemplateEngineName();
+
     protected AbstractNegotiator(String strategy, Object context) {
         this.strategy = strategy;
         this.context = context;
     }
 
     public final String getSpec() throws NegotiationException {
-        return String.format("%s/%s/%s/%s/%s", SPEC_PREFIX,
-                negotiate("engine"), negotiate("mode"), negotiate("theme"),
+        return String.format("%s/%s/%s/%s/%s/%s", SPEC_PREFIX,
+                negotiate("engine"), negotiate("mode"),
+                getTemplateEngineName(), negotiate("theme"),
                 negotiate("perspective"));
     }
 
-    synchronized public final String negotiate(String object) throws NegotiationException {
+    public final synchronized String negotiate(String object)
+            throws NegotiationException {
         if (strategy == null) {
             throw new NegotiationException("No negotiation strategy is set.");
         }
@@ -46,9 +50,8 @@ public abstract class AbstractNegotiator implements Negotiator {
                 TypeFamily.NEGOTIATION,
                 String.format("%s/%s", strategy, object));
         if (negotiation == null) {
-            throw new NegotiationException(
-                    "Could not obtain negotiation for: " + strategy
-                            + " (strategy) " + object + " (object)");
+            throw new NegotiationException("Could not obtain negotiation for: "
+                    + strategy + " (strategy) " + object + " (object)");
         }
         final List<Scheme> schemes = negotiation.getSchemes();
 

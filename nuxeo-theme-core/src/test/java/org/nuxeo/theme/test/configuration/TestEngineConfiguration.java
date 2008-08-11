@@ -32,15 +32,15 @@ public class TestEngineConfiguration extends NXRuntimeTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-service.xml");
-        deployContrib("org.nuxeo.theme.core.tests", "nxthemes-core-contrib.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-service.xml");
+        deployContrib("org.nuxeo.theme.core", "OSGI-INF/nxthemes-core-contrib.xml");
         deployContrib("org.nuxeo.theme.core.tests", "engine-config.xml");
         ThemeService themeService = (ThemeService) Framework.getRuntime().getComponent(
                 ThemeService.ID);
         typeRegistry = (TypeRegistry) themeService.getRegistry("types");
     }
 
-    public void testRegisterEngine1() throws Exception {
+    public void testRegisterEngine1() {
         // engine 1
         engine1 = (EngineType) typeRegistry.lookup(TypeFamily.ENGINE,
                 "test-engine");
@@ -50,7 +50,7 @@ public class TestEngineConfiguration extends NXRuntimeTestCase {
                 engine1.getRenderers().get("theme").getFilters().toString());
     }
 
-    public void testRegisterEngine2() throws Exception {
+    public void testRegisterEngine2() {
         // engine 2
         engine2 = (EngineType) typeRegistry.lookup(TypeFamily.ENGINE,
                 "test-engine-2");

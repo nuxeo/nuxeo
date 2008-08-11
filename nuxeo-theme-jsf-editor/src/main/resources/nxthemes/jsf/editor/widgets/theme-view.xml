@@ -12,7 +12,7 @@
     <nxthemes:resources />
 
     <script type="text/javascript"
-      src="/nuxeo/seam/remoting/interface.js?nxthemesEditorAction">
+      src="/nuxeo/seam/resource/remoting/interface.js?nxthemesEditorAction">
       <!--
         // This space intentionally left blank
         //-->

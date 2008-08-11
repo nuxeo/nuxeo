@@ -24,7 +24,7 @@ public final class DefaultPerspective implements Scheme {
 
     public String getOutcome(final Object context) {
         final Map<String, Object> requestMap = ((FacesContext) context).getExternalContext().getRequestMap();
-        return (String) requestMap.get("nxthemesDefaultPerspective");
+        return (String) requestMap.get("org.nuxeo.theme.default.perspective");
     }
 
 }

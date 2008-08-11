@@ -34,6 +34,7 @@ import org.nuxeo.theme.elements.PageElement;
 import org.nuxeo.theme.elements.ThemeElement;
 import org.nuxeo.theme.formats.styles.Style;
 import org.nuxeo.theme.jsf.negotiation.CookieManager;
+import org.nuxeo.theme.perspectives.PerspectiveManager;
 import org.nuxeo.theme.perspectives.PerspectiveType;
 
 @Stateful
@@ -45,19 +46,19 @@ public class UiStates implements UiStatesLocal {
 
     private List<String> clipboardElements = new ArrayList<String>();
 
-    private Element selectedElement = null;
+    private Element selectedElement;
 
-    private String currentStyleSelector = null;
+    private String currentStyleSelector;
 
-    private String styleCategory = null;
+    private String styleCategory;
 
-    private String presetGroup = null;
+    private String presetGroup;
 
-    private String styleEditMode = null;
+    private String styleEditMode;
 
     private String stylePropertyCategory = "";
 
-    private Style styleLayer = null;
+    private Style styleLayer;
 
     private String applicationPath = "";
 
@@ -92,7 +93,7 @@ public class UiStates implements UiStatesLocal {
         if (perspectiveName == null) {
             return null;
         }
-        return Manager.getPerspectiveManager().getPerspectiveByName(
+        return PerspectiveManager.getPerspectiveByName(
                 perspectiveName);
     }
 

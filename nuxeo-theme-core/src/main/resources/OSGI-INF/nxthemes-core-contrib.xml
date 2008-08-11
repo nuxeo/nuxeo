@@ -43,6 +43,12 @@
       </class>
     </registry>
 
+    <registry name="vocabularies">
+      <class>
+        org.nuxeo.theme.vocabularies.VocabularyManager
+      </class>
+    </registry>
+
   </extension>
 
   <extension target="org.nuxeo.theme.services.ThemeService"

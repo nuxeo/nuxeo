@@ -16,7 +16,8 @@ package org.nuxeo.theme.jsf.component;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.faces.component.UIOutput;
 import javax.faces.context.ExternalContext;
@@ -24,61 +25,27 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.servlet.ServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.theme.Manager;
-import org.nuxeo.theme.elements.ElementFormatter;
-import org.nuxeo.theme.elements.ThemeElement;
-import org.nuxeo.theme.formats.widgets.Widget;
+import org.nuxeo.theme.html.ui.Head;
 import org.nuxeo.theme.jsf.URLUtils;
+import org.nuxeo.theme.themes.ThemeManager;
 
 public class UIHead extends UIOutput {
-
-    private static final Log log = LogFactory.getLog(UIHead.class);
 
     @Override
     public void encodeAll(final FacesContext context) throws IOException {
         final ResponseWriter writer = context.getResponseWriter();
-        final ExternalContext externalContext = (ExternalContext) context.getExternalContext();
+        final ExternalContext externalContext = context.getExternalContext();
+
         final URL themeUrl = (URL) externalContext.getRequestMap().get(
-                "nxthemesThemeUrl");
-        final ThemeElement theme = Manager.getThemeManager().getThemeByUrl(
-                themeUrl);
-        final Widget widget = (Widget) ElementFormatter.getFormatFor(theme,
-                "widget");
+                "org.nuxeo.theme.url");
+        Map<String, String> params = new HashMap<String, String>();
 
-        if (widget == null) {
-            log.warn("Theme " + themeUrl + " has no widget format.");
-        } else {
-            final Properties properties = widget.getProperties();
+        params.put("themeName", ThemeManager.getThemeNameByUrl(themeUrl));
+        params.put("basePath", externalContext.getRequestContextPath());
+        params.put(
+                "baseUrl",
+                URLUtils.getBaseURL((ServletRequest) externalContext.getRequest()));
 
-            // Charset
-            final String charset = properties.getProperty("charset", "utf-8");
-            writer.write(String.format(
-                    "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=%s\"/>",
-                    charset));
-
-            // Site icon
-            final String icon = properties.getProperty("icon", "/favicon.ico");
-            writer.write(String.format(
-                    "<link rel=\"icon\" href=\"%s\" type=\"image/x-icon\"/>",
-                    icon));
-            writer.write(String.format(
-                    "<link rel=\"shortcut icon\" href=\"%s\" type=\"image/x-icon\"/>",
-                    icon));
-        }
-
-        // Styles
-        final String contextPath = externalContext.getRequestContextPath();
-        writer.write(String.format(
-                "<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"/nuxeo/nxthemes-css/?path=%s\"/>",
-                contextPath));
-
-        // Base URL
-        final ServletRequest request = (ServletRequest) externalContext.getRequest();
-        final String baseUrl = URLUtils.getBaseURL(request);
-        if (baseUrl != null) {
-            writer.write(String.format("<base href=\"%s\" />", baseUrl));
-        }
+        writer.write(Head.render(params));
     }
 }

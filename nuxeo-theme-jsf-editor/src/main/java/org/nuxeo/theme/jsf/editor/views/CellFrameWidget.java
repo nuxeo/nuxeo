@@ -19,6 +19,7 @@ import org.nuxeo.theme.views.AbstractView;
 
 public class CellFrameWidget extends AbstractView {
 
+    @Override
     public String render(final RenderingInfo info) {
         final String markup = info.getMarkup();
         String className = "nxthemesContainer";

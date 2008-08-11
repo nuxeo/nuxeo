@@ -36,7 +36,6 @@ public class FragmentTag extends UIComponentELTag {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void setProperties(UIComponent component) {
         super.setProperties(component);
         component.getAttributes().put("uid", uid);
