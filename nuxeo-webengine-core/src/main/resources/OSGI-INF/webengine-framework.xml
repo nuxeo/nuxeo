@@ -188,6 +188,7 @@
             <eq ref="my:email" />
           </constraints>
         </field>
+        <field id="my:email" required="true" />
       </form>
     </code>
   </documentation>

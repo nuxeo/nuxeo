@@ -91,7 +91,39 @@ public class TestForms extends NXRuntimeTestCase {
         data.setField("dc:title", "My title 2");
         assertFalse(form.getField("dc:title").validate(data).isOk());
 
+        data.setField("my:country", "some country");
+        assertFalse(form.getField("my:country").validate(data).isOk());
+        data.setField("my:country", "France");
+        assertTrue(form.getField("my:country").validate(data).isOk());
+        data.setField("my:country", "Romania");
+        assertTrue(form.getField("my:country").validate(data).isOk());
+        data.setField("my:country", "USA");
+        assertTrue(form.getField("my:country").validate(data).isOk());
+        data.setField("my:country", "Belgium");
+        assertTrue(form.getField("my:country").validate(data).isOk());
+        // multi-valued field
+        data.addField("my:country", "Romania");
+        assertTrue(form.getField("my:country").validate(data).isOk());
 
+        data.setField("my:country", "");
+        assertTrue(form.getField("my:country").validate(data).isOk());
+        data.setField("my:country", (String)null);
+        assertTrue(form.getField("my:country").validate(data).isOk());
+        data.setField("my:country", "Italy");
+        assertFalse(form.getField("my:country").validate(data).isOk());
+
+        data.setField("my:email", "");
+        assertFalse(form.getField("my:email").validate(data).isOk());
+        data.setField("my:email", (String)null);
+        assertFalse(form.getField("my:email").validate(data).isOk());
+
+        data.setField("confirm_email", "some@email.com");
+        assertFalse(form.getField("confirm_email").validate(data).isOk());
+
+        data.setField("my:email", "bs@nuxeo.com");
+        assertFalse(form.getField("confirm_email").validate(data).isOk());
+        data.setField("confirm_email", "bs@nuxeo.com");
+        assertTrue(form.getField("confirm_email").validate(data).isOk());
     }
 
 
