@@ -77,7 +77,6 @@ public interface LifeCycleManager {
      *            the life cycle policy
      * @throws LifeCycleException
      */
-    void setPolicy(Document doc, String policy)
-            throws LifeCycleException;
+    void setPolicy(Document doc, String policy) throws LifeCycleException;
 
 }

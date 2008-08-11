@@ -61,8 +61,8 @@ variables, fields, tables, functions
  */
 /*IdentifierLetter = [:jletterdigit:] | \.*/
 Identifier = [:jletter:] [a-zA-Z0-9_:.-]*
-
 FromIdentifier = {Identifier} (\. {Identifier})*
+PathIdentifier = {Identifier} (\/ {Identifier})+
 
 
 /* integer literal */
@@ -217,6 +217,7 @@ Exponent = [eE] [+-]? [0-9]+
 
 	/* Identifiers */
 	{Identifier}        { return symbol(sym.IDENTIFIER, yytext()); }
+	{PathIdentifier}    { return symbol(sym.PATH_IDENTIFIER, yytext()); }
 	{FromIdentifier}    { return symbol(sym.FROM_IDENTIFIER, yytext()); }
 
 }
