@@ -6,7 +6,6 @@
     Default Wiki Objects
   </documentation>
 
-
   <extension target="org.nuxeo.ecm.webengine.WebEngineComponent"
              point="application-mapping">
     <mapping path="/wikis" webapp="wiki" document="/default-domain/workspaces/wikis" />
@@ -141,4 +140,3 @@
     
   </extension>
 </component>
-

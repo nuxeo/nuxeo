@@ -2,7 +2,7 @@
 <#--<h1>${Document.title}</h1>-->
 
 <div id="entry-content">
-    <@wiki>${Document.wikiPage.content}</@wiki>
+  <@wiki>${Document.wikiPage.content}</@wiki>
 </div>
 
 <div id="entry-attachments">

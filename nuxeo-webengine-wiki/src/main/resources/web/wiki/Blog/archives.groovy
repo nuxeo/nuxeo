@@ -19,9 +19,7 @@ def main () {
     
     Request.render('Blog/archives.ftl',
                   ['year': year, 'month': month, 'pquery': pquery, 'results': results, 'sdate': c.getTime()])
-
 }
-
 
 /**
  * return True if the year is a leap year
@@ -46,10 +44,7 @@ def NumberOfDaysInMonth (year, month) {
         return IsLeapYear(y) ? 29 : 28
     } else {
         return 30
-    }
-    
+    }   
 }
-
-
 
 main()

@@ -11,11 +11,8 @@ if (Session.principal.isAnonymous()) {
 }
 
 Context.print("doc ${Document.sessionId}\n")
-
 Context.print("session ${Session.sessionId}\n")
-
 Context.print("principal ${Session.principal.name}\n")
-
 
 if (cText != null) {
     cDoc.addComment(cText)

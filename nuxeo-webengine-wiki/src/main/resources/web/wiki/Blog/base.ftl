@@ -1,20 +1,20 @@
 <html>
 <#import "common/util.ftl" as base/>
 <head>
-    <title>${Root.document.title} :: ${This.document.title}</title>
+  <title>${Root.document.title} :: ${This.document.title}</title>
     
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     
-<link rel="stylesheet" href="/nuxeo/site/files/resources/css/webengine.css" type="text/css" media="screen" charset="utf-8">
-<link rel="stylesheet" href="/nuxeo/site/files/resources/css/blog.css" type="text/css" media="screen" charset="utf-8">
-<script src="/nuxeo/site/files/resources/script/jquery/jquery.js"></script>
+  <link rel="stylesheet" href="/nuxeo/site/files/resources/css/webengine.css" type="text/css" media="screen" charset="utf-8">
+  <link rel="stylesheet" href="/nuxeo/site/files/resources/css/blog.css" type="text/css" media="screen" charset="utf-8">
+  <script src="/nuxeo/site/files/resources/script/jquery/jquery.js"></script>
   <link rel="stylesheet" href="/nuxeo/site/files/resources/script/jquery/ui/themes/flora/flora.all.css" type="text/css" media="screen" title="Flora (Default)">
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.base.js"></script>
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/ui/ui.tabs.js"></script>
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/base64.js"></script>
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/jquery/cookie.js"></script>
   
-   <!-- markit up -->
+  <!-- markit up -->
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/markitup/jquery.markitup.pack.js"></script>
   <script type="text/javascript" src="/nuxeo/site/files/resources/script/markitup/sets/default/set.js"></script>
   <link rel="stylesheet" type="text/css" href="/nuxeo/site/files/resources/script/markitup/skins/markitup/style.css" />
@@ -25,8 +25,7 @@
   
   <base href="${This.urlPath}">
 
-<script>
-
+  <script>
 $.fn.search = function() {
 	return $(this).focus(function() {
 		if( $(this).value == This.defaultValue ) {
@@ -38,16 +37,12 @@ $.fn.search = function() {
 		}
 	});
 };
-
-
-
-</script>
+  </script>
 
 </head>
 
 <body>
-
-<div id="wrap">
+  <div id="wrap">
     <div id="header">
       <div class="searchBox">
       <form action="${Root.docURL}@@search" method="get" accept-charset="utf-8">
@@ -55,7 +50,7 @@ $.fn.search = function() {
         <input type="hidden" name="p" value="${Root.path}">
       </form>
      </div>  
-       <h1><a href="${Root.urlPath}">${Root.title}</a></h1>
+     <h1><a href="${Root.urlPath}">${Root.title}</a></h1>
     </div>
     <div id="main-wrapper">
       <div id="main">
@@ -75,7 +70,6 @@ $.fn.search = function() {
        <p>&copy; 2000-2008 <a href="http://www.nuxeo.com/en/">Nuxeo</a>.</p>
     </div>
     
-</div>
-
+  </div>
 </body>
 </html>

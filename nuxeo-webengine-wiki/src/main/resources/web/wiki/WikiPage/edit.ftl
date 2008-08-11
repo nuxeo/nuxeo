@@ -15,7 +15,7 @@ $('#content').ready(function(){
 </script>
 
 <form method="POST" action="${This.urlPath}@@update" accept-charset="utf-8">
-<h1><input type="text" name="dc:title" value="${Document.dublincore.title}"/></h1>
+  <h1><input type="text" name="dc:title" value="${Document.dublincore.title}"/></h1>
   <textarea name="wp:content" cols="75" rows="40" id="content" class="entryEdit">${Document.wikiPage.content}</textarea>
   <p class="entryEditOptions">
     Version increment:

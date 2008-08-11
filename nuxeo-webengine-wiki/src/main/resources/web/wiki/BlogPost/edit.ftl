@@ -6,13 +6,13 @@
     Allow Trackbacks:
     <input type="radio" name="trackback" value="yes" checked /> Yes
     <input type="radio" name="trackback" value="yes" /> No
-</p>
+  </p>
 
-<p class="entryEditOptions">
+  <p class="entryEditOptions">
     Allow Comments:
     <input type="radio" name="comment" value="yes" checked /> Yes
     <input type="radio" name="comment" value="yes" /> No
-</p>
+  </p>
 
   <p class="buttonsGadget">
     <input type="submit" class="button"/>

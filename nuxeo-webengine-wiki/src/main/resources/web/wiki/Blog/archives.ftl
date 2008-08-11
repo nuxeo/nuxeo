@@ -6,9 +6,8 @@
     <#else>${sdate?string("yyyy")}</#if></h1>
 
 ${sdate?date}
+
 <br/>
-
-
 <br/>
 
 <#list results as doc>
