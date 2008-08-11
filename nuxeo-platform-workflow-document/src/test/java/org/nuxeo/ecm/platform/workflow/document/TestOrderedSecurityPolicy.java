@@ -23,19 +23,14 @@ public class TestOrderedSecurityPolicy extends TestCase {
     OrderedReviewWorkflowDocumentSecurityPolicy policy;
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    protected void tearDown() throws Exception {
+        policy = null;
+        super.tearDown();
     }
 
     public void testFixtures() {
         Collection<WMWorkItemInstance> tasks = new ArrayList<WMWorkItemInstance>();
         policy = new FakeOrderedReviewWorkflowDocumentSecurityPolicy(tasks);
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        policy = null;
-        super.tearDown();
     }
 
 }

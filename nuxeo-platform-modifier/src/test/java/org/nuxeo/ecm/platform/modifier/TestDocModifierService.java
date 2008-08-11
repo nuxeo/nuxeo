@@ -43,7 +43,6 @@ import org.nuxeo.ecm.platform.transform.interfaces.Transformer;
 import org.nuxeo.ecm.platform.transform.service.TransformService;
 
 
-
 /**
  * Tests the Document Modifier component.
  *
@@ -51,7 +50,7 @@ import org.nuxeo.ecm.platform.transform.service.TransformService;
  */
 public class TestDocModifierService extends AbstractPluginTestCase {
 
-    final Log log = LogFactory.getLog(TestDocModifierService.class);
+    private static final Log log = LogFactory.getLog(TestDocModifierService.class);
 
     private Session session;
 

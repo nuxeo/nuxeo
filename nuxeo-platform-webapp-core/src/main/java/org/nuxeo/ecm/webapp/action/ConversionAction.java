@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.webapp.action;
 
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.Blob;
 
 public interface ConversionAction {
