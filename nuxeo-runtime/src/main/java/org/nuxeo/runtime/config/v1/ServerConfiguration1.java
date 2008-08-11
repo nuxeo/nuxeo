@@ -42,20 +42,18 @@ public class ServerConfiguration1 extends AbstractServerConfiguration {
     private ServiceDescriptor[] serviceDescriptors;
     private ServiceHost[] hosts;
 
-
     public ServerConfiguration1(InvokerLocator locator, String name, Version version) {
-        super (locator, name, version);
+        super(locator, name, version);
     }
 
-
-    // compatibility code - retrieve service binginds and groups
+    // compatibility code - retrieve service bindings and groups
 
     public ServiceDescriptor[] getServiceBindingsCompat() {
         return serviceDescriptors;
     }
 
     public void setServiceBindingsCompat(ServiceDescriptor[] bindings) {
-        this.serviceDescriptors = bindings;
+        serviceDescriptors = bindings;
     }
 
     public ServiceHost[] getServiceHostsCompat() {
@@ -77,7 +75,7 @@ public class ServerConfiguration1 extends AbstractServerConfiguration {
 
         // TODO: service/groups management is buggy - when ServiceHost objects are deserialized
         // the Groups are registered in the current manager!!
-        // service management must be rewriten
+        // service management must be rewritten
         for (ServiceHost sh : hosts) {
             serviceMgr.registerServer(sh);
         }
@@ -90,7 +88,6 @@ public class ServerConfiguration1 extends AbstractServerConfiguration {
         for (SecurityDomain sd : securityDomains) {
             loginMgr.addSecurityDomain(sd);
         }
-
     }
 
     protected void loadStreamingConfig(String serverLocator) throws Exception {

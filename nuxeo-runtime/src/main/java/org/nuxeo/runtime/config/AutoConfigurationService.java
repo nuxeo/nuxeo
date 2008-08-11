@@ -41,10 +41,10 @@ public class AutoConfigurationService {
 
     ServerConfiguration config; // last loaded server config
 
-    ServiceManager serviceMgr;
-    LoginService loginMgr;
-    RemotingService remoting;
-    Version version = new Version(1,0,0);
+    final ServiceManager serviceMgr;
+    final LoginService loginMgr;
+    final RemotingService remoting;
+    final Version version = new Version(1,0,0);
 
     public AutoConfigurationService() {
         remoting = Framework.getLocalService(RemotingService.class);
@@ -52,9 +52,6 @@ public class AutoConfigurationService {
         loginMgr = Framework.getLocalService(LoginService.class);
     }
 
-    /**
-     * @return the version.
-     */
     public Version getVersion() {
         return version;
     }
@@ -71,7 +68,7 @@ public class AutoConfigurationService {
     }
 
     public void load(String protocol, String host, int port) throws Exception {
-        HashMap<String,String> params = new HashMap<String,String>();
+        Map<String,String> params = new HashMap<String,String>();
         params.put("datatype", "nuxeo");
         load (new InvokerLocator(protocol, host, port, "/", params));
     }
@@ -101,9 +98,9 @@ public class AutoConfigurationService {
         }
     }
 
-
     /**
-     * Get the currently connected e server config
+     * Gets the currently connected e server config.
+     *
      * @return the server config or null if no server was connected yet
      */
     public ServerConfiguration getServerConfiguration() {
@@ -113,7 +110,6 @@ public class AutoConfigurationService {
     protected void loadCompat(Server server, InvokerLocator locator) throws Exception {
         new Configuration().load(server, locator.getHost(), locator.getLocatorURI());
     }
-
 
     private static final String  JNDI_PREFIX = "nuxeo-client-jndi.";
 
@@ -129,10 +125,10 @@ public class AutoConfigurationService {
         return jndiProperties;
     }
 
-
     public static InvokerLocator createLocator(String url) throws MalformedURLException {
         InvokerLocator locator = new InvokerLocator(url);
-        return createLocator(locator.getProtocol(), locator.getHost(), locator.getPort(), locator.getPath(), locator.getParameters());
+        return createLocator(locator.getProtocol(), locator.getHost(),
+                locator.getPort(), locator.getPath(), locator.getParameters());
     }
 
     public static InvokerLocator createLocator(String host, int port) {
@@ -143,11 +139,13 @@ public class AutoConfigurationService {
         return createLocator(protocol, host, port, "", null);
     }
 
-    public static InvokerLocator createLocator(String protocol, String host, int port, String path) {
+    public static InvokerLocator createLocator(String protocol, String host,
+            int port, String path) {
         return createLocator(protocol, host, port, path, null);
     }
 
-    public static InvokerLocator createLocator(String protocol, String host, int port, String path, Map<String,String> params) {
+    public static InvokerLocator createLocator(String protocol, String host,
+            int port, String path, Map<String, String> params) {
         if (params == null) {
             params = new HashMap<String, String>();
             params.put(InvokerLocator.DATATYPE, "nuxeo");

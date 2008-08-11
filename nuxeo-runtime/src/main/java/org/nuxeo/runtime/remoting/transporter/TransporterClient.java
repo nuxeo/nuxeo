@@ -51,7 +51,6 @@ import org.jboss.remoting.network.NetworkRegistry;
  *
  * @author <a href="mailto:tom.elrod@jboss.com">Tom Elrod</a>
  */
-
 public class TransporterClient implements InvocationHandler, Serializable {
 
     private static final long serialVersionUID = 3894857374386677211L;
@@ -112,8 +111,8 @@ public class TransporterClient implements InvocationHandler, Serializable {
         // multicast detector will detect new network registries that come
         // online
         detector = new MulticastDetector();
-        server.registerMBean(detector, new ObjectName(
-                "remoting:type=MulticastDetector"));
+        server.registerMBean(detector,
+                new ObjectName("remoting:type=MulticastDetector"));
         detector.start();
     }
 
@@ -121,7 +120,7 @@ public class TransporterClient implements InvocationHandler, Serializable {
      * Creates a remote proxy to a POJO on a remote server.
      *
      * @param locatorURI
-     *            the remoting locator uri to the target server where the target
+     *            the remoting locator URI to the target server where the target
      *            POJO exists.
      * @param targetClass
      *            the interface class of the POJO will be calling upon.
@@ -129,9 +128,9 @@ public class TransporterClient implements InvocationHandler, Serializable {
      *            true will cause the transporter to look for other remoting
      *            serves that have the POJO running and include it in the
      *            client's target list. If a call on first target fails, will
-     *            seamlessly fail over to one of the other discovered targets.
+     *            seamlessly failover to one of the other discovered targets.
      * @return dynamic remote proxy typed to the interface specified by the
-     *         targetClass param.
+     *         targetClass param
      * @throws Exception
      */
     public static Object createTransporterClient(String locatorURI,
@@ -145,22 +144,21 @@ public class TransporterClient implements InvocationHandler, Serializable {
             InvokerLocator locator = new InvokerLocator(locatorURI);
             TransporterClient client = new TransporterClient(locator,
                     targetClass.getName());
-            return Proxy.newProxyInstance(Thread.currentThread()
-                    .getContextClassLoader(), new Class[] { targetClass },
-                    client);
+            return Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
+                    new Class[] { targetClass }, client);
         }
     }
 
     /**
      * Creates a remote proxy to a POJO on a remote server.
      *
-     * @param locatorURI -
-     *            the remoting locator uri to the target server where the target
-     *            POJO exists.
-     * @param targetClass -
+     * @param locatorURI
+     *            the remoting locator URI to the target server where the target
+     *            POJO exists
+     * @param targetClass
      *            the interface class of the POJO will be calling upon.
      * @return dynamic remote proxy typed to the interface specified by the
-     *         targetClass param.
+     *         targetClass parameter
      * @throws Exception
      */
     public static Object createTransporterClient(String locatorURI,
@@ -172,13 +170,13 @@ public class TransporterClient implements InvocationHandler, Serializable {
     /**
      * Creates a remote proxy to a POJO on a remote server.
      *
-     * @param locator -
+     * @param locator
      *            the remoting locator to the target server where the target
-     *            POJO exists.
-     * @param targetClass -
+     *            POJO exists
+     * @param targetClass
      *            the interface class of the POJO will be calling upon.
      * @return dynamic remote proxy typed to the interface specified by the
-     *         targetClass param.
+     *         targetClass parameter
      * @throws Exception
      */
     public static Object createTransporterClient(InvokerLocator locator,
@@ -309,7 +307,7 @@ public class TransporterClient implements InvocationHandler, Serializable {
      * @param args
      * @return
      */
-    private String[] createParamSignature(Class[] args) {
+    private static String[] createParamSignature(Class[] args) {
         if (args == null || args.length == 0) {
             return new String[] {};
         }

@@ -50,9 +50,6 @@ public class ServiceGroup implements Serializable {
         }
     }
 
-    /**
-     * @return the name.
-     */
     public String getName() {
         return name;
     }
@@ -94,9 +91,6 @@ public class ServiceGroup implements Serializable {
         return getServer().lookup(sd);
     }
 
-    /**
-     * @param server The server to set.
-     */
     public void setServer(ServiceHost server) {
         this.server = server;
     }

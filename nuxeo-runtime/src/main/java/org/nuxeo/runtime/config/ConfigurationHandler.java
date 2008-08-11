@@ -25,7 +25,7 @@ import java.util.List;
 import org.jboss.remoting.InvokerLocator;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.remoting.Server;
-import org.nuxeo.runtime.remoting.UnsupportedServerVersion;
+import org.nuxeo.runtime.remoting.UnsupportedServerVersionException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -33,35 +33,37 @@ import org.nuxeo.runtime.remoting.UnsupportedServerVersion;
  */
 public abstract class ConfigurationHandler {
 
-
-    private static List<ConfigurationHandler>registry = new ArrayList<ConfigurationHandler>();
+    private static final List<ConfigurationHandler> registry = new ArrayList<ConfigurationHandler>();
 
     public static void registerHandler(ConfigurationHandler handler) {
         registry.add(handler);
     }
 
-    public static ConfigurationHandler getHandler(Version version) throws UnsupportedServerVersion {
+    public static ConfigurationHandler getHandler(Version version)
+            throws UnsupportedServerVersionException {
         if (version == null) {
             version = Version.MIN;
         }
-        for (int i=0,len=registry.size(); i<len; i++) {
+        for (int i = 0, len = registry.size(); i < len; i++) {
             ConfigurationHandler cl = registry.get(i);
             if (cl.accept(version)) {
                 return cl;
             }
         }
-        throw new UnsupportedServerVersion(version);
+        throw new UnsupportedServerVersionException(version);
     }
 
-    public static ServerConfiguration loadConfig(InvokerLocator locator, Server server, String version) throws ConfigurationException, UnsupportedServerVersion {
+    public static ServerConfiguration loadConfig(InvokerLocator locator, Server server, String version)
+            throws ConfigurationException {
         return loadConfig(locator, server, Version.parseString(version));
     }
 
-    public static ServerConfiguration loadConfig(InvokerLocator locator, Server server, Version version) throws ConfigurationException, UnsupportedServerVersion {
+    public static ServerConfiguration loadConfig(InvokerLocator locator, Server server, Version version)
+            throws ConfigurationException {
         return ConfigurationHandler.getHandler(version).loadConfig(locator, server);
     }
 
-    public static ServerConfiguration buildConfig(Version version) throws ConfigurationException, UnsupportedServerVersion {
+    public static ServerConfiguration buildConfig(Version version) throws ConfigurationException {
         return ConfigurationHandler.getHandler(version).buildConfig();
     }
 
@@ -72,15 +74,18 @@ public abstract class ConfigurationHandler {
     public abstract Version getVersion();
 
     /**
-     * Load the configuration of the given remote server
+     * Loads the configuration of the given remote server.
+     *
      * @param locator the server locator
      * @param server the server proxy object
      * @return the configuration
      */
-    public abstract ServerConfiguration loadConfig(InvokerLocator locator, Server server) throws ConfigurationException;
+    public abstract ServerConfiguration loadConfig(InvokerLocator locator, Server server)
+            throws ConfigurationException;
 
     /**
-     * Get the configuration for the current running framework
+     * Gets the configuration for the current running framework.
+     *
      * @return the configuration
      */
     public abstract ServerConfiguration buildConfig() throws ConfigurationException;

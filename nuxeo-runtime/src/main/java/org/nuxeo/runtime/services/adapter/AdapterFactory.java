@@ -51,4 +51,5 @@ public interface AdapterFactory {
      * @return the collection of adapter types
      */
     Class[] getAdapterList();
+
 }

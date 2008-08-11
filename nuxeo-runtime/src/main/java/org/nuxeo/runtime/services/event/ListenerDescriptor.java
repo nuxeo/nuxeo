@@ -41,9 +41,9 @@ public class ListenerDescriptor {
 
 
     @XNode("@class")
-    public void setListener(Class listenerClass) {
+    public void setListener(Class<EventListener> listenerClass) {
         try {
-            listener = (EventListener) listenerClass.newInstance();
+            listener = listenerClass.newInstance();
         } catch (Exception e) {
             listener = NULL_LISTENER;
             e.printStackTrace();

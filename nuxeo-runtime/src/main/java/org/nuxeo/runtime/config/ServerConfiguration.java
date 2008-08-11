@@ -42,23 +42,24 @@ public interface ServerConfiguration extends Serializable {
     InvokerLocator getLocator();
 
     /**
-     * get server properties
+     * Gets the server properties.
+     *
      * @return the server properties
      */
-    public Properties getProperties();
+    Properties getProperties();
 
     /**
-     * Get the JNDI properties required by clients to connect to this server
+     * Get the JNDI properties required by clients to connect to this server.
+     *
      * @return
      */
-    public Properties getJndiProperties();
+    Properties getJndiProperties();
 
     /**
-     * Install the given configuration on the running framework
+     * Installs the given configuration on the running framework.
+     *
      * @throws Exception if any exception occurs
      */
-    public void install() throws Exception;
-
-
+    void install() throws Exception;
 
 }

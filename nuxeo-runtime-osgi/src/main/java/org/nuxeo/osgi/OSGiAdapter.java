@@ -47,8 +47,9 @@ public class OSGiAdapter {
     private static final Log log = LogFactory.getLog(OSGiAdapter.class);
 
     protected final File workingDir;
-    protected final File idTableFile;
-    protected final BundleIdGenerator bundleIds;
+    protected final File dataDir;
+    protected File idTableFile;
+    protected BundleIdGenerator bundleIds;
 
     protected ListenerList frameworkListeners;
     protected ListenerList bundleListeners;
@@ -65,16 +66,26 @@ public class OSGiAdapter {
 
 
     public OSGiAdapter(File workingDir) {
+        this(workingDir, new File(workingDir, "data"), new Properties());
+    }
+
+    public OSGiAdapter(File workingDir, File dataDir, Properties properties) {
         this.workingDir = workingDir;
-        properties = new Properties();
+        this.dataDir = dataDir;
+        this.dataDir.mkdirs();
+        this.workingDir.mkdirs();
+        initialize(properties);
+    }
+
+    protected void initialize(Properties properties) {
+        this.properties = properties == null ? new Properties() : properties;
         registry = new BundleRegistry();
         frameworkListeners = new ListenerList();
         bundleListeners = new ListenerList();
         serviceListeners = new ListenerList();
         bundleIds = new BundleIdGenerator();
-        idTableFile = new File(workingDir, "bundles.ids");
+        idTableFile = new File(dataDir, "bundles.ids");
         bundleIds.load(idTableFile);
-
         // setting up default properties
         properties.put(Constants.FRAMEWORK_VENDOR, "Nuxeo");
         properties.put(Constants.FRAMEWORK_VERSION, "1.0.0");
@@ -99,6 +110,14 @@ public class OSGiAdapter {
             value = System.getProperty(key);
         }
         return value;
+    }
+
+    public String getProperty(String key, String defvalue) {
+        String val = getProperty(key);
+        if (val == null) {
+            val = defvalue;
+        }
+        return val;
     }
 
     /**
@@ -128,12 +147,18 @@ public class OSGiAdapter {
         return workingDir;
     }
 
+    public File getDataDir() {
+        return dataDir;
+    }
+
     public BundleImpl[] getInstalledBundles() {
         return registry.getInstalledBundles();
     }
 
     public void install(BundleImpl bundle) throws BundleException {
+        double s = System.currentTimeMillis();
         registry.install(bundle);
+        bundle.startupTime = System.currentTimeMillis() - s;
     }
 
     public void uninstall(BundleImpl bundle) throws BundleException {

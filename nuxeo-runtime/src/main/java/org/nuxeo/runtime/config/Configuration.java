@@ -121,58 +121,34 @@ public class Configuration {
         return properties;
     }
 
-    /**
-     * @param updateBindingsOption the updateBindingsOption to set.
-     */
     public void setBindingsUpdateOption(int updateBindingsOption) {
         this.updateBindingsOption = updateBindingsOption;
     }
 
-    /**
-     * @param updateLoginOption the updateLoginOption to set.
-     */
     public void setLoginUpdateOption(int updateLoginOption) {
         this.updateLoginOption = updateLoginOption;
     }
 
-    /**
-     * @param updateServersOption the updateServersOption to set.
-     */
     public void setServersUpdateOption(int updateServersOption) {
         this.updateServersOption = updateServersOption;
     }
 
-    /**
-     * @param updateStreamingOption the updateStreamingOption to set.
-     */
     public void setUpdateStreamingOption(int updateStreamingOption) {
         this.updateStreamingOption = updateStreamingOption;
     }
 
-    /**
-     * @return the overwriteLocalBindings.
-     */
     public int getUpdateBindingsOption() {
         return updateBindingsOption;
     }
 
-    /**
-     * @return the overwriteLocalLogin.
-     */
     public int getUpdateLoginOption() {
         return updateLoginOption;
     }
 
-    /**
-     * @return the overwriteLocalServers.
-     */
     public int getUpdateServersOption() {
         return updateServersOption;
     }
 
-    /**
-     * @return the updateStreamingOption.
-     */
     public int getUpdateStreamingOption() {
         return updateStreamingOption;
     }
@@ -249,7 +225,7 @@ public class Configuration {
         }
     }
 
-    private void loadStreamingConfig(String serverLocator) throws Exception {
+    private static void loadStreamingConfig(String serverLocator) throws Exception {
         StreamingService streamingService = (StreamingService) Framework.getRuntime().getComponent(
                 StreamingService.NAME);
         if (!streamingService.isServer()) { // if this host ignores updating

@@ -30,13 +30,12 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.deployment.DeploymentInfo;
 import org.jboss.mx.util.MBeanProxyCreationException;
 import org.jboss.system.ServiceMBeanSupport;
+import org.nuxeo.osgi.jboss.JBossOSGiAdapter;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.ComponentListener;
-import org.nuxeo.runtime.NXRuntime;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.jboss.osgi.JBossOSGiAdapter;
 import org.nuxeo.runtime.jboss.util.DeploymentHelper;
 import org.nuxeo.runtime.jboss.util.ServiceLocator;
 import org.nuxeo.runtime.model.ComponentName;
@@ -48,7 +47,6 @@ import org.nuxeo.runtime.model.RegistrationInfo;
  * Should be started before the NXRuntime bundle is deployed.
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class ComponentAdapter extends ServiceMBeanSupport
         implements ComponentAdapterMBean, RuntimeServiceListener, ComponentListener {
@@ -59,9 +57,8 @@ public class ComponentAdapter extends ServiceMBeanSupport
     protected void createService() throws Exception {
         super.createService();
         // add me as a listener to the current nx runtime service
-        // FIXME: use Framework API instead
-        NXRuntime.addListener(this);
-        if (NXRuntime.isInitialized()) {
+        Framework.addListener(this);
+        if (Framework.isInitialized()) {
             Framework.getRuntime().getComponentManager().addComponentListener(this);
         }
     }
@@ -70,8 +67,7 @@ public class ComponentAdapter extends ServiceMBeanSupport
     protected void destroyService() throws Exception {
         super.destroyService();
         // remove me as a listener to the current nx runtime service
-        // FIXME: use Framework API instead
-        NXRuntime.removeListener(this);
+        Framework.removeListener(this);
     }
 
     public void handleEvent(ComponentEvent event) {

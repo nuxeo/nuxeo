@@ -57,10 +57,7 @@ public interface ComponentManager {
      * If true is returned, the object will be added to the main registry under
      * the name given in RegistrationInfo.
      *
-     * @param reg the main registry
      * @param ri the registration info
-     * @return true if the object should be added to the main registry, false
-     *         otherwise
      */
     void register(RegistrationInfo ri);
 
@@ -71,10 +68,7 @@ public interface ComponentManager {
      * <p>
      * If true is returned, the object will be removed from the main registry.
      *
-     * @param reg the main registry
      * @param ri the registration info
-     * @return true if the object should be removed from the main registry,
-     *         false otherwise
      */
     void unregister(RegistrationInfo ri);
 
@@ -82,7 +76,6 @@ public interface ComponentManager {
      * Unregisters a component given its name.
      *
      * @param name the component name
-     * @throws Exception if any error occurs
      */
     void unregister(ComponentName name);
 
@@ -157,5 +150,12 @@ public interface ComponentManager {
      * @return the service object
      */
     <T> T getService(Class<T> serviceClass);
+
+    /**
+     * Get the component that provides the given service
+     * @param serviceClass the service class
+     * @return the component or null if none
+     */
+    ComponentInstance getComponentProvidingService(Class<?> serviceClass);
 
 }

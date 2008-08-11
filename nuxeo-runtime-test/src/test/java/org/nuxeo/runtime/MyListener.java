@@ -28,12 +28,11 @@ import org.nuxeo.runtime.services.event.EventListener;
 public class MyListener implements EventListener {
 
     public boolean aboutToHandleEvent(Event event) {
-        // Auto-generated method stub
         return false;
     }
 
     public void handleEvent(Event event) {
-        System.out.println(event);
+        //System.out.println(event);
     }
 
 }

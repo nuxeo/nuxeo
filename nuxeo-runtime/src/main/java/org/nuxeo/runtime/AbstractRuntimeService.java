@@ -28,6 +28,7 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
@@ -35,6 +36,7 @@ import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.impl.ComponentManagerImpl;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
 import org.nuxeo.runtime.services.adapter.AdapterManager;
+import org.osgi.framework.Bundle;
 
 /**
  * Abstract implementation of the Runtime Service.
@@ -85,9 +87,6 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         }
     }
 
-    /**
-     * @return the warnings.
-     */
     public List<String> getWarnings() {
         return warnings;
     }
@@ -107,12 +106,12 @@ public abstract class AbstractRuntimeService implements RuntimeService {
                     + getVersion());
             //NXRuntime.setInstance(this);
             manager = createComponentManager();
-            NXRuntime.sendEvent(new RuntimeServiceEvent(
+            Framework.sendEvent(new RuntimeServiceEvent(
                     RuntimeServiceEvent.RUNTIME_ABOUT_TO_START, this));
             doStart();
             startExtensions();
             isStarted = true;
-            NXRuntime.sendEvent(new RuntimeServiceEvent(
+            Framework.sendEvent(new RuntimeServiceEvent(
                     RuntimeServiceEvent.RUNTIME_STARTED, this));
         }
     }
@@ -120,12 +119,12 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     public synchronized void stop() throws Exception {
         if (isStarted) {
             log.info("Stopping NXRuntime service " + getName() + "; version: " + getVersion());
-            NXRuntime.sendEvent(new RuntimeServiceEvent(
+            Framework.sendEvent(new RuntimeServiceEvent(
                     RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP, this));
             stopExtensions();
             doStop();
             isStarted = false;
-            NXRuntime.sendEvent(new RuntimeServiceEvent(
+            Framework.sendEvent(new RuntimeServiceEvent(
                     RuntimeServiceEvent.RUNTIME_STOPPED, this));
             manager.shutdown();
             //NXRuntime.setRuntime(null);
@@ -290,4 +289,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         return result.toString();
     }
 
+    public File getBundleFile(Bundle bundle) {
+        return null;
+    }
 }

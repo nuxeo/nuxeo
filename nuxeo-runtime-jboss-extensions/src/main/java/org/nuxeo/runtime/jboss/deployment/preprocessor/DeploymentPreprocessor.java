@@ -327,7 +327,8 @@ public class DeploymentPreprocessor {
                         "You must not use <require> tags for OSGi bundles - use Require-Bundle manifest header instead. Bundle: "
                                 + fileName);
             }
-            String requires = attrs.getValue("Nuxeo-Require"); // needed to control start-up order (which differs from Require-Bundle)
+            // needed to control start-up order (which differs from Require-Bundle)
+            String requires = attrs.getValue("Nuxeo-Require");
             if (requires == null) { // if not specific requirement is met use Require-Bundle
                 requires = attrs.getValue("Require-Bundle");
             }

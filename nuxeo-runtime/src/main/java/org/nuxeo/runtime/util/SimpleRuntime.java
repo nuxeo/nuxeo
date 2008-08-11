@@ -68,7 +68,7 @@ public class SimpleRuntime extends AbstractRuntimeService {
         return VERSION;
     }
 
-    private synchronized String generateId() {
+    private static synchronized String generateId() {
         long stamp = System.currentTimeMillis();
         counter++;
         return Long.toHexString(stamp) + '-'

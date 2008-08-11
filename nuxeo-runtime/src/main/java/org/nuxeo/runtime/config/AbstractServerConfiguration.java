@@ -35,9 +35,11 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
 
     private static final long serialVersionUID = 1970555604877434479L;
 
-    protected String name;
+    protected final String name;
 
-    protected Version version;
+    protected final Version version;
+
+    protected final InvokerLocator locator;
 
     protected Properties properties;
 
@@ -51,13 +53,11 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
 
     protected String[] peers;
 
-    protected InvokerLocator locator;
-
     //TODO
     //protected ServiceLocator serviceLocator;
 
 
-    public AbstractServerConfiguration(InvokerLocator locator, String name, Version version) {
+    protected AbstractServerConfiguration(InvokerLocator locator, String name, Version version) {
         this.locator = locator;
         this.name = name;
         this.version = version;
@@ -87,16 +87,10 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
         return name + ' ' + version;
     }
 
-    /**
-     * @return the properties.
-     */
     public Properties getProperties() {
         return properties;
     }
 
-    /**
-     * @param properties the properties to set.
-     */
     public void setProperties(Properties properties) {
         this.properties = properties;
     }
@@ -140,9 +134,6 @@ public abstract class AbstractServerConfiguration implements ServerConfiguration
         return jndiProperties;
     }
 
-    /**
-     * @param jndiProperties the jndiProperties to set.
-     */
     public void setJndiProperties(Properties jndiProperties) {
         this.jndiProperties = jndiProperties;
     }

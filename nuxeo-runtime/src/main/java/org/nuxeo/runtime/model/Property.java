@@ -64,16 +64,10 @@ public class Property implements Serializable {
         this.value = value;
     }
 
-    /**
-     * @return the type.
-     */
     public String getType() {
         return type;
     }
 
-    /**
-     * @return the name.
-     */
     public String getName() {
         return name;
     }

@@ -44,7 +44,7 @@ public class RemoteContext implements RuntimeContext {
 
     private final RemoteClassLoader cl;
 
-    public RemoteContext(ServerDescriptor sd, ComponentName component, ClassLoader localClassLoader) throws Exception {
+    public RemoteContext(ServerDescriptor sd, ComponentName component, ClassLoader localClassLoader) {
         cl = new RemoteClassLoader(sd, component, localClassLoader);
     }
 
