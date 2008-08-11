@@ -152,13 +152,13 @@ public interface Session extends Connection {
      * Gets the children of a node.
      *
      * @param parent the parent node
+     * @param name the children name to get (for lists of complex properties)
      * @param complexProp whether to check complex properties or regular
      *            children
-     * @param name the children name to get (for lists of complex properties)
      * @return the collection of children
      * @throws StorageException
      */
-    List<Node> getChildren(Node parent, boolean complexProp, String name)
+    List<Node> getChildren(Node parent, String name, boolean complexProp)
             throws StorageException;
 
     /**
@@ -166,13 +166,14 @@ public interface Session extends Connection {
      *
      * @param parent the parent to which the child is added
      * @param name the child name
+     * @param pos the child position, or {@code null}
      * @param typeName the child type
      * @param complexProp whether this is a complex property ({@code true}) or a
      *            regular child ({@code false})
      * @return the new node
      * @throws StorageException
      */
-    Node addChildNode(Node parent, String name, String typeName,
+    Node addChildNode(Node parent, String name, Long pos, String typeName,
             boolean complexProp) throws StorageException;
 
     /**
@@ -182,11 +183,12 @@ public interface Session extends Connection {
      * @param versionableId the versionable id
      * @param parent the parent to which the proxy is added
      * @param name the proxy name
+     * @param pos the proxy position
      * @return the new proxy node
      * @throws StorageException
      */
     Node addProxy(Serializable targetId, Serializable versionableId,
-            Node parent, String name) throws StorageException;
+            Node parent, String name, Long pos) throws StorageException;
 
     /**
      * Removes a node from the storage.
@@ -305,7 +307,6 @@ public interface Session extends Connection {
      * @return the list of proxies
      * @throws StorageException
      */
-    List<Node> getProxies(Node document, Node parent)
-            throws StorageException;
+    List<Node> getProxies(Node document, Node parent) throws StorageException;
 
 }

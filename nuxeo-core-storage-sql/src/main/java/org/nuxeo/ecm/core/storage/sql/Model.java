@@ -650,14 +650,8 @@ public class Model {
                         /*
                          * Complex list.
                          */
-                        // Set<String> listProperties =
-                        // complexLists.get(typeName);
-                        // if (listProperties == null) {
-                        // listProperties = new HashSet<String>();
-                        // complexLists.put(typeName, listProperties);
-                        // }
-                        // listProperties.add(propertyName);
-                        initTypeModel((ComplexType) listFieldType);
+                        String subFragmentName = initTypeModel((ComplexType) listFieldType);
+                        addTypeSimpleFragment(listFieldType.getName(), subFragmentName);
                     }
                 } else {
                     /*

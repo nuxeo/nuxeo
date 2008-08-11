@@ -21,9 +21,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
@@ -46,6 +50,8 @@ import org.nuxeo.ecm.core.storage.StorageException;
  */
 public class Children {
 
+    private static final Log log = LogFactory.getLog(Children.class);
+
     /**
      * This is {@code true} when complete information about the children is
      * known.
@@ -61,9 +67,7 @@ public class Children {
 
     private boolean completeProperties;
 
-    private Map<String, SimpleFragment> existingProperties;
-
-    private Set<String> missingProperties;
+    private Map<String, List<SimpleFragment>> existingProperties;
 
     public Children(boolean complete) {
         this.completeRegular = complete;
@@ -75,15 +79,11 @@ public class Children {
     }
 
     private void newExistingProperties() {
-        existingProperties = new HashMap<String, SimpleFragment>();
+        existingProperties = new HashMap<String, List<SimpleFragment>>();
     }
 
     private void newMissingRegular() {
         missingRegular = new HashSet<String>();
-    }
-
-    private void newMissingProperties() {
-        missingProperties = new HashSet<String>();
     }
 
     /**
@@ -99,18 +99,15 @@ public class Children {
     public void add(SimpleFragment fragment, String name, boolean complexProp)
             throws StorageException {
         if (complexProp) {
-            if (missingProperties != null) {
-                missingProperties.remove(name);
-            }
             if (existingProperties == null) {
                 newExistingProperties();
-            } else {
-                if (existingProperties.containsKey(name)) {
-                    throw new StorageException(
-                            "Duplicate complex property name: " + name);
-                }
             }
-            existingProperties.put(name, fragment);
+            List<SimpleFragment> list = existingProperties.get(name);
+            if (list == null) {
+                list = new LinkedList<SimpleFragment>();
+                existingProperties.put(name, list);
+            }
+            list.add(fragment);
         } else {
             if (missingRegular != null) {
                 missingRegular.remove(name);
@@ -152,11 +149,14 @@ public class Children {
                     // cannot happen, row is pristine
                     name = "ACCESSFAILED";
                 }
-                existingProperties.put(name, fragment);
+                List<SimpleFragment> list = existingProperties.get(name);
+                if (list == null) {
+                    list = new LinkedList<SimpleFragment>();
+                    existingProperties.put(name, list);
+                }
+                list.add(fragment);
             }
-            missingProperties = null; // could check coherence with existing
             completeProperties = true;
-
         } else {
             assert !completeRegular;
             if (existingRegular == null) {
@@ -180,29 +180,33 @@ public class Children {
     /**
      * Removes a known child.
      *
-     * @param name the child name
+     * @param fragment the fragment to remove
      * @param complexProp whether the child is a complex property or a regular
      *            child
+     * @param model the model
      * @throws StorageException
      */
-    public void remove(String name, boolean complexProp)
+    public void remove(SimpleFragment fragment, boolean complexProp, Model model)
             throws StorageException {
+        String name;
+        try {
+            name = fragment.getString(model.HIER_CHILD_NAME_KEY);
+        } catch (StorageException e) {
+            // cannot happen, row is pristine
+            name = "ACCESSFAILED";
+        }
         if (complexProp) {
             if (existingProperties != null) {
-                if (existingProperties.remove(name) == null) {
+                List<SimpleFragment> list = existingProperties.get(name);
+                if (list == null) {
                     throw new StorageException(
                             "Nonexistent complex property: " + name);
                 }
-            }
-            if (missingProperties == null) {
-                newMissingProperties();
-            } else {
-                if (missingProperties.contains(name)) {
+                if (!list.remove(fragment)) {
                     throw new StorageException(
-                            "Already missing complex property: " + name);
+                            "Nonexistent complex property: " + fragment);
                 }
             }
-            missingProperties.add(name);
         } else {
             if (existingRegular != null) {
                 if (existingRegular.remove(name) == null) {
@@ -234,19 +238,17 @@ public class Children {
      */
     public SimpleFragment get(String name, boolean complexProp) {
         if (complexProp) {
-            if (completeProperties) {
-                return existingProperties == null ? null
-                        : existingProperties.get(name);
+            if (existingProperties == null) {
+                return completeProperties ? null : SimpleFragment.UNKNOWN;
             }
-            if (existingProperties != null) {
-                SimpleFragment fragment = existingProperties.get(name);
-                if (fragment != null) {
-                    return fragment;
-                }
+            List<SimpleFragment> list = existingProperties.get(name);
+            if (list == null || list.size() == 0) {
+                return completeProperties ? null : SimpleFragment.UNKNOWN;
             }
-            return missingProperties != null &&
-                    missingProperties.contains(name) ? null
-                    : SimpleFragment.UNKNOWN;
+            if (list.size() > 1) {
+                log.warn("Get by name with several children: " + name);
+            }
+            return list.get(0);
         } else {
             if (completeRegular) {
                 return existingRegular == null ? null
@@ -268,17 +270,31 @@ public class Children {
      * <p>
      * If the list is not complete, returns {@code null}.
      *
+     * @param name the name of the children, or {@code null} for all
      * @param complexProp {@code true} for complex properties, {@code false} for
      *            regular children
      * @return all the fragments, or {@code null}
      */
-    public Collection<SimpleFragment> getFragments(boolean complexProp) {
+    public Collection<SimpleFragment> getFragments(String name,
+            boolean complexProp) {
         if (complexProp) {
             if (!completeProperties) {
                 return null;
             }
-            return existingProperties == null ? Collections.<SimpleFragment> emptyList()
-                    : existingProperties.values();
+            if (existingProperties == null) {
+                return Collections.emptyList();
+            }
+            if (name == null) {
+                List<SimpleFragment> fragments = new LinkedList<SimpleFragment>();
+                for (List<SimpleFragment> list : existingProperties.values()) {
+                    fragments.addAll(list);
+                }
+                return fragments;
+            } else {
+                List<SimpleFragment> list = existingProperties.get(name);
+                return list == null ? Collections.<SimpleFragment> emptyList()
+                        : list;
+            }
         } else {
             if (!completeRegular) {
                 return null;

@@ -266,13 +266,14 @@ public class PersistenceContext {
      * Finds all the children given a parent id.
      *
      * @param parentId the parent id
+     * @param name the name of the children, or {@code null} for all
      * @param complexProp whether to get complex properties or real children
      * @return the collection of hierarchy fragments
      * @throws StorageException
      */
     public Collection<SimpleFragment> getChildren(Serializable parentId,
-            boolean complexProp) throws StorageException {
-        return contexts.get(model.hierFragmentName).getChildren(parentId,
+            String name, boolean complexProp) throws StorageException {
+        return contexts.get(model.hierFragmentName).getChildren(parentId, name,
                 complexProp);
     }
 
