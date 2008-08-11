@@ -21,6 +21,10 @@ package org.nuxeo.ecm.webengine.tests.forms;
 
 import java.net.URL;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
+import net.sf.json.processors.JsonBeanProcessor;
+
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.forms.FormManager;
@@ -124,6 +128,18 @@ public class TestForms extends NXRuntimeTestCase {
         assertFalse(form.getField("confirm_email").validate(data).isOk());
         data.setField("confirm_email", "bs@nuxeo.com");
         assertTrue(form.getField("confirm_email").validate(data).isOk());
+
+        // test error message
+        data.setField("confirm_email", "some@email.com");
+        Status status = form.getField("confirm_email").validate(data);
+        assertFalse(status.isOk());
+        // message is: "Confirmation E-mail address doesn't match: %s"
+        String error = status.getParametrizedMessage(data);
+        assertEquals("Confirmation E-mail address doesn't match: some@email.com", error);
+
+        // test JSON representation
+        JSONObject obj = new JSONObject().element("isOk", false).element("field", "confirm_email").element("message", "Confirmation E-mail address doesn't match: %s");
+        assertEquals(obj, status.toJSON());
     }
 
 

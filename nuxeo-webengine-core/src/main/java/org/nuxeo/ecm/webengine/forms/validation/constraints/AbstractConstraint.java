@@ -21,7 +21,9 @@ package org.nuxeo.ecm.webengine.forms.validation.constraints;
 
 import org.nuxeo.ecm.webengine.forms.FormInstance;
 import org.nuxeo.ecm.webengine.forms.validation.Constraint;
+import org.nuxeo.ecm.webengine.forms.validation.ErrorStatus;
 import org.nuxeo.ecm.webengine.forms.validation.Field;
+import org.nuxeo.ecm.webengine.forms.validation.MultiStatus;
 import org.nuxeo.ecm.webengine.forms.validation.Status;
 
 /**
@@ -29,6 +31,8 @@ import org.nuxeo.ecm.webengine.forms.validation.Status;
  *
  */
 public class AbstractConstraint implements Constraint {
+
+    protected String errorMessage;
 
     public void init(Field field, String value) {
         throw new UnsupportedOperationException("adding sub-constraints or values is not supported");
@@ -52,6 +56,24 @@ public class AbstractConstraint implements Constraint {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public String getErrorMessage() {
+        return this.errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    protected ErrorStatus error(Field field) {
+        return new ErrorStatus(field.getId(), errorMessage);
+    }
+
+    protected MultiStatus error(Status status) {
+        MultiStatus ms =  new MultiStatus(status.getField(), errorMessage);
+        ms.add(status);
+        return ms;
     }
 
 }

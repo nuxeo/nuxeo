@@ -19,6 +19,11 @@
 
 package org.nuxeo.ecm.webengine.forms.validation;
 
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
+
+import org.nuxeo.ecm.webengine.forms.FormInstance;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -40,14 +45,28 @@ public interface Status {
             return null;
         }
         public String getMessage() {
-            return null;
+            return "OK";
+        }
+        public String getParametrizedMessage(FormInstance data) {
+            return "OK";
+        }
+        public Status negate() {
+            return KO;
         }
         @Override
         public String toString() {
             return "OK";
         }
+        public JSON toJSON() {
+            return new JSONObject().element("isOk", true);
+        }
+        public String toJSONString() {
+            return toJSON().toString();
+        }
     };
 
+    public final static ErrorStatus KO = new ErrorStatus(null) {
+    };
 
     boolean isOk();
 
@@ -58,5 +77,13 @@ public interface Status {
     String getMessage();
 
     Status[] getChildren();
+
+    String getParametrizedMessage(FormInstance data);
+
+    Status negate();
+
+    JSON toJSON();
+
+    String toJSONString();
 
 }

@@ -185,10 +185,12 @@
         <field id="confirm_email" required="false" type="string">
           <label>Confirm E-Mail</label>
           <constraints>
-            <eq ref="my:email" />
+            <!-- example on how to setup an error message: the variable %s
+            will be replaced with the actual value -->
+            <eq ref="my:email"  error-message="Confirmation E-mail address doesn't match: %s" />
           </constraints>
         </field>
-        <field id="my:email" required="true" />
+        <field id="my:email" required="true"/>
       </form>
     </code>
   </documentation>

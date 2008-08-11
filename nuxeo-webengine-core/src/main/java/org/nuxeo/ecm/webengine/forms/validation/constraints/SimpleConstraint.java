@@ -92,6 +92,7 @@ public abstract class SimpleConstraint extends AbstractConstraint {
             String againstValue = getRefValue(form);
             // TODO handle references to multivalued fields
             SimpleConstraint sc = (SimpleConstraint)newInstance();
+            sc.errorMessage = this.errorMessage;
             Object decodedValue = null;
             try {
                 decodedValue = field.decode(againstValue);

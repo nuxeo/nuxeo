@@ -23,7 +23,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.webengine.forms.FormInstance;
-import org.nuxeo.ecm.webengine.forms.validation.ErrorStatus;
 import org.nuxeo.ecm.webengine.forms.validation.Field;
 import org.nuxeo.ecm.webengine.forms.validation.Status;
 
@@ -46,7 +45,7 @@ public class Like extends SimpleConstraint {
         assert pattern != null;
         Matcher m = pattern.matcher(rawValue);
         return m.matches() ? Status.OK
-                : new ErrorStatus(field.getId());
+                : error(field);
     }
 
     @Override

@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webengine.forms.validation.constraints;
 
 import org.nuxeo.ecm.webengine.forms.FormInstance;
-import org.nuxeo.ecm.webengine.forms.validation.ErrorStatus;
 import org.nuxeo.ecm.webengine.forms.validation.Field;
 import org.nuxeo.ecm.webengine.forms.validation.Status;
 
@@ -47,7 +46,7 @@ public class GtEq extends SimpleConstraint {
     public Status doValidate(FormInstance form, Field field, String rawValue, Object value) {
         assert this.value != null;
         return this.value.compareTo((Comparable)value) <= 0 ? Status.OK
-                : new ErrorStatus(field.getId());
+                : error(field);
     }
 
     @Override

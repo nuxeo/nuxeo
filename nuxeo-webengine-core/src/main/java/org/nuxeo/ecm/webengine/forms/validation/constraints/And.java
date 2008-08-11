@@ -39,7 +39,7 @@ public class And extends ContainerConstraint {
         for (Constraint child : children) {
             Status status = child.validate(form, field, rawValue, value);
             if (!status.isOk()) {
-                return status;
+                return error(status);
             }
         }
         return Status.OK;

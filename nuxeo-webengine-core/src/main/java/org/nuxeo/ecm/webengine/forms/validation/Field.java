@@ -60,9 +60,14 @@ public class Field {
 
     @XContent("constraints")
     void setConstraints(DocumentFragment body) {
-        root = new And();
+        And top = new And();
         try {
-            loadChildren(this, body, root);
+            loadChildren(this, body, top);
+            if (top.getChildren().size() == 1) { // remove unneeded top constraint
+                root = top.getChildren().get(0);
+            } else {
+                root = top;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -258,6 +263,10 @@ public class Field {
             loadChildren(field, body, constraint);
         } else {
             NamedNodeMap attrs = body.getAttributes();
+            Node msg = attrs.getNamedItem("error-message");
+            if (msg != null) {
+                constraint.setErrorMessage(msg.getNodeValue());
+            }
             Node ref = attrs.getNamedItem("ref");
             if (ref != null) {
                 if (constraint instanceof SimpleConstraint) {

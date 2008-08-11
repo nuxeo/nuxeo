@@ -37,4 +37,8 @@ public interface Constraint {
 
     public Status validate(FormInstance form,  Field field, String rawValue, Object value);
 
+    public String getErrorMessage();
+
+    public void setErrorMessage(String errorMessage);
+
 }

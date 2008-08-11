@@ -42,4 +42,13 @@ public abstract class ContainerConstraint extends AbstractConstraint {
         return true;
     }
 
+
+    /**
+     * @return the children.
+     */
+    public List<Constraint> getChildren() {
+        return children;
+    }
+
+
 }

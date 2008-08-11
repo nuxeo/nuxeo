@@ -20,14 +20,13 @@
 package org.nuxeo.ecm.webengine.forms.validation;
 
 
+
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ErrorStatus implements Status {
-
-    protected String message;
-    protected String field;
+public class ErrorStatus extends AbstractStatus {
 
     public ErrorStatus(String field) {
         this (field, "");
@@ -38,13 +37,6 @@ public class ErrorStatus implements Status {
         this.message = message;
     }
 
-    /**
-     * @return the isOk.
-     */
-    public boolean isOk() {
-        return false;
-    }
-
     public Status[] getChildren() {
         return null;
     }
@@ -53,30 +45,9 @@ public class ErrorStatus implements Status {
         return false;
     }
 
-    /**
-     * @return the field.
-     */
-    public String getField() {
-        return field;
-    }
-
-    /**
-     * @return the message.
-     */
-    public String getMessage() {
-        return message;
-    }
-
-    /**
-     * @param message the message to set.
-     */
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
     @Override
     public String toString() {
-        return "Error: "+message;
+        return isOk ? "OK" : "KO: "+getMessage();
     }
 
 }

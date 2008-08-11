@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webengine.forms.validation.constraints;
 
 import org.nuxeo.ecm.webengine.forms.FormInstance;
 import org.nuxeo.ecm.webengine.forms.validation.Constraint;
-import org.nuxeo.ecm.webengine.forms.validation.ErrorStatus;
 import org.nuxeo.ecm.webengine.forms.validation.Field;
 import org.nuxeo.ecm.webengine.forms.validation.Status;
 
@@ -44,7 +43,7 @@ public class Not extends ContainerConstraint {
     public Status validate(FormInstance form, Field field, String rawValue, Object value) {
         assert !children.isEmpty();
         Status status = children.get(0).validate(form, field, rawValue, value);
-        return status.isOk() ? new ErrorStatus(field.getId()) : Status.OK;
+        return status.negate();
     }
 
     @Override

@@ -42,7 +42,7 @@ public class Or extends ContainerConstraint {
             if (status.isOk()) {
                 return Status.OK;
             } else {
-                return status;
+                return error(status);
             }
         }
         return new ErrorStatus(field.getId()); // should never reach this

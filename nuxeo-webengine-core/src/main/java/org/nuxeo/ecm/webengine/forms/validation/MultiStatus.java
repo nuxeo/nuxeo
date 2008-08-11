@@ -27,19 +27,23 @@ import java.util.List;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class MultiStatus implements Status, Iterable<Status>{
+public class MultiStatus extends AbstractStatus implements Iterable<Status>{
 
     protected List<Status> children;
-    protected String message;
-    protected boolean isOk = true;
 
     public MultiStatus() {
         this (null);
     }
 
-    public MultiStatus(String message) {
+    public MultiStatus(String field, String message) {
         this.message = message;
         children = new ArrayList<Status>();
+        this.field = field;
+        isOk = true;
+    }
+
+    public MultiStatus(String field) {
+        this (field, null);
     }
 
     public void add(Status status) {
@@ -61,12 +65,30 @@ public class MultiStatus implements Status, Iterable<Status>{
         return children.toArray(new Status[children.size()]);
     }
 
-    public String getField() {
-        return null;
+    public String getMessage() {
+        if (message == null) {
+            for (Status status : children) {
+                message = status.getMessage();
+                if (message != null) {
+                    break;
+                }
+            }
+        }
+        return message;
     }
 
-    public String getMessage() {
-        return message;
+    public String[] getMessages() {
+        ArrayList<String> msgs = new ArrayList<String>();
+        if (message != null) {
+            msgs.add(message);
+        }
+        for (Status status : children) {
+            String msg = status.getMessage();
+            if (msg != null) {
+                msgs.add(msg);
+            }
+        }
+        return msgs.toArray(new String[msgs.size()]);
     }
 
     public boolean isMultiStatus() {
@@ -81,4 +103,5 @@ public class MultiStatus implements Status, Iterable<Status>{
     public String toString() {
         return isOk ? "OK" : "Error: "+message;
     }
+
 }

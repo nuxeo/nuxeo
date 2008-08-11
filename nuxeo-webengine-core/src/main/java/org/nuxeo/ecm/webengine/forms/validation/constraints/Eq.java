@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webengine.forms.validation.constraints;
 
 import org.nuxeo.ecm.webengine.forms.FormInstance;
-import org.nuxeo.ecm.webengine.forms.validation.ErrorStatus;
 import org.nuxeo.ecm.webengine.forms.validation.Field;
 import org.nuxeo.ecm.webengine.forms.validation.Status;
 
@@ -41,14 +40,9 @@ public class Eq extends SimpleConstraint {
     @Override
     public Status doValidate(FormInstance form, Field field, String rawValue, Object value) {
         if (this.value == null || value == null) {
-            if (this.value == value) {
-                return Status.OK;
-            } else {
-                return new ErrorStatus(field.getId(), "Not equals with '"+this.value+"'");
-            }
+            return this.value == value ? Status.OK : error(field);
         } else {
-            return this.value.equals(value) ? Status.OK
-                    : new ErrorStatus(field.getId(), "Not equals with '"+this.value+"'") ;
+            return this.value.equals(value) ? Status.OK : error(field);
         }
     }
 
