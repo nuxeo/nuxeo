@@ -131,12 +131,8 @@ public class SQLSession implements Session {
     }
 
     public void cancel() throws DocumentException {
-        try {
-            // TODO session.refresh or revert;
-            throw new StorageException("unimplemented");
-        } catch (StorageException e) {
-            throw new DocumentException(e);
-        }
+        // TODO
+        // throw new UnsupportedOperationException();
     }
 
     public boolean isLive() {
