@@ -2,8 +2,6 @@ SQL Storage TODO
 
 - major/minor version management
 
-- locking
-
 - recursive removal on node remove
 
 Optimizations:

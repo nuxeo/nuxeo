@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Constants;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -55,6 +56,9 @@ import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
 public class SQLDocument extends SQLComplexProperty implements Document {
 
     private static final Log log = LogFactory.getLog(SQLDocument.class);
+
+    // cache of the lock state, for efficiency
+    protected transient String lock;
 
     protected SQLDocument(Node node, ComplexType type, SQLSession session,
             boolean readonly) {
@@ -230,22 +234,35 @@ public class SQLDocument extends SQLComplexProperty implements Document {
      * ----- org.nuxeo.ecm.core.model.Lockable -----
      */
 
-    // TODO: optimize this since it is used in permission checks
     public boolean isLocked() throws DocumentException {
         return getLock() != null;
     }
 
     public String getLock() throws DocumentException {
-        return null;
-        // throw new UnsupportedOperationException();
+        if (lock != null) {
+            return lock == Constants.EMPTY_STRING ? null : lock;
+        }
+        String l = getString(Model.LOCK_PROP);
+        lock = l == null ? Constants.EMPTY_STRING : l;
+        return l;
     }
 
     public void setLock(String key) throws DocumentException {
-        throw new UnsupportedOperationException();
+        if (key == null) {
+            throw new IllegalArgumentException("Lock key cannot be null");
+        }
+        if (isLocked()) {
+            throw new DocumentException("Document already locked");
+        }
+        setString(Model.LOCK_PROP, key);
+        lock = key;
     }
 
     public String unlock() throws DocumentException {
-        throw new UnsupportedOperationException();
+        String l = getLock();
+        setString(Model.LOCK_PROP, null);
+        lock = Constants.EMPTY_STRING;
+        return l;
     }
 
     /*

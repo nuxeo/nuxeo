@@ -571,6 +571,8 @@ public class SQLSession implements Session {
             field = Model.VERSION_CREATED_FIELD;
         } else if (Model.MAIN_CHECKED_IN_PROP.equals(name)) {
             field = Model.MAIN_CHECKED_IN_FIELD;
+        } else if (Model.LOCK_PROP.equals(name)) {
+            field = Model.LOCK_FIELD;
         } else {
             if (complexList) {
                 field = ((ListType) parentType).getField();
