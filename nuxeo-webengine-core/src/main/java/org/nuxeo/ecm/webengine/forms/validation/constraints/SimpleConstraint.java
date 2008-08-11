@@ -112,8 +112,11 @@ public abstract class SimpleConstraint extends AbstractConstraint {
     protected String getRefValue(FormInstance form) {
         try {
             Object[] values = form.get(ref);
+            if (values == null || values.length == 0) {
+                return null;
+            }
             Object obj = values[index];
-            return obj.toString();
+            return obj != null ? obj.toString() : null;
         } catch (WebException e) {
             e.printStackTrace();
         }

@@ -40,9 +40,16 @@ public class Eq extends SimpleConstraint {
 
     @Override
     public Status doValidate(FormInstance form, Field field, String rawValue, Object value) {
-        assert this.value != null;
-        return this.value.equals(value) ? Status.OK
-                : new ErrorStatus(field.getId(), "Not equals with '"+this.value+"'") ;
+        if (this.value == null || value == null) {
+            if (this.value == value) {
+                return Status.OK;
+            } else {
+                return new ErrorStatus(field.getId(), "Not equals with '"+this.value+"'");
+            }
+        } else {
+            return this.value.equals(value) ? Status.OK
+                    : new ErrorStatus(field.getId(), "Not equals with '"+this.value+"'") ;
+        }
     }
 
     @Override
