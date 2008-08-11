@@ -908,7 +908,7 @@ public abstract class TestAPI extends TestConnection {
         remote.saveDocuments(returnedChildDocs.toArray(new DocumentModel[0]));
         remote.save();
 
-        DocumentModelList list = remote.query("SELECT name FROM File");
+        DocumentModelList list = remote.query("SELECT * FROM File");
         assertEquals(1, list.size());
         DocumentModel docModel = list.get(0);
         List<String> schemas = Arrays.asList(docModel.getDeclaredSchemas());
@@ -920,7 +920,7 @@ public abstract class TestAPI extends TestConnection {
 
         // if we select filename, the returned docModel
         // should have both schemas "file" and "common"
-        list = remote.query("SELECT filename FROM File");
+        list = remote.query("SELECT * FROM File");
         assertEquals(1, list.size());
         docModel = list.get(0);
         schemas = Arrays.asList(docModel.getDeclaredSchemas());
@@ -2344,6 +2344,7 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("File", docModel.getType());
     }
 
+    @SuppressWarnings("unchecked")
     public void testCopyContent() throws ClientException {
         DocumentModel root = remote.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(),
@@ -2395,6 +2396,7 @@ public abstract class TestAPI extends TestConnection {
         assertEquals("myfile", content);
     }
 
+    @SuppressWarnings("unchecked")
     public void testDocumentModelTreeSort() throws Exception {
         // create a folder tree
         DocumentModel root = getRootDocument();
@@ -2430,7 +2432,6 @@ public abstract class TestAPI extends TestConnection {
         b1_folder = createChildDocument(b1_folder);
         b2_folder = createChildDocument(b2_folder);
 
-
         DocumentModelTreeImpl tree = new DocumentModelTreeImpl();
         tree.add(a_folder, 1);
         tree.add(a1_folder, 2);
@@ -2443,7 +2444,7 @@ public abstract class TestAPI extends TestConnection {
         // sort using title
         DocumentModelTreeNodeComparator comp = new DocumentModelTreeNodeComparator(
                 tree.getPathTitles());
-        Collections.sort((ArrayList)tree, comp);
+        Collections.sort((ArrayList) tree, comp);
 
         assertEquals(b_folder, tree.get(0).getDocument());
         assertEquals(b1_folder, tree.get(1).getDocument());
@@ -2455,7 +2456,7 @@ public abstract class TestAPI extends TestConnection {
         assertEquals(a2_folder, tree.get(5).getDocument());
         assertEquals(a1_folder, tree.get(6).getDocument());
 
-
         remote.cancel();
     }
+
 }

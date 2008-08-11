@@ -38,7 +38,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
-    private final static String REPO_NAME = "default";
+    private static final String REPO_NAME = "default";
 
     @Override
     protected void setUp() throws Exception {
@@ -90,7 +90,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         saveAndcloseSession(session);
     }
 
-    public void checkCorePolicy() throws Exception {
+    public static void checkCorePolicy() throws Exception {
         // create document
         CoreSession session = openSession(SecurityConstants.ADMINISTRATOR);
         setTestPermissions(SecurityConstants.ANONYMOUS, SecurityConstants.READ);
@@ -98,7 +98,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         DocumentModel folder = new DocumentModelImpl(root.getPathAsString(),
                 "folder#1", "Folder");
         // set access security
-        folder.setProperty("secupolicy", "securityLevel", Long.valueOf(4));
+        folder.setProperty("secupolicy", "securityLevel", 4L);
         folder = session.createDocument(folder);
         saveAndcloseSession(session);
 
@@ -106,7 +106,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         session = openSession(SecurityConstants.ANONYMOUS);
         DocumentModelImpl documentModelImpl = new DocumentModelImpl("User");
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("accessLevel", Long.valueOf(3));
+        data.put("accessLevel", 3L);
         documentModelImpl.addDataModel(new DataModelImpl("user", data));
         ((NuxeoPrincipal) session.getPrincipal()).setModel(documentModelImpl);
         // access level is too low for this doc
@@ -114,7 +114,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
                 SecurityConstants.READ));
         // change user access level => can read
         ((NuxeoPrincipal) session.getPrincipal()).getModel().setProperty(
-                "user", "accessLevel", Long.valueOf(5));
+                "user", "accessLevel", 5L);
         assertTrue(session.hasPermission(folder.getRef(),
                 SecurityConstants.READ));
         saveAndcloseSession(session);
@@ -140,15 +140,14 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         checkCorePolicy();
     }
 
-    public void checkLockPermissions(CoreSession session, DocumentRef docRef,
+    public static void checkLockPermissions(CoreSession session, DocumentRef docRef,
             boolean canWrite) throws ClientException {
         assertEquals(canWrite, session.hasPermission(docRef,
                 SecurityConstants.WRITE));
         // test WRITE_PROPERTIES as it used to be granted when locked
         assertEquals(canWrite, session.hasPermission(docRef,
                 SecurityConstants.WRITE_PROPERTIES));
-        assertEquals(true,
-                session.hasPermission(docRef, SecurityConstants.READ));
+        assertTrue(session.hasPermission(docRef, SecurityConstants.READ));
     }
 
     public void testLockSecurityPolicy() throws Exception {
@@ -194,4 +193,5 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
         checkLockPermissions(session, docRef, false);
         saveAndcloseSession(session);
     }
+
 }

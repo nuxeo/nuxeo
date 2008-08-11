@@ -86,6 +86,7 @@ public class BlobProperty extends ObjectProperty {
 //        }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T convertTo(Serializable value, Class<T> toType)
             throws PropertyConversionException {
@@ -99,8 +100,7 @@ public class BlobProperty extends ObjectProperty {
     }
 
     @Override
-    public Object newInstance() throws InstantiationException,
-            IllegalAccessException {
+    public Object newInstance() {
         return new ByteArrayInputStream("".getBytes()); // TODO not serializable
     }
 

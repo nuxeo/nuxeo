@@ -47,7 +47,6 @@ public class MapProperty extends ComplexProperty {
         this.field = field;
     }
 
-
     public MapProperty(Property parent, Field field, int flags) {
         super (parent, flags);
         this.field = field;
@@ -66,9 +65,8 @@ public class MapProperty extends ComplexProperty {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public ComplexType getType() {
-        return (ComplexType)field.getType();
+        return (ComplexType) field.getType();
     }
 
     public Field getField() {
@@ -77,7 +75,7 @@ public class MapProperty extends ComplexProperty {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        MapProperty clone = (MapProperty)super.clone();
+        MapProperty clone = (MapProperty) super.clone();
         return clone;
     }
 

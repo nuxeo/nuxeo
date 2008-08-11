@@ -31,7 +31,7 @@ public final class BuiltinTypes {
 
     public static DocumentTypeImpl T_DOCUMENT;
 
-    public static SchemaImpl systemSchema;
+    private static SchemaImpl systemSchema;
 
     // This is an utility class.
     private BuiltinTypes() { }
