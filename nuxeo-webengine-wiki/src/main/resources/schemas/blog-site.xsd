@@ -4,13 +4,9 @@
         xmlns:tns="http://project.nuxeo.org/schemas/webengine/site/blog">
 
   <element name="accept-trackback" type="boolean"></element>
-
   <element name="accept-comment" type="boolean"></element>
-
   <element name="feedburner-id" type="string"></element>
-
   <element name="akismet-id" type="string"></element>
-
   <element name="google-analytics-id" type="string"></element>
 
 </schema>

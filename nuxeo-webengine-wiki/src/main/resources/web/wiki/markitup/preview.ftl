@@ -12,20 +12,20 @@
   </head>
   <body>
     <div id="main">
-     <div class="closeWindow">
-<form>
-    <input type="button" value=" Close this window " onclick="self.close()" />
-  </form>
-</div>
+      <div class="closeWindow">
+        <form>
+          <input type="button" value=" Close this window " onclick="self.close()" />
+        </form>
+      </div>
       <div class="main-content">
         <h1>${This.title}</h1>
         <@wiki>${Request.getParameter('content')}</@wiki> 
       </div>
       <div class="closeWindow">
-<form>
-    <input type="button" value=" Close this window " onclick="self.close()" />
-  </form>
-</div>
+	    <form>
+	      <input type="button" value=" Close this window " onclick="self.close()" />
+	    </form>
+	  </div>
     </div>
   </body>
 </html>

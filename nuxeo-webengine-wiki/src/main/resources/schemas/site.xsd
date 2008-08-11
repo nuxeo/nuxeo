@@ -4,7 +4,6 @@
         xmlns:tns="http://project.nuxeo.org/schemas/webengine/site">
 
   <element name="skin" type="string"></element>
-
   <element name="sitebase" type="string"></element>
 
 </schema>

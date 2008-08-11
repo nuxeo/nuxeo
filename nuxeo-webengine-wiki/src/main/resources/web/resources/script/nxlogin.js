@@ -17,7 +17,6 @@ function doLogin(username, password) {
   return false;
 }
 
-
 function make_base_auth(user, pass) {
   var tok = user + ':' + pass;
   var hash = Base64.encode(tok);
@@ -25,32 +24,32 @@ function make_base_auth(user, pass) {
 }
 
 function doLogin2(username, password, loginUrl) {
-    
-      auth = make_base_auth(username, password)
 
-      //remove the JSESSIONID cookie to initiate a new session
-      jQuery.cookie("JSESSIONID", null, {path: "/"});
+  auth = make_base_auth(username, password)
 
-      jQuery.ajax({
-        url: loginUrl,
-        type: "POST",
-        async: false,
-        timeout: 2000,
-        beforeSend : function(req) {
-          req.setRequestHeader("Authorization", auth);
-        },
-        error: function() {
-          alert("Cannot send login informations!")
-        },
-        complete: function(xhr, textStatus) {
-          if (xhr.responseText == "Authenticated") {
-            loggedin = true;
-          } else {
-            loggedin = false;
-          }
-        },
-      })
-      return loggedin
+  //remove the JSESSIONID cookie to initiate a new session
+  jQuery.cookie("JSESSIONID", null, {path: "/"});
+
+  jQuery.ajax({
+    url: loginUrl,
+    type: "POST",
+    async: false,
+    timeout: 2000,
+    beforeSend : function(req) {
+      req.setRequestHeader("Authorization", auth);
+    },
+    error: function() {
+      alert("Cannot send login informations!")
+    },
+    complete: function(xhr, textStatus) {
+      if (xhr.responseText == "Authenticated") {
+        loggedin = true;
+      } else {
+        loggedin = false;
+      }
+    },
+  })
+  return loggedin
 }
 
 function showLoginError(errtext) {
