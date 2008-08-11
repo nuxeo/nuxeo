@@ -41,13 +41,11 @@ import javax.transaction.xa.Xid;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocument;
 
 /**
  * The session is the main high level access point to data from the underlying
@@ -340,15 +338,13 @@ public class SessionImpl implements Session, XAResource {
         return node;
     }
 
-    public Node addChildNode(Node parent, String name, String typeName,
-            boolean complexProp) throws StorageException {
+    public Node addChildNode(Node parent, String name, Long pos,
+            String typeName, boolean complexProp) throws StorageException {
         checkLive();
         if (name == null || name.contains("/") || name.equals(".") ||
                 name.equals("..")) {
-            // XXX real parsing
             throw new IllegalArgumentException("Illegal name: " + name);
         }
-        // XXX do namespace transformations
 
         Serializable id = context.generateNewId();
 
@@ -365,7 +361,7 @@ public class SessionImpl implements Session, XAResource {
             hierMap = mainMap;
         }
         hierMap.put(model.HIER_PARENT_KEY, parent.mainFragment.getId());
-        hierMap.put(model.HIER_CHILD_POS_KEY, null);
+        hierMap.put(model.HIER_CHILD_POS_KEY, pos);
         hierMap.put(model.HIER_CHILD_NAME_KEY, name);
         hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY,
                 Boolean.valueOf(complexProp));
@@ -401,8 +397,8 @@ public class SessionImpl implements Session, XAResource {
     }
 
     public Node addProxy(Serializable targetId, Serializable versionableId,
-            Node parent, String name) throws StorageException {
-        Node proxy = addChildNode(parent, name, Model.PROXY_TYPE, false);
+            Node parent, String name, Long pos) throws StorageException {
+        Node proxy = addChildNode(parent, name, pos, Model.PROXY_TYPE, false);
         proxy.setSingleProperty(model.PROXY_TARGET_PROP, targetId);
         proxy.setSingleProperty(model.PROXY_VERSIONABLE_PROP, versionableId);
         return proxy;
@@ -460,14 +456,14 @@ public class SessionImpl implements Session, XAResource {
     public boolean hasChildren(Node parent, boolean complexProp)
             throws StorageException {
         checkLive();
-        return context.getChildren(parent.getId(), complexProp).size() > 0;
+        return context.getChildren(parent.getId(), null, complexProp).size() > 0;
     }
 
-    public List<Node> getChildren(Node parent, boolean complexProp, String name)
+    public List<Node> getChildren(Node parent, String name, boolean complexProp)
             throws StorageException {
         checkLive();
         Collection<SimpleFragment> fragments = context.getChildren(
-                parent.getId(), complexProp);
+                parent.getId(), name, complexProp);
         List<Node> nodes;
         if (complexProp) {
             nodes = new LinkedList<Node>();
@@ -544,8 +540,7 @@ public class SessionImpl implements Session, XAResource {
         return getNodeById(id);
     }
 
-    public List<Node> getVersions(Node versionableNode)
-            throws StorageException {
+    public List<Node> getVersions(Node versionableNode) throws StorageException {
         checkLive();
         context.save();
         List<SimpleFragment> fragments = context.getVersions(versionableNode.getId());
@@ -560,8 +555,7 @@ public class SessionImpl implements Session, XAResource {
             throws StorageException {
         checkLive();
         context.save();
-        List<SimpleFragment> fragments = context.getProxies(document,
-                parent);
+        List<SimpleFragment> fragments = context.getProxies(document, parent);
         List<Node> nodes = new ArrayList<Node>(fragments.size());
         for (SimpleFragment fragment : fragments) {
             nodes.add(getNodeById(fragment.getId()));

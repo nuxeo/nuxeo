@@ -179,6 +179,12 @@ public class Model {
 
     public static final String PROXY_VERSIONABLE_KEY = "versionable";
 
+    public static final String LOCK_TABLE_NAME = "locks";
+
+    public static final String LOCK_PROP = "ecm:lock";
+
+    public static final String LOCK_KEY = "lock";
+
     private static TypeRef<? extends Type> STRING_TYPE_REF = StringType.INSTANCE.getRef();
 
     private static TypeRef<? extends Type> DATE_TYPE_REF = DateType.INSTANCE.getRef();
@@ -212,6 +218,9 @@ public class Model {
 
     public static Field MAIN_CHECKED_IN_FIELD = new FieldImpl(
             QName.valueOf(MAIN_CHECKED_IN_PROP), TypeRef.NULL, BOOLEAN_TYPE_REF);
+
+    public static Field LOCK_FIELD = new FieldImpl(QName.valueOf(LOCK_PROP),
+            TypeRef.NULL, STRING_TYPE_REF);
 
     private final BinaryManager binaryManager;
 
@@ -287,6 +296,7 @@ public class Model {
         initMainModel();
         initVersionsModel();
         initProxiesModel();
+        initLocksModel();
         initAclModel();
         initMiscModel();
         initModels(schemaManager);
@@ -552,6 +562,16 @@ public class Model {
     }
 
     /**
+     * Special model for the locks table.
+     */
+    private void initLocksModel() {
+        Map<String, PropertyType> fragmentKeysType = new LinkedHashMap<String, PropertyType>();
+        fragmentsKeysType.put(LOCK_TABLE_NAME, fragmentKeysType);
+        initSimpleProperty(LOCK_TABLE_NAME, LOCK_PROP, LOCK_KEY,
+                PropertyType.STRING, fragmentKeysType);
+    }
+
+    /**
      * Special collection-like model for the ACL table.
      */
     private void initAclModel() {
@@ -650,14 +670,9 @@ public class Model {
                         /*
                          * Complex list.
                          */
-                        // Set<String> listProperties =
-                        // complexLists.get(typeName);
-                        // if (listProperties == null) {
-                        // listProperties = new HashSet<String>();
-                        // complexLists.put(typeName, listProperties);
-                        // }
-                        // listProperties.add(propertyName);
-                        initTypeModel((ComplexType) listFieldType);
+                        String subFragmentName = initTypeModel((ComplexType) listFieldType);
+                        addTypeSimpleFragment(listFieldType.getName(),
+                                subFragmentName);
                     }
                 } else {
                     /*

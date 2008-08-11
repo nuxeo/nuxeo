@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -65,23 +64,11 @@ public class SQLComplexListProperty extends SQLBaseProperty {
     }
 
     public List<Property> getValue() throws DocumentException {
-
-        // TODO special case if (elType.getName().equals(TypeConstants.CONTENT))
-        // return new BlobProperty(this, element, createField(name));
-
-        List<Node> nodes = session.getComplexList(node, name);
-        List<Property> properties = new ArrayList<Property>(nodes.size());
-        for (Node node : nodes) {
-            Property property = session.makeProperty(node, elementType, name,
-                    readonly);
-            properties.add(property);
-        }
-        return properties;
+        return session.makeProperties(node, name, type, readonly, -1);
     }
 
     public void setValue(Object value) throws DocumentException {
         checkWritable();
-        // TODO
         if (value instanceof ListDiff) {
             setList((ListDiff) value);
         } else if (value instanceof List) {
@@ -97,11 +84,49 @@ public class SQLComplexListProperty extends SQLBaseProperty {
      * ----- internal -----
      */
 
-    public void setList(ListDiff list) {
-        throw new UnsupportedOperationException();
+    public void setList(List<?> list) throws DocumentException {
+        // TODO optimize this to keep existing nodes
+        // remove previous nodes
+        List<Node> nodes = session.getComplexList(node, name);
+        for (Node n : nodes) {
+            session.remove(n);
+        }
+        // add new nodes
+        List<Property> properties = session.makeProperties(node, name, type,
+                readonly, list.size());
+        // set values
+        int i = 0;
+        for (Object value : list) {
+            properties.get(i++).setValue(value);
+        }
     }
 
-    public void setList(List<?> list) throws DocumentException {
+    public void setList(ListDiff list) throws DocumentException {
+        if (!list.isDirty()) {
+            return;
+        }
+        for (ListDiff.Entry entry : list.diff()) {
+            switch (entry.type) {
+            case ListDiff.ADD:
+                // add(entry.value);
+                break;
+            case ListDiff.REMOVE:
+                // remove(entry.index);
+                break;
+            case ListDiff.INSERT:
+                // insert(entry.index, entry.value);
+                break;
+            case ListDiff.MOVE:
+                // move(entry.index, (Integer) entry.value);
+                break;
+            case ListDiff.MODIFY:
+                // modify(entry.index, entry.value);
+                break;
+            case ListDiff.CLEAR:
+                // clear();
+                break;
+            }
+        }
         throw new UnsupportedOperationException();
     }
 

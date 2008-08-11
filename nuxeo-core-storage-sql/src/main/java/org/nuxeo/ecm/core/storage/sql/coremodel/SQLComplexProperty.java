@@ -101,12 +101,14 @@ public class SQLComplexProperty extends SQLBaseProperty implements
         Map<String, Object> map = (Map<String, Object>) value;
         if (map == null) {
             // XXX should delete the node?
-            // throw new RuntimeException("null");
-            return;
-        }
-        for (Entry<String, Object> entry : map.entrySet()) {
-            Property property = getProperty(entry.getKey());
-            property.setValue(entry.getValue());
+            for (Property property : getProperties()) {
+                property.setValue(null);
+            }
+        } else {
+            for (Entry<String, Object> entry : map.entrySet()) {
+                Property property = getProperty(entry.getKey());
+                property.setValue(entry.getValue());
+            }
         }
     }
 
@@ -121,7 +123,7 @@ public class SQLComplexProperty extends SQLBaseProperty implements
 
     @Override
     public Property getProperty(String name) throws DocumentException {
-        return session.makeProperty(node, (ComplexType) type, name, readonly);
+        return session.makeProperty(node, name, (ComplexType) type, readonly);
     }
 
     @Override

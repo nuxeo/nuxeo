@@ -27,16 +27,20 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.Constants;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
+import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentIterator;
 import org.nuxeo.ecm.core.model.EmptyDocumentIterator;
-import org.nuxeo.ecm.core.model.Property;
+import org.nuxeo.ecm.core.model.PropertyContainer;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -52,6 +56,9 @@ import org.nuxeo.ecm.core.versioning.DocumentVersionIterator;
 public class SQLDocument extends SQLComplexProperty implements Document {
 
     private static final Log log = LogFactory.getLog(SQLDocument.class);
+
+    // cache of the lock state, for efficiency
+    protected transient String lock;
 
     protected SQLDocument(Node node, ComplexType type, SQLSession session,
             boolean readonly) {
@@ -126,13 +133,38 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public void readDocumentPart(DocumentPart dp) throws Exception {
-        for (org.nuxeo.ecm.core.api.model.Property property : dp) {
-            property.init((Serializable) getPropertyValue(property.getName()));
+        readPropertyContainer((ComplexProperty) dp, this);
+    }
+
+    protected static void readPropertyContainer(
+            ComplexProperty complexProperty, PropertyContainer propertyContainer)
+            throws DocumentException, PropertyException {
+        for (Property property : complexProperty) {
+            readOneProperty(property,
+                    propertyContainer.getPropertyValue(property.getName()));
+        }
+    }
+
+    protected static void readOneProperty(Property property, Object value)
+            throws PropertyException, DocumentException {
+        if (property.isContainer()) {
+            if (property.isList()) {
+                for (Object v : (List<?>) value) {
+                    readPropertyContainer((ComplexProperty) property.add(),
+                            (PropertyContainer) v);
+                }
+            } else {
+                property.init((Serializable) value);
+                // readPropertyContainer((ComplexProperty) property,
+                // (PropertyContainer) value);
+            }
+        } else {
+            property.init((Serializable) value);
         }
     }
 
     public void writeDocumentPart(DocumentPart dp) throws Exception {
-        for (org.nuxeo.ecm.core.api.model.Property property : dp) {
+        for (Property property : dp) {
             setPropertyValue(property.getName(), property.getValue());
         }
         dp.clearDirtyFlags();
@@ -202,22 +234,35 @@ public class SQLDocument extends SQLComplexProperty implements Document {
      * ----- org.nuxeo.ecm.core.model.Lockable -----
      */
 
-    // TODO: optimize this since it is used in permission checks
     public boolean isLocked() throws DocumentException {
         return getLock() != null;
     }
 
     public String getLock() throws DocumentException {
-        return null;
-        // throw new UnsupportedOperationException();
+        if (lock != null) {
+            return lock == Constants.EMPTY_STRING ? null : lock;
+        }
+        String l = getString(Model.LOCK_PROP);
+        lock = l == null ? Constants.EMPTY_STRING : l;
+        return l;
     }
 
     public void setLock(String key) throws DocumentException {
-        throw new UnsupportedOperationException();
+        if (key == null) {
+            throw new IllegalArgumentException("Lock key cannot be null");
+        }
+        if (isLocked()) {
+            throw new DocumentException("Document already locked");
+        }
+        setString(Model.LOCK_PROP, key);
+        lock = key;
     }
 
     public String unlock() throws DocumentException {
-        throw new UnsupportedOperationException();
+        String l = getLock();
+        setString(Model.LOCK_PROP, null);
+        lock = Constants.EMPTY_STRING;
+        return l;
     }
 
     /*
@@ -267,7 +312,8 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public DocumentVersionIterator getVersions() throws DocumentException {
-        return new SQLDocumentVersionIterator(session.getVersions(getHierarchyNode()));
+        return new SQLDocumentVersionIterator(
+                session.getVersions(getHierarchyNode()));
     }
 
     public DocumentVersion getLastVersion() throws DocumentException {
@@ -355,7 +401,8 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         if (!isFolder()) {
             throw new IllegalArgumentException("Not a folder");
         }
-        return session.addChild(getHierarchyNode(), name, typeName);
+        // TODO pos
+        return session.addChild(getHierarchyNode(), name, null, typeName);
     }
 
     public void orderBefore(String src, String dest) throws DocumentException {
@@ -378,7 +425,8 @@ public class SQLDocument extends SQLComplexProperty implements Document {
      * ----- internal for SQLSecurityManager -----
      */
 
-    protected Property getACLProperty() throws DocumentException {
+    protected org.nuxeo.ecm.core.model.Property getACLProperty()
+            throws DocumentException {
         return session.makeACLProperty(getHierarchyNode());
     }
 

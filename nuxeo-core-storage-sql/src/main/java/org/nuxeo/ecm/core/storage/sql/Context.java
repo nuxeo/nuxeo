@@ -354,8 +354,7 @@ public class Context {
         Children children = knownChildren.get(parentId);
         if (children != null) {
             boolean complexProp = ((Boolean) row.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
-            children.remove(row.getString(model.HIER_CHILD_NAME_KEY),
-                    complexProp);
+            children.remove(row, complexProp, model);
         }
     }
 
@@ -400,12 +399,13 @@ public class Context {
      * Gets the list of children for a given parent id.
      *
      * @param parentId the parent id
+     * @param name the name of the children, or {@code null} for all
      * @param complexProp whether to get complex properties or regular children
      * @return the list of children
      * @throws StorageException
      */
     public Collection<SimpleFragment> getChildren(Serializable parentId,
-            boolean complexProp) throws StorageException {
+            String name, boolean complexProp) throws StorageException {
         Collection<SimpleFragment> fragments;
 
         // check in the known children
@@ -414,7 +414,7 @@ public class Context {
             children = new Children(false);
             knownChildren.put(parentId, children);
         } else {
-            fragments = children.getFragments(complexProp);
+            fragments = children.getFragments(name, complexProp);
             if (fragments != null) {
                 return fragments;
             }
@@ -426,8 +426,8 @@ public class Context {
         // we now know the full children for this parent
         children.addComplete(fragments, complexProp, model);
 
-        // the children may include newly-created ones
-        return children.getFragments(complexProp);
+        // the children may include newly-created ones, also restrict name
+        return children.getFragments(name, complexProp);
     }
 
     /**

@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -273,7 +274,7 @@ public class SQLSession implements Session {
             Node parentNode = ((SQLDocument) parent).getHierarchyNode();
             String name = findFreeName(parentNode, document.getName());
             Node proxy = session.addProxy(versionNode.getId(),
-                    versionableNode.getId(), parentNode, name);
+                    versionableNode.getId(), parentNode, name, null);
             return newDocument(proxy);
         } catch (StorageException e) {
             throw new DocumentException(e);
@@ -350,6 +351,11 @@ public class SQLSession implements Session {
         }
     }
 
+    // called by SQLContentProperty
+    protected Binary getBinary(InputStream in) throws IOException {
+        return session.getBinary(in);
+    }
+
     /**
      * Resolves a node given its absolute path, or given an existing node and a
      * relative path.
@@ -398,7 +404,7 @@ public class SQLSession implements Session {
     protected List<Document> getChildren(Node node) throws DocumentException {
         List<Node> nodes;
         try {
-            nodes = session.getChildren(node, false, null);
+            nodes = session.getChildren(node, null, false);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -425,11 +431,11 @@ public class SQLSession implements Session {
         }
     }
 
-    protected Document addChild(Node parent, String name, String typeName)
-            throws DocumentException {
+    protected Document addChild(Node parent, String name, Long pos,
+            String typeName) throws DocumentException {
         try {
-            return newDocument(session.addChildNode(parent, name, typeName,
-                    false));
+            return newDocument(session.addChildNode(parent, name, pos,
+                    typeName, false));
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -439,7 +445,7 @@ public class SQLSession implements Session {
             throws DocumentException {
         List<Node> nodes;
         try {
-            nodes = session.getChildren(node, true, name);
+            nodes = session.getChildren(node, name, true);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -534,9 +540,20 @@ public class SQLSession implements Session {
         return new SQLCollectionProperty(property, null, false);
     }
 
-    protected Property makeProperty(Node node, ComplexType parentType,
-            String name, boolean readonly) throws DocumentException {
+    /** Make a property. */
+    protected Property makeProperty(Node node, String name,
+            ComplexType parentType, boolean readonly) throws DocumentException {
+        return makeProperties(node, name, parentType, readonly, 0).get(0);
+    }
 
+    /**
+     * Make properties, either a single one, or the whole list for complex list
+     * elements.
+     */
+    protected List<Property> makeProperties(Node node, String name,
+            Type parentType, boolean readonly, int complexListSize)
+            throws DocumentException {
+        boolean complexList = parentType instanceof ListType;
         Field field;
         if (Model.MISC_LIFECYCLE_POLICY_PROP.equals(name)) {
             field = Model.SYSTEM_LIFECYCLE_POLICY_FIELD;
@@ -554,69 +571,96 @@ public class SQLSession implements Session {
             field = Model.VERSION_CREATED_FIELD;
         } else if (Model.MAIN_CHECKED_IN_PROP.equals(name)) {
             field = Model.MAIN_CHECKED_IN_FIELD;
+        } else if (Model.LOCK_PROP.equals(name)) {
+            field = Model.LOCK_FIELD;
         } else {
-            field = parentType.getField(name);
-            if (field == null) {
-                throw new NoSuchPropertyException(name);
+            if (complexList) {
+                field = ((ListType) parentType).getField();
+            } else {
+                field = ((ComplexType) parentType).getField(name);
+                if (field == null) {
+                    throw new NoSuchPropertyException(name);
+                }
+                // qualify if necessary (some callers pass unprefixed names)
+                name = field.getName().getPrefixedName();
             }
-            // qualify if necessary (some callers pass unprefixed names)
-            name = field.getName().getPrefixedName();
         }
 
         Type type = field.getType();
         if (type.isSimpleType()) {
-            SimpleProperty property;
+            SimpleProperty prop;
             try {
-                property = node.getSimpleProperty(name);
+                prop = node.getSimpleProperty(name);
             } catch (StorageException e) {
                 throw new DocumentException(e);
             }
-            return new SQLSimpleProperty(property, type, readonly);
+            Property property = new SQLSimpleProperty(prop, type, readonly);
+            return Collections.singletonList(property);
         } else if (type.isListType()) {
+            Property property;
             ListType listType = (ListType) type;
             if (listType.getFieldType().isSimpleType()) {
-                CollectionProperty property;
+                CollectionProperty prop;
                 try {
-                    property = node.getCollectionProperty(name);
+                    prop = node.getCollectionProperty(name);
                 } catch (StorageException e) {
                     throw new DocumentException(e);
                 }
-                return new SQLCollectionProperty(property, listType, readonly);
+                property = new SQLCollectionProperty(prop, listType, readonly);
             } else {
-                return new SQLComplexListProperty(node, listType, name, this,
-                        readonly);
+                property = new SQLComplexListProperty(node, listType, name,
+                        this, readonly);
             }
+            return Collections.singletonList(property);
         } else {
-            // complex type
-            ComplexType complexType = (ComplexType) type;
-            Node childNode;
+            // complex type, may be part of a complex list or not
+            List<Node> childNodes;
             try {
-                childNode = session.getChildNode(node, name, true);
-                if (childNode == null) {
-                    // Create the needed complex property. This could also be
-                    // done lazily when an actual write is done -- this would
-                    // mean refactoring the various SQL*Property classes to hold
-                    // parent information.
-                    childNode = session.addChildNode(node, name,
-                            type.getName(), true);
+                if (complexList) {
+                    if (complexListSize == -1) {
+                        // get existing
+                        childNodes = session.getChildren(node, name, true);
+                    } else {
+                        // create with given size (after a remove)
+                        childNodes = new ArrayList<Node>(complexListSize);
+                        for (int i = 0; i < complexListSize; i++) {
+                            Node childNode = session.addChildNode(node, name,
+                                    Long.valueOf(i), type.getName(), true);
+                            childNodes.add(childNode);
+                        }
+                    }
+                } else {
+                    Node childNode = session.getChildNode(node, name, true);
+                    if (childNode == null) {
+                        // Create the needed complex property. This could also
+                        // be done lazily when an actual write is done -- this
+                        // would mean refactoring the various SQL*Property
+                        // classes to hold parent information.
+                        childNode = session.addChildNode(node, name, null,
+                                type.getName(), true);
+                    }
+                    childNodes = Collections.singletonList(childNode);
                 }
             } catch (StorageException e) {
                 throw new DocumentException(e);
             }
-            // TODO use a better switch
-            if (type.getName().equals("content")) {
-                return new SQLContentProperty(childNode, complexType, this,
-                        readonly);
-            } else {
-                return new SQLComplexProperty(childNode, complexType, this,
-                        readonly);
+            ComplexType complexType = (ComplexType) type;
+            List<Property> properties = new ArrayList<Property>(
+                    childNodes.size());
+            for (Node childNode : childNodes) {
+                Property property;
+                // TODO use a better switch
+                if (type.getName().equals("content")) {
+                    property = new SQLContentProperty(childNode, complexType,
+                            this, readonly);
+                } else {
+                    property = new SQLComplexProperty(childNode, complexType,
+                            this, readonly);
+                }
+                properties.add(property);
             }
+            return properties;
         }
-    }
-
-    // called by SQLContentProperty
-    protected Binary getBinary(InputStream in) throws IOException {
-        return session.getBinary(in);
     }
 
 }

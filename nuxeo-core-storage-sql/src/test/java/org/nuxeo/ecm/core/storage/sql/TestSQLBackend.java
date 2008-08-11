@@ -63,7 +63,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node root = session.getRootNode();
 
         // root doc /foo
-        Node nodefoo = session.addChildNode(root, "foo", "TestDoc", false);
+        Node nodefoo = session.addChildNode(root, "foo", null, "TestDoc", false);
         assertEquals(root.getId(), session.getParentNode(nodefoo).getId());
         assertEquals("TestDoc", nodefoo.getPrimaryType());
         assertEquals("/foo", session.getPath(nodefoo));
@@ -71,7 +71,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(nodefoo.getId(), nodeabis.getId());
 
         // first child /foo/bar
-        Node nodeb = session.addChildNode(nodefoo, "bar", "TestDoc", false);
+        Node nodeb = session.addChildNode(nodefoo, "bar", null, "TestDoc",
+                false);
         assertEquals("/foo/bar", session.getPath(nodeb));
         assertEquals(nodefoo.getId(), session.getParentNode(nodeb).getId());
         assertEquals(nodeb.getId(),
@@ -90,14 +91,15 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("/foo", session.getPath(nodefoo));
 
         // second child /foo/gee
-        Node nodec = session.addChildNode(nodefoo, "gee", "TestDoc", false);
+        Node nodec = session.addChildNode(nodefoo, "gee", null, "TestDoc",
+                false);
         assertEquals("/foo/gee", session.getPath(nodec));
-        List<Node> children = session.getChildren(nodefoo, false, null);
+        List<Node> children = session.getChildren(nodefoo, null, false);
         assertEquals(2, children.size());
 
         session.save();
 
-        children = session.getChildren(nodefoo, false, null);
+        children = session.getChildren(nodefoo, null, false);
         assertEquals(2, children.size());
 
         // delete bar
@@ -109,7 +111,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     public void testBasics() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
-        Node nodea = session.addChildNode(root, "foo", "TestDoc", false);
+        Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
 
         nodea.setSingleProperty("tst:title", "hello world");
         nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
@@ -153,7 +155,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     public void testBinary() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
-        Node nodea = session.addChildNode(root, "foo", "TestDoc", false);
+        Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
 
         InputStream in = new ByteArrayInputStream("abc".getBytes("UTF-8"));
         Binary bin = session.getBinary(in);
@@ -257,14 +259,17 @@ public class TestSQLBackend extends SQLBackendTestCase {
     public void testMove() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
-        Node foldera = session.addChildNode(root, "folder_a", "TestDoc", false);
+        Node foldera = session.addChildNode(root, "folder_a", null, "TestDoc",
+                false);
         Serializable prevId = foldera.getId();
-        Node nodea = session.addChildNode(foldera, "node_a", "TestDoc", false);
-        Node nodeac = session.addChildNode(nodea, "node_a_complex", "TestDoc",
-                true);
+        Node nodea = session.addChildNode(foldera, "node_a", null, "TestDoc",
+                false);
+        Node nodeac = session.addChildNode(nodea, "node_a_complex", null,
+                "TestDoc", true);
         assertEquals("/folder_a/node_a/node_a_complex", session.getPath(nodeac));
-        Node folderb = session.addChildNode(root, "folder_b", "TestDoc", false);
-        session.addChildNode(folderb, "node_b", "TestDoc", false);
+        Node folderb = session.addChildNode(root, "folder_b", null, "TestDoc",
+                false);
+        session.addChildNode(folderb, "node_b", null, "TestDoc", false);
         session.save();
 
         // cannot move under itself
@@ -304,20 +309,24 @@ public class TestSQLBackend extends SQLBackendTestCase {
     public void testCopy() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
-        Node foldera = session.addChildNode(root, "folder_a", "TestDoc", false);
+        Node foldera = session.addChildNode(root, "folder_a", null, "TestDoc",
+                false);
         Serializable prevFolderaId = foldera.getId();
-        Node nodea = session.addChildNode(foldera, "node_a", "TestDoc", false);
+        Node nodea = session.addChildNode(foldera, "node_a", null, "TestDoc",
+                false);
         Serializable prevNodeaId = nodea.getId();
-        Node nodeac = session.addChildNode(nodea, "node_a_complex", "TestDoc",
-                true);
+        Node nodeac = session.addChildNode(nodea, "node_a_complex", null,
+                "TestDoc", true);
         Serializable prevNodeacId = nodeac.getId();
         nodea.setSingleProperty("tst:title", "hello world");
         nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
                 "c" });
         assertEquals("/folder_a/node_a/node_a_complex", session.getPath(nodeac));
-        Node folderb = session.addChildNode(root, "folder_b", "TestDoc", false);
-        session.addChildNode(folderb, "node_b", "TestDoc", false);
-        Node folderc = session.addChildNode(root, "folder_c", "TestDoc", false);
+        Node folderb = session.addChildNode(root, "folder_b", null, "TestDoc",
+                false);
+        session.addChildNode(folderb, "node_b", null, "TestDoc", false);
+        Node folderc = session.addChildNode(root, "folder_c", null, "TestDoc",
+                false);
         session.save();
 
         // cannot copy under itself
@@ -372,10 +381,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
     public void testVersioning() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
-        Node foldera = session.addChildNode(root, "folder_a", "TestDoc", false);
-        Node nodea = session.addChildNode(foldera, "node_a", "TestDoc", false);
-        Node nodeac = session.addChildNode(nodea, "node_a_complex", "TestDoc",
-                true);
+        Node foldera = session.addChildNode(root, "folder_a", null, "TestDoc",
+                false);
+        Node nodea = session.addChildNode(foldera, "node_a", null, "TestDoc",
+                false);
+        Node nodeac = session.addChildNode(nodea, "node_a_complex", null,
+                "TestDoc", true);
         nodea.setSingleProperty("tst:title", "hello world");
         nodea.setCollectionProperty("tst:subjects", new String[] { "a", "b",
                 "c" });
@@ -425,9 +436,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
     public void testProxies() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
-        Node foldera = session.addChildNode(root, "foldera", "TestDoc", false);
-        Node nodea = session.addChildNode(foldera, "nodea", "TestDoc", false);
-        Node folderb = session.addChildNode(root, "folderb", "TestDoc", false);
+        Node foldera = session.addChildNode(root, "foldera", null, "TestDoc",
+                false);
+        Node nodea = session.addChildNode(foldera, "nodea", null, "TestDoc",
+                false);
+        Node folderb = session.addChildNode(root, "folderb", null, "TestDoc",
+                false);
 
         /*
          * Check in.
@@ -439,7 +453,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         /*
          * Make proxy (by hand).
          */
-        Node proxy = session.addProxy(version.getId(), nodea.getId(), folderb, "proxy1");
+        Node proxy = session.addProxy(version.getId(), nodea.getId(), folderb,
+                "proxy1", null);
         session.save();
         assertNotSame(version.getId(), proxy.getId());
         assertNotSame(nodea.getId(), proxy.getId());

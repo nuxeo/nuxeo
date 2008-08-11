@@ -153,14 +153,14 @@ public class ConnectionImpl implements Session {
         return session.hasChildren(parent, complexProp);
     }
 
-    public List<Node> getChildren(Node parent, boolean complexProp, String name)
+    public List<Node> getChildren(Node parent, String name, boolean complexProp)
             throws StorageException {
-        return session.getChildren(parent, complexProp, name);
+        return session.getChildren(parent, name, complexProp);
     }
 
-    public Node addChildNode(Node parent, String name, String typeName,
-            boolean complex) throws StorageException {
-        return session.addChildNode(parent, name, typeName, complex);
+    public Node addChildNode(Node parent, String name, Long pos,
+            String typeName, boolean complexProp) throws StorageException {
+        return session.addChildNode(parent, name, pos, typeName, complexProp);
     }
 
     public void removeNode(Node node) throws StorageException {
@@ -213,8 +213,8 @@ public class ConnectionImpl implements Session {
     }
 
     public Node addProxy(Serializable targetId, Serializable versionableId,
-            Node parent, String name) throws StorageException {
-        return session.addProxy(targetId, versionableId, parent, name);
+            Node parent, String name, Long pos) throws StorageException {
+        return session.addProxy(targetId, versionableId, parent, name, pos);
     }
 
 }

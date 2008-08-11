@@ -2,13 +2,7 @@ SQL Storage TODO
 
 - major/minor version management
 
-- proxies
-
-- locking
-
 - recursive removal on node remove
-
-- complex lists
 
 Optimizations:
 
