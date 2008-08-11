@@ -43,7 +43,12 @@ Copy to $JBOSS/server/default/deploy/nuxeo.ear/config/repository-sql-config.xml
 configuration options, for new the binaries storage is hardcoded to
 $JBOSS/server/default/data/NXRuntime/binaries)
 
-Copy to $JBOSS/server/default/deploy/nuxeo.ear/datasources/repository-sql-ds.xml
+Install the appropriate JDBC driver in $JBOSS/server/default/lib, for instance
+derby-10.4.1.3.jar, or postgresql-8.2-507.jdbc3.jar.
+
+Create the datasource file
+$JBOSS/server/default/deploy/nuxeo.ear/datasources/repository-sql-ds.xml
+For Derby, use the following datasource:
 
 <?xml version="1.0"?>
 <connection-factories>
@@ -63,7 +68,7 @@ Copy to $JBOSS/server/default/deploy/nuxeo.ear/datasources/repository-sql-ds.xml
   </tx-connection-factory>
 </connection-factories>
 
-For PostgreSQL instead of the default Derby, adapt the datasource properties like this:
+For PostgreSQL, adapt the datasource properties like this:
 
 <?xml version="1.0"?>
 <connection-factories>
