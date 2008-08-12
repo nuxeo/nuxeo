@@ -49,8 +49,6 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
 
     private Map<String, ContentFactory> factoryInstancesByType;
 
-    private RepositoryInitializationHandler initializationHandler;
-
     @Override
     public void activate(ComponentContext context) {
         factories = new HashMap<String, ContentFactoryDescriptor>();
@@ -58,15 +56,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements
         factoryInstancesByType = new HashMap<String, ContentFactory>();
 
         // register our Repo init listener
-        initializationHandler = new RepositoryInitializationListener();
-        initializationHandler.install();
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) throws Exception {
-        if (initializationHandler != null) {
-            initializationHandler.uninstall();
-        }
+        RepositoryInitializationHandler.setInstance(new RepositoryInitializationListener());
     }
 
     @Override
