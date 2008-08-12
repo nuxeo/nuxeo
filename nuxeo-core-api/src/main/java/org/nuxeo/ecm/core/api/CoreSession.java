@@ -172,7 +172,9 @@ public interface CoreSession {
             throws ClientException;
 
     /**
-     * Gets a a list of documents given their references.
+     * Gets a list of documents given their references.
+     * <p>
+     * Documents that are not accessible are skipped.
      */
     DocumentModelList getDocuments(DocumentRef[] docRefs)
             throws ClientException;
