@@ -16,15 +16,19 @@ package org.nuxeo.ecm.platform.workflow.document.ejb;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ejb.Local;
 import javax.ejb.Remote;
-import javax.ejb.Stateful;
+import javax.ejb.Remove;
+import javax.ejb.Stateless;
 import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -35,31 +39,113 @@ import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
+import org.nuxeo.ecm.platform.workflow.document.api.ejb.delegate.CoreDocumentManagerBusinessDelegate;
+import org.nuxeo.ecm.platform.workflow.document.api.ejb.delegate.WorkflowDocumentSecurityPolicyBusinessDelegate;
 import org.nuxeo.ecm.platform.workflow.document.api.ejb.local.WorkflowDocumentSecurityLocal;
 import org.nuxeo.ecm.platform.workflow.document.api.ejb.remote.WorkflowDocumentSecurityRemote;
 import org.nuxeo.ecm.platform.workflow.document.api.security.WorkflowDocumentSecurityException;
 import org.nuxeo.ecm.platform.workflow.document.api.security.WorkflowDocumentSecurityManager;
+import org.nuxeo.ecm.platform.workflow.document.api.security.policy.WorkflowDocumentSecurityPolicyManager;
 
 /**
  * Workflow security manager bean.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-@Stateful
+@Stateless
 @Local(WorkflowDocumentSecurityLocal.class)
 @Remote(WorkflowDocumentSecurityRemote.class)
-public class WorkflowDocumentSecurityBean extends
-        AbstractWorkflowDocumentManager implements
+public class WorkflowDocumentSecurityBean implements
         WorkflowDocumentSecurityManager {
 
     private static final long serialVersionUID = 4800384487274281699L;
 
     private static final Log log = LogFactory.getLog(WorkflowDocumentSecurityBean.class);
 
+    protected String repositoryUri;
+
+    protected final CoreDocumentManagerBusinessDelegate documentManagerBusinessDelegate;
+
+    protected final WorkflowDocumentSecurityPolicyBusinessDelegate wDocRightsPolicyBusinessDelegate;
+
+    protected transient CoreSession documentManager;
+
     public WorkflowDocumentSecurityBean() {
+        documentManagerBusinessDelegate = new CoreDocumentManagerBusinessDelegate();
+        wDocRightsPolicyBusinessDelegate = new WorkflowDocumentSecurityPolicyBusinessDelegate();
     }
 
     public WorkflowDocumentSecurityBean(String repositoryUri) {
+        this();
+        this.repositoryUri = repositoryUri;
+    }
+
+    @PostConstruct
+    public void postConstruct() {
+        try {
+            documentManager = getDocumentManager();
+        } catch (NamingException e) {
+            log.error(e);
+        } catch (ClientException e) {
+            log.error(e);
+        }
+    }
+
+    @PreDestroy
+    public void preDestroy() {
+        try {
+            documentManager.disconnect();
+        } catch (ClientException e) {
+            log.error(e);
+        }
+    }
+
+    protected CoreSession getDocumentManager() throws NamingException,
+            ClientException {
+        if (documentManager == null) {
+            documentManager = documentManagerBusinessDelegate.getDocumentManager(
+                    repositoryUri, null);
+        }
+        return documentManager;
+    }
+
+    protected WorkflowDocumentSecurityPolicyManager getWorkflowDocumentRightsPolicy()
+            throws Exception {
+        return wDocRightsPolicyBusinessDelegate.getWorkflowDocumentRightsPolicyManager();
+    }
+
+    public void unlockDocument(DocumentRef docRef) throws ClientException {
+
+        try {
+            documentManager = getDocumentManager();
+        } catch (NamingException e) {
+            throw new ClientException(e.getMessage());
+        }
+
+        if (docRef != null) {
+            documentManager.unlock(docRef);
+            documentManager.save();
+            log.info("Document has been unlocked.... docRef=" + docRef);
+        }
+
+    }
+
+    public DocumentModel getDocumentModelFor(DocumentRef docRef)
+            throws ClientException {
+        DocumentModel dm;
+        try {
+            dm = getDocumentManager().getDocument(docRef);
+        } catch (NamingException e) {
+            throw new ClientException(e);
+        }
+        return dm;
+    }
+
+    public String getRepositoryUri() {
+        return repositoryUri;
+    }
+
+    public void setRepositoryUri(String repositoryUri) {
         this.repositoryUri = repositoryUri;
     }
 
@@ -250,5 +336,4 @@ public class WorkflowDocumentSecurityBean extends
             throw new WorkflowDocumentSecurityException(wlce);
         }
     }
-
 }

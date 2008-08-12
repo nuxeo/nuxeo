@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.publishing;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -112,6 +113,9 @@ public class PublishActionsBean implements PublishActions, Serializable {
     protected static final String DOMAIN_SECTIONS = "DOMAIN_SECTIONS";
 
     private static final String DOMAIN_TYPE = "Domain";
+
+    @In(create = true)
+    protected Principal currentUser;
 
     @In(create = true)
     protected transient WebActions webActions;
@@ -261,8 +265,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
                     throw new ClientException(e);
                 }
                 if (repository == null) {
-                    throw new ClientException("Cannot get repository " +
-                            repositoryName);
+                    throw new ClientException("Cannot get repository "
+                            + repositoryName);
                 }
                 try {
                     unrestrictedSession = repository.open();
@@ -348,8 +352,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
                         if (sectionRef.equals(proxyParentRef)) {
                             String versionLabel = versioningManager.getVersionLabel(pProxy);
                             node.setVersion(versionLabel);
-                            existingPublishedProxy.put(proxyParentRef.toString(),
-                                    pProxy);
+                            existingPublishedProxy.put(
+                                    proxyParentRef.toString(), pProxy);
                             if (!sectionRef.equals(currentParentRef)) {
                                 // when looking at a proxy, don't check itself
                                 addSelectedSection(node);
@@ -407,10 +411,10 @@ public class PublishActionsBean implements PublishActions, Serializable {
         // sort sections using titles
         DocumentModelTreeNodeComparator comp = new DocumentModelTreeNodeComparator(
                 nodes.getPathTitles());
-        Collections.sort((ArrayList)nodes, comp);
+        Collections.sort((ArrayList) nodes, comp);
 
         // populate sections
-        for (DocumentModelTreeNode node: nodes) {
+        for (DocumentModelTreeNode node : nodes) {
             sections.add(node);
         }
     }
@@ -470,31 +474,32 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
         log.debug("selected " + selectedSections.size() + " sections");
 
-        /**
+        /*
          * Proxies for which we need a moderation. Let's request the moderation
          * after the document manager session has been saved to avoid conflicts
          * in between sync txn and async txn that can start before the end of
          * the sync txn.
          */
         List<DocumentModel> forModeration = new ArrayList<DocumentModel>();
+        List<DocumentModel> alreadyPublished = new ArrayList<DocumentModel>();
 
+        boolean published = false;
         for (DocumentModelTreeNode section : selectedSections) {
-            boolean moderation = !isAlreadyPublishedInSection(docToPublish,
+            DocumentModel proxy = getPublishedInSection(docToPublish,
                     section.getDocument());
-
-            DocumentModel proxy = publishDocument(docToPublish,
-                    section.getDocument());
-
+            boolean moderation = proxy == null
+                    || new PublishingTasks(proxy, currentUser).getPublishingWorkItem() != null;
+            boolean candidate = false;
+            if (proxy == null) {
+                candidate = true;
+                proxy = publishDocument(docToPublish, section.getDocument());
+            }
+            if(candidate && isReviewer(proxy)) {
+                    published = true;
+            }
             if (moderation && !isReviewer(proxy)) {
                 forModeration.add(proxy);
             }
-        }
-
-        // A document is considered published if it doesn't have
-        // approval from section's manager
-        boolean published = false;
-        if (selectedSections.size() > forModeration.size()) {
-            published = true;
         }
 
         if (published) {
@@ -554,6 +559,17 @@ public class PublishActionsBean implements PublishActions, Serializable {
         return false;
     }
 
+    private DocumentModel getPublishedInSection(DocumentModel doc,
+            DocumentModel section) throws ClientException {
+        for (PublishingInformation each : getPublishingInformation(doc)) {
+            if (each.getSection().getPathAsString().equals(
+                    section.getPathAsString())) {
+                return each.getProxy();
+            }
+        }
+        return null;
+    }
+
     /*
      * Called by action WORKLIST_PUBLISH.
      */
@@ -587,15 +603,16 @@ public class PublishActionsBean implements PublishActions, Serializable {
                     documentManager.publishDocument(doc, target);
                     nbPublishedDocs++;
                 } else {
-                    log.info("Attempted to publish non-publishable document " +
-                            doc.getTitle());
+                    log.info("Attempted to publish non-publishable document "
+                            + doc.getTitle());
                 }
             }
         }
 
         Object[] params = { nbPublishedDocs };
-        facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 " +
-                resourcesAccessor.getMessages().get("n_published_docs"), params);
+        facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+                + resourcesAccessor.getMessages().get("n_published_docs"),
+                params);
 
         if (nbPublishedDocs < docs2Publish.size()) {
             facesMessages.add(FacesMessage.SEVERITY_WARN,
@@ -622,8 +639,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
         // set issued date only if the doc is dirty, to avoid setting it
         // repeatedly if several publishings are done
-        final boolean setIssuedDate = documentManager.isDirty(docToPublish.getRef()) &&
-                !docToPublish.isProxy();
+        final boolean setIssuedDate = documentManager.isDirty(docToPublish.getRef())
+                && !docToPublish.isProxy();
         if (setIssuedDate) {
             docToPublish.setProperty("dublincore", "issued",
                     Calendar.getInstance());
@@ -669,8 +686,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
                     StringBuilder recips = new StringBuilder();
                     for (String user : validators) {
                         boolean isUser = principalListManager.getPrincipalType(user) == PrincipalListManager.USER_TYPE;
-                        recips.append((isUser ? "user:" : "group:") + user +
-                                "|");
+                        recips.append((isUser ? "user:" : "group:") + user
+                                + "|");
                     }
                     eventInfo.put("recipients", recips.substring(0,
                             recips.length() - 1));
@@ -944,8 +961,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
      * Called by section_clipboard.xhtml
      */
     public List<Action> getActionsForSectionSelection() {
-        return webActions.getUnfiltredActionsList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION +
-                "_LIST");
+        return webActions.getUnfiltredActionsList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION
+                + "_LIST");
     }
 
     protected PublishingService getPublishingService() throws ClientException {

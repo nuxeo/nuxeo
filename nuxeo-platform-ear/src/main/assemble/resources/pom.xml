@@ -23,6 +23,7 @@
       <!-- build zip artifacts with resources -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-beta-2</version>
         <configuration>
           <outputDirectory>../../../../target-resources</outputDirectory>
           <descriptors>
