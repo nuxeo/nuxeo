@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.jcr.search;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 
@@ -93,8 +92,7 @@ public class TestXPathQuery extends RepositoryTestCase {
      *       +- testfolder3
      *           -- testfile4
      * </pre>
-     * @throws DocumentException
-     * @throws IOException
+     * @throws Exception
      */
     private void createDocs() throws Exception {
         // put some data in workspace
