@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.comment.web.CommentManagerActions;
 import org.nuxeo.ecm.platform.comment.web.ThreadEntry;
 import org.nuxeo.ecm.platform.forum.web.api.PostAction;
@@ -143,9 +144,11 @@ public class ThreadActionBean extends InputController implements ThreadAction {
         docThread.setProperty(schema, "moderated", moderated);
 
         if (moderated) {
+            // XXX: hack, administrators should have the right to moderate
+            // without being in this list
             // We automatically add administrators as moderators
-            if (!moderators.contains("administrators")) {
-                moderators.add("administrators");
+            if (!moderators.contains(SecurityConstants.ADMINISTRATORS)) {
+                moderators.add(SecurityConstants.ADMINISTRATORS);
             }
             // We can also remove Administrator() since his group is added
             if (moderators.contains("Administrator()")) {

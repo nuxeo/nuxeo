@@ -74,8 +74,6 @@ public class WorkspaceActionsBean extends InputController implements
 
     private static final Log log = LogFactory.getLog(WorkspaceActionsBean.class);
 
-    protected static final String ADMIN_GROUP = "administrators";
-
     @In(create = true, required = false)
     private transient CoreSession documentManager;
 
@@ -272,7 +270,7 @@ public class WorkspaceActionsBean extends InputController implements
             }
 
             // Force addition of administrators group
-            principalsName.add("administrators");
+            principalsName.add(SecurityConstants.ADMINISTRATORS);
 
             // Grant to principalList
             for (String principalName : principalsName) {
@@ -354,7 +352,7 @@ public class WorkspaceActionsBean extends InputController implements
             }
 
             // Add Admin group
-            securityActions.addPermission(ADMIN_GROUP,
+            securityActions.addPermission(SecurityConstants.ADMINISTRATORS,
                     SecurityConstants.EVERYTHING, true);
 
             // DENY at root

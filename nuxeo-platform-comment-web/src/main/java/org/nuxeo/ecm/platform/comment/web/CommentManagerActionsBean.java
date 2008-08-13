@@ -40,8 +40,8 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
-import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -115,7 +115,7 @@ public class CommentManagerActionsBean extends InputController implements
         showCreateForm = false;
 
         principal = userSession.getCurrentNuxeoPrincipal();
-        principalIsAdmin = principal.getGroups().contains("administrators");
+        principalIsAdmin = principal.isAdministrator();
     }
 
     @Destroy
