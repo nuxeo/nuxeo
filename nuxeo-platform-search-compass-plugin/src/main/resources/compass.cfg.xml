@@ -8,19 +8,19 @@
   <compass name="default">
 
     <connection>
-    <!-- IMPORTANT. This connection setting is a sample.
-    It will be overridden by the compass backend's extension point for
-    NXRuntime. To avoid overriding it the latest contribution to the
-    extension point should be:
-
-     <extension target="org.nuxeo.ecm.core.search.backend.compass.CompassBackend"
-             point="connection">
-      <default/>
-    </extension>
-     -->
+      <!-- IMPORTANT. This connection setting is a sample.
+        It will be overridden by the compass backend's extension point for
+        NXRuntime. To avoid overriding it the latest contribution to the
+        extension point should be:
+        
+        <extension target="org.nuxeo.ecm.core.search.backend.compass.CompassBackend"
+        point="connection">
+        <default/>
+        </extension>
+      -->
 
       <jdbc managed="true"
-        dialectClass="org.apache.lucene.store.jdbc.dialect.HSQLDialect"
+        dialectClass="org.apache.lucene.store.jdbc.dialect.DerbyDialect"
         deleteMarkDeletedDelta="60000">
         <dataSourceProvider>
           <jndi lookup="java:/nxsearch-compass" />
@@ -30,7 +30,7 @@
 
     <transaction commitBeforeCompletion="true"
       factory="org.compass.core.transaction.JTASyncTransactionFactory">
-      <batchInsertSettings maxBufferedDocs="100" mergeFactor="50"/>
+      <batchInsertSettings maxBufferedDocs="100" mergeFactor="50" />
     </transaction>
 
     <converters>
@@ -50,8 +50,8 @@
       <analyzer name="lowerWhitespace" type="CustomAnalyzer"
         analyzerClass="org.nuxeo.ecm.core.search.backend.compass.LowerWhitespaceAnalyzer" />
       <analyzer name="french" type="CustomAnalyzer"
-        analyzerClass="org.apache.lucene.analysis.fr.FrenchAnalyzer"/>
-      <optimizer scheduleInterval="300" schedule="false" mergeFactor="50"/>
+        analyzerClass="org.apache.lucene.analysis.fr.FrenchAnalyzer" />
+      <optimizer scheduleInterval="300" schedule="false" mergeFactor="50" />
     </searchEngine>
 
     <mappings>

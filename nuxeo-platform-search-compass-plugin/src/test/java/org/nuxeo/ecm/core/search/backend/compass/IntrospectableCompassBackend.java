@@ -54,7 +54,6 @@ class IntrospectableCompassBackend extends CompassBackend {
         return buildResource(session, resource, null, null, null, null);
     }
 
-    @SuppressWarnings("unchecked")
     public static Resource buildResource(CompassSession session,
             ResolvedResource resource,
             List<ResolvedData> commonData,

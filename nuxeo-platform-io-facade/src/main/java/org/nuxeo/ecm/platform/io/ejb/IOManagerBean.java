@@ -214,6 +214,19 @@ public class IOManagerBean implements IOManager {
         }
     }
 
+    public String externalizeExport(String repo,
+            Collection<DocumentRef> sources, String docReaderFactoryName,
+            Map<String, Object> readerFactoryParams,
+            Collection<String> ioAdapters) throws ClientException {
+        try {
+            String uri = service.externalizeExport(repo, sources, docReaderFactoryName,
+                    readerFactoryParams, ioAdapters);
+            return uri;
+        } catch (Throwable t) {
+            throw EJBExceptionHandler.wrapException(t);
+        }
+    }
+
     public void disposeExport(String uri) throws ClientException {
         try {
             service.disposeExport(uri);
