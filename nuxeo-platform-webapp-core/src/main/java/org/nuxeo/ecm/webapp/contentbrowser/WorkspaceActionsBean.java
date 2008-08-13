@@ -352,7 +352,7 @@ public class WorkspaceActionsBean extends InputController implements
             }
 
             // Add Admin group
-            securityActions.addPermission(ADMIN_GROUP,
+            securityActions.addPermission(SecurityConstants.ADMINISTRATORS,
                     SecurityConstants.EVERYTHING, true);
 
             // DENY at root
