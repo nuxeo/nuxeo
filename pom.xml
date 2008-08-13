@@ -631,12 +631,6 @@
         <version>3.2.1.GA</version>
       </dependency>
       <dependency>
-        <groupId>jsr170</groupId>
-        <artifactId>jcr</artifactId>
-        <version>1.0</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
         <groupId>javax.jcr</groupId>
         <artifactId>jcr</artifactId>
         <version>1.0.1</version>
