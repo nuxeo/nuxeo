@@ -116,7 +116,6 @@ public class GroupManagerActionsBean extends InputController implements
     public void initialize() throws ClientException {
         log.info("Initializing...");
         principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
-        // principalIsAdmin = principal.getGroups().contains("administrators");
         groupListingMode = userManager.getGroupListingMode();
     }
 

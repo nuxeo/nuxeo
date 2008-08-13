@@ -85,9 +85,6 @@ public class SecurityActionsBean extends InputController implements
 
     private static final long serialVersionUID = -7190826911734958662L;
 
-    // XXX temporary
-    protected static final String ADMIN_GROUP = "administrators";
-
     protected static final String[] SEED_PERMISSIONS_TO_CHECK = {
             SecurityConstants.WRITE_SECURITY, SecurityConstants.READ_SECURITY };
 
@@ -497,7 +494,7 @@ public class SecurityActionsBean extends InputController implements
                 securityData.addModifiablePrivilege(currentUser.getName(),
                         SecurityConstants.EVERYTHING, true);
                 // add administrators to avoid LockUp
-                securityData.addModifiablePrivilege(ADMIN_GROUP,
+                securityData.addModifiablePrivilege(SecurityConstants.ADMINISTRATORS,
                         SecurityConstants.EVERYTHING, true);
             }
         } else {

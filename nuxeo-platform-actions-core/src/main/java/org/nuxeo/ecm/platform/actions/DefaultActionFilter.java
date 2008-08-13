@@ -31,6 +31,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.expression.Context;
 import org.nuxeo.runtime.expression.JexlExpression;
 
@@ -198,7 +199,7 @@ public class DefaultActionFilter implements ActionFilter {
             // default check when there is not context yet
             if (principal != null) {
                 List<String> groups = principal.getGroups();
-                if (groups != null && groups.contains("administrators")) {
+                if (groups != null && groups.contains(SecurityConstants.ADMINISTRATORS)) {
                     return true;
                 }
             }
@@ -246,7 +247,7 @@ public class DefaultActionFilter implements ActionFilter {
     protected final boolean checkConditions(Action action,
             ActionContext context, String[] conditions) {
         DocumentModel doc = context.getCurrentDocument();
-        NuxeoPrincipal currentPrincipal = context.getCurrentPrincipal();        
+        NuxeoPrincipal currentPrincipal = context.getCurrentPrincipal();
 
         for (String condition : conditions) {
             try {
@@ -258,7 +259,7 @@ public class DefaultActionFilter implements ActionFilter {
                 for (String k : context.keySet())
                 {
                 	ctx.put(k, context.get(k));
-                }                
+                }
                 ctx.put("SeamContext", context.get("SeamContext"));
 
                 boolean eval = (Boolean) exp.eval(ctx);

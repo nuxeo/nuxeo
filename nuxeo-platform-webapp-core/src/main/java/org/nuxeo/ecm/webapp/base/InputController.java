@@ -19,11 +19,11 @@
 
 package org.nuxeo.ecm.webapp.base;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -85,6 +85,9 @@ public abstract class InputController {
 
     @In(create = true)
     protected TypesTool typesTool;
+
+    @In(create = true)
+    protected transient Principal currentUser;
 
     /**
      * Utility method that helps remove a {@link DocumentModel} from a list. The
@@ -173,15 +176,9 @@ public abstract class InputController {
      */
     public boolean getAdministrator() {
         boolean administrator = false;
-
-        NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
-
-        List<String> groups = principal.getGroups();
-
-        if (groups.contains("administrators")) {
-            administrator = true;
+        if (currentUser instanceof NuxeoPrincipal) {
+            administrator = ((NuxeoPrincipal) currentUser).isAdministrator();
         }
-
         return administrator;
     }
 
