@@ -1400,7 +1400,7 @@ public interface CoreSession {
      * {@link DocumentModel#refresh()}
      * <p>
      * Get fresh data from a document given a description of what kind of data
-     * should be refecthed.
+     * should be refetched.
      * <p>
      * The refresh information is specified using a bit mask. See
      * {@link DocumentModel} for all accepted flags.
@@ -1416,7 +1416,7 @@ public interface CoreSession {
      * <li> on index 1 - the lock state info
      * <li> on index 2 - the life cycle state info
      * <li> on index 3 - the life cycle policy
-     * <li> on index 4 - hte ACP
+     * <li> on index 4 - the ACP
      * <li> on index 5 - an array of {@link DocumentPart} objects
      * </ul>
      *
