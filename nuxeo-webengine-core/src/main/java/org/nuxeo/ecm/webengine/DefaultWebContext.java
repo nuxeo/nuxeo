@@ -243,10 +243,14 @@ public class DefaultWebContext implements WebContext {
         return head;
     }
 
+    public UserSession getUserSession() {
+        return UserSession.getCurrentSession(request.getSession(true));
+    }
+
     public CoreSession getCoreSession() throws WebException {
         if (session == null) {
             try {
-                UserSession us = UserSession.getCurrentSession(request.getSession(true));
+                UserSession us = getUserSession();
                 if (us != null) {
                     session = us.getCoreSession();
                     if (session == null) {

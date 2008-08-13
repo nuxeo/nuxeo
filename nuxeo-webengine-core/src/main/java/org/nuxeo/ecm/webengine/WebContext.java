@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.forms.FormData;
+import org.nuxeo.ecm.webengine.login.UserSession;
 import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.runtime.model.Adaptable;
 
@@ -549,6 +550,17 @@ public interface WebContext extends Adaptable {
      */
     String getFirstUnresolvedSegment();
 
+    /**
+     * Get the current user session.
+     * <p>
+     * The user session is a WebEngine abstraction for the current user session and can be
+     * used to retrieve current login, core session, and to set or get user session variables
+     *
+     * @return the user session. Never returns null.
+     */
+    public UserSession getUserSession();
+
+
     /** --------- Experimental methods - these may change in future ------------ */
 
     /**
@@ -594,5 +606,6 @@ public interface WebContext extends Adaptable {
      * @param value
      */
     void setClientVariable(String key, Object value);
+
 
 }

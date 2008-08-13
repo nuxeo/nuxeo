@@ -19,6 +19,7 @@
   <modules>
     <module>nuxeo-platform-rendering</module>
     <module>nuxeo-webengine-core</module>
+    <module>nuxeo-webengine-ui</module>
     <module>nuxeo-webengine-wiki</module>
     <module>nuxeo-webengine-server</module>
     <module>nuxeo-webengine-wiki-jsf</module>
@@ -38,6 +39,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-core</artifactId>
+        <version>${nuxeo.webengine.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.webengine</groupId>
+        <artifactId>nuxeo-webengine-ui</artifactId>
         <version>${nuxeo.webengine.version}</version>
       </dependency>
       <dependency>
@@ -185,5 +191,20 @@
     <developerConnection>scm:hg:https://hg.nuxeo.org/nuxeo-webengine#5.2</developerConnection>
     <url>http://hg.nuxeo.org/nuxeo-webengine#5.2/</url>
   </scm>
+
+  <developers>
+    <developer>
+      <id>bstefanescu</id>
+      <name>Bogdan Stefanescu</name>
+      <email>contact@nuxeo.com</email>
+      <organization>Nuxeo SAS</organization>
+      <organizationUrl>http://www.nuxeo.com/en</organizationUrl>
+      <url>http://blogs.nuxeo.com/section/blogs/bogdan_stefanescu</url>
+      <roles>
+        <role>Lead Architect</role>
+        <role>Project Manager</role>
+      </roles>
+    </developer>
+  </developers>
 
 </project>

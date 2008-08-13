@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webengine.login;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,7 +41,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class UserSession implements Serializable, HttpSessionBindingListener {
+public class UserSession extends HashMap<String, Object> implements Serializable, HttpSessionBindingListener {
 
     private static final long serialVersionUID = 260562970988817064L;
 

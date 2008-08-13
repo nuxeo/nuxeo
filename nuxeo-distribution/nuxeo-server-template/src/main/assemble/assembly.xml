@@ -61,6 +61,7 @@
   <artifactSet id="webengine-bundles" profile="webengine">
     <artifacts>
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-core" version="${nuxeo.webengine.version}"/>
+      <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-ui" version="${nuxeo.webengine.version}"/>
       <artifact group="org.nuxeo.ecm.webengine" name="nuxeo-webengine-wiki" version="${nuxeo.webengine.version}"/>
       <artifact group="org.nuxeo.ecm.platform" name="nuxeo-platform-rendering" version="${nuxeo.platform.version}"/>
     </artifacts>
@@ -69,7 +70,8 @@
 
   <artifactSet id="third-party-libs">
     <artifacts>
-      <artifact group="javax.servlet" name="servlet-api" version="2.4"/>      
+      <artifact group="javax.servlet" name="servlet-api" version="2.4"/>
+      <artifact group="commons-beanutils" name="commons-beanutils" />
       <artifact group="commons-io" name="commons-io" />
       <artifact group="commons-fileupload" name="commons-fileupload" />
       <artifact group="org.freemarker" name="freemarker" version="2.3.11" />      
