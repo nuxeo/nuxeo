@@ -40,6 +40,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.sql.XAConnection;
+import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
@@ -75,13 +76,16 @@ public class Mapper {
     /** The SQL information. */
     private final SQLInfo sqlInfo;
 
+    /** The xa datasource. */
+    private final XADataSource xadatasource;
+
     /** The xa pooled connection. */
-    private final XAConnection xaconnection;
+    private XAConnection xaconnection;
 
     /** The actual connection. */
-    private final Connection connection;
+    private Connection connection;
 
-    private final XAResource xaresource;
+    private XAResource xaresource;
 
     // for debug
     private static final AtomicLong instanceCounter = new AtomicLong(0);
@@ -94,28 +98,46 @@ public class Mapper {
      *
      * @param model the model
      * @param sqlInfo the sql info
-     * @param xaconnection the XA connection to use
+     * @param xadatasource the XA datasource to use to get connections
      */
-    public Mapper(Model model, SQLInfo sqlInfo, XAConnection xaconnection)
+    public Mapper(Model model, SQLInfo sqlInfo, XADataSource xadatasource)
             throws StorageException {
         this.model = model;
         this.sqlInfo = sqlInfo;
-        this.xaconnection = xaconnection;
-        try {
-            connection = xaconnection.getConnection();
-            xaresource = xaconnection.getXAResource();
-        } catch (SQLException e) {
-            throw new StorageException(e);
-        }
+        this.xadatasource = xadatasource;
+        resetConnection();
     }
 
     public void close() {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+            }
+        }
+        if (xaconnection != null) {
+            try {
+                xaconnection.close();
+            } catch (SQLException e) {
+            }
+        }
+        xaconnection = null;
+        connection = null;
+        xaresource = null;
+    }
+
+    /**
+     * Finds a new connection if the previous ones was broken or timed out.
+     */
+    protected void resetConnection() throws StorageException {
+        close();
         try {
-            connection.close();
-            xaconnection.close();
+            xaconnection = xadatasource.getXAConnection();
+            connection = xaconnection.getConnection();
+            xaresource = xaconnection.getXAResource();
         } catch (SQLException e) {
-            // nothing much we can do...
-            log.error("Cannot close connection", e);
+            close();
+            throw new StorageException(e);
         }
     }
 
@@ -1259,24 +1281,53 @@ public class Mapper {
         }
     }
 
+    /*
+     * ----- called by SessionImpl -----
+     */
+
     protected void start(Xid xid, int flags) throws XAException {
-        xaresource.start(xid, flags);
+        try {
+            xaresource.start(xid, flags);
+        } catch (XAException e) {
+            log.error("XA error on start: " + e.getMessage());
+            throw e;
+        }
     }
 
     protected void end(Xid xid, int flags) throws XAException {
-        xaresource.end(xid, flags);
+        try {
+            xaresource.end(xid, flags);
+        } catch (XAException e) {
+            log.error("XA error on end: " + e.getMessage());
+            throw e;
+        }
     }
 
     protected int prepare(Xid xid) throws XAException {
-        return xaresource.prepare(xid);
+        try {
+            return xaresource.prepare(xid);
+        } catch (XAException e) {
+            log.error("XA error on prepare: " + e.getMessage());
+            throw e;
+        }
     }
 
     protected void commit(Xid xid, boolean onePhase) throws XAException {
-        xaresource.commit(xid, onePhase);
+        try {
+            xaresource.commit(xid, onePhase);
+        } catch (XAException e) {
+            log.error("XA error on commit: " + e.getMessage());
+            throw e;
+        }
     }
 
     protected void rollback(Xid xid) throws XAException {
-        xaresource.rollback(xid);
+        try {
+            xaresource.rollback(xid);
+        } catch (XAException e) {
+            log.error("XA error on rollback: " + e.getMessage());
+            throw e;
+        }
     }
 
     protected void forget(Xid xid) throws XAException {

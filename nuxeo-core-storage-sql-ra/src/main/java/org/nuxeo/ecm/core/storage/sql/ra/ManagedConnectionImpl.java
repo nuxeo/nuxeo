@@ -110,7 +110,8 @@ public class ManagedConnectionImpl implements ManagedConnection,
             throws ResourceException {
         assert connectionRequestInfo instanceof ConnectionRequestInfoImpl;
         if (connection != null) {
-            throw new ResourceException("Sharing not supported");
+            throw new ResourceException("Sharing not supported, " + this +
+                    " still associated to " + connection);
         }
         connection = new ConnectionImpl(this, session);
         return connection;
@@ -149,12 +150,12 @@ public class ManagedConnectionImpl implements ManagedConnection,
     public synchronized void associateConnection(Object object)
             throws ResourceException {
         ConnectionImpl connection = (ConnectionImpl) object;
-        ManagedConnectionImpl managedConnection = connection.getManagedConnection();
-        if (managedConnection != this) {
-            // reassociate it with us
+        ManagedConnectionImpl other = connection.getManagedConnection();
+        if (other != this) {
+            // deassociate it from other ManagedConnection
+            other.connection = null;
+            // reassociate it with this
             connection.setManagedConnection(this, session);
-            // update ManagedConnection to set who has it
-            managedConnection.connection = null;
             this.connection = connection;
         }
     }
@@ -299,6 +300,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
     protected SessionImpl getSession() {
         return session;
     }
+
     /*
      * ----- part of javax.resource.cci.Connection -----
      */

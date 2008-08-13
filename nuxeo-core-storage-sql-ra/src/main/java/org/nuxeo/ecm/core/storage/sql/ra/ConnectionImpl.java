@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.storage.sql.ra;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 
 import javax.resource.ResourceException;
@@ -30,8 +29,6 @@ import javax.resource.cci.Interaction;
 import javax.resource.cci.LocalTransaction;
 import javax.resource.cci.ResultSetInfo;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -49,8 +46,6 @@ import org.nuxeo.ecm.core.storage.sql.SessionImpl;
  * @author Florent Guillaume
  */
 public class ConnectionImpl implements Session {
-
-    private static final Log log = LogFactory.getLog(ConnectionImpl.class);
 
     private ManagedConnectionImpl managedConnection;
 
@@ -87,7 +82,12 @@ public class ConnectionImpl implements Session {
      */
 
     public void close() throws ResourceException {
-        managedConnection.close();
+        try {
+            managedConnection.close();
+        } finally {
+            managedConnection = null;
+            session = null;
+        }
     }
 
     public Interaction createInteraction() throws ResourceException {
@@ -110,12 +110,12 @@ public class ConnectionImpl implements Session {
      * ----- org.nuxeo.ecm.core.storage.sql.Session -----
      */
 
-    public Binary getBinary(InputStream in) throws IOException {
-        return session.getBinary(in);
+    public boolean isLive() {
+        return session != null && session.isLive();
     }
 
-    public boolean isLive() {
-        return session.isLive();
+    public Binary getBinary(InputStream in) throws IOException {
+        return session.getBinary(in);
     }
 
     public Model getModel() {
