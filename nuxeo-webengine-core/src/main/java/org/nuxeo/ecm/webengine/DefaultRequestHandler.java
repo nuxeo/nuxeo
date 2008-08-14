@@ -50,7 +50,7 @@ public class DefaultRequestHandler implements RequestHandler, Actions {
 
     public void doPost(WebObject object) throws WebException {
         // assuming UPDATE / DELETE / VIEW actions from the request method is buggy
-        doAction(object, VIEW);
+        doAction(object, null);
     }
 
     public void doPut(WebObject object) throws WebException {
