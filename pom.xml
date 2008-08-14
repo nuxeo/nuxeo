@@ -158,15 +158,16 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
-        <groupId>javax.ejb</groupId>
-        <artifactId>ejb</artifactId>
-        <version>${jboss.ejb.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
         <groupId>javax.annotation</groupId>
         <artifactId>jsr250-api</artifactId>
         <version>1.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <!-- TODO: remove. It's the same as the two preceding ones -->
+      <dependency>
+        <groupId>javax.ejb</groupId>
+        <artifactId>ejb</artifactId>
+        <version>${jboss.ejb.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
