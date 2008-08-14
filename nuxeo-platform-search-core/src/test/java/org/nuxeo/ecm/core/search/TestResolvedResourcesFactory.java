@@ -80,16 +80,6 @@ public class TestResolvedResourcesFactory extends RepositoryTestCase {
         deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "RepositoryManager.xml");
 
-        deployContrib("org.nuxeo.ecm.platform.search.tests", "CoreService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests", "TypeService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "PolicyService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "SecurityService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "RepositoryService.xml");
-        deployContrib("org.nuxeo.ecm.platform.search.tests",
-                "test-CoreExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests",
                 "CoreTestExtensions.xml");
         deployContrib("org.nuxeo.ecm.platform.search.tests",
