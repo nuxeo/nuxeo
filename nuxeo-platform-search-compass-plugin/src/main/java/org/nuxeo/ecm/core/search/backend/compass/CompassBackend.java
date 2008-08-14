@@ -305,7 +305,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
             }
             if (!userTxn || mustCommitNow(session.countWaitingResources())) {
                 session.saveAndCommit(userTxn);
-                if (userTxn){
+                if (userTxn) {
                     doOptimize();
                     markForRecycling();
                 }
@@ -401,7 +401,7 @@ public class CompassBackend extends AbstractSearchEngineBackend {
                 optimize_try += 1;
                 if ((optimize_try >= OPTIMIZER_SAVE_INTERVAL)
                         && (getCompass().getSearchEngineOptimizer().needOptimization())) {
-                    optimize_try=0;
+                    optimize_try = 0;
                     log.debug("Running optimizer");
                     getCompass().getSearchEngineOptimizer().optimize();
                     log.debug("Optimizer ended");
@@ -691,11 +691,14 @@ public class CompassBackend extends AbstractSearchEngineBackend {
                             break;
                         }
                     }
-                    if (map == null) {
+                    if (map == null && !Util.EMPTY_MARKER.equals(sValue)) {
                         map = new HashMap<String, Serializable>();
                         cmpl.add(map);
                     }
                 }
+            }
+            if (map == null) {
+                continue;
             }
 
             if (value == null || dataConf == null || isComplex

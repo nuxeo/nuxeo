@@ -45,6 +45,10 @@ class IntrospectableCompassBackend extends CompassBackend {
         return (FakeSearchService) searchService;
     }
 
+    public void initSearchService() {
+        searchService = new FakeSearchService();
+    }
+
     public CompassSession openSession() {
         return getCompass().openSession();
     }

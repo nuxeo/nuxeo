@@ -60,6 +60,7 @@ import org.nuxeo.ecm.core.search.api.indexing.resources.configuration.document.R
 import org.nuxeo.ecm.core.search.backend.compass.lucene.MatchBeforeQuery;
 import org.nuxeo.ecm.core.search.backend.compass.lucene.ProofConceptQuery;
 import org.nuxeo.ecm.core.search.backend.testing.SharedTestDataBuilder;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestCompassBackendInternals extends TestCase {
 
@@ -68,7 +69,7 @@ public class TestCompassBackendInternals extends TestCase {
     Map<String, FakeIndexableResourceDataDescriptor> dataConfs;
 
     @Override
-    public void setUp() {
+    public void setUp() throws Exception {
         backend = new IntrospectableCompassBackend("/testcompass.cfg.xml");
         dataConfs = backend.getSearchService().dataConfs;
         dataConfs.put("dc:title",
@@ -311,6 +312,34 @@ public class TestCompassBackendInternals extends TestCase {
             oc = l.get(3);
             assertEquals("Invisibles", oc.get("title"));
             assertEquals("gm", oc.get("author"));
+
+        } finally {
+            session.close();
+        }
+    }
+
+    public void testBuildResultItemEmptyComplexProp() throws Exception {
+        CompassSession session = backend.openSession();
+        try {
+            Resource r = session.createResource("nxdoc");
+            Property p = session.createProperty("nxdoc_id", "docid",
+                    Property.Store.YES, Property.Index.UN_TOKENIZED);
+            r.addProperty(p);
+
+            p = session.createProperty("a:complex:title", Util.EMPTY_MARKER,
+                    Property.Store.YES, Property.Index.UN_TOKENIZED);
+            r.addProperty(p);
+            p = session.createProperty("a:complex:author", Util.EMPTY_MARKER,
+                    Property.Store.YES, Property.Index.UN_TOKENIZED);
+            r.addProperty(p);
+
+            ResultItem item;
+            item = backend.buildResultItem(r);
+
+            assertTrue(item.get("a:complex") instanceof List);
+            List<Map<String, Object>> l;
+            l = (List<Map<String, Object>>) item.get("a:complex");
+            assertEquals(0, l.size());
 
         } finally {
             session.close();
