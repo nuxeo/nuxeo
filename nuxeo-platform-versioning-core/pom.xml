@@ -49,17 +49,22 @@
       <artifactId>ejb-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>jsr250-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>persistence</artifactId>
-    </dependency>
-    <!-- jboss-j2ee is required for EJBException class ??? -->
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-j2ee</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.jms</groupId>
       <artifactId>jms</artifactId>
+    </dependency>
+
+    <!-- jboss-j2ee is required for EJBException class ??? -->
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-j2ee</artifactId>
     </dependency>
 
     <dependency>

@@ -29,6 +29,11 @@
       <artifactId>ejb-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>jsr250-api</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-j2ee</artifactId>
     </dependency>
@@ -44,6 +49,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>
