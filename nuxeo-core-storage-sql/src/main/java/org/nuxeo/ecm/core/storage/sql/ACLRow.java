@@ -28,11 +28,9 @@ public class ACLRow implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public final int aclpos;
-
-    public final String aclname;
-
     public final int pos;
+
+    public final String name;
 
     public final boolean grant;
 
@@ -42,11 +40,10 @@ public class ACLRow implements Serializable {
 
     public final String group;
 
-    public ACLRow(int aclpos, String aclname, int pos, boolean grant,
-            String permission, String user, String group) {
-        this.aclpos = aclpos;
-        this.aclname = aclname;
+    public ACLRow(int pos, String name, boolean grant, String permission,
+            String user, String group) {
         this.pos = pos;
+        this.name = name;
         this.grant = grant;
         this.permission = permission;
         this.user = user;
@@ -55,8 +52,8 @@ public class ACLRow implements Serializable {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + '(' + aclpos + ',' + aclname +
-                ',' + pos + ',' + (grant ? "GRANT" : "DENY") + ',' +
-                permission + ',' + user + ',' + group + ')';
+        return this.getClass().getSimpleName() + '(' + pos + ',' + name + ',' +
+                (grant ? "GRANT" : "DENY") + ',' + permission + ',' + user +
+                ',' + group + ')';
     }
 }

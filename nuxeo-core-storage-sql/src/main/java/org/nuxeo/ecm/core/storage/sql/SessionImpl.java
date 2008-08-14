@@ -628,15 +628,15 @@ public class SessionImpl implements Session, XAResource {
     private void addRootACP() throws StorageException {
         ACLRow[] aclrows = new ACLRow[4];
         // TODO put groups in their proper place. like that now for consistency.
-        aclrows[0] = new ACLRow(0, ACL.LOCAL_ACL, 0, true,
+        aclrows[0] = new ACLRow(0, ACL.LOCAL_ACL, true,
                 SecurityConstants.EVERYTHING, SecurityConstants.ADMINISTRATORS,
                 null);
-        aclrows[1] = new ACLRow(0, ACL.LOCAL_ACL, 1, true,
+        aclrows[1] = new ACLRow(1, ACL.LOCAL_ACL, true,
                 SecurityConstants.EVERYTHING, SecurityConstants.ADMINISTRATOR,
                 null);
-        aclrows[2] = new ACLRow(0, ACL.LOCAL_ACL, 2, true,
-                SecurityConstants.READ, SecurityConstants.MEMBERS, null);
-        aclrows[3] = new ACLRow(0, ACL.LOCAL_ACL, 3, true,
+        aclrows[2] = new ACLRow(2, ACL.LOCAL_ACL, true, SecurityConstants.READ,
+                SecurityConstants.MEMBERS, null);
+        aclrows[3] = new ACLRow(3, ACL.LOCAL_ACL, true,
                 SecurityConstants.VERSION, SecurityConstants.MEMBERS, null);
         rootNode.setCollectionProperty(Model.ACL_PROP, aclrows);
     }

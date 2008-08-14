@@ -201,8 +201,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         CollectionProperty prop = root.getCollectionProperty(Model.ACL_PROP);
         assertNotNull(prop);
         assertEquals(4, prop.getValue().length); // root acls preexist
-        ACLRow acl1 = new ACLRow(0, "test", 1, true, "Write", "steve", null);
-        ACLRow acl2 = new ACLRow(0, "test", 0, true, "Read", null, "Members");
+        ACLRow acl1 = new ACLRow(1, "test", true, "Write", "steve", null);
+        ACLRow acl2 = new ACLRow(0, "test", true, "Read", null, "Members");
         prop.setValue(new ACLRow[] { acl1, acl2 });
         session.save();
         session.close();
@@ -212,9 +212,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
         ACLRow[] acls = (ACLRow[]) prop.getValue();
         assertEquals(2, acls.length);
         assertEquals("Members", acls[0].group);
-        assertEquals("test", acls[0].aclname);
+        assertEquals("test", acls[0].name);
         assertEquals("steve", acls[1].user);
-        assertEquals("test", acls[1].aclname);
+        assertEquals("test", acls[1].name);
     }
 
     public void testCrossSessionInvalidations() throws Exception {

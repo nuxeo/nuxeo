@@ -60,9 +60,8 @@ public class ACLsFragment extends ArrayFragment {
 
             ArrayList<ACLRow> list = new ArrayList<ACLRow>();
             while (rs.next()) {
-                int aclpos = 0;
-                String aclname = null;
                 int pos = 0;
+                String name = null;
                 boolean grant = false;
                 String permission = null;
                 String user = null;
@@ -72,12 +71,10 @@ public class ACLsFragment extends ArrayFragment {
                     i++;
                     String key = column.getKey();
                     Serializable v = column.getFromResultSet(rs, i);
-                    if (key.equals(model.ACL_ACLPOS_KEY)) {
-                        aclpos = v == null ? 0 : ((Long) v).intValue();
-                    } else if (key.equals(model.ACL_ACLNAME_KEY)) {
-                        aclname = (String) v;
-                    } else if (key.equals(model.ACL_POS_KEY)) {
+                    if (key.equals(model.ACL_POS_KEY)) {
                         pos = v == null ? 0 : ((Long) v).intValue();
+                    } else if (key.equals(model.ACL_NAME_KEY)) {
+                        name = (String) v;
                     } else if (key.equals(model.ACL_GRANT_KEY)) {
                         grant = v == null ? false
                                 : ((Boolean) v).booleanValue();
@@ -93,8 +90,8 @@ public class ACLsFragment extends ArrayFragment {
                         throw new AssertionError(key);
                     }
                 }
-                ACLRow acl = new ACLRow(aclpos, aclname, pos, grant,
-                        permission, user, group);
+                ACLRow acl = new ACLRow(pos, name, grant, permission, user,
+                        group);
                 list.add(acl);
             }
             return list.toArray(new ACLRow[list.size()]);
@@ -133,12 +130,10 @@ public class ACLsFragment extends ArrayFragment {
                 Serializable v;
                 if (key.equals(model.MAIN_KEY)) {
                     v = getId();
-                } else if (key.equals(model.ACL_ACLPOS_KEY)) {
-                    v = Long.valueOf(acl.aclpos);
-                } else if (key.equals(model.ACL_ACLNAME_KEY)) {
-                    v = acl.aclname;
                 } else if (key.equals(model.ACL_POS_KEY)) {
                     v = Long.valueOf(acl.pos);
+                } else if (key.equals(model.ACL_NAME_KEY)) {
+                    v = acl.name;
                 } else if (key.equals(model.ACL_GRANT_KEY)) {
                     v = Boolean.valueOf(acl.grant);
                 } else if (key.equals(model.ACL_PERMISSION_KEY)) {
