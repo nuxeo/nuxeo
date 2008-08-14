@@ -272,13 +272,14 @@ public class Mapper {
                     // table already present
                     continue;
                 }
-                String sql = sqlInfo.getTableCreateSql(tableName);
-                logDebug(sql);
-                Statement s = connection.createStatement();
-                try {
-                    s.execute(sql);
-                } finally {
-                    s.close();
+                for (String sql : sqlInfo.getTableCreateSqls(tableName)) {
+                    logDebug(sql);
+                    Statement s = connection.createStatement();
+                    try {
+                        s.execute(sql);
+                    } finally {
+                        s.close();
+                    }
                 }
             }
         } catch (SQLException e) {

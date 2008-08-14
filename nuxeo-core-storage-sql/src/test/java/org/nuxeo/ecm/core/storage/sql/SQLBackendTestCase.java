@@ -72,17 +72,27 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
 
     protected RepositoryDescriptor prepareDescriptor() {
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
-
         String className = org.apache.derby.jdbc.EmbeddedXADataSource.class.getName();
         descriptor.xaDataSourceName = className;
-
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("createDatabase", "create");
         properties.put("databaseName", prepareDBDirectory().getAbsolutePath());
         properties.put("user", "sa");
         properties.put("password", "");
         descriptor.properties = properties;
+        return descriptor;
+    }
 
+    protected RepositoryDescriptor prepareDescriptorPG() {
+        RepositoryDescriptor descriptor = new RepositoryDescriptor();
+        descriptor.xaDataSourceName = "org.postgresql.xa.PGXADataSource";
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put("ServerName", "localhost");
+        properties.put("PortNumber", "5432");
+        properties.put("DatabaseName", "nuxeo");
+        properties.put("User", "postgres");
+        properties.put("Password", "");
+        descriptor.properties = properties;
         return descriptor;
     }
 

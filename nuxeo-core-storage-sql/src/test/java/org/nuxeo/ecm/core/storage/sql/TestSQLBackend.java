@@ -23,11 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocument;
 
 /**
  * @author Florent Guillaume
@@ -490,5 +488,23 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, proxies.size());
         proxies = session.getProxies(proxy, foldera);
         assertEquals(0, proxies.size());
+    }
+
+    public void testDelete() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
+        nodea.setSingleProperty("tst:title", "foo");
+        Node nodeb = session.addChildNode(nodea, "bar", null, "TestDoc", false);
+        nodeb.setSingleProperty("tst:title", "bar");
+        Node nodec = session.addChildNode(nodeb, "gee", null, "TestDoc", false);
+        nodec.setSingleProperty("tst:title", "gee");
+        session.save();
+        // delete foo after having modified some of the deleted children
+        nodea.setSingleProperty("tst:title", "foo2");
+        nodeb.setSingleProperty("tst:title", "bar2");
+        nodec.setSingleProperty("tst:title", "gee2");
+        session.removeNode(nodea);
+        session.save();
     }
 }
