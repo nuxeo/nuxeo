@@ -21,8 +21,6 @@ package org.nuxeo.ecm.core.storage.sql.db;
 
 import java.io.Serializable;
 
-import org.hibernate.dialect.Dialect;
-
 /**
  * An {@code UPDATE} statement.
  *

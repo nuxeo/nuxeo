@@ -21,12 +21,10 @@ package org.nuxeo.ecm.core.storage.sql.db;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.hibernate.dialect.Dialect;
 import org.nuxeo.common.utils.StringUtils;
 
 /**
@@ -205,9 +203,8 @@ public class Table implements Serializable {
                 s = s.replace(" foreign key ", " FOREIGN KEY ");
                 s = s.replace(" references ", " REFERENCES ");
                 buf.append(s);
-                if (dialect.supportsCascadeDelete()) {
-                    buf.append(" ON DELETE CASCADE");
-                }
+                // if (dialect.supportsCascadeDelete())
+                buf.append(" ON DELETE CASCADE");
                 sqls.add(buf.toString());
             }
         }

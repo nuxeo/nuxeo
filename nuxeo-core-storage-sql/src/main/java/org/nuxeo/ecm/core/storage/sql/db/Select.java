@@ -21,8 +21,6 @@ package org.nuxeo.ecm.core.storage.sql.db;
 
 import java.io.Serializable;
 
-import org.hibernate.dialect.Dialect;
-
 /**
  * A {@code SELECT} statement.
  *
@@ -84,7 +82,8 @@ public class Select implements Serializable {
             buf.append(" ORDER BY ");
             buf.append(orderBy);
         }
-        // ... "for update" in some cases, see dialect.getForUpdateString and lock modes
+        // ... "for update" in some cases, see dialect.getForUpdateString and
+        // lock modes
         return buf.toString();
     }
 }

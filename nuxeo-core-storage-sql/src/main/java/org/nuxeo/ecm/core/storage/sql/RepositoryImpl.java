@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map.Entry;
@@ -37,12 +36,10 @@ import javax.sql.XADataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.HibernateException;
-import org.hibernate.dialect.Dialect;
-import org.hibernate.dialect.DialectFactory;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.db.Dialect;
 
 /**
  * @author Florent Guillaume
@@ -258,7 +255,7 @@ public class RepositoryImpl implements Repository {
             Connection connection = null;
             try {
                 connection = xaconnection.getConnection();
-                dialect = getDialect(connection);
+                dialect = new Dialect(connection);
             } finally {
                 if (connection != null) {
                     connection.close();
@@ -270,30 +267,6 @@ public class RepositoryImpl implements Repository {
         }
         model = new Model(this, schemaManager);
         sqlInfo = new SQLInfo(model, dialect);
-    }
-
-    /**
-     * Gets the {@code Dialect}, by connecting to the datasource to check what
-     * database is used.
-     *
-     * @throws StorageException if a SQL connection problem occurs
-     */
-    private Dialect getDialect(Connection connection) throws StorageException {
-        String dbname;
-        int dbmajor;
-        try {
-            DatabaseMetaData metadata = connection.getMetaData();
-            dbname = metadata.getDatabaseProductName();
-            dbmajor = metadata.getDatabaseMajorVersion();
-        } catch (SQLException e) {
-            throw new StorageException(e);
-        }
-        try {
-            return DialectFactory.determineDialect(dbname, dbmajor);
-        } catch (HibernateException e) {
-            throw new StorageException("Cannot determine dialect for class: " +
-                    repositoryDescriptor.xaDataSourceName, e);
-        }
     }
 
     // called by session
