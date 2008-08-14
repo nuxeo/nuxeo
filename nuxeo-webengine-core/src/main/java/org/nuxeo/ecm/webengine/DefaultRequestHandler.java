@@ -37,14 +37,11 @@ public class DefaultRequestHandler implements RequestHandler, Actions {
     }
 
     public void doGet(WebObject object) throws WebException {
-        /*
         if (object.getWebContext().getPathInfo().hasTrailingPath()) {
             doAction(object, null); // avoid doing an action since we have unresolved segments
         } else {
             doAction(object, VIEW);
         }
-        */
-        doAction(object, null);
     }
 
     public void doHead(WebObject object) throws WebException {
@@ -53,7 +50,7 @@ public class DefaultRequestHandler implements RequestHandler, Actions {
 
     public void doPost(WebObject object) throws WebException {
         // assuming UPDATE / DELETE / VIEW actions from the request method is buggy
-        doAction(object, null);
+        doAction(object, VIEW);
     }
 
     public void doPut(WebObject object) throws WebException {
