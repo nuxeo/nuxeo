@@ -20,8 +20,6 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,7 +32,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeRef;
@@ -135,11 +132,9 @@ public class Model {
 
     public static final String ACL_PROP = "__acl__";
 
-    public static final String ACL_ACLPOS_KEY = "aclpos";
-
-    public static final String ACL_ACLNAME_KEY = "aclname";
-
     public static final String ACL_POS_KEY = "pos";
+
+    public static final String ACL_NAME_KEY = "name";
 
     public static final String ACL_GRANT_KEY = "grant";
 
@@ -573,17 +568,15 @@ public class Model {
     private void initAclModel() {
         Map<String, PropertyType> fragmentKeysType = new LinkedHashMap<String, PropertyType>();
         fragmentsKeysType.put(ACL_TABLE_NAME, fragmentKeysType);
-        fragmentKeysType.put(ACL_ACLPOS_KEY, PropertyType.LONG);
-        fragmentKeysType.put(ACL_ACLNAME_KEY, PropertyType.STRING);
         fragmentKeysType.put(ACL_POS_KEY, PropertyType.LONG);
+        fragmentKeysType.put(ACL_NAME_KEY, PropertyType.STRING);
         fragmentKeysType.put(ACL_GRANT_KEY, PropertyType.BOOLEAN);
         fragmentKeysType.put(ACL_PERMISSION_KEY, PropertyType.STRING);
         fragmentKeysType.put(ACL_USER_KEY, PropertyType.STRING);
         fragmentKeysType.put(ACL_GROUP_KEY, PropertyType.STRING);
         collectionTables.put(ACL_TABLE_NAME, PropertyType.COLL_ACL);
         collectionMakers.put(ACL_TABLE_NAME, ACLsFragment.MAKER);
-        collectionOrderBy.put(ACL_TABLE_NAME, Arrays.asList(ACL_ACLPOS_KEY,
-                ACL_POS_KEY));
+        collectionOrderBy.put(ACL_TABLE_NAME, Collections.singletonList(ACL_POS_KEY));
         propertyFragment.put(ACL_PROP, ACL_TABLE_NAME);
         propertyType.put(ACL_PROP, PropertyType.COLL_ACL);
     }
