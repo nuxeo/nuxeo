@@ -52,7 +52,7 @@
     </dependency>
     <dependency>
       <groupId>javax.ejb</groupId>
-      <artifactId>ejb</artifactId>
+      <artifactId>ejb-api</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>

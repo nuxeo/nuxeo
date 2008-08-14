@@ -69,7 +69,7 @@
     </dependency>
     <dependency>
       <groupId>javax.ejb</groupId>
-      <artifactId>ejb</artifactId>
+      <artifactId>ejb-api</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.persistence</groupId>

@@ -62,7 +62,7 @@
     </dependency>
     <dependency><!-- For fake wapi service on runtime -->
       <groupId>javax.ejb</groupId>
-      <artifactId>ejb</artifactId>
+      <artifactId>ejb-api</artifactId>
     </dependency>
     <!-- Seems to be needed on some machines, do not get why -->
     <!-- JC : commented; if needed, please detail in which environment(s)
