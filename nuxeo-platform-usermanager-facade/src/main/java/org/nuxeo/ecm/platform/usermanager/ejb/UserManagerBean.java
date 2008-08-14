@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.usermanager.UserManagerDescriptor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -64,7 +65,8 @@ public class UserManagerBean implements UserManager {
         return userManager;
     }
 
-    public void cleanup() {}
+    public void cleanup() {
+    }
 
     public boolean checkUsernamePassword(String username, String password)
             throws ClientException {
@@ -101,7 +103,8 @@ public class UserManagerBean implements UserManager {
         }
     }
 
-    public void remove() {}
+    public void remove() {
+    }
 
     public void createGroup(NuxeoGroup group) throws ClientException {
         try {
@@ -208,37 +211,9 @@ public class UserManagerBean implements UserManager {
         return getUserManager().getDefaultGroup();
     }
 
-    public void setDefaultGroup(String defaultGroup) {
-        getUserManager().setDefaultGroup(defaultGroup);
-    }
-
-    public void setRootLogin(String defaultRootLogin) throws ClientException {
-        try {
-            getUserManager().setRootLogin(defaultRootLogin);
-        } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setUserSortField(String sortField) throws ClientException {
-        try {
-            getUserManager().setUserSortField(sortField);
-        } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
-        }
-    }
-
     public String getUserSortField() throws ClientException {
         try {
             return getUserManager().getUserSortField();
-        } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setGroupSortField(String sortField) throws ClientException {
-        try {
-            getUserManager().setGroupSortField(sortField);
         } catch (Throwable e) {
             throw EJBExceptionHandler.wrapException(e);
         }
@@ -252,36 +227,9 @@ public class UserManagerBean implements UserManager {
         }
     }
 
-    public void setUserListingMode(String userListingMode)
-            throws ClientException {
-        try {
-            getUserManager().setUserListingMode(userListingMode);
-        } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
-        }
-    }
-
     public String getGroupListingMode() throws ClientException {
         try {
             return getUserManager().getGroupListingMode();
-        } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setGroupListingMode(String groupListingMode)
-            throws ClientException {
-        try {
-            getUserManager().setGroupListingMode(groupListingMode);
-        } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setUserDirectoryName(String userDirectoryName)
-            throws ClientException {
-        try {
-            getUserManager().setUserDirectoryName(userDirectoryName);
         } catch (Throwable e) {
             throw EJBExceptionHandler.wrapException(e);
         }
@@ -295,26 +243,9 @@ public class UserManagerBean implements UserManager {
         }
     }
 
-    public void setUserEmailField(String userEmailField) throws ClientException {
-        try {
-            getUserManager().setUserEmailField(userEmailField);
-        } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
-        }
-    }
-
     public String getUserEmailField() throws ClientException {
         try {
             return getUserManager().getUserEmailField();
-        } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setUserSearchFields(Set<String> userSearchFields)
-            throws ClientException {
-        try {
-            getUserManager().setUserSearchFields(userSearchFields);
         } catch (Throwable e) {
             throw EJBExceptionHandler.wrapException(e);
         }
@@ -328,27 +259,9 @@ public class UserManagerBean implements UserManager {
         }
     }
 
-    public void setGroupDirectoryName(String groupDirectoryName)
-            throws ClientException {
-        try {
-            getUserManager().setGroupDirectoryName(groupDirectoryName);
-        } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
-        }
-    }
-
     public String getGroupDirectoryName() throws ClientException {
         try {
             return getUserManager().getGroupDirectoryName();
-        } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setGroupMembersField(String groupMembersField)
-            throws ClientException {
-        try {
-            getUserManager().setGroupMembersField(groupMembersField);
         } catch (Throwable e) {
             throw EJBExceptionHandler.wrapException(e);
         }
@@ -362,27 +275,9 @@ public class UserManagerBean implements UserManager {
         }
     }
 
-    public void setGroupSubGroupsField(String groupSubGroupsField)
-            throws ClientException {
-        try {
-            getUserManager().setGroupSubGroupsField(groupSubGroupsField);
-        } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
-        }
-    }
-
     public String getGroupSubGroupsField() throws ClientException {
         try {
             return getUserManager().getGroupSubGroupsField();
-        } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setGroupParentGroupsField(String groupParentGroupsField)
-            throws ClientException {
-        try {
-            getUserManager().setGroupParentGroupsField(groupParentGroupsField);
         } catch (Throwable e) {
             throw EJBExceptionHandler.wrapException(e);
         }
@@ -445,24 +340,6 @@ public class UserManagerBean implements UserManager {
         }
     }
 
-    public void setUserPasswordPattern(Pattern userPasswordPattern)
-            throws ClientException {
-        try {
-            getUserManager().setUserPasswordPattern(userPasswordPattern);
-        } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
-        }
-    }
-
-    public void setAnonymousUser(Map<String, String> anonymousUser)
-            throws ClientException {
-        try {
-            getUserManager().setAnonymousUser(anonymousUser);
-        } catch (Throwable e) {
-            throw EJBExceptionHandler.wrapException(e);
-        }
-    }
-
     public String getAnonymousUserId() throws ClientException {
         try {
             return getUserManager().getAnonymousUserId();
@@ -470,4 +347,14 @@ public class UserManagerBean implements UserManager {
             throw EJBExceptionHandler.wrapException(e);
         }
     }
+
+    public void setConfiguration(UserManagerDescriptor descriptor)
+            throws ClientException {
+        try {
+            getUserManager().setConfiguration(descriptor);
+        } catch (Throwable e) {
+            throw EJBExceptionHandler.wrapException(e);
+        }
+    }
+
 }
