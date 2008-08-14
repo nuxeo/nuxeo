@@ -50,7 +50,7 @@
       <analyzer name="lowerWhitespace" type="CustomAnalyzer"
         analyzerClass="org.nuxeo.ecm.core.search.backend.compass.LowerWhitespaceAnalyzer" />
       <analyzer name="french" type="CustomAnalyzer"
-        analyzerClass="org.apache.lucene.analysis.fr.FrenchAnalyzer"/>
+        analyzerClass="org.nuxeo.ecm.core.search.backend.compass.lucene.analysis.fr.FrenchAnalyzer"/>
       <optimizer scheduleInterval="300" schedule="true"/>
     </searchEngine>
 

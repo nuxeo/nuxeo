@@ -497,7 +497,11 @@ public class QueryConverter {
         if (analyzer != null) {
             sBuilder.setAnalyzer(analyzer);
         }
-        return sBuilder.toQuery();
+        CompassQuery res = sBuilder.toQuery();
+        if (res.toString().trim().length() == 0) {
+        	return null;
+        }
+        return res;
     }
 
     /**
