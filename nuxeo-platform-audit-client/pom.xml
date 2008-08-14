@@ -49,16 +49,16 @@
       <artifactId>ejb-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>javax.jws</groupId>
+      <artifactId>jsr181</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-annotations-ejb3</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>javax.jws</groupId>
-      <artifactId>jsr181</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>

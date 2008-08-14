@@ -30,11 +30,10 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-events-api</artifactId>
     </dependency>
-
-    <!-- jboss-j2ee is required for EJBException class ??? -->
+    
     <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-j2ee</artifactId>
+      <groupId>javax.jms</groupId>
+      <artifactId>jms</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.ejb</groupId>
@@ -48,9 +47,11 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
+
     <dependency>
       <groupId>jmock</groupId>
       <artifactId>jmock</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
