@@ -35,20 +35,5 @@
       <artifactId>nuxeo-platform-search-compass-plugin</artifactId>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
-
-  <build>
-    <plugins>
-      <!-- FIXME: disable tests for now : working with junit-->
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>**/*Test*.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
