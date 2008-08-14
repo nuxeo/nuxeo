@@ -21,7 +21,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +33,6 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.exception.SQLExceptionConverter;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.IdGenPolicy;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Delete;
@@ -227,8 +225,12 @@ public class SQLInfo {
         return database;
     }
 
-    public String getTableCreateSql(String tableName) {
-        return database.getTable(tableName).getCreateSql(dialect);
+    public List<String> getTableCreateSqls(String tableName) {
+        List<String> sqls = new LinkedList<String>();
+        Table table = database.getTable(tableName);
+        sqls.add(table.getCreateSql(dialect));
+        sqls.addAll(table.getPostCreateSqls(dialect));
+        return sqls;
     }
 
     // ----- select -----
@@ -410,8 +412,8 @@ public class SQLInfo {
     protected void initSQL() {
 
         // structural tables
-        initRepositorySQL();
         initHierarchySQL();
+        initRepositorySQL();
 
         for (String tableName : model.fragmentsKeysType.keySet()) {
             if (tableName.equals(model.MAIN_TABLE_NAME) &&
@@ -426,13 +428,14 @@ public class SQLInfo {
          * versions
          */
         Table table = database.getTable(model.VERSION_TABLE_NAME);
-        selectVersionsByLabel = makeSelect(table,
-                model.VERSION_VERSIONABLE_KEY, model.VERSION_LABEL_KEY);
         selectVersionsByVersionable = makeSelect(table,
                 model.VERSION_VERSIONABLE_KEY);
-        String[] createdDesc = new String[] { model.VERSION_CREATED_KEY,
-                ORDER_DESC };
-        selectVersionsByVersionableLastFirst = makeSelect(table, createdDesc,
+        table.addIndex(model.VERSION_VERSIONABLE_KEY);
+        selectVersionsByLabel = makeSelect(table,
+                model.VERSION_VERSIONABLE_KEY, model.VERSION_LABEL_KEY);
+        // don't index versionable+label, a simple label scan will suffice
+        selectVersionsByVersionableLastFirst = makeSelect(table, new String[] {
+                model.VERSION_CREATED_KEY, ORDER_DESC },
                 model.VERSION_VERSIONABLE_KEY);
 
         /*
@@ -442,7 +445,9 @@ public class SQLInfo {
         Table hierTable = database.getTable(model.hierFragmentName);
         selectProxiesByVersionable = makeSelect(table,
                 model.PROXY_VERSIONABLE_KEY);
+        table.addIndex(model.PROXY_VERSIONABLE_KEY);
         selectProxiesByTarget = makeSelect(table, model.PROXY_TARGET_KEY);
+        table.addIndex(model.PROXY_TARGET_KEY);
         selectProxiesByVersionableAndParent = makeSelect(table,
                 new String[] { model.PROXY_VERSIONABLE_KEY }, hierTable,
                 new String[] { model.HIER_PARENT_KEY });
@@ -450,7 +455,6 @@ public class SQLInfo {
         selectProxiesByTargetAndParent = makeSelect(table,
                 new String[] { model.PROXY_TARGET_KEY }, hierTable,
                 new String[] { model.HIER_PARENT_KEY });
-
     }
 
     /**
@@ -475,7 +479,7 @@ public class SQLInfo {
         } else {
             maker.newId(); // global primary key / generation
         }
-        maker.newMainKey(model.HIER_PARENT_KEY);
+        maker.newMainKeyReference(model.HIER_PARENT_KEY, true);
         maker.newColumn(model.HIER_CHILD_POS_KEY, PropertyType.LONG,
                 Types.INTEGER);
         maker.newColumn(model.HIER_CHILD_NAME_KEY, PropertyType.STRING,
@@ -493,6 +497,10 @@ public class SQLInfo {
         if (!model.separateMainTable) {
             maker.postProcessIdGeneration();
         }
+
+        maker.table.addIndex(model.HIER_PARENT_KEY);
+        maker.table.addIndex(model.HIER_PARENT_KEY, model.HIER_CHILD_NAME_KEY);
+        // don't index parent+name+isprop, a simple isprop scan will suffice
     }
 
     /**
@@ -500,14 +508,17 @@ public class SQLInfo {
      */
     protected void initFragmentSQL(String tableName) {
         TableMaker maker = new TableMaker(tableName);
-        Table table = maker.table;
-
         boolean isMain = tableName.equals(model.mainFragmentName);
 
         if (isMain) {
             maker.newId(); // global primary key / generation
         } else {
-            maker.newPrimaryKey();
+            if (model.isCollectionFragment(tableName)) {
+                maker.newMainKeyReference(model.MAIN_KEY, false);
+                maker.table.addIndex(model.MAIN_KEY);
+            } else {
+                maker.newPrimaryKey();
+            }
         }
 
         Map<String, PropertyType> fragmentKeysType = model.fragmentsKeysType.get(tableName);
@@ -557,14 +568,21 @@ public class SQLInfo {
             return column;
         }
 
+        protected Column newMainKeyReference(String name, boolean nullable) {
+            Column column = newMainKey(name);
+            column.setReferences(database.getTable(model.mainFragmentName),
+                    model.MAIN_KEY);
+            column.setNullable(nullable);
+            return column;
+        }
+
         protected void newPrimaryKey() {
-            Column column = newMainKey(model.MAIN_KEY);
+            Column column = newMainKeyReference(model.MAIN_KEY, false);
             column.setPrimary(true);
         }
 
         protected void newId() {
             Column column = newMainKey(model.MAIN_KEY);
-            column.setPrimary(true);
             switch (model.idGenPolicy) {
             case APP_UUID:
                 break;
@@ -574,19 +592,26 @@ public class SQLInfo {
             default:
                 throw new AssertionError(model.idGenPolicy);
             }
+            column.setNullable(false);
+            column.setPrimary(true);
         }
 
         protected void newPrimitiveField(String key, PropertyType type) {
             // TODO find a way to put these exceptions in model
             if (tableName.equals(model.VERSION_TABLE_NAME) &&
                     key.equals(model.VERSION_VERSIONABLE_KEY)) {
-                newMainKey(key); // not a foreign key though
+                newMainKeyReference(key, true);
                 return;
             }
-            if (tableName.equals(model.PROXY_TABLE_NAME) &&
-                    (key.equals(model.PROXY_TARGET_KEY) || key.equals(model.PROXY_VERSIONABLE_KEY))) {
-                newMainKey(key); // only target is a foreign key
-                return;
+            if (tableName.equals(model.PROXY_TABLE_NAME)) {
+                if (key.equals(model.PROXY_TARGET_KEY)) {
+                    newMainKeyReference(key, true);
+                    return;
+                }
+                if (key.equals(model.PROXY_VERSIONABLE_KEY)) {
+                    newMainKey(key); // not a foreign key
+                    return;
+                }
             }
             int sqlType;
             switch (type) {
@@ -622,7 +647,8 @@ public class SQLInfo {
             Column column = newColumn(key, type, sqlType);
             if (type == PropertyType.BINARY) {
                 // log them, will be useful for GC of binaries
-                SQLInfo.log.info("Binary column: " + column.getFullQuotedName(dialect));
+                SQLInfo.log.info("Binary column: " +
+                        column.getFullQuotedName(dialect));
             }
             // XXX apply defaults
         }
@@ -710,7 +736,7 @@ public class SQLInfo {
             List<String> wheres = new LinkedList<String>();
             for (Column column : table.getColumns()) {
                 String qname = column.getQuotedName(dialect);
-                if (column.isPrimary()) {
+                if (column.getName().equals(model.MAIN_KEY)) {
                     wheres.add(qname + " = ?");
                 } else {
                     whats.add(qname);
@@ -867,7 +893,7 @@ public class SQLInfo {
             List<String> wheres = new LinkedList<String>();
             List<Column> whereColumns = new LinkedList<Column>();
             for (Column column : table.getColumns()) {
-                if (column.isPrimary()) {
+                if (column.getName().equals(model.MAIN_KEY)) {
                     wheres.add(column.getQuotedName(dialect) + " = ?");
                     whereColumns.add(column);
                 } else {
@@ -889,7 +915,7 @@ public class SQLInfo {
             delete.setTable(table);
             List<String> wheres = new LinkedList<String>();
             for (Column column : table.getColumns()) {
-                if (column.isPrimary()) {
+                if (column.getName().equals(model.MAIN_KEY)) {
                     wheres.add(column.getQuotedName(dialect) + " = ?");
                 }
             }

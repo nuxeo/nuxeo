@@ -373,6 +373,10 @@ public class Model {
         return collectionTables.get(tableName);
     }
 
+    public boolean isCollectionFragment(String tableName) {
+        return collectionTables.containsKey(tableName);
+    }
+
     /**
      * Create a collection fragment according to the factories registered.
      */
@@ -447,16 +451,8 @@ public class Model {
         return typeSimpleFragments.get(typeName);
     }
 
-    public Set<String> getTypeCollectionFragments(String typeName) {
-        return typeCollectionFragments.get(typeName);
-    }
-
     public Set<String> getTypeFragments(String typeName) {
         return typeFragments.get(typeName);
-    }
-
-    public boolean isComplexType(String typeName) {
-        return typeSimpleFragments.containsKey(typeName);
     }
 
     private PropertyType mainIdType() {
