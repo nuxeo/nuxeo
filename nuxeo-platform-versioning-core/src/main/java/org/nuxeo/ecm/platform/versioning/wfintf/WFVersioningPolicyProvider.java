@@ -72,8 +72,8 @@ public final class WFVersioningPolicyProvider {
                     WFDocVersioning.SYSTEM_PROPERTY_NAME_WF_OPTION,
                     String.class);
         } catch (DocumentException e) {
-            log.warn("Workflow versioning inc policy not set as document system prop. Error msg: "
-                    + e.getMessage());
+            log.debug("Workflow versioning inc policy not set "
+                    + "as document system prop", e);
             return VersioningActions.ACTION_UNDEFINED;
         }
 
