@@ -71,6 +71,9 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
     }
 
     protected RepositoryDescriptor prepareDescriptor() {
+        System.setProperty(
+                "derby.stream.error.file",
+                new File(Framework.getRuntime().getHome(), "derby.log").getAbsolutePath());
         RepositoryDescriptor descriptor = new RepositoryDescriptor();
         String className = org.apache.derby.jdbc.EmbeddedXADataSource.class.getName();
         descriptor.xaDataSourceName = className;
