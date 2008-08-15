@@ -17,12 +17,13 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.login;
+package org.nuxeo.ecm.webengine.session;
 
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.security.auth.Subject;
@@ -30,11 +31,15 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
+ * TODO: should be synchronized? concurrent access may happen for the same session
+ *
  * Used to store user session. This object is cached in a the HTTP session
  * Principal, subject and credentials are immutable per user session
  *
@@ -45,7 +50,11 @@ public class UserSession extends HashMap<String, Object> implements Serializable
 
     private static final long serialVersionUID = 260562970988817064L;
 
+    private static Log log = LogFactory.getLog(UserSession.class);
+
     protected static UserSession anonymous;
+
+    protected Map<Class<?>, ComponentMap<?>> comps = new HashMap<Class<?>, ComponentMap<?>>();
 
 
     public static UserSession getCurrentSession(HttpSession session) {
@@ -136,13 +145,12 @@ public class UserSession extends HashMap<String, Object> implements Serializable
 
     public void valueBound(HttpSessionBindingEvent event) {
         // the user session was bound to the HTTP session
-        //install(event.getSession());
-        //System.out.println("bound : "+event.getName() + " = " +event.getValue());
+        install(event.getSession());
     }
 
     public void valueUnbound(HttpSessionBindingEvent event) {
         // the user session was removed from the HTTP session
-        //uninstall(event.getSession());
+        uninstall(event.getSession());
        // System.out.println("unbound: "+event.getName() + " = " +event.getValue());
         //HttpSess
 //        CoreSession cs = (CoreSession)session.getAttribute(DefaultWebContext.CORESESSION_KEY);
@@ -155,9 +163,130 @@ public class UserSession extends HashMap<String, Object> implements Serializable
     }
 
     protected void install(HttpSession session) {
+        if (log.isDebugEnabled()) {
+            log.debug("Installing user session");
+        }
     }
 
-    protected void uninstall(HttpSession session) {
+    protected synchronized void uninstall(HttpSession session) {
+        if (log.isDebugEnabled()) {
+            log.debug("Uninstalling user session");
+        }
+        // destroy all components
+        for (Map.Entry<Class<?>,ComponentMap<?>> entry : comps.entrySet()) {
+            try {
+                entry.getValue().destroy(this);
+            } catch (SessionException e) {
+                log.error("Failed to destroy component: "+entry.getKey(), e);
+            }
+        }
+        comps = null;
+        // destroy core session
+        if (coreSession != null) {
+            coreSession.destroy();
+            coreSession = null;
+        }
+    }
+
+
+    /**
+     * Find an existing component. The component state will not be modified before being returned
+     * as in {@link #getComponent(Class, String)}
+     * <p>
+     * If the component was not found in that session returns null
+     *
+     * @param <T>
+     * @param type
+     * @param name
+     * @return
+     * @throws SessionException
+     */
+    @SuppressWarnings("unchecked")
+    public synchronized <T extends Component> T findComponent(Class<T> type, String name) throws SessionException {
+        ComponentMap<T> map = (ComponentMap<T>)comps.get(type);
+        if (map == null) {
+            return null;
+        }
+        if (name == null) {
+            return map.getComponent();
+        } else {
+            return type.cast(map.get(name));
+        }
+    }
+
+    /**
+     * Get a component given it's class and an optional name.
+     * If the component was not yet created in this session it will
+     * be created and registered against the session.
+     * @param <T>
+     * @param type
+     * @param name
+     * @return
+     * @throws SessionException
+     */
+    @SuppressWarnings("unchecked")
+    public synchronized <T extends Component> T getComponent(Class<T> type, String name) throws SessionException {
+        ComponentMap<T> map = (ComponentMap<T>)comps.get(type);
+        T comp = null;
+        if (map == null) {
+            map = new ComponentMap<T>();
+            comps.put(type, map);
+        } else {
+            if (name == null) {
+                comp = map.getComponent();
+            } else {
+                comp = type.cast(map.get(name));
+            }
+            if (comp != null) {
+                return comp;
+            }
+        }
+        // component not found
+        try {
+            comp = (T)type.newInstance();
+        } catch (Exception e) {
+            throw new SessionException("Failed to instantiate component: "+type, e);
+        }
+        comp.initialize(this, name);
+        if (name == null) {
+            map.setComponent(comp);
+        } else {
+            map.put(name, comp);
+        }
+        return type.cast(comp);
+    }
+
+    public <T extends Component> T getComponent(Class<T> type) throws SessionException {
+        return getComponent(type, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Component> T getComponent(String  typeName, String name) throws SessionException {
+        try {
+            Class<T> type = (Class<T>)Class.forName(typeName);
+            return getComponent(type, name);
+        } catch (ClassNotFoundException e) {
+            throw new SessionException("Could not find component class: "+typeName, e);
+        }
+    }
+
+    /**
+     * Get component by ID.
+     * The ID is of the form <code>type#name</code> for not null names
+     * and <code>type</code> for null names
+     *
+     * @param <T>
+     * @param id
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends Component> T getComponent(String  id) throws SessionException {
+        int p = id.lastIndexOf('#');
+        if (p > -1) {
+            return (T)getComponent(id.substring(0, p), id.substring(p+1));
+        } else {
+            return (T)getComponent(id, null);
+        }
     }
 
 }

@@ -17,23 +17,49 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.ui.tree;
+package org.nuxeo.ecm.webengine.ui.tree.document;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.webengine.ui.tree.ContentProvider;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DirectoryContentProvider implements ContentProvider {
+public class DocumentContentProvider implements ContentProvider {
+
+    private static final long serialVersionUID = 1L;
 
     protected CoreSession session;
 
-    public DirectoryContentProvider(CoreSession session) {
+
+    public DocumentContentProvider(CoreSession session) {
         this.session = session;
+    }
+
+    public void setSession(CoreSession session) {
+        this.session = session;
+    }
+
+    public CoreSession getSession() {
+        return session;
+    }
+
+    public Object[] getElements(Object input) {
+        if (input instanceof Repository) {
+            try {
+                return new DocumentModel[] {session.getRootDocument()};
+            } catch (ClientException e) {
+                e.printStackTrace();
+                return null;
+            }
+        } else { // may be a document
+            return getChildren(input);
+        }
     }
 
     public Object[] getChildren(Object obj) {
@@ -48,11 +74,22 @@ public class DirectoryContentProvider implements ContentProvider {
         return null;
     }
 
-    public boolean hasChildren(Object obj) {
+    public boolean isContainer(Object obj) {
         if (obj instanceof DocumentModel) {
             return ((DocumentModel)obj).isFolder();
         }
         return false;
+    }
+
+    public String getLabel(Object obj) {
+        if (obj instanceof DocumentModel) {
+            return ((DocumentModel)obj).getTitle();
+        }
+        return null;
+    }
+
+    public String[] getFacets(Object object) {
+        return null;
     }
 
     public String getName(Object obj) {

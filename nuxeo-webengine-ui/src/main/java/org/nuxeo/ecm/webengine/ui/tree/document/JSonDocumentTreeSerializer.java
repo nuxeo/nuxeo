@@ -17,14 +17,27 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.ui.tree;
+package org.nuxeo.ecm.webengine.ui.tree.document;
+
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.webengine.WebContext;
+import org.nuxeo.ecm.webengine.ui.tree.JSonTreeSerializer;
+import org.nuxeo.ecm.webengine.ui.tree.TreeItem;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DirectoryTree {
+public class JSonDocumentTreeSerializer extends JSonTreeSerializer {
 
+    protected WebContext ctx;
 
+    public JSonDocumentTreeSerializer(WebContext ctx) {
+        this.ctx = ctx;
+    }
+
+    public String getUrl(TreeItem item) {
+        return ctx.getUrlPath((DocumentModel)item.getObject());
+    }
 
 }

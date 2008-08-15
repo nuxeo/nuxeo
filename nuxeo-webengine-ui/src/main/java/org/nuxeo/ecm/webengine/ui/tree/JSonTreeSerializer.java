@@ -24,26 +24,20 @@ import java.util.Collection;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.webengine.WebContext;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class JSonDocTreeSerializer implements TreeItemVisitor {
+public class JSonTreeSerializer implements TreeItemVisitor {
 
-    protected WebContext ctx;
-
-    public JSonDocTreeSerializer(WebContext ctx) {
-        this.ctx = ctx;
+    public JSonTreeSerializer() {
     }
 
     /**
      * Must be overrided to provide real URLs
      */
-    public String getUrl(DocumentModel doc) {
-        return ctx.getUrlPath(doc);
+    public String getUrl(TreeItem item) {
+        return item.getPath().toString();
     }
 
     public JSONArray toJSON(Collection<TreeItem> items) {
@@ -54,7 +48,7 @@ public class JSonDocTreeSerializer implements TreeItemVisitor {
         return ar;
     }
 
-    public JSONArray toJSON(TreeItem ... items) {
+    public JSONArray toJSON(TreeItem[] items) {
         JSONArray ar = new JSONArray();
         for (TreeItem item : items) {
             ar.add(toJSON(item));
@@ -66,33 +60,41 @@ public class JSonDocTreeSerializer implements TreeItemVisitor {
         return (JSONObject)root.accept(this);
     }
 
-    protected JSONObject toJSON(DocumentModel doc) {
-        JSONObject json = new JSONObject();
-        json.element("text", doc.getName())
-            .element("id", doc.getPathAsString())
-            .element("href", getUrl(doc));
-        if (doc.isFolder()) {
-            json.element("hasChildren", true);
-        }
-        return json;
-    }
-
     public Object visit(TreeItem item) {
-        DocumentModel doc = (DocumentModel)item.getObject();
-        JSONObject json = toJSON(doc);
+        JSONArray jsons = null;
         if (item.isExpanded()) {
-            json.element("expanded", true);
             TreeItem[] children = item.getChildren();
             if (children != null && children.length > 0) {
-                JSONArray jsons = new JSONArray();
+                jsons = new JSONArray();
                 for (TreeItem child : children) {
                     JSONObject childJson = (JSONObject)visit(child);
                     jsons.add(childJson);
                 }
-                json.element("children", jsons);
+            }
+        }
+        return item2JSON(item, jsons);
+    }
+
+    /**
+     * You may override this method to change the output JSON
+     * @param item
+     * @param children
+     * @return
+     */
+    protected JSONObject item2JSON(TreeItem item, JSONArray children) {
+        JSONObject json = new JSONObject();
+        json.element("text", item.getLabel())
+            .element("id", item.getPath().toString())
+            .element("href", getUrl(item));
+        if (item.isContainer()) {
+            json.element("hasChildren", true);
+        }
+        if (item.isExpanded()) {
+            json.element("expanded", true);
+            if (item.hasChildren()) {
+                json.element("children", children);
             }
         }
         return json;
     }
-
 }
