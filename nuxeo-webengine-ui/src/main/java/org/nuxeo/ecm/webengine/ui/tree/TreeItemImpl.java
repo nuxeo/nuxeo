@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.webengine.ui.tree;
 
-import java.util.Map;
-
 import org.nuxeo.common.utils.Path;
 
 
@@ -33,17 +31,26 @@ public class TreeItemImpl implements TreeItem {
 
     private static final long serialVersionUID = 5252830785508229998L;
 
+    public static final int F_CONTAINER = 4;
+    public static final int F_EXPANDED = 8;
+
     public final static TreeItem[] EMPTY_CHILDREN = new TreeItem[0];
     public final static TreeItem[] HAS_CHILDREN = new TreeItem[0];
 
-    protected TreeItem parent;
     protected ContentProvider provider;
-    protected transient Object obj;
+    protected TreeItem parent;
+    protected Path path;
+    protected String label;
+    protected String[] facets;
     protected TreeItem[] children = EMPTY_CHILDREN;
-    protected boolean isExpanded = false;
-    protected boolean isLoaded = false; // whether or not children are known
-    protected String name;
-    protected Map<String, TreeItem> childrenMap; //TODO: use a map?
+
+    protected Object obj;
+
+    protected volatile int state = BOTH;
+
+    // TODO: use a map?
+    //protected Map<String, TreeItem> childrenMap;
+
 
     public TreeItemImpl(ContentProvider provider, Object data) {
         this (null, provider, data);
@@ -53,23 +60,36 @@ public class TreeItemImpl implements TreeItem {
         this.parent = parent;
         this.provider = provider;
         this.obj = data;
-        this.name = provider.getName(obj);
+        String name = provider.getName(obj);
+        if (parent != null) {
+            this.path = parent.getPath().append(name);
+        } else {
+            this.path = new Path("/");
+        }
+        if (provider.isContainer(obj)) {
+            this.state |= F_CONTAINER; // set container flag and invalidate children
+        }
     }
 
     public TreeItemImpl(TreeItem parent, Object data) {
         this (parent, parent.getContentProvider(), data);
     }
 
-    public boolean isLoaded() {
-        return children != HAS_CHILDREN && children != EMPTY_CHILDREN;
+    public boolean hasChildren() {
+        return children.length > 0;
     }
 
     public TreeItem[] getChildren() {
+        validateChildren();
         return children;
     }
 
     public Object getObject() {
         return obj;
+    }
+
+    public Path getPath() {
+        return path;
     }
 
     public TreeItem getParent() {
@@ -81,25 +101,30 @@ public class TreeItemImpl implements TreeItem {
     }
 
     public String getName() {
-        return name;
+        return path.lastSegment();
     }
 
-    public boolean hasChildren() {
-        if (children == EMPTY_CHILDREN) {
-            boolean hasChildren = provider.hasChildren(obj);
-            if (!hasChildren) {
-                children = HAS_CHILDREN;
-            }
-            return hasChildren;
-        } else {
-            return children != null;
-        }
+    public String getLabel() {
+        validateData();
+        return label;
+    }
+
+    /**
+     * @return the facets.
+     */
+    public String[] getFacets() {
+        validateData();
+        return facets;
+    }
+
+    public boolean isContainer() {
+        return (state & F_CONTAINER) != 0;
     }
 
     public TreeItem find(Path path) {
         TreeItem item = this;
         for (int i=0,len=path.segmentCount()-1; i<len; i++) {
-            if (!item.isLoaded()) {
+            if (!item.hasChildren()) {
                 return null;
             }
             item = item.getChild(path.segment(i));
@@ -107,7 +132,7 @@ public class TreeItemImpl implements TreeItem {
                 return null;
             }
         }
-        if (!item.isLoaded()) {
+        if (!item.hasChildren()) {
             return null;
         }
         return item.getChild(path.lastSegment());
@@ -128,7 +153,7 @@ public class TreeItemImpl implements TreeItem {
     }
 
     public TreeItem getChild(String name) {
-        loadChildren(); // force children loading
+        validateChildren();
         return _getChild(name);
     }
 
@@ -142,48 +167,86 @@ public class TreeItemImpl implements TreeItem {
     }
 
     public TreeItem[] expand() {
-        if (isExpanded) {
+        if (isExpanded()) {
             return children;
         } else {
             if (parent != null && !parent.isExpanded()) {
                 parent.expand();
             }
-            isExpanded = true;
-            return loadChildren();
+            state |= F_EXPANDED;
+            return getChildren();
         }
     }
 
-    public TreeItem[] loadChildren() {
-        if (!isLoaded) {
-            Object[] objects = provider.getChildren(obj);
-            if (objects == null) {
-                children = null;
-            } else {
-                children = new TreeItemImpl[objects.length];
-                if (objects != null) {
-                    for (int i=0; i<objects.length; i++) {
-                        children[i] = new TreeItemImpl(this, objects[i]);
-                    }
+    protected void loadData() {
+        this.label = provider.getLabel(obj);
+        this.facets = provider.getFacets(obj);
+    }
+
+    public void validateData() {
+        if ((state & DATA) != 0) {
+            loadData();
+            state &= ~DATA;
+        }
+    }
+
+    public void validateChildren() {
+        if ((state & CHILDREN) != 0) {
+            loadChildren();
+            state &= ~CHILDREN;
+        }
+    }
+
+    protected void loadChildren() {
+        if (!isContainer()) return;
+        Object[] objects = parent == null
+            ? provider.getElements(obj) : provider.getChildren(obj);
+        if (objects == null) {
+            children = null;
+        } else {
+            children = new TreeItemImpl[objects.length];
+            if (objects != null) {
+                for (int i=0; i<objects.length; i++) {
+                    children[i] = new TreeItemImpl(this, objects[i]);
                 }
             }
-            isLoaded = true;
         }
-        return children;
     }
 
     public void collapse() {
-        isExpanded = false;
+        state &= ~F_EXPANDED;
     }
 
     public boolean isExpanded() {
-        return isExpanded;
+        return (state & F_EXPANDED) != 0;
     }
 
-    public void refresh() {
-        children = EMPTY_CHILDREN;
-        if (isExpanded) {
+    /**
+     * TODO not completely implemented
+     */
+    public void refresh(int type) {
+        if ((type & DATA) != 0) {
+            loadData();
+        }
+        if ((type & CHILDREN) != 0) {
             loadChildren();
         }
+        state &= ~type;
+    }
+
+    public void validate() {
+        refresh(state);
+    }
+
+    public void invalidate(int type) {
+        state |= type;
+    }
+
+    /**
+     * TODO not implemented
+     */
+    public int getValidationState() {
+        return state;
     }
 
     public Object accept(TreeItemVisitor visitor) {

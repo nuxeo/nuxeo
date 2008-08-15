@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webengine.ui.tree;
 
+import org.nuxeo.common.utils.Path;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -26,9 +28,14 @@ package org.nuxeo.ecm.webengine.ui.tree;
  */
 public class TreeViewImpl implements TreeView {
 
+    private static final long serialVersionUID = 1L;
+
     protected ContentProvider provider;
     protected TreeItem root;
 
+
+    public TreeViewImpl() {
+    }
 
     public TreeViewImpl(ContentProvider provider) {
         this.provider = provider;
@@ -38,15 +45,55 @@ public class TreeViewImpl implements TreeView {
         return provider;
     }
 
-    public void setIntput(Object input) {
-        this.root = new TreeItemImpl(provider, input);
+    public void setContentProvider(ContentProvider provider) {
+        this.provider = provider;
+    }
+
+    public void setInput(Object input) {
+        if (input == null) {
+            this.root = null;
+        } else {
+            this.root = new TreeItemImpl(provider, input);
+        }
     }
 
     public TreeItem getRoot() {
         return root;
     }
 
-    public TreeItem findItem(String path) {
+    public TreeItem findAndReveal(String path) {
+        return findAndReveal(new Path(path));
+    }
+
+    public TreeItem find(String path) {
+        return find(new Path(path));
+    }
+
+    public TreeItem findAndReveal(Path path) {
+        if (root == null) {
+            return null;
+        }
+        return root.findAndReveal(path);
+    }
+
+    public TreeItem find(Path path) {
+        if (root == null) {
+            return null;
+        }
+        Path rootPath = root.getPath();
+        int p = path.matchingFirstSegments(rootPath);
+        if (p == rootPath.segmentCount()) {
+            return root.find(path.removeFirstSegments(p));
+        }
         return null;
     }
+
+    public Object getInput() {
+        return root == null ? null : root.getObject();
+    }
+
+    public boolean hasInput() {
+        return root != null;
+    }
+
 }

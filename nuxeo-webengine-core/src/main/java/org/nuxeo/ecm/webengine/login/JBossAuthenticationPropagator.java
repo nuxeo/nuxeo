@@ -28,6 +28,7 @@ import java.util.HashMap;
 import javax.security.auth.Subject;
 
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
+import org.nuxeo.ecm.webengine.session.UserSession;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

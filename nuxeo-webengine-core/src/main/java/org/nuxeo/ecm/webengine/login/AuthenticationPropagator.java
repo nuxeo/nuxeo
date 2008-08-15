@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.webengine.login;
 
+import org.nuxeo.ecm.webengine.session.UserSession;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

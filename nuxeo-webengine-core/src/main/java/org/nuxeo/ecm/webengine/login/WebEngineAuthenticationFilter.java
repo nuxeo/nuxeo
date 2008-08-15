@@ -37,6 +37,7 @@ import javax.servlet.http.HttpSession;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.runtime.api.Framework;
 
 import sun.misc.BASE64Decoder;
