@@ -433,7 +433,7 @@ public class VersioningService extends DefaultComponent implements
             }
 
             if (!ruleFound) {
-                log.warn(logPrefix + "No matching rule found for request: "
+                log.debug(logPrefix + "No matching rule found for request: "
                         + req);
             }
 
