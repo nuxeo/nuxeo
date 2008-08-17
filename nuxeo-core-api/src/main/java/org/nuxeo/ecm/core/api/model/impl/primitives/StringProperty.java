@@ -34,9 +34,8 @@ public class StringProperty extends ScalarProperty {
 
     private static final long serialVersionUID = -3586917845281930368L;
 
-
     public StringProperty(Property parent, Field field, int flags) {
-        super (parent, field, flags);
+        super(parent, field, flags);
     }
 
     @Override

@@ -36,7 +36,7 @@ public interface SecurityPolicy {
      * Checks given permission for doc and principal.
      *
      * @param doc the document to check
-     * @param mergedAcp merged acp resolved for this document
+     * @param mergedAcp merged ACP resolved for this document
      * @param principal principal to check
      * @param permission permission to check
      * @param resolvedPermissions permissions or groups of permissions

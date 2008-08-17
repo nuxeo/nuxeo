@@ -40,14 +40,13 @@ public class BinaryProperty extends ScalarProperty {
     private static final long serialVersionUID = 1036197257646828836L;
 
     public BinaryProperty(Property parent, Field field, int flags) {
-        super (parent, field, flags);
+        super(parent, field, flags);
     }
 
     @Override
     public boolean isNormalized(Object value) {
         return value == null || value instanceof InputStream;
     }
-
 
     @Override
     public Serializable normalize(Object value)

@@ -77,7 +77,7 @@
       <artifactId>log4j</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency><!-- TO BE REMOVED; if not present, tests are running in spite of exclude tags -->
+    <dependency>
       <groupId>jboss</groupId>
       <artifactId>jbosssx</artifactId>
       <scope>test</scope>
@@ -129,12 +129,6 @@
         <configuration>
           <excludes>
             <exclude>**/TestApiHeavyLoad_remote.java</exclude>
-            <!-- XXX The following provokes OutOfMemoryError: Java heap space -->
-            <!-- AT: re-activated, these tests are important -->
-            <!--
-              <exclude>**/TestLocalAPI.java</exclude>
-              <exclude>**/TestSecurity.java</exclude>
-            -->
           </excludes>
         </configuration>
       </plugin>

@@ -61,7 +61,7 @@ public class BlobProperty extends ObjectProperty {
     }
 
     public BlobProperty(Property parent, Field field, int flags) {
-        super (getObjectMetaData(), parent, field, flags);
+        super(getObjectMetaData(), parent, field, flags);
     }
 
     @Override

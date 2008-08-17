@@ -34,17 +34,17 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
+    static final String creator = "Bodie";
+
+    static final String user = "Bubbles";
+
+    static final Principal creatorPrincipal = new UserPrincipal("Bodie");
+
+    static final Principal userPrincipal = new UserPrincipal("Bubbles");
+
     private SecurityPolicyService service;
 
     private Document doc;
-
-    final String creator = "Bodie";
-
-    final String user = "Bubbles";
-
-    final Principal creatorPrincipal = new UserPrincipal("Bodie");
-
-    final Principal userPrincipal = new UserPrincipal("Bubbles");
 
     @Override
     public void setUp() throws Exception {

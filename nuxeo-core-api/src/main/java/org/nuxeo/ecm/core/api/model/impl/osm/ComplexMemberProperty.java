@@ -40,12 +40,12 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
     protected final ObjectAdapter adapter;
 
     public ComplexMemberProperty(ObjectAdapter adapter, Property parent, Field field) {
-        super (parent, field);
+        super(parent, field);
         this.adapter = adapter;
     }
 
     public ComplexMemberProperty(ObjectAdapter adapter,  Property parent, Field field, int flags) {
-        super (parent, field, flags);
+        super(parent, field, flags);
         this.adapter = adapter;
     }
 
@@ -57,7 +57,6 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
     public boolean isContainer() {
         return false;
     }
-
 
     @SuppressWarnings("unchecked")
     @Override
@@ -84,7 +83,6 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
         removePhantomFlag();
     }
 
-
     @Override
     public void internalSetValue(Serializable value) throws PropertyException {
         ObjectAdapter adapter = ((Adaptable) parent).getAdapter();
@@ -96,7 +94,6 @@ public class ComplexMemberProperty extends MapProperty implements Adaptable {
         ObjectAdapter adapter = ((Adaptable)parent).getAdapter();
         return (Serializable)adapter.getValue(parent.getValue(), getName());
     }
-
 
     @Override
     protected Property internalGetChild(Field field) {

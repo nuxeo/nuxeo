@@ -35,7 +35,7 @@ public class LongProperty extends ScalarProperty {
     private static final long serialVersionUID = 4071336664294418041L;
 
     public LongProperty(Property parent, Field field, int flags) {
-        super (parent, field, flags);
+        super(parent, field, flags);
     }
 
     @Override

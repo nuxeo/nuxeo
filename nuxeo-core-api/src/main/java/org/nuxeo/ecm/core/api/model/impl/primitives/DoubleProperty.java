@@ -34,9 +34,8 @@ public class DoubleProperty extends ScalarProperty {
 
     private static final long serialVersionUID = 3764033209483557763L;
 
-
     public DoubleProperty(Property parent, Field field, int flags) {
-        super (parent, field, flags);
+        super(parent, field, flags);
     }
 
     @Override

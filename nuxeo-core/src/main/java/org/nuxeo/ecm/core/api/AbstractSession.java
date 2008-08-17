@@ -127,13 +127,13 @@ public abstract class AbstractSession implements CoreSession,
     /**
      * Used to check permissions.
      */
-    private transient SecurityService __securityService;
+    private transient SecurityService securityService;
 
     protected SecurityService getSecurityService() {
-        if (__securityService == null) {
-            __securityService = NXCore.getSecurityService();
+        if (securityService == null) {
+            securityService = NXCore.getSecurityService();
         }
-        return __securityService;
+        return securityService;
     }
 
     /**
@@ -165,13 +165,12 @@ public abstract class AbstractSession implements CoreSession,
         // this session is valid until the disconnect method is called
         sessionId = createSessionId();
         sessionContext.put("SESSION_ID", sessionId);
-        // register this session locally -> this way document models can retirve
-        // their session
-        // on the server side
+        // register this session locally -> this way document models can retrieve
+        // their session on the server side
         CoreInstance.getInstance().registerSession(sessionId, this);
 
         // <------------ begin repository initialization
-        // we need to intialize the repository if this is the first time it is
+        // we need to initialize the repository if this is the first time it is
         // accessed in this JVM session
         // for this we get the session and test if the "REPOSITORY_FIRST_ACCESS"
         // is set after the session is created
@@ -229,7 +228,7 @@ public abstract class AbstractSession implements CoreSession,
      * be unique in the system)
      *
      * <ul>
-     * <li> A is the repository name (uniquely identify the repository in the
+     * <li>A is the repository name (which uniquely identifies the repository in the
      * system)
      * <li>B is the time of the session creation in milliseconds
      * </ul>

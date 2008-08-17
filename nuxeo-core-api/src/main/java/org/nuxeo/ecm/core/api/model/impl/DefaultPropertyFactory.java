@@ -45,15 +45,18 @@ import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * A composite property factory that use children factories to create properties.
+ * A composite property factory that uses children factories to create
+ * properties.
  * <p>
- * The children factories are registered under a string key that is the type name corresponding
- * to the property that is to be created. The type name can be specified as an absolute or as a local type name.
- * For example if the global type <code>string</code> is redefined by a schema <code>myschema</code>
- * then you need to use the absolute type name to refer to that type: myschema:string.
+ * The children factories are registered under a string key that is the type
+ * name corresponding to the property that is to be created. The type name can
+ * be specified as an absolute or as a local type name. For example if the
+ * global type <code>string</code> is redefined by a schema
+ * <code>myschema</code> then you need to use the absolute type name to refer to
+ * that type: <code>myschema:string</code>.
  * <p>
- * If one looks up a factory using an absolute type name - the absolute name will be used and if no factory is found
- * then the local type name is used.
+ * If one looks up a factory using an absolute type name - the absolute name
+ * will be used and if no factory is found then the local type name is used.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -126,7 +129,7 @@ public class DefaultPropertyFactory extends CompositePropertyFactory {
     }
 
     private DefaultPropertyFactory(){
-        super (DEFAULT);
+        super(DEFAULT);
     }
 
     public void unregisterFactory(String schema, String type) {

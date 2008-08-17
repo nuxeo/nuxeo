@@ -36,11 +36,9 @@ public class DateProperty extends ScalarProperty {
 
     private static final long serialVersionUID = -7344978155078073495L;
 
-
     public DateProperty(Property parent, Field field, int flags) {
-        super (parent, field, flags);
+        super(parent, field, flags);
     }
-
 
     @Override
     public boolean isNormalized(Object value) {

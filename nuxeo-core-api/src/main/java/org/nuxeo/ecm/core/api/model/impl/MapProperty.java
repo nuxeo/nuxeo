@@ -28,9 +28,9 @@ import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  * Phantom properties are not stored as children objects.
+ *
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class MapProperty extends ComplexProperty {
 
@@ -43,12 +43,12 @@ public class MapProperty extends ComplexProperty {
 
 
     public MapProperty(Property parent, Field field) {
-        super (parent);
+        super(parent);
         this.field = field;
     }
 
     public MapProperty(Property parent, Field field, int flags) {
-        super (parent, flags);
+        super(parent, flags);
         this.field = field;
     }
 
