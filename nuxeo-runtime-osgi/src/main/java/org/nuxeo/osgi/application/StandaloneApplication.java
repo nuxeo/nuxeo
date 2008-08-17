@@ -50,16 +50,16 @@ public class StandaloneApplication extends OSGiAdapter {
     private static String[] args;
     private static Runnable mainTask;
 
-    public static StandaloneApplication getInstance() {
-        return instance;
-    }
-
     protected final SharedClassLoader classLoader;
     protected final Environment env;
     protected boolean isStarted;
     protected File home;
     protected List<File> classPath;
     protected boolean scanForNestedJARs = true; // by default true
+
+    public static StandaloneApplication getInstance() {
+        return instance;
+    }
 
     public static StandaloneApplication createInstance(SharedClassLoader cl) throws IOException {
         if (StandaloneApplication.instance != null) {
@@ -77,7 +77,7 @@ public class StandaloneApplication extends OSGiAdapter {
     }
 
     private StandaloneApplication(SharedClassLoader cl, Environment env) {
-        super (env.getHome(), env.getData(), env.getProperties());
+        super(env.getHome(), env.getData(), env.getProperties());
         classLoader = cl;
         this.env = env;
     }

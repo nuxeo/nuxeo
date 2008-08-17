@@ -58,10 +58,11 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
     /** Can be used to change the runtime home directory */
     public static final String PROP_HOME_DIR = "org.nuxeo.runtime.home";
+
     /** The OSGi application install directory. */
     public static final String PROP_INSTALL_DIR = "INSTALL_DIR";
 
-    /** The osgi application config directory. */
+    /** The OSGi application config directory. */
     public static final String PROP_CONFIG_DIR = "CONFIG_DIR";
 
     /** The host adapter. */
@@ -190,8 +191,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                     for (String name : dir.list()) {
                         if (name.endsWith("-config.xml") || name.endsWith("-bundle.xml")) {
                             //TODO
-                            // because of somen dep bugs (regarding the depoyment of demo-ds.xml)
-                            // we cannot let the runtime deploy config dir at begining...
+                            // because of some dep bugs (regarding the deployment of demo-ds.xml)
+                            // we cannot let the runtime deploy config dir at beginning...
                             // until fixing this we deploy config dir from
                             // NuxeoDeployer
                             File file = new File(dir, name);
@@ -225,10 +226,10 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
                 if (name.endsWith("-config.xml")
                         || name.endsWith("-bundle.xml")) {
                     // TODO
-                    // because of somen dep bugs (regarding the depoyment of
+                    // because of some dep bugs (regarding the deployment of
                     // demo-ds.xml)
                     // we cannot let the runtime deploy config dir at
-                    // begining...
+                    // beginning...
                     // until fixing this we deploy config dir from
                     // NuxeoDeployer
 
@@ -276,7 +277,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
     }
 
     /**
-     * Overrides the default method to be able to inculde OSGi properties
+     * Overrides the default method to be able to include OSGi properties.
      */
     @Override
     public String getProperty(String name, String defValue) {
@@ -311,13 +312,13 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements
 
         Map<ComponentName, Set<ComponentName>> pendingRegistrations = manager.getPendingRegistrations();
         Collection<ComponentName> activatingRegistrations = manager.getActivatingRegistrations();
-        msg.append(hr).append("\n= Component Loading Status: Pending: ").append(
-                pendingRegistrations.size()).append(" / Unstarted: ").append(
-                activatingRegistrations.size()).append(" / Total: ").append(
-                manager.getRegistrations().size()).append('\n');
+        msg.append(hr).append("\n= Component Loading Status: Pending: ").append(pendingRegistrations.size())
+                .append(" / Unstarted: ").append(activatingRegistrations.size())
+                .append(" / Total: ").append(manager.getRegistrations().size())
+                .append('\n');
         for (Entry<ComponentName, Set<ComponentName>> e : pendingRegistrations.entrySet()) {
-            msg.append("  * ").append(e.getKey()).append(" requires ").append(
-                    e.getValue()).append('\n');
+            msg.append("  * ").append(e.getKey()).append(" requires ")
+                    .append(e.getValue()).append('\n');
         }
         for (ComponentName componentName : activatingRegistrations) {
             msg.append("  - ").append(componentName).append('\n');

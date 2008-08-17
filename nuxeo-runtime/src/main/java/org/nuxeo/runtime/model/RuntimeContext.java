@@ -39,7 +39,7 @@ import org.osgi.framework.Bundle;
 public interface RuntimeContext {
 
     /**
-     * Gets the curent runtime service.
+     * Gets the current runtime service.
      *
      * @return the runtime service
      */
@@ -93,17 +93,17 @@ public interface RuntimeContext {
     /**
      * Undeploys a component XML descriptor given its URL.
      * <p>
-     * Do nothing if no component was registered fro the given URL.
+     * Do nothing if no component was registered for the given URL.
      *
-     * @param url the url of the XML descriptor
+     * @param url the URL of the XML descriptor
      * @throws Exception if any error occurs
      */
     void undeploy(URL url) throws Exception;
 
     /**
-     * Checks whether the component XML file at given URL was deployeds.
+     * Checks whether the component XML file at given URL was deployed.
      *
-     * @param url the url to check
+     * @param url the URL to check
      * @return true it deployed, false otherwise
      */
     boolean isDeployed(URL url);

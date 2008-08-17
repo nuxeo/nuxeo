@@ -42,13 +42,12 @@ public class GlassFishServer extends GlassFish {
 
     final static Logger log = Logger.getLogger("GlassFishServer");
 
-
     public GlassFishServer(URL domainXmlUrl) {
-        super (domainXmlUrl);
+        super(domainXmlUrl);
     }
 
     public GlassFishServer(int port) {
-        super (port);
+        super(port);
     }
 
     public Habitat getHabitat() {
@@ -62,10 +61,9 @@ public class GlassFishServer extends GlassFish {
     public ActionReport execute(String command, Properties args) {
         PlainTextActionReporter reporter = new PlainTextActionReporter();
         CommandRunner commandRunner =
-            (CommandRunner) habitat.getComponent(CommandRunner.class);
+            habitat.getComponent(CommandRunner.class);
         return commandRunner.doCommand(command, args, reporter);
     }
-
 
     public String getVersion() {
         ActionReport report = execute("version", new Properties());
@@ -92,7 +90,6 @@ public class GlassFishServer extends GlassFish {
         return execute("delete-jdbc-connection-pool", args);
     }
 
-
     public String[] listJdbcConnectionPools() {
         ActionReport ar = execute("list-jdbc-connection-pools", new Properties());
         if (ar.getActionExitCode() == ActionReport.ExitCode.FAILURE) {
@@ -103,7 +100,6 @@ public class GlassFishServer extends GlassFish {
             result.add(parts.getMessage());
         }
         return result.toArray(new String[result.size()]);
-
     }
 
     public boolean pingJdbcConnectionPool(String poolName) throws Exception {

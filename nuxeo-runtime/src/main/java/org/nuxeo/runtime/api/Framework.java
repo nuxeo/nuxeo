@@ -40,11 +40,11 @@ import org.nuxeo.runtime.api.login.LoginService;
  * There are two type of services:
  * <ul>
  * <li> Global Services - these services are uniquely defined by a service
- * class. and there is an unique instance of the service in the system per
+ * class, and there is an unique instance of the service in the system per
  * class.
- * <li> Localized Services - these services are defined by a class and an URI.
- * This type of services allows multiple service instances for the same class of
- * services Each instance is uniquely defined in the system by an URI
+ * <li> Local Services - these services are defined by a class and an URI.
+ * This type of service allows multiple service instances for the same class of
+ * services. Each instance is uniquely defined in the system by an URI.
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -55,9 +55,10 @@ public final class Framework {
      * The runtime instance.
      */
     private static RuntimeService runtime;
-    private static org.nuxeo.runtime.ServiceManager serviceMgr;
-    private static final ListenerList listeners = new ListenerList();
 
+    private static org.nuxeo.runtime.ServiceManager serviceMgr;
+
+    private static final ListenerList listeners = new ListenerList();
 
     // Utility class.
     private Framework() { }
@@ -68,7 +69,7 @@ public final class Framework {
         if (runtime != null) {
             throw new Exception("Nuxeo Framework was already initialized");
         }
-        Framework.runtime = runtimeService;
+        runtime = runtimeService;
         initServiceManager();
         runtime.start();
     }
@@ -95,7 +96,7 @@ public final class Framework {
             serviceMgr = org.nuxeo.runtime.api.ServiceManager.getInstance();
         } else {
             try {
-                serviceMgr = (org.nuxeo.runtime.ServiceManager)Class.forName(sm).newInstance();
+                serviceMgr = (org.nuxeo.runtime.ServiceManager) Class.forName(sm).newInstance();
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new Error("Failed to initialize service manager");
@@ -104,7 +105,7 @@ public final class Framework {
     }
 
     /**
-     * Gets the runtime instance.
+     * Gets the runtime service instance.
      *
      * @return
      */
@@ -137,7 +138,8 @@ public final class Framework {
     }
 
     /**
-     * Get a nuxeo-runtime local service.
+     * Gets a nuxeo-runtime local service.
+     *
      * @param <T>
      * @param serviceClass
      * @return
@@ -153,7 +155,8 @@ public final class Framework {
     }
 
     /**
-     * Lookup a registered object given its key
+     * Lookup a registered object given its key.
+     *
      * @param key
      * @return
      */
@@ -251,9 +254,10 @@ public final class Framework {
     }
 
     /**
-     * Remove the given listener.
+     * Removes the given listener.
      * <p>
-     * If the listener is not registered do nothing
+     * If the listener is not registered, do nothing.
+     *
      * @param listener
      */
     public static void removeListener(RuntimeServiceListener listener) {

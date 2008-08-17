@@ -32,23 +32,21 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 
+// BUG:       in InjectionManager  if (!isOptional(inject)) { return always true - isOptional return always false
+
 /**
- * BUG:       in InjectionManger                  if (!isOptional(inject)) { return always true - isOptional return always false
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class GF3Component extends DefaultComponent {
 
-    public final static ComponentName NAME = new ComponentName("org.nuxeo.runtime.server");
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.runtime.server");
 
-    public final static String XP_WEB_APP = "webapp";
-    public final static String XP_DATA_SOURCE = "datasource";
+    public static final String XP_WEB_APP = "webapp";
+    public static final String XP_DATA_SOURCE = "datasource";
 
     protected GlassFishServer server;
 
-    /**
-     * @return the server.
-     */
     public GlassFishServer getServer() {
         return server;
     }
