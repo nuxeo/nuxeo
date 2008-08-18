@@ -182,7 +182,6 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
     @SuppressWarnings("unchecked")
     public ManagedConnection matchManagedConnections(Set set, Subject subject,
             ConnectionRequestInfo cri) throws ResourceException {
-        log.debug("---------- calling matchManagedConnection");
         for (Object candidate : set) {
             if (!(candidate instanceof ManagedConnectionImpl)) {
                 continue;
@@ -193,7 +192,6 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
             }
             return managedConnection;
         }
-        log.debug("---------- no match");
         return null;
     }
 

@@ -985,9 +985,17 @@ public abstract class AbstractSession implements CoreSession,
 
     public DocumentModelList getDocuments(DocumentRef[] docRefs)
             throws ClientException {
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
+        List<DocumentModel> docs = new ArrayList<DocumentModel>(docRefs.length);
         for (DocumentRef docRef : docRefs) {
-            docs.add(getDocument(docRef));
+            Document doc;
+            try {
+                doc = resolveReference(docRef);
+                checkPermission(doc, READ);
+            } catch (DocumentException e) {
+                // no permission, or other low-level error
+                continue;
+            }
+            docs.add(readModel(doc, null));
         }
         DocumentModelList list = new DocumentModelListImpl(docs);
         return list;

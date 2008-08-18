@@ -23,11 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.ecm.core.storage.StorageException;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocument;
 
 /**
  * @author Florent Guillaume
@@ -203,8 +201,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         CollectionProperty prop = root.getCollectionProperty(Model.ACL_PROP);
         assertNotNull(prop);
         assertEquals(4, prop.getValue().length); // root acls preexist
-        ACLRow acl1 = new ACLRow(0, "test", 1, true, "Write", "steve", null);
-        ACLRow acl2 = new ACLRow(0, "test", 0, true, "Read", null, "Members");
+        ACLRow acl1 = new ACLRow(1, "test", true, "Write", "steve", null);
+        ACLRow acl2 = new ACLRow(0, "test", true, "Read", null, "Members");
         prop.setValue(new ACLRow[] { acl1, acl2 });
         session.save();
         session.close();
@@ -214,9 +212,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
         ACLRow[] acls = (ACLRow[]) prop.getValue();
         assertEquals(2, acls.length);
         assertEquals("Members", acls[0].group);
-        assertEquals("test", acls[0].aclname);
+        assertEquals("test", acls[0].name);
         assertEquals("steve", acls[1].user);
-        assertEquals("test", acls[1].aclname);
+        assertEquals("test", acls[1].name);
     }
 
     public void testCrossSessionInvalidations() throws Exception {
@@ -490,5 +488,23 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1, proxies.size());
         proxies = session.getProxies(proxy, foldera);
         assertEquals(0, proxies.size());
+    }
+
+    public void testDelete() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
+        nodea.setSingleProperty("tst:title", "foo");
+        Node nodeb = session.addChildNode(nodea, "bar", null, "TestDoc", false);
+        nodeb.setSingleProperty("tst:title", "bar");
+        Node nodec = session.addChildNode(nodeb, "gee", null, "TestDoc", false);
+        nodec.setSingleProperty("tst:title", "gee");
+        session.save();
+        // delete foo after having modified some of the deleted children
+        nodea.setSingleProperty("tst:title", "foo2");
+        nodeb.setSingleProperty("tst:title", "bar2");
+        nodec.setSingleProperty("tst:title", "gee2");
+        session.removeNode(nodea);
+        session.save();
     }
 }

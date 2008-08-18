@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.hibernate.dialect.Dialect;
 import org.nuxeo.common.utils.StringUtils;
 
 /**

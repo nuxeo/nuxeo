@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -79,7 +80,9 @@ public class PersistenceContext {
 
         // avoid doing tests all the time for this known case
         getContext(model.hierFragmentName);
-        createdIds = new HashSet<Serializable>();
+        // this has to be linked to keep creation order, as foreign keys
+        // are used and need this
+        createdIds = new LinkedHashSet<Serializable>();
         oldIdMap = new HashMap<Serializable, Serializable>();
     }
 

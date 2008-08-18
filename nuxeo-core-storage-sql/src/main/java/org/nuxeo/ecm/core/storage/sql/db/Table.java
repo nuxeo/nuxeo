@@ -22,8 +22,10 @@ package org.nuxeo.ecm.core.storage.sql.db;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 
-import org.hibernate.dialect.Dialect;
+import org.nuxeo.common.utils.StringUtils;
 
 /**
  * A SQL table.
@@ -40,6 +42,8 @@ public class Table implements Serializable {
 
     private Column primaryColumn;
 
+    private List<String[]> indexedColumns;
+
     /**
      * Creates a new empty table.
      *
@@ -49,6 +53,7 @@ public class Table implements Serializable {
         this.name = name;
         // we use a LinkedHashMap to have deterministic ordering
         columns = new LinkedHashMap<String, Column>();
+        indexedColumns = new LinkedList<String[]>();
     }
 
     public String getName() {
@@ -79,12 +84,21 @@ public class Table implements Serializable {
         }
         if (column.isPrimary()) {
             if (primaryColumn != null) {
-                throw new IllegalArgumentException("Identity column "
-                        + primaryColumn + " redefined as " + column);
+                throw new IllegalArgumentException("Identity column " +
+                        primaryColumn + " redefined as " + column);
             }
             primaryColumn = column;
         }
         columns.put(name, column);
+    }
+
+    /**
+     * Adds an index on one or several columns.
+     *
+     * @param columnNames the column names
+     */
+    public void addIndex(String... columnNames) {
+        indexedColumns.add(columnNames);
     }
 
     /**
@@ -145,7 +159,83 @@ public class Table implements Serializable {
     }
 
     /**
+     * Computes the SQL statement to finish creating the table, usually some
+     * ALTER TABLE statements to add constraints.
+     *
+     * @param dialect the dialect
+     * @return the SQL strings
+     */
+    public List<String> getPostCreateSqls(Dialect dialect) {
+        List<String> sqls = new LinkedList<String>();
+        for (Column column : columns.values()) {
+            if (column.isPrimary()) {
+                StringBuilder buf = new StringBuilder();
+                String constraintName = dialect.openQuote() + name + "_pk" +
+                        dialect.closeQuote();
+                buf.append("ALTER TABLE ");
+                buf.append(getQuotedName(dialect));
+                String s = dialect.getAddPrimaryKeyConstraintString(constraintName);
+                // cosmetic
+                s = s.replace(" add constraint ", " ADD CONSTRAINT ");
+                s = s.replace(" primary key ", " PRIMARY KEY ");
+                buf.append(s);
+                buf.append('(');
+                buf.append(column.getQuotedName(dialect));
+                buf.append(')');
+                sqls.add(buf.toString());
+            }
+            Table ft = column.getForeignTable();
+            if (ft != null) {
+                Column fc = ft.getColumn(column.getForeignKey());
+                String constraintName = dialect.openQuote() + name + "_" +
+                        column.getName() + "_" + ft.getName() + "_fk" +
+                        dialect.closeQuote();
+                StringBuilder buf = new StringBuilder();
+                buf.append("ALTER TABLE ");
+                buf.append(getQuotedName(dialect));
+                String s = dialect.getAddForeignKeyConstraintString(
+                        constraintName,
+                        new String[] { column.getQuotedName(dialect) },
+                        ft.getQuotedName(dialect),
+                        new String[] { fc.getQuotedName(dialect) }, true);
+                // cosmetic
+                s = s.replace(" add constraint ", " ADD CONSTRAINT ");
+                s = s.replace(" foreign key ", " FOREIGN KEY ");
+                s = s.replace(" references ", " REFERENCES ");
+                buf.append(s);
+                // if (dialect.supportsCascadeDelete())
+                buf.append(" ON DELETE CASCADE");
+                sqls.add(buf.toString());
+            }
+        }
+        for (String[] columnNames : indexedColumns) {
+            String indexName = dialect.openQuote() +
+                    (dialect.qualifyIndexName() ? name + "_" : "") +
+                    StringUtils.join(columnNames, '_') + "_idx" +
+                    dialect.closeQuote();
+            List<String> qcols = new LinkedList<String>();
+            for (String name : columnNames) {
+                qcols.add(getColumn(name).getQuotedName(dialect));
+            }
+            StringBuilder buf = new StringBuilder();
+            buf.append("CREATE");
+            // buf.append(unique ? " UNIQUE" : "");
+            buf.append(" INDEX ");
+            buf.append(indexName);
+            buf.append(" ON ");
+            buf.append(getQuotedName(dialect));
+            buf.append(" (");
+            buf.append(StringUtils.join(qcols, ", "));
+            buf.append(')');
+            sqls.add(buf.toString());
+        }
+        return sqls;
+    }
+
+    /**
      * Computes the SQL statement to drop the table.
+     * <p>
+     * TODO drop constraints and indexes
      *
      * @param dialect the dialect.
      * @return the SQL drop string.

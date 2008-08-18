@@ -19,7 +19,6 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -125,9 +124,7 @@ public class Context {
         this.persistenceContext = persistenceContext;
         model = mapper.getModel();
         pristine = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
-        // linked map to create children after parents (needed if ids are
-        // generated)
-        modified = new LinkedHashMap<Serializable, Fragment>();
+        modified = new HashMap<Serializable, Fragment>();
 
         modifiedInTransaction = new HashSet<Serializable>();
         deletedInTransaction = new HashSet<Serializable>();
@@ -628,6 +625,8 @@ public class Context {
                 modifiedInTransaction.add(id);
                 break;
             case DELETED:
+                // TODO deleting non-hierarchy fragments is done by the database
+                // itself as their foreign key to hierarchy is ON DELETE CASCADE
                 mapper.deleteFragment(fragment);
                 fragment.detach();
                 // modified map cleared at end of loop

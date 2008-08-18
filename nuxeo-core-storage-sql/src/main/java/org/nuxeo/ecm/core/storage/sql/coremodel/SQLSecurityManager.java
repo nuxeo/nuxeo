@@ -20,10 +20,11 @@ package org.nuxeo.ecm.core.storage.sql.coremodel;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -123,14 +124,14 @@ public class SQLSecurityManager implements SecurityManager {
     protected static ACP aclRowsToACP(ACLRow[] acls) {
         ACP acp = new ACPImpl();
         ACL acl = null;
-        String aclname = null;
+        String name = null;
         for (ACLRow aclrow : acls) {
-            if (!aclrow.aclname.equals(aclname)) {
+            if (!aclrow.name.equals(name)) {
                 if (acl != null) {
                     acp.addACL(acl);
                 }
-                aclname = aclrow.aclname;
-                acl = new ACLImpl(aclname);
+                name = aclrow.name;
+                acl = new ACLImpl(name);
             }
             // XXX should prefix user/group
             String user = aclrow.user;
@@ -148,16 +149,14 @@ public class SQLSecurityManager implements SecurityManager {
     // unit tested
     protected static ACLRow[] acpToAclRows(ACP acp) {
         List<ACLRow> aclrows = new LinkedList<ACLRow>();
-        int aclpos = -1;
+        int pos = 0;
         for (ACL acl : acp.getACLs()) {
-            String aclname = acl.getName();
-            if (aclname.equals(ACL.INHERITED_ACL)) {
+            String name = acl.getName();
+            if (name.equals(ACL.INHERITED_ACL)) {
                 continue;
             }
-            aclpos++;
-            int pos = 0;
             for (ACE ace : acl.getACEs()) {
-                aclrows.add(makeACLRow(aclpos, aclname, pos++, ace));
+                aclrows.add(makeACLRow(pos++, name, ace));
             }
         }
         ACLRow[] array = new ACLRow[aclrows.size()];
@@ -169,81 +168,76 @@ public class SQLSecurityManager implements SecurityManager {
         List<ACLRow> newaclrows = new LinkedList<ACLRow>();
         Map<String, ACL> aclmap = new HashMap<String, ACL>();
         for (ACL acl : acp.getACLs()) {
-            String aclname = acl.getName();
-            if (aclname.equals(ACL.INHERITED_ACL)) {
+            String name = acl.getName();
+            if (ACL.INHERITED_ACL.equals(name)) {
                 continue;
             }
-            aclmap.put(aclname, acl);
+            aclmap.put(name, acl);
         }
         List<ACE> aces = Collections.emptyList();
-        String aclname = null;
-        int aclpos = -1;
-        int pos = -1;
+        Set<String> aceKeys = null;
+        int pos = 0;
+        String name = null;
         for (ACLRow aclrow : aclrows) {
             // new acl?
-            if (!aclrow.aclname.equals(aclname)) {
+            if (!aclrow.name.equals(name)) {
                 // finish remaining aces
                 for (ACE ace : aces) {
-                    newaclrows.add(makeACLRow(aclpos, aclname, pos++, ace));
+                    newaclrows.add(makeACLRow(pos++, name, ace));
                 }
                 // start next round
-                aclpos++;
-                aclname = aclrow.aclname;
-                pos = 0;
-                ACL acl = aclmap.remove(aclname);
+                name = aclrow.name;
+                ACL acl = aclmap.remove(name);
                 aces = acl == null ? Collections.<ACE> emptyList()
                         : new LinkedList<ACE>(Arrays.asList(acl.getACEs()));
-            }
-            // check if any ace replaces current row
-            for (Iterator<ACE> it = aces.iterator(); it.hasNext();) {
-                ACE ace = it.next();
-                String user = aclrow.user;
-                if (user == null) {
-                    user = aclrow.group;
-                }
-                if (user.equals(ace.getUsername()) &&
-                        aclrow.permission.equals(ace.getPermission())) {
-                    // match user + permission -> replace
-                    if (aclrow.grant != ace.isGranted()) {
-                        // NOTE slightly different semantics than in JCR (here
-                        // we don't move updated rows to the end, this keeps the
-                        // pos unchanged)
-                        aclrow = new ACLRow(aclpos, aclname, pos,
-                                ace.isGranted(), aclrow.permission,
-                                aclrow.user, aclrow.group);
-                    }
-                    it.remove();
-                    break;
+                aceKeys = new HashSet<String>();
+                for (ACE ace : aces) {
+                    aceKeys.add(getACEkey(ace));
                 }
             }
-            // add acl
-            newaclrows.add(aclrow);
-            pos++;
+            if (!aceKeys.contains(getACLrowKey(aclrow))) {
+                // no match, keep the aclrow info instead of the ace
+                newaclrows.add(new ACLRow(pos++, name, aclrow.grant,
+                        aclrow.permission, aclrow.user, aclrow.group));
+            }
         }
         // finish remaining aces for last acl done
         for (ACE ace : aces) {
-            newaclrows.add(makeACLRow(aclpos, aclname, pos++, ace));
+            newaclrows.add(makeACLRow(pos++, name, ace));
         }
         // do non-done acls
         for (ACL acl : aclmap.values()) {
-            aclpos++;
-            aclname = acl.getName();
-            pos = 0;
+            name = acl.getName();
             for (ACE ace : acl.getACEs()) {
-                newaclrows.add(makeACLRow(aclpos, aclname, pos++, ace));
+                newaclrows.add(makeACLRow(pos++, name, ace));
             }
         }
         ACLRow[] array = new ACLRow[newaclrows.size()];
         return newaclrows.toArray(array);
     }
 
-    protected static ACLRow makeACLRow(int aclpos, String aclname, int pos,
-            ACE ace) {
+    /** Key to distinguish ACEs */
+    protected static String getACEkey(ACE ace) {
+        // TODO separate user/group
+        return ace.getUsername() + '|' + ace.getPermission();
+    }
+
+    /** Key to distinguish ACLRows */
+    protected static String getACLrowKey(ACLRow aclrow) {
+        // TODO separate user/group
+        String user = aclrow.user;
+        if (user == null) {
+            user = aclrow.group;
+        }
+        return user + '|' + aclrow.permission;
+    }
+
+    protected static ACLRow makeACLRow(int pos, String name, ACE ace) {
         // XXX should prefix user/group
         String user = ace.getUsername();
         String group = null; // XXX all in user for now
-        return new ACLRow(aclpos, aclname, pos, ace.isGranted(),
-                ace.getPermission(), user, group);
+        return new ACLRow(pos, name, ace.isGranted(), ace.getPermission(),
+                user, group);
     }
 
     protected ACL getInheritedACLs(Document doc) throws DocumentException {

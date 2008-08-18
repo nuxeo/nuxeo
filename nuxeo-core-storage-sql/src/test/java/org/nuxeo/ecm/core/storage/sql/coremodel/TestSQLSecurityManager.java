@@ -32,9 +32,9 @@ import junit.framework.TestCase;
 public class TestSQLSecurityManager extends TestCase {
 
     public void testAclRowsToACP() throws Exception {
-        ACLRow acl1 = new ACLRow(0, "local", 0, true, "Read", "bob", null);
-        ACLRow acl2 = new ACLRow(1, "wf", 0, false, "Write", "steve", null);
-        ACLRow acl3 = new ACLRow(1, "wf", 1, true, "Zap", "pete", null);
+        ACLRow acl1 = new ACLRow(0, "local", true, "Read", "bob", null);
+        ACLRow acl2 = new ACLRow(1, "wf", false, "Write", "steve", null);
+        ACLRow acl3 = new ACLRow(2, "wf", true, "Zap", "pete", null);
         ACP acp = SQLSecurityManager.aclRowsToACP(new ACLRow[] { acl1, acl2,
                 acl3 });
 
@@ -82,9 +82,8 @@ public class TestSQLSecurityManager extends TestCase {
 
         assertEquals(3, aclrows.length);
         ACLRow aclrow = aclrows[0];
-        assertEquals(0, aclrow.aclpos);
-        assertEquals("local", aclrow.aclname);
         assertEquals(0, aclrow.pos);
+        assertEquals("local", aclrow.name);
         assertTrue(aclrow.grant);
         assertEquals("Read", aclrow.permission);
         assertEquals("bob", aclrow.user);
@@ -97,9 +96,9 @@ public class TestSQLSecurityManager extends TestCase {
 
     public void testUpdateAclRows() throws Exception {
         // existing:
-        ACLRow acl1 = new ACLRow(0, "local", 0, true, "Read", "bob", null);
-        ACLRow acl2 = new ACLRow(1, "wf", 0, false, "Write", "steve", null);
-        ACLRow acl3 = new ACLRow(1, "wf", 1, true, "Zap", "pete", null);
+        ACLRow acl1 = new ACLRow(0, "local", true, "Read", "bob", null);
+        ACLRow acl2 = new ACLRow(1, "wf", false, "Write", "steve", null);
+        ACLRow acl3 = new ACLRow(2, "wf", true, "Zap", "pete", null);
         // update with:
         ACPImpl acp = new ACPImpl();
         ACL acl = new ACLImpl("local");
@@ -121,33 +120,30 @@ public class TestSQLSecurityManager extends TestCase {
 
         assertEquals(5, aclrows.length);
         ACLRow aclrow = aclrows[0];
-        assertEquals(0, aclrow.aclpos);
-        assertEquals("local", aclrow.aclname);
         assertEquals(0, aclrow.pos);
+        assertEquals("local", aclrow.name);
         assertFalse(aclrow.grant);
         assertEquals("Read", aclrow.permission);
         assertEquals("bob", aclrow.user);
         assertNull(aclrow.group);
         aclrow = aclrows[1];
-        assertEquals(0, aclrow.aclpos);
-        assertEquals("local", aclrow.aclname);
         assertEquals(1, aclrow.pos);
+        assertEquals("local", aclrow.name);
         assertTrue(aclrow.grant);
         assertEquals("All", aclrow.permission);
         assertEquals("me", aclrow.user);
         assertNull(aclrow.group);
         aclrow = aclrows[2];
-        assertEquals(1, aclrow.aclpos);
-        assertEquals("wf", aclrow.aclname);
+        assertEquals(2, aclrow.pos);
+        assertEquals("wf", aclrow.name);
         assertEquals("steve", aclrow.user);
         aclrow = aclrows[3];
-        assertEquals(1, aclrow.aclpos);
-        assertEquals("wf", aclrow.aclname);
+        assertEquals(3, aclrow.pos);
+        assertEquals("wf", aclrow.name);
         assertEquals("pete", aclrow.user);
         aclrow = aclrows[4];
-        assertEquals(2, aclrow.aclpos);
-        assertEquals("legal", aclrow.aclname);
-        assertEquals(0, aclrow.pos);
+        assertEquals(4, aclrow.pos);
+        assertEquals("legal", aclrow.name);
         assertFalse(aclrow.grant);
         assertEquals("Write", aclrow.permission);
         assertEquals("all", aclrow.user);

@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map.Entry;
@@ -37,12 +36,10 @@ import javax.sql.XADataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.HibernateException;
-import org.hibernate.dialect.Dialect;
-import org.hibernate.dialect.DialectFactory;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.Credentials;
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.db.Dialect;
 
 /**
  * @author Florent Guillaume
@@ -128,18 +125,11 @@ public class RepositoryImpl implements Repository {
         Credentials credentials = connectionSpec == null ? null
                 : ((ConnectionSpecImpl) connectionSpec).getCredentials();
 
-        XAConnection xaconnection;
-        try {
-            xaconnection = xadatasource.getXAConnection();
-        } catch (SQLException e) {
-            throw new StorageException("Cannot get XAConnection", e);
-        }
-
         if (!initialized) {
-            initialize(xaconnection);
+            initialize();
         }
 
-        Mapper mapper = new Mapper(model, sqlInfo, xaconnection);
+        Mapper mapper = new Mapper(model, sqlInfo, xadatasource);
 
         if (!initialized) {
             // first connection, initialize the database
@@ -258,48 +248,25 @@ public class RepositoryImpl implements Repository {
      * Lazy initialization, to delay dialect detection until the first
      * connection is really needed.
      */
-    private void initialize(XAConnection xaconnection) throws StorageException {
+    private void initialize() throws StorageException {
         log.debug("Initializing");
-        dialect = getDialect(xaconnection);
+        try {
+            XAConnection xaconnection = xadatasource.getXAConnection();
+            Connection connection = null;
+            try {
+                connection = xaconnection.getConnection();
+                dialect = new Dialect(connection);
+            } finally {
+                if (connection != null) {
+                    connection.close();
+                }
+                xaconnection.close();
+            }
+        } catch (SQLException e) {
+            throw new StorageException("Cannot get XAConnection", e);
+        }
         model = new Model(this, schemaManager);
         sqlInfo = new SQLInfo(model, dialect);
-    }
-
-    /**
-     * Gets the {@code Dialect}, by connecting to the datasource to check what
-     * database is used.
-     *
-     * @throws StorageException if a SQL connection problem occurs
-     */
-    private Dialect getDialect(XAConnection xaconnection)
-            throws StorageException {
-        Connection connection = null;
-        String dbname;
-        int dbmajor;
-        try {
-            connection = xaconnection.getConnection();
-            DatabaseMetaData metadata = connection.getMetaData();
-            dbname = metadata.getDatabaseProductName();
-            dbmajor = metadata.getDatabaseMajorVersion();
-        } catch (SQLException e) {
-            throw new StorageException(e);
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    throw new StorageException(
-                            "Cannot get metadata for class: " +
-                                    repositoryDescriptor.xaDataSourceName, e);
-                }
-            }
-        }
-        try {
-            return DialectFactory.determineDialect(dbname, dbmajor);
-        } catch (HibernateException e) {
-            throw new StorageException("Cannot determine dialect for class: " +
-                    repositoryDescriptor.xaDataSourceName, e);
-        }
     }
 
     // called by session

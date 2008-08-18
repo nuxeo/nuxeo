@@ -29,7 +29,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.hibernate.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.Binary;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.PropertyType;
@@ -70,6 +69,11 @@ public class Column implements Serializable {
     private boolean nullable = true;
 
     private String defaultValue;
+
+    /** For foreign key reference. */
+    private Table foreignTable;
+
+    private String foreignKey;
 
     /**
      * Creates a new column with the given name and type, with a specified SQL
@@ -166,6 +170,19 @@ public class Column implements Serializable {
 
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
+    }
+
+    public void setReferences(Table foreignTable, String foreignKey) {
+        this.foreignTable = foreignTable;
+        this.foreignKey = foreignKey;
+    }
+
+    public Table getForeignTable() {
+        return foreignTable;
+    }
+
+    public String getForeignKey() {
+        return foreignKey;
     }
 
     public String getSqlTypeString(Dialect dialect) {

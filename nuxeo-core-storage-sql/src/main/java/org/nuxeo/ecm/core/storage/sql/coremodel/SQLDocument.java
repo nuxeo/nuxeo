@@ -121,7 +121,9 @@ public class SQLDocument extends SQLComplexProperty implements Document {
      * made since the last time a snapshot of it was done (for publishing).
      */
     public boolean isDirty() throws DocumentException {
-        return getBoolean(Model.MISC_DIRTY_PROP);
+        Boolean value = (Boolean) getProperty(Model.MISC_DIRTY_PROP).getValue();
+        // not set implies new => dirty
+        return value == null ? true : value.booleanValue();
     }
 
     /**
@@ -132,10 +134,28 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         setBoolean(Model.MISC_DIRTY_PROP, value);
     }
 
+    /*
+     * The following 3 methods are a bit complex, there are two levels of
+     * "properties" in play.
+     *
+     * - the "high level" properties, visible to application code,
+     * org.nuxeo.ecm.core.api.model...,
+     *
+     * - the "core model level" properties, org.nuxeo.ecm.core.model...
+     */
+
+    /**
+     * Read into the high-level DocumentPart the values retrieved through this
+     * SQLDocument.
+     */
     public void readDocumentPart(DocumentPart dp) throws Exception {
         readPropertyContainer((ComplexProperty) dp, this);
     }
 
+    /**
+     * Sets into the high-level ComplexProperty the values retrieved through the
+     * PropertyContainer (SQLDocument/SQLComplexProperty).
+     */
     protected static void readPropertyContainer(
             ComplexProperty complexProperty, PropertyContainer propertyContainer)
             throws DocumentException, PropertyException {
@@ -145,6 +165,9 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         }
     }
 
+    /**
+     * Sets into the high-level Property the given semi-simple value.
+     */
     protected static void readOneProperty(Property property, Object value)
             throws PropertyException, DocumentException {
         if (property.isContainer()) {

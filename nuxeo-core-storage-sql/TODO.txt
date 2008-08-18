@@ -2,11 +2,7 @@ SQL Storage TODO
 
 - major/minor version management
 
-- recursive removal on node remove
-
 Optimizations:
-
-- indexes
 
 - blob storage GC
 
