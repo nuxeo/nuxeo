@@ -35,7 +35,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.repository.Repository;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * TODO: should be synchronized? concurrent access may happen for the same session
@@ -120,8 +123,34 @@ public class UserSession extends HashMap<String, Object> implements Serializable
         this.coreSession = coreSession;
     }
 
-    public CoreSession getCoreSession() {
+    /**
+     * Get a core session. If not already exists it will be oipened against the
+     * given repository
+     * @param repoName
+     * @return the core session
+     */
+    public CoreSession getCoreSession(String repoName) {
+        if (coreSession == null) {
+            synchronized (this) {
+                if (coreSession == null) {
+                    try {
+                        coreSession = openSession(repoName);
+                    } catch (Exception e) {
+                        e.printStackTrace(); //TODO
+                    }
+                }
+            }
+        }
         return coreSession;
+    }
+
+    /**
+     * Get a core session. I not already opened open a
+     * new core session against the default repository
+     * @return
+     */
+    public CoreSession getCoreSession() {
+        return getCoreSession(null);
     }
 
     /**
@@ -141,6 +170,21 @@ public class UserSession extends HashMap<String, Object> implements Serializable
 
     public Subject getSubject() {
         return subject;
+    }
+
+    public static CoreSession openSession(String repoName) throws Exception {
+        RepositoryManager rm = Framework.getService(RepositoryManager.class);
+        Repository repo = null;
+        if (repoName== null) {
+            repo = rm.getDefaultRepository();
+        } else {
+            repo = rm.getRepository(repoName);
+        }
+        if (repo == null) {
+            throw new SessionException("Unable to get " + repoName
+                    + " repository");
+        }
+        return repo.open();
     }
 
     public void valueBound(HttpSessionBindingEvent event) {

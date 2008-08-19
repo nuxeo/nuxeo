@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webengine;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,12 +40,9 @@ import net.sf.json.JSONSerializer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.forms.FormData;
@@ -54,7 +50,6 @@ import org.nuxeo.ecm.webengine.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.session.UserSession;
 import org.nuxeo.ecm.webengine.util.JSonHelper;
-import org.nuxeo.runtime.api.Framework;
 import org.python.core.PyDictionary;
 
 /**
@@ -253,12 +248,8 @@ public class DefaultWebContext implements WebContext {
                 UserSession us = getUserSession();
                 if (us != null) {
                     session = us.getCoreSession();
-                    if (session == null) {
-                        session = openSession();
-                        us.setCoreSession(session);
-                    }
                 } else {
-                    session = openSession();
+                    session = UserSession.openSession(app.getRepositoryName());
                 }
             } catch (Exception e) {
                 throw WebException.wrap(e);
@@ -778,31 +769,6 @@ public class DefaultWebContext implements WebContext {
        return "PathInfo: " + pathInfo.toString();
    }
 
-    public  CoreSession openSession() throws Exception {
-        String repoName = app.getRepositoryName();
-        RepositoryManager rm = Framework.getService(RepositoryManager.class);
-        Repository repo = rm.getRepository(repoName);
-        if (repo == null) {
-            throw new ClientException("Unable to get " + repoName
-                    + " repository");
-        }
-        // we should set the principal in the session context to be sure it will work for
-        // both POJO session and bean session (bean session are working always
-        // because they get the principal from the bean context)
-        Principal principal = request.getUserPrincipal();
-//        //TODO ========== temporary code
-//        if (principal == null) {
-//            principal = new UserPrincipal("system");
-//        }
-//        //TODO ========== temporary code
-        if (principal instanceof Serializable) {
-            HashMap<String,Serializable> ctx = new HashMap<String, Serializable>();
-            ctx.put("principal", (Serializable)principal);
-            return repo.open(ctx);
-        } else {
-            return repo.open();
-        }
-    }
 
     /**
      * Given an absolute path return its relative path to the given base path if any.
