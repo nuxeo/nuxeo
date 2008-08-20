@@ -176,7 +176,7 @@ public class DocVersioningListener extends AbstractEventListener implements
                     // has to be string
                     final VersioningActions incOption = (VersioningActions) options.get(VersioningActions.KEY_FOR_INC_OPTION);
                     if (incOption == null) {
-                        log.warn("version increment option not available");
+                        log.debug("version increment option not available");
                         return;
                     }
 
