@@ -44,7 +44,7 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Out;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
@@ -56,7 +56,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.VersionModel;
@@ -195,7 +194,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
 
             ComposedNXQueryImpl q = new ComposedNXQueryImpl(
                     SQLQueryParser.parse("SELECT * FROM Document"),
-                    ss.getSearchPrincipal((NuxeoPrincipal) documentManager.getPrincipal()));
+                    ss.getSearchPrincipal(documentManager.getPrincipal()));
             ResultSet results;
             try {
                 results = ss.searchQuery(q, 0, 1);
@@ -448,7 +447,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         }
         currentDocument = documentManager.saveDocument(currentDocument);
         documentManager.save();
-
     }
 
     public List<PathElement> getCurrentPathList() throws ClientException {
@@ -493,8 +491,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
      */
     public void setCurrentServerLocation(RepositoryLocation serverLocation)
             throws ClientException {
-        if (serverLocation==null)
-        {
+        if (serverLocation == null) {
             log.warn("Setting ServerLocation to null, is this normal ?");
         }
 
@@ -548,7 +545,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
 
     @Factory(value = "currentDocument", scope = EVENT)
     public DocumentModel factoryCurrentDocument() {
-        return getCurrentDocument();
+        return currentDocument;
     }
 
     @Factory(value = "changeableDocument", scope = EVENT)
@@ -644,13 +641,10 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         //currentItem = currentDocument;
 
         //sessionContext.set("changeableDocument", currentDocument);
-        if (currentDocument!=null)
-        {
+        if (currentDocument != null) {
             changeableDocument = currentDocument;
             eventContext.set("changeableDocument", changeableDocument);
-        }
-        else
-        {
+        } else {
             changeableDocument = currentDocument;
             eventContext.remove("changeableDocument");
         }
@@ -728,7 +722,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
         eventContext.remove("currentWorkspace");
         eventContext.remove("currentContentRoot");
         eventContext.remove("currentSuperSpace");
-
     }
 
     // XXX AT: we should let each action listener raise specific events
@@ -790,7 +783,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
     }
 
     public String goHome() {
-	    resetCurrentContext();
+        resetCurrentContext();
         EventManager.raiseEventsOnGoingHome();
         return "home";
     }
@@ -916,12 +909,12 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
      * @see NavigationContext#getCurrentDocumentFullUrl()
      */
     public String getCurrentDocumentFullUrl() {
-        if (null == getCurrentDocument()) {
+        if (null == currentDocument) {
             log.error("current document is null");
             return null;
         }
         return DocumentLocator.getFullDocumentUrl(getCurrentServerLocation(),
-                getCurrentDocument().getRef());
+                currentDocument.getRef());
     }
 
     // start a new conversation if needed, join main if possible
@@ -1052,7 +1045,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
                 e.printStackTrace();
             }
         }
-
     }
 
     public PagedDocumentsProvider getResultsProvider(String name)

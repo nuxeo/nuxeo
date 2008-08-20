@@ -41,7 +41,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
 import org.jboss.seam.contexts.Context;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -116,7 +116,6 @@ public class GroupManagerActionsBean extends InputController implements
     public void initialize() throws ClientException {
         log.info("Initializing...");
         principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
-        // principalIsAdmin = principal.getGroups().contains("administrators");
         groupListingMode = userManager.getGroupListingMode();
     }
 
