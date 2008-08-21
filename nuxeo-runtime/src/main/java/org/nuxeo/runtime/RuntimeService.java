@@ -31,19 +31,19 @@ import org.osgi.framework.Bundle;
 
 /**
  * The runtime service: a singleton object that provides access to the Nuxeo
- * Runtime. A runtime service must be started before any other runtime component
+ * Runtime. The runtime service must be started before any other runtime component
  * or object that accesses the runtime.
  * <p>
  * This service is usually implemented for each target platform where Nuxeo
  * Runtime should run.
  * <p>
- * It is recommended to extend the AbstractRuntimeService class instead of
+ * It is recommended to extend the {@link AbstractRuntimeService} class instead of
  * directly implementing this interface.
  * <p>
  * After the runtime service was initialized, it may be accessed through the
- * facade class {@link NXRuntime}.
+ * facade class {@link Framework}.
  *
- * @see NXRuntime
+ * @see {@link Framework}
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

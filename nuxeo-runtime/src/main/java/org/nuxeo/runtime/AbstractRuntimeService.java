@@ -45,7 +45,6 @@ import org.osgi.framework.Bundle;
  * the {@link RuntimeService} interface.
  *
  * @author  <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public abstract class AbstractRuntimeService implements RuntimeService {
 
