@@ -19,12 +19,10 @@
 
 package org.nuxeo.ecm.platform;
 
-import java.io.IOException;
 import java.rmi.RMISecurityManager;
 import java.util.Properties;
 
 import javax.security.auth.Subject;
-import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
@@ -40,9 +38,10 @@ import org.nuxeo.ecm.platform.util.CoreFacadeBusinessDelegate;
  * Remote tests through the ejb facade.
  *
  * @author Razvan Caraghin
- * @deprectaed obsolete tests - should be re moved
- * FIXME: remove these tests they are deprectaed
+ * @deprecated obsolete tests - should be removed
+ * FIXME: remove these tests, they are deprecated
  */
+@Deprecated
 public abstract class NXPInit extends TestCase {
 
     protected Properties properties;
@@ -51,6 +50,7 @@ public abstract class NXPInit extends TestCase {
 
     protected LoginContext loginContext;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -60,6 +60,7 @@ public abstract class NXPInit extends TestCase {
         _initializeServerInstance();
     }
 
+    @Override
     protected void tearDown() throws Exception {
         _unauthenticate();
         _uninitializeServerInstance();

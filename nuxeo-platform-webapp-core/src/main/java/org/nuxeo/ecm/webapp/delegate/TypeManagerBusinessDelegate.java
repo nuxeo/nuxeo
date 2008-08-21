@@ -67,7 +67,6 @@ public class TypeManagerBusinessDelegate implements Serializable {
     public TypeManager getTypeManager() throws ClientException {
         if (null == typeManager) {
             try {
-                //typeManager = ECM.getPlatform().getService(TypeManager.class);
                 typeManager = Framework.getService(TypeManager.class);
             } catch (Exception e) {
                 final String errMsg = "Error connecting to TypeManager. "

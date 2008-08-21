@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 
 /**
  * File Manager.
- * <p/>
+ * <p>
  * File Manager to handle file
  *
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
@@ -60,10 +60,10 @@ public interface FileManager {
     /**
      * Returns an initialized doc based on a given blob.
      *
-     * @param input     the blob containing the content and the mime/type
+     * @param input     the blob containing the content and the mime type
      * @param path      the path were to create the document
      * @param overwrite boolean how decide to overwrite or not
-     * @param fullName  the fullname that containes the filename
+     * @param fullName  the fullname that contains the filename
      * @return the created Document
      */
     DocumentModel createDocumentFromBlob(CoreSession documentManager,
@@ -75,9 +75,9 @@ public interface FileManager {
      * Just applies the same actions as creation but does not changes the doc
      * type.
      *
-     * @param input    the blob containing the content and the mime/type
+     * @param input    the blob containing the content and the mime type
      * @param path     the path to the file to update
-     * @param fullName the fullname that containes the filename
+     * @param fullName the full name that contains the filename
      * @return the updated Document
      */
     DocumentModel updateDocumentFromBlob(CoreSession documentManager,
@@ -86,9 +86,9 @@ public interface FileManager {
     /**
      * Creates a Folder.
      *
-     * @param fullname teh full Name of the folder
+     * @param fullname the full name of the folder
      * @param path     the path were to create the folder
-     * @return teh Folder Created
+     * @return the Folder Created
      */
     DocumentModel createFolder(CoreSession documentManager,
             String fullname, String path) throws Exception;
