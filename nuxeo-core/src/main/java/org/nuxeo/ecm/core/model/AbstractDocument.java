@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.model;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
@@ -68,8 +69,7 @@ public abstract class AbstractDocument implements Document {
         if (lifeCycle != null) {
             return lifeCycle.getAllowedStateTransitionsFrom(getCurrentLifeCycleState());
         } else {
-            throw new LifeCycleException(
-                    "The document doesn't have any associated life cycle !");
+            return Collections.emptyList();
         }
     }
 
