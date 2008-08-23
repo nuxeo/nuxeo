@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,6 +158,24 @@ public class PathMap<T> {
             return entry.entries.remove(segments[len]);
         }
 
+    }
+
+    public Collection<T> getValues() {
+        ArrayList<T> list = new ArrayList<T>();
+        collectValues(root, list);
+        return list;
+    }
+
+
+    protected void collectValues(Entry<T> entry, Collection<T> list) {
+        if (entry.value != null) {
+            list.add(entry.value);
+        }
+        if (entry.entries != null) {
+            for (Entry<T> e : entry.entries.values()) {
+                collectValues(e, list);
+            }
+        }
     }
 
     public static void main(String[] args) {
