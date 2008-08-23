@@ -17,26 +17,26 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.domains;
+package org.nuxeo.ecm.webengine.rest;
 
-import org.nuxeo.ecm.webengine.WebObject;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * Not Yet Used - TO BE USED with WebObjectManager
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class FileDomain extends WebDomain {
+@Inherited
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Adapter {
 
-    /**
-     * 
-     */
-    public FileDomain() {
-        super ();
-    }
-    
-    @Override
-    protected WebObject resolve(String path) {
-        return super.resolve(path);
-    }
+    public Class<?> value();
+
+    public String name();
 
 }

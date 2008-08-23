@@ -21,13 +21,11 @@ package org.nuxeo.ecm.webengine.rest.domains;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.ProduceMime;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.GET;
 
+import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.WebObjectManager;
+import org.nuxeo.ecm.webengine.rest.adapters.ScriptObject;
 import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
 
 import com.sun.jersey.api.core.HttpContext;
@@ -36,30 +34,23 @@ import com.sun.jersey.api.core.HttpContext;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-@ProduceMime({"text/html", "*/*"})
-public class WebDomain<T extends DomainDescriptor> {
+public class ScriptDomain extends WebDomain<DomainDescriptor> {
 
-    public String id;
-    public WebEngine2 engine;
-    public T descriptor;
-
-    public WebDomain(WebEngine2 engine, T desc) {
-        descriptor = desc;
-        this.engine = engine;
+    @GET
+    public Object get() {
+        return "hello world!";
     }
 
-
-    protected WebObject resolve(HttpContext ctx, HttpServletRequest req, HttpServletResponse resp, String path) throws Exception {
-        return null;
+    public ScriptDomain(WebEngine2 engine, DomainDescriptor desc) {
+        super (engine, desc );
     }
 
-    @Path(value="{path}", limited=false)
-    public WebObject dispatch(@PathParam("path") String path, @Context HttpContext ctx, @Context HttpServletRequest req, @Context HttpServletResponse resp) throws Exception {
-        return resolve(ctx, req, resp, path);
-    }
-
-    protected WebObject getObject(String type) {
-        return WebObjectManager.getCurrent().newInstance(type);
+    @Override
+    protected WebObject resolve(HttpContext httpctx, HttpServletRequest req, HttpServletResponse resp, String path) {
+        WebContext2 ctx = new WebContext2(this, httpctx, req, resp);
+        ScriptObject script = new ScriptObject();
+        script.initialize(ctx, path);
+        return script;
     }
 
 }

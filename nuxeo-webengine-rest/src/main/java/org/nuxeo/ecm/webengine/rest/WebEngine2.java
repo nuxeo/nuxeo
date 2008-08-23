@@ -30,29 +30,25 @@ import org.nuxeo.ecm.webengine.rest.domains.WebDomain;
  */
 public class WebEngine2 {
 
-    protected Map<String, WebDomain> domains = new HashMap<String, WebDomain>();
-    protected Map<String, WebDomain> mappings = new HashMap<String, WebDomain>();
+    protected Map<String, WebDomain<?>> domains = new HashMap<String, WebDomain<?>>();
+    protected Map<String, WebDomain<?>> mappings = new HashMap<String, WebDomain<?>>();
 
     public WebEngine2() {
-        domains.put("repository", new WebDomain());
-        domains.put("root", new WebDomain());
-        domains.put("admin", new WebDomain());
-        domains.put("wikis", new WebDomain());
     }
 
-    public void registerDomain(WebDomain domain) {
+    public void registerDomain(WebDomain<?> domain) {
         //domains.put(domain.getId(), value);
     }
 
-    public WebDomain[] getDomains() {
+    public WebDomain<?>[] getDomains() {
         return domains.values().toArray(new WebDomain[domains.size()]);
     }
 
-    public WebDomain getDomain(String id) {
+    public WebDomain<?> getDomain(String id) {
         return domains.get(id);
     }
 
-    public WebDomain getDomainByPath(String path) {
+    public WebDomain<?> getDomainByPath(String path) {
         return mappings.get(path);
     }
 

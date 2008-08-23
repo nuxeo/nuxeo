@@ -17,14 +17,15 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest;
-
-import java.io.File;
+package org.nuxeo.ecm.webengine.rest.adapters;
 
 import javax.ws.rs.GET;
 
-import org.nuxeo.common.Environment;
-import org.nuxeo.ecm.webengine.rest.types.DefaultWebType;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.webengine.rest.WebContext2;
+import org.nuxeo.ecm.webengine.rest.methods.LOCK;
+import org.nuxeo.ecm.webengine.rest.types.WebDocumentType;
 import org.nuxeo.ecm.webengine.rest.types.WebType;
 
 
@@ -33,26 +34,36 @@ import org.nuxeo.ecm.webengine.rest.types.WebType;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class FileObject extends WebObject {
+public class DocumentObject extends WebObject {
 
-    public final static WebType TYPE = new DefaultWebType("file", WebType.OBJECT);
+    protected DocumentModel doc;
+    protected WebDocumentType type;
 
-    /**
-     *
-     */
-    public FileObject(String path) {
-        super (path);
+
+    public void initialize(WebContext2 ctx, DocumentModel doc) {
+        this.ctx = ctx;
+        this.doc = doc;
+        this.type = new WebDocumentType(doc.getDocumentType());
+    }
+
+
+    public CoreSession getCoreSession() {
+        return ctx.getCoreSession();
     }
 
     @Override
     public WebType getType() {
-        return TYPE;
+        return type;
     }
 
     @GET
-    public File get() {
-        File file = Environment.getDefault().getWeb();
-        return new File(file, path);
+    public DocumentModel get() throws Exception {
+        return doc;
+    }
+
+    @LOCK
+    public String lock() throws Exception {
+        return "LockId";
     }
 
 }

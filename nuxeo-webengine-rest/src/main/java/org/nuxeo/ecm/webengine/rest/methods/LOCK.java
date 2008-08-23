@@ -17,37 +17,22 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest;
+package org.nuxeo.ecm.webengine.rest.methods;
 
-import javax.ws.rs.ProduceMime;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.nuxeo.ecm.webengine.rest.types.WebType;
-
+import javax.ws.rs.HttpMethod;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
- *There is a bug in ResourceJavaMethodDispatcher#getAcceptableMediaType
- * when no setting the mime type it will return binary content ...
  */
-@ProduceMime({"text/html", "*/*"})
-public abstract class WebObject {
-
-    protected String path;
-
-    public WebObject(String path) {
-        this.path = path;
-    }
-
-    /**
-     * @return the path.
-     */
-    public String getPath() {
-        return path;
-    }
-
-    public WebType getType() {
-        return WebType.OBJECT;
-    }
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@HttpMethod("LOCK")
+public @interface LOCK {
 
 }
