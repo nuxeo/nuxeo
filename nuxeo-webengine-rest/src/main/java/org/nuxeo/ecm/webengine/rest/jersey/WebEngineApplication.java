@@ -19,13 +19,18 @@
 
 package org.nuxeo.ecm.webengine.rest.jersey;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
+import org.nuxeo.ecm.webengine.RootDescriptor;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.domains.DocumentDomain;
 import org.nuxeo.ecm.webengine.rest.domains.DomainDescriptor;
 import org.nuxeo.ecm.webengine.rest.domains.ScriptDomain;
 import org.nuxeo.ecm.webengine.rest.domains.WebDomain;
+import org.nuxeo.ecm.webengine.rest.jersey.patch.WebApplicationContext;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.jersey.api.core.ResourceConfig;
@@ -35,6 +40,8 @@ import com.sun.jersey.impl.uri.PathPattern;
 import com.sun.jersey.impl.uri.PathTemplate;
 import com.sun.jersey.impl.uri.rules.ResourceObjectRule;
 import com.sun.jersey.impl.uri.rules.RightHandPathRule;
+import com.sun.jersey.spi.container.ContainerRequest;
+import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.uri.rules.UriRule;
 
 
@@ -47,6 +54,12 @@ import com.sun.jersey.spi.uri.rules.UriRule;
  *
  */
 public class WebEngineApplication extends org.nuxeo.ecm.webengine.rest.jersey.patch.WebApplicationImpl {
+
+     @Override
+    protected WebApplicationContext createWebAcpplicationContext(
+            ContainerRequest request, ContainerResponse response) {
+        return new WebContextImpl(this, request, response);
+    }
 
     @Override
     protected RulesMap<UriRule> processRootResources(Set<Class<?>> classes) {
@@ -85,25 +98,29 @@ public class WebEngineApplication extends org.nuxeo.ecm.webengine.rest.jersey.pa
 
 
 
-    protected WebDomain<?>[] getDomains() {
+    protected WebDomain<?>[] getDomains() throws WebException {
         WebEngine2 engine = Framework.getLocalService(WebEngine2.class);
+
+        List<RootDescriptor> roots = Arrays.asList(new RootDescriptor[] {new RootDescriptor("/default", 0)});
+        List<RootDescriptor> roots2 = Arrays.asList(new RootDescriptor[] {new RootDescriptor("/resources", 0)});
 
         DomainDescriptor desc = new DomainDescriptor();
         desc.id = "default";
-        desc.root="default";
         desc.path = "/";
+        desc.roots = roots;
         ScriptDomain d1 = new ScriptDomain(engine, desc);
 
         desc = new DomainDescriptor();
         desc.id = "resources";
-        desc.root = "/resources";
         desc.path = "/resources";
+        desc.roots = roots2;
         ScriptDomain d2 = new ScriptDomain(engine, desc);
 
         desc = new DomainDescriptor();
         desc.id = "repository";
         desc.root = "/default-domain";
         desc.path = "/repository";
+        desc.roots = roots;
         DocumentDomain d3 = new DocumentDomain(engine, desc);
 
         return new WebDomain<?>[] {

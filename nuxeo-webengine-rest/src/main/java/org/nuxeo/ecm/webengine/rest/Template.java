@@ -17,36 +17,36 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.domains;
+package org.nuxeo.ecm.webengine.rest;
 
-import javax.ws.rs.GET;
+import java.util.Map;
 
-import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.adapters.ScriptObject;
+import javax.script.SimpleBindings;
+
 import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ScriptDomain extends WebDomain<DomainDescriptor> {
+public class Template extends SimpleBindings {
 
-    @GET
-    public Object get() {
-        return "hello world!";
+    protected WebObject ctx;
+
+    public Template() {
+
     }
 
-    public ScriptDomain(WebEngine2 engine, DomainDescriptor desc) throws WebException {
-        super (engine, desc );
+    public Template(Map<String, Object> bindings) {
+        super (bindings);
     }
 
-    @Override
-    protected WebObject resolve(WebContext2 ctx, String path) throws WebException {
-        ScriptObject script = (ScriptObject)ctx.getEngine().getWebTypeManager().newInstance("Script");
-        script.initialize(ctx, path);
-        return script;
+    public void setWebObject(WebObject object) {
+
     }
 
+    public void setEngine(WebEngine2 engine) {
+
+    }
 }
+

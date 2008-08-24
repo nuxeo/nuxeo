@@ -141,8 +141,8 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
             }
             // first build object from its super objects if any
             for (Contribution<K,T> key : dependencies) {
-                T superObject = (T)registry.get(key.getId()).merge();
-                registry.applySuperObject(value, superObject);
+                T superObject = (T)registry.getContribution(key.getId()).merge();
+                registry.applyFragment(value, superObject);
             }
             // and now apply fragments
             for (T fragment : this) {

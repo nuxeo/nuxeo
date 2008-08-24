@@ -17,36 +17,39 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.domains;
-
-import javax.ws.rs.GET;
+package org.nuxeo.ecm.webengine.rest.types;
 
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.adapters.ScriptObject;
 import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ScriptDomain extends WebDomain<DomainDescriptor> {
+public class ObjectType implements WebType {
 
-    @GET
-    public Object get() {
-        return "hello world!";
+    public Action getAction(String action) {
+        return null;
     }
 
-    public ScriptDomain(WebEngine2 engine, DomainDescriptor desc) throws WebException {
-        super (engine, desc );
+    public String getName() {
+        return "Object";
     }
 
-    @Override
-    protected WebObject resolve(WebContext2 ctx, String path) throws WebException {
-        ScriptObject script = (ScriptObject)ctx.getEngine().getWebTypeManager().newInstance("Script");
-        script.initialize(ctx, path);
-        return script;
+    public Class<? extends WebObject> getObjectClass() {
+        return WebObject.class;
+    }
+
+    public WebType getSuperType() {
+        return null;
+    }
+
+    public boolean isDynamic() {
+        return false;
+    }
+
+    public WebObject newInstance() throws WebException {
+        return new WebObject(this);
     }
 
 }

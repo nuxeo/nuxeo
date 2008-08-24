@@ -20,7 +20,6 @@
 package org.nuxeo.runtime.contribution.impl;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.runtime.contribution.Contribution;
@@ -33,15 +32,13 @@ import org.nuxeo.runtime.contribution.ContributionRegistry;
 public abstract class AbstractRegistry<K, T> implements
         ContributionRegistry<K, T> {
 
-    protected Map<Object, Contribution<K, T>> registry = new HashMap<Object, Contribution<K, T>>();
+    private Map<Object, Contribution<K, T>> registry = new HashMap<Object, Contribution<K, T>>();
 
-    protected Map<Object, List<Contribution<K, T>>> pending = new HashMap<Object, List<Contribution<K, T>>>();
-
-    public synchronized Contribution<K, T> get(K primaryKey) {
+    public synchronized Contribution<K, T> getContribution(K primaryKey) {
         return registry.get(primaryKey);
     }
 
-    public synchronized void remove(K key) {
+    public synchronized void removeContribution(K key) {
         Contribution<K, T> contrib = registry.get(key);
         if (contrib != null) {
             contrib.unregister();
@@ -57,7 +54,7 @@ public abstract class AbstractRegistry<K, T> implements
         }
     }
 
-    public synchronized Contribution<K, T> register(K key, T fragment,
+    public synchronized Contribution<K, T> addFragment(K key, T fragment,
             K... superKeys) {
         Contribution<K, T> contrib = registry.get(key);
         if (contrib == null) {
@@ -80,16 +77,16 @@ public abstract class AbstractRegistry<K, T> implements
 
     @SuppressWarnings("unchecked")
     public synchronized void clear() {
-        Contribution<K, T>[] contribs = registry.values().toArray(
-                new Contribution[registry.size()]);
-        for (Contribution<K, T> c : contribs) {
-            fireUnresolved(c);
-        }
+//        Contribution<K, T>[] contribs = registry.values().toArray(
+//                new Contribution[registry.size()]);
+//        for (Contribution<K, T> c : contribs) {
+//            fireUnresolved(c);
+//        }
         registry.clear();
     }
 
     public void fireUnresolved(Contribution<K, T> contrib) {
-        uninstall(contrib.getId());
+        uninstallContribution(contrib.getId());
     }
 
     public void fireResolved(Contribution<K, T> contrib) {
@@ -97,7 +94,7 @@ public abstract class AbstractRegistry<K, T> implements
         if (value == null) {
             throw new IllegalStateException("contribution is null");
         }
-        install(contrib.getId(), value);
+        installContribution(contrib.getId(), value);
     }
 
     public void fireUpdated(Contribution<K, T> contrib) {
@@ -105,17 +102,20 @@ public abstract class AbstractRegistry<K, T> implements
         if (value == null) {
             throw new IllegalStateException("contribution is null");
         }
-        reinstall(contrib.getId(), value);
+        reinstallContribution(contrib.getId(), value);
     }
 
-    protected abstract void applySuperObject(T object, T superObject);
-
+    /**
+     * Apply fragment over the given object
+     * @param object
+     * @param fragment
+     */
     protected abstract void applyFragment(T object, T fragment);
 
-    protected abstract void install(K key, T object);
+    protected abstract void installContribution(K key, T object);
 
-    protected abstract void uninstall(K key);
+    protected abstract void uninstallContribution(K key);
 
-    protected abstract void reinstall(K key, T object);
+    protected abstract void reinstallContribution(K key, T object);
 
 }

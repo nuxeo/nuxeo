@@ -17,36 +17,42 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.domains;
+package org.nuxeo.ecm.webengine.rest.types;
 
-import javax.ws.rs.GET;
+import java.lang.reflect.Method;
 
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.adapters.ScriptObject;
+import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ScriptDomain extends WebDomain<DomainDescriptor> {
+public class MethodAction extends Action {
 
-    @GET
-    public Object get() {
-        return "hello world!";
+    protected Method method;
+
+
+    public MethodAction(ActionDescriptor desc, Method method) {
+        super (desc);
+        this.method = method;
     }
 
-    public ScriptDomain(WebEngine2 engine, DomainDescriptor desc) throws WebException {
-        super (engine, desc );
+    /**
+     * @return the method.
+     */
+    public Method getMethod() {
+        return method;
     }
 
-    @Override
-    protected WebObject resolve(WebContext2 ctx, String path) throws WebException {
-        ScriptObject script = (ScriptObject)ctx.getEngine().getWebTypeManager().newInstance("Script");
-        script.initialize(ctx, path);
-        return script;
+    public Object invoke(WebObject obj) throws WebException {
+        checkPermission(obj);
+        try {
+            return method.invoke(obj);
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to execute action: "+desc.getId(), e);
+        }
     }
 
 }

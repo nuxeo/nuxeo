@@ -19,76 +19,80 @@
 
 package org.nuxeo.ecm.webengine.rest;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.Principal;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
 import org.nuxeo.ecm.webengine.rest.domains.WebDomain;
+import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.session.UserSession;
 
 import com.sun.jersey.api.core.HttpContext;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebContext2 {
+public interface WebContext2 {
 
-    protected WebDomain<?> domain;
-    protected HttpServletRequest req;
-    protected HttpServletResponse resp;
-    protected UserSession us;
-    protected HttpContext ctx;
+    public void setDomain(WebDomain<?> domain);
 
-    public WebContext2(WebDomain<?> domain, HttpContext ctx, HttpServletRequest req, HttpServletResponse resp) {
-        this.domain = domain;
-        this.ctx = ctx;
-        this.req = req;
-        this.resp = resp;
-        this.us = UserSession.getCurrentSession(req.getSession(true));
-    }
+    public WebDomain<?> getDomain();
 
-    public WebEngine2 getEngine() {
-        return domain.engine;
-    }
+    public WebEngine2 getEngine();
 
-    /**
-     * @return the domain.
-     */
-    public WebDomain<?> getDomain() {
-        return domain;
-    }
+    public UserSession getUserSession();
 
-    public UserSession getUserSession() {
-        return us;
-    }
+    public CoreSession getCoreSession();
 
-    public CoreSession getCoreSession() {
-        return us.getCoreSession();
-    }
+    public Principal getPrincipal();
 
-    public Principal getPrincipal() {
-        return us.getPrincipal();
-    }
+    public HttpContext getHttpContext();
 
-    /**
-     * @return the req.
-     */
-    public HttpServletRequest getRequest() {
-        return req;
-    }
 
-    /**
-     * @return the resp.
-     */
-    public HttpServletResponse getResponse() {
-        return resp;
-    }
 
-    public HttpContext getHttpContext() {
-        return ctx;
-    }
+    /** object stack API */
+
+    public void push(WebObject obj);
+
+    public WebObject pop();
+
+    public WebObject tail();
+
+    public WebObject head();
+
+
+
+    /** template and script resolver */
+
+    public ScriptFile getFile(String path) throws IOException;
+
+    public void pushScriptFile(File file);
+
+    public File popScriptFile();
+
+
+
+    /** running scripts and rendering templates */
+
+    public void render(String template) throws WebException;
+
+    public void render(String template, Object ctx) throws WebException;
+
+    @SuppressWarnings("unchecked")
+    public void render(ScriptFile script, Object ctx) throws WebException;
+
+    public Object runScript(String script) throws WebException;
+
+    public Object runScript(String script, Map<String, Object> args) throws WebException;
+
+    public Object runScript(ScriptFile script, Map<String, Object> args) throws WebException;
+
+    public Object exec(ScriptFile script, Map<String, Object> args) throws WebException;
 
 }

@@ -41,13 +41,13 @@ public class TestContributions extends TestCase {
 
         MyObject mf = new MyObject("key1", "#1");
         mf.str = "a";
-        reg.register(mf.id, mf);
+        reg.addFragment(mf.id, mf);
 
         MyObject mf2 = new MyObject("key1", "#2");
         mf2.str = "b";
         mf2.list = new ArrayList<String>();
         mf2.list.add("k1");
-        reg.register(mf2.id, mf2);
+        reg.addFragment(mf2.id, mf2);
 
         System.out.println(reg);
     }
@@ -56,19 +56,19 @@ public class TestContributions extends TestCase {
 
         MyObject mf = new MyObject("key1", "#1");
         mf.str = "a";
-        reg.register(mf.id, mf, "base");
+        reg.addFragment(mf.id, mf, "base");
 
         MyObject base = new MyObject("base", "#1");
         base.str = "base str";
         base.list = new ArrayList<String>();
         base.list.add("base1");
-        reg.register(base.id, base);
+        reg.addFragment(base.id, base);
 
         MyObject mf2 = new MyObject("key1", "#2");
         mf2.str = "b";
         mf2.list = new ArrayList<String>();
         mf2.list.add("k1");
-        reg.register(mf2.id, mf2);
+        reg.addFragment(mf2.id, mf2);
 
         System.out.println(reg);
     }
@@ -77,19 +77,19 @@ public class TestContributions extends TestCase {
 
         MyObject mf = new MyObject("key1", "#1");
         mf.str = "a";
-        reg.register(mf.id, mf, "base");
+        reg.addFragment(mf.id, mf, "base");
 
         MyObject base = new MyObject("base", "#1");
         base.str = "base str";
         base.list = new ArrayList<String>();
         base.list.add("base1");
-        reg.register(base.id, base);
+        reg.addFragment(base.id, base);
 
         MyObject mf2 = new MyObject("key1", "#2");
         mf2.str = "b";
         mf2.list = new ArrayList<String>();
         mf2.list.add("k1");
-        reg.register(mf2.id, mf2);
+        reg.addFragment(mf2.id, mf2);
 
 //        reg.remove("key1");
 //        System.out.println(reg);

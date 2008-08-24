@@ -17,36 +17,43 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.domains;
+package org.nuxeo.ecm.webengine.rest.types;
 
-import javax.ws.rs.GET;
+
 
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.adapters.ScriptObject;
+import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
+import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
+import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ScriptDomain extends WebDomain<DomainDescriptor> {
+public class ScriptAction extends Action {
 
-    @GET
-    public Object get() {
-        return "hello world!";
+    protected ScriptFile script;
+
+
+    public ScriptAction(ActionDescriptor desc, ScriptFile script) {
+        super (desc);
+        this.script  = script;
     }
 
-    public ScriptDomain(WebEngine2 engine, DomainDescriptor desc) throws WebException {
-        super (engine, desc );
-    }
-
-    @Override
-    protected WebObject resolve(WebContext2 ctx, String path) throws WebException {
-        ScriptObject script = (ScriptObject)ctx.getEngine().getWebTypeManager().newInstance("Script");
-        script.initialize(ctx, path);
+    /**
+     * @return the script.
+     */
+    public ScriptFile getScript() {
         return script;
+    }
+
+    public Object invoke(WebObject obj) throws WebException {
+        String id = desc.getId();
+        if (!desc.getGuard().check(obj)) {
+            throw new WebSecurityException(id);
+        }
+        return obj.getContext().exec(script, null);
     }
 
 }

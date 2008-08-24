@@ -20,12 +20,17 @@
 package org.nuxeo.ecm.webengine.rest.adapters;
 
 import java.io.File;
+import java.io.IOException;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 
-import org.nuxeo.common.Environment;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.types.DefaultWebType;
+import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
+import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
 import org.nuxeo.ecm.webengine.rest.types.WebType;
 
 
@@ -36,28 +41,38 @@ import org.nuxeo.ecm.webengine.rest.types.WebType;
  */
 public class ScriptObject extends WebObject {
 
-    public final static WebType TYPE = new DefaultWebType("script", WebType.OBJECT);
+    protected ScriptFile file;
 
-    protected File file;
+    public ScriptObject(WebType type) {
+        super (type);
+    }
 
     @Override
     public void initialize(WebContext2 ctx, String path) {
         super.initialize(ctx, path);
-        file = new File(Environment.getDefault().getWeb(), getDomain().descriptor.root);
-        file = new File(file, path);
-    }
-
-    @Override
-    public WebType getType() {
-        return TYPE;
+        try {
+            file = ctx.getDomain().getFile(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @GET
-    public File get() {
-        if (!file.exists()) {
+    public Object get(@Context ServletContext servletCtx) throws WebException {
+        if (file == null) {
             return null;
         } else {
-            return file;
+            String ext = file.getExtension();
+            Scripting scripting = ctx.getEngine().getScripting();
+            if (file.isTemplate()) {
+                return file.getFile(); //TODO // new Template(this, )
+            } else if (scripting.isScript(ext)) { // script
+                return ctx.runScript(file, null);
+            } else { // regular file
+                File f = file.getFile();
+                String ctype = servletCtx.getMimeType(f.getName());
+                return Response.ok(f, ctype).build();
+            }
         }
     }
 

@@ -19,18 +19,13 @@
 
 package org.nuxeo.ecm.webengine.rest.domains;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.WebObjectManager;
 import org.nuxeo.ecm.webengine.rest.adapters.DocumentObject;
 import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
-
-import com.sun.jersey.api.core.HttpContext;
 
 
 /**
@@ -41,20 +36,20 @@ public class DocumentDomain extends WebDomain<DomainDescriptor> {
 
     protected String repository = "default"; // TODO
 
-    public DocumentDomain(WebEngine2 engine, DomainDescriptor desc) {
+    public DocumentDomain(WebEngine2 engine, DomainDescriptor desc) throws WebException {
         super (engine, desc );
     }
 
     @Override
-    protected WebObject resolve(HttpContext httpctx, HttpServletRequest req, HttpServletResponse resp, String path) throws Exception {
-        WebContext2 ctx = new WebContext2(this, httpctx, req, resp);
-        DocumentModel doc = ctx.getCoreSession().getDocument(new PathRef(descriptor.root+"/"+path));
-        DocumentObject obj = (DocumentObject)WebObjectManager.getCurrent().newInstance(doc.getType());
-        if (obj == null) { //TODO
-            obj = new DocumentObject();
+    protected WebObject resolve(WebContext2 ctx, String path) throws WebException {
+        try {
+            DocumentModel doc = ctx.getCoreSession().getDocument(new PathRef(descriptor.root+"/"+path));
+            DocumentObject obj = (DocumentObject)ctx.getEngine().getWebTypeManager().newInstance(doc.getType());
+            obj.initialize(ctx, doc);
+            return obj;
+        } catch (Exception e) {
+            throw WebException.wrap("Failed to resolve request", e);
         }
-        obj.initialize(ctx, doc);
-        return obj;
     }
 
 }

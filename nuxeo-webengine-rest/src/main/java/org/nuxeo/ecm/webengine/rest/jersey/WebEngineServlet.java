@@ -19,8 +19,16 @@
 
 package org.nuxeo.ecm.webengine.rest.jersey;
 
+import java.io.IOException;
+import java.net.URI;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.nuxeo.ecm.webengine.rest.jersey.patch.ServletContainer;
+
+import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.WebApplication;
-import com.sun.jersey.spi.container.servlet.ServletContainer;
+
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -34,6 +42,18 @@ public class WebEngineServlet extends ServletContainer {
     @Override
     protected WebApplication create() {
         return new WebEngineApplication();
+    }
+
+    protected ContainerRequest createContainerRequest(HttpServletRequest request,
+            WebApplication _application, URI baseUri, URI requestUri) throws IOException {
+        return new org.nuxeo.ecm.webengine.rest.jersey.patch.ServletContainerRequest(
+                request,
+                _application,
+                request.getMethod(),
+                baseUri,
+                requestUri,
+                getHeaders(request),
+                request.getInputStream());
     }
 
 }

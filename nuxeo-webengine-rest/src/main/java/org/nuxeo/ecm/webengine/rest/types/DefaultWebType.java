@@ -19,27 +19,43 @@
 
 package org.nuxeo.ecm.webengine.rest.types;
 
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DefaultWebType implements WebType {
+public class DefaultWebType extends AbstractWebType {
 
-    protected String name;
+    // fields that need to be resolved
+    protected Class<? extends WebObject> klass;
     protected WebType superType;
+    protected WebTypeDescriptor desc;
 
+    public DefaultWebType(WebTypeManager mgr, WebTypeDescriptor desc) throws WebException {
+        this.desc = desc;
+        try {
+            superType = mgr.getType(desc.superTypeName);
+            klass = resolveObjectClass(mgr, desc.className);
+        } catch (Exception e) {
+            WebException.wrap("Failed to resolve type: "+desc.name, e);
+        }
+    }
 
-    public DefaultWebType(String name, WebType superType) {
-        this.name = name;
-        this.superType = superType;
+    public boolean isDynamic() {
+        return false;
     }
 
     public String getName() {
-        return name;
+        return desc.name;
     }
 
-     public WebType getSuperType() {
+    public Class<? extends WebObject> getObjectClass() {
+        return klass;
+    }
+
+    public WebType getSuperType() {
         return superType;
     }
 

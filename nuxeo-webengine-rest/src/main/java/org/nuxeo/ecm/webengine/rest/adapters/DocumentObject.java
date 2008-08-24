@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.methods.LOCK;
-import org.nuxeo.ecm.webengine.rest.types.WebDocumentType;
 import org.nuxeo.ecm.webengine.rest.types.WebType;
 
 
@@ -37,13 +36,16 @@ import org.nuxeo.ecm.webengine.rest.types.WebType;
 public class DocumentObject extends WebObject {
 
     protected DocumentModel doc;
-    protected WebDocumentType type;
 
+
+    public DocumentObject(WebType type) {
+        super (type);
+    }
 
     public void initialize(WebContext2 ctx, DocumentModel doc) {
+        super.initialize(ctx, null); //TODO
         this.ctx = ctx;
         this.doc = doc;
-        this.type = new WebDocumentType(doc.getDocumentType());
     }
 
 
@@ -51,9 +53,8 @@ public class DocumentObject extends WebObject {
         return ctx.getCoreSession();
     }
 
-    @Override
-    public WebType getType() {
-        return type;
+    public DocumentModel getDocument() {
+        return doc;
     }
 
     @GET

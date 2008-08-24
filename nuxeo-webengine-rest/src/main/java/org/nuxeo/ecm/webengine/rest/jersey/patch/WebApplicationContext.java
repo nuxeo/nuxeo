@@ -63,15 +63,15 @@ import javax.ws.rs.core.UriBuilder;
  *
  * @author Paul.Sandoz@Sun.Com
  */
-public final class WebApplicationContext implements UriRuleContext, ExtendedUriInfo {
+public class WebApplicationContext implements UriRuleContext, ExtendedUriInfo {
 
-    private final ContainerRequest request;
+    protected final ContainerRequest request;
 
-    private final ContainerResponse response;
+    protected final ContainerResponse response;
 
-    private final WebApplicationImpl app;
+    protected final WebApplicationImpl app;
 
-    private Map<String, Object> properties;
+    protected Map<String, Object> properties;
 
     public WebApplicationContext(WebApplicationImpl app,
             ContainerRequest request, ContainerResponse response) {

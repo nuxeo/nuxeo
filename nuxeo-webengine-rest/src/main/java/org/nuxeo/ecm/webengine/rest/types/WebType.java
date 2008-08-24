@@ -19,19 +19,28 @@
 
 package org.nuxeo.ecm.webengine.rest.types;
 
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public interface WebType {
 
-    public final static WebType OBJECT = new WebType() {
-        public WebType getSuperType() { return null; };
-        public String getName() { return "Object"; };
-    };
+    public final static WebType ROOT = new ObjectType();
 
     public WebType getSuperType();
 
     public String getName();
 
+    public WebObject newInstance() throws WebException;
+
+    public Class<? extends WebObject> getObjectClass();
+
+    public boolean isDynamic();
+
+    public Action getAction(String action);
+
+    //TODO: add actions
 }

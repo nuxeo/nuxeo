@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webengine.rest.adapters;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import javax.ws.rs.ProduceMime;
@@ -26,6 +27,7 @@ import javax.ws.rs.ProduceMime;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.domains.WebDomain;
+import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.types.WebType;
 import org.nuxeo.runtime.model.Adaptable;
 
@@ -41,13 +43,20 @@ public class WebObject implements Adaptable {
 
     protected WebContext2 ctx;
     protected String path;
+    protected WebType type;
 
-    public WebObject() {
+    public WebObject(WebType type) {
+        this.type = type;
     }
 
     public void initialize(WebContext2 ctx, String path) {
         this.ctx = ctx;
         this.path = path;
+        this.ctx.push(this);
+    }
+
+    public void setContext(WebContext2 ctx) {
+        this.ctx = ctx;
     }
 
     public WebContext2 getContext() {
@@ -66,11 +75,48 @@ public class WebObject implements Adaptable {
     }
 
     public WebType getType() {
-        return WebType.OBJECT;
+        return type;
     }
 
     public <T> T getAdapter(Class<T> adapter) {
         return null;
+    }
+
+
+    public ScriptFile getActionScript(String action) {
+        WebDomain<?> domain = ctx.getDomain();
+        StringBuilder path = new StringBuilder();
+        path.append('/').append(getType().getName()).append('/')
+            .append(action).append('.').append(domain.getScriptExtension());
+        try {
+            return domain.getFile(path.toString());
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    public ScriptFile getTemplate(String action) {
+        return getTemplateScript(action, null);
+    }
+
+    public ScriptFile getTemplateScript(String action, String format) {
+        WebDomain<?> domain = ctx.getDomain();
+        if (format == null) {
+            format = "html";
+        }
+        StringBuilder path = new StringBuilder();
+        path.append('/').append(getType().getName()).append('/')
+            .append(action).append('.').append(format).append('.')
+            .append(domain.getTemplateExtension());
+        try {
+            return domain.getFile(path.toString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public ActionDescriptor getAction(String action) {
+        return null; //TODO
     }
 
     public Collection<ActionDescriptor> getActions() {

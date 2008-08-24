@@ -17,24 +17,20 @@
  * $Id$
  */
 
-package org.nuxeo.runtime.contribution;
+package org.nuxeo.ecm.webengine.rest.types;
 
-
+import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface ContributionRegistry<K,T> {
+public class TypeNotFoundException extends WebException {
 
-    Contribution<K,T> getContribution(K key);
+    private static final long serialVersionUID = 1L;
 
-    Contribution<K,T> addFragment(K key, T fragment, K ... superKeys);
-
-    void removeContribution(K key);
-
-    void removeFragment(K key, T fragment);
-
-    void clear();
+    public TypeNotFoundException(String type) {
+        super ("Type not found: "+type);
+    }
 
 }

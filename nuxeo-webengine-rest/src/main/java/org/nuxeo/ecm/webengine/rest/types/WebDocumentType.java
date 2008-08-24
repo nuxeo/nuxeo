@@ -20,33 +20,56 @@
 package org.nuxeo.ecm.webengine.rest.types;
 
 import org.nuxeo.ecm.core.schema.DocumentType;
-
+import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
 
 /**
+ * Dynamic type generated to handle document types that were not specified
+ * explicitly in the configuration
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebDocumentType implements WebType {
+public class WebDocumentType extends AbstractWebType {
 
-    WebDocumentType superType;
-    DocumentType docType;
+    protected DocumentType docType;
+    protected WebType superType;
+    protected WebTypeManager mgr;
+    protected Class<? extends WebObject> klass;
 
-    public WebDocumentType(DocumentType type) {
-        docType = type;
+    public WebDocumentType(WebTypeManager mgr, DocumentType type) {
+        this.docType = type;
+        this.mgr = mgr;
     }
 
+    public boolean isDynamic() {
+        return true;
+    }
     public String getName() {
         return docType.getName();
     }
 
     public WebType getSuperType() {
         if (superType == null) {
-            DocumentType type = (DocumentType)docType.getSuperType();
-            if (type != null) {
-                superType = new WebDocumentType(type);
+            DocumentType stype = (DocumentType)docType.getSuperType();
+            if (stype != null) {
+                try {
+                    superType = mgr.getType(stype.getName());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    superType = WebType.ROOT;
+                }
+            } else {
+                superType = WebType.ROOT;
             }
         }
         return superType;
+    }
+
+    public Class<? extends WebObject> getObjectClass() {
+        if (klass == null) {
+            klass = resolveObjectClass(mgr);
+        }
+        return klass;
     }
 
 }

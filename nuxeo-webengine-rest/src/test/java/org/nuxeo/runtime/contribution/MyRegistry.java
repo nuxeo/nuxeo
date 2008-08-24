@@ -34,10 +34,6 @@ public class MyRegistry extends AbstractRegistry<String,MyObject> {
     protected Map<String,MyObject> map = new HashMap<String, MyObject>();
 
 
-    @Override
-    protected void applySuperObject(MyObject object, MyObject superObject) {
-        applyFragment(object, superObject);
-    }
 
     @Override
     protected void applyFragment(MyObject object, MyObject fragment) {
@@ -54,17 +50,17 @@ public class MyRegistry extends AbstractRegistry<String,MyObject> {
     }
 
     @Override
-    protected void install(String key, MyObject object) {
+    protected void installContribution(String key, MyObject object) {
         map.put(key, object);
     }
 
     @Override
-    protected void reinstall(String key, MyObject object) {
+    protected void reinstallContribution(String key, MyObject object) {
         map.put(key, object);
     }
 
     @Override
-    protected void uninstall(String key) {
+    protected void uninstallContribution(String key) {
         map.remove(key);
     }
 

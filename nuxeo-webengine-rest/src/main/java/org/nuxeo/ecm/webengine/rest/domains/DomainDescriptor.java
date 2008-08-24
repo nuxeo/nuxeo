@@ -60,6 +60,12 @@ public class DomainDescriptor {
     @XNode("defaultPage")
     public String defaultPage;
 
+    @XNode("script-extension")
+    public String scriptExtension = "groovy";
+
+    @XNode("template-extension")
+    public String templateExtension = "ftl";
+
     @XNodeList(value="roots/root", type=ArrayList.class, componentType=RootDescriptor.class, nullByDefault=true)
     public List<RootDescriptor> roots;
 

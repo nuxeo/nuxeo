@@ -637,8 +637,12 @@ public class WebApplicationImpl implements WebApplication {
         handleRequest(request, response);
     }
 
+    protected WebApplicationContext createWebAcpplicationContext(ContainerRequest request, ContainerResponse response) {
+        return new WebApplicationContext(this, request, response);
+    }
+
     public void handleRequest(ContainerRequest request, ContainerResponse response) throws IOException {
-        final WebApplicationContext localContext = new WebApplicationContext(this, request, response);
+        final WebApplicationContext localContext = createWebAcpplicationContext(request, response);
         context.set(localContext);
 
         if (resourceConfig.getFeature(ResourceConfig.FEATURE_NORMALIZE_URI)) {
