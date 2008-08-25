@@ -189,14 +189,11 @@ public class WAPIImpl implements WAPI {
 
     public void assignWorkItem(String workItemId, WMParticipant participant)
             throws WMWorkflowException {
-
         WorkflowEngine workflowEngine = getDefaultEngine();
-
         if (workflowEngine != null) {
             WMWorkItemInstance workItem = workflowEngine.getWorkItemById(workItemId);
             workflowEngine.assignWorkItem(workItem, participant);
         }
-
     }
 
     public void unAssignWorkItem(String workItemId, WMParticipant participant)

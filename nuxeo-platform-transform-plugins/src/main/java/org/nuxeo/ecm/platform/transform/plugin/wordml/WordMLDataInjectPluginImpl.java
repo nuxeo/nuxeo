@@ -82,7 +82,7 @@ public class WordMLDataInjectPluginImpl extends AbstractPlugin implements
         return builder.parse(in);
     }
 
-    private File createTmpFile() throws IOException {
+    private static File createTmpFile() throws IOException {
         final long time = System.currentTimeMillis();
         File tmpFile = File.createTempFile("WordMLDataInjectPlugin_" + time,
                 ".xml");

@@ -45,7 +45,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
-import org.jboss.seam.core.FacesMessages;
+import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.common.utils.i18n.Labeler;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -84,9 +84,6 @@ public class SecurityActionsBean extends InputController implements
         SecurityActions, Serializable {
 
     private static final long serialVersionUID = -7190826911734958662L;
-
-    // XXX temporary
-    protected static final String ADMIN_GROUP = "administrators";
 
     protected static final String[] SEED_PERMISSIONS_TO_CHECK = {
             SecurityConstants.WRITE_SECURITY, SecurityConstants.READ_SECURITY };
@@ -497,7 +494,7 @@ public class SecurityActionsBean extends InputController implements
                 securityData.addModifiablePrivilege(currentUser.getName(),
                         SecurityConstants.EVERYTHING, true);
                 // add administrators to avoid LockUp
-                securityData.addModifiablePrivilege(ADMIN_GROUP,
+                securityData.addModifiablePrivilege(SecurityConstants.ADMINISTRATORS,
                         SecurityConstants.EVERYTHING, true);
             }
         } else {

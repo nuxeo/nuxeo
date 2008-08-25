@@ -12,12 +12,18 @@ public class EventDescriptorPage implements Serializable {
 
     private EventDescriptor[] events;
 
-    public EventDescriptorPage(EventDescriptor[] data, int pageIndex, boolean bHasMorePage)
-    {
+    public EventDescriptorPage() {
+        super();
+        pageIndex = 0;
+        bHasMorePage = false;
+    }
 
-        this.pageIndex=pageIndex;
-        this.bHasMorePage=bHasMorePage;
-        this.events=data;
+    public EventDescriptorPage(EventDescriptor[] data, int pageIndex,
+            boolean bHasMorePage) {
+
+        this.pageIndex = pageIndex;
+        this.bHasMorePage = bHasMorePage;
+        this.events = data;
 
     }
 
@@ -33,8 +39,7 @@ public class EventDescriptorPage implements Serializable {
         return events;
     }
 
-    public boolean getHasMorePage()
-    {
+    public boolean getHasMorePage() {
         return bHasMorePage;
     }
 

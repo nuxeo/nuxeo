@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 /**
  * Logs interface.
  * <p>
- * :XXX: http://jira.nuxeo.org/browse/NXP-514
+ * {@see http://jira.nuxeo.org/browse/NXP-514}
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
@@ -48,7 +48,7 @@ public interface Logs extends Serializable {
      * <p>
      * :XXX: add parameters to this method for paging.
      *
-     * @param uuid : the document uuid
+     * @param uuid the document uuid
      * @return a list of log entries
      * @throws AuditException
      */
@@ -61,7 +61,7 @@ public interface Logs extends Serializable {
     /**
      * Returns a given log entry given its id.
      *
-     * @param id : the log entry identifier
+     * @param id the log entry identifier
      * @return a LogEntry instance
      * @throws AuditException
      */
@@ -69,11 +69,9 @@ public interface Logs extends Serializable {
 
     /**
      * Returns the list of log entries.
-     *
      * <p>
      * Note we will use NXQL in the future when the search engine will index
      * history.
-     * </p>
      *
      * @see org.nuxeo.ecm.platform.audit.api.query.DateRangeQueryConstants
      *
@@ -87,11 +85,9 @@ public interface Logs extends Serializable {
 
     /**
      * Returns the batched list of log entries.
-     *
      * <p>
      * Note we will use NXQL in the future when the search engine will index
      * history.
-     * </p>
      *
      * @see org.nuxeo.ecm.platform.audit.api.query.DateRangeQueryConstants
      *
@@ -132,9 +128,9 @@ public interface Logs extends Serializable {
             throws AuditException;
 
     /**
-     *
-     * Force Log Synchronisation for a branch of the repository. This can be
-     * usefull to add the create entries if DB was initializd from a bulk import
+     * Forces log Synchronisation for a branch of the repository. This can be
+     * usefull to add the create entries if DB was initializd from a bulk
+     * import.
      *
      * @param repoId
      * @param path
