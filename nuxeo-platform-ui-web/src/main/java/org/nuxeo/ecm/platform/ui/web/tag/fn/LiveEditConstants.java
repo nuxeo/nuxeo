@@ -119,14 +119,34 @@ public interface LiveEditConstants {
     static final QName docRepositoryTag = DocumentFactory.getInstance().createQName(
             "repository");
 
+    /**
+     * @deprecated use docBlobFieldNameTag instead
+     */
+    @Deprecated
     static final QName docFieldNameTag = DocumentFactory.getInstance().createQName(
             "fieldName");
 
-    static final QName docSchemaNameTag = DocumentFactory.getInstance().createQName(
-            "schemaName");
-
+    /**
+     * @deprecated use docBlobFieldPathTag instead
+     */
+    @Deprecated
     static final QName docfieldPathTag = DocumentFactory.getInstance().createQName(
             "fieldPath");
+
+    static final QName docBlobFieldNameTag = DocumentFactory.getInstance().createQName(
+            "blobFieldName");
+
+    static final QName docBlobFieldPathTag = DocumentFactory.getInstance().createQName(
+            "blobFieldPath");
+
+    static final QName docFilenameFieldNameTag = DocumentFactory.getInstance().createQName(
+            "filenameFieldName");
+
+    static final QName docFilenameFieldPathTag = DocumentFactory.getInstance().createQName(
+            "filenameFieldPath");
+
+    static final QName docSchemaNameTag = DocumentFactory.getInstance().createQName(
+            "schemaName");
 
     static final QName docfileNameTag = DocumentFactory.getInstance().createQName(
             "fileName");
