@@ -265,14 +265,15 @@ public class Mapper {
              * Create missing tables.
              */
             Database database = sqlInfo.getDatabase();
-            for (Table table : database.getTables()) {
-                String tableName = table.getName();
+            for (Entry<String, Table> entry : database.getTables()) {
+                String tableName = entry.getKey();
+                Table table = entry.getValue();
                 if (tableNames.contains(tableName) ||
                         tableNames.contains(tableName.toUpperCase())) {
                     // table already present
                     continue;
                 }
-                for (String sql : sqlInfo.getTableCreateSqls(tableName)) {
+                for (String sql : sqlInfo.getTableCreateSqls(table)) {
                     logDebug(sql);
                     Statement s = connection.createStatement();
                     try {
@@ -984,10 +985,10 @@ public class Mapper {
         } catch (SQLException e) {
             throw newStorageException(e, "Could not copy", sourceId.toString());
         }
+
         /*
          * Assemble per-fragment-type sets of ids.
          */
-
         Map<String, Set<Serializable>> allFragmentIds = new HashMap<String, Set<Serializable>>();
         for (Entry<Serializable, String> e : idType.entrySet()) {
             Serializable id = e.getKey();
@@ -1093,8 +1094,8 @@ public class Mapper {
                 // post insert fetch idrow
                 // TODO PG 8.2 has INSERT ... RETURNING ... which can avoid this
                 // separate query
-                String isql = sqlInfo.getIdentityFetchSql(model.hierFragmentName);
-                Column icolumn = sqlInfo.getIdentityFetchColumn(model.hierFragmentName);
+                String isql = sqlInfo.getIdentityFetchSql(model.hierTableName);
+                Column icolumn = sqlInfo.getIdentityFetchColumn(model.hierTableName);
                 ps.close();
                 ps = connection.prepareStatement(isql);
                 ResultSet rs = ps.executeQuery();

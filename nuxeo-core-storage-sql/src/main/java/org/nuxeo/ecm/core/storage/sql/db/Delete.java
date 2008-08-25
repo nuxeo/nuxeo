@@ -30,17 +30,11 @@ public class Delete implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Dialect dialect;
-
-    private Table table;
+    protected final Table table;
 
     private String where;
 
-    public Delete(Dialect dialect) {
-        this.dialect = dialect;
-    }
-
-    public void setTable(Table table) {
+    public Delete(Table table) {
         this.table = table;
     }
 
@@ -51,7 +45,7 @@ public class Delete implements Serializable {
     public String getStatement() {
         StringBuilder buf = new StringBuilder(50);
         buf.append("DELETE FROM ");
-        buf.append(table.getQuotedName(dialect));
+        buf.append(table.getQuotedName());
         if (where != null && where.length() != 0) {
             buf.append(" WHERE ");
             buf.append(where);

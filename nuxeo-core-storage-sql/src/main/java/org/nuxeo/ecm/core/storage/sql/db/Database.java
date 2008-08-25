@@ -20,10 +20,12 @@
 package org.nuxeo.ecm.core.storage.sql.db;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.sound.midi.Sequence;
 
@@ -36,26 +38,49 @@ public class Database implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Map<String, Table> tables;
+    protected final Dialect dialect;
 
-    public Database() {
+    protected final Map<String, Table> tables;
+
+    protected final Set<String> physicalTables;
+
+    public Database(Dialect dialect) {
+        this.dialect = dialect;
         tables = new LinkedHashMap<String, Table>();
+        physicalTables = new HashSet<String>();
     }
 
-    public void addTable(Table table) throws IllegalArgumentException {
-        String name = table.getName();
-        if (tables.containsKey(name)) {
-            throw new IllegalArgumentException("Duplicate table " + name);
+    public Table addTable(String name) throws IllegalArgumentException {
+        String physicalName = getTablePhysicalName(name);
+        if (!physicalTables.add(physicalName)) {
+            throw new IllegalArgumentException("Duplicate table name: " +
+                    physicalName);
         }
+        Table table = new Table(this, physicalName);
         tables.put(name, table);
+        return table;
     }
 
-    public Table getTable(String tableName) {
-        return tables.get(tableName);
+    protected String getPhysicalName(String name) {
+        String physicalName = dialect.storesUpperCaseIdentifiers() ? name.toUpperCase()
+                : name.toLowerCase();
+        return physicalName.replace(':', '_');
     }
 
-    public Collection<Table> getTables() {
-        return tables.values();
+    protected String getTablePhysicalName(String name) {
+        return getPhysicalName(name);
+    }
+
+    protected String getColumnPhysicalName(String name) {
+        return getPhysicalName(name);
+    }
+
+    public Table getTable(String name) {
+        return tables.get(name);
+    }
+
+    public Set<Entry<String, Table>> getTables() {
+        return tables.entrySet();
     }
 
     @Override
@@ -63,10 +88,9 @@ public class Database implements Serializable {
         StringBuilder buf = new StringBuilder();
         buf.append(getClass().getSimpleName());
         buf.append('(');
-        Iterator<Table> iter = tables.values().iterator();
-        while (iter.hasNext()) {
+        for (Iterator<Table> iter = tables.values().iterator(); iter.hasNext();) {
             Table table = iter.next();
-            buf.append(table.getName());
+            buf.append(table.getPhysicalName());
             if (iter.hasNext()) {
                 buf.append(',');
             }

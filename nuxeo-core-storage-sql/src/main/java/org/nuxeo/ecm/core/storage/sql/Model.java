@@ -71,9 +71,9 @@ public class Model {
 
     public static final String MAIN_KEY = "id";
 
-    public final String hierFragmentName;
+    public final String hierTableName;
 
-    public final String mainFragmentName;
+    public final String mainTableName;
 
     public static final String MAIN_PRIMARY_TYPE_PROP = "ecm:primaryType";
 
@@ -234,9 +234,8 @@ public class Model {
         idGenPolicy = repositoryDescriptor.idGenPolicy;
         separateMainTable = repositoryDescriptor.separateMainTable;
         temporaryIdCounter = new AtomicLong(0);
-        hierFragmentName = HIER_TABLE_NAME;
-        mainFragmentName = separateMainTable ? MAIN_TABLE_NAME
-                : HIER_TABLE_NAME;
+        hierTableName = HIER_TABLE_NAME;
+        mainTableName = separateMainTable ? MAIN_TABLE_NAME : HIER_TABLE_NAME;
 
         schemaFragment = new HashMap<String, String>();
         propertyType = new HashMap<String, PropertyType>();
@@ -465,15 +464,15 @@ public class Model {
     private void initMainModel() {
         Map<String, PropertyType> fragmentKeysType = new LinkedHashMap<String, PropertyType>();
         fragmentsKeysType.put(MAIN_TABLE_NAME, fragmentKeysType);
-        initSimpleROProperty(mainFragmentName, MAIN_PRIMARY_TYPE_PROP,
+        initSimpleROProperty(mainTableName, MAIN_PRIMARY_TYPE_PROP,
                 MAIN_PRIMARY_TYPE_KEY, PropertyType.STRING, fragmentKeysType);
-        initSimpleROProperty(mainFragmentName, MAIN_CHECKED_IN_PROP,
+        initSimpleROProperty(mainTableName, MAIN_CHECKED_IN_PROP,
                 MAIN_CHECKED_IN_KEY, PropertyType.BOOLEAN, fragmentKeysType);
-        initSimpleROProperty(mainFragmentName, MAIN_BASE_VERSION_PROP,
+        initSimpleROProperty(mainTableName, MAIN_BASE_VERSION_PROP,
                 MAIN_BASE_VERSION_KEY, mainIdType(), fragmentKeysType);
-        initSimpleROProperty(mainFragmentName, MAIN_MAJOR_VERSION_PROP,
+        initSimpleROProperty(mainTableName, MAIN_MAJOR_VERSION_PROP,
                 MAIN_MAJOR_VERSION_KEY, PropertyType.LONG, fragmentKeysType);
-        initSimpleROProperty(mainFragmentName, MAIN_MINOR_VERSION_PROP,
+        initSimpleROProperty(mainTableName, MAIN_MINOR_VERSION_PROP,
                 MAIN_MINOR_VERSION_KEY, PropertyType.LONG, fragmentKeysType);
         specialPropertyTypes.put(MAIN_CHECKED_IN_PROP, BooleanType.INSTANCE);
     }

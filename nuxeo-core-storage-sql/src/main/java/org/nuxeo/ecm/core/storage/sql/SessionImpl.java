@@ -218,14 +218,14 @@ public class SessionImpl implements Session, XAResource {
 
         // get main row
         SimpleFragment childMain = (SimpleFragment) context.get(
-                model.mainFragmentName, id, false);
+                model.mainTableName, id, false);
         if (childMain == null) {
             // HACK try old id
             id = context.getOldId(id);
             if (id == null) {
                 return null;
             }
-            childMain = (SimpleFragment) context.get(model.mainFragmentName,
+            childMain = (SimpleFragment) context.get(model.mainTableName,
                     id, false);
             if (childMain == null) {
                 return null;
@@ -367,13 +367,13 @@ public class SessionImpl implements Session, XAResource {
                 Boolean.valueOf(complexProp));
 
         SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
-                model.mainFragmentName, id, mainMap);
+                model.mainTableName, id, mainMap);
 
         SimpleFragment hierRow;
         if (model.separateMainTable) {
             // TODO put it in a collection context instead
             hierRow = (SimpleFragment) context.createSimpleFragment(
-                    model.hierFragmentName, id, hierMap);
+                    model.hierTableName, id, hierMap);
         } else {
             hierRow = null;
         }
@@ -435,7 +435,7 @@ public class SessionImpl implements Session, XAResource {
         // get main row
         SimpleFragment childMain;
         if (model.separateMainTable) {
-            childMain = (SimpleFragment) context.get(model.mainFragmentName,
+            childMain = (SimpleFragment) context.get(model.mainTableName,
                     childId, false);
         } else {
             childMain = childHier;
@@ -610,12 +610,12 @@ public class SessionImpl implements Session, XAResource {
         hierMap.put(model.HIER_CHILD_ISPROPERTY_KEY, Boolean.FALSE);
 
         SimpleFragment mainRow = (SimpleFragment) context.createSimpleFragment(
-                model.mainFragmentName, id, mainMap);
+                model.mainTableName, id, mainMap);
 
         SimpleFragment hierRow;
         if (model.separateMainTable) {
             hierRow = (SimpleFragment) context.createSimpleFragment(
-                    model.hierFragmentName, id, hierMap);
+                    model.hierTableName, id, hierMap);
         } else {
             hierRow = null;
         }

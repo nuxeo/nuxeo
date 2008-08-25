@@ -79,7 +79,7 @@ public class PersistenceContext {
         contexts = new ConcurrentHashMap<String, Context>();
 
         // avoid doing tests all the time for this known case
-        getContext(model.hierFragmentName);
+        getContext(model.hierTableName);
         // this has to be linked to keep creation order, as foreign keys
         // are used and need this
         createdIds = new LinkedHashSet<Serializable>();
@@ -138,7 +138,7 @@ public class PersistenceContext {
         /*
          * First, create the main rows to get final ids for each.
          */
-        Context mainContext = contexts.get(model.mainFragmentName);
+        Context mainContext = contexts.get(model.mainTableName);
         Map<Serializable, Serializable> idMap;
         if (mainContext != null) {
             idMap = mainContext.saveMainCreated(createdIds);
@@ -245,7 +245,7 @@ public class PersistenceContext {
      */
     public Fragment getChildById(Serializable id, boolean allowAbsent)
             throws StorageException {
-        return contexts.get(model.hierFragmentName).getChildById(id,
+        return contexts.get(model.hierTableName).getChildById(id,
                 allowAbsent);
     }
 
@@ -261,7 +261,7 @@ public class PersistenceContext {
      */
     public SimpleFragment getChildByName(Serializable parentId, String name,
             boolean complexProp) throws StorageException {
-        return contexts.get(model.hierFragmentName).getChildByName(parentId,
+        return contexts.get(model.hierTableName).getChildByName(parentId,
                 name, complexProp);
     }
 
@@ -276,7 +276,7 @@ public class PersistenceContext {
      */
     public Collection<SimpleFragment> getChildren(Serializable parentId,
             String name, boolean complexProp) throws StorageException {
-        return contexts.get(model.hierFragmentName).getChildren(parentId, name,
+        return contexts.get(model.hierTableName).getChildren(parentId, name,
                 complexProp);
     }
 
@@ -290,7 +290,7 @@ public class PersistenceContext {
      */
     public void move(Node source, Serializable parentId, String name)
             throws StorageException {
-        contexts.get(model.hierFragmentName).moveChild(source, parentId, name);
+        contexts.get(model.hierTableName).moveChild(source, parentId, name);
     }
 
     /**
@@ -304,7 +304,7 @@ public class PersistenceContext {
      */
     public Serializable copy(Node source, Serializable parentId, String name)
             throws StorageException {
-        return contexts.get(model.hierFragmentName).copyChild(source, parentId,
+        return contexts.get(model.hierTableName).copyChild(source, parentId,
                 name);
     }
 

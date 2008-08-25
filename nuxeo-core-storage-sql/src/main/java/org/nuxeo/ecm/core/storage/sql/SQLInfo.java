@@ -164,7 +164,7 @@ public class SQLInfo {
         this.dialect = dialect;
         sqlExceptionConverter = dialect.buildSQLExceptionConverter();
 
-        database = new Database();
+        database = new Database(dialect);
 
         selectRootIdSql = null;
         selectRootIdWhatColumn = null;
@@ -225,11 +225,10 @@ public class SQLInfo {
         return database;
     }
 
-    public List<String> getTableCreateSqls(String tableName) {
+    public List<String> getTableCreateSqls(Table table) {
         List<String> sqls = new LinkedList<String>();
-        Table table = database.getTable(tableName);
-        sqls.add(table.getCreateSql(dialect));
-        sqls.addAll(table.getPostCreateSqls(dialect));
+        sqls.add(table.getCreateSql());
+        sqls.addAll(table.getPostCreateSqls());
         return sqls;
     }
 
@@ -442,7 +441,7 @@ public class SQLInfo {
          * proxies
          */
         table = database.getTable(model.PROXY_TABLE_NAME);
-        Table hierTable = database.getTable(model.hierFragmentName);
+        Table hierTable = database.getTable(model.hierTableName);
         selectProxiesByVersionable = makeSelect(table,
                 model.PROXY_VERSIONABLE_KEY);
         table.addIndex(model.PROXY_VERSIONABLE_KEY);
@@ -473,7 +472,7 @@ public class SQLInfo {
      * Creates the SQL for the table holding hierarchy information.
      */
     protected void initHierarchySQL() {
-        TableMaker maker = new TableMaker(model.hierFragmentName);
+        TableMaker maker = new TableMaker(model.hierTableName);
         if (model.separateMainTable) {
             maker.newPrimaryKey();
         } else {
@@ -508,7 +507,7 @@ public class SQLInfo {
      */
     protected void initFragmentSQL(String tableName) {
         TableMaker maker = new TableMaker(tableName);
-        boolean isMain = tableName.equals(model.mainFragmentName);
+        boolean isMain = tableName.equals(model.mainTableName);
 
         if (isMain) {
             maker.newId(); // global primary key / generation
@@ -536,8 +535,6 @@ public class SQLInfo {
 
     protected class TableMaker {
 
-        private final Dialect dialect;
-
         private final String tableName;
 
         private final Table table;
@@ -545,10 +542,8 @@ public class SQLInfo {
         private final List<String> orderBy;
 
         protected TableMaker(String tableName) {
-            this.dialect = SQLInfo.this.dialect;
             this.tableName = tableName;
-            table = new Table(tableName);
-            database.addTable(table);
+            table = database.addTable(tableName);
             orderBy = model.collectionOrderBy.get(tableName);
         }
 
@@ -570,7 +565,7 @@ public class SQLInfo {
 
         protected Column newMainKeyReference(String name, boolean nullable) {
             Column column = newMainKey(name);
-            column.setReferences(database.getTable(model.mainFragmentName),
+            column.setReferences(database.getTable(model.mainTableName),
                     model.MAIN_KEY);
             column.setNullable(nullable);
             return column;
@@ -647,17 +642,15 @@ public class SQLInfo {
             Column column = newColumn(key, type, sqlType);
             if (type == PropertyType.BINARY) {
                 // log them, will be useful for GC of binaries
-                SQLInfo.log.info("Binary column: " +
-                        column.getFullQuotedName(dialect));
+                SQLInfo.log.info("Binary column: " + column.getFullQuotedName());
             }
             // XXX apply defaults
         }
 
         protected Column newColumn(String key, PropertyType type, int sqlType) {
             String columnName = key;
-            Column column = new Column(table, columnName, type, sqlType, key,
+            Column column = table.addColumn(columnName, type, sqlType, key,
                     model);
-            table.addColumn(column);
             return column;
         }
 
@@ -672,20 +665,20 @@ public class SQLInfo {
             String what = null;
             String where = null;
             for (Column column : table.getColumns()) {
-                String name = column.getName();
-                String qname = column.getQuotedName(dialect);
-                if (name.equals(model.MAIN_KEY)) {
+                String key = column.getKey();
+                String qname = column.getQuotedName();
+                if (key.equals(model.MAIN_KEY)) {
                     what = qname;
                     selectRootIdWhatColumn = column;
-                } else if (name.equals(model.REPOINFO_REPOID_KEY)) {
+                } else if (key.equals(model.REPOINFO_REPOID_KEY)) {
                     where = qname + " = ?";
                 } else {
                     throw new AssertionError(column);
                 }
             }
-            Select select = new Select(dialect);
+            Select select = new Select(table);
             select.setWhat(what);
-            select.setFrom(table.getQuotedName(dialect));
+            select.setFrom(table.getQuotedName());
             select.setWhere(where);
             selectRootIdSql = select.getStatement();
         }
@@ -735,22 +728,22 @@ public class SQLInfo {
             List<String> whats = new LinkedList<String>();
             List<String> wheres = new LinkedList<String>();
             for (Column column : table.getColumns()) {
-                String qname = column.getQuotedName(dialect);
-                if (column.getName().equals(model.MAIN_KEY)) {
+                String qname = column.getQuotedName();
+                if (column.getKey().equals(model.MAIN_KEY)) {
                     wheres.add(qname + " = ?");
                 } else {
                     whats.add(qname);
                     selectByIdColumns.add(column);
                 }
             }
-            Select select = new Select(dialect);
+            Select select = new Select(table);
             select.setWhat(StringUtils.join(whats, ", "));
-            select.setFrom(table.getQuotedName(dialect));
+            select.setFrom(table.getQuotedName());
             select.setWhere(StringUtils.join(wheres, " AND "));
             if (orderBy != null) {
                 List<String> order = new LinkedList<String>();
                 for (String name : orderBy) {
-                    order.add(table.getColumn(name).getQuotedName(dialect));
+                    order.add(table.getColumn(name).getQuotedName());
                 }
                 select.setOrderBy(StringUtils.join(order, ", "));
             }
@@ -764,10 +757,10 @@ public class SQLInfo {
             List<Column> whereColumns = new ArrayList<Column>(2);
             List<String> wheres = new ArrayList<String>(2);
             for (Column column : table.getColumns()) {
-                String name = column.getName();
-                String qname = column.getQuotedName(dialect);
-                if (name.equals(model.HIER_PARENT_KEY) ||
-                        name.equals(model.HIER_CHILD_NAME_KEY)) {
+                String key = column.getKey();
+                String qname = column.getQuotedName();
+                if (key.equals(model.HIER_PARENT_KEY) ||
+                        key.equals(model.HIER_CHILD_NAME_KEY)) {
                     wheres.add(qname + " = ?");
                     whereColumns.add(column);
                 } else {
@@ -775,9 +768,9 @@ public class SQLInfo {
                     whatColumns.add(column);
                 }
             }
-            Select select = new Select(dialect);
+            Select select = new Select(table);
             select.setWhat(StringUtils.join(whats, ", "));
-            select.setFrom(table.getQuotedName(dialect));
+            select.setFrom(table.getQuotedName());
             select.setWhere(StringUtils.join(wheres, " AND "));
             selectByChildNameAllSql = select.getStatement();
             selectByChildNameAllWhatColumns = whatColumns;
@@ -791,14 +784,14 @@ public class SQLInfo {
             List<String> wheresProperties = new ArrayList<String>(2);
             List<String> wheresRegular = new ArrayList<String>(2);
             for (Column column : table.getColumns()) {
-                String name = column.getName();
-                String qname = column.getQuotedName(dialect);
-                if (name.equals(model.HIER_PARENT_KEY) ||
-                        name.equals(model.HIER_CHILD_NAME_KEY)) {
+                String key = column.getKey();
+                String qname = column.getQuotedName();
+                if (key.equals(model.HIER_PARENT_KEY) ||
+                        key.equals(model.HIER_CHILD_NAME_KEY)) {
                     wheresRegular.add(qname + " = ?");
                     wheresProperties.add(qname + " = ?");
                     whereColumns.add(column);
-                } else if (name.equals(model.HIER_CHILD_ISPROPERTY_KEY)) {
+                } else if (key.equals(model.HIER_CHILD_ISPROPERTY_KEY)) {
                     wheresRegular.add(qname + " = " +
                             dialect.toBooleanValueString(false));
                     wheresProperties.add(qname + " = " +
@@ -808,9 +801,9 @@ public class SQLInfo {
                     whatColumns.add(column);
                 }
             }
-            Select select = new Select(dialect);
+            Select select = new Select(table);
             select.setWhat(StringUtils.join(whats, ", "));
-            select.setFrom(table.getQuotedName(dialect));
+            select.setFrom(table.getQuotedName());
             // regular children
             select.setWhere(StringUtils.join(wheresRegular, " AND "));
             selectByChildNameRegularSql = select.getStatement();
@@ -830,24 +823,22 @@ public class SQLInfo {
             ArrayList<String> whats = new ArrayList<String>(2);
             Column column = table.getColumn(model.MAIN_KEY);
             whatColumns.add(column);
-            whats.add(column.getQuotedName(dialect));
+            whats.add(column.getQuotedName());
             column = table.getColumn(model.MAIN_PRIMARY_TYPE_KEY);
             whatColumns.add(column);
-            whats.add(column.getQuotedName(dialect));
-            Select select = new Select(dialect);
+            whats.add(column.getQuotedName());
+            Select select = new Select(table);
             select.setWhat(StringUtils.join(whats, ", "));
-            select.setFrom(table.getQuotedName(dialect));
-            String where = table.getColumn(model.HIER_PARENT_KEY).getQuotedName(
-                    dialect) +
+            select.setFrom(table.getQuotedName());
+            String where = table.getColumn(model.HIER_PARENT_KEY).getQuotedName() +
                     " = ?";
             select.setWhere(where);
             selectChildrenIdsAndTypesSql = select.getStatement();
             selectChildrenIdsAndTypesWhatColumns = whatColumns;
             // now only complex properties
             where += " AND " +
-                    table.getColumn(model.HIER_CHILD_ISPROPERTY_KEY).getQuotedName(
-                            dialect) + " = " +
-                    dialect.toBooleanValueString(true);
+                    table.getColumn(model.HIER_CHILD_ISPROPERTY_KEY).getQuotedName() +
+                    " = " + dialect.toBooleanValueString(true);
             select.setWhere(where);
             selectComplexChildrenIdsAndTypesSql = select.getStatement();
         }
@@ -857,8 +848,7 @@ public class SQLInfo {
             // insert (implicitly auto-generated sequences not included)
             Collection<Column> columns = table.getColumns();
             List<Column> insertColumns = new ArrayList<Column>(columns.size());
-            Insert insert = new Insert(dialect);
-            insert.setTable(table);
+            Insert insert = new Insert(table);
             for (Column column : columns) {
                 if (column.isIdentity()) {
                     // identity column is never inserted
@@ -877,8 +867,8 @@ public class SQLInfo {
             Column identityColumn = null;
             for (Column column : table.getColumns()) {
                 if (column.isIdentity()) {
-                    sql = dialect.getIdentitySelectString(table.getName(),
-                            column.getName(), column.getSqlType());
+                    sql = dialect.getIdentitySelectString(tableName,
+                            column.getPhysicalName(), column.getSqlType());
                     identityColumn = column;
                     break; // only one identity per table
                 }
@@ -893,17 +883,17 @@ public class SQLInfo {
             List<String> wheres = new LinkedList<String>();
             List<Column> whereColumns = new LinkedList<Column>();
             for (Column column : table.getColumns()) {
-                if (column.getName().equals(model.MAIN_KEY)) {
-                    wheres.add(column.getQuotedName(dialect) + " = ?");
+                if (column.getKey().equals(model.MAIN_KEY)) {
+                    wheres.add(column.getQuotedName() + " = ?");
                     whereColumns.add(column);
                 } else {
-                    newValues.add(column.getQuotedName(dialect) + " = ?");
+                    newValues.add(column.getQuotedName() + " = ?");
                     updateByIdColumns.add(column);
                 }
             }
             updateByIdColumns.addAll(whereColumns);
-            Update update = new Update(dialect);
-            update.setTable(table.getQuotedName(dialect));
+            Update update = new Update(table);
+            update.setTable(table.getQuotedName());
             update.setNewValues(StringUtils.join(newValues, ", "));
             update.setWhere(StringUtils.join(wheres, " AND "));
             updateByIdSqlMap.put(tableName, update.getStatement());
@@ -911,12 +901,11 @@ public class SQLInfo {
         }
 
         protected void postProcessDelete() {
-            Delete delete = new Delete(dialect);
-            delete.setTable(table);
+            Delete delete = new Delete(table);
             List<String> wheres = new LinkedList<String>();
             for (Column column : table.getColumns()) {
-                if (column.getName().equals(model.MAIN_KEY)) {
-                    wheres.add(column.getQuotedName(dialect) + " = ?");
+                if (column.getKey().equals(model.MAIN_KEY)) {
+                    wheres.add(column.getQuotedName() + " = ?");
                 }
             }
             delete.setWhere(StringUtils.join(wheres, " AND "));
@@ -934,16 +923,15 @@ public class SQLInfo {
             copyHierColumns = new ArrayList<Column>(2);
             copyHierColumnsExplicitName = new ArrayList<Column>(3);
             copyHierColumnsCreateVersion = new ArrayList<Column>(3);
-            Insert insert = new Insert(dialect);
-            insert.setTable(table);
+            Insert insert = new Insert(table);
             for (Column column : columns) {
                 if (column.isIdentity()) {
                     // identity column is never copied
                     continue;
                 }
                 insert.addColumn(column);
-                String quotedName = column.getQuotedName(dialect);
-                String key = column.getName();
+                String quotedName = column.getQuotedName();
+                String key = column.getKey();
                 if (key.equals(model.MAIN_KEY) ||
                         key.equals(model.HIER_PARENT_KEY)) {
                     // explicit id/parent value (id if not identity column)
@@ -975,9 +963,9 @@ public class SQLInfo {
                 }
             }
             copyHierWhereColumn = table.getColumn(model.MAIN_KEY);
-            Select select = new Select(dialect);
-            select.setFrom(table.getQuotedName(dialect));
-            select.setWhere(copyHierWhereColumn.getQuotedName(dialect) + " = ?");
+            Select select = new Select(table);
+            select.setFrom(table.getQuotedName());
+            select.setWhere(copyHierWhereColumn.getQuotedName() + " = ?");
             // without explicit name nor version creation (normal)
             select.setWhat(StringUtils.join(selectWhats, ", "));
             insert.setValues(select.getStatement());
@@ -994,12 +982,10 @@ public class SQLInfo {
 
         // copy of a fragment
         protected void postProcessCopy() {
-            String tableName = table.getName();
             Collection<Column> columns = table.getColumns();
             List<String> selectWhats = new ArrayList<String>(columns.size());
             Column copyIdColumn = table.getColumn(model.MAIN_KEY);
-            Insert insert = new Insert(dialect);
-            insert.setTable(table);
+            Insert insert = new Insert(table);
             for (Column column : columns) {
                 if (column.isIdentity()) {
                     // identity column is never copied
@@ -1011,13 +997,13 @@ public class SQLInfo {
                     selectWhats.add("?");
                 } else {
                     // otherwise copy value
-                    selectWhats.add(column.getQuotedName(dialect));
+                    selectWhats.add(column.getQuotedName());
                 }
             }
-            Select select = new Select(dialect);
+            Select select = new Select(table);
             select.setWhat(StringUtils.join(selectWhats, ", "));
-            select.setFrom(table.getQuotedName(dialect));
-            select.setWhere(copyIdColumn.getQuotedName(dialect) + " = ?");
+            select.setFrom(table.getQuotedName());
+            select.setWhere(copyIdColumn.getQuotedName() + " = ?");
             insert.setValues(select.getStatement());
             copySqlMap.put(tableName, insert.getStatement());
             copyIdColumnMap.put(tableName, copyIdColumn);
@@ -1060,8 +1046,8 @@ public class SQLInfo {
         List<String> whats = new LinkedList<String>();
         List<String> wheres = new LinkedList<String>();
         for (Column column : table.getColumns()) {
-            String qname = column.getQuotedName(dialect);
-            if (freeColumnsList.contains(column.getName())) {
+            String qname = column.getQuotedName();
+            if (freeColumnsList.contains(column.getKey())) {
                 whereColumns.add(column);
                 wheres.add(qname + " = ?");
             } else {
@@ -1069,16 +1055,16 @@ public class SQLInfo {
                 whats.add(qname);
             }
         }
-        Select select = new Select(dialect);
+        Select select = new Select(table);
         select.setWhat(StringUtils.join(whats, ", "));
-        select.setFrom(table.getQuotedName(dialect));
+        select.setFrom(table.getQuotedName());
         select.setWhere(StringUtils.join(wheres, " AND "));
         List<String> orders = new LinkedList<String>();
         for (int i = 0; i < orderBys.length; i++) {
             String name = orderBys[i++];
             String ascdesc = orderBys[i].equals(ORDER_DESC) ? " " + ORDER_DESC
                     : "";
-            orders.add(table.getColumn(name).getQuotedName(dialect) + ascdesc);
+            orders.add(table.getColumn(name).getQuotedName() + ascdesc);
         }
         select.setOrderBy(StringUtils.join(orders, ", "));
         return new SQLInfoSelect(select.getStatement(), whatColumns,
@@ -1096,13 +1082,12 @@ public class SQLInfo {
         List<Column> whereColumns = new LinkedList<Column>();
         List<String> whats = new LinkedList<String>();
         List<String> wheres = new LinkedList<String>();
-        String join = table.getColumn(model.MAIN_KEY).getFullQuotedName(dialect) +
-                " = " +
-                joinTable.getColumn(model.MAIN_KEY).getFullQuotedName(dialect);
+        String join = table.getColumn(model.MAIN_KEY).getFullQuotedName() +
+                " = " + joinTable.getColumn(model.MAIN_KEY).getFullQuotedName();
         wheres.add(join);
         for (Column column : table.getColumns()) {
-            String qname = column.getFullQuotedName(dialect);
-            if (freeColumnsList.contains(column.getName())) {
+            String qname = column.getFullQuotedName();
+            if (freeColumnsList.contains(column.getKey())) {
                 whereColumns.add(column);
                 wheres.add(qname + " = ?");
             } else {
@@ -1113,12 +1098,11 @@ public class SQLInfo {
         for (String name : joinCriteria) {
             Column column = joinTable.getColumn(name);
             whereColumns.add(column);
-            wheres.add(column.getFullQuotedName(dialect) + " = ?");
+            wheres.add(column.getFullQuotedName() + " = ?");
         }
-        Select select = new Select(dialect);
+        Select select = new Select(table);
         select.setWhat(StringUtils.join(whats, ", "));
-        select.setFrom(table.getQuotedName(dialect) + ", " +
-                joinTable.getQuotedName(dialect));
+        select.setFrom(table.getQuotedName() + ", " + joinTable.getQuotedName());
         select.setWhere(StringUtils.join(wheres, " AND "));
         return new SQLInfoSelect(select.getStatement(), whatColumns,
                 whereColumns);
