@@ -302,17 +302,32 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 docTitleT.setText(doc.getTitle());
             }
             addTextElement(docInfo, docRepositoryTag, repoID);
+
+            addTextElement(docInfo, docSchemaNameTag, schema);
+            addTextElement(docInfo, docFieldNameTag, blobField);
+            addTextElement(docInfo, docBlobFieldNameTag, blobField);
             Element docFieldPathT = docInfo.addElement(docfieldPathTag);
+            Element docBlobFieldPathT = docInfo.addElement(docBlobFieldPathTag);
             if (blobPropertyName != null) {
                 // FIXME AT: NXP-2306: send blobPropertyName correctly (?)
                 docFieldPathT.setText(blobPropertyName);
+                docBlobFieldPathT.setText(blobPropertyName);
             } else {
-                addTextElement(docInfo, docSchemaNameTag, schema);
-                addTextElement(docInfo, docFieldNameTag, blobField);
                 if (schema != null && blobField != null) {
-                    docFieldPathT.setText(schema + '/' + blobField);
+                    docFieldPathT.setText(schema + ':' + blobField);
+                    docBlobFieldPathT.setText(schema + ':' + blobField);
                 }
             }
+            addTextElement(docInfo, docFilenameFieldNameTag, filenameField);
+            Element docFilenameFieldPathT = docInfo.addElement(docFilenameFieldPathTag);
+            if (filenamePropertyName != null) {
+                docFilenameFieldPathT.setText(filenamePropertyName);
+            } else {
+                if (schema != null && blobField != null) {
+                    docFilenameFieldPathT.setText(schema + ':' + filenameField);
+                }
+            }
+
             addTextElement(docInfo, docfileNameTag, filename);
             addTextElement(docInfo, docTypeTag, docType);
             addTextElement(docInfo, docMimetypeTag, mimetype);
@@ -327,6 +342,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             }
 
             // template information for ACTION_CREATE_DOCUMENT_FROM_TEMPLATE
+
             Element templateDocInfo = root.addElement(templateDocumentTag);
             addTextElement(templateDocInfo, docRefTag, templateDocRef);
             docPathT = templateDocInfo.addElement(docPathTag);
@@ -338,9 +354,12 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
             addTextElement(templateDocInfo, docRepositoryTag, templateRepoID);
             addTextElement(templateDocInfo, docSchemaNameTag, templateSchema);
             addTextElement(templateDocInfo, docFieldNameTag, templateBlobField);
+            addTextElement(templateDocInfo, docBlobFieldNameTag, templateBlobField);
             docFieldPathT = templateDocInfo.addElement(docfieldPathTag);
+            docBlobFieldPathT = templateDocInfo.addElement(docBlobFieldPathTag);
             if (templateSchema != null && templateBlobField != null) {
-                docFieldPathT.setText(templateSchema + "/" + templateBlobField);
+                docFieldPathT.setText(templateSchema + ":" + templateBlobField);
+                docBlobFieldPathT.setText(templateSchema + ":" + templateBlobField);
             }
             addTextElement(templateDocInfo, docMimetypeTag, mimetype);
             addTextElement(templateDocInfo, docFileExtensionTag,
