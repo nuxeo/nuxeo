@@ -34,12 +34,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.TypeRef;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
-import org.nuxeo.ecm.core.schema.types.FieldImpl;
 import org.nuxeo.ecm.core.schema.types.ListType;
-import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
@@ -180,43 +177,6 @@ public class Model {
 
     public static final String LOCK_KEY = "lock";
 
-    private static TypeRef<? extends Type> STRING_TYPE_REF = StringType.INSTANCE.getRef();
-
-    private static TypeRef<? extends Type> DATE_TYPE_REF = DateType.INSTANCE.getRef();
-
-    private static TypeRef<? extends Type> BOOLEAN_TYPE_REF = BooleanType.INSTANCE.getRef();
-
-    public static Field SYSTEM_LIFECYCLE_POLICY_FIELD = new FieldImpl(
-            QName.valueOf(MISC_LIFECYCLE_POLICY_PROP), TypeRef.NULL,
-            STRING_TYPE_REF);
-
-    public static Field SYSTEM_LIFECYCLE_STATE_FIELD = new FieldImpl(
-            QName.valueOf(MISC_LIFECYCLE_STATE_PROP), TypeRef.NULL,
-            STRING_TYPE_REF);
-
-    public static Field SYSTEM_DIRTY_FIELD = new FieldImpl(
-            QName.valueOf(MISC_DIRTY_PROP), TypeRef.NULL, STRING_TYPE_REF);
-
-    public static Field VERSION_VERSIONABLE_FIELD = new FieldImpl(
-            QName.valueOf(VERSION_VERSIONABLE_PROP), TypeRef.NULL,
-            STRING_TYPE_REF); // TODO convert from long to string in some cases
-
-    public static Field VERSION_LABEL_FIELD = new FieldImpl(
-            QName.valueOf(VERSION_LABEL_PROP), TypeRef.NULL, STRING_TYPE_REF);
-
-    public static Field VERSION_DESCRIPTION_FIELD = new FieldImpl(
-            QName.valueOf(VERSION_DESCRIPTION_PROP), TypeRef.NULL,
-            STRING_TYPE_REF);
-
-    public static Field VERSION_CREATED_FIELD = new FieldImpl(
-            QName.valueOf(VERSION_CREATED_PROP), TypeRef.NULL, DATE_TYPE_REF);
-
-    public static Field MAIN_CHECKED_IN_FIELD = new FieldImpl(
-            QName.valueOf(MAIN_CHECKED_IN_PROP), TypeRef.NULL, BOOLEAN_TYPE_REF);
-
-    public static Field LOCK_FIELD = new FieldImpl(QName.valueOf(LOCK_PROP),
-            TypeRef.NULL, STRING_TYPE_REF);
-
     private final BinaryManager binaryManager;
 
     /** The id generation policy. */
@@ -265,6 +225,9 @@ public class Model {
 
     public final Set<String> readOnlyProperties;
 
+    /** Properties that don't come from the schema manager. */
+    private HashMap<String, Type> specialPropertyTypes;
+
     public Model(RepositoryImpl repository, SchemaManager schemaManager) {
         binaryManager = repository.getBinaryManager();
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
@@ -287,6 +250,8 @@ public class Model {
         typeCollectionFragments = new HashMap<String, Set<String>>();
         propertyFragment = new HashMap<String, String>();
         propertyFragmentKey = new HashMap<String, String>();
+
+        specialPropertyTypes = new HashMap<String, Type>();
 
         initMainModel();
         initVersionsModel();
@@ -410,6 +375,10 @@ public class Model {
         return propertyFragmentKey.get(propertyName);
     }
 
+    public Type getSpecialPropertyType(String propertyName) {
+        return specialPropertyTypes.get(propertyName);
+    }
+
     protected void addTypeSimpleFragment(String typeName, String fragmentName) {
         Set<String> fragments = typeSimpleFragments.get(typeName);
         if (fragments == null) {
@@ -506,6 +475,7 @@ public class Model {
                 MAIN_MAJOR_VERSION_KEY, PropertyType.LONG, fragmentKeysType);
         initSimpleROProperty(mainFragmentName, MAIN_MINOR_VERSION_PROP,
                 MAIN_MINOR_VERSION_KEY, PropertyType.LONG, fragmentKeysType);
+        specialPropertyTypes.put(MAIN_CHECKED_IN_PROP, BooleanType.INSTANCE);
     }
 
     /**
@@ -521,6 +491,10 @@ public class Model {
                 MISC_LIFECYCLE_STATE_KEY, PropertyType.STRING, fragmentKeysType);
         initSimpleProperty(MISC_TABLE_NAME, MISC_DIRTY_PROP, MISC_DIRTY_KEY,
                 PropertyType.BOOLEAN, fragmentKeysType);
+        specialPropertyTypes.put(MISC_LIFECYCLE_POLICY_PROP,
+                StringType.INSTANCE);
+        specialPropertyTypes.put(MISC_LIFECYCLE_STATE_PROP, StringType.INSTANCE);
+        specialPropertyTypes.put(MISC_DIRTY_PROP, BooleanType.INSTANCE);
     }
 
     /**
@@ -537,6 +511,10 @@ public class Model {
                 VERSION_LABEL_KEY, PropertyType.STRING, fragmentKeysType);
         initSimpleROProperty(VERSION_TABLE_NAME, VERSION_DESCRIPTION_PROP,
                 VERSION_DESCRIPTION_KEY, PropertyType.STRING, fragmentKeysType);
+        specialPropertyTypes.put(VERSION_VERSIONABLE_PROP, StringType.INSTANCE);
+        specialPropertyTypes.put(VERSION_CREATED_PROP, DateType.INSTANCE);
+        specialPropertyTypes.put(VERSION_LABEL_PROP, StringType.INSTANCE);
+        specialPropertyTypes.put(VERSION_DESCRIPTION_PROP, StringType.INSTANCE);
     }
 
     /**
@@ -560,6 +538,7 @@ public class Model {
         fragmentsKeysType.put(LOCK_TABLE_NAME, fragmentKeysType);
         initSimpleProperty(LOCK_TABLE_NAME, LOCK_PROP, LOCK_KEY,
                 PropertyType.STRING, fragmentKeysType);
+        specialPropertyTypes.put(LOCK_PROP, StringType.INSTANCE);
     }
 
     /**
@@ -576,7 +555,8 @@ public class Model {
         fragmentKeysType.put(ACL_GROUP_KEY, PropertyType.STRING);
         collectionTables.put(ACL_TABLE_NAME, PropertyType.COLL_ACL);
         collectionMakers.put(ACL_TABLE_NAME, ACLsFragment.MAKER);
-        collectionOrderBy.put(ACL_TABLE_NAME, Collections.singletonList(ACL_POS_KEY));
+        collectionOrderBy.put(ACL_TABLE_NAME,
+                Collections.singletonList(ACL_POS_KEY));
         propertyFragment.put(ACL_PROP, ACL_TABLE_NAME);
         propertyType.put(ACL_PROP, PropertyType.COLL_ACL);
     }

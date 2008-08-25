@@ -550,26 +550,9 @@ public class SQLSession implements Session {
             Type parentType, boolean readonly, int complexListSize)
             throws DocumentException {
         boolean complexList = parentType instanceof ListType;
-        Field field;
-        if (Model.MISC_LIFECYCLE_POLICY_PROP.equals(name)) {
-            field = Model.SYSTEM_LIFECYCLE_POLICY_FIELD;
-        } else if (Model.MISC_LIFECYCLE_STATE_PROP.equals(name)) {
-            field = Model.SYSTEM_LIFECYCLE_STATE_FIELD;
-        } else if (Model.MISC_DIRTY_PROP.equals(name)) {
-            field = Model.SYSTEM_DIRTY_FIELD;
-        } else if (Model.VERSION_VERSIONABLE_PROP.equals(name)) {
-            field = Model.VERSION_VERSIONABLE_FIELD;
-        } else if (Model.VERSION_LABEL_PROP.equals(name)) {
-            field = Model.VERSION_LABEL_FIELD;
-        } else if (Model.VERSION_DESCRIPTION_PROP.equals(name)) {
-            field = Model.VERSION_DESCRIPTION_FIELD;
-        } else if (Model.VERSION_CREATED_PROP.equals(name)) {
-            field = Model.VERSION_CREATED_FIELD;
-        } else if (Model.MAIN_CHECKED_IN_PROP.equals(name)) {
-            field = Model.MAIN_CHECKED_IN_FIELD;
-        } else if (Model.LOCK_PROP.equals(name)) {
-            field = Model.LOCK_FIELD;
-        } else {
+        Type type = session.getModel().getSpecialPropertyType(name);
+        if (type == null) {
+            Field field;
             if (complexList) {
                 field = ((ListType) parentType).getField();
             } else {
@@ -580,9 +563,9 @@ public class SQLSession implements Session {
                 // qualify if necessary (some callers pass unprefixed names)
                 name = field.getName().getPrefixedName();
             }
+            type = field.getType();
         }
 
-        Type type = field.getType();
         if (type.isSimpleType()) {
             SimpleProperty prop;
             try {
