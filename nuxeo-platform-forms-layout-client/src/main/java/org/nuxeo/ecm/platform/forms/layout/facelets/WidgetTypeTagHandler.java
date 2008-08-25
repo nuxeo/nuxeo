@@ -121,6 +121,6 @@ public class WidgetTypeTagHandler extends TagHandler {
         } finally {
             ctx.setVariableMapper(orig);
         }
-
     }
+
 }

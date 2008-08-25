@@ -32,17 +32,14 @@ public class PublishingException extends ClientException {
     private static final long serialVersionUID = 1L;
 
     public PublishingException() {
-
     }
 
     public PublishingException(String message) {
         super(message);
-
     }
 
     public PublishingException(String message, Throwable cause) {
         super(message, cause);
-
     }
 
     public PublishingException(Throwable cause) {

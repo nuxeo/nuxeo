@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ui.web.component.list;
 
 import java.io.Externalizable;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.Serializable;
@@ -35,6 +36,7 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ui.component.UIFileUpload;
 import org.nuxeo.ecm.platform.ui.web.directory.ChainSelect;
 
 /**
@@ -144,12 +146,6 @@ final class StampState implements Externalizable {
         return rows.get(dk);
     }
 
-    private static boolean needToSaveSelfState(UIComponent stamp) {
-        // XXX AT: this component saves selections in other fields than usual
-        // ones
-        return stamp instanceof ChainSelect;
-    }
-
     /**
      * Saves the state of a stamp. This method is called when the currency of
      * this component is changed so that the state of this stamp can be
@@ -165,18 +161,29 @@ final class StampState implements Externalizable {
         if (stamp.isTransient()) {
             return null;
         }
-        Object[] state = new Object[3];
 
         // because base components use shallow copies in their saveState method,
         // need to copy separately properties that are likely to change as well
         // as submitted value that is not saved in UIInput state
         Object[] selfState = new Object[5];
+
         // XXX AT: NXP-1508: saving the whole state is overkill, but it must be
-        // done for some of our components that save some info in other fields
-        // than submitted value, local value, etc.
-        if (needToSaveSelfState(stamp)) {
-            selfState[0] = stamp.saveState(context);
+        // done for some components that save some info in other fields than
+        // standard EditableValueHolder fields.
+        Object[] innerSelfState = new Object[5];
+        if (stamp instanceof ChainSelect) {
+            innerSelfState[0] = stamp.saveState(context);
+        } else if (stamp instanceof UIFileUpload) {
+            innerSelfState[0] = stamp.saveState(context);
+            UIFileUpload fileUpload = (UIFileUpload) stamp;
+            innerSelfState[1] = fileUpload.getLocalContentType();
+            innerSelfState[2] = fileUpload.getLocalFileName();
+            innerSelfState[3] = fileUpload.getLocalFileSize();
+            innerSelfState[4] = fileUpload.getLocalInputStream();
         }
+        selfState[0] = innerSelfState;
+
+        // editable value holder standard values saving
         if (stamp instanceof EditableValueHolder) {
             EditableValueHolder evh = (EditableValueHolder) stamp;
             selfState[1] = evh.getSubmittedValue();
@@ -184,6 +191,7 @@ final class StampState implements Externalizable {
             selfState[3] = evh.isLocalValueSet();
             selfState[4] = evh.isValid();
         }
+        Object[] state = new Object[3];
         state[0] = selfState;
 
         int facetCount = stamp.getFacets().size();
@@ -216,7 +224,7 @@ final class StampState implements Externalizable {
             childStateArray = new Object[childCount];
             boolean wasAllTransient = true;
             int i = 0;
-            for (UIComponent child: stamp.getChildren()) {
+            for (UIComponent child : stamp.getChildren()) {
                 if (!child.isTransient()) {
                     wasAllTransient = false;
                     childStateArray[i] = saveStampState(context, child);
@@ -251,9 +259,22 @@ final class StampState implements Externalizable {
         Object[] state = (Object[]) stampState;
 
         Object[] selfState = (Object[]) state[0];
-        if (needToSaveSelfState(stamp)) {
-            stamp.restoreState(context, selfState[0]);
+
+        // NXP-1508: restoring specific values for components that do not follow
+        // EditableValueHolder standard interface.
+        Object[] innerSelfState = (Object[]) selfState[0];
+        if (stamp instanceof ChainSelect) {
+            stamp.restoreState(context, innerSelfState[0]);
+        } else if (stamp instanceof UIFileUpload) {
+            stamp.restoreState(context, innerSelfState[0]);
+            UIFileUpload fileUpload = (UIFileUpload) stamp;
+            fileUpload.setLocalContentType((String) innerSelfState[1]);
+            fileUpload.setLocalFileName((String) innerSelfState[2]);
+            fileUpload.setLocalFileSize((Integer) innerSelfState[3]);
+            fileUpload.setLocalInputStream((InputStream) innerSelfState[4]);
         }
+
+        // editable value holder standard values saving
         if (stamp instanceof EditableValueHolder) {
             EditableValueHolder evh = (EditableValueHolder) stamp;
             evh.setSubmittedValue(selfState[1]);
@@ -278,7 +299,7 @@ final class StampState implements Externalizable {
         Object[] childStateArray = (Object[]) state[2];
         int childArrayCount = childStateArray.length;
         int i = 0;
-        for (UIComponent child: stamp.getChildren()) {
+        for (UIComponent child : stamp.getChildren()) {
             if (!child.isTransient() && i < childArrayCount) {
                 restoreStampState(context, child, childStateArray[i]);
                 i++;

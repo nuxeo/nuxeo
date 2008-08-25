@@ -23,7 +23,7 @@ import javax.annotation.security.PermitAll;
 import javax.ejb.Remove;
 
 import org.jboss.seam.annotations.Destroy;
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.types.Type;
