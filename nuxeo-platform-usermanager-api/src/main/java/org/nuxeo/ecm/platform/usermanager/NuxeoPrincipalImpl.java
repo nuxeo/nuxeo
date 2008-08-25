@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -280,7 +281,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     public boolean isAdministrator() {
         try {
-            return isMemberOf("administrators");
+            return isMemberOf(SecurityConstants.ADMINISTRATORS);
         } catch (ClientException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

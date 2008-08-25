@@ -59,11 +59,9 @@ import org.nuxeo.ecm.platform.audit.ejb.local.LogsLocal;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Stateful bean allowing to query the logs.
- *
+ * Stateless bean allowing to query the logs.
  * <p>
  * This class takes advantage of EJBQL.
- * </p>
  *
  * :XXX: http://jira.nuxeo.org/browse/NXP-514
  *

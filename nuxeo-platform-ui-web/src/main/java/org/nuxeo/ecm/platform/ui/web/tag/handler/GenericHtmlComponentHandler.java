@@ -43,7 +43,6 @@ public class GenericHtmlComponentHandler extends HtmlComponentHandler {
 
     public GenericHtmlComponentHandler(ComponentConfig config) {
         super(config);
-        // TODO Auto-generated constructor stub
     }
 
     /**
