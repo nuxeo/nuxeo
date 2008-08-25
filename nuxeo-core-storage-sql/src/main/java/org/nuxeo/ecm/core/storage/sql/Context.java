@@ -132,7 +132,7 @@ public class Context {
         deletedInvalidations = new HashSet<Serializable>();
 
         // TODO use a dedicated subclass for the hierarchy table
-        isHierarchy = tableName.equals(model.hierFragmentName);
+        isHierarchy = tableName.equals(model.hierTableName);
         if (isHierarchy) {
             knownChildren = new HashMap<Serializable, Children>();
         } else {

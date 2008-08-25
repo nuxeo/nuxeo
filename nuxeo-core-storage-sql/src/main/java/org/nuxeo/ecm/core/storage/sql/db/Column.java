@@ -42,9 +42,11 @@ public class Column implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final Table table;
+    protected final Table table;
 
-    private final String name;
+    protected final Dialect dialect;
+
+    protected final String physicalName;
 
     /** The backend type */
     private final PropertyType type;
@@ -80,32 +82,33 @@ public class Column implements Serializable {
      * type.
      *
      * @param table the column's table
-     * @param name the column name
+     * @param physicalName the column name
      * @param type the backend type
      * @param sqlType the SQL type
      * @param key the associated field name
      * @param model the model (to fetch binaries)
      */
-    public Column(Table table, String name, PropertyType type, int sqlType,
-            String key, Model model) {
+    public Column(Table table, String physicalName, PropertyType type,
+            int sqlType, String key, Model model) {
         this.table = table;
-        this.name = name;
+        this.dialect = table.dialect;
+        this.physicalName = physicalName;
         this.type = type;
         this.sqlType = sqlType;
         this.key = key;
         this.model = model;
     }
 
-    public String getName() {
-        return name;
+    public String getPhysicalName() {
+        return physicalName;
     }
 
-    public String getQuotedName(Dialect dialect) {
-        return dialect.openQuote() + name + dialect.closeQuote();
+    public String getQuotedName() {
+        return dialect.openQuote() + physicalName + dialect.closeQuote();
     }
 
-    public String getFullQuotedName(Dialect dialect) {
-        return table.getQuotedName(dialect) + '.' + getQuotedName(dialect);
+    public String getFullQuotedName() {
+        return table.getQuotedName() + '.' + getQuotedName();
     }
 
     public int getSqlType() {
@@ -185,7 +188,7 @@ public class Column implements Serializable {
         return foreignKey;
     }
 
-    public String getSqlTypeString(Dialect dialect) {
+    public String getSqlTypeString() {
         return dialect.getTypeName(sqlType, getLength(), getPrecision(),
                 getScale());
     }
@@ -281,7 +284,7 @@ public class Column implements Serializable {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + name + ')';
+        return getClass().getSimpleName() + '(' + physicalName + ')';
     }
 
 }

@@ -26,6 +26,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.PropertyType;
 
 /**
  * A SQL table.
@@ -36,32 +38,38 @@ public class Table implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final String name;
+    protected final Database database;
 
+    protected final Dialect dialect;
+
+    protected final String physicalName;
+
+    /** Map of logical names to columns. */
     private final LinkedHashMap<String, Column> columns;
 
-    private Column primaryColumn;
-
+    /** Logical names of indexed columns. */
     private List<String[]> indexedColumns;
 
     /**
      * Creates a new empty table.
      *
-     * @param name the table name.
+     * @param physicalName the table name
      */
-    public Table(String name) {
-        this.name = name;
+    public Table(Database database, String physicalName) {
+        this.database = database;
+        this.dialect = database.dialect;
+        this.physicalName = physicalName;
         // we use a LinkedHashMap to have deterministic ordering
         columns = new LinkedHashMap<String, Column>();
         indexedColumns = new LinkedList<String[]>();
     }
 
-    public String getName() {
-        return name;
+    public String getPhysicalName() {
+        return physicalName;
     }
 
-    public String getQuotedName(Dialect dialect) {
-        return dialect.openQuote() + name + dialect.closeQuote();
+    public String getQuotedName() {
+        return dialect.openQuote() + physicalName + dialect.closeQuote();
     }
 
     public Column getColumn(String name) {
@@ -77,19 +85,17 @@ public class Table implements Serializable {
      *
      * @param column the column
      */
-    public void addColumn(Column column) throws IllegalArgumentException {
-        String name = column.getName();
-        if (columns.containsKey(name)) {
-            throw new IllegalArgumentException("duplicate column " + column);
+    public Column addColumn(String name, PropertyType type, int sqlType,
+            String key, Model model) throws IllegalArgumentException {
+        String physicalName = database.getColumnPhysicalName(name);
+        if (columns.containsKey(physicalName)) {
+            throw new IllegalArgumentException("duplicate column " +
+                    physicalName);
         }
-        if (column.isPrimary()) {
-            if (primaryColumn != null) {
-                throw new IllegalArgumentException("Identity column " +
-                        primaryColumn + " redefined as " + column);
-            }
-            primaryColumn = column;
-        }
+        Column column = new Column(this, physicalName, type, sqlType, key,
+                model);
         columns.put(name, column);
+        return column;
     }
 
     /**
@@ -104,18 +110,13 @@ public class Table implements Serializable {
     /**
      * Computes the SQL statement to create the table.
      *
-     * @param dialect the dialect.
      * @return the SQL create string.
      */
-    public String getCreateSql(Dialect dialect) {
+    public String getCreateSql() {
         StringBuilder buf = new StringBuilder();
-        char openQuote = dialect.openQuote();
-        char closeQuote = dialect.closeQuote();
 
         buf.append("CREATE TABLE ");
-        buf.append(openQuote);
-        buf.append(name);
-        buf.append(closeQuote);
+        buf.append(getQuotedName());
         buf.append(" (");
 
         boolean first = true;
@@ -125,18 +126,16 @@ public class Table implements Serializable {
             } else {
                 buf.append(", ");
             }
-            buf.append(openQuote);
-            buf.append(column.getName());
-            buf.append(closeQuote);
+            buf.append(column.getQuotedName());
             buf.append(' ');
             if (column.isIdentity()) {
                 if (dialect.hasDataTypeInIdentityColumn()) {
-                    buf.append(column.getSqlTypeString(dialect));
+                    buf.append(column.getSqlTypeString());
                     buf.append(' ');
                 }
                 buf.append(dialect.getIdentityColumnString(column.getSqlType()));
             } else {
-                buf.append(column.getSqlTypeString(dialect));
+                buf.append(column.getSqlTypeString());
                 String defaultValue = column.getDefaultValue();
                 if (defaultValue != null) {
                     buf.append(" DEFAULT ");
@@ -162,42 +161,44 @@ public class Table implements Serializable {
      * Computes the SQL statement to finish creating the table, usually some
      * ALTER TABLE statements to add constraints.
      *
-     * @param dialect the dialect
      * @return the SQL strings
      */
-    public List<String> getPostCreateSqls(Dialect dialect) {
+    public List<String> getPostCreateSqls() {
         List<String> sqls = new LinkedList<String>();
         for (Column column : columns.values()) {
             if (column.isPrimary()) {
                 StringBuilder buf = new StringBuilder();
-                String constraintName = dialect.openQuote() + name + "_pk" +
+                String constraintName = dialect.openQuote() + physicalName +
+                        (dialect.storesUpperCaseIdentifiers() ? "_PK" : "_pk") +
                         dialect.closeQuote();
                 buf.append("ALTER TABLE ");
-                buf.append(getQuotedName(dialect));
+                buf.append(getQuotedName());
                 String s = dialect.getAddPrimaryKeyConstraintString(constraintName);
                 // cosmetic
                 s = s.replace(" add constraint ", " ADD CONSTRAINT ");
                 s = s.replace(" primary key ", " PRIMARY KEY ");
                 buf.append(s);
                 buf.append('(');
-                buf.append(column.getQuotedName(dialect));
+                buf.append(column.getQuotedName());
                 buf.append(')');
                 sqls.add(buf.toString());
             }
             Table ft = column.getForeignTable();
             if (ft != null) {
                 Column fc = ft.getColumn(column.getForeignKey());
-                String constraintName = dialect.openQuote() + name + "_" +
-                        column.getName() + "_" + ft.getName() + "_fk" +
+                String constraintName = dialect.openQuote() + physicalName +
+                        "_" + column.getPhysicalName() + "_" +
+                        ft.getPhysicalName() +
+                        (dialect.storesUpperCaseIdentifiers() ? "_FK" : "_fk") +
                         dialect.closeQuote();
                 StringBuilder buf = new StringBuilder();
                 buf.append("ALTER TABLE ");
-                buf.append(getQuotedName(dialect));
+                buf.append(getQuotedName());
                 String s = dialect.getAddForeignKeyConstraintString(
                         constraintName,
-                        new String[] { column.getQuotedName(dialect) },
-                        ft.getQuotedName(dialect),
-                        new String[] { fc.getQuotedName(dialect) }, true);
+                        new String[] { column.getQuotedName() },
+                        ft.getQuotedName(),
+                        new String[] { fc.getQuotedName() }, true);
                 // cosmetic
                 s = s.replace(" add constraint ", " ADD CONSTRAINT ");
                 s = s.replace(" foreign key ", " FOREIGN KEY ");
@@ -209,21 +210,25 @@ public class Table implements Serializable {
             }
         }
         for (String[] columnNames : indexedColumns) {
-            String indexName = dialect.openQuote() +
-                    (dialect.qualifyIndexName() ? name + "_" : "") +
-                    StringUtils.join(columnNames, '_') + "_idx" +
-                    dialect.closeQuote();
             List<String> qcols = new LinkedList<String>();
+            List<String> pcols = new LinkedList<String>();
             for (String name : columnNames) {
-                qcols.add(getColumn(name).getQuotedName(dialect));
+                Column col = getColumn(name);
+                qcols.add(col.getQuotedName());
+                pcols.add(col.getPhysicalName());
             }
+            String indexName = dialect.openQuote() +
+                    (dialect.qualifyIndexName() ? physicalName + "_" : "") +
+                    StringUtils.join(pcols, '_') +
+                    (dialect.storesUpperCaseIdentifiers() ? "_IDX" : "_idx") +
+                    dialect.closeQuote();
             StringBuilder buf = new StringBuilder();
             buf.append("CREATE");
             // buf.append(unique ? " UNIQUE" : "");
             buf.append(" INDEX ");
             buf.append(indexName);
             buf.append(" ON ");
-            buf.append(getQuotedName(dialect));
+            buf.append(getQuotedName());
             buf.append(" (");
             buf.append(StringUtils.join(qcols, ", "));
             buf.append(')');
@@ -237,18 +242,15 @@ public class Table implements Serializable {
      * <p>
      * TODO drop constraints and indexes
      *
-     * @param dialect the dialect.
      * @return the SQL drop string.
      */
-    public String getDropSql(Dialect dialect) {
+    public String getDropSql() {
         StringBuilder buf = new StringBuilder();
         buf.append("DROP TABLE ");
         if (dialect.supportsIfExistsBeforeTableName()) {
             buf.append("IF EXISTS ");
         }
-        buf.append(dialect.openQuote());
-        buf.append(name);
-        buf.append(dialect.closeQuote());
+        buf.append(getQuotedName());
         buf.append(dialect.getCascadeConstraintsString());
         if (dialect.supportsIfExistsAfterTableName()) {
             buf.append(" IF EXISTS");
@@ -258,7 +260,7 @@ public class Table implements Serializable {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + name + ')';
+        return getClass().getSimpleName() + '(' + physicalName + ')';
     }
 
 }

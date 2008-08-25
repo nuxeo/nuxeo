@@ -35,16 +35,14 @@ import org.nuxeo.ecm.core.storage.StorageException;
  */
 public class Dialect {
 
-    private final org.hibernate.dialect.Dialect dialect;
+    protected final boolean storesUpperCaseIdentifiers;
 
-    private final String name;
+    protected final org.hibernate.dialect.Dialect dialect;
 
-    private final char openQuote;
-
-    private final char closeQuote;
+    protected final String name;
 
     /**
-     * Creats a {@code Dialect} by connecting to the datasource to check what
+     * Creates a {@code Dialect} by connecting to the datasource to check what
      * database is used.
      *
      * @throws StorageException if a SQL connection problem occurs
@@ -56,6 +54,7 @@ public class Dialect {
             DatabaseMetaData metadata = connection.getMetaData();
             dbname = metadata.getDatabaseProductName();
             dbmajor = metadata.getDatabaseMajorVersion();
+            storesUpperCaseIdentifiers = metadata.storesUpperCaseIdentifiers();
         } catch (SQLException e) {
             throw new StorageException(e);
         }
@@ -66,8 +65,6 @@ public class Dialect {
                     connection, e);
         }
         name = dialect.getClass().getSimpleName();
-        openQuote = dialect.openQuote();
-        closeQuote = dialect.closeQuote();
     }
 
     @Override
@@ -75,12 +72,24 @@ public class Dialect {
         return name;
     }
 
+    /*
+     * ----- DatabaseMetaData info -----
+     */
+
+    public boolean storesUpperCaseIdentifiers() {
+        return storesUpperCaseIdentifiers;
+    }
+
+    /*
+     * ----- Delegates to Hibernate -----
+     */
+
     public char openQuote() {
-        return openQuote;
+        return dialect.openQuote();
     }
 
     public char closeQuote() {
-        return closeQuote;
+        return dialect.closeQuote();
     }
 
     public SQLExceptionConverter buildSQLExceptionConverter() {
