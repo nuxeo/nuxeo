@@ -35,6 +35,18 @@ public class RootDescriptor implements Comparable<RootDescriptor> {
     @XNode("@priority")
     public int priority;
 
+    /**
+     *
+     */
+    public RootDescriptor() {
+        // TODO Auto-generated constructor stub
+    }
+
+    public RootDescriptor(String path, int priority) {
+        this.path = path;
+        this.priority = priority;
+    }
+
     public int compareTo(RootDescriptor o) {
         return o.priority - priority;
     }
