@@ -17,43 +17,39 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.domains;
+package org.nuxeo.ecm.webengine.rest.template;
 
-import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.HashMap;
 
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
+import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
-import org.nuxeo.runtime.deploy.FileChangeListener;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface WebDomain extends FileChangeListener {
+public class Template extends HashMap<String, Object> {
 
-    WebEngine2 getEngine();
+    private static final long serialVersionUID = 1L;
 
-    String getId();
+    protected WebContext2 ctx;
+    protected ScriptFile script;
 
-    String getType();
+    public Template(WebContext2 ctx, ScriptFile script) {
+        this.ctx = ctx;
+        this.script = script;
+    }
 
-    String getPath();
+    public WebContext2 getContext() {
+        return ctx;
+    }
 
-    // TODO this is specific to a document domain
-    String getRoot();
-
-    ScriptFile getIndexPage();
-
-    ScriptFile getErrorPage();
-
-    ScriptFile getDefaultPage();
-
-    String getScriptExtension();
-
-    String getTemplateExtension();
-
-    void flushCache();
-
-    ScriptFile getFile(String path) throws IOException;
+    public void render(OutputStream out) throws WebException {
+        ctx.render(script, this, new OutputStreamWriter(out));
+    }
 
 }
+

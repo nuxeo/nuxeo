@@ -42,6 +42,10 @@ public class DomainDescriptor {
     @XNode("@id")
     public String id;
 
+    /** the name of the type or he class of the resource to serve */
+    @XNode("@type")
+    public String type;
+
     @XNode("@path")
     public String path;
 
@@ -52,13 +56,13 @@ public class DomainDescriptor {
     public String root;
 
     @XNode("errorPage")
-    public String errorPage;
+    public String errorPage = "error.ftl";
 
     @XNode("indexPage")
-    public String indexPage;
+    public String indexPage = "index.ftl";
 
     @XNode("defaultPage")
-    public String defaultPage;
+    public String defaultPage = "default.ftl";
 
     @XNode("script-extension")
     public String scriptExtension = "groovy";

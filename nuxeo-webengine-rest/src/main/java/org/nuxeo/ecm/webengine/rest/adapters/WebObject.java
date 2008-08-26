@@ -21,12 +21,14 @@ package org.nuxeo.ecm.webengine.rest.adapters;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
 import javax.ws.rs.ProduceMime;
 
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
-import org.nuxeo.ecm.webengine.rest.domains.WebDomain;
+import org.nuxeo.ecm.webengine.rest.domains.DefaultWebDomain;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.types.WebType;
 import org.nuxeo.runtime.model.Adaptable;
@@ -63,7 +65,7 @@ public class WebObject implements Adaptable {
         return ctx;
     }
 
-    public WebDomain<?> getDomain() {
+    public DefaultWebDomain<?> getDomain() {
         return ctx.getDomain();
     }
 
@@ -84,7 +86,7 @@ public class WebObject implements Adaptable {
 
 
     public ScriptFile getActionScript(String action) {
-        WebDomain<?> domain = ctx.getDomain();
+        DefaultWebDomain<?> domain = ctx.getDomain();
         StringBuilder path = new StringBuilder();
         path.append('/').append(getType().getName()).append('/')
             .append(action).append('.').append(domain.getScriptExtension());
@@ -100,14 +102,14 @@ public class WebObject implements Adaptable {
     }
 
     public ScriptFile getTemplateScript(String action, String format) {
-        WebDomain<?> domain = ctx.getDomain();
-        if (format == null) {
-            format = "html";
-        }
+        DefaultWebDomain<?> domain = ctx.getDomain();
         StringBuilder path = new StringBuilder();
         path.append('/').append(getType().getName()).append('/')
-            .append(action).append('.').append(format).append('.')
-            .append(domain.getTemplateExtension());
+            .append(action).append('.');
+        if (format != null) {
+          path.append(format).append('.');
+        }
+        path.append(domain.getTemplateExtension());
         try {
             return domain.getFile(path.toString());
         } catch (Exception e) {
@@ -124,6 +126,10 @@ public class WebObject implements Adaptable {
     }
 
     public Collection<ActionDescriptor> getActions(String category) {
+        return null; //TODO
+    }
+
+    public Map<String, Collection<ActionDescriptor>> getActionsByCategory() throws WebException {
         return null; //TODO
     }
 

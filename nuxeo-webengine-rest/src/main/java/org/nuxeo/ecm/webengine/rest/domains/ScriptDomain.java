@@ -31,7 +31,7 @@ import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ScriptDomain extends WebDomain<DomainDescriptor> {
+public class ScriptDomain extends DefaultWebDomain<DomainDescriptor> {
 
     @GET
     public Object get() {

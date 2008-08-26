@@ -20,6 +20,8 @@
 package org.nuxeo.ecm.webengine.rest.adapters;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,10 +44,18 @@ public class DocumentObject extends WebObject {
         super (type);
     }
 
-    public void initialize(WebContext2 ctx, DocumentModel doc) {
-        super.initialize(ctx, null); //TODO
+    public void initialize(WebContext2 ctx, DocumentModel doc, String path) {
+        super.initialize(ctx, path);
         this.ctx = ctx;
         this.doc = doc;
+    }
+
+    @Path(value="{path}", limited=true)
+    public WebObject dispatch(@PathParam("path") String path) throws Exception {
+        DocumentModel doc = ctx.getCoreSession().getChild(((DocumentObject)ctx.tail()).getDocument().getRef(), path);
+        DocumentObject obj = (DocumentObject)ctx.getEngine().getWebTypeManager().newInstance(doc.getType());
+        obj.initialize(ctx, doc, path);
+        return obj;
     }
 
 
@@ -58,8 +68,8 @@ public class DocumentObject extends WebObject {
     }
 
     @GET
-    public DocumentModel get() throws Exception {
-        return doc;
+    public WebObject get() throws Exception {
+        return this;
     }
 
     @LOCK

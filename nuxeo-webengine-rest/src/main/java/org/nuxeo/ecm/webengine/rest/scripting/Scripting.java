@@ -19,10 +19,13 @@
 
 package org.nuxeo.ecm.webengine.rest.scripting;
 
+import groovy.lang.GroovyClassLoader;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +43,7 @@ import javax.script.SimpleScriptContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.groovy.control.CompilerConfiguration;
 import org.python.core.PyDictionary;
 import org.python.core.PyList;
 import org.python.core.PyObject;
@@ -56,10 +60,26 @@ public class Scripting {
     private final ConcurrentMap<File, Entry> cache = new ConcurrentHashMap<File, Entry>();
 
     protected final ScriptEngineManager scriptMgr = new ScriptEngineManager();
+    protected final GroovyClassLoader groovyLoader;
 
     public Scripting() {
+        this (false);
     }
 
+    public Scripting(boolean isDebug) {
+        CompilerConfiguration cfg = new CompilerConfiguration(CompilerConfiguration.DEFAULT);
+        cfg.setDebug(isDebug);
+        ClassLoader ccl = Thread.currentThread().getContextClassLoader();
+        groovyLoader = new GroovyClassLoader(ccl != null ? ccl : Scripting.class.getClassLoader(), cfg);
+    }
+
+    public void addClassPath(String path) {
+        groovyLoader.addClasspath(path);
+    }
+
+    public void addClassPathUrl(URL url) {
+        groovyLoader.addURL(url);
+    }
     public static CompiledScript compileScript(ScriptEngine engine, File file) throws ScriptException {
         if (engine instanceof Compilable) {
             Compilable comp = (Compilable)engine;
@@ -78,12 +98,24 @@ public class Scripting {
         }
     }
 
+    public void flushCache() {
+        groovyLoader.clearCache();
+    }
+
     public ScriptEngineManager getEngineManager() {
         return scriptMgr;
     }
 
     public boolean isScript(String ext) {
         return scriptMgr.getEngineByExtension(ext) != null;
+    }
+
+    public GroovyClassLoader getGroovyClassLoader() {
+        return groovyLoader;
+    }
+
+    public Class<?> loadClass(String className) throws ClassNotFoundException {
+        return groovyLoader.loadClass(className);
     }
 
     public Object runScript(ScriptFile script) throws Exception {
@@ -99,32 +131,43 @@ public class Scripting {
             args = new SimpleBindings();
         }
         String ext = script.getExtension();
-// TODO: add debug mode
-//        if ("groovy".equals(ext)) {
-//            return new GroovyShell(new Binding(args)).evaluate(script.getFile());
-//        }
-        // check for a script engine
-        ScriptEngine engine = scriptMgr.getEngineByExtension(ext);
-        if (engine != null) {
-            ScriptContext ctx = new SimpleScriptContext();
-            ctx.setBindings(args, ScriptContext.ENGINE_SCOPE);
-            CompiledScript comp = getCompiledScript(engine, script.getFile()); // use cache for compiled scripts
-            if (comp != null) {
-                return comp.eval(ctx);
-            } // compilation not supported - eval it on the fly
-            try {
-                Reader reader = new FileReader(script.getFile());
-                try { // TODO use __result__ to pass return value for engine that doesn't returns like jython
-                    Object result = engine.eval(reader, ctx);
-                    if (result == null) {
-                        result = args.get("__result__");
+        // special case for groovy - we want use our groovy class loader to control the classpath
+        ClassLoader  oldCl = null;
+        try {
+            if ("groovy".equals(ext)) {
+                Thread ct = Thread.currentThread();
+                oldCl = ct.getContextClassLoader();
+                ct.setContextClassLoader(groovyLoader);
+                // TODO: add debug mode
+//              return new GroovyShell(new Binding(args)).evaluate(script.getFile());
+            }
+            // check for a script engine
+            ScriptEngine engine = scriptMgr.getEngineByExtension(ext);
+            if (engine != null) {
+                ScriptContext ctx = new SimpleScriptContext();
+                ctx.setBindings(args, ScriptContext.ENGINE_SCOPE);
+                CompiledScript comp = getCompiledScript(engine, script.getFile()); // use cache for compiled scripts
+                if (comp != null) {
+                    return comp.eval(ctx);
+                } // compilation not supported - eval it on the fly
+                try {
+                    Reader reader = new FileReader(script.getFile());
+                    try { // TODO use __result__ to pass return value for engine that doesn't returns like jython
+                        Object result = engine.eval(reader, ctx);
+                        if (result == null) {
+                            result = args.get("__result__");
+                        }
+                        return result;
+                    } finally {
+                        reader.close();
                     }
-                    return result;
-                } finally {
-                    reader.close();
+                } catch (IOException e) {
+                    throw new ScriptException(e);
                 }
-            } catch (IOException e) {
-                throw new ScriptException(e);
+            }
+        } finally {
+            if (oldCl != null) {
+                Thread.currentThread().setContextClassLoader(oldCl);
             }
         }
         return null;

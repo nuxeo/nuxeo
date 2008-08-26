@@ -36,7 +36,7 @@ public interface WebType {
 
     public WebObject newInstance() throws WebException;
 
-    public Class<? extends WebObject> getObjectClass();
+    public Class<? extends WebObject> getObjectClass() throws WebException;
 
     public boolean isDynamic();
 

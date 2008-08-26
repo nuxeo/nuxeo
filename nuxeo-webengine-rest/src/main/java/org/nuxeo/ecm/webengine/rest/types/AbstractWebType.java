@@ -23,6 +23,8 @@ import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
 
@@ -31,6 +33,8 @@ import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
  *
  */
 public abstract class AbstractWebType implements WebType {
+
+    private final static Log log = LogFactory.getLog(WebType.class);
 
     protected Map<String, Action> actions;
 
@@ -43,28 +47,25 @@ public abstract class AbstractWebType implements WebType {
         return false;
     }
 
-    protected Class<? extends WebObject> resolveObjectClass(WebTypeManager mgr) {
-        try {
-            return resolveObjectClass(mgr, null);
-        } catch (TypeNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
+    protected Class<? extends WebObject> resolveObjectClass(WebTypeManager mgr) throws WebException {
+        return resolveObjectClass(mgr, null);
     }
 
     @SuppressWarnings("unchecked")
-    protected Class<? extends WebObject> resolveObjectClass(WebTypeManager mgr, String className) throws TypeNotFoundException {
+    protected Class<? extends WebObject> resolveObjectClass(WebTypeManager mgr, String className) throws WebException {
         Class<? extends WebObject> klass = null;
         if (className == null) {
-            className = "org.nuxeo.ecm.webengine.rest."+getName()+"Object";
+            className = "org.nuxeo.ecm.webengine.rest.adapters."+getName()+"Object";
             try {
-                klass = (Class<? extends WebObject>)mgr.getClassLoader().loadClass(className);
+                klass = (Class<? extends WebObject>)mgr.engine.getScripting().loadClass(className);
+            } catch (ClassNotFoundException e) {
+                log.warn("Type not found: "+className);
             } catch (Exception e) {
-                // do nothing
+                throw WebException.wrap("Failed to load class: "+className, e);
             }
         } else {
             try {
-                klass = (Class<? extends WebObject>)mgr.getClassLoader().loadClass(className);
+                klass = (Class<? extends WebObject>)mgr.engine.getScripting().loadClass(className);
             } catch (Exception e) {
                 throw new TypeNotFoundException(getName());
             }
@@ -82,6 +83,7 @@ public abstract class AbstractWebType implements WebType {
             Constructor ctor = getObjectClass().getConstructor(new Class[] {WebType.class});
             return (WebObject)ctor.newInstance(this);
         } catch (Exception e) {
+            e.printStackTrace();
             throw WebException.wrap("Failed to instantiate type: "+getName()
                     +". Class name: "+getObjectClass(), e);
         }

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URI;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.UriBuilder;
 
 import org.nuxeo.ecm.webengine.rest.jersey.patch.ServletContainer;
 
@@ -46,6 +47,17 @@ public class WebEngineServlet extends ServletContainer {
 
     protected ContainerRequest createContainerRequest(HttpServletRequest request,
             WebApplication _application, URI baseUri, URI requestUri) throws IOException {
+        // remove action from uri
+        String path = requestUri.getPath();
+        int p = path.lastIndexOf("@@");
+        String action = null;
+        if (p > -1) {
+            action = path.substring(p+2);
+            path = path.substring(0, p);
+            // remove @@ that is specific to webengine
+            requestUri = UriBuilder.fromUri(
+                    requestUri).replacePath(path).build();
+        }
         return new org.nuxeo.ecm.webengine.rest.jersey.patch.ServletContainerRequest(
                 request,
                 _application,
@@ -53,7 +65,7 @@ public class WebEngineServlet extends ServletContainer {
                 baseUri,
                 requestUri,
                 getHeaders(request),
-                request.getInputStream());
+                request.getInputStream(), action);
     }
 
 }

@@ -26,10 +26,12 @@ import java.util.Set;
 import org.nuxeo.ecm.webengine.RootDescriptor;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
+import org.nuxeo.ecm.webengine.rest.domains.DefaultWebDomain;
 import org.nuxeo.ecm.webengine.rest.domains.DocumentDomain;
 import org.nuxeo.ecm.webengine.rest.domains.DomainDescriptor;
 import org.nuxeo.ecm.webengine.rest.domains.ScriptDomain;
-import org.nuxeo.ecm.webengine.rest.domains.WebDomain;
+import org.nuxeo.ecm.webengine.rest.jersey.patch.ServletContainer;
+import org.nuxeo.ecm.webengine.rest.jersey.patch.ServletContainerRequest;
 import org.nuxeo.ecm.webengine.rest.jersey.patch.WebApplicationContext;
 import org.nuxeo.runtime.api.Framework;
 
@@ -58,7 +60,9 @@ public class WebEngineApplication extends org.nuxeo.ecm.webengine.rest.jersey.pa
      @Override
     protected WebApplicationContext createWebAcpplicationContext(
             ContainerRequest request, ContainerResponse response) {
-        return new WebContextImpl(this, request, response);
+        WebContextImpl ctx = new WebContextImpl(this, request, response);
+        ctx.setAction(((ServletContainerRequest)request).getAction());
+        return ctx;
     }
 
     @Override
@@ -76,9 +80,9 @@ public class WebEngineApplication extends org.nuxeo.ecm.webengine.rest.jersey.pa
     //TODO: refactor webapplication and rename it as ResourceContainer ?
     protected void addRootResources(RulesMap<UriRule> rules) throws Exception {
         boolean redirect = resourceConfig.getFeature(ResourceConfig.FEATURE_REDIRECT);
-        for (WebDomain<?> domain : getDomains()) {
+        for (DefaultWebDomain<?> domain : getDomains()) {
             getResourceClass(domain.getClass()); //TODO here we must be able to modify resource uri path...
-            String path = domain.descriptor.path;
+            String path = domain.getPath();
             String pathStr = null;
             boolean pathEndsInSlash = false;
             if (path == null || path.equals("/")) {
@@ -98,7 +102,7 @@ public class WebEngineApplication extends org.nuxeo.ecm.webengine.rest.jersey.pa
 
 
 
-    protected WebDomain<?>[] getDomains() throws WebException {
+    protected DefaultWebDomain<?>[] getDomains() throws WebException {
         WebEngine2 engine = Framework.getLocalService(WebEngine2.class);
 
         List<RootDescriptor> roots = Arrays.asList(new RootDescriptor[] {new RootDescriptor("/default", 0)});
@@ -123,8 +127,16 @@ public class WebEngineApplication extends org.nuxeo.ecm.webengine.rest.jersey.pa
         desc.roots = roots;
         DocumentDomain d3 = new DocumentDomain(engine, desc);
 
-        return new WebDomain<?>[] {
-                d1, d2, d3
+        // a groovy domain for testing groovy resources
+        desc = new DomainDescriptor();
+        desc.id = "groovy";
+        desc.path = "/groovy";
+        desc.type="Groovy";
+        desc.roots = roots;
+        DefaultWebDomain d4 = new DefaultWebDomain(engine, desc);
+
+        return new DefaultWebDomain<?>[] {
+                d1, d2, d3, d4
         };
     }
 

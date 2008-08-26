@@ -65,7 +65,7 @@ public class ScriptObject extends WebObject {
             String ext = file.getExtension();
             Scripting scripting = ctx.getEngine().getScripting();
             if (file.isTemplate()) {
-                return file.getFile(); //TODO // new Template(this, )
+                return ctx.getTemplate(file);
             } else if (scripting.isScript(ext)) { // script
                 return ctx.runScript(file, null);
             } else { // regular file

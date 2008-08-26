@@ -22,45 +22,48 @@ package org.nuxeo.ecm.webengine.rest.types;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
 
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DefaultWebType extends AbstractWebType {
+public class DynamicType extends AbstractWebType {
 
-    // fields that need to be resolved
+    protected String className;
+    protected String name;
     protected Class<? extends WebObject> klass;
-    protected WebType superType;
-    protected WebTypeDescriptor desc;
     protected WebTypeManager mgr;
 
-    public DefaultWebType(WebTypeManager mgr, WebTypeDescriptor desc) throws WebException {
-        this.desc = desc;
+    public DynamicType(WebTypeManager mgr, String type) {
         this.mgr = mgr;
-        try {
-            superType = mgr.getType(desc.superTypeName);
-        } catch (Exception e) {
-            WebException.wrap("Failed to resolve type: "+desc.name, e);
+        int p = type.lastIndexOf('.');
+        if (p > -1) {
+            name = type.substring(p+1);
+            className = type.substring(0, p);
+        } else {
+            name = type;
         }
     }
 
+    @Override
     public boolean isDynamic() {
-        return false;
+        return true;
     }
 
     public String getName() {
-        return desc.name;
+        return name;
+    }
+
+    public WebType getSuperType() {
+        return WebType.ROOT;
     }
 
     public Class<? extends WebObject> getObjectClass() throws WebException {
         if (klass == null) {
-            klass = resolveObjectClass(mgr, desc.className);
+            klass = resolveObjectClass(mgr, className);
         }
         return klass;
     }
 
-    public WebType getSuperType() {
-        return superType;
-    }
 
 }

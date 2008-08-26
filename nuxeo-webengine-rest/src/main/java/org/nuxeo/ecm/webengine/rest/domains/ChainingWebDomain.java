@@ -17,43 +17,39 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.types;
+package org.nuxeo.ecm.webengine.rest.domains;
 
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
 
-
+import org.nuxeo.ecm.core.CoreService;
 import org.nuxeo.ecm.webengine.WebException;
-import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
-import org.nuxeo.ecm.webengine.exceptions.WebSecurityException;
+import org.nuxeo.ecm.webengine.rest.WebContext2;
+import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
-import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
+import org.nuxeo.runtime.api.Framework;
+
+import com.sun.jersey.api.core.HttpContext;
 
 /**
+ * This domain is initiating a chain resolving of objects on the traversal path
+ * because of limited = true
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ScriptAction extends Action {
-
-    protected ScriptFile script;
+public class ChainingWebDomain<T extends DomainDescriptor> extends DefaultWebDomain<T> {
 
 
-    public ScriptAction(ActionDescriptor desc, ScriptFile script) {
-        super (desc);
-        this.script  = script;
+    public ChainingWebDomain(WebEngine2 engine, T desc) throws WebException {
+        super (engine, desc);
     }
 
-    /**
-     * @return the script.
-     */
-    public ScriptFile getScript() {
-        return script;
+    @Path(value="{path}", limited=true)
+    public WebObject dispatch(@PathParam("path") String path, @Context HttpContext ctx) throws Exception {
+        return super.dispatch(path, ctx);
     }
 
-    public Object invoke(WebObject obj) throws WebException {
-        String id = desc.getId();
-        if (!desc.getGuard().check(obj)) {
-            throw new WebSecurityException(id);
-        }
-        return obj.getContext().runScript(script, null);
-    }
 
 }

@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.webengine.rest.types;
 
 import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
 
 /**
@@ -65,11 +66,13 @@ public class WebDocumentType extends AbstractWebType {
         return superType;
     }
 
-    public Class<? extends WebObject> getObjectClass() {
+    public Class<? extends WebObject> getObjectClass() throws WebException {
         if (klass == null) {
             klass = resolveObjectClass(mgr);
         }
         return klass;
     }
+
+
 
 }

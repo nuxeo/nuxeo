@@ -19,17 +19,15 @@
 
 package org.nuxeo.ecm.webengine.rest.types;
 
-import groovy.lang.GroovyClassLoader;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.codehaus.groovy.control.CompilerConfiguration;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
+import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.contribution.impl.AbstractRegistry;
@@ -40,29 +38,27 @@ import org.nuxeo.runtime.contribution.impl.AbstractRegistry;
  */
 public class WebTypeManager extends AbstractRegistry<String, WebTypeDescriptor> {
 
-    protected ClassLoader cl;
     protected final Map<String, WebType> registry;
+    protected WebEngine2 engine;
 
-    public WebTypeManager() {
-        CompilerConfiguration cfg = new CompilerConfiguration(CompilerConfiguration.DEFAULT);
-        cl = new GroovyClassLoader(this.getClassLoader(), cfg);
+    public WebTypeManager(WebEngine2 engine) {
+        this.engine = engine;
         registry = new HashMap<String, WebType>();
         //TODO temp code until config will be back again
-
         registry.put("Script", new ScriptType());
     }
 
-    public void setClassLoader(ClassLoader cl) {
-        this.cl = cl;
-    }
-
-    public ClassLoader getClassLoader() {
-        return cl;
-    }
 
     //TODO trigger a reload from its backing registry
     public void reload() {
 
+    }
+
+    /**
+     * @return the engine.
+     */
+    public WebEngine2 getEngine() {
+        return engine;
     }
 
     //TODO hot reload is not yet working: when registering existing types we must remove the register
@@ -94,21 +90,12 @@ public class WebTypeManager extends AbstractRegistry<String, WebTypeDescriptor> 
                 if (type ==null) {
                     SchemaManager mgr = Framework.getLocalService(SchemaManager.class);
                     DocumentType docType = mgr.getDocumentType(name);
-                    if (docType == null) {
-                        throw new TypeNotFoundException(name);
-                    }
-                    DocumentType stype = (DocumentType)docType.getSuperType();
-                    while (stype != null) {
-                        type = registry.get(stype.getName());
-                        if (type != null) {
-                            break;
-                        }
-                        stype = (DocumentType)stype.getSuperType();
-                    }
-                    if (type == null) { // create a new dynamic type
+                    if (docType == null) { // create a dynamic type
+                        type = new DynamicType(this, name);
+                    } else { // a dynamic document type
                         type = new WebDocumentType(this, docType);
-                    } // else put the super type
-                    registry.put(docType.getName(), type);
+                    }
+                    registry.put(type.getName(), type);
                 }
             }
         }

@@ -82,7 +82,6 @@ import com.sun.jersey.api.model.ResourceModelIssue;
 import com.sun.jersey.api.uri.ExtendedUriInfo;
 import com.sun.jersey.api.uri.UriTemplate;
 import com.sun.jersey.impl.ImplMessages;
-import com.sun.jersey.impl.ThreadLocalHttpContext;
 import com.sun.jersey.impl.application.ComponentProviderCache;
 import com.sun.jersey.impl.application.ContextResolverFactory;
 import com.sun.jersey.impl.application.ExceptionMapperFactory;

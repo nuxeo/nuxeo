@@ -21,14 +21,16 @@ package org.nuxeo.ecm.webengine.rest;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
 import java.security.Principal;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
-import org.nuxeo.ecm.webengine.rest.domains.WebDomain;
+import org.nuxeo.ecm.webengine.rest.domains.DefaultWebDomain;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
+import org.nuxeo.ecm.webengine.rest.template.Template;
 import org.nuxeo.ecm.webengine.session.UserSession;
 
 import com.sun.jersey.api.core.HttpContext;
@@ -40,9 +42,9 @@ import com.sun.jersey.api.core.HttpContext;
  */
 public interface WebContext2 {
 
-    public void setDomain(WebDomain<?> domain);
+    public void setDomain(DefaultWebDomain<?> domain);
 
-    public WebDomain<?> getDomain();
+    public DefaultWebDomain<?> getDomain();
 
     public WebEngine2 getEngine();
 
@@ -54,6 +56,9 @@ public interface WebContext2 {
 
     public HttpContext getHttpContext();
 
+    public void setAction(String action);
+
+    public String getAction();
 
 
     /** object stack API */
@@ -80,12 +85,12 @@ public interface WebContext2 {
 
     /** running scripts and rendering templates */
 
-    public void render(String template) throws WebException;
+    public void render(String template, Writer writer) throws WebException;
 
-    public void render(String template, Object ctx) throws WebException;
+    public void render(String template, Object ctx, Writer writer) throws WebException;
 
     @SuppressWarnings("unchecked")
-    public void render(ScriptFile script, Object ctx) throws WebException;
+    public void render(ScriptFile script, Object ctx, Writer writer) throws WebException;
 
     public Object runScript(String script) throws WebException;
 
@@ -93,6 +98,8 @@ public interface WebContext2 {
 
     public Object runScript(ScriptFile script, Map<String, Object> args) throws WebException;
 
-    public Object exec(ScriptFile script, Map<String, Object> args) throws WebException;
+    public Template getTemplate(String path) throws IOException;
+
+    public Template getTemplate(ScriptFile script);
 
 }
