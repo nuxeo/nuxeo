@@ -25,9 +25,9 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.webengine.forms.validation.Form;
 import org.nuxeo.ecm.webengine.install.Installer;
 import org.nuxeo.ecm.webengine.rendering.RenderingExtensionDescriptor;
+import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.RuntimeServiceException;
@@ -35,7 +35,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.deploy.ConfigurationChangedListener;
 import org.nuxeo.runtime.deploy.ConfigurationDeployer;
 import org.nuxeo.runtime.deploy.ContributionManager;
-import org.nuxeo.runtime.deploy.FileChangeListener;
 import org.nuxeo.runtime.deploy.FileChangeNotifier;
 import org.nuxeo.runtime.deploy.ManagedComponent;
 import org.nuxeo.runtime.deploy.ConfigurationDeployer.Entry;
@@ -46,10 +45,11 @@ import org.nuxeo.runtime.model.RuntimeContext;
 import org.osgi.framework.Bundle;
 
 /**
+ * TODO remove old WebEngine references and rename WebEngine2 to WebEngine
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebEngineComponent extends ManagedComponent implements FileChangeListener, ConfigurationChangedListener {
+public class WebEngineComponent extends ManagedComponent implements ConfigurationChangedListener {
 
     public static final ComponentName NAME = new ComponentName(WebEngineComponent.class.getName());
 
@@ -66,7 +66,8 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
 
     private static final Log log = LogFactory.getLog(WebEngineComponent.class);
 
-    private WebEngine engine;
+    private WebEngine2 engine2;
+    private WebEngine engine; //TODO REMOVE
     private FileChangeNotifier notifier;
     private ComponentContext ctx;
 
@@ -85,6 +86,7 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
         }
         root = root.getCanonicalFile();
         log.info("Using web root: "+root);
+
         if (!new File(root, "default").exists()) {
             try {
                 root.mkdirs();
@@ -95,6 +97,7 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
                 throw e;
             }
         }
+
         // register contrib managers
         registerContributionManager(APPLICATION_XP, new ContributionManager(this));
         registerContributionManager(WEB_OBJ_XP, new ContributionManager(this));
@@ -102,9 +105,9 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
         // load message bundle
         notifier = new FileChangeNotifier();
         notifier.start();
-        notifier.addListener(this);
 
-        engine = new DefaultWebEngine(root, notifier);
+        engine = new DefaultWebEngine(root, notifier); //TODO remove
+        engine2 = new WebEngine2(root, notifier);
         deployer = new ConfigurationDeployer(notifier);
         deployer.addConfigurationChangedListener(this);
 
@@ -114,7 +117,6 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
     @Override
     public void deactivate(ComponentContext context) throws Exception {
         notifier.stop();
-        notifier.removeListener(this);
         deployer.removeConfigurationChangedListener(this);
         engine.destroy();
         engine = null;
@@ -126,6 +128,10 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
 
     private static void deployWebDir(Bundle bundle, File root) throws IOException {
         Installer.copyResources(bundle, "web", root);
+    }
+
+    public WebEngine2 getEngine2() {
+        return engine2;
     }
 
     public WebEngine getEngine() {
@@ -147,7 +153,6 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
             engine.fireConfigurationChanged();
         }
     }
-
 
 
     @Override
@@ -182,9 +187,10 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
             } else {
                 log.error("Neither path neither entry attribute was defined in the configuration extension. Ignoring");
             }
-        } else if (extensionPoint.endsWith(FORM_XP)) {
-            Form form = (Form)contribution;
-            engine.getFormManager().registerForm(form);
+//TODO
+//        } else if (extensionPoint.endsWith(FORM_XP)) {
+//            Form form = (Form)contribution;
+//            engine.getFormManager().registerForm(form);
         }
     }
 
@@ -216,47 +222,32 @@ public class WebEngineComponent extends ManagedComponent implements FileChangeLi
             } else {
                 log.error("Neither path neither entry attribute was defined in the configuration extension. Ignoring");
             }
-        } else if (extensionPoint.endsWith(FORM_XP)) {
-            Form form = (Form)contribution;
-            engine.getFormManager().unregisterForm(form.getId());
+//TODO
+//        } else if (extensionPoint.endsWith(FORM_XP)) {
+//            Form form = (Form)contribution;
+//            engine.getFormManager().unregisterForm(form.getId());
         }
     }
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (adapter == WebEngine.class) {
+        if (adapter == WebEngine.class) { // TODO remove this
             return adapter.cast(engine);
+        } else if (adapter == WebEngine2.class) {
+            return adapter.cast(engine2);
         } else if (adapter == FileChangeNotifier.class) {
             return adapter.cast(notifier);
         }
         return null;
     }
 
-    public void fileChanged(FileChangeNotifier.FileEntry entry, long now) throws Exception {
-        if (ctx == null) {
-            return;
-        }
-        String path = entry.file.getAbsolutePath();
-        String rootPath = engine.getRootDirectory().getAbsolutePath();
-        if (!path.startsWith(rootPath)) {
-            return;
-        }
-        String relPath = path.substring(rootPath.length());
-        if (!relPath.startsWith("/")) {
-            relPath = '/' + relPath;
-        }
-//      if (file.getAbsolutePath().startsWith(mgr.getRootDirectory().getAbsolutePath())) {
-//        if (relPath.equals("/nuxeo-web.xml")) { // TODO remove this
-//            URL url = entry.file.toURI().toURL();
-//            ctx.getRuntimeContext().undeploy(url);
-//            ctx.getRuntimeContext().deploy(url);
-//            engine.fireConfigurationChanged();
-//        }
-    }
 
     public void configurationChanged(Entry entry) throws Exception {
         if (engine != null) {
             engine.fireConfigurationChanged();
+        }
+        if (engine2 != null) {
+            engine2.reload();
         }
     }
 

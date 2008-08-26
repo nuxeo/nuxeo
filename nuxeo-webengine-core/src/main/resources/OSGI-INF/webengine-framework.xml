@@ -15,6 +15,8 @@
   	<provide interface="org.nuxeo.ecm.webengine.WebEngine" />
   	<provide
   		interface="org.nuxeo.ecm.webengine.util.FileChangeNotifier" />
+    <!-- temporary entry remove it -->
+    <provide interface="org.nuxeo.ecm.webengine.rest.WebEngine2" />
   </service>
 
   <extension-point name="rendering-extension">
