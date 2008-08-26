@@ -35,9 +35,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.platform.rendering.fm.i18n.ResourceComposite;
 import org.nuxeo.ecm.webengine.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.forms.FormManager;
-import org.nuxeo.ecm.webengine.nl.ResourceComposite;
 import org.nuxeo.ecm.webengine.scripting.Scripting;
 import org.nuxeo.ecm.webengine.servlet.WebConst;
 import org.nuxeo.ecm.webengine.util.PathMap;
