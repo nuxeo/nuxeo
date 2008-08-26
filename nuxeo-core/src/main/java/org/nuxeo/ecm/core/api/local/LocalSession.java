@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashMap;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -30,6 +31,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
@@ -72,6 +74,9 @@ public class LocalSession extends AbstractSession {
                     }
                 }
             }
+            if (principal == null && isTestingContext()) {
+                principal = new UserPrincipal("system");
+            }
             // store the principal in the core session context so that other core tools may retrieve it
             sessionContext.put("principal", principal);
 
@@ -81,6 +86,17 @@ public class LocalSession extends AbstractSession {
         } catch (Exception e) {
             throw new ClientException("Failed to load repository " + repoName, e);
         }
+    }
+
+    /**
+     * This method is for compatibility with < 1.5 core
+     * In older core this class were used only for testing - but now it is used by webengine
+     * and a security fix that break tests was done.
+     * This method is checking if we are in a testing context
+     * @return
+     */
+    public boolean isTestingContext() { // neither in jboss neither in nuxeo launcher
+        return Environment.getDefault() == null;
     }
 
     @Override
