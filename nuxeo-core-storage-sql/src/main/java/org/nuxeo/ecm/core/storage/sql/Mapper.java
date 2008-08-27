@@ -1282,8 +1282,8 @@ public class Mapper {
         }
     }
 
-    /*
-     * ----- called by SessionImpl -----
+    /**
+     * ----- called by {@link TransactionalSession} -----
      */
 
     protected void start(Xid xid, int flags) throws XAException {

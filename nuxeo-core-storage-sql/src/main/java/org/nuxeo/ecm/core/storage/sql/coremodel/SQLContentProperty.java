@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,14 +83,16 @@ public class SQLContentProperty extends SQLComplexProperty {
         } else if (value instanceof Blob) {
             Blob blob = (Blob) value;
             Binary binary;
-            try {
-                if (blob instanceof SQLBlob) {
-                    binary = ((SQLBlob) blob).binary;
-                } else {
-                    binary = session.getBinary(blob.getStream());
+            if (blob instanceof SQLBlob) {
+                binary = ((SQLBlob) blob).binary;
+            } else {
+                InputStream stream;
+                try {
+                    stream = blob.getStream();
+                } catch (IOException e) {
+                    throw new DocumentException(e);
                 }
-            } catch (IOException e) {
-                throw new DocumentException(e);
+                binary = session.getBinary(stream);
             }
             String filename = blob.getFilename();
             String mimeType = blob.getMimeType();
