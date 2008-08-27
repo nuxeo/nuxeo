@@ -46,7 +46,7 @@ public class ResourceServlet extends HttpServlet {
 
     private static final long serialVersionUID = 6548084847887645044L;
 
-    private File root;
+    protected File root;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
