@@ -10,6 +10,9 @@
     </layout>
   </appender>
 
+  <category name="org.nuxeo.ecm.core.storage">
+    <priority value="DEBUG" />
+  </category>
   <category name="org.nuxeo">
     <priority value="INFO" />
   </category>

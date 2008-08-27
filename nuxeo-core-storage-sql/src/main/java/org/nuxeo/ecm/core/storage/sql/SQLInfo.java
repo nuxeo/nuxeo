@@ -598,6 +598,7 @@ public class SQLInfo {
                 newMainKeyReference(key, true);
                 return;
             }
+            // TODO XXX also MAIN_BASE_VERSION_KEY is main key
             if (tableName.equals(model.PROXY_TABLE_NAME)) {
                 if (key.equals(model.PROXY_TARGET_KEY)) {
                     newMainKeyReference(key, true);
@@ -614,6 +615,8 @@ public class SQLInfo {
                 // hack, make this more configurable
                 if (tableName.equals(model.VERSION_TABLE_NAME) &&
                         key.equals(model.VERSION_LABEL_KEY)) {
+                    // these are columns that need to be searchable, as some
+                    // databases (Derby) don't allow matches on CLOB columns
                     sqlType = Types.VARCHAR;
                 } else {
                     sqlType = Types.CLOB; // or VARCHAR for system tables?
