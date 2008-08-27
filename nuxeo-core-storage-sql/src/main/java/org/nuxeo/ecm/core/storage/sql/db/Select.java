@@ -40,8 +40,8 @@ public class Select implements Serializable {
 
     private String orderBy;
 
-    public Select(Dialect dialect) {
-        // dialect unused
+    public Select(Table table) {
+        // table unused
     }
 
     public void setWhat(String what) {

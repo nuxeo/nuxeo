@@ -34,7 +34,7 @@ public class Insert implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final Dialect dialect;
+    protected final Dialect dialect;
 
     private Table table;
 
@@ -42,13 +42,10 @@ public class Insert implements Serializable {
 
     private String insertValues;
 
-    public Insert(Dialect dialect) {
-        this.dialect = dialect;
-        columns = new LinkedList<Column>();
-    }
-
-    public void setTable(Table table) {
+    public Insert(Table table) {
         this.table = table;
+        this.dialect = table.dialect;
+        columns = new LinkedList<Column>();
     }
 
     public void addColumn(Column column) {
@@ -71,13 +68,13 @@ public class Insert implements Serializable {
     public String getStatement() {
         StringBuilder buf = new StringBuilder(128);
         buf.append("INSERT INTO ");
-        buf.append(table.getQuotedName(dialect));
+        buf.append(table.getQuotedName());
         buf.append(' ');
 
         List<String> columnNames = new LinkedList<String>();
         List<String> values = new LinkedList<String>();
         for (Column column : columns) {
-            columnNames.add(column.getQuotedName(dialect));
+            columnNames.add(column.getQuotedName());
             values.add("?");
         }
 

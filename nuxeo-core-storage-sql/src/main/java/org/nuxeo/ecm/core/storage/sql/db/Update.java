@@ -36,8 +36,8 @@ public class Update implements Serializable {
 
     private String where;
 
-    public Update(Dialect dialect) {
-        // dialect unused
+    public Update(Table table) {
+        // table unused
     }
 
     public void setTable(String table) {
