@@ -139,10 +139,10 @@ public interface DocumentIndexableResource extends NXCoreIndexableResource {
      * @return the facets declared by the document model.
      */
     List<String> getDocFacets();
-    
+
     /**
      * Returns the flags declared on the document model.
-     * 
+     *
      * @return a long value (depending on the DocumentModelImpl for now.
      */
     Long getFlags();
