@@ -83,7 +83,7 @@ public class Model {
 
     public static final String MAIN_BASE_VERSION_PROP = "ecm:baseVersion";
 
-    public static final String MAIN_BASE_VERSION_KEY = "baseversion";
+    public static final String MAIN_BASE_VERSION_KEY = "baseversion"; // TODO XXX baseversionId
 
     public static final String MAIN_CHECKED_IN_PROP = "ecm:isCheckedIn";
 
@@ -165,11 +165,11 @@ public class Model {
 
     public static final String PROXY_TARGET_PROP = "ecm:proxyTargetId";
 
-    public static final String PROXY_TARGET_KEY = "target";
+    public static final String PROXY_TARGET_KEY = "target"; // TODO XXX targetId
 
     public static final String PROXY_VERSIONABLE_PROP = "ecm:proxyVersionableId";
 
-    public static final String PROXY_VERSIONABLE_KEY = "versionable";
+    public static final String PROXY_VERSIONABLE_KEY = "versionable"; // TODO XXX versionableId
 
     public static final String LOCK_TABLE_NAME = "locks";
 

@@ -265,11 +265,10 @@ public class Mapper {
              * Create missing tables.
              */
             Database database = sqlInfo.getDatabase();
-            for (Entry<String, Table> entry : database.getTables()) {
-                String tableName = entry.getKey();
-                Table table = entry.getValue();
-                if (tableNames.contains(tableName) ||
-                        tableNames.contains(tableName.toUpperCase())) {
+            for (Table table : database.getTables()) {
+                String physicalName = table.getPhysicalName();
+                if (tableNames.contains(physicalName) ||
+                        tableNames.contains(physicalName.toUpperCase())) {
                     // table already present
                     continue;
                 }
@@ -1283,8 +1282,8 @@ public class Mapper {
         }
     }
 
-    /*
-     * ----- called by SessionImpl -----
+    /**
+     * ----- called by {@link TransactionalSession} -----
      */
 
     protected void start(Xid xid, int flags) throws XAException {

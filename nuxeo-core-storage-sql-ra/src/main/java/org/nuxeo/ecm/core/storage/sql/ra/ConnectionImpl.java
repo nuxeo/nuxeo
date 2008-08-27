@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.core.storage.sql.ra;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
@@ -51,30 +50,40 @@ public class ConnectionImpl implements Session {
 
     private SessionImpl session;
 
-    public ConnectionImpl(ManagedConnectionImpl managedConnection,
-            SessionImpl session) {
+    public ConnectionImpl(ManagedConnectionImpl managedConnection) {
         this.managedConnection = managedConnection;
-        this.session = session;
     }
 
     /*
-     * ----- -----
+     * ----- callbacks -----
      */
 
     /**
-     * Called by {@link ManagedConnectionImpl#associateConnection}
+     * Called by {@link ManagedConnectionImpl#associateConnection}.
      */
     protected ManagedConnectionImpl getManagedConnection() {
         return managedConnection;
     }
 
     /**
-     * Called by {@link ManagedConnectionImpl#associateConnection}
+     * Called by {@link ManagedConnectionImpl#associateConnection}.
      */
-    protected void setManagedConnection(
-            ManagedConnectionImpl managedConnection, SessionImpl session) {
+    protected void setManagedConnection(ManagedConnectionImpl managedConnection) {
         this.managedConnection = managedConnection;
+    }
+
+    /**
+     * Called by {@link ManagedConnectionImpl#addConnection}.
+     */
+    protected void associate(SessionImpl session) {
         this.session = session;
+    }
+
+    /**
+     * Called by {@link ManagedConnectionImpl#removeConnection}.
+     */
+    protected void disassociate() {
+        session = null;
     }
 
     /*
@@ -83,10 +92,9 @@ public class ConnectionImpl implements Session {
 
     public void close() throws ResourceException {
         try {
-            managedConnection.close();
+            managedConnection.close(this);
         } finally {
             managedConnection = null;
-            session = null;
         }
     }
 
@@ -110,111 +118,119 @@ public class ConnectionImpl implements Session {
      * ----- org.nuxeo.ecm.core.storage.sql.Session -----
      */
 
+    private Session getSession() throws StorageException {
+        if (session == null) {
+            throw new StorageException("Cannot use closed connection handle");
+        }
+        return session;
+    }
+
     public boolean isLive() {
         return session != null && session.isLive();
     }
 
-    public Binary getBinary(InputStream in) throws IOException {
-        return session.getBinary(in);
+    public Binary getBinary(InputStream in) throws StorageException {
+        return getSession().getBinary(in);
     }
 
-    public Model getModel() {
-        return session.getModel();
+    public Model getModel() throws StorageException {
+        return getSession().getModel();
     }
 
     public void save() throws StorageException {
-        session.save();
+        getSession().save();
     }
 
     public Node getRootNode() throws StorageException {
-        return session.getRootNode();
+        return getSession().getRootNode();
     }
 
     public Node getNodeById(Serializable id) throws StorageException {
-        return session.getNodeById(id);
+        return getSession().getNodeById(id);
     }
 
     public Node getNodeByPath(String path, Node node) throws StorageException {
-        return session.getNodeByPath(path, node);
+        return getSession().getNodeByPath(path, node);
     }
 
     public boolean hasChildNode(Node parent, String name, boolean complexProp)
             throws StorageException {
-        return session.hasChildNode(parent, name, complexProp);
+        return getSession().hasChildNode(parent, name, complexProp);
     }
 
     public Node getChildNode(Node parent, String name, boolean complexProp)
             throws StorageException {
-        return session.getChildNode(parent, name, complexProp);
+        return getSession().getChildNode(parent, name, complexProp);
     }
 
     public boolean hasChildren(Node parent, boolean complexProp)
             throws StorageException {
-        return session.hasChildren(parent, complexProp);
+        return getSession().hasChildren(parent, complexProp);
     }
 
     public List<Node> getChildren(Node parent, String name, boolean complexProp)
             throws StorageException {
-        return session.getChildren(parent, name, complexProp);
+        return getSession().getChildren(parent, name, complexProp);
     }
 
     public Node addChildNode(Node parent, String name, Long pos,
             String typeName, boolean complexProp) throws StorageException {
-        return session.addChildNode(parent, name, pos, typeName, complexProp);
+        return getSession().addChildNode(parent, name, pos, typeName,
+                complexProp);
     }
 
     public void removeNode(Node node) throws StorageException {
-        session.removeNode(node);
+        getSession().removeNode(node);
     }
 
     public Node getParentNode(Node node) throws StorageException {
-        return session.getParentNode(node);
+        return getSession().getParentNode(node);
     }
 
     public String getPath(Node node) throws StorageException {
-        return session.getPath(node);
+        return getSession().getPath(node);
     }
 
     public Node move(Node source, Node parent, String name)
             throws StorageException {
-        return session.move(source, parent, name);
+        return getSession().move(source, parent, name);
     }
 
     public Node copy(Node source, Node parent, String name)
             throws StorageException {
-        return session.copy(source, parent, name);
+        return getSession().copy(source, parent, name);
     }
 
     public Node checkIn(Node node, String label, String description)
             throws StorageException {
-        return session.checkIn(node, label, description);
+        return getSession().checkIn(node, label, description);
     }
 
     public void checkOut(Node node) throws StorageException {
-        session.checkOut(node);
+        getSession().checkOut(node);
     }
 
     public Node getVersionByLabel(Node node, String label)
             throws StorageException {
-        return session.getVersionByLabel(node, label);
+        return getSession().getVersionByLabel(node, label);
     }
 
     public List<Node> getVersions(Node node) throws StorageException {
-        return session.getVersions(node);
+        return getSession().getVersions(node);
     }
 
     public Node getLastVersion(Node node) throws StorageException {
-        return session.getLastVersion(node);
+        return getSession().getLastVersion(node);
     }
 
     public List<Node> getProxies(Node document, Node parent)
             throws StorageException {
-        return session.getProxies(document, parent);
+        return getSession().getProxies(document, parent);
     }
 
     public Node addProxy(Serializable targetId, Serializable versionableId,
             Node parent, String name, Long pos) throws StorageException {
-        return session.addProxy(targetId, versionableId, parent, name, pos);
+        return getSession().addProxy(targetId, versionableId, parent, name, pos);
     }
 
 }

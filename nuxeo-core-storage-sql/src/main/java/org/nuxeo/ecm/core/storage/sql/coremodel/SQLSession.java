@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -348,8 +347,12 @@ public class SQLSession implements Session {
     }
 
     // called by SQLContentProperty
-    protected Binary getBinary(InputStream in) throws IOException {
-        return session.getBinary(in);
+    protected Binary getBinary(InputStream in) throws DocumentException {
+        try {
+            return session.getBinary(in);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
     }
 
     /**
@@ -550,7 +553,13 @@ public class SQLSession implements Session {
             Type parentType, boolean readonly, int complexListSize)
             throws DocumentException {
         boolean complexList = parentType instanceof ListType;
-        Type type = session.getModel().getSpecialPropertyType(name);
+        Model model;
+        try {
+            model = session.getModel();
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+        Type type = model.getSpecialPropertyType(name);
         if (type == null) {
             Field field;
             if (complexList) {

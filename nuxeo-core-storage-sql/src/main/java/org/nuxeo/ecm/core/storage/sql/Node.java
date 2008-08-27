@@ -61,9 +61,10 @@ public class Node {
      * @param session the session
      * @param context the persistence context
      * @param rowGroup the group of rows for the node
+     * @throws StorageException
      */
     protected Node(Session session, PersistenceContext context,
-            FragmentGroup rowGroup) {
+            FragmentGroup rowGroup) throws StorageException {
         this.context = context;
         model = session.getModel();
         mainFragment = rowGroup.main;
