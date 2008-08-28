@@ -207,7 +207,6 @@ public final class XMLMemento implements Memento {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     public Memento[] getChildren(String type) {
 
         // Get the nodes.
@@ -475,16 +474,16 @@ public final class XMLMemento implements Memento {
 
         private void startTag(Element element, boolean hasChildren) {
             StringBuilder sb = new StringBuilder();
-            sb.append('<'); //$NON-NLS-1$
+            sb.append('<'); 
             sb.append(element.getTagName());
             NamedNodeMap attributes = element.getAttributes();
             for (int i = 0; i < attributes.getLength(); i++) {
                 Attr attribute = (Attr) attributes.item(i);
-                sb.append(' '); //$NON-NLS-1$
+                sb.append(' '); 
                 sb.append(attribute.getName());
                 sb.append("=\""); //$NON-NLS-1$
                 sb.append(getEscaped(String.valueOf(attribute.getValue())));
-                sb.append('\"'); //$NON-NLS-1$
+                sb.append('\"'); 
             }
             sb.append(hasChildren ? ">" : "/>"); //$NON-NLS-1$ //$NON-NLS-2$
             print(sb.toString());
@@ -494,7 +493,7 @@ public final class XMLMemento implements Memento {
             StringBuilder sb = new StringBuilder();
             sb.append("</"); //$NON-NLS-1$
             sb.append(element.getNodeName());
-            sb.append('>'); //$NON-NLS-1$
+            sb.append('>'); 
             print(sb.toString());
         }
 
