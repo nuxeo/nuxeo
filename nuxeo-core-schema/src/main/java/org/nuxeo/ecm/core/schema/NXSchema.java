@@ -25,7 +25,11 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class NXSchema {
+public class NXSchema {
+
+    // Utility class.
+    private NXSchema() {
+    }
 
     public static SchemaManager getSchemaManager() {
         return Framework.getLocalService(SchemaManager.class);
