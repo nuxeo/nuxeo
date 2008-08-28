@@ -414,7 +414,10 @@ public class SQLInfo {
         initHierarchySQL();
         initRepositorySQL();
 
-        for (String tableName : model.fragmentsKeysType.keySet()) {
+        for (String tableName : model.getFragmentNames()) {
+            if (tableName.equals(model.HIER_TABLE_NAME)) {
+                continue;
+            }
             if (tableName.equals(model.MAIN_TABLE_NAME) &&
                     !model.separateMainTable) {
                 // merged into already-generated hierarchy
@@ -486,10 +489,7 @@ public class SQLInfo {
         maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, PropertyType.BOOLEAN,
                 Types.BIT); // not null
         if (!model.separateMainTable) {
-            Map<String, PropertyType> fragmentKeysType = model.fragmentsKeysType.get(model.MAIN_TABLE_NAME);
-            for (Entry<String, PropertyType> entry : fragmentKeysType.entrySet()) {
-                maker.newPrimitiveField(entry.getKey(), entry.getValue());
-            }
+            maker.newFragmentFields();
         }
         maker.postProcess();
         maker.postProcessHierarchy();
@@ -520,10 +520,7 @@ public class SQLInfo {
             }
         }
 
-        Map<String, PropertyType> fragmentKeysType = model.fragmentsKeysType.get(tableName);
-        for (Entry<String, PropertyType> entry : fragmentKeysType.entrySet()) {
-            maker.newPrimitiveField(entry.getKey(), entry.getValue());
-        }
+        maker.newFragmentFields();
 
         maker.postProcess();
         if (isMain) {
@@ -544,7 +541,7 @@ public class SQLInfo {
         protected TableMaker(String tableName) {
             this.tableName = tableName;
             table = database.addTable(tableName);
-            orderBy = model.collectionOrderBy.get(tableName);
+            orderBy = model.getCollectionOrderBy(tableName);
         }
 
         protected Column newMainKey(String name) {
@@ -589,6 +586,13 @@ public class SQLInfo {
             }
             column.setNullable(false);
             column.setPrimary(true);
+        }
+
+        protected void newFragmentFields() {
+            Map<String, PropertyType> keysType = model.getFragmentKeysType(tableName);
+            for (Entry<String, PropertyType> entry : keysType.entrySet()) {
+                newPrimitiveField(entry.getKey(), entry.getValue());
+            }
         }
 
         protected void newPrimitiveField(String key, PropertyType type) {

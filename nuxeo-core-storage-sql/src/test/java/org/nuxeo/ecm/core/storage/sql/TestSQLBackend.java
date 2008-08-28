@@ -47,11 +47,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals("/", session.getPath(root));
         assertEquals("Root",
                 root.getSimpleProperty("ecm:primaryType").getString());
-
-        SimpleProperty titleProp = root.getSimpleProperty("tst:title");
-        assertNull(titleProp.getValue());
-        titleProp.setValue("the root");
-
+        try {
+            root.getSimpleProperty("tst:title");
+            fail("Property should not exist");
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
         session.save();
         session.close();
     }
@@ -150,6 +151,25 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.save();
     }
 
+    public void testPropertiesSameName() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
+
+        nodea.setSingleProperty("tst:title", "hello world");
+        assertEquals("hello world",
+                nodea.getSimpleProperty("tst:title").getString());
+
+        try {
+            nodea.setSingleProperty("tst2:title", "aha");
+            fail("shouldn't allow setting property from foreign schema");
+        } catch (Exception e) {
+            // ok
+        }
+
+        session.save();
+    }
+
     public void testBinary() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -220,11 +240,14 @@ public class TestSQLBackend extends SQLBackendTestCase {
     public void testCrossSessionInvalidations() throws Exception {
         Session session1 = repository.getConnection();
         Node root1 = session1.getRootNode();
-        SimpleProperty title1 = root1.getSimpleProperty("tst:title");
+        Node node1 = session1.addChildNode(root1, "foo", null, "TestDoc", false);
+        SimpleProperty title1 = node1.getSimpleProperty("tst:title");
+        session1.save();
 
         Session session2 = repository.getConnection();
         Node root2 = session2.getRootNode();
-        SimpleProperty title2 = root2.getSimpleProperty("tst:title");
+        Node node2 = session2.getChildNode(root2, "foo", false);
+        SimpleProperty title2 = node2.getSimpleProperty("tst:title");
 
         // change title1
         title1.setValue("yo");

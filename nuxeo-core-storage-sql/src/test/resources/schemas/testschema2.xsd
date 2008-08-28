@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/test/testschema2"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="title" type="xs:string" />
+
+</xs:schema>
