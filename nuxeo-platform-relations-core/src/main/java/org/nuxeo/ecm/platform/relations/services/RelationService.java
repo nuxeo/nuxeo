@@ -319,6 +319,15 @@ public class RelationService extends DefaultComponent implements
         return graph;
     }
 
+    public Graph getTransientGraph(String type) throws ClientException {
+        Graph graph = getGraphByType(type);
+        if (graph == null) {
+            throw new RuntimeException(String.format(
+                    "Caught error when instanciating graph %s", type));
+        }
+        return graph;
+    }
+
     // RelationManager interface
 
     public synchronized Graph getGraphByName(String name)

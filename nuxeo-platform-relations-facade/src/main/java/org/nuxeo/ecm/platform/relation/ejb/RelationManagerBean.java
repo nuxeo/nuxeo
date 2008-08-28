@@ -232,4 +232,8 @@ public class RelationManagerBean implements RelationManager {
         }
     }
 
+    public Graph getTransientGraph(String type) throws ClientException {
+        return service.getTransientGraph(type);
+    }
+
 }
