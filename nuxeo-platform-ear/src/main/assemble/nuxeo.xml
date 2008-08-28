@@ -4,21 +4,10 @@
   <assemble>
     <set>resources</set>
     <outputFile>/</outputFile>
-    <unpack>true</unpack>
-    <unpackInNewDirectory>false</unpackInNewDirectory>
   </assemble>
-  <artifactSet id="resources">
-    <import>**</import>
-    <includes>
-      <artifact name="nuxeo-platform-ear-resources" classifier="mono"
-        type="zip" />
-    </includes>
-  </artifactSet>
-<!--
   <zipEntrySet id="resources">
-    <artifact>org.nuxeo.ecm.platform:nuxeo-platform-ear-resources:${project.version}:zip:mono</artifact>
+    <artifact>org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-mono</artifact>
   </zipEntrySet>
- -->
 
   <!-- ARTIFACTS -->
   <assemble>

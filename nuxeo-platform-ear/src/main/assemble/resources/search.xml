@@ -1,5 +1,5 @@
 <assembly>
-  <id>search</id>
+  <id>resources-search</id>
   <formats>
     <format>zip</format>
   </formats>
