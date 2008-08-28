@@ -522,7 +522,7 @@ public class SessionImpl implements Session {
     }
 
     private void computeRootNode() throws StorageException {
-        Long repositoryId = Long.valueOf(0L); // always 0 for now
+        String repositoryId = "default"; // TODO use repo name
         Serializable rootId = context.getRootId(repositoryId);
         if (rootId == null) {
             log.debug("Creating root");

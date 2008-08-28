@@ -1610,6 +1610,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         childFile.setProperty("file", "content", new StringBlob("the content"));
 
         session.saveDocument(childFile);
+        session.save();
 
         try {
             session.getContentData(childFile.getRef(), "title");
