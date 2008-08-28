@@ -465,9 +465,9 @@ public class SQLInfo {
      */
     protected void initRepositorySQL() {
         TableMaker maker = new TableMaker(model.REPOINFO_TABLE_NAME);
-        maker.newColumn(model.REPOINFO_REPOID_KEY, PropertyType.LONG,
-                Types.INTEGER);
         maker.newPrimaryKey(); // foreign key to main id
+        maker.newColumn(model.REPOINFO_REPONAME_KEY, PropertyType.STRING,
+                Types.VARCHAR);
         maker.postProcessRepository();
     }
 
@@ -677,7 +677,7 @@ public class SQLInfo {
                 if (key.equals(model.MAIN_KEY)) {
                     what = qname;
                     selectRootIdWhatColumn = column;
-                } else if (key.equals(model.REPOINFO_REPOID_KEY)) {
+                } else if (key.equals(model.REPOINFO_REPONAME_KEY)) {
                     where = qname + " = ?";
                 } else {
                     throw new AssertionError(column);

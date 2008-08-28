@@ -1,7 +1,5 @@
 SQL Storage TODO
 
-- major/minor version management
-
 Optimizations:
 
 - blob storage GC

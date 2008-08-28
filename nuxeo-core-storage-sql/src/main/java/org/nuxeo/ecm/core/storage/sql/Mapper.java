@@ -353,7 +353,7 @@ public class Mapper {
                     Serializable v;
                     if (key.equals(model.MAIN_KEY)) {
                         v = id;
-                    } else if (key.equals(model.REPOINFO_REPOID_KEY)) {
+                    } else if (key.equals(model.REPOINFO_REPONAME_KEY)) {
                         v = repositoryId;
                     } else {
                         throw new AssertionError(key);

@@ -65,9 +65,9 @@ public class Model {
 
     public static final String ROOT_TYPE = "Root";
 
-    public static final String REPOINFO_TABLE_NAME = "repositoryinfo";
+    public static final String REPOINFO_TABLE_NAME = "repositories";
 
-    public static final String REPOINFO_REPOID_KEY = "repoid";
+    public static final String REPOINFO_REPONAME_KEY = "name";
 
     public static final String MAIN_KEY = "id";
 
@@ -83,8 +83,7 @@ public class Model {
 
     public static final String MAIN_BASE_VERSION_PROP = "ecm:baseVersion";
 
-    // TODO XXX baseversionId
-    public static final String MAIN_BASE_VERSION_KEY = "baseversion";
+    public static final String MAIN_BASE_VERSION_KEY = "baseversionid";
 
     public static final String MAIN_CHECKED_IN_PROP = "ecm:isCheckedIn";
 
@@ -97,6 +96,12 @@ public class Model {
     public static final String MAIN_MINOR_VERSION_PROP = "ecm:minorVersion";
 
     public static final String MAIN_MINOR_VERSION_KEY = "minorversion";
+
+    public static final String UID_SCHEMA_NAME = "uid";
+
+    public static final String UID_MAJOR_VERSION_KEY = "major_version";
+
+    public static final String UID_MINOR_VERSION_KEY = "minor_version";
 
     public static final String HIER_TABLE_NAME = "hierarchy";
 
@@ -166,12 +171,11 @@ public class Model {
 
     public static final String PROXY_TARGET_PROP = "ecm:proxyTargetId";
 
-    public static final String PROXY_TARGET_KEY = "target"; // TODO XXX targetId
+    public static final String PROXY_TARGET_KEY = "targetid";
 
     public static final String PROXY_VERSIONABLE_PROP = "ecm:proxyVersionableId";
 
-    // TODO XXX versionableId
-    public static final String PROXY_VERSIONABLE_KEY = "versionable";
+    public static final String PROXY_VERSIONABLE_KEY = "versionableid";
 
     public static final String LOCK_TABLE_NAME = "locks";
 
@@ -713,11 +717,20 @@ public class Model {
                     PropertyType propertyType = PropertyType.fromFieldType(
                             fieldType, false);
                     String fragmentKey = field.getName().getLocalName();
-                    addPropertyInfo(typeName, propertyName, propertyType,
-                            fragmentName, fragmentKey, false, null);
-
-                    // note that this type has a fragment
-                    thisFragmentName = fragmentName;
+                    if (fragmentName.equals(UID_SCHEMA_NAME) &&
+                            (fragmentKey.equals(UID_MAJOR_VERSION_KEY) || fragmentKey.equals(UID_MINOR_VERSION_KEY))) {
+                        // HACK special-case the "uid" schema, put major/minor
+                        // in the hierarchy table
+                        fragmentKey = fragmentKey.equals(UID_MAJOR_VERSION_KEY) ? MAIN_MAJOR_VERSION_KEY
+                                : MAIN_MINOR_VERSION_KEY;
+                        addPropertyInfo(typeName, propertyName, propertyType,
+                                mainTableName, fragmentKey, false, null);
+                    } else {
+                        addPropertyInfo(typeName, propertyName, propertyType,
+                                fragmentName, fragmentKey, false, null);
+                        // note that this type has a fragment
+                        thisFragmentName = fragmentName;
+                    }
                 }
             }
         }
