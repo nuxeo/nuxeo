@@ -85,4 +85,7 @@
   <activeProfiles>
     <activeProfile>Nuxeo</activeProfile>
   </activeProfiles>
+  <pluginGroups>
+    <pluginGroup>org.nuxeo.build</pluginGroup>
+  </pluginGroups>
 </settings>
