@@ -62,16 +62,18 @@ public interface CoreEventListenerService {
     void notifyEventListeners(CoreEvent coreEvent);
 
     /**
-     * Fire a command starting event
+     * Fires a command starting event.
+     *
      * @param command the command
      */
-    public void fireOperationStarted(Operation<?> command);
+    void fireOperationStarted(Operation<?> command);
 
     /**
-     * Fire a command termination event
+     * Fires a command termination event.
+     *
      * @param command the command that terminated
      */
-    public void fireOperationTerminated(Operation<?> command);
+    void fireOperationTerminated(Operation<?> command);
 
     /**
      * Returns the collection of event listeners.
@@ -85,7 +87,7 @@ public interface CoreEventListenerService {
      *
      * @param name
      *            the name of the event listener used a registration time
-     * @return the EventListener instance.
+     * @return the EventListener instance, or null if none found.
      */
     EventListener getEventListenerByName(String name);
 
