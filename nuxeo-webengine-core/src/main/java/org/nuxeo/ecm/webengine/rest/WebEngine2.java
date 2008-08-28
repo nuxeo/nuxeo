@@ -24,8 +24,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Vector;
 
 import org.nuxeo.ecm.core.url.URLFactory;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
@@ -33,10 +35,10 @@ import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
 import org.nuxeo.ecm.webengine.WebClassLoader;
 import org.nuxeo.ecm.webengine.nl.ResourceComposite;
-import org.nuxeo.ecm.webengine.rest.domains.DefaultWebDomain;
-import org.nuxeo.ecm.webengine.rest.jersey.WebContextImpl;
+import org.nuxeo.ecm.webengine.rest.domains.DomainRegistry;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.scripting.Scripting;
+import org.nuxeo.ecm.webengine.rest.servlet.jersey.WebContextImpl;
 import org.nuxeo.ecm.webengine.rest.types.WebTypeManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.deploy.FileChangeListener;
@@ -50,8 +52,7 @@ import org.nuxeo.runtime.deploy.FileChangeNotifier.FileEntry;
 public class WebEngine2 implements FileChangeListener, ResourceLocator {
 
     protected File root;
-    protected Map<String, DefaultWebDomain<?>> domains = new HashMap<String, DefaultWebDomain<?>>();
-    protected Map<String, DefaultWebDomain<?>> mappings = new HashMap<String, DefaultWebDomain<?>>();
+    protected DomainRegistry domainReg;
     protected FileChangeNotifier notifier;
     protected volatile long lastMessagesUpdate = 0;
     protected Scripting scripting;
@@ -59,11 +60,16 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
     protected RenderingEngine rendering;
     protected Map<String, Object> env;
     protected ResourceBundle messages;
-    protected Map<String, Object> renderingExtensions;
+    protected Map<String, Object> renderingExtensions; //TODO this should be moved in rendering project
     protected boolean isDebug = false;
+
+    protected List<ResourceBinding> bindings = new Vector<ResourceBinding>();
+
+
 
     public WebEngine2(File root, FileChangeNotifier notifier) throws IOException {
         isDebug = Boolean.parseBoolean(Framework.getProperty("debug", "false"));
+        this.domainReg = new DomainRegistry(this);
         this.root = root;
         this.notifier = notifier;
         this.scripting = new Scripting(isDebug);
@@ -154,20 +160,8 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
         return scripting;
     }
 
-    public void registerDomain(DefaultWebDomain<?> domain) {
-        //domains.put(domain.getId(), value);
-    }
-
-    public DefaultWebDomain<?>[] getDomains() {
-        return domains.values().toArray(new DefaultWebDomain[domains.size()]);
-    }
-
-    public DefaultWebDomain<?> getDomain(String id) {
-        return domains.get(id);
-    }
-
-    public DefaultWebDomain<?> getDomainByPath(String path) {
-        return mappings.get(path);
+    public DomainRegistry getDomainRegistry() {
+        return domainReg;
     }
 
     public File getRootDirectory() {
@@ -182,10 +176,24 @@ public class WebEngine2 implements FileChangeListener, ResourceLocator {
         return rendering;
     }
 
+    /** Manage jax-rs root resource bindings */
+    public void addResourceBinding(ResourceBinding binding) {
+        bindings.add(binding);
+    }
+
+    public void removeResourceBinding(ResourceBinding binding) {
+        bindings.remove(binding);
+    }
+
+    public ResourceBinding[] getBindings() {
+        return bindings.toArray(new ResourceBinding[bindings.size()]);
+    }
+
     /**
      * Reload configuration
      */
     public void reload() {
+        bindings.clear();
         //TODO
         //defaultApplication = null;
         //for (WebApplication app : apps.values()) {

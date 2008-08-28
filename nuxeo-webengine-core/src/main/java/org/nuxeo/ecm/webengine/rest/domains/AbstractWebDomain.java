@@ -76,18 +76,6 @@ public class AbstractWebDomain<T extends DomainDescriptor> implements WebDomain 
         return engine;
     }
 
-    public String getPath() {
-        return descriptor.path;
-    }
-
-    public String getRoot() {
-        return descriptor.root;
-    }
-
-    public String getType() {
-        return descriptor.type;
-    }
-
     public ScriptFile getDefaultPage() {
         try {
             return getFile(descriptor.defaultPage);

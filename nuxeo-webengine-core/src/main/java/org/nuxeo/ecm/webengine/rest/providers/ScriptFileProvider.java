@@ -29,21 +29,20 @@ import java.lang.reflect.Type;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
-
-import com.sun.jersey.impl.provider.entity.AbstractMessageReaderWriterProvider;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ScriptFileProvider extends AbstractMessageReaderWriterProvider<ScriptFile> {
+public class ScriptFileProvider implements MessageBodyWriter<ScriptFile> {
 
-    public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
-        return false;
+
+    public long getSize(ScriptFile t) {
+        return -1;
     }
 
     public boolean isWriteable(Class<?> type, Type genericType,

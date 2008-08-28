@@ -33,8 +33,6 @@ import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
 import org.nuxeo.ecm.webengine.rest.template.Template;
 import org.nuxeo.ecm.webengine.session.UserSession;
 
-import com.sun.jersey.api.core.HttpContext;
-
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -53,8 +51,6 @@ public interface WebContext2 {
     public CoreSession getCoreSession();
 
     public Principal getPrincipal();
-
-    public HttpContext getHttpContext();
 
     public void setAction(String action);
 

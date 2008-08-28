@@ -23,13 +23,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.runtime.contribution.impl.AbstractRegistry;
+import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class MyRegistry extends AbstractRegistry<String,MyObject> {
+public class MyRegistry extends AbstractContributionRegistry<String,MyObject> {
 
     protected Map<String,MyObject> map = new HashMap<String, MyObject>();
 

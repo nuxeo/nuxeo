@@ -17,36 +17,22 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.domains;
+package org.nuxeo.ecm.webengine.rest.servlet.jersey;
 
-import java.io.IOException;
-
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
-import org.nuxeo.runtime.deploy.FileChangeListener;
+import com.sun.jersey.api.core.DefaultResourceConfig;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface WebDomain extends FileChangeListener {
+public class WebEngineResourceConfig extends DefaultResourceConfig {
 
-    WebEngine2 getEngine();
 
-    String getId();
-
-    ScriptFile getIndexPage();
-
-    ScriptFile getErrorPage();
-
-    ScriptFile getDefaultPage();
-
-    String getScriptExtension();
-
-    String getTemplateExtension();
-
-    void flushCache();
-
-    ScriptFile getFile(String path) throws IOException;
+    /**
+     *
+     */
+    public WebEngineResourceConfig() {
+        super ();
+    }
 
 }

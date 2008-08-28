@@ -27,7 +27,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.webengine.install.Installer;
 import org.nuxeo.ecm.webengine.rendering.RenderingExtensionDescriptor;
+import org.nuxeo.ecm.webengine.rest.ResourceBinding;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
+import org.nuxeo.ecm.webengine.rest.domains.DomainDescriptor;
 import org.nuxeo.ecm.webengine.security.GuardDescriptor;
 import org.nuxeo.ecm.webengine.security.PermissionService;
 import org.nuxeo.runtime.RuntimeServiceException;
@@ -55,7 +57,9 @@ public class WebEngineComponent extends ManagedComponent implements Configuratio
 
     public static final String RENDERING_EXTENSION_XP = "rendering-extension";
     public static final String WEB_OBJ_XP = "webObject";
-    public static final String BINDING_XP = "binding";
+    public static final String BINDING_XP = "binding"; // TODO deprecated
+    public static final String RESOURCE_BINDING_XP = "resource";
+    public static final String DOMAIN_XP = "domain";
     public static final String GUARD_XP = "guard"; // global guards
     public static final String APPLICATION_XP = "application";
     public static final String INSTALL_XP = "install";
@@ -162,6 +166,10 @@ public class WebEngineComponent extends ManagedComponent implements Configuratio
         if (GUARD_XP.equals(extensionPoint)) {
             GuardDescriptor gd = (GuardDescriptor)contribution;
             PermissionService.getInstance().registerGuard(gd.getId(), gd.getGuard());
+        } else if (RESOURCE_BINDING_XP.equals(extensionPoint)) {
+            engine2.addResourceBinding((ResourceBinding)contribution);
+        } else if (DOMAIN_XP.equals(extensionPoint)) {
+            engine2.getDomainRegistry().registerDescriptor((DomainDescriptor)contribution);
         } else if (BINDING_XP.equals(extensionPoint)) {
             WebObjectBindingDescriptor binding = (WebObjectBindingDescriptor)contribution;
             engine.registerBinding(binding.type, binding.objectId);
@@ -202,6 +210,10 @@ public class WebEngineComponent extends ManagedComponent implements Configuratio
         if (GUARD_XP.equals(extensionPoint)) {
             GuardDescriptor gd = (GuardDescriptor)contribution;
             PermissionService.getInstance().unregisterGuard(gd.getId());
+        } else if (RESOURCE_BINDING_XP.equals(extensionPoint)) {
+            engine2.removeResourceBinding((ResourceBinding)contribution);
+        } else if (DOMAIN_XP.equals(extensionPoint)) {
+            engine2.getDomainRegistry().unregisterDescriptor((DomainDescriptor)contribution);
         } else if (BINDING_XP.equals(extensionPoint)) {
             WebObjectBindingDescriptor binding = (WebObjectBindingDescriptor)contribution;
             engine.unregisterBinding(binding.type);

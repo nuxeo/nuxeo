@@ -23,6 +23,9 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.ProduceMime;
 
 import org.nuxeo.ecm.webengine.WebException;
@@ -131,6 +134,21 @@ public class WebObject implements Adaptable {
 
     public Map<String, Collection<ActionDescriptor>> getActionsByCategory() throws WebException {
         return null; //TODO
+    }
+
+
+    @Path("@{action}")
+    public WebAction dispatchAction(@PathParam("action") String action) {
+        //WebAction act = ctx.getEngine().getWebTypeManager().getAction(action);
+        WebAction act = new WebAction();
+        act.initialize(this, action);
+        return act;
+    }
+
+    @Path("([a-c]){view}")
+    @GET
+    public String dispatchView(@PathParam("view") String view) {
+        return "@@@@ view: "+view;
     }
 
 }

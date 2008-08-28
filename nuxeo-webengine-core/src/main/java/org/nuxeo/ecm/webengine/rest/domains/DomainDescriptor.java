@@ -42,18 +42,21 @@ public class DomainDescriptor {
     @XNode("@id")
     public String id;
 
-    /** the name of the type or he class of the resource to serve */
-    @XNode("@type")
-    public String type;
-
-    @XNode("@path")
-    public String path;
+    /**
+     * A fragment id to be used only if this contribution is patching another one
+     */
+    @XNode("@fragment")
+    public String fragment = "";
 
     @XNode("@extends")
     public String base;
 
-    @XNode("root")
-    public String root;
+    /** the class of the resource to serve */
+    @XNode("type")
+    public String type;
+
+    @XNode("contentRoot")
+    public String contentRoot;
 
     @XNode("errorPage")
     public String errorPage = "error.ftl";
@@ -72,12 +75,6 @@ public class DomainDescriptor {
 
     @XNodeList(value="roots/root", type=ArrayList.class, componentType=RootDescriptor.class, nullByDefault=true)
     public List<RootDescriptor> roots;
-
-    @XNode("locator")
-    public String locator;
-
-    @XNode("default")
-    public boolean isDefault;
 
     @XNode("permission")
     public  GuardDescriptor guardDescriptor;
@@ -102,4 +99,12 @@ public class DomainDescriptor {
         return guard;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj.getClass() == DomainDescriptor.class) {
+            DomainDescriptor dd = (DomainDescriptor)obj;
+            return dd.id.equals(id) && dd.fragment.equals(fragment);
+        }
+        return false;
+    }
 }

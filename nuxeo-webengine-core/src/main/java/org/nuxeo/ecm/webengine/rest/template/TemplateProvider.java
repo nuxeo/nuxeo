@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webengine.rest.template;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -29,21 +28,19 @@ import javax.ws.rs.ProduceMime;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.nuxeo.ecm.webengine.WebException;
-
-import com.sun.jersey.impl.provider.entity.AbstractMessageReaderWriterProvider;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 @ProduceMime("text/html")
-public class TemplateProvider extends AbstractMessageReaderWriterProvider<Template> {
+public class TemplateProvider implements MessageBodyWriter<Template> {
 
-    public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
-        return false;
+    public long getSize(Template t) {
+        return -1;
     }
 
     public boolean isWriteable(Class<?> type, Type genericType,
@@ -63,13 +60,6 @@ public class TemplateProvider extends AbstractMessageReaderWriterProvider<Templa
             ee.initCause(e);
             throw ee;
         }
-    }
-
-    public Template readFrom(Class<Template> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException {
-        return null;
     }
 
 }

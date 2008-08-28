@@ -37,7 +37,7 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
     private static final long serialVersionUID = 1L;
 
 
-    protected AbstractRegistry<K,T> registry;
+    protected AbstractContributionRegistry<K,T> registry;
     protected K primaryKey;
     protected List<T> fragments = new ArrayList<T>();
     // the contributions I depend on
@@ -53,7 +53,7 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
 
 
 
-    public ContributionImpl(AbstractRegistry<K,T> reg,  K primaryKey) {
+    public ContributionImpl(AbstractContributionRegistry<K,T> reg,  K primaryKey) {
         this.primaryKey = primaryKey;
         this.registry = reg;
     }
@@ -111,7 +111,7 @@ public class ContributionImpl<K,T> implements Contribution<K,T> {
 
     public void addFragment(T fragment, K ... superKeys) {
         fragments.add(fragment);
-        if (superKeys != null && superKeys.length > 0) {
+        if (superKeys != null && superKeys.length > 0 && superKeys[0] != null) { // when passing a null value as the superKey you get an arrray with a null element
             if (superKeys != null && superKeys.length > 0) {
                 for (int i=0; i<superKeys.length; i++) {
                     Contribution<K,T> c = registry.getOrCreateContribution(superKeys[i]);

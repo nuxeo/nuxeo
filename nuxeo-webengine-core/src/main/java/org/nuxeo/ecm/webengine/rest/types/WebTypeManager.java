@@ -30,13 +30,13 @@ import org.nuxeo.ecm.webengine.actions.ActionDescriptor;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.contribution.impl.AbstractRegistry;
+import org.nuxeo.runtime.contribution.impl.AbstractContributionRegistry;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class WebTypeManager extends AbstractRegistry<String, WebTypeDescriptor> {
+public class WebTypeManager extends AbstractContributionRegistry<String, WebTypeDescriptor> {
 
     protected final Map<String, WebType> registry;
     protected WebEngine2 engine;

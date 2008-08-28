@@ -17,36 +17,28 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.domains;
+package org.nuxeo.ecm.webengine.rest.servlet.resteasy;
 
-import java.io.IOException;
-
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
-import org.nuxeo.runtime.deploy.FileChangeListener;
+import org.nuxeo.ecm.webengine.rest.servlet.resteasy.patch.ResourceMethodRegistry;
+import org.resteasy.Dispatcher;
+import org.resteasy.spi.ResteasyProviderFactory;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface WebDomain extends FileChangeListener {
+public class WebEngineDispatcher extends Dispatcher {
 
-    WebEngine2 getEngine();
+    public WebEngineDispatcher(ResteasyProviderFactory factory) {
+        super (factory);
+        // override the registry with our own
+        this.registry = new ResourceMethodRegistry(providerFactory);
+    }
 
-    String getId();
-
-    ScriptFile getIndexPage();
-
-    ScriptFile getErrorPage();
-
-    ScriptFile getDefaultPage();
-
-    String getScriptExtension();
-
-    String getTemplateExtension();
-
-    void flushCache();
-
-    ScriptFile getFile(String path) throws IOException;
+    @Override
+    public ResourceMethodRegistry getRegistry() {
+        // TODO Auto-generated method stub
+        return (ResourceMethodRegistry)super.getRegistry();
+    }
 
 }

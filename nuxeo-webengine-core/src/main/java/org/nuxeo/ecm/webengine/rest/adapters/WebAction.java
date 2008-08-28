@@ -17,36 +17,29 @@
  * $Id$
  */
 
-package org.nuxeo.ecm.webengine.rest.domains;
+package org.nuxeo.ecm.webengine.rest.adapters;
 
-import java.io.IOException;
-
-import org.nuxeo.ecm.webengine.rest.WebEngine2;
-import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
-import org.nuxeo.runtime.deploy.FileChangeListener;
+import javax.ws.rs.GET;
+import javax.ws.rs.ProduceMime;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public interface WebDomain extends FileChangeListener {
+@ProduceMime({"text/html", "*/*"})
+public class WebAction {
 
-    WebEngine2 getEngine();
+    protected WebObject object;
+    protected String name;
 
-    String getId();
+    public void initialize(WebObject object, String name) {
+        this.object = object;
+        this.name = name;
+    }
 
-    ScriptFile getIndexPage();
-
-    ScriptFile getErrorPage();
-
-    ScriptFile getDefaultPage();
-
-    String getScriptExtension();
-
-    String getTemplateExtension();
-
-    void flushCache();
-
-    ScriptFile getFile(String path) throws IOException;
+    @GET
+    public Object get() {
+        return "Calling action "+name+" on "+object.getPath();
+    }
 
 }

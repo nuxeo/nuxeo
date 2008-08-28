@@ -48,9 +48,9 @@ public class DocumentDomain extends ChainingWebDomain<DomainDescriptor> {
             CoreSession session = ctx.getCoreSession();
             WebTypeManager typeMgr = ctx.getEngine().getWebTypeManager();
             // create the root document
-            DocumentModel root = session.getDocument(new PathRef(descriptor.root));
+            DocumentModel root = session.getDocument(new PathRef(descriptor.contentRoot));
             DocumentObject obj = (DocumentObject)typeMgr.newInstance(root.getType());
-            obj.initialize(ctx, root, descriptor.root);
+            obj.initialize(ctx, root, descriptor.contentRoot);
             // create the child document
             DocumentModel doc = session.getChild(root.getRef(), path);
             obj = (DocumentObject)typeMgr.newInstance(doc.getType());

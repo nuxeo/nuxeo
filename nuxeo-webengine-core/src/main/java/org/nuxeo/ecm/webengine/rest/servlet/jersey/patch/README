@@ -1,0 +1,12 @@
+This is patching jersey implementation to be able to register root resources
+without using annotations but configuration files.
+
+WebApplicationImpl class was patched by making the method
+RulesMap<UriRule> processRootResources(Set<Class<?>> classes) and the field
+'resourceConfig' protected
+
+Also the 'final'modifier was removed form the class declaration to be able to subclass it.
+
+The WebApplicationContext was patched to use the patched WebApplicationImpl
+type in constructor
+

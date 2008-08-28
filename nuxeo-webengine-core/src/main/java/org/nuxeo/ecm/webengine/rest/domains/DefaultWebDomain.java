@@ -29,8 +29,6 @@ import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
 
-import com.sun.jersey.api.core.HttpContext;
-
 /**
  * The dispatch is using by default a right path match (limited=false).
  * This way we avoid generating a resource chain corresponding to each
@@ -64,10 +62,9 @@ public class DefaultWebDomain<T extends DomainDescriptor> extends AbstractWebDom
 
 
     @Path(value="{path}", limited=false)
-    public WebObject dispatch(@PathParam("path") String path, @Context HttpContext ctx) throws Exception {
-        WebContext2 webCtx = (WebContext2)ctx;
-        webCtx.setDomain(this);
-        return resolve((WebContext2)ctx, path);
+    public WebObject dispatch(@PathParam("path") String path, @Context WebContext2 ctx) throws Exception {
+        ctx.setDomain(this);
+        return resolve(ctx, path);
     }
 
 

@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webengine.rest.providers;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.annotation.Annotation;
@@ -30,23 +29,21 @@ import javax.ws.rs.ProduceMime;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
 import org.nuxeo.ecm.webengine.rest.scripting.ScriptFile;
-
-import com.sun.jersey.impl.provider.entity.AbstractMessageReaderWriterProvider;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 @ProduceMime("text/html")
-public class DocumentObjectProvider extends AbstractMessageReaderWriterProvider<WebObject> {
+public class DocumentObjectProvider implements MessageBodyWriter<WebObject> {
 
-    public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
-        return false;
+    public long getSize(WebObject t) {
+        return -1;
     }
 
     public boolean isWriteable(Class<?> type, Type genericType,
@@ -78,11 +75,4 @@ public class DocumentObjectProvider extends AbstractMessageReaderWriterProvider<
         }
     }
 
-    public WebObject readFrom(Class<WebObject> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }

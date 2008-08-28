@@ -23,14 +23,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 
-import org.nuxeo.ecm.core.CoreService;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.rest.WebContext2;
 import org.nuxeo.ecm.webengine.rest.WebEngine2;
 import org.nuxeo.ecm.webengine.rest.adapters.WebObject;
-import org.nuxeo.runtime.api.Framework;
-
-import com.sun.jersey.api.core.HttpContext;
 
 /**
  * This domain is initiating a chain resolving of objects on the traversal path
@@ -47,7 +43,7 @@ public class ChainingWebDomain<T extends DomainDescriptor> extends DefaultWebDom
     }
 
     @Path(value="{path}", limited=true)
-    public WebObject dispatch(@PathParam("path") String path, @Context HttpContext ctx) throws Exception {
+    public WebObject dispatch(@PathParam("path") String path, @Context WebContext2 ctx) throws Exception {
         return super.dispatch(path, ctx);
     }
 
