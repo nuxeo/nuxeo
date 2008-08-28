@@ -87,7 +87,7 @@ doesn't implement JTA fully.
     <config-property name="name">default</config-property>
     <config-property name="xaDataSource" type="java.lang.String">org.postgresql.xa.PGXADataSource</config-property>
     <config-property name="property" type="java.lang.String">ServerName=localhost</config-property>
-    <config-property name="property" type="java.lang.String">PortNumber=5432</config-property>
+    <config-property name="property" type="java.lang.String">PortNumber/Integer=5432</config-property>
     <config-property name="property" type="java.lang.String">DatabaseName=nuxeo</config-property>
     <config-property name="property" type="java.lang.String">User=postgres</config-property>
     <config-property name="property" type="java.lang.String">Password=</config-property>
