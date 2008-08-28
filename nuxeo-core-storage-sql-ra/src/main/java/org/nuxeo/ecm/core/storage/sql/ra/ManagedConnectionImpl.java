@@ -18,7 +18,6 @@
 package org.nuxeo.ecm.core.storage.sql.ra;
 
 import java.io.PrintWriter;
-import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 
 import javax.resource.ResourceException;

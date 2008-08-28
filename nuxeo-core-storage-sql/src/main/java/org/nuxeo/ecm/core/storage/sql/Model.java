@@ -83,7 +83,8 @@ public class Model {
 
     public static final String MAIN_BASE_VERSION_PROP = "ecm:baseVersion";
 
-    public static final String MAIN_BASE_VERSION_KEY = "baseversion"; // TODO XXX baseversionId
+    // TODO XXX baseversionId
+    public static final String MAIN_BASE_VERSION_KEY = "baseversion";
 
     public static final String MAIN_CHECKED_IN_PROP = "ecm:isCheckedIn";
 
@@ -97,7 +98,7 @@ public class Model {
 
     public static final String MAIN_MINOR_VERSION_KEY = "minorversion";
 
-    private static final String HIER_TABLE_NAME = "hierarchy";
+    public static final String HIER_TABLE_NAME = "hierarchy";
 
     public static final String HIER_PARENT_KEY = "parent";
 
@@ -127,7 +128,7 @@ public class Model {
 
     public static final String ACL_TABLE_NAME = "acls";
 
-    public static final String ACL_PROP = "__acl__";
+    public static final String ACL_PROP = "ecm:acl";
 
     public static final String ACL_POS_KEY = "pos";
 
@@ -169,13 +170,33 @@ public class Model {
 
     public static final String PROXY_VERSIONABLE_PROP = "ecm:proxyVersionableId";
 
-    public static final String PROXY_VERSIONABLE_KEY = "versionable"; // TODO XXX versionableId
+    // TODO XXX versionableId
+    public static final String PROXY_VERSIONABLE_KEY = "versionable";
 
     public static final String LOCK_TABLE_NAME = "locks";
 
     public static final String LOCK_PROP = "ecm:lock";
 
     public static final String LOCK_KEY = "lock";
+
+    public static class PropertyInfo {
+
+        public final PropertyType propertyType;
+
+        public final String fragmentName;
+
+        public final String fragmentKey;
+
+        public final boolean readonly;
+
+        public PropertyInfo(PropertyType propertyType, String fragmentName,
+                String fragmentKey, boolean readonly) {
+            this.propertyType = propertyType;
+            this.fragmentName = fragmentName;
+            this.fragmentKey = fragmentKey;
+            this.readonly = readonly;
+        }
+    }
 
     private final BinaryManager binaryManager;
 
@@ -185,19 +206,28 @@ public class Model {
     /** Is the hierarchy table separate from the main table. */
     protected final boolean separateMainTable;
 
-    protected final AtomicLong temporaryIdCounter;
+    private final AtomicLong temporaryIdCounter;
 
-    /** Maps table name to a map of properties to their basic type. */
-    protected final Map<String, Map<String, PropertyType>> fragmentsKeysType;
+    /** Shared high-level properties that don't come from the schema manager. */
+    private Map<String, Type> specialPropertyTypes;
 
-    /** Column ordering for collections. */
-    protected final Map<String, List<String>> collectionOrderBy;
+    /** Per-schema/type info about properties. */
+    private final HashMap<String, Map<String, PropertyInfo>> schemaPropertyInfos;
+
+    /** Shared properties. */
+    private final Map<String, PropertyInfo> sharedPropertyInfos;
+
+    /** Per-table info about properties. */
+    private final Map<String, Map<String, PropertyType>> fragmentsKeys;
 
     /** Maps collection table names to their type. */
-    protected final Map<String, PropertyType> collectionTables;
+    private final Map<String, PropertyType> collectionTables;
 
     /** The factories to build collection fragments. */
-    protected final Map<String, CollectionMaker> collectionMakers;
+    private final Map<String, CollectionMaker> collectionMakers;
+
+    /** Column ordering for collections. */
+    private final Map<String, List<String>> collectionOrderBy;
 
     /**
      * The fragment for each schema, or {@code null} if the schema doesn't have
@@ -205,28 +235,14 @@ public class Model {
      */
     private final Map<String, String> schemaFragment;
 
-    /** Maps document type name or schema name to allowed simple fragments. */
+    /** Maps document type or schema to simple fragments. */
     protected final Map<String, Set<String>> typeSimpleFragments;
 
-    /** Maps schema name to allowed collection fragments. */
+    /** Maps schema to collection fragments. */
     protected final Map<String, Set<String>> typeCollectionFragments;
 
-    /** Maps schema name to allowed simple+collection fragments. */
+    /** Maps schema to simple+collection fragments. */
     protected final Map<String, Set<String>> typeFragments;
-
-    /** Maps property name to fragment name. */
-    private final Map<String, String> propertyFragment;
-
-    /** Maps property name to fragment key (single-valued). */
-    private final Map<String, String> propertyFragmentKey;
-
-    /** Maps of properties to their basic type. */
-    public final Map<String, PropertyType> propertyType;
-
-    public final Set<String> readOnlyProperties;
-
-    /** Properties that don't come from the schema manager. */
-    private HashMap<String, Type> specialPropertyTypes;
 
     public Model(RepositoryImpl repository, SchemaManager schemaManager) {
         binaryManager = repository.getBinaryManager();
@@ -237,18 +253,18 @@ public class Model {
         hierTableName = HIER_TABLE_NAME;
         mainTableName = separateMainTable ? MAIN_TABLE_NAME : HIER_TABLE_NAME;
 
-        schemaFragment = new HashMap<String, String>();
-        propertyType = new HashMap<String, PropertyType>();
-        readOnlyProperties = new HashSet<String>();
-        fragmentsKeysType = new HashMap<String, Map<String, PropertyType>>();
-        collectionOrderBy = new HashMap<String, List<String>>();
+        schemaPropertyInfos = new HashMap<String, Map<String, PropertyInfo>>();
+        sharedPropertyInfos = new HashMap<String, PropertyInfo>();
+        fragmentsKeys = new HashMap<String, Map<String, PropertyType>>();
+
         collectionTables = new HashMap<String, PropertyType>();
+        collectionOrderBy = new HashMap<String, List<String>>();
         collectionMakers = new HashMap<String, CollectionMaker>();
+
+        schemaFragment = new HashMap<String, String>();
         typeFragments = new HashMap<String, Set<String>>();
         typeSimpleFragments = new HashMap<String, Set<String>>();
         typeCollectionFragments = new HashMap<String, Set<String>>();
-        propertyFragment = new HashMap<String, String>();
-        propertyFragmentKey = new HashMap<String, String>();
 
         specialPropertyTypes = new HashMap<String, Type>();
 
@@ -316,24 +332,117 @@ public class Model {
         }
     }
 
-    // public Type getPropertyCoreType(String propertyName) {
-    // return propertyCoreType.get(propertyName);
-    // }
+    /**
+     * Records info about one property, in a schema-based structure and in a
+     * table-based structure.
+     * <p>
+     * If {@literal schemaName} is {@code null}, then the property applies to
+     * all types (system properties).
+     */
+    private void addPropertyInfo(String schemaName, String propertyName,
+            PropertyType propertyType, String fragmentName, String fragmentKey,
+            boolean readonly, Type type) {
+        // per-type
+        Map<String, PropertyInfo> propertyInfos;
+        if (schemaName == null) {
+            propertyInfos = sharedPropertyInfos;
+        } else {
+            propertyInfos = schemaPropertyInfos.get(schemaName);
+            if (propertyInfos == null) {
+                propertyInfos = new HashMap<String, PropertyInfo>();
+                schemaPropertyInfos.put(schemaName, propertyInfos);
+            }
+        }
+        propertyInfos.put(propertyName, new PropertyInfo(propertyType,
+                fragmentName, fragmentKey, readonly));
 
-    public PropertyType getPropertyType(String propertyName) {
-        return propertyType.get(propertyName);
+        // per-table
+        if (fragmentKey != null) {
+            Map<String, PropertyType> fragmentKeys = fragmentsKeys.get(fragmentName);
+            if (fragmentKeys == null) {
+                fragmentKeys = new LinkedHashMap<String, PropertyType>();
+                fragmentsKeys.put(fragmentName, fragmentKeys);
+            }
+            fragmentKeys.put(fragmentKey, propertyType);
+        }
+
+        // system properties
+        if (type != null) {
+            specialPropertyTypes.put(propertyName, type);
+        }
+
     }
 
-    public boolean isPropertyReadOnly(String propertyName) {
-        return readOnlyProperties.contains(propertyName);
+    /**
+     * Infers type property information from all its schemas.
+     */
+    private void inferTypePropertyInfos(String typeName, String[] schemaNames) {
+        Map<String, PropertyInfo> propertyInfos;
+        propertyInfos = schemaPropertyInfos.get(typeName);
+        if (propertyInfos == null) {
+            propertyInfos = new HashMap<String, PropertyInfo>();
+            schemaPropertyInfos.put(typeName, propertyInfos);
+        }
+        for (String schemaName : schemaNames) {
+            Map<String, PropertyInfo> infos = schemaPropertyInfos.get(schemaName);
+            if (infos == null) {
+                // schema with no properties (complex list)
+                continue;
+            }
+            for (Map.Entry<String, PropertyInfo> info : infos.entrySet()) {
+                propertyInfos.put(info.getKey(), info.getValue());
+            }
+        }
     }
 
-    public PropertyType getCollectionFragmentType(String tableName) {
-        return collectionTables.get(tableName);
+    public PropertyInfo getPropertyInfo(String schemaName, String propertyName) {
+        Map<String, PropertyInfo> propertyInfos = schemaPropertyInfos.get(schemaName);
+        if (propertyInfos == null) {
+            // no such schema
+            return null;
+        }
+        PropertyInfo propertyInfo = propertyInfos.get(propertyName);
+        return propertyInfo != null ? propertyInfo
+                : sharedPropertyInfos.get(propertyName);
     }
 
-    public boolean isCollectionFragment(String tableName) {
-        return collectionTables.containsKey(tableName);
+    private void addCollectionFragmentInfos(String fragmentName,
+            PropertyType propertyType, CollectionMaker maker,
+            List<String> orderBy, Map<String, PropertyType> fragmentKeys) {
+        collectionTables.put(fragmentName, propertyType);
+        collectionMakers.put(fragmentName, maker);
+        collectionOrderBy.put(fragmentName, orderBy);
+        // set all keys types
+        Map<String, PropertyType> old = fragmentsKeys.get(fragmentName);
+        if (old == null) {
+            fragmentsKeys.put(fragmentName, fragmentKeys);
+        } else {
+            old.putAll(fragmentKeys);
+        }
+    }
+
+    public Type getSpecialPropertyType(String propertyName) {
+        return specialPropertyTypes.get(propertyName);
+    }
+
+    public PropertyType getCollectionFragmentType(String fragmentName) {
+        return collectionTables.get(fragmentName);
+    }
+
+    public boolean isCollectionFragment(String fragmentName) {
+        return collectionTables.containsKey(fragmentName);
+    }
+
+    public List<String> getCollectionOrderBy(String fragmentName) {
+        return collectionOrderBy.get(fragmentName);
+    }
+
+    public Set<String> getFragmentNames() {
+        return fragmentsKeys.keySet();
+    }
+
+    public Map<String, PropertyType> getFragmentKeysType(String fragmentName) {
+        return fragmentsKeys.get(fragmentName);
     }
 
     /**
@@ -366,24 +475,13 @@ public class Model {
         return maker.makeEmpty(id, context, this);
     }
 
-    public String getFragmentName(String propertyName) {
-        return propertyFragment.get(propertyName);
-    }
-
-    public String getFragmentKey(String propertyName) {
-        return propertyFragmentKey.get(propertyName);
-    }
-
-    public Type getSpecialPropertyType(String propertyName) {
-        return specialPropertyTypes.get(propertyName);
-    }
-
     protected void addTypeSimpleFragment(String typeName, String fragmentName) {
         Set<String> fragments = typeSimpleFragments.get(typeName);
         if (fragments == null) {
             fragments = new HashSet<String>();
             typeSimpleFragments.put(typeName, fragments);
         }
+        // fragmentName may be null, to just create the entry
         if (fragmentName != null) {
             fragments.add(fragmentName);
             addTypeFragment(typeName, fragmentName);
@@ -446,6 +544,7 @@ public class Model {
                     }
                 }
             }
+            inferTypePropertyInfos(typeName, documentType.getSchemaNames());
             // all documents have ACLs too
             addTypeCollectionFragment(typeName, ACL_TABLE_NAME);
             log.debug("Fragments for " + typeName + ": " +
@@ -462,70 +561,58 @@ public class Model {
      * table.
      */
     private void initMainModel() {
-        Map<String, PropertyType> fragmentKeysType = new LinkedHashMap<String, PropertyType>();
-        fragmentsKeysType.put(MAIN_TABLE_NAME, fragmentKeysType);
-        initSimpleROProperty(mainTableName, MAIN_PRIMARY_TYPE_PROP,
-                MAIN_PRIMARY_TYPE_KEY, PropertyType.STRING, fragmentKeysType);
-        initSimpleROProperty(mainTableName, MAIN_CHECKED_IN_PROP,
-                MAIN_CHECKED_IN_KEY, PropertyType.BOOLEAN, fragmentKeysType);
-        initSimpleROProperty(mainTableName, MAIN_BASE_VERSION_PROP,
-                MAIN_BASE_VERSION_KEY, mainIdType(), fragmentKeysType);
-        initSimpleROProperty(mainTableName, MAIN_MAJOR_VERSION_PROP,
-                MAIN_MAJOR_VERSION_KEY, PropertyType.LONG, fragmentKeysType);
-        initSimpleROProperty(mainTableName, MAIN_MINOR_VERSION_PROP,
-                MAIN_MINOR_VERSION_KEY, PropertyType.LONG, fragmentKeysType);
-        specialPropertyTypes.put(MAIN_CHECKED_IN_PROP, BooleanType.INSTANCE);
+        addPropertyInfo(null, MAIN_PRIMARY_TYPE_PROP, PropertyType.STRING,
+                mainTableName, MAIN_PRIMARY_TYPE_KEY, true, null);
+        addPropertyInfo(null, MAIN_CHECKED_IN_PROP, PropertyType.BOOLEAN,
+                mainTableName, MAIN_CHECKED_IN_KEY, true, BooleanType.INSTANCE);
+        addPropertyInfo(null, MAIN_BASE_VERSION_PROP, mainIdType(),
+                mainTableName, MAIN_BASE_VERSION_KEY, true, null);
+        addPropertyInfo(null, MAIN_MAJOR_VERSION_PROP, PropertyType.LONG,
+                mainTableName, MAIN_MAJOR_VERSION_KEY, true, null);
+        addPropertyInfo(null, MAIN_MINOR_VERSION_PROP, PropertyType.LONG,
+                mainTableName, MAIN_MINOR_VERSION_KEY, true, null);
     }
 
     /**
      * Special model for the "misc" table (lifecycle, dirty.).
      */
     private void initMiscModel() {
-        Map<String, PropertyType> fragmentKeysType = new LinkedHashMap<String, PropertyType>();
-        fragmentsKeysType.put(MISC_TABLE_NAME, fragmentKeysType);
-        initSimpleProperty(MISC_TABLE_NAME, MISC_LIFECYCLE_POLICY_PROP,
-                MISC_LIFECYCLE_POLICY_KEY, PropertyType.STRING,
-                fragmentKeysType);
-        initSimpleProperty(MISC_TABLE_NAME, MISC_LIFECYCLE_STATE_PROP,
-                MISC_LIFECYCLE_STATE_KEY, PropertyType.STRING, fragmentKeysType);
-        initSimpleProperty(MISC_TABLE_NAME, MISC_DIRTY_PROP, MISC_DIRTY_KEY,
-                PropertyType.BOOLEAN, fragmentKeysType);
-        specialPropertyTypes.put(MISC_LIFECYCLE_POLICY_PROP,
+        addPropertyInfo(null, MISC_LIFECYCLE_POLICY_PROP, PropertyType.STRING,
+                MISC_TABLE_NAME, MISC_LIFECYCLE_POLICY_KEY, false,
                 StringType.INSTANCE);
-        specialPropertyTypes.put(MISC_LIFECYCLE_STATE_PROP, StringType.INSTANCE);
-        specialPropertyTypes.put(MISC_DIRTY_PROP, BooleanType.INSTANCE);
+        addPropertyInfo(null, MISC_LIFECYCLE_STATE_PROP, PropertyType.STRING,
+                MISC_TABLE_NAME, MISC_LIFECYCLE_STATE_KEY, false,
+                StringType.INSTANCE);
+        addPropertyInfo(null, MISC_DIRTY_PROP, PropertyType.BOOLEAN,
+                MISC_TABLE_NAME, MISC_DIRTY_KEY, false, BooleanType.INSTANCE);
     }
 
     /**
      * Special model for the versions table.
      */
     private void initVersionsModel() {
-        Map<String, PropertyType> fragmentKeysType = new LinkedHashMap<String, PropertyType>();
-        fragmentsKeysType.put(VERSION_TABLE_NAME, fragmentKeysType);
-        initSimpleROProperty(VERSION_TABLE_NAME, VERSION_VERSIONABLE_PROP,
-                VERSION_VERSIONABLE_KEY, mainIdType(), fragmentKeysType);
-        initSimpleROProperty(VERSION_TABLE_NAME, VERSION_CREATED_PROP,
-                VERSION_CREATED_KEY, PropertyType.DATETIME, fragmentKeysType);
-        initSimpleROProperty(VERSION_TABLE_NAME, VERSION_LABEL_PROP,
-                VERSION_LABEL_KEY, PropertyType.STRING, fragmentKeysType);
-        initSimpleROProperty(VERSION_TABLE_NAME, VERSION_DESCRIPTION_PROP,
-                VERSION_DESCRIPTION_KEY, PropertyType.STRING, fragmentKeysType);
-        specialPropertyTypes.put(VERSION_VERSIONABLE_PROP, StringType.INSTANCE);
-        specialPropertyTypes.put(VERSION_CREATED_PROP, DateType.INSTANCE);
-        specialPropertyTypes.put(VERSION_LABEL_PROP, StringType.INSTANCE);
-        specialPropertyTypes.put(VERSION_DESCRIPTION_PROP, StringType.INSTANCE);
+        addPropertyInfo(null, VERSION_VERSIONABLE_PROP, mainIdType(),
+                VERSION_TABLE_NAME, VERSION_VERSIONABLE_KEY, true,
+                StringType.INSTANCE);
+        addPropertyInfo(null, VERSION_CREATED_PROP, PropertyType.DATETIME,
+                VERSION_TABLE_NAME, VERSION_CREATED_KEY, true,
+                DateType.INSTANCE);
+        addPropertyInfo(null, VERSION_LABEL_PROP, PropertyType.STRING,
+                VERSION_TABLE_NAME, VERSION_LABEL_KEY, true,
+                StringType.INSTANCE);
+        addPropertyInfo(null, VERSION_DESCRIPTION_PROP, PropertyType.STRING,
+                VERSION_TABLE_NAME, VERSION_DESCRIPTION_KEY, true,
+                StringType.INSTANCE);
     }
 
     /**
      * Special model for the proxies table.
      */
     private void initProxiesModel() {
-        Map<String, PropertyType> fragmentKeysType = new LinkedHashMap<String, PropertyType>();
-        fragmentsKeysType.put(PROXY_TABLE_NAME, fragmentKeysType);
-        initSimpleProperty(PROXY_TABLE_NAME, PROXY_TARGET_PROP,
-                PROXY_TARGET_KEY, mainIdType(), fragmentKeysType);
-        initSimpleProperty(PROXY_TABLE_NAME, PROXY_VERSIONABLE_PROP,
-                PROXY_VERSIONABLE_KEY, mainIdType(), fragmentKeysType);
+        addPropertyInfo(PROXY_TYPE, PROXY_TARGET_PROP, mainIdType(),
+                PROXY_TABLE_NAME, PROXY_TARGET_KEY, false, null);
+        addPropertyInfo(PROXY_TYPE, PROXY_VERSIONABLE_PROP, mainIdType(),
+                PROXY_TABLE_NAME, PROXY_VERSIONABLE_KEY, false, null);
         addTypeSimpleFragment(PROXY_TYPE, PROXY_TABLE_NAME);
     }
 
@@ -533,47 +620,27 @@ public class Model {
      * Special model for the locks table.
      */
     private void initLocksModel() {
-        Map<String, PropertyType> fragmentKeysType = new LinkedHashMap<String, PropertyType>();
-        fragmentsKeysType.put(LOCK_TABLE_NAME, fragmentKeysType);
-        initSimpleProperty(LOCK_TABLE_NAME, LOCK_PROP, LOCK_KEY,
-                PropertyType.STRING, fragmentKeysType);
-        specialPropertyTypes.put(LOCK_PROP, StringType.INSTANCE);
+        addPropertyInfo(null, LOCK_PROP, PropertyType.STRING, LOCK_TABLE_NAME,
+                LOCK_KEY, false, StringType.INSTANCE);
     }
 
     /**
      * Special collection-like model for the ACL table.
      */
     private void initAclModel() {
-        Map<String, PropertyType> fragmentKeysType = new LinkedHashMap<String, PropertyType>();
-        fragmentsKeysType.put(ACL_TABLE_NAME, fragmentKeysType);
-        fragmentKeysType.put(ACL_POS_KEY, PropertyType.LONG);
-        fragmentKeysType.put(ACL_NAME_KEY, PropertyType.STRING);
-        fragmentKeysType.put(ACL_GRANT_KEY, PropertyType.BOOLEAN);
-        fragmentKeysType.put(ACL_PERMISSION_KEY, PropertyType.STRING);
-        fragmentKeysType.put(ACL_USER_KEY, PropertyType.STRING);
-        fragmentKeysType.put(ACL_GROUP_KEY, PropertyType.STRING);
-        collectionTables.put(ACL_TABLE_NAME, PropertyType.COLL_ACL);
-        collectionMakers.put(ACL_TABLE_NAME, ACLsFragment.MAKER);
-        collectionOrderBy.put(ACL_TABLE_NAME,
-                Collections.singletonList(ACL_POS_KEY));
-        propertyFragment.put(ACL_PROP, ACL_TABLE_NAME);
-        propertyType.put(ACL_PROP, PropertyType.COLL_ACL);
-    }
-
-    private void initSimpleProperty(String tableName, String propertyName,
-            String key, PropertyType type,
-            Map<String, PropertyType> fragmentKeysType) {
-        propertyType.put(propertyName, type);
-        propertyFragment.put(propertyName, tableName);
-        propertyFragmentKey.put(propertyName, key);
-        fragmentKeysType.put(key, type);
-    }
-
-    private void initSimpleROProperty(String tableName, String propertyName,
-            String key, PropertyType type,
-            Map<String, PropertyType> fragmentKeysType) {
-        initSimpleProperty(tableName, propertyName, key, type, fragmentKeysType);
-        readOnlyProperties.add(propertyName);
+        Map<String, PropertyType> fragmentKeys = new LinkedHashMap<String, PropertyType>();
+        fragmentKeys.put(ACL_POS_KEY, PropertyType.LONG);
+        fragmentKeys.put(ACL_NAME_KEY, PropertyType.STRING);
+        fragmentKeys.put(ACL_GRANT_KEY, PropertyType.BOOLEAN);
+        fragmentKeys.put(ACL_PERMISSION_KEY, PropertyType.STRING);
+        fragmentKeys.put(ACL_USER_KEY, PropertyType.STRING);
+        fragmentKeys.put(ACL_GROUP_KEY, PropertyType.STRING);
+        String fragmentName = ACL_TABLE_NAME;
+        addCollectionFragmentInfos(fragmentName, PropertyType.COLL_ACL,
+                ACLsFragment.MAKER, Collections.singletonList(ACL_POS_KEY),
+                fragmentKeys);
+        addPropertyInfo(null, ACL_PROP, PropertyType.COLL_ACL, fragmentName,
+                null, false, null);
     }
 
     /**
@@ -589,7 +656,7 @@ public class Model {
         }
 
         /** Initialized if this type has a table associated. */
-        String fragmentName = null;
+        String thisFragmentName = null;
 
         log.debug("Making model for type " + typeName);
 
@@ -613,27 +680,23 @@ public class Model {
                         /*
                          * Array: use a collection table.
                          */
-                        // propertyCoreType.put(propertyName, fieldType);
-                        PropertyType type = PropertyType.fromFieldType(
+                        String fragmentName = collectionFragmentName(propertyName);
+                        PropertyType propertyType = PropertyType.fromFieldType(
                                 listFieldType, true);
-                        propertyType.put(propertyName, type);
+                        addPropertyInfo(typeName, propertyName, propertyType,
+                                fragmentName, null, false, null);
 
-                        String tableName = collectionFragmentName(propertyName);
-                        propertyFragment.put(propertyName, tableName);
-                        collectionTables.put(tableName, type);
-                        collectionMakers.put(tableName, ArrayFragment.MAKER);
-                        Map<String, PropertyType> fragmentKeysType = fragmentsKeysType.get(tableName);
-                        if (fragmentKeysType == null) {
-                            fragmentKeysType = new LinkedHashMap<String, PropertyType>();
-                            fragmentsKeysType.put(tableName, fragmentKeysType);
-                        }
-                        fragmentKeysType.put(COLL_TABLE_POS_KEY,
-                                PropertyType.LONG); // TODO INT
-                        fragmentKeysType.put(COLL_TABLE_VALUE_KEY,
-                                type.getArrayBaseType());
-                        collectionOrderBy.put(tableName,
-                                Collections.singletonList(COLL_TABLE_POS_KEY));
-                        addTypeCollectionFragment(typeName, tableName);
+                        Map<String, PropertyType> fragmentKeys = new LinkedHashMap<String, PropertyType>();
+                        fragmentKeys.put(COLL_TABLE_POS_KEY, PropertyType.LONG); // TODO
+                        // INT
+                        fragmentKeys.put(COLL_TABLE_VALUE_KEY,
+                                propertyType.getArrayBaseType());
+                        addCollectionFragmentInfos(fragmentName, propertyType,
+                                ArrayFragment.MAKER,
+                                Collections.singletonList(COLL_TABLE_POS_KEY),
+                                fragmentKeys);
+
+                        addTypeCollectionFragment(typeName, fragmentName);
                     } else {
                         /*
                          * Complex list.
@@ -646,27 +709,21 @@ public class Model {
                     /*
                      * Primitive type.
                      */
-                    // propertyCoreType.put(propertyName, fieldType);
-                    PropertyType type = PropertyType.fromFieldType(fieldType,
-                            false);
-                    propertyType.put(propertyName, type);
-                    fragmentName = typeFragmentName(complexType);
-                    propertyFragment.put(propertyName, fragmentName);
-                    String key = field.getName().getLocalName();
-                    propertyFragmentKey.put(propertyName, key);
+                    String fragmentName = typeFragmentName(complexType);
+                    PropertyType propertyType = PropertyType.fromFieldType(
+                            fieldType, false);
+                    String fragmentKey = field.getName().getLocalName();
+                    addPropertyInfo(typeName, propertyName, propertyType,
+                            fragmentName, fragmentKey, false, null);
 
-                    Map<String, PropertyType> fragmentKeysType = fragmentsKeysType.get(fragmentName);
-                    if (fragmentKeysType == null) {
-                        fragmentKeysType = new LinkedHashMap<String, PropertyType>();
-                        fragmentsKeysType.put(fragmentName, fragmentKeysType);
-                    }
-                    fragmentKeysType.put(key, type);
+                    // note that this type has a fragment
+                    thisFragmentName = fragmentName;
                 }
             }
         }
 
-        schemaFragment.put(typeName, fragmentName); // may be null
-        return fragmentName;
+        schemaFragment.put(typeName, thisFragmentName); // may be null
+        return thisFragmentName;
     }
 
     private String typeFragmentName(ComplexType type) {

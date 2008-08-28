@@ -138,7 +138,7 @@ public class Context {
         } else {
             knownChildren = null;
         }
-        isCollection = model.collectionTables.containsKey(tableName);
+        isCollection = model.isCollectionFragment(tableName);
     }
 
     public String getTableName() {
