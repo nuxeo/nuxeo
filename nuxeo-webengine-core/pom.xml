@@ -104,6 +104,30 @@
       <artifactId>nuxeo-platform-usermanager-api</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey</artifactId>
+      <version>0.8-ea</version>
+    </dependency>
+    <dependency>
+      <groupId>org.resteasy</groupId>
+      <artifactId>resteasy-jaxrs</artifactId>
+      <version>1.0-beta-5</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
+      <version>0.8</version>
+    </dependency>
+
+<!-- needed for distribution 
+      <dependency>
+         <groupId>javax.annotation</groupId>
+         <artifactId>jsr250-api</artifactId>
+         <version>1.0</version>
+      </dependency>
+-->
+
     <!-- test scope -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -132,4 +156,16 @@
     </dependency>
   </dependencies>
 
+  <repositories>
+    <repository>
+      <id>jboss</id>
+      <url>http://repository.jboss.org/maven2</url>
+    </repository>
+    <repository>
+      <id>m2.dev.java.net</id>
+      <url>http://download.java.net/maven/2</url>
+      <layout>default</layout>
+    </repository>
+
+  </repositories>
 </project>

@@ -15,6 +15,8 @@
   	<provide interface="org.nuxeo.ecm.webengine.WebEngine" />
   	<provide
   		interface="org.nuxeo.ecm.webengine.util.FileChangeNotifier" />
+    <!-- temporary entry remove it -->
+    <provide interface="org.nuxeo.ecm.webengine.rest.WebEngine2" />
   </service>
 
   <extension-point name="rendering-extension">
@@ -197,6 +199,42 @@
 
     <object
       class="org.nuxeo.ecm.webengine.forms.validation.Form" />
+  </extension-point>
+
+
+  <extension-point name="domain">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Register a domain
+    <code>
+    <domain id="repository" >
+      <roots>
+        <root priority="0">default</root>
+      </roots>
+      <contentRoot>/default-domain</contentRoot>
+      <errorPage>error.ftl</errorPage>
+    </domain>
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.rest.domains.DomainDescriptor" />
+  </extension-point>
+
+  <extension-point name="resource">
+  <documentation>
+    @author Bogdan Stefanescu (bs@nuxeo.com)
+    Register a JAX-RS root resource
+    <code>
+    <resource domain="repository" pattern="{lang:[a-z]}" limited="true" />
+    <resource domain="repository" pattern="repository" limited="true" />
+    <resource domain="default" pattern="/" />
+    <resource resource="org.nuxeo.Resource" pattern="/test" />
+    </code>
+  </documentation>
+
+    <object
+      class="org.nuxeo.ecm.webengine.rest.ResourceBinding" />
   </extension-point>
 
 </component>
