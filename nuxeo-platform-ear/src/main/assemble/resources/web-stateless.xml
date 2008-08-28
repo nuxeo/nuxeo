@@ -1,5 +1,5 @@
 <assembly>
-  <id>web-stateless</id>
+  <id>resources-web-stateless</id>
   <formats>
     <format>zip</format>
   </formats>

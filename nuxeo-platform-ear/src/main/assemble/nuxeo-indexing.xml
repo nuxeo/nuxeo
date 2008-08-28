@@ -6,7 +6,7 @@
     <outputFile>/</outputFile>
   </assemble>
   <zipEntrySet id="resources">
-    <artifact>org.nuxeo.ecm.platform:nuxeo-platform-ear-resources:${project.version}:zip:search</artifact>
+    <artifact>org.nuxeo.ecm.platform:nuxeo-platform-ear:${project.version}:zip:resources-search</artifact>
   </zipEntrySet>
 
   <!-- ARTIFACTS -->
