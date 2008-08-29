@@ -105,7 +105,7 @@ public class Model {
 
     public static final String HIER_TABLE_NAME = "hierarchy";
 
-    public static final String HIER_PARENT_KEY = "parent";
+    public static final String HIER_PARENT_KEY = "parentid";
 
     public static final String HIER_CHILD_NAME_KEY = "name";
 
