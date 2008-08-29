@@ -1,6 +1,5 @@
 <assembly>
-  <artifactId>nuxeo</artifactId>
-  <id>mono</id>
+  <id>resources-mono</id>
   <formats>
     <format>zip</format>
   </formats>
