@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
 import javax.ejb.EJBContext;
@@ -92,6 +93,18 @@ public class DocumentManagerBean extends AbstractSession {
     @PermitAll
     public void destroy() {
         log.debug("@Remove");
+        //super.destroy();
+    }
+
+    @PreDestroy
+    /**
+     * This method is called before the stateful bean instance is destroyed.
+     * <p>
+     * When a client is explicitly destroying a bean using the @Remove method this method will be automatically
+     * called before the instance is destroyed
+     */
+    public void preDestroy() {
+        log.debug("@PreDestroy");
         super.destroy();
     }
 
@@ -119,7 +132,6 @@ public class DocumentManagerBean extends AbstractSession {
             log.error("Failed to close session", e);
         }
     }
-
 
     @Override
     public Principal getPrincipal() {
@@ -169,7 +181,7 @@ public class DocumentManagerBean extends AbstractSession {
             }
             return super.connect(repositoryName, sessionContext);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -184,13 +196,13 @@ public class DocumentManagerBean extends AbstractSession {
             try {
                 NXCore.getRepository(repositoryName);
             } catch (Exception e) {
-                throw EJBExceptionHandler.wrapException(e);
+                throw ClientException.wrap(e);
             }
             try {
                 session = createSession(repositoryName, "default",
                         sessionContext);
             } catch (Exception e) {
-                throw EJBExceptionHandler.wrapException(e);
+                throw ClientException.wrap(e);
             }
         }
         return session;
@@ -212,7 +224,7 @@ public class DocumentManagerBean extends AbstractSession {
         try {
             return super.getDocument(docRef);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -223,7 +235,7 @@ public class DocumentManagerBean extends AbstractSession {
         try {
             return super.getDocument(docRef, schemas);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -237,7 +249,7 @@ public class DocumentManagerBean extends AbstractSession {
             }
             return super.getChild(parent, name);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -251,7 +263,7 @@ public class DocumentManagerBean extends AbstractSession {
             }
             return super.getChildren(parent);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -265,7 +277,7 @@ public class DocumentManagerBean extends AbstractSession {
             }
             return super.getChildren(parent, type);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -279,7 +291,7 @@ public class DocumentManagerBean extends AbstractSession {
             }
             return super.getChildren(parent, type, perm);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -295,7 +307,7 @@ public class DocumentManagerBean extends AbstractSession {
         try {
             return super.getSecuritySummary(docModel, includeParents);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
