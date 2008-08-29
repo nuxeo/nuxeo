@@ -146,7 +146,6 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
         return field;
     }
 
-
     public boolean hasField(String name) {
         if (fieldsCache.containsKey(name)) {
             return true;
@@ -209,7 +208,6 @@ public class ComplexTypeImpl extends AbstractType implements ComplexType {
         return map;
     }
 
-    @Override
     @SuppressWarnings("unchecked")
     public Object convert(Object object) throws TypeException {
         if (object instanceof Map) {

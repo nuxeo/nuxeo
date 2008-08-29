@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class DoubleProperty extends JCRScalarProperty {
+class DoubleProperty extends JCRScalarProperty {
 
     DoubleProperty(JCRNodeProxy parent, Property property, Field field) {
         super(parent, property, field);

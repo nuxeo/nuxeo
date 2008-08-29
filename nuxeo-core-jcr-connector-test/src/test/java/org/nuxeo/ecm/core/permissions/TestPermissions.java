@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.permissions;
 
 
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 
@@ -104,7 +103,7 @@ public class TestPermissions extends RepositoryTestCase {
 //
 //    } // TODO: test with multiple acls - test order?
 //
-    public void testACP() throws DocumentException {
+    public void testACP() {
 //
 //        List<IItem> items = workspaceBean.getItems();
 //
