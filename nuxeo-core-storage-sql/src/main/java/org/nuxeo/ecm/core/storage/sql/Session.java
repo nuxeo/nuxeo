@@ -17,10 +17,8 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 
 import javax.resource.cci.Connection;
@@ -46,8 +44,9 @@ public interface Session extends Connection {
      * Gets the {@link Model} associated to this session.
      *
      * @return the model
+     * @throws StorageException
      */
-    Model getModel();
+    Model getModel() throws StorageException;
 
     /**
      * Saves the modifications to persistent storage.
@@ -268,7 +267,7 @@ public interface Session extends Connection {
      * @return the list of versions
      * @throws StorageException
      */
-    Collection<Node> getVersions(Node node) throws StorageException;
+    List<Node> getVersions(Node node) throws StorageException;
 
     /**
      * Gets the last version for a given versionable node.
@@ -286,9 +285,9 @@ public interface Session extends Connection {
      *
      * @param in the input stream
      * @return the binary value
-     * @throws IOException
+     * @throws StorageException
      */
-    Binary getBinary(InputStream in) throws IOException;
+    Binary getBinary(InputStream in) throws StorageException;
 
     /**
      * Finds the proxies for a document. If the parent is not null, the search

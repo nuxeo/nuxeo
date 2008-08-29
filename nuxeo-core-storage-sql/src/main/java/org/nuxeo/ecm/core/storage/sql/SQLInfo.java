@@ -414,7 +414,10 @@ public class SQLInfo {
         initHierarchySQL();
         initRepositorySQL();
 
-        for (String tableName : model.fragmentsKeysType.keySet()) {
+        for (String tableName : model.getFragmentNames()) {
+            if (tableName.equals(model.HIER_TABLE_NAME)) {
+                continue;
+            }
             if (tableName.equals(model.MAIN_TABLE_NAME) &&
                     !model.separateMainTable) {
                 // merged into already-generated hierarchy
@@ -462,9 +465,9 @@ public class SQLInfo {
      */
     protected void initRepositorySQL() {
         TableMaker maker = new TableMaker(model.REPOINFO_TABLE_NAME);
-        maker.newColumn(model.REPOINFO_REPOID_KEY, PropertyType.LONG,
-                Types.INTEGER);
         maker.newPrimaryKey(); // foreign key to main id
+        maker.newColumn(model.REPOINFO_REPONAME_KEY, PropertyType.STRING,
+                Types.VARCHAR);
         maker.postProcessRepository();
     }
 
@@ -486,10 +489,7 @@ public class SQLInfo {
         maker.newColumn(model.HIER_CHILD_ISPROPERTY_KEY, PropertyType.BOOLEAN,
                 Types.BIT); // not null
         if (!model.separateMainTable) {
-            Map<String, PropertyType> fragmentKeysType = model.fragmentsKeysType.get(model.MAIN_TABLE_NAME);
-            for (Entry<String, PropertyType> entry : fragmentKeysType.entrySet()) {
-                maker.newPrimitiveField(entry.getKey(), entry.getValue());
-            }
+            maker.newFragmentFields();
         }
         maker.postProcess();
         maker.postProcessHierarchy();
@@ -520,10 +520,7 @@ public class SQLInfo {
             }
         }
 
-        Map<String, PropertyType> fragmentKeysType = model.fragmentsKeysType.get(tableName);
-        for (Entry<String, PropertyType> entry : fragmentKeysType.entrySet()) {
-            maker.newPrimitiveField(entry.getKey(), entry.getValue());
-        }
+        maker.newFragmentFields();
 
         maker.postProcess();
         if (isMain) {
@@ -544,7 +541,7 @@ public class SQLInfo {
         protected TableMaker(String tableName) {
             this.tableName = tableName;
             table = database.addTable(tableName);
-            orderBy = model.collectionOrderBy.get(tableName);
+            orderBy = model.getCollectionOrderBy(tableName);
         }
 
         protected Column newMainKey(String name) {
@@ -591,6 +588,13 @@ public class SQLInfo {
             column.setPrimary(true);
         }
 
+        protected void newFragmentFields() {
+            Map<String, PropertyType> keysType = model.getFragmentKeysType(tableName);
+            for (Entry<String, PropertyType> entry : keysType.entrySet()) {
+                newPrimitiveField(entry.getKey(), entry.getValue());
+            }
+        }
+
         protected void newPrimitiveField(String key, PropertyType type) {
             // TODO find a way to put these exceptions in model
             if (tableName.equals(model.VERSION_TABLE_NAME) &&
@@ -598,6 +602,7 @@ public class SQLInfo {
                 newMainKeyReference(key, true);
                 return;
             }
+            // TODO XXX also MAIN_BASE_VERSION_KEY is main key
             if (tableName.equals(model.PROXY_TABLE_NAME)) {
                 if (key.equals(model.PROXY_TARGET_KEY)) {
                     newMainKeyReference(key, true);
@@ -614,6 +619,8 @@ public class SQLInfo {
                 // hack, make this more configurable
                 if (tableName.equals(model.VERSION_TABLE_NAME) &&
                         key.equals(model.VERSION_LABEL_KEY)) {
+                    // these are columns that need to be searchable, as some
+                    // databases (Derby) don't allow matches on CLOB columns
                     sqlType = Types.VARCHAR;
                 } else {
                     sqlType = Types.CLOB; // or VARCHAR for system tables?
@@ -670,7 +677,7 @@ public class SQLInfo {
                 if (key.equals(model.MAIN_KEY)) {
                     what = qname;
                     selectRootIdWhatColumn = column;
-                } else if (key.equals(model.REPOINFO_REPOID_KEY)) {
+                } else if (key.equals(model.REPOINFO_REPONAME_KEY)) {
                     where = qname + " = ?";
                 } else {
                     throw new AssertionError(column);

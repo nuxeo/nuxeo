@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
 
 /**
  * A {@code Node} implementation. The actual data is stored in contained objects
@@ -61,9 +62,10 @@ public class Node {
      * @param session the session
      * @param context the persistence context
      * @param rowGroup the group of rows for the node
+     * @throws StorageException
      */
     protected Node(Session session, PersistenceContext context,
-            FragmentGroup rowGroup) {
+            FragmentGroup rowGroup) throws StorageException {
         this.context = context;
         model = session.getModel();
         mainFragment = rowGroup.main;
@@ -167,21 +169,21 @@ public class Node {
             throws StorageException {
         SimpleProperty property = (SimpleProperty) propertyCache.get(name);
         if (property == null) {
-            PropertyType propType = model.getPropertyType(name);
-            if (propType == null) {
+            PropertyInfo propertyInfo = model.getPropertyInfo(getPrimaryType(),
+                    name);
+            if (propertyInfo == null) {
                 throw new IllegalArgumentException("Unknown field: " + name);
             }
-            String tableName = model.getFragmentName(name);
-            String fragmentKey = model.getFragmentKey(name);
-            Fragment row = fragments.get(tableName);
+            String fragmentName = propertyInfo.fragmentName;
+            Fragment row = fragments.get(fragmentName);
             if (row == null) {
                 // lazy fragment, fetch from context
-                row = context.get(tableName, getId(), true);
-                fragments.put(tableName, row);
+                row = context.get(fragmentName, getId(), true);
+                fragments.put(fragmentName, row);
             }
-            boolean readonly = model.isPropertyReadOnly(name);
-            property = new SimpleProperty(name, propType, readonly,
-                    (SimpleFragment) row, fragmentKey);
+            property = new SimpleProperty(name, propertyInfo.propertyType,
+                    propertyInfo.readonly, (SimpleFragment) row,
+                    propertyInfo.fragmentKey);
             propertyCache.put(name, property);
         }
         return property;
@@ -199,14 +201,15 @@ public class Node {
             throws StorageException {
         CollectionProperty property = (CollectionProperty) propertyCache.get(name);
         if (property == null) {
-            PropertyType propType = model.getPropertyType(name);
-            if (propType == null) {
+            PropertyInfo propertyInfo = model.getPropertyInfo(getPrimaryType(),
+                    name);
+            if (propertyInfo == null) {
                 throw new IllegalArgumentException("Unknown field: " + name);
             }
-            String tableName = model.getFragmentName(name);
-            Fragment fragment = context.get(tableName, getId(), true);
-            property = new CollectionProperty(name, propType, false,
-                    (CollectionFragment) fragment);
+            String fragmentName = propertyInfo.fragmentName;
+            Fragment fragment = context.get(fragmentName, getId(), true);
+            property = new CollectionProperty(name, propertyInfo.propertyType,
+                    false, (CollectionFragment) fragment);
             propertyCache.put(name, property);
         }
         return property;
@@ -217,11 +220,12 @@ public class Node {
         if (property != null) {
             return property;
         }
-        PropertyType propType = model.getPropertyType(name);
-        if (propType == null) {
+        PropertyInfo propertyInfo = model.getPropertyInfo(getPrimaryType(),
+                name);
+        if (propertyInfo == null) {
             throw new IllegalArgumentException("Unknown field: " + name);
         }
-        if (propType.isArray()) {
+        if (propertyInfo.propertyType.isArray()) {
             return getCollectionProperty(name);
         } else {
             return getSimpleProperty(name);

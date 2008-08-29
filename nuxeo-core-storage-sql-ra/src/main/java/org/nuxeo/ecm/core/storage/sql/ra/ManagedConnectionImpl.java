@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.core.storage.sql.ra;
 
 import java.io.PrintWriter;
+import java.util.LinkedList;
 
 import javax.resource.ResourceException;
 import javax.resource.cci.Connection;
@@ -63,15 +64,20 @@ public class ManagedConnectionImpl implements ManagedConnection,
     private final ConnectionSpecImpl connectionSpec;
 
     /**
-     * High-level {@link Connection} returned to the application, if an
-     * association has been made.
+     * All the {@link Connection} handles for this managed connection. There is
+     * usually only one, unless sharing is in effect.
      */
-    private ConnectionImpl connection;
+    private final LinkedList<ConnectionImpl> connections;
 
     /**
      * The low-level session managed by this connection.
      */
     private final SessionImpl session;
+
+    /**
+     * The wrapped session as a connection-aware xaresource.
+     */
+    private final ConnectionAwareXAResource xaresource;
 
     /**
      * List of listeners set by the application server which we must notify of
@@ -92,9 +98,12 @@ public class ManagedConnectionImpl implements ManagedConnection,
         out = managedConnectionFactory.getLogWriter();
         this.managedConnectionFactory = managedConnectionFactory;
         this.connectionSpec = connectionRequestInfo.connectionSpec;
+        connections = new LinkedList<ConnectionImpl>();
         listeners = new ListenerList();
         // create the underlying session
         session = managedConnectionFactory.getConnection(connectionSpec);
+        xaresource = new ConnectionAwareXAResource(session.getXAResource(),
+                this);
     }
 
     /*
@@ -108,12 +117,10 @@ public class ManagedConnectionImpl implements ManagedConnection,
     public synchronized Connection getConnection(Subject subject,
             ConnectionRequestInfo connectionRequestInfo)
             throws ResourceException {
+        log.debug("getConnection: " + this);
         assert connectionRequestInfo instanceof ConnectionRequestInfoImpl;
-        if (connection != null) {
-            throw new ResourceException("Sharing not supported, " + this +
-                    " still associated to " + connection);
-        }
-        connection = new ConnectionImpl(this, session);
+        ConnectionImpl connection = new ConnectionImpl(this);
+        addConnection(connection);
         return connection;
     }
 
@@ -126,7 +133,11 @@ public class ManagedConnectionImpl implements ManagedConnection,
      * Later, the application server may call {@link #getConnection} again.
      */
     public void cleanup() {
-        connection = null;
+        log.debug("cleanup: " + this);
+        synchronized (connections) {
+            // TODO session.cancel
+            connections.clear();
+        }
     }
 
     /**
@@ -136,6 +147,7 @@ public class ManagedConnectionImpl implements ManagedConnection,
      * destroyed.
      */
     public void destroy() throws ResourceException {
+        log.debug("destroy: " + this);
         cleanup();
         session.close();
     }
@@ -144,24 +156,24 @@ public class ManagedConnectionImpl implements ManagedConnection,
      * Called by the application server to change the association of an
      * application-level {@link Connection} handle with a
      * {@link ManagedConnection} instance.
-     * <p>
-     * Used when connection sharing is in effect.
      */
-    public synchronized void associateConnection(Object object)
-            throws ResourceException {
+    public void associateConnection(Object object) throws ResourceException {
         ConnectionImpl connection = (ConnectionImpl) object;
+        log.debug("associateConnection: " + this + ", connection: " +
+                connection);
         ManagedConnectionImpl other = connection.getManagedConnection();
         if (other != this) {
+            log.debug("associateConnection other: " + other);
             // deassociate it from other ManagedConnection
-            other.connection = null;
+            other.removeConnection(connection);
             // reassociate it with this
-            connection.setManagedConnection(this, session);
-            this.connection = connection;
+            connection.setManagedConnection(this);
+            addConnection(connection);
         }
     }
 
     public XAResource getXAResource() {
-        return session;
+        return xaresource;
     }
 
     public LocalTransaction getLocalTransaction() {
@@ -221,8 +233,64 @@ public class ManagedConnectionImpl implements ManagedConnection,
     }
 
     /*
-     * ----- -----
+     * ----- Internal -----
      */
+
+    /**
+     * Sets a connection as the new current one for this managed connection.
+     */
+    private void addConnection(ConnectionImpl connection) {
+        synchronized (connections) {
+            log.debug("addConnection: " + connection);
+            ConnectionImpl previous = connections.peek();
+            if (previous != null) {
+                previous.disassociate();
+            }
+            connections.addFirst(connection);
+            connection.associate(session);
+        }
+    }
+
+    /**
+     * Removes a connection from those of this managed connection.
+     */
+    private void removeConnection(ConnectionImpl connection) {
+        synchronized (connections) {
+            log.debug("removeConnection: " + connection);
+            connection.disassociate();
+            connections.remove(connection);
+            ConnectionImpl first = connections.peek();
+            if (first != null) {
+                first.associate(session);
+            }
+        }
+    }
+
+    /**
+     * Called by {@link ConnectionImpl#close} when the connection is closed.
+     */
+    protected void close(ConnectionImpl connection) throws ResourceException {
+        log.debug("close: " + this);
+        removeConnection(connection);
+        sendClosedEvent(connection);
+    }
+
+    /**
+     * Called by {@link ConnectionAwareXAResource} at the end of a transaction.
+     */
+    protected void closeConnections() {
+        log.debug("closeConnections: " + this);
+        synchronized (connections) {
+            // copy to avoid ConcurrentModificationException
+            ConnectionImpl[] array = new ConnectionImpl[connections.size()];
+            for (ConnectionImpl connection : connections.toArray(array)) {
+                log.debug("closing connection: " + connection);
+                connection.disassociate();
+                sendClosedEvent(connection);
+            }
+            connections.clear();
+        }
+    }
 
     /**
      * Called by {@link ManagedConnectionFactoryImpl#matchManagedConnections}.
@@ -235,27 +303,28 @@ public class ManagedConnectionImpl implements ManagedConnection,
      * ----- Event management -----
      */
 
-    private void sendClosedEvent() {
-        sendEvent(ConnectionEvent.CONNECTION_CLOSED, null);
+    private void sendClosedEvent(ConnectionImpl connection) {
+        sendEvent(ConnectionEvent.CONNECTION_CLOSED, connection, null);
     }
 
-    protected void sendTxStartedEvent() {
-        sendEvent(ConnectionEvent.LOCAL_TRANSACTION_STARTED, null);
+    protected void sendTxStartedEvent(ConnectionImpl connection) {
+        sendEvent(ConnectionEvent.LOCAL_TRANSACTION_STARTED, connection, null);
     }
 
-    protected void sendTxCommittedEvent() {
-        sendEvent(ConnectionEvent.LOCAL_TRANSACTION_COMMITTED, null);
+    protected void sendTxCommittedEvent(ConnectionImpl connection) {
+        sendEvent(ConnectionEvent.LOCAL_TRANSACTION_COMMITTED, connection, null);
     }
 
-    protected void sendTxRolledbackEvent() {
-        sendEvent(ConnectionEvent.LOCAL_TRANSACTION_ROLLEDBACK, null);
+    protected void sendTxRolledbackEvent(ConnectionImpl connection) {
+        sendEvent(ConnectionEvent.LOCAL_TRANSACTION_ROLLEDBACK, connection,
+                null);
     }
 
-    protected void sendErrorEvent(Exception cause) {
-        sendEvent(ConnectionEvent.CONNECTION_ERROR_OCCURRED, cause);
+    protected void sendErrorEvent(ConnectionImpl connection, Exception cause) {
+        sendEvent(ConnectionEvent.CONNECTION_ERROR_OCCURRED, connection, cause);
     }
 
-    private void sendEvent(int type, Exception cause) {
+    private void sendEvent(int type, ConnectionImpl connection, Exception cause) {
         ConnectionEvent event = new ConnectionEvent(this, type, cause);
         if (connection != null) {
             event.setConnectionHandle(connection);
@@ -289,25 +358,6 @@ public class ManagedConnectionImpl implements ManagedConnection,
                 break;
             }
         }
-    }
-
-    /**
-     * ------------------------------------------------------------------
-     * delegated methods called from the {@link ConnectionImpl} itself
-     * ------------------------------------------------------------------
-     */
-
-    protected SessionImpl getSession() {
-        return session;
-    }
-
-    /*
-     * ----- part of javax.resource.cci.Connection -----
-     */
-
-    protected void close() throws ResourceException {
-        sendClosedEvent();
-        connection = null;
     }
 
 }
