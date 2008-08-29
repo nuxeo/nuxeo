@@ -65,8 +65,6 @@ public class WorkflowDocumentVersioningPolicyBean implements
     public String getVersioningPolicyFor(DocumentRef docRef)
             throws WMWorkflowException {
 
-        String versioningPolicy = null;
-
         WorkflowDocumentRelationManager wDoc;
         WAPI wapi;
         try {
@@ -76,6 +74,7 @@ public class WorkflowDocumentVersioningPolicyBean implements
             throw new WMWorkflowException(e);
         }
         String[] workflowInstanceIds = wDoc.getWorkflowInstanceIdsFor(docRef);
+        String versioningPolicy = null;
         if (workflowInstanceIds.length > 0) {
             // :XXX: The workflow architecture allows to start several processes
             // per document. For now, I take the first one and discard the rest.

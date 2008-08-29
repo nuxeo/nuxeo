@@ -65,20 +65,20 @@ public class DocumentModelGhost implements DocumentModel {
     // private static final Logger log =
     // Logger.getLogger(DocumentModelGhost.class);
 
-    protected String sid;
+    protected final String sid;
 
-    protected DocumentRef ref;
+    protected final DocumentRef ref;
 
-    protected String type;
+    protected final String type;
 
     // protected String[] declaredSchemas;
 
-    protected String id;
+    protected final String id;
 
-    protected Path path;
+    protected final Path path;
 
     //
-    protected DocumentRef parentRef;
+    protected final DocumentRef parentRef;
 
     // cache the reference to DocumentModel object available in the cache
     private DocumentModel documentModel;
@@ -95,7 +95,6 @@ public class DocumentModelGhost implements DocumentModel {
      * DocumentModel, this shallow is what is bundled within the direct response
      * from server.
      *
-     * @param docRef
      */
     public DocumentModelGhost(@NotNull DocumentRef ref, String sid, @NotNull String type,
             String[] declaredSchemas, @NotNull String id, @NotNull Path path,
@@ -387,7 +386,7 @@ public class DocumentModelGhost implements DocumentModel {
     }
 
     /**
-     * @see DocumentModel#copyContent()
+     * @see DocumentModel#copyContent(DocumentModel)
      */
     public void copyContent(DocumentModel sourceDoc) {
         getDM().copyContent(sourceDoc);
@@ -447,12 +446,10 @@ public class DocumentModelGhost implements DocumentModel {
 
     public void prefetchCurrentLifecycleState(String lifecycle) {
         getDM().prefetchCurrentLifecycleState(lifecycle);
-
     }
 
     public void prefetchLifeCyclePolicy(String lifeCyclePolicy) {
         getDM().prefetchLifeCyclePolicy(lifeCyclePolicy);
-
     }
 
     public boolean isLifeCycleLoaded() {
@@ -491,6 +488,15 @@ public class DocumentModelGhost implements DocumentModel {
 
     public void reset() {
         getDM().reset();
+    }
+
+    public void refresh() throws ClientException {
+        getDM().refresh();
+    }
+
+    public void refresh(int refreshFlags, String[] schemas)
+            throws ClientException {
+        getDM().refresh(refreshFlags, schemas);
     }
 
 }

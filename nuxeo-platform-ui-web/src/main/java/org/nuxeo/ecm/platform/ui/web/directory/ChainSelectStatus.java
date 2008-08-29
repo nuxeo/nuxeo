@@ -269,7 +269,6 @@ public class ChainSelectStatus extends UIOutput {
         }
 
         return param;
-
     }
 
     @Override

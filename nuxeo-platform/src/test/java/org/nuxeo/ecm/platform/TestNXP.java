@@ -123,7 +123,6 @@ public class TestNXP extends NXPInit {
         return new InitialContext(properties);
     }
 
-
     public void testRetrieveRepositoryLocations() {
         List<RepositoryLocation> locations = server
                 .getAvailableRepositoryLocations();
@@ -176,4 +175,5 @@ public class TestNXP extends NXPInit {
         assertNotNull(workspaces);
         assertEquals(1, workspaces.size());
     }
+
 }

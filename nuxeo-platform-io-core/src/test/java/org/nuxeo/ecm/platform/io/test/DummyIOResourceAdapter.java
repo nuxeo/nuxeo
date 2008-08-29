@@ -48,7 +48,7 @@ public class DummyIOResourceAdapter implements IOResourceAdapter {
 
     // backend for tests: key are document refs, values are dummy corresponding
     // values
-    public final static Map<String, String> backend = new HashMap<String, String>();
+    public static final Map<String, String> backend = new HashMap<String, String>();
 
     private Map<String, Serializable> properties;
 

@@ -38,7 +38,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntryBase;
 import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 
@@ -56,7 +55,7 @@ import org.nuxeo.ecm.platform.events.api.DocumentMessage;
 @DiscriminatorColumn(name = "DISCRIMINATOR", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("NXP")
 @EntityListeners(LogEntryCallbackListener.class)
-public class LogEntryImpl extends LogEntryBase implements LogEntry {
+public class LogEntryImpl extends LogEntryBase {
 
     private static final long serialVersionUID = 0L;
 

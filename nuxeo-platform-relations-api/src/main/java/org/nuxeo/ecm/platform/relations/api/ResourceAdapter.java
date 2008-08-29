@@ -19,40 +19,73 @@
 
 package org.nuxeo.ecm.platform.relations.api;
 
+import java.io.Serializable;
+import java.util.Map;
+
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Adapter to transform any java Object into a qualified name
+ * Adapter to transform any java {@link Serializable} into a qualified name
  * resource and conversely.
- *
- * TODO should use Serializable instead of Object
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public interface ResourceAdapter {
+
+    String CORE_SESSION_ID_CONTEXT_KEY = "CoreSession";
 
     String getNamespace();
 
     void setNamespace(String namespace);
 
     /**
-     * Transform an incoming object into a Resource
+     * Transforms an incoming object into a Resource.
      *
      * @param object TODO Serializable
      * @return the resource
+     * @deprecated use {@link #getResource(Object, Map)}
      */
+    @Deprecated
     Resource getResource(Object object);
 
     /**
-     * Resolve the resource to an applicative representation,
-     * for instance a DocumentModel,
+     * Transforms an incoming object into a Resource.
+     *
+     * @since 5.2-M1
+     * @param object the object to transform
+     * @param context a context map
+     * @return the resource
+     */
+    Resource getResource(Serializable object, Map<String, Serializable> context);
+
+    /**
+     * Resolves the resource to an applicative representation, for instance a
+     * DocumentModel.
+     *
+     * @since 5.2-M1
+     * @param resource
+     * @return the representation
+     * @deprecated use {@link #getResourceRepresentation(Resource, Map)}
+     */
+    @Deprecated
+    Object getResourceRepresentation(Resource resource);
+
+    /**
+     * Resolves the resource to an applicative representation, for instance a
+     * {@link DocumentModel}.
      *
      * @param resource
-     * @return the representation TODO Serializable
+     * @param context a context map (holding for instance a {@link CoreSession}
+     *            instance.
+     * @return the representation
      */
-    Object getResourceRepresentation(Resource resource);
+    Serializable getResourceRepresentation(Resource resource,
+            Map<String, Serializable> context);
 
     /**
      * @return the class being adapted
      */
     Class<?> getKlass();
+
 }
