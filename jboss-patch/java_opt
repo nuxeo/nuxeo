@@ -1,2 +1,2 @@
 
-JAVA_OPTS="$JAVA_OPTS -XX:MaxPermSize=128m"
+JAVA_OPTS="$JAVA_OPTS -XX:MaxPermSize=256m"
