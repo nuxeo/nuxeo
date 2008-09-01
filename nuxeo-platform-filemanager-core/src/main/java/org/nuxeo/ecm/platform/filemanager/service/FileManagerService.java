@@ -154,25 +154,21 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return repositoryManager;
     }
 
-    private Blob checkMimeType(Blob input, String fullname)
+    private Blob checkMimeType(Blob blob, String fullname)
             throws ClientException {
-        String mime = input.getMimeType();
-        if (mime == null || mime.equals("application/octet-stream")) {
+        String mime = blob.getMimeType();
+        if (mime == null) {
             String filename = FileManagerUtils.fetchFileName(fullname);
-            if (mime == null || mime.equals("application/octet-stream")) {
-                try {
-                    mime = getMimeService().getMimetypeFromFilenameAndBlobWithDefault(
-                            filename, input, mime);
-                    input.setMimeType(mime);
-                } catch (MimetypeDetectionException e) {
-                    log.error("Unable to get MimeType : " + e.getMessage());
-                    input.setMimeType("application/octet-stream*");
-                }
+            try {
+                blob = getMimeService().updateMimetype(blob, filename);
+            } catch (MimetypeDetectionException e) {
+                throw new ClientException(e);
             }
         }
-        return input;
+        return blob;
     }
 
+    // XXX: OG: what is the goal of this method?
     private static String getMimeType(Blob input) {
         String mime = input.getMimeType();
         if (mime.equals("application/octet-stream*")) {
