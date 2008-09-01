@@ -105,7 +105,7 @@ a:hover {
 
   String pageTitle = "An error occured";
   if (securityError != null && securityError.booleanValue()) {
-    pageTitle = "You don't have the neccessary permission to do the requested action";
+    pageTitle = "You don't have the necessary permission to do the requested action";
   }
 %>
 
