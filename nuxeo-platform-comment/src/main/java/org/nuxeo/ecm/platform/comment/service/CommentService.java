@@ -71,4 +71,11 @@ public class CommentService extends DefaultComponent {
         return config;
     }
 
+    @Override
+    public <T> T getAdapter(Class<T> adapter) {
+        if (adapter == CommentManager.class) {
+            return adapter.cast(getCommentManager());
+        }
+        return null;
+    }
 }

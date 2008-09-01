@@ -52,7 +52,7 @@ import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
@@ -108,8 +108,8 @@ import org.nuxeo.runtime.api.Framework;
 @Name("FileManageWS")
 @Scope(ScopeType.CONVERSATION)
 @SerializedConcurrentAccess
-@Remote(org.nuxeo.ecm.webapp.filemanager.FileManageActionsRemote.class)
-@Local(org.nuxeo.ecm.webapp.filemanager.FileManageWSLocal.class)
+@Remote(FileManageActionsRemote.class)
+@Local(FileManageWSLocal.class)
 @WebService(name = "FileManageInterface", serviceName = "FileManageService")
 @SOAPBinding(style = Style.DOCUMENT)
 public class FileManageWS extends InputController implements
@@ -304,8 +304,7 @@ public class FileManageWS extends InputController implements
         return navigationContext.getCurrentDocument();
     }
 
-    public void _setChangeableDocument(DocumentModel documentModel)
-            throws ClientException {
+    public void _setChangeableDocument(DocumentModel documentModel) {
         navigationContext.setChangeableDocument(documentModel);
         // navigationContext.setCurrentDocument(documentModel);
     }
@@ -647,7 +646,7 @@ public class FileManageWS extends InputController implements
         if (depth == path.length - 1) {
             map.put(key, value);
         } else {
-            Map<String, Object> subMap = (HashMap<String, Object>) map.get(key);
+            Map<String, Object> subMap = (Map<String, Object>) map.get(key);
             if (subMap == null) {
                 subMap = new HashMap<String, Object>();
                 map.put(path[depth], subMap);
@@ -679,9 +678,9 @@ public class FileManageWS extends InputController implements
 
         Map<String, Object> propertiesMap = createDataMap(properties);
 
-        Map<String, Object> fileMap = (HashMap<String, Object>) propertiesMap.get("file");
-        Map<String, Object> contentMap = (HashMap<String, Object>) fileMap.get("content");
-        Map<String, Object> dublincoreMap = (HashMap<String, Object>) propertiesMap.get("dublincore");
+        Map<String, Object> fileMap = (Map<String, Object>) propertiesMap.get("file");
+        Map<String, Object> contentMap = (Map<String, Object>) fileMap.get("content");
+        Map<String, Object> dublincoreMap = (Map<String, Object>) propertiesMap.get("dublincore");
 
         document.setProperty("dublincore", "description",
                 dublincoreMap.get("description"));
@@ -848,21 +847,17 @@ public class FileManageWS extends InputController implements
         return edit();
     }
 
-
-
     // Compatibility method to make the Component work
     // even when conversation context is not properly restored
     // => this is the case for WS access
     // ==> use Session context to store currentDoc and currentRepo
 
-    private void setEditedRepositoryName(RepositoryLocation repoLoc)
-    {
+    private void setEditedRepositoryName(RepositoryLocation repoLoc) {
         final Context sessionContext = Contexts.getSessionContext();
         sessionContext.set(CURRENT_EDITED_REPOSITORY_LOCATION, repoLoc);
     }
 
-    private void setEditedDocument(DocumentModel doc)
-    {
+    private void setEditedDocument(DocumentModel doc) {
         final Context sessionContext = Contexts.getSessionContext();
         sessionContext.set(CURRENT_EDITED_DOCUMENT, doc);
     }
@@ -872,40 +867,38 @@ public class FileManageWS extends InputController implements
             documentManager = (CoreSession) Component.getInstance(
                     "documentManager", true);
         }
-        if (documentManager==null)
-        {
-            DocumentManagerBusinessDelegate documentManagerBD = (DocumentManagerBusinessDelegate) Contexts.lookupInStatefulContexts("documentManager");
+        if (documentManager == null) {
+            DocumentManagerBusinessDelegate documentManagerBD = (DocumentManagerBusinessDelegate) Contexts.lookupInStatefulContexts(
+                    "documentManager");
             if (documentManagerBD == null) {
                 documentManagerBD = new DocumentManagerBusinessDelegate();
             }
             RepositoryLocation serverLoc = getEditedRepositoryLocation();
             documentManager = documentManagerBD.getDocumentManager(serverLoc);
-            Contexts.getConversationContext().set("currentServerLocation", serverLoc);
+            Contexts.getConversationContext().set("currentServerLocation",
+                    serverLoc);
         }
         return documentManager;
     }
 
-    private DocumentModel getCurrentDocument()
-    {
-        DocumentModel currentDocument=null;
-        if (navigationContext!=null)
-            currentDocument=navigationContext.getCurrentDocument();
+    private DocumentModel getCurrentDocument() {
+        DocumentModel currentDocument = null;
+        if (navigationContext != null) {
+            currentDocument = navigationContext.getCurrentDocument();
+        }
 
-        if (currentDocument==null)
-        {
+        if (currentDocument == null) {
             final Context sessionContext = Contexts.getSessionContext();
-            currentDocument = (DocumentModel) sessionContext.get(CURRENT_EDITED_DOCUMENT);
+            currentDocument = (DocumentModel) sessionContext.get(
+                    CURRENT_EDITED_DOCUMENT);
         }
         return currentDocument;
     }
 
-
-    private RepositoryLocation getEditedRepositoryLocation()
-    {
+    private RepositoryLocation getEditedRepositoryLocation() {
         final Context sessionContext = Contexts.getSessionContext();
-        return (RepositoryLocation) sessionContext.get(CURRENT_EDITED_REPOSITORY_LOCATION);
+        return (RepositoryLocation) sessionContext.get(
+                CURRENT_EDITED_REPOSITORY_LOCATION);
     }
-
-
 
 }

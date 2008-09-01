@@ -20,17 +20,16 @@
 package org.nuxeo.ecm.webapp.filemanager;
 
 import javax.ejb.Local;
-
-import org.jboss.seam.annotations.WebRemote;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
  *         Kalogeropoulos</a>
- *
+ * 
  */
 @Local
-public interface FileManageActionsLocal extends FileManageActions{
+public interface FileManageActionsLocal extends FileManageActions {
 
     void initialize();
 
