@@ -36,7 +36,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 /**
  * Service that produces JMS Message Document.
  *
- * @author : <a href="ja@nuxeo.com">Julien Anguenot</a>
+ * @author <a href="ja@nuxeo.com">Julien Anguenot</a>
  */
 public class JMSDocumentMessageProducerService extends DefaultComponent
         implements DocumentMessageProducer {
@@ -74,7 +74,7 @@ public class JMSDocumentMessageProducerService extends DefaultComponent
     }
 
     public void produceEventMessages(List<EventMessage> messages) {
-        if ((messages == null) || (messages.size() == 0)) {
+        if (messages == null || messages.isEmpty()) {
             log.debug("Incoming messages list is null. Cancelling...");
         }
 
@@ -112,7 +112,6 @@ public class JMSDocumentMessageProducerService extends DefaultComponent
                     + " topic destination");
             e.printStackTrace();
         }
-
     }
 
     public void produce(NXCoreEvent event) {

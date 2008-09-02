@@ -2,7 +2,6 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
   xmlns:c="http://java.sun.com/jstl/core" id="a1"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
@@ -22,14 +21,14 @@
     <div class="userClipboard">
           <div class="userClipboardTabs">
 
-          <t:dataList var="docList" layout="unorderedList"
+          <nxu:dataList var="docList" layout="unorderedList"
         value="#{clipboardActions.descriptorsForAvailableLists}"
         itemStyleClass="#{nxu:test(clipboardActions.currentSelectedListName == docList.name, 'selected', '')}">
           <h:commandLink value="" action="#{clipboardActions.selectList}">
             <f:param name="listIdToSelect" value="#{docList.name}" />
             <nxu:graphicImage value="#{docList.imageURL}" title="#{messages[docList.title]}" />
           </h:commandLink>
-        </t:dataList>
+        </nxu:dataList>
 
      </div>
 
@@ -41,17 +40,17 @@
 
       <div id="clipboardCopy">
 
-      <t:dataList var="copiedDocument"
+      <nxu:dataList var="copiedDocument"
         value="#{clipboardActions.currentSelectedList}">
         <div id="docRef:#{copiedDocument.ref}" class="cell">
           <span class="clipboardRemoveItem">
            <h:commandLink
               actionListener="#{clipboardActions.removeWorkListItem(copiedDocument.ref)}"
               >
-              <t:graphicImage value="/icons/action_delete_mini.gif" />
+              <nxu:graphicImage value="/icons/action_delete_mini.gif" />
             </h:commandLink>
           </span>
-          <t:graphicImage
+          <nxu:graphicImage
           value="#{nxd:iconPath(copiedDocument)}" styleClass="iconImage" />
           <nxd:restDocumentLink document="#{copiedDocument}">
           <h:outputText
@@ -60,7 +59,7 @@
         <script type="text/javascript">
               <h:outputText value="new Draggable('docRef:#{copiedDocument.ref}', {revert:true});"/>
         </script>
-      </t:dataList>
+      </nxu:dataList>
 
       <div class="clipboardEmptyMessage">
         <h:outputText
@@ -70,14 +69,14 @@
 
       </div>
       <div class="clipboardFunctions">
-      <t:dataList var="cb_action" value="#{clipboardActions.actionsForCurrentList}" >
+      <nxu:dataList var="cb_action" value="#{clipboardActions.actionsForCurrentList}" >
         <div class="clipboardFunction">
          <nxh:commandLink action="#{cb_action.getLink()}">
-            <t:graphicImage value="#{cb_action.icon}"/>
+            <nxu:graphicImage value="#{cb_action.icon}"/>
             <h:outputText value=" #{messages[cb_action.label]}" />
           </nxh:commandLink>
         </div>
-      </t:dataList>
+      </nxu:dataList>
       </div>
 
       </div>
