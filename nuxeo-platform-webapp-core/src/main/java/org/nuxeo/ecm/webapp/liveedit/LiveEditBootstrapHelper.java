@@ -43,7 +43,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -107,11 +107,11 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(LiveEditBootstrapHelper.class);
 
-    @In(required = true, create = true)
-    protected NavigationContext navigationContext;
+    @In(create = true)
+    protected transient NavigationContext navigationContext;
 
     @In(create = true, required = false)
-    protected CoreSession documentManager;
+    protected transient CoreSession documentManager;
 
     @RequestParameter
     protected String action;
@@ -461,7 +461,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
 
     // TODO: please explain what is the use of the "editId" tag here
     protected static String getEditId(DocumentModel doc, CoreSession session,
-            String userName) throws ClientException {
+            String userName) {
         StringBuilder sb = new StringBuilder();
 
         if (doc != null) {

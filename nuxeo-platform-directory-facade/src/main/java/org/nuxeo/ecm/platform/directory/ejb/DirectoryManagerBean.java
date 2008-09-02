@@ -64,7 +64,7 @@ public class DirectoryManagerBean implements DirectoryManager {
 
     private static final Map<Long, String> sessionDirectoryNames = new HashMap<Long, String>();
 
-    private transient DirectoryService directoryService;
+    private DirectoryService directoryService;
 
     private AtomicLong sessionIdCounter = new AtomicLong(0);
 
@@ -158,8 +158,8 @@ public class DirectoryManagerBean implements DirectoryManager {
         }
     }
 
-    public void deleteEntry(long sessionId, String id) throws
-            DirectoryException {
+    public void deleteEntry(long sessionId, String id)
+            throws DirectoryException {
         try {
             getSession(sessionId).deleteEntry(id);
         } catch (Throwable e) {
@@ -176,7 +176,8 @@ public class DirectoryManagerBean implements DirectoryManager {
         }
     }
 
-    public DocumentModelList getEntries(long sessionId) throws DirectoryException {
+    public DocumentModelList getEntries(long sessionId)
+            throws DirectoryException {
         try {
             return getSession(sessionId).getEntries();
         } catch (Throwable e) {
@@ -188,6 +189,15 @@ public class DirectoryManagerBean implements DirectoryManager {
             throws DirectoryException {
         try {
             return getSession(sessionId).getEntry(id);
+        } catch (Throwable e) {
+            throw EJBExceptionHandler.wrapException(e);
+        }
+    }
+
+    public DocumentModel getEntry(long sessionId, String id,
+            boolean fetchReferences) throws DirectoryException {
+        try {
+            return getSession(sessionId).getEntry(id, fetchReferences);
         } catch (Throwable e) {
             throw EJBExceptionHandler.wrapException(e);
         }
@@ -274,6 +284,17 @@ public class DirectoryManagerBean implements DirectoryManager {
         }
     }
 
+    public DocumentModelList query(long sessionId, Map<String, Object> filter,
+            Set<String> fulltext, Map<String, String> orderBy,
+            boolean fetchReferences) throws DirectoryException {
+        try {
+            return getSession(sessionId).query(filter, fulltext, orderBy,
+                    fetchReferences);
+        } catch (Throwable e) {
+            throw EJBExceptionHandler.wrapException(e);
+        }
+    }
+
     public void rollback(long sessionId) throws DirectoryException {
         try {
             getSession(sessionId).rollback();
@@ -311,7 +332,7 @@ public class DirectoryManagerBean implements DirectoryManager {
     public Session open(String directoryName) throws DirectoryException {
         try {
             Session session = getService().open(directoryName);
-            long id =sessionIdCounter.incrementAndGet();
+            long id = sessionIdCounter.incrementAndGet();
             sessionMap.put(id, session);
             sessionDirectoryNames.put(id, directoryName);
             return new DirectoryClientImpl(id);
