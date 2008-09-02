@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.proxy;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,15 +27,27 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
 
 public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
+
+    private static final Log log = LogFactory.getLog(ProxyAuthenticator.class);
 
     private static String HEADER_NAME_KEY = "ssoHeaderName";
 
     protected String userIdHeaderName = "remote_user";
+
+    public final static String HTTP_CREDENTIAL_DIRECTORY_FIELD_PROPERTY_NAME = "org.nuxeo.ecm.platform.login.mod_sso.credentialDirectoryField";
 
     public List<String> getUnAuthenticatedURLPrefix() {
         return null;
@@ -51,6 +64,51 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
         if (userName == null) {
             return null;
         }
+
+        String credentialFieldName = Framework.getRuntime().getProperty(
+                HTTP_CREDENTIAL_DIRECTORY_FIELD_PROPERTY_NAME);
+        if (credentialFieldName != null) {
+            // use custom directory field to find the user with the ID given in
+            // the HTTP header
+            Session userDir = null;
+            try {
+                String directoryName = Framework.getService(UserManager.class).getUserDirectoryName();
+                userDir = Framework.getService(DirectoryService.class).open(
+                        directoryName);
+                Map<String, Object> queryFilters = new HashMap<String, Object>();
+                queryFilters.put(credentialFieldName, userName);
+                DocumentModelList result = userDir.query(queryFilters);
+                if (result.isEmpty()) {
+                    log.error(String.format(
+                            "could not find any user with %s='%s' in directory %s",
+                            credentialFieldName, userName, directoryName));
+                    return null;
+                }
+                if (result.size() > 1) {
+                    log.error(String.format(
+                            "found more than one entry for  %s='%s' in directory %s",
+                            credentialFieldName, userName, directoryName));
+                    return null;
+                }
+                // use the ID of the found user entry as new identification for the principal
+                userName = result.get(0).getId();
+            } catch (Exception e) {
+                log.error(String.format(
+                        "could not retrieve user entry with %s='%s':  %s",
+                        credentialFieldName, userName, e.getMessage()), e);
+                return null;
+            } finally {
+                if (userDir != null) {
+                    try {
+                        userDir.close();
+                    } catch (DirectoryException e) {
+                        log.error("error while closing directory session: "
+                                + e.getMessage(), e);
+                    }
+                }
+            }
+        }
+
         handleRedirectToValidStartPage(httpRequest, httpResponse);
         return new UserIdentificationInfo(userName, userName);
     }
