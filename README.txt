@@ -33,7 +33,7 @@ location of your JBoss instance.
 - "ant deploy"
 
 NB: you only have to run "ant patch" once. You have to run "ant" or "ant
-deploy" each time to change the source code.
+deploy" each time you change the source code.
 
 Long story
 ----------
