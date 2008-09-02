@@ -33,12 +33,14 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.SimpleFileManager;
+import org.nuxeo.ecm.platform.ui.web.util.FileUploadHelper;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -76,9 +78,6 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet implements Serializabl
             }
         }
 
-        //DOMDocumentFactory domfactory = new DOMDocumentFactory();
-        //DOMDocument result = (DOMDocument) domfactory.createDocument();
-
         DocumentModel currentDocument;
 
         try {
@@ -104,30 +103,25 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet implements Serializabl
 
         if (currentDocument != null) {
             Representation repr = req.getEntity();
-            RestletFileUpload fu = new RestletFileUpload();
-            fu.setFileItemFactory(new DiskFileItemFactory());
             String fileNameCharset = getHttpRequest(req).getHeader("FileNameCharset");
-            if (fileNameCharset != null) {
-                fu.setHeaderEncoding(fileNameCharset);
-            }
-            List<FileItem> fiList;
+
+            List<Blob> blobs=null;
             try {
-                fiList = fu.parseRequest(req);
-            } catch (FileUploadException e) {
-                handleError(res, e);
+                blobs = FileUploadHelper.parseRequest(req);
+            } catch (Exception e1) {
                 return;
             }
 
-            FileItem myFile = fiList.get(0);
+            if (blobs.size()==0)
+                return;
+
+            Blob myFile = blobs.get(0);
             try {
-                //InputStream input = repr.getStream();
-                InputStream input = myFile.getInputStream();
 
-                MediaType mediaType = repr.getMediaType();
+                String mimeType = myFile.getMimeType();
+                String fileName = myFile.getFilename();
 
-                String mimeType = mediaType.getName();
-                String fileName = myFile.getName();
-                byte[] content = FileUtils.readBytes(input);
+                byte[] content = myFile.getByteArray();
 
                 try {
                     returnCode = FileManageActions.addBinaryFileFromPlugin(
@@ -146,7 +140,6 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet implements Serializabl
                 return;
             }
         }
-        //res.setEntity(result.asXML(), MediaType.TEXT_XML);
         res.setEntity(returnCode, MediaType.TEXT_PLAIN);
     }
 

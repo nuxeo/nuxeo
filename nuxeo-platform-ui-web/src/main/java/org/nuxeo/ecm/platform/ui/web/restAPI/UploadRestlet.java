@@ -26,8 +26,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
 import org.dom4j.Element;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
@@ -35,17 +33,18 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.SimpleFileManager;
+import org.nuxeo.ecm.platform.ui.web.util.FileUploadHelper;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.ext.fileupload.RestletFileUpload;
 import org.restlet.resource.Representation;
 
 @Name("uploadRestlet")
@@ -84,17 +83,17 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
 
         if (dm != null) {
             Representation repr = req.getEntity();
-            RestletFileUpload fu = new RestletFileUpload();
-            List<FileItem> fiList = null;
+            List<Blob> blobs = null;
+
             try {
-                fiList = fu.parseRequest(req);
-            } catch (FileUploadException e) {
+                blobs = FileUploadHelper.parseRequest(req);
+            } catch (Exception e) {
                 //handleError(res, e);
                 //return;
                 // XXX : this fails for requests not sent via browser
             }
 
-            if (fiList == null) {
+            if ((blobs == null) || (blobs.size()==0)) {
                 // mono import
 
                 try {
@@ -124,16 +123,16 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
                 Element uploads = result.addElement("uploads");
                 result.setRootElement(uploads);
 
-                for (FileItem fileItem : fiList) {
+                for (Blob blob : blobs) {
 
                     Element upload = result.addElement("upload");
                     ((org.w3c.dom.Element) uploads).appendChild((org.w3c.dom.Element) upload);
 
-                    fileName = fileItem.getName();
-                    String mimeType = fileItem.getContentType();
+                    fileName = blob.getFilename();
+                    String mimeType = blob.getMimeType();
                     byte[] content;
                     try {
-                        content = FileUtils.readBytes(fileItem.getInputStream());
+                        content = FileUtils.readBytes(blob.getStream());
                     } catch (IOException e) {
                         upload.setText("ERROR : " + e.getMessage());
                         continue;
