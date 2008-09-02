@@ -24,7 +24,7 @@ information if needed.
 5.1.
 
 3. Copy build.properties.sample to build.properties and edit it to match the
-location of your JBoss
+location of your JBoss instance.
 
 3. Run:
 
@@ -32,8 +32,8 @@ location of your JBoss
 
 - "ant deploy"
 
-NB: you only have to run "ant patch" once, you have to run "ant" or "ant
-deploy" each time to change you source code.
+NB: you only have to run "ant patch" once. You have to run "ant" or "ant
+deploy" each time to change the source code.
 
 Long story
 ----------
