@@ -10,7 +10,7 @@
   rendered="#{documents != null}">
 
   <h:form id="#{documents.name}">
-    
+
     <ui:insert name="empty_folder_label">
       <h:outputText value="#{messages['label.content.emptyFolder']}"
         rendered="#{documents.rowCount == 0}" />
@@ -176,7 +176,8 @@
     <ui:include src="/pagination/pageNavigationControls.xhtml" />
 
     <ui:insert name="buttons" />
-    
+
+    <div class="syndicationContainer">
     <ui:insert name="syndication_buttons">
       <f:subview rendered="#{currentDocument.folder}">
         <ui:include src="/incl/syndication_buttons.xhtml">
@@ -185,7 +186,7 @@
       </f:subview>
     </ui:insert>
 
-    <div style="clear:both"></div>
+    </div>
   </h:form>
 
 </a4j:region>

@@ -159,12 +159,14 @@
 
     <ui:insert name="buttons" />
 
+    <div class="syndicationContainer">
     <f:subview rendered="#{currentDocument.folder or currentDocument.type == 'section'}">
       <ui:include src="/incl/syndication_buttons.xhtml">
         <ui:param name="type" value="document" />
       </ui:include>
     </f:subview>
-    <div style="clear:both"></div>
+    <!-- <div style="clear:both"></div>  -->
+    </div>
   </h:form>
 
 </a4j:region>

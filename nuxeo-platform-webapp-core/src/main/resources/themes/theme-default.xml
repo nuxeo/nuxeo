@@ -330,7 +330,7 @@
         <border-width>1px</border-width>
       </selector>
     </style>
-    
+
     <style name="breadcrumbs style">
     <selector path="">
         <padding>5px 0px</padding>
@@ -382,7 +382,7 @@
         <padding>5px 4px 0px 0px</padding>
       </selector>
     </style>
-    
+
     <style name="common style 1">
       <selector path="h1, h2, h3, h4, h5, h6, form, p">
         <margin>0</margin>
@@ -1636,6 +1636,9 @@
         <font-size>9px</font-size>
         <float>right</float>
       </selector>
+      <selector path=".syndicationContainer">
+        <height>30px</height>
+      </selector>
       <selector path="div.syndicationButton div.syndicationLinks" view="facelet region">
         <color>rgb(241, 242, 243)</color>
         <font preset="small (Nuxeo default fonts)"/>
@@ -1659,6 +1662,9 @@
         <margin-top>10px</margin-top>
         <font-size>9px</font-size>
         <float>right</float>
+      </selector>
+      <selector path=".syndicationContainer">
+        <height>30px</height>
       </selector>
       <selector path="div.syndicationButton div.syndicationLinks" view="facelet region">
         <font preset="small (Nuxeo default fonts)"/>
