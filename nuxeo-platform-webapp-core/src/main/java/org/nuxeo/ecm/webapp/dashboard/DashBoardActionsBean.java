@@ -293,7 +293,8 @@ public class DashBoardActionsBean extends InputController implements
             Collection<WMWorkItemInstance> workItems = wapi.getWorkItemsFor(
                     participants, WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
 
-            List<DocumentRef> alreadyIn = new ArrayList<DocumentRef>();
+            //NXP-1706 Rux: show all not duplicated document - task pairs, except ended tasks
+            List<List<String>> docTaskPairs = new ArrayList<List<String>>();
             Set<String> pids = new HashSet<String>();
             for(WMWorkItemInstance workItem : workItems) {
                 pids.add(workItem.getProcessInstance().getId());
@@ -309,13 +310,18 @@ public class DashBoardActionsBean extends InputController implements
                         continue;
                     }
                 }
-
+                if (workItem.hasEnded()) {
+                    continue;
+                }
                 String authorName = workItem.getProcessInstance().getAuthorName();
                 String workflowType = workItem.getProcessInstance().getName();
 
                 for (DocumentModel dm : pidDmMap.get(workItem.getProcessInstance().getId())) {
                     DocumentRef docRef = dm.getRef();
-                    if (alreadyIn.contains(docRef)) {
+                    List<String> pair = new ArrayList<String>();
+                    pair.add(docRef.toString());
+                    pair.add(workflowType);
+                    if (docTaskPairs.contains(pair)) {
                         continue;
                     }
 
@@ -330,9 +336,7 @@ public class DashBoardActionsBean extends InputController implements
                     dashBoardItem.setAuthorName(authorName);
                     dashBoardItem.setWorkflowType(workflowType);
                     dashboardItems.add(dashBoardItem);
-
-                    // Do not duplicate in the future.
-                    alreadyIn.add(docRef);
+                    docTaskPairs.add(pair);
                 }
             }
         } catch (WMWorkflowException we) {
