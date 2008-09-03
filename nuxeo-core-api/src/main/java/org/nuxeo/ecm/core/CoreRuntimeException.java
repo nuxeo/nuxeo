@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.core;
 
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -32,7 +31,6 @@ public class CoreRuntimeException extends RuntimeException {
     private static final long serialVersionUID = 4917408908773220562L;
 
     public CoreRuntimeException() {
-
     }
 
     public CoreRuntimeException(String message) {

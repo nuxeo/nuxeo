@@ -22,6 +22,8 @@ package org.nuxeo.ecm.core.repository.jcr;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.jcr.Node;
+
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.types.Type;
 
@@ -31,7 +33,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
  */
 public class StructuredPropertyManager {
 
-    private final static Map<String, PropertyAccessor> registry = new HashMap<String, PropertyAccessor>();
+    private static final Map<String, PropertyAccessor> registry = new HashMap<String, PropertyAccessor>();
 
     // Utility class.
     private StructuredPropertyManager() {
@@ -58,7 +60,7 @@ public class StructuredPropertyManager {
     }
 
 
-    public static boolean write(javax.jcr.Node node, Property property) throws Exception {
+    public static boolean write(Node node, Property property) throws Exception {
         Type type = property.getType();
         PropertyAccessor accessor = registry.get(type.getName());
         if (accessor != null) {
@@ -68,7 +70,7 @@ public class StructuredPropertyManager {
         return false;
     }
 
-    public static boolean read(javax.jcr.Node node, Property property) throws Exception {
+    public static boolean read(Node node, Property property) throws Exception {
         Type type = property.getType();
         PropertyAccessor accessor = registry.get(type.getName());
         if (accessor != null) {
