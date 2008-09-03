@@ -112,6 +112,7 @@ public final class Functions {
      * @param username the user id, or null or empty for the current user.
      * @return the full user name.
      */
+    @SuppressWarnings("unchecked")
     public static String userFullName(String username) {
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
         // empty user name is current user
