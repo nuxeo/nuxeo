@@ -87,7 +87,6 @@ public class UIEditableList extends UIInput implements NamingContainer {
 
     private InternalState state;
 
-    @SuppressWarnings("unchecked")
     private static final class InternalState implements Serializable {
 
         private static final long serialVersionUID = 4730664880938551346L;
@@ -181,7 +180,6 @@ public class UIEditableList extends UIInput implements NamingContainer {
         return value;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void restoreState(FacesContext context, Object state) {
         final Object superState;
@@ -383,12 +381,11 @@ public class UIEditableList extends UIInput implements NamingContainer {
     }
 
     /**
-     * Returns a new EditableModel fro given value.
+     * Returns a new EditableModel from given value.
      *
      * @param current the current CollectionModel, or null if there is none.
      * @param value this is the value returned from {@link #getValue()}
      */
-    @SuppressWarnings("unchecked")
     protected EditableModel createEditableModel(EditableModel current,
             Object value) {
         EditableModel model = new EditableModelImpl(value);

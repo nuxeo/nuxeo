@@ -156,7 +156,6 @@ final class StampState implements Externalizable {
      * @return this object must be Serializable if client-side state saving is
      *         used.
      */
-    @SuppressWarnings("unchecked")
     public static Object saveStampState(FacesContext context, UIComponent stamp) {
         if (stamp.isTransient()) {
             return null;
@@ -250,7 +249,6 @@ final class StampState implements Externalizable {
      * changed to match the new currency. This method recurses for the children
      * and facets of the stamp.
      */
-    @SuppressWarnings("unchecked")
     public static void restoreStampState(FacesContext context,
             UIComponent stamp, Object stampState) {
         if (stampState == null || stamp == null) {
