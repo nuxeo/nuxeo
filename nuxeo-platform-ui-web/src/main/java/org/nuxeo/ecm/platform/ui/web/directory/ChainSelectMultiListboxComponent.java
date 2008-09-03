@@ -213,7 +213,6 @@ public class ChainSelectMultiListboxComponent extends UIInput {
         return (ChainSelect) component;
     }
 
-    @SuppressWarnings("unchecked")
     public Object getProperty(String name) {
         ValueBinding vb = getValueBinding(name);
         if (vb != null) {

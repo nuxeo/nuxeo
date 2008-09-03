@@ -131,7 +131,6 @@ public class PluggableAuthenticationService extends DefaultComponent {
 			} catch (IllegalAccessException e) {
 				log.error("Unable to creeate propagator", e);
 			}
-
         }
         else if (extensionPoint.equals(EP_CBFACTORY)) {
             CallbackHandlerFactoryDescriptor cbhfContrib = (CallbackHandlerFactoryDescriptor) contribution;
@@ -183,16 +182,13 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     // Service API
 
-
     public List<String> getStartURLPatterns() {
         return startupURLs;
     }
 
-
     public List<String> getAuthChain() {
         return authChain;
     }
-
 
     public UserIdentificationInfoCallbackHandler getCallbackHandler(
             UserIdentificationInfo userIdent) {

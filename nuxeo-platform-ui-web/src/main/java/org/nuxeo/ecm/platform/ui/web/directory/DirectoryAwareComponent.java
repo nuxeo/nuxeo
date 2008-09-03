@@ -355,7 +355,6 @@ public abstract class DirectoryAwareComponent extends UIInput {
         directoryValues = (VocabularyEntryList) values[15];
     }
 
-    @SuppressWarnings("unchecked")
     public Boolean getBooleanProperty(String key, Boolean defaultValue) {
         Map<String, Object> map = getAttributes();
         Boolean value = (Boolean) map.get(key);
@@ -365,7 +364,6 @@ public abstract class DirectoryAwareComponent extends UIInput {
         return value;
     }
 
-    @SuppressWarnings("unchecked")
     public String getStringProperty(String key, String defaultValue) {
         Map<String, Object> map = getAttributes();
         String value = (String) map.get(key);

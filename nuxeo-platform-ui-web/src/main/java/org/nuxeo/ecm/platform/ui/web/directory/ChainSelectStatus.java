@@ -95,7 +95,6 @@ public class ChainSelectStatus extends UIOutput {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void restoreState(FacesContext context, Object state) {
         Object[] values = (Object[]) state;
         super.restoreState(context, values[0]);
@@ -131,7 +130,6 @@ public class ChainSelectStatus extends UIOutput {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void encodeBegin(FacesContext context) throws IOException {
         ResponseWriter writer = context.getResponseWriter();
         String id = getClientId(context);
@@ -276,7 +274,6 @@ public class ChainSelectStatus extends UIOutput {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void encodeEnd(FacesContext context) throws IOException {
         ResponseWriter writer = context.getResponseWriter();
         writer.endElement("div");
@@ -287,7 +284,6 @@ public class ChainSelectStatus extends UIOutput {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public Object getProperty(String name) {
         ValueBinding vb = getValueBinding(name);
         if (vb != null) {
