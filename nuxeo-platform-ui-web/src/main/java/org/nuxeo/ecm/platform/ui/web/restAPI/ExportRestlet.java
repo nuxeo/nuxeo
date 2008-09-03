@@ -24,8 +24,8 @@ import static org.jboss.seam.ScopeType.STATELESS;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Map;
 import java.io.Serializable;
+import java.util.Map;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
