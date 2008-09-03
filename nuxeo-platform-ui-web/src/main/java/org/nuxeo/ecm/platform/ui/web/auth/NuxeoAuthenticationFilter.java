@@ -598,7 +598,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     // App Server JAAS SPI
     protected  void propagateUserIdentificationInformation(
             CachableUserIdentificationInfo cachableUserIdent) {
-    		service.propagateUserIdentificationInformation(cachableUserIdent);
+        	service.propagateUserIdentificationInformation(cachableUserIdent);
     }
 
     // Plugin API

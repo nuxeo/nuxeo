@@ -194,19 +194,19 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
 
-    public UserIdentificationInfoCallbackHandler getCallbackHandler(UserIdentificationInfo userIdent)
-    {
-        if (cbhFactory==null)
-        {
+    public UserIdentificationInfoCallbackHandler getCallbackHandler(
+            UserIdentificationInfo userIdent) {
+        if (cbhFactory == null) {
             return new UserIdentificationInfoCallbackHandler(userIdent);
         }
         return cbhFactory.createCallbackHandler(userIdent);
     }
 
-    public void propagateUserIdentificationInformation(CachableUserIdentificationInfo cachableUserIdent)
-    {
-    	if (propagator!=null)
-    		propagator.propagateUserIdentificationInformation(cachableUserIdent);
+    public void propagateUserIdentificationInformation(
+            CachableUserIdentificationInfo cachableUserIdent) {
+        if (propagator != null) {
+            propagator.propagateUserIdentificationInformation(cachableUserIdent);
+        }
     }
 
     public List<NuxeoAuthenticationPlugin> getPluginChain() {
