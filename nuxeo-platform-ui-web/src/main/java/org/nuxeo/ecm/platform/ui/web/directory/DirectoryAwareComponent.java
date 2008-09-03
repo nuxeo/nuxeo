@@ -334,6 +334,7 @@ public abstract class DirectoryAwareComponent extends UIInput {
         return values;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void restoreState(FacesContext context, Object state) {
         Object[] values = (Object[]) state;
