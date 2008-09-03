@@ -121,16 +121,16 @@ public class PluggableAuthenticationService extends DefaultComponent {
             startupURLs.addAll(startupURLContrib.getStartURLPatterns());
         }
         else if (extensionPoint.equals(EP_PROPAGATOR)) {
-        	AuthenticationPropagatorDescriptor propagationContrib = (AuthenticationPropagatorDescriptor) contribution;
+            AuthenticationPropagatorDescriptor propagationContrib = (AuthenticationPropagatorDescriptor) contribution;
 
-        	// create the new instance
-        	try {
-				propagator = (NuxeoAuthenticationPropagator) propagationContrib.getClassName().newInstance();
-			} catch (InstantiationException e) {
-				log.error("Unable to creeate propagator", e);
-			} catch (IllegalAccessException e) {
-				log.error("Unable to creeate propagator", e);
-			}
+            // create the new instance
+            try {
+                propagator = (NuxeoAuthenticationPropagator) propagationContrib.getClassName().newInstance();
+            } catch (InstantiationException e) {
+                log.error("Unable to creeate propagator", e);
+            } catch (IllegalAccessException e) {
+                log.error("Unable to creeate propagator", e);
+            }
         }
         else if (extensionPoint.equals(EP_CBFACTORY)) {
             CallbackHandlerFactoryDescriptor cbhfContrib = (CallbackHandlerFactoryDescriptor) contribution;
