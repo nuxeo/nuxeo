@@ -441,7 +441,8 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         HttpSession session = httpRequest.getSession(false);
         if (session != null) {
-            CachableUserIdentificationInfo cachableUserInfo = (CachableUserIdentificationInfo) session.getAttribute(NXAuthContants.USERIDENT_KEY);
+            CachableUserIdentificationInfo cachableUserInfo
+                    = (CachableUserIdentificationInfo) session.getAttribute(NXAuthContants.USERIDENT_KEY);
             if (cachableUserInfo != null) {
                 return cachableUserInfo;
             }
