@@ -86,13 +86,9 @@ public enum PropertyType {
     public Serializable[] listToArray(List<Serializable> list) {
         // contrary to list.toArray(), this creates an array
         // of the property type instead of an Object[]
-        try {
-            Serializable[] array = (Serializable[]) Array.newInstance(klass,
-                    list.size());
-            return list.toArray(array);
-        } catch (NullPointerException e) {
-            throw e;
-        }
+        Serializable[] array = (Serializable[]) Array.newInstance(klass,
+                list.size());
+        return list.toArray(array);
     }
 
     /**

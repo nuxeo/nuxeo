@@ -32,6 +32,14 @@ import org.nuxeo.ecm.core.storage.StorageException;
  * The id of the fragment is distinguished internally from other columns. For
  * fragments corresponding to created data, the initial id is a temporary one,
  * and it will be changed after database insert.
+ * <p>
+ * This class has two kinds of state-changing methods:
+ * <ul>
+ * <li>the "set" ones, which only change the state,</li>
+ * <li>the "mark" ones, which change the state and do the corresponding changes
+ * in the pristine/modified maps of the context.</li>
+ * <li></li>
+ * </ul>
  *
  * @author Florent Guillaume
  */
@@ -129,6 +137,7 @@ public abstract class Fragment implements Serializable {
             }
             break;
         case CREATED:
+        case DELETED:
             context.modified.put(id, this);
             break;
         case ABSENT:
@@ -136,7 +145,6 @@ public abstract class Fragment implements Serializable {
             context.pristine.put(id, this);
             break;
         case MODIFIED:
-        case DELETED:
         case INVALIDATED_MODIFIED:
         case INVALIDATED_DELETED:
             throw new IllegalArgumentException(state.toString());
@@ -201,14 +209,6 @@ public abstract class Fragment implements Serializable {
     protected abstract State refetch() throws StorageException;
 
     /**
-     * Detaches the fragment from its persistence context.
-     */
-    protected void detach() {
-        state = State.DETACHED;
-        context = null;
-    }
-
-    /**
      * Checks that access to the fragment is possible. Called internally before
      * a get, so that invalidated fragments can be refetched.
      *
@@ -224,7 +224,7 @@ public abstract class Fragment implements Serializable {
         case DELETED:
             break;
         case INVALIDATED_MODIFIED:
-            state = refetch(); // updates state
+            state = refetch();
             break;
         case INVALIDATED_DELETED:
             throw new ConcurrentModificationException(
@@ -235,7 +235,7 @@ public abstract class Fragment implements Serializable {
     /**
      * Marks the fragment modified. Called internally after a put/set.
      */
-    protected void modified() {
+    protected void markModified() {
         switch (state) {
         case ABSENT:
             context.pristine.remove(id);
@@ -262,53 +262,9 @@ public abstract class Fragment implements Serializable {
     }
 
     /**
-     * Marks the fragment invalidated from a modification. Called during
-     * post-commit invalidation.
-     */
-    protected void invalidateModified() {
-        switch (state) {
-        case ABSENT:
-        case PRISTINE:
-            state = State.INVALIDATED_MODIFIED;
-            break;
-        case INVALIDATED_MODIFIED:
-        case INVALIDATED_DELETED:
-            break;
-        case DETACHED:
-        case CREATED:
-        case MODIFIED:
-        case DELETED:
-            // incoherent with the pristine map
-            throw new AssertionError(this);
-        }
-    }
-
-    /**
-     * Marks the fragment invalidated from a deletion. Called during post-commit
-     * invalidation.
-     */
-    protected void invalidateDeleted() {
-        switch (state) {
-        case ABSENT:
-        case PRISTINE:
-        case INVALIDATED_MODIFIED:
-            state = State.INVALIDATED_DELETED;
-            break;
-        case INVALIDATED_DELETED:
-            break;
-        case DETACHED:
-        case CREATED:
-        case MODIFIED:
-        case DELETED:
-            // incoherent with the pristine map
-            throw new AssertionError(this);
-        }
-    }
-
-    /**
      * Marks the fragment deleted. Called after a remove.
      */
-    public void markDeleted() {
+    protected void markDeleted() {
         switch (state) {
         case DETACHED:
             break;
@@ -338,12 +294,69 @@ public abstract class Fragment implements Serializable {
     }
 
     /**
-     * Marks the (created/modified) fragment pristine. Called after a save.
+     * Marks the fragment invalidated from modification.
      * <p>
-     * Lets the called move from the modified to the pristine map, as it's
-     * inside an iterator over modified.
+     * Called when a database operation does non-tracked changes, which means
+     * that on access a refetch will be needed.
      */
-    protected void markPristine() {
+    protected void markInvalidatedModified() {
+        switch (state) {
+        case CREATED:
+        case MODIFIED:
+        case DELETED:
+            context.modified.remove(id);
+            context.pristine.put(id, this);
+            // fall through
+        case ABSENT:
+        case PRISTINE:
+            state = State.INVALIDATED_MODIFIED;
+            break;
+        case INVALIDATED_MODIFIED:
+        case INVALIDATED_DELETED:
+            break;
+        case DETACHED:
+            throw new AssertionError(this);
+        }
+    }
+
+    /**
+     * Marks the fragment invalidated from deletion.
+     * <p>
+     * Called when a database operation does a delete.
+     */
+    protected void markInvalidatedDeleted() {
+        switch (state) {
+        case CREATED:
+        case MODIFIED:
+        case DELETED:
+            context.modified.remove(id);
+            context.pristine.put(id, this);
+            // fall through
+        case ABSENT:
+        case PRISTINE:
+            state = State.INVALIDATED_MODIFIED;
+            break;
+        case INVALIDATED_MODIFIED:
+        case INVALIDATED_DELETED:
+            break;
+        case DETACHED:
+            throw new AssertionError(this);
+        }
+    }
+
+    /**
+     * Detaches the fragment from its persistence context.
+     */
+    protected void setDetached() {
+        state = State.DETACHED;
+        context = null;
+    }
+
+    /**
+     * Sets the (created/modified) fragment in the pristine state. Called after
+     * a save.
+     */
+    protected void setPristine() {
         switch (state) {
         case CREATED:
         case MODIFIED:
@@ -356,6 +369,50 @@ public abstract class Fragment implements Serializable {
         case INVALIDATED_MODIFIED:
         case INVALIDATED_DELETED:
             // incoherent with the pristine map + expected state
+            throw new AssertionError(this);
+        }
+    }
+
+    /**
+     * Sets the fragment in the "invalidated from a modification" state. Called
+     * during post-commit invalidation.
+     */
+    protected void setInvalidatedModified() {
+        switch (state) {
+        case ABSENT:
+        case PRISTINE:
+            state = State.INVALIDATED_MODIFIED;
+            break;
+        case INVALIDATED_MODIFIED:
+        case INVALIDATED_DELETED:
+            break;
+        case DETACHED:
+        case CREATED:
+        case MODIFIED:
+        case DELETED:
+            // incoherent with the pristine map
+            throw new AssertionError(this);
+        }
+    }
+
+    /**
+     * Sets the fragment in the "invalidated from a deletion" state. Called
+     * during post-commit invalidation.
+     */
+    protected void setInvalidatedDeleted() {
+        switch (state) {
+        case ABSENT:
+        case PRISTINE:
+        case INVALIDATED_MODIFIED:
+            state = State.INVALIDATED_DELETED;
+            break;
+        case INVALIDATED_DELETED:
+            break;
+        case DETACHED:
+        case CREATED:
+        case MODIFIED:
+        case DELETED:
+            // incoherent with the pristine map
             throw new AssertionError(this);
         }
     }

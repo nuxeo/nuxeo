@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.storage.sql.SQLInfo.SQLInfoSelect;
 import org.nuxeo.ecm.core.storage.sql.db.Column;
 import org.nuxeo.ecm.core.storage.sql.db.Database;
 import org.nuxeo.ecm.core.storage.sql.db.Table;
+import org.nuxeo.ecm.core.storage.sql.db.Update;
 
 /**
  * A {@link Mapper} maps objects to and from the database. It is specific to a
@@ -152,8 +153,15 @@ public class Mapper {
     }
 
     // for debug
+    protected void logCount(int count) {
+        if (count > 0 && log.isDebugEnabled()) {
+            logDebug("  -> " + count + " row" + (count > 1 ? "s" : ""));
+        }
+    }
+
+    // for debug
     protected void logDebug(String string) {
-        log.debug("[" + instanceNumber + "] SQL: " + string);
+        log.debug("(" + instanceNumber + ") SQL: " + string);
     }
 
     // for debug
@@ -552,6 +560,47 @@ public class Mapper {
             Map<String, Serializable> criteriaMap,
             Map<String, Serializable> joinMap, boolean limitToOne,
             Context context) throws StorageException {
+        List<Map<String, Serializable>> maps = getSelectMaps(select,
+                criteriaMap, joinMap, limitToOne, context);
+        if (maps == null) {
+            return null;
+        }
+        List<SimpleFragment> fragments = new LinkedList<SimpleFragment>();
+        for (Map<String, Serializable> map : maps) {
+            Serializable id = map.remove(model.MAIN_KEY);
+            SimpleFragment fragment = (SimpleFragment) context.getIfPresent(id);
+            if (fragment == null) {
+                fragment = new SimpleFragment(id, State.PRISTINE, context, map);
+            } else {
+                // row is already known in the persistent context,
+                // use it
+                State state = fragment.getState();
+                if (state == State.DELETED) {
+                    // row has been deleted in the persistent context,
+                    // ignore it
+                    continue;
+                } else if (state == State.ABSENT ||
+                        state == State.INVALIDATED_MODIFIED ||
+                        state == State.INVALIDATED_DELETED) {
+                    // XXX TODO
+                    throw new RuntimeException(state.toString());
+                }
+                // known id
+            }
+            fragments.add(fragment);
+        }
+        return fragments;
+    }
+
+    /**
+     * Fetch the maps for a select of fragments with fixed criteria given as a
+     * map.
+     */
+    protected List<Map<String, Serializable>> getSelectMaps(
+            SQLInfoSelect select, Map<String, Serializable> criteriaMap,
+            Map<String, Serializable> joinMap, boolean limitToOne,
+            Context context) throws StorageException {
+        List<Map<String, Serializable>> list = new LinkedList<Map<String, Serializable>>();
         PreparedStatement ps = null;
         try {
             ps = connection.prepareStatement(select.sql);
@@ -592,60 +641,27 @@ public class Mapper {
             ResultSet rs = ps.executeQuery();
 
             /*
-             * Construct the rows from the result set.
+             * Construct the maps from the result set.
              */
-            List<SimpleFragment> rows = new LinkedList<SimpleFragment>();
             while (rs.next()) {
-                Serializable id = null;
-                Map<String, Serializable> map = new HashMap<String, Serializable>();
+                Map<String, Serializable> map = new HashMap<String, Serializable>(
+                        criteriaMap);
                 i = 1;
                 for (Column column : select.whatColumns) {
-                    String key = column.getKey();
-                    Serializable value = column.getFromResultSet(rs, i++);
-                    if (key.equals(model.MAIN_KEY)) {
-                        id = value;
-                    } else {
-                        map.put(key, value);
-                    }
+                    map.put(column.getKey(), column.getFromResultSet(rs, i++));
                 }
-                SimpleFragment fragment = (SimpleFragment) context.getIfPresent(id);
-                if (fragment == null) {
-                    map.putAll(criteriaMap);
-                    fragment = new SimpleFragment(id, State.PRISTINE, context,
-                            map);
-                    if (log.isDebugEnabled()) {
-                        logResultSet(rs, select.whatColumns);
-                    }
-                } else {
-                    // row is already known in the persistent context,
-                    // use it
-                    State state = fragment.getState();
-                    if (state == State.DELETED) {
-                        // row has been deleted in the persistent context,
-                        // ignore it
-                        if (log.isDebugEnabled()) {
-                            logDebug("  -> deleted id=" + id);
-                        }
-                        continue;
-                    } else if (state == State.ABSENT ||
-                            state == State.INVALIDATED_MODIFIED ||
-                            state == State.INVALIDATED_DELETED) {
-                        // XXX TODO
-                        throw new RuntimeException(state.toString());
-                    }
-                    if (log.isDebugEnabled()) {
-                        logDebug("  -> known id=" + id);
-                    }
+                if (log.isDebugEnabled()) {
+                    logResultSet(rs, select.whatColumns);
                 }
-                rows.add(fragment);
+                list.add(map);
                 if (limitToOne) {
-                    return rows;
+                    return list;
                 }
             }
             if (limitToOne) {
                 return null;
             }
-            return rows;
+            return list;
         } catch (SQLException e) {
             throw newStorageException(e, "Could not select", select.sql);
         } finally {
@@ -670,45 +686,12 @@ public class Mapper {
      */
     public Map<String, Serializable> readSingleRowMap(String tableName,
             Serializable id, Context context) throws StorageException {
-        String sql = sqlInfo.getSelectByIdSql(tableName);
-        try {
-            if (log.isDebugEnabled()) {
-                logSQL(sql, Collections.singletonList(id));
-            }
-            PreparedStatement ps = connection.prepareStatement(sql);
-            try {
-                ps.setObject(1, id); // assumes only one primary column
-                ResultSet rs = ps.executeQuery();
-                if (!rs.next()) {
-                    // no match, row doesn't exist
-                    if (log.isDebugEnabled()) {
-                        logDebug("  -> (none)");
-                    }
-                    return null;
-                }
-                // construct the map
-                Map<String, Serializable> map = new HashMap<String, Serializable>();
-                int i = 0;
-                List<Column> columns = sqlInfo.getSelectByIdColumns(tableName);
-                for (Column column : columns) {
-                    i++;
-                    map.put(column.getKey(), column.getFromResultSet(rs, i));
-                }
-                if (log.isDebugEnabled()) {
-                    logResultSet(rs, columns);
-                }
-                // check that we didn't get several rows
-                if (rs.next()) {
-                    throw new StorageException("Row query for " + id +
-                            " returned several rows: " + sql);
-                }
-                return map;
-            } finally {
-                ps.close();
-            }
-        } catch (SQLException e) {
-            throw newStorageException(e, "Could not select", sql);
-        }
+        SQLInfoSelect select = sqlInfo.selectFragmentById.get(tableName);
+        Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
+        criteriaMap.put(model.MAIN_KEY, id);
+        List<Map<String, Serializable>> maps = getSelectMaps(select,
+                criteriaMap, null, true, context);
+        return maps == null ? null : maps.get(0);
     }
 
     /**
@@ -842,7 +825,8 @@ public class Mapper {
      */
     public Serializable[] readCollectionArray(Serializable id, Context context)
             throws StorageException {
-        String sql = sqlInfo.getSelectByIdSql(context.getTableName());
+        String tableName = context.getTableName();
+        String sql = sqlInfo.selectFragmentById.get(tableName).sql;
         try {
             // XXX statement should be already prepared
             if (log.isDebugEnabled()) {
@@ -850,7 +834,7 @@ public class Mapper {
             }
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
-                List<Column> columns = sqlInfo.getSelectByIdColumns(context.getTableName());
+                List<Column> columns = sqlInfo.selectFragmentById.get(tableName).whatColumns;
                 ps.setObject(1, id); // assumes only one primary column
                 ResultSet rs = ps.executeQuery();
 
@@ -901,17 +885,46 @@ public class Mapper {
                     column.setToPreparedStatement(ps, i, v);
                 }
                 int count = ps.executeUpdate();
-                if (log.isDebugEnabled()) {
-                    logDebug("  -> " + count + " rows");
-                }
-                // XXX check number of changed rows
-                // if 1 -> ok
-                // if 0 -> must do an insert (for missing fragments)
+                logCount(count);
             } finally {
                 ps.close();
             }
         } catch (SQLException e) {
-            throw newStorageException(e, "Could not select", sql);
+            throw newStorageException(e, "Could not update", sql);
+        }
+    }
+
+    /**
+     * Updates a row in the database with given explicit values.
+     */
+    public void updateSingleRowWithValues(String tableName, Serializable id,
+            Map<String, Serializable> map) throws StorageException {
+        Update update = sqlInfo.getUpdateByIdForKeys(tableName, map.keySet());
+        Table table = update.getTable();
+        String sql = update.getStatement();
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            try {
+                if (log.isDebugEnabled()) {
+                    List<Serializable> values = new LinkedList<Serializable>();
+                    values.addAll(map.values());
+                    values.add(id);
+                    logSQL(sql, values);
+                }
+                int i = 1;
+                for (Entry<String, Serializable> entry : map.entrySet()) {
+                    String key = entry.getKey();
+                    Serializable value = entry.getValue();
+                    table.getColumn(key).setToPreparedStatement(ps, i++, value);
+                }
+                ps.setObject(i, id);
+                int count = ps.executeUpdate();
+                logCount(count);
+            } finally {
+                ps.close();
+            }
+        } catch (SQLException e) {
+            throw newStorageException(e, "Could not update", sql);
         }
     }
 
@@ -935,102 +948,157 @@ public class Mapper {
      * @param fragment the fragment
      */
     public void deleteFragment(Fragment fragment) throws StorageException {
-        String tableName = fragment.getTableName();
-        String sql = sqlInfo.getDeleteSql(tableName);
-        Serializable id = fragment.getId();
         try {
-            if (log.isDebugEnabled()) {
-                logSQL(sql, Collections.singletonList(id));
-            }
-            // XXX statement should be already prepared
-            PreparedStatement ps = connection.prepareStatement(sql);
-            try {
-                ps.setObject(1, id); // FIXME assumes only one primary column
-                int count = ps.executeUpdate();
-                if (log.isDebugEnabled()) {
-                    logDebug("  -> " + count + " rows");
-                }
-            } finally {
-                ps.close();
-            }
+            deleteFragment(fragment.getTableName(), fragment.getId());
         } catch (SQLException e) {
-            throw newStorageException(e, "Could not delete", sql);
+            throw newStorageException(e, "Could not delete",
+                    fragment.getId().toString());
         }
     }
 
     /**
-     * Copy the hierarchy starting from a given fragment to a new parent with a
-     * new name.
+     * Deletes a fragment, and returns {@code true} if there really were rows
+     * deleted.
+     */
+    protected boolean deleteFragment(String tableName, Serializable id)
+            throws SQLException {
+        String sql = sqlInfo.getDeleteSql(tableName);
+        if (log.isDebugEnabled()) {
+            logSQL(sql, Collections.singletonList(id));
+        }
+        PreparedStatement ps = connection.prepareStatement(sql);
+        try {
+            ps.setObject(1, id);
+            int count = ps.executeUpdate();
+            logCount(count);
+            return count > 0;
+        } finally {
+            ps.close();
+        }
+    }
+
+    /**
+     * Copies the hierarchy starting from a given fragment to a new parent with
+     * a new name.
      * <p>
      * If the new parent is {@code null}, then this is a version creation, which
      * doesn't recurse in regular children.
+     * <p>
+     * If {@code overwriteId} and {@code overwriteMap} are passed, the copy is
+     * done onto this existing node as its root (version restore).
      *
      * @param sourceId the id of fragment to copy (with children)
      * @param typeName the type of the fragment to copy (to avoid refetching
      *            known info)
      * @param destParentId the new parent id, or {@code null}
      * @parem destName the new name
+     * @param overwriteId when not {@code null}, the copy is done onto this
+     *            existing root id
+     * @param overwriteMap when overwriting, set these hierarchy columns
+     * @param persistenceContext the persistence context, to invalidate
+     *            fragments when overwriting
      * @return the id of the root of the copy
      * @throws StorageException
      */
     public Serializable copyHierarchy(Serializable sourceId, String typeName,
-            Serializable destParentId, String destName) throws StorageException {
+            Serializable destParentId, String destName,
+            Serializable overwriteId, Map<String, Serializable> overwriteMap,
+            PersistenceContext persistenceContext) throws StorageException {
         assert !model.separateMainTable; // other case not implemented
-        Map<Serializable, Serializable> idMap = new LinkedHashMap<Serializable, Serializable>();
-        Map<Serializable, String> idType = new HashMap<Serializable, String>();
         try {
-            idType.put(sourceId, typeName);
-            copyHier(sourceId, typeName, destParentId, destName, idMap, idType);
+            Map<Serializable, Serializable> idMap = new LinkedHashMap<Serializable, Serializable>();
+            Map<Serializable, String> idType = new HashMap<Serializable, String>();
+            // copy the hierarchy fragments recursively
+            if (overwriteId != null) {
+                // overwrite hier root with explicit values
+                updateSingleRowWithValues(model.hierTableName, overwriteId,
+                        overwriteMap);
+                idMap.put(sourceId, overwriteId);
+                // invalidate
+                persistenceContext.getContext(model.hierTableName).markInvalidated(
+                        overwriteId, true);
+            }
+            // create the new hierarchy by copy
+            Serializable newRootId = copyHierRecursive(sourceId, typeName,
+                    destParentId, destName, overwriteId, idMap, idType);
+            // copy all collected fragments
+            for (Entry<String, Set<Serializable>> entry : model.getPerFragmentIds(
+                    idType).entrySet()) {
+                String tableName = entry.getKey();
+                // TODO move ACL skip logic higher
+                if (tableName.equals(model.ACL_TABLE_NAME)) {
+                    continue;
+                }
+                Set<Serializable> ids = entry.getValue();
+                boolean overwrite = overwriteId != null &&
+                        !tableName.equals(model.mainTableName);
+                Boolean invalidation = copyFragments(tableName, ids, idMap,
+                        overwrite ? overwriteId : null);
+                if (invalidation != null) {
+                    // make sure things are properly invalidated in this and
+                    // other sessions
+                    persistenceContext.getContext(tableName).markInvalidated(
+                            overwriteId, invalidation.booleanValue());
+                }
+            }
+            return newRootId;
         } catch (SQLException e) {
             throw newStorageException(e, "Could not copy", sourceId.toString());
         }
-
-        /*
-         * Assemble per-fragment-type sets of ids.
-         */
-        Map<String, Set<Serializable>> allFragmentIds = new HashMap<String, Set<Serializable>>();
-        for (Entry<Serializable, String> e : idType.entrySet()) {
-            Serializable id = e.getKey();
-            String type = e.getValue();
-            for (String fragmentName : model.getTypeFragments(type)) {
-                Set<Serializable> fragmentIds = allFragmentIds.get(fragmentName);
-                if (fragmentIds == null) {
-                    fragmentIds = new HashSet<Serializable>();
-                    allFragmentIds.put(fragmentName, fragmentIds);
-                }
-                fragmentIds.add(id);
-            }
-        }
-        /*
-         * Now copy all the fragments. TODO also collections!
-         */
-        for (Entry<String, Set<Serializable>> entry : allFragmentIds.entrySet()) {
-            String fragmentName = entry.getKey();
-            Set<Serializable> ids = entry.getValue();
-            try {
-                copyFragments(fragmentName, ids, idMap);
-            } catch (SQLException e) {
-                throw newStorageException(e, "Could not copy fragments",
-                        fragmentName);
-            }
-        }
-        return idMap.get(sourceId);
     }
 
     /**
-     * Copy from id to parentId. If name is {@code null}, then the original name
-     * is kept.
+     * Copies hierarchy from id to parentId, and recurses.
      * <p>
-     * {@code idMap} is filled with info about the correspondance between
+     * If name is {@code null}, then the original name is kept.
+     * <p>
+     * {@code idMap} is filled with info about the correspondence between
      * original and copied ids. {@code idType} is filled with the type of each
      * (source) fragment.
      * <p>
-     * TODO: Obviously this should be optimized to use a stored procedure.
+     * TODO: this should be optimized to use a stored procedure.
+     *
+     * @param overwriteId when not {@code null}, the copy is done onto this
+     *            existing node (skipped)
+     * @return the new root id
      */
-    protected void copyHier(Serializable id, String type,
-            Serializable parentId, String name,
+    protected Serializable copyHierRecursive(Serializable id, String type,
+            Serializable parentId, String name, Serializable overwriteId,
             Map<Serializable, Serializable> idMap,
             Map<Serializable, String> idType) throws SQLException {
+        idType.put(id, type);
+        Serializable newId;
+        if (overwriteId == null) {
+            newId = copyHier(id, type, parentId, name, idMap);
+        } else {
+            newId = overwriteId;
+            idMap.put(id, newId);
+        }
+        // recurse in children
+        boolean onlyComplex = parentId == null;
+        for (Serializable[] info : getChildrenIds(id, onlyComplex)) {
+            Serializable childId = info[0];
+            String childType = (String) info[1];
+            copyHierRecursive(childId, childType, newId, null, null, idMap,
+                    idType);
+        }
+        return newId;
+    }
+
+    /**
+     * Copies hierarchy from id to a new child of parentId.
+     * <p>
+     * If name is {@code null}, then the original name is kept.
+     * <p>
+     * {@code idMap} is filled with info about the correspondence between
+     * original and copied ids. {@code idType} is filled with the type of each
+     * (source) fragment.
+     *
+     * @return the new id
+     */
+    protected Serializable copyHier(Serializable id, String type,
+            Serializable parentId, String name,
+            Map<Serializable, Serializable> idMap) throws SQLException {
         boolean createVersion = parentId == null;
         boolean explicitName = name != null;
         Serializable newId = null;
@@ -1085,9 +1153,7 @@ public class Mapper {
                 logSQL(sql, debugValues);
             }
             int count = ps.executeUpdate();
-            if (log.isDebugEnabled() && count != 0) {
-                logDebug("  -> " + count + " rows");
-            }
+            logCount(count);
 
             if (newId == null) {
                 // post insert fetch idrow
@@ -1109,19 +1175,12 @@ public class Mapper {
         } finally {
             ps.close();
         }
-
-        /*
-         * Recurse on children.
-         */
-
-        for (Serializable[] info : getChildrenIds(id, createVersion)) {
-            Serializable childId = info[0];
-            String childType = (String) info[1];
-            idType.put(childId, childType);
-            copyHier(childId, childType, newId, null, idMap, idType);
-        }
+        return newId;
     }
 
+    /**
+     * Gets the children ids and types of a node.
+     */
     protected List<Serializable[]> getChildrenIds(Serializable id,
             boolean onlyComplex) throws SQLException {
         List<Serializable[]> childrenIds = new LinkedList<Serializable[]>();
@@ -1169,29 +1228,54 @@ public class Mapper {
      * Copy the rows from tableName with ids in fragmentIds into new ones with
      * new ids given by idMap.
      *
+     * @return {@link Boolean#TRUE} for a modification or creation,
+     *         {@link Boolean#FALSE} for a deletion, {@code null} otherwise
+     *         (still absent)
      * @throws SQLException
      */
-    protected void copyFragments(String tableName, Set<Serializable> ids,
-            Map<Serializable, Serializable> idMap) throws SQLException {
-        String sql = sqlInfo.getCopySql(tableName);
-        Column column = sqlInfo.getCopyIdColumn(tableName);
-        PreparedStatement ps = connection.prepareStatement(sql);
+    protected Boolean copyFragments(String tableName, Set<Serializable> ids,
+            Map<Serializable, Serializable> idMap, Serializable overwriteId)
+            throws SQLException {
+        String copySql = sqlInfo.getCopySql(tableName);
+        Column copyIdColumn = sqlInfo.getCopyIdColumn(tableName);
+        PreparedStatement copyPs = connection.prepareStatement(copySql);
+        String deleteSql = sqlInfo.getDeleteSql(tableName);
+        PreparedStatement deletePs = connection.prepareStatement(deleteSql);
         try {
+            boolean before = false;
+            boolean after = false;
             for (Serializable id : ids) {
-                column.setToPreparedStatement(ps, 1, idMap.get(id)); // col
-                column.setToPreparedStatement(ps, 2, id); // WHERE "id" = ?
-                if (log.isDebugEnabled()) {
-                    logSQL(sql, Arrays.asList(idMap.get(id), id));
+                Serializable newId = idMap.get(id);
+                boolean overwrite = newId.equals(overwriteId);
+                if (overwrite) {
+                    // remove existing first
+                    if (log.isDebugEnabled()) {
+                        logSQL(deleteSql, Collections.singletonList(newId));
+                    }
+                    deletePs.setObject(1, newId);
+                    int delCount = deletePs.executeUpdate();
+                    logCount(delCount);
+                    before = delCount > 0;
                 }
-                int count = ps.executeUpdate();
-                if (log.isDebugEnabled() && count != 0) {
-                    logDebug("  -> " + count + " rows");
+                copyIdColumn.setToPreparedStatement(copyPs, 1, newId);
+                copyIdColumn.setToPreparedStatement(copyPs, 2, id);
+                if (log.isDebugEnabled()) {
+                    logSQL(copySql, Arrays.asList(newId, id));
+                }
+                int copyCount = copyPs.executeUpdate();
+                logCount(copyCount);
+                if (overwrite) {
+                    after = copyCount > 0;
                 }
             }
+            // * , n -> mod (TRUE)
+            // n , 0 -> del (FALSE)
+            // 0 , 0 -> null
+            return after ? Boolean.TRUE : (before ? Boolean.FALSE : null);
         } finally {
-            ps.close();
+            copyPs.close();
+            deletePs.close();
         }
-
     }
 
     /**
@@ -1228,7 +1312,6 @@ public class Mapper {
      */
     public SimpleFragment getLastVersion(Serializable versionableId,
             Context context) throws StorageException {
-
         SQLInfoSelect select = sqlInfo.selectVersionsByVersionableLastFirst;
         Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
         criteriaMap.put(model.VERSION_VERSIONABLE_KEY, versionableId);

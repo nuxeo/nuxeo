@@ -318,7 +318,7 @@ public class SQLDocument extends SQLComplexProperty implements Document {
     }
 
     public void restore(String label) throws DocumentException {
-        throw new UnsupportedOperationException();
+        session.restoreByLabel(getHierarchyNode(), label);
     }
 
     public List<String> getVersionsIds() throws DocumentException {

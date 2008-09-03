@@ -71,7 +71,7 @@ public class ArrayFragment extends CollectionFragment {
     public void set(Serializable[] value) {
         // no need to call accessed() as we overwrite all
         array = value.clone();
-        modified();
+        markModified();
     }
 
     @Override

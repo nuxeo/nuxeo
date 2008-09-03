@@ -85,7 +85,7 @@ public class SimpleFragment extends Fragment {
     public void put(String key, Serializable value) throws StorageException {
         accessed(); // maybe refetch other values
         map.put(key, value);
-        modified();
+        markModified();
     }
 
     /**

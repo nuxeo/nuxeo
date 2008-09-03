@@ -72,6 +72,11 @@ public class Table implements Serializable {
         return dialect.openQuote() + physicalName + dialect.closeQuote();
     }
 
+    public String getQuotedSuffixedName(String suffix) {
+        return dialect.openQuote() + physicalName + suffix +
+                dialect.closeQuote();
+    }
+
     public Column getColumn(String name) {
         return columns.get(name);
     }

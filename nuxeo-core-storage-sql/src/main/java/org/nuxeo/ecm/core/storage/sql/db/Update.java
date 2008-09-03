@@ -21,6 +21,8 @@ package org.nuxeo.ecm.core.storage.sql.db;
 
 import java.io.Serializable;
 
+import org.nuxeo.common.utils.StringUtils;
+
 /**
  * An {@code UPDATE} statement.
  *
@@ -30,22 +32,31 @@ public class Update implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String table;
+    protected final Table table;
 
-    private String newValues;
+    protected String newValues;
 
-    private String where;
+    protected String[] from;
+
+    protected String where;
 
     public Update(Table table) {
-        // table unused
+        this.table = table;
     }
 
-    public void setTable(String table) {
-        this.table = table;
+    public Table getTable() {
+        return table;
     }
 
     public void setNewValues(String newValues) {
         this.newValues = newValues;
+    }
+
+    /**
+     * Sets additional table names with which to join for this update.
+     */
+    public void setFrom(String... from) {
+        this.from = from;
     }
 
     public void setWhere(String where) {
@@ -58,9 +69,17 @@ public class Update implements Serializable {
     public String getStatement() {
         StringBuilder buf = new StringBuilder(128);
         buf.append("UPDATE ");
-        buf.append(table);
+        buf.append(table.getQuotedName());
         buf.append(" SET ");
         buf.append(newValues);
+        if (from != null) {
+            buf.append(" FROM ");
+            if (table.dialect.doesUpdateFromRepeatSelf()) {
+                buf.append(table.getQuotedName());
+                buf.append(", ");
+            }
+            buf.append(StringUtils.join(from, ", "));
+        }
         if (where != null) {
             buf.append(" WHERE ");
             buf.append(where);

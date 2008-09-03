@@ -413,6 +413,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 "c" });
         // nodea.setSingleProperty("ecm:majorVersion", Long.valueOf(1));
         // nodea.setSingleProperty("ecm:minorVersion", Long.valueOf(0));
+        session.save();
+        Serializable nodeacId = nodeac.getId();
 
         /*
          * Check in.
@@ -443,6 +445,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 version.getSimpleProperty("ecm:versionLabel").getValue());
         assertEquals("bardesc", version.getSimpleProperty(
                 "ecm:versionDescription").getValue());
+        // the version child (complex prop)
+        Node nodeacv = session.getChildNode(version, "node_a_complex", true);
+        assertNotNull(nodeacv);
+        assertNotSame(nodeacId, nodeacv.getId());
 
         /*
          * Check out.
@@ -452,6 +458,27 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 nodea.getSimpleProperty("ecm:isCheckedIn").getValue());
         assertEquals(version.getId(),
                 nodea.getSimpleProperty("ecm:baseVersion").getString());
+        nodea.setSingleProperty("tst:title", "blorp");
+        nodea.setCollectionProperty("tst:subjects", new String[] { "x", "y" });
+        Node nodeac2 = session.getChildNode(nodea, "node_a_complex", true);
+        nodeac2.setSingleProperty("tst:title", "comp");
+        session.save();
+
+        /*
+         * Restore.
+         */
+        session.restoreByLabel(nodea, "foolab");
+        assertEquals("hello world",
+                nodea.getSimpleProperty("tst:title").getString());
+        assertEquals(
+                Arrays.asList("a", "b", "c"),
+                Arrays.asList(nodea.getCollectionProperty("tst:subjects").getStrings()));
+        Node nodeac3 = session.getChildNode(nodea, "node_a_complex", true);
+        assertNotNull(nodeac3);
+        SimpleProperty sp = nodeac3.getSimpleProperty("tst:title");
+        assertNotNull(sp);
+        assertEquals(null, sp.getString());
+
     }
 
     public void testProxies() throws Exception {

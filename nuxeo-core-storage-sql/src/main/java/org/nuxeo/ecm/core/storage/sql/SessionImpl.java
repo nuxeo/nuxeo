@@ -467,6 +467,12 @@ public class SessionImpl implements Session {
         context.checkOut(node);
     }
 
+    public void restoreByLabel(Node node, String label) throws StorageException {
+        checkLive();
+        // save done inside method
+        context.restoreByLabel(node, label);
+    }
+
     public Node getVersionByLabel(Node node, String label)
             throws StorageException {
         checkLive();

@@ -178,6 +178,17 @@ public class Children {
     }
 
     /**
+     * Invalidates children after some have been added.
+     */
+    public void invalidateAdded(boolean complexProp) {
+        if (complexProp) {
+            completeProperties = false;
+        } else {
+            completeRegular = false;
+        }
+    }
+
+    /**
      * Removes a known child.
      *
      * @param fragment the fragment to remove

@@ -17,14 +17,17 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import java.io.Serializable;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
@@ -59,7 +62,7 @@ public class SQLInfo {
 
     private final SQLExceptionConverter sqlExceptionConverter;
 
-    private final Database database;
+    public final Database database;
 
     private String selectRootIdSql;
 
@@ -68,10 +71,6 @@ public class SQLInfo {
     private static final String ORDER_DESC = "DESC";
 
     private static final String ORDER_ASC = "ASC";
-
-    private final Map<String, String> selectByIdSqlMap; // statement
-
-    private final Map<String, List<Column>> selectByIdColumnsMap; // without ids
 
     private final Map<String, String> identityFetchSqlMap; // statement
 
@@ -135,6 +134,8 @@ public class SQLInfo {
 
     private Column selectVersionIdByLabelWhatColumn;
 
+    protected final Map<String, SQLInfoSelect> selectFragmentById;
+
     protected SQLInfoSelect selectVersionsByLabel;
 
     protected SQLInfoSelect selectVersionsByVersionable;
@@ -169,8 +170,7 @@ public class SQLInfo {
         selectRootIdSql = null;
         selectRootIdWhatColumn = null;
 
-        selectByIdSqlMap = new HashMap<String, String>();
-        selectByIdColumnsMap = new HashMap<String, List<Column>>();
+        selectFragmentById = new HashMap<String, SQLInfoSelect>();
         identityFetchSqlMap = new HashMap<String, String>();
         identityFetchColumnMap = new HashMap<String, Column>();
 
@@ -248,21 +248,6 @@ public class SQLInfo {
 
     public List<Column> getInsertRootIdColumns() {
         return insertColumnsMap.get(model.REPOINFO_TABLE_NAME);
-    }
-
-    /**
-     * Gets the SQL statement to select one row.
-     *
-     * @param typeName the type name.
-     * @return the SQL statement.
-     */
-    public String getSelectByIdSql(String typeName) {
-        return selectByIdSqlMap.get(typeName);
-    }
-
-    // field names to bind
-    public List<Column> getSelectByIdColumns(String typeName) {
-        return selectByIdColumnsMap.get(typeName);
     }
 
     public String getSelectByChildNameSql(Boolean complexProp) {
@@ -536,7 +521,7 @@ public class SQLInfo {
 
         private final Table table;
 
-        private final List<String> orderBy;
+        private final String orderBy;
 
         protected TableMaker(String tableName) {
             this.tableName = tableName;
@@ -731,31 +716,10 @@ public class SQLInfo {
         }
 
         protected void postProcessSelectById() {
-            List<Column> selectByIdColumns = new LinkedList<Column>();
-            List<String> whats = new LinkedList<String>();
-            List<String> wheres = new LinkedList<String>();
-            for (Column column : table.getColumns()) {
-                String qname = column.getQuotedName();
-                if (column.getKey().equals(model.MAIN_KEY)) {
-                    wheres.add(qname + " = ?");
-                } else {
-                    whats.add(qname);
-                    selectByIdColumns.add(column);
-                }
-            }
-            Select select = new Select(table);
-            select.setWhat(StringUtils.join(whats, ", "));
-            select.setFrom(table.getQuotedName());
-            select.setWhere(StringUtils.join(wheres, " AND "));
-            if (orderBy != null) {
-                List<String> order = new LinkedList<String>();
-                for (String name : orderBy) {
-                    order.add(table.getColumn(name).getQuotedName());
-                }
-                select.setOrderBy(StringUtils.join(order, ", "));
-            }
-            selectByIdSqlMap.put(tableName, select.getStatement());
-            selectByIdColumnsMap.put(tableName, selectByIdColumns);
+            String[] orderBys = orderBy == null ? new String[0] : new String[] {
+                    orderBy, ORDER_ASC };
+            SQLInfoSelect select = makeSelect(table, orderBys, model.MAIN_KEY);
+            selectFragmentById.put(tableName, select);
         }
 
         protected void postProcessSelectByChildNameAll() {
@@ -900,7 +864,6 @@ public class SQLInfo {
             }
             updateByIdColumns.addAll(whereColumns);
             Update update = new Update(table);
-            update.setTable(table.getQuotedName());
             update.setNewValues(StringUtils.join(newValues, ", "));
             update.setWhere(StringUtils.join(wheres, " AND "));
             updateByIdSqlMap.put(tableName, update.getStatement());
@@ -988,6 +951,7 @@ public class SQLInfo {
         }
 
         // copy of a fragment
+        // INSERT INTO foo (id, x, y) SELECT ?, x, y FROM foo WHERE id = ?
         protected void postProcessCopy() {
             Collection<Column> columns = table.getColumns();
             List<String> selectWhats = new ArrayList<String>(columns.size());
@@ -1016,6 +980,19 @@ public class SQLInfo {
             copyIdColumnMap.put(tableName, copyIdColumn);
         }
 
+    }
+
+    public Update getUpdateByIdForKeys(String tableName, Set<String> keys) {
+        Table table = database.getTable(tableName);
+        List<String> values = new ArrayList<String>(keys.size());
+        for (String key : keys) {
+            values.add(table.getColumn(key).getQuotedName() + " = ?");
+        }
+        Update update = new Update(table);
+        update.setNewValues(StringUtils.join(values, ", "));
+        update.setWhere(table.getColumn(model.MAIN_KEY).getQuotedName() +
+                " = ?");
+        return update;
     }
 
     public static class SQLInfoSelect {

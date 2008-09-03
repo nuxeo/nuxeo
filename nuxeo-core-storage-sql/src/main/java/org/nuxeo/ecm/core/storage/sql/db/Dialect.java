@@ -25,6 +25,9 @@ import java.sql.Types;
 import org.hibernate.HibernateException;
 import org.hibernate.dialect.DerbyDialect;
 import org.hibernate.dialect.DialectFactory;
+import org.hibernate.dialect.MySQLDialect;
+import org.hibernate.dialect.PostgreSQLDialect;
+import org.hibernate.dialect.SQLServerDialect;
 import org.hibernate.exception.SQLExceptionConverter;
 import org.nuxeo.ecm.core.storage.StorageException;
 
@@ -161,6 +164,38 @@ public class Dialect {
 
     public String getCascadeConstraintsString() {
         return dialect.getCascadeConstraintsString();
+    }
+
+    /**
+     * Does the dialect support UPDATE t SET ... FROM t, u WHERE ... ?
+     */
+    public boolean supportsUpdateFrom() {
+        if (dialect instanceof PostgreSQLDialect ||
+                dialect instanceof MySQLDialect ||
+                dialect instanceof SQLServerDialect) {
+            return true;
+        }
+        if (dialect instanceof DerbyDialect) {
+            return false;
+        }
+        // others unknown
+        return false;
+    }
+
+    /**
+     * When doing an UPDATE t SET ... FROM t, u WHERE ..., does the FROM clause
+     * need to repeate the updated table (t).
+     */
+    public boolean doesUpdateFromRepeatSelf() {
+        if (dialect instanceof PostgreSQLDialect) {
+            return false;
+        }
+        if (dialect instanceof MySQLDialect ||
+                dialect instanceof SQLServerDialect) {
+            return true;
+        }
+        // not reached
+        return true;
     }
 
 }

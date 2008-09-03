@@ -210,6 +210,10 @@ public class ConnectionImpl implements Session {
         getSession().checkOut(node);
     }
 
+    public void restoreByLabel(Node node, String label) throws StorageException {
+        getSession().restoreByLabel(node, label);
+    }
+
     public Node getVersionByLabel(Node node, String label)
             throws StorageException {
         return getSession().getVersionByLabel(node, label);

@@ -156,7 +156,7 @@ public class Context {
 
     private void detachAll() {
         for (Fragment fragment : modified.values()) {
-            fragment.detach();
+            fragment.setDetached();
         }
         modified.clear();
     }
@@ -512,7 +512,8 @@ public class Context {
          * Do the copy.
          */
         String typeName = source.getPrimaryType();
-        Serializable newId = mapper.copyHierarchy(id, typeName, parentId, name);
+        Serializable newId = mapper.copyHierarchy(id, typeName, parentId, name,
+                null, null, persistenceContext);
         getChildById(newId, false); // adds it as a new child of its parent
         return newId;
     }
@@ -529,6 +530,24 @@ public class Context {
             removeChild((SimpleFragment) fragment);
         }
         fragment.markDeleted();
+    }
+
+    /**
+     * Removes a fragment from the database.
+     *
+     * @param id the fragment id
+     * @throws StorageException
+     */
+    protected void remove(Serializable id) throws StorageException {
+        Fragment fragment = getIfPresent(id);
+        if (fragment != null) {
+            if (fragment.getState() != State.DELETED) {
+                remove(fragment);
+            }
+        } else {
+            // this registers it with the "modified" map
+            new SimpleFragment(id, State.DELETED, this, null);
+        }
     }
 
     /**
@@ -560,7 +579,7 @@ public class Context {
                 }
             }
             Serializable newId = mapper.insertSingleRow(row);
-            row.markPristine();
+            row.setPristine();
             pristine.put(id, row);
             if (!newId.equals(id)) {
                 // save in translation map, if different
@@ -600,6 +619,8 @@ public class Context {
                         row.put(model.HIER_PARENT_KEY, newParentId);
                     }
                 }
+                // TODO XXX there are other references to id (versionableid,
+                // targetid, etc).
                 /*
                  * Do the creation.
                  */
@@ -608,7 +629,7 @@ public class Context {
                 } else {
                     mapper.insertCollectionRows((CollectionFragment) fragment);
                 }
-                fragment.markPristine();
+                fragment.setPristine();
                 // modified map cleared at end of loop
                 pristine.put(id, fragment);
                 modifiedInTransaction.add(id);
@@ -619,7 +640,7 @@ public class Context {
                 } else {
                     mapper.updateCollectionRows((CollectionFragment) fragment);
                 }
-                fragment.markPristine();
+                fragment.setPristine();
                 // modified map cleared at end of loop
                 pristine.put(id, fragment);
                 modifiedInTransaction.add(id);
@@ -628,7 +649,7 @@ public class Context {
                 // TODO deleting non-hierarchy fragments is done by the database
                 // itself as their foreign key to hierarchy is ON DELETE CASCADE
                 mapper.deleteFragment(fragment);
-                fragment.detach();
+                fragment.setDetached();
                 // modified map cleared at end of loop
                 deletedInTransaction.add(id);
                 break;
@@ -652,6 +673,40 @@ public class Context {
     }
 
     /**
+     * Called when the database has added new children to a node.
+     */
+    protected void markChildrenInvalidatedAdded(Serializable id,
+            boolean complexProp) {
+        Children children = knownChildren.get(id);
+        if (children != null) {
+            children.invalidateAdded(complexProp);
+        }
+    }
+
+    /**
+     * Called by the mapper when a fragment has been updated in the database.
+     *
+     * @param id the id
+     * @param wasModified {@code true} for a modification, {@code false} for a
+     *            deletion
+     */
+    protected void markInvalidated(Serializable id, boolean wasModified) {
+        if (wasModified) {
+            Fragment fragment = getIfPresent(id);
+            if (fragment != null) {
+                fragment.markInvalidatedModified();
+            }
+            modifiedInTransaction.add(id);
+        } else { // deleted
+            Fragment fragment = getIfPresent(id);
+            if (fragment != null) {
+                fragment.markInvalidatedDeleted();
+            }
+            deletedInTransaction.add(id);
+        }
+    }
+
+    /**
      * Process invalidations notified from other sessions. Called
      * pre-transaction.
      */
@@ -660,7 +715,7 @@ public class Context {
             for (Serializable id : modifiedInvalidations) {
                 Fragment fragment = pristine.remove(id);
                 if (fragment != null) {
-                    fragment.invalidateModified();
+                    fragment.setInvalidatedModified();
                 }
             }
             modifiedInvalidations.clear();
@@ -669,7 +724,7 @@ public class Context {
             for (Serializable id : deletedInvalidations) {
                 Fragment fragment = pristine.remove(id);
                 if (fragment != null) {
-                    fragment.invalidateDeleted();
+                    fragment.setInvalidatedDeleted();
                 }
             }
             deletedInvalidations.clear();

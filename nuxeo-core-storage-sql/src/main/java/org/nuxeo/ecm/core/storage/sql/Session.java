@@ -247,6 +247,17 @@ public interface Session extends Connection {
     void checkOut(Node node) throws StorageException;
 
     /**
+     * Restores a node to a given version.
+     * <p>
+     * The restored node is checked in.
+     *
+     * @param node the node to restore
+     * @param label the version label
+     * @throws StorageException
+     */
+    void restoreByLabel(Node node, String label) throws StorageException;
+
+    /**
      * Gets a version of a node given its label.
      * <p>
      * A {@link #save} is automatically done first.

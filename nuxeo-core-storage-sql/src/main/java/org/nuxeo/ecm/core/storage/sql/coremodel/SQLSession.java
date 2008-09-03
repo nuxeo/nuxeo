@@ -476,6 +476,15 @@ public class SQLSession implements Session {
         }
     }
 
+    protected void restoreByLabel(Node node, String label)
+            throws DocumentException {
+        try {
+            session.restoreByLabel(node, label);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
     protected Document getVersionByLabel(Node node, String label)
             throws DocumentException {
         try {

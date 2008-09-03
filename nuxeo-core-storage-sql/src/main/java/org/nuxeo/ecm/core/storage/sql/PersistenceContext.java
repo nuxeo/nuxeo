@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -92,7 +91,7 @@ public class PersistenceContext {
     }
 
     // get or create if missing
-    private Context getContext(String tableName) {
+    protected Context getContext(String tableName) {
         Context context = contexts.get(tableName);
         if (context == null) {
             context = new Context(tableName, mapper, this);
@@ -245,8 +244,7 @@ public class PersistenceContext {
      */
     public Fragment getChildById(Serializable id, boolean allowAbsent)
             throws StorageException {
-        return contexts.get(model.hierTableName).getChildById(id,
-                allowAbsent);
+        return contexts.get(model.hierTableName).getChildById(id, allowAbsent);
     }
 
     /**
@@ -261,8 +259,8 @@ public class PersistenceContext {
      */
     public SimpleFragment getChildByName(Serializable parentId, String name,
             boolean complexProp) throws StorageException {
-        return contexts.get(model.hierTableName).getChildByName(parentId,
-                name, complexProp);
+        return contexts.get(model.hierTableName).getChildByName(parentId, name,
+                complexProp);
     }
 
     /**
@@ -340,11 +338,12 @@ public class PersistenceContext {
             throw new StorageException("Already checked in");
         }
         /*
-         * Do the copy without children, with null parent.
+         * Do the copy without non-complex children, with null parent.
          */
         Serializable id = node.getId();
         String typeName = node.getPrimaryType();
-        Serializable newId = mapper.copyHierarchy(id, typeName, null, null);
+        Serializable newId = mapper.copyHierarchy(id, typeName, null, null,
+                null, null, this);
         /*
          * Create a "version" row for our new version.
          */
@@ -383,6 +382,61 @@ public class PersistenceContext {
          * Update the node to reflect that it's checked out.
          */
         node.mainFragment.put(model.MAIN_CHECKED_IN_KEY, Boolean.FALSE);
+    }
+
+    /**
+     * Restores a node by label.
+     * <p>
+     * The restored node is checked in.
+     *
+     * @param node the node
+     * @param label the version label to restore
+     * @throws StorageException
+     */
+    public void restoreByLabel(Node node, String label) throws StorageException {
+        String typeName = node.getPrimaryType();
+        /*
+         * Find the version.
+         */
+        Serializable versionableId = node.getId();
+        Context versionsContext = getContext(model.VERSION_TABLE_NAME);
+        Serializable versionId = mapper.getVersionByLabel(versionableId, label,
+                versionsContext);
+        if (versionId == null) {
+            throw new StorageException("Unknown version: " + label);
+        }
+        /*
+         * Clear complex properties.
+         */
+        for (Fragment child : getChildren(versionableId, null, true)) {
+            remove(child); // will cascade deletes
+        }
+        save(); // flush deletes
+        /*
+         * Copy the version values.
+         */
+        Map<String, Serializable> overwriteMap = new HashMap<String, Serializable>();
+        SimpleFragment versionHier = (SimpleFragment) getContext(
+                model.hierTableName).get(versionId, false);
+        for (String key : model.getFragmentKeysType(model.hierTableName).keySet()) {
+            if (key.equals(model.HIER_PARENT_KEY) ||
+                    key.equals(model.HIER_CHILD_NAME_KEY) ||
+                    key.equals(model.HIER_CHILD_POS_KEY) ||
+                    key.equals(model.HIER_CHILD_ISPROPERTY_KEY) ||
+                    key.equals(model.MAIN_PRIMARY_TYPE_KEY) ||
+                    key.equals(model.MAIN_CHECKED_IN_KEY) ||
+                    key.equals(model.MAIN_BASE_VERSION_KEY)) {
+                continue;
+            }
+            overwriteMap.put(key, versionHier.get(key));
+        }
+        overwriteMap.put(model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
+        overwriteMap.put(model.MAIN_BASE_VERSION_KEY, versionId);
+        mapper.copyHierarchy(versionId, typeName, node.getParentId(), null,
+                versionableId, overwriteMap, this);
+        // mark Children non-complete as there may be new ones
+        getContext(model.hierTableName).markChildrenInvalidatedAdded(
+                versionableId, true);
     }
 
     /**

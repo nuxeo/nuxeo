@@ -111,6 +111,15 @@ public class Node {
         }
     }
 
+    public String getParentId() {
+        try {
+            return getHierFragment().getString(model.HIER_PARENT_KEY);
+        } catch (StorageException e) {
+            // do not propagate this unlikely exception as a checked one
+            throw new RuntimeException(e);
+        }
+    }
+
     protected SimpleFragment getHierFragment() {
         return hierFragment == null ? mainFragment : hierFragment;
     }

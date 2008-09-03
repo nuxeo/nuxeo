@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
@@ -231,7 +232,7 @@ public class Model {
     private final Map<String, CollectionMaker> collectionMakers;
 
     /** Column ordering for collections. */
-    private final Map<String, List<String>> collectionOrderBy;
+    private final Map<String, String> collectionOrderBy;
 
     /**
      * The fragment for each schema, or {@code null} if the schema doesn't have
@@ -262,7 +263,7 @@ public class Model {
         fragmentsKeys = new HashMap<String, Map<String, PropertyType>>();
 
         collectionTables = new HashMap<String, PropertyType>();
-        collectionOrderBy = new HashMap<String, List<String>>();
+        collectionOrderBy = new HashMap<String, String>();
         collectionMakers = new HashMap<String, CollectionMaker>();
 
         schemaFragment = new HashMap<String, String>();
@@ -304,6 +305,7 @@ public class Model {
         switch (idGenPolicy) {
         case APP_UUID:
             return UUID.randomUUID().toString();
+            // return "U_" + temporaryIdCounter.incrementAndGet();
         case DB_IDENTITY:
             return "T" + temporaryIdCounter.incrementAndGet();
         default:
@@ -411,8 +413,8 @@ public class Model {
     }
 
     private void addCollectionFragmentInfos(String fragmentName,
-            PropertyType propertyType, CollectionMaker maker,
-            List<String> orderBy, Map<String, PropertyType> fragmentKeys) {
+            PropertyType propertyType, CollectionMaker maker, String orderBy,
+            Map<String, PropertyType> fragmentKeys) {
         collectionTables.put(fragmentName, propertyType);
         collectionMakers.put(fragmentName, maker);
         collectionOrderBy.put(fragmentName, orderBy);
@@ -437,7 +439,7 @@ public class Model {
         return collectionTables.containsKey(fragmentName);
     }
 
-    public List<String> getCollectionOrderBy(String fragmentName) {
+    public String getCollectionOrderBy(String fragmentName) {
         return collectionOrderBy.get(fragmentName);
     }
 
@@ -518,6 +520,27 @@ public class Model {
 
     public Set<String> getTypeFragments(String typeName) {
         return typeFragments.get(typeName);
+    }
+
+    /**
+     * Given a map of id to types, returns a map of fragment names to ids.
+     */
+    public Map<String, Set<Serializable>> getPerFragmentIds(
+            Map<Serializable, String> idType) {
+        Map<String, Set<Serializable>> allFragmentIds = new HashMap<String, Set<Serializable>>();
+        for (Entry<Serializable, String> e : idType.entrySet()) {
+            Serializable id = e.getKey();
+            String type = e.getValue();
+            for (String fragmentName : getTypeFragments(type)) {
+                Set<Serializable> fragmentIds = allFragmentIds.get(fragmentName);
+                if (fragmentIds == null) {
+                    fragmentIds = new HashSet<Serializable>();
+                    allFragmentIds.put(fragmentName, fragmentIds);
+                }
+                fragmentIds.add(id);
+            }
+        }
+        return allFragmentIds;
     }
 
     private PropertyType mainIdType() {
@@ -641,8 +664,7 @@ public class Model {
         fragmentKeys.put(ACL_GROUP_KEY, PropertyType.STRING);
         String fragmentName = ACL_TABLE_NAME;
         addCollectionFragmentInfos(fragmentName, PropertyType.COLL_ACL,
-                ACLsFragment.MAKER, Collections.singletonList(ACL_POS_KEY),
-                fragmentKeys);
+                ACLsFragment.MAKER, ACL_POS_KEY, fragmentKeys);
         addPropertyInfo(null, ACL_PROP, PropertyType.COLL_ACL, fragmentName,
                 null, false, null);
     }
@@ -696,8 +718,7 @@ public class Model {
                         fragmentKeys.put(COLL_TABLE_VALUE_KEY,
                                 propertyType.getArrayBaseType());
                         addCollectionFragmentInfos(fragmentName, propertyType,
-                                ArrayFragment.MAKER,
-                                Collections.singletonList(COLL_TABLE_POS_KEY),
+                                ArrayFragment.MAKER, COLL_TABLE_POS_KEY,
                                 fragmentKeys);
 
                         addTypeCollectionFragment(typeName, fragmentName);
