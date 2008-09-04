@@ -34,6 +34,10 @@ import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
  */
 public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
+    public TestSQLRepositoryVersioning(String name) {
+        super(name);
+    }
+
     private static final Log log = LogFactory.getLog(TestSQLRepositoryVersioning.class);
 
     @Override

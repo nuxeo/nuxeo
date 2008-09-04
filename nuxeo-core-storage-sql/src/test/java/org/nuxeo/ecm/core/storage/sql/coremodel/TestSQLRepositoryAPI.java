@@ -65,6 +65,10 @@ import org.nuxeo.ecm.core.api.model.Property;
  */
 public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
 
+    public TestSQLRepositoryAPI(String name) {
+        super(name);
+    }
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();

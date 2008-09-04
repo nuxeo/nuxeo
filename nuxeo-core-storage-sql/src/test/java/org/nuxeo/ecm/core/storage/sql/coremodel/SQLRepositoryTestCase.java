@@ -39,6 +39,10 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
 
     protected CoreSession session;
 
+    public SQLRepositoryTestCase(String name) {
+        super(name);
+    }
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();

@@ -42,6 +42,10 @@ import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
  */
 public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
 
+    public TestSQLRepositorySecurity(String name) {
+        super(name);
+    }
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();

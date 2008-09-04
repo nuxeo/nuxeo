@@ -37,6 +37,10 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
 
     public Repository repository;
 
+    public SQLBackendTestCase(String name) {
+        super(name);
+    }
+
     @Override
     public void setUp() throws Exception {
         super.setUp();

@@ -32,6 +32,10 @@ import org.nuxeo.ecm.core.storage.StorageException;
  */
 public class TestSQLBackend extends SQLBackendTestCase {
 
+    public TestSQLBackend(String name) {
+        super(name);
+    }
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
