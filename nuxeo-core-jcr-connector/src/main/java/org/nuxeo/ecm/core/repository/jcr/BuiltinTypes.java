@@ -85,9 +85,9 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
  * <li><i>ecm-mix:orderedfolder</i>  - marker type that denotes an ordered folder
  *
  * </ul>
- * The <code>ecm-mix</code> nodes cannot represent themself a node type,
+ * The <code>ecm-mix</code> nodes cannot represent themselves a node type,
  * instead they are used as additional
- * types given a primary type and they are not dervied from ecm-nt:base
+ * types given a primary type and they are not derived from ecm-nt:base
  * <p>
  * Reserved names are prefixed with <code>ecm</code> and are. This is the list
  * of the defined names:
@@ -97,15 +97,19 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
  * </ul>
  * The following namespaces are defined:
  * <ul>
- * <li>uri: <code>http://nuxeo.org/ecm/jcr/types/</code>, prefix: <code>ecm-nt</code> - denotes ECM node types
- * <li>uri: <code>http://nuxeo.org/ecm/jcr/mixin/</code>, prefix: <code>ecm-mix</code> - denotes ECM mixin types
- * <li>uri: <code>http://nuxeo.org/ecm/jcr/names/</code>, prefix: <code>ecm</code> - denotes ECM names
- * <li>uri: <code>http://nuxeo.org/ecm/jcr/docs/</code>, prefix: <code>ecm-doc</code> - denotes ECM document types (derived from ecm-nt:document)
- * <li>uri: <code>http://nuxeo.org/ecm/jcr/schemas/</code>, prefix: <code>ecm-schema</code> - denotes ECM schema types (derived from ecm-nt:schema)
+ * <li>uri: <code>http://nuxeo.org/ecm/jcr/types/</code>,
+ *     prefix: <code>ecm-nt</code> - denotes ECM node types
+ * <li>uri: <code>http://nuxeo.org/ecm/jcr/mixin/</code>,
+ *     prefix: <code>ecm-mix</code> - denotes ECM mixin types
+ * <li>uri: <code>http://nuxeo.org/ecm/jcr/names/</code>,
+ *     prefix: <code>ecm</code> - denotes ECM names
+ * <li>uri: <code>http://nuxeo.org/ecm/jcr/docs/</code>,
+ *     prefix: <code>ecm-doc</code> - denotes ECM document types (derived from ecm-nt:document)
+ * <li>uri: <code>http://nuxeo.org/ecm/jcr/schemas/</code>,
+ *     prefix: <code>ecm-schema</code> - denotes ECM schema types (derived from ecm-nt:schema)
  * </ul>
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public final class BuiltinTypes implements NodeConstants {
 
