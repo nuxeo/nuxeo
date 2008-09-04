@@ -40,7 +40,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
-import org.jboss.seam.annotations.RequestParameter;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -56,7 +56,6 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.api.ResultsProviderFarm;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
 import org.nuxeo.ecm.platform.workflow.api.client.delegate.WAPIBusinessDelegate;
@@ -91,7 +90,7 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 @Scope(SESSION)
 @Install(precedence = FRAMEWORK)
 public class DashBoardActionsBean extends InputController implements
-        DashboardActions, ResultsProviderFarm {
+        DashboardActions {
 
     private static final long serialVersionUID = 7737098220471277412L;
 
@@ -135,9 +134,9 @@ public class DashBoardActionsBean extends InputController implements
     @In(create = true)
     protected transient ResultsProvidersCache resultsProvidersCache;
 
-    transient protected Collection<DashBoardItem> dashboardItems;
+    protected transient Collection<DashBoardItem> dashboardItems;
 
-    transient protected Collection<DocumentProcessItem> documentProcessItems;
+    protected transient Collection<DocumentProcessItem> documentProcessItems;
 
     @RequestParameter("sortColumn")
     protected String newSortColumn;

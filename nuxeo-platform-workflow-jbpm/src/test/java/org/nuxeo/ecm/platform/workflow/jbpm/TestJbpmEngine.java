@@ -110,7 +110,6 @@ public class TestJbpmEngine extends AbstractJbmTestCase {
 
         newTransaction();
         undeployOne(RPATH_PD1);
-
     }
 
     public void testUndeploy() throws WMWorkflowException {
@@ -1368,7 +1367,6 @@ public class TestJbpmEngine extends AbstractJbmTestCase {
         tis = engine.getWorkItemsFor(participant,
                 WMWorkItemState.WORKFLOW_TASK_STATE_ALL);
         assertEquals(1, tis.size());
-
     }
 
     public void testActivityInstanceSerializable() throws Exception {
@@ -1488,9 +1486,8 @@ public class TestJbpmEngine extends AbstractJbmTestCase {
         WMProcessInstanceIterator it = engine.listProcessInstances(null);
         while (it.hasNext()) {
             WMProcessInstance proc = it.next();
-            assertTrue(proc instanceof WMProcessInstance);
+            // TODO: assert something?
         }
-
     }
 
     public void testListAllWorkItems() throws Exception {
@@ -1505,7 +1502,6 @@ public class TestJbpmEngine extends AbstractJbmTestCase {
         }
 
         assertEquals(5, engine.listWorkItems(null).size());
-
     }
 
     public void testFilterWorkItems() throws Exception {
@@ -1558,7 +1554,6 @@ public class TestJbpmEngine extends AbstractJbmTestCase {
          * WMFilterImpl(WorkflowConstants.WORKFLOW_TASK_PROP_DUE_DATE,
          * WMFilter.NE, dueDate)).size());
          */
-
     }
 
     public void testFilterProcessInstances() throws Exception {
@@ -1580,7 +1575,6 @@ public class TestJbpmEngine extends AbstractJbmTestCase {
         assertEquals(1, engine.listProcessInstances(
                 new WMFilterImpl(WorkflowConstants.WORKFLOW_CREATOR,
                         WMFilter.NE, "Joy")).size());
-
     }
 
     public void testNoteTransitionsLoop01() throws Exception {
@@ -1612,7 +1606,6 @@ public class TestJbpmEngine extends AbstractJbmTestCase {
         taskInstances = engine.getWorkItemsFor(principal, null);
         taskInstance = taskInstances.iterator().next();
         engine.endWorkItem(taskInstance, "accept");
-
     }
 
     public void testNoteTransitionsLoop02() throws Exception {
@@ -1640,7 +1633,6 @@ public class TestJbpmEngine extends AbstractJbmTestCase {
         taskInstances = engine.getWorkItemsFor(principal, null);
         taskInstance = taskInstances.iterator().next();
         engine.endWorkItem(taskInstance, "accept");
-
     }
 
 }

@@ -104,61 +104,34 @@ public class Action implements Serializable, Comparable<Action> {
         this.enabled = enabled;
     }
 
-    /**
-     * @return the label
-     */
     public String getLabel() {
         return label;
     }
 
-    /**
-     * @param label
-     *            the label to set
-     */
     public void setLabel(String label) {
         this.label = label;
     }
 
-    /**
-     * @return the icon
-     */
     public String getIcon() {
         return icon;
     }
 
-    /**
-     * @param icon
-     *            the icon to set
-     */
     public void setIcon(String icon) {
         this.icon = icon;
     }
 
-    /**
-     * @return the link
-     */
     public String getLink() {
         return link;
     }
 
-    /**
-     * @param link
-     *            the link to set
-     */
     public void setLink(String link) {
         this.link = link;
     }
 
-    /**
-     * @return the category
-     */
     public String[] getCategories() {
         return categories;
     }
 
-    /**
-     * @return the id
-     */
     public String getId() {
         return id;
     }
