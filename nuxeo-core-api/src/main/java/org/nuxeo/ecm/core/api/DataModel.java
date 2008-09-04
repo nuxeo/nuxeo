@@ -54,7 +54,7 @@ public interface DataModel extends Serializable {
 
     /**
      * Gets the schema of this data model.
-     * 
+     *
      * @return the data model schema
      */
     String getSchema();

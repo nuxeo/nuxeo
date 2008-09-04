@@ -26,6 +26,6 @@ package org.nuxeo.ecm.core.blob.storage;
  */
 public interface BlobStorage {
 
-    public BlobStorageSession getSession();
+    BlobStorageSession getSession();
 
 }

@@ -34,18 +34,18 @@ public interface BlobResource {
      *
      * @return the MD5 hash of the blob
      */
-    public String getHash();
+    String getHash();
 
     /**
      * The blob resource last modification time.
      * @return the last modification time
      */
-    public long lastModified();
+    long lastModified();
 
     /**
      * Get the blob stream
      * @return the input stream
      */
-    public InputStream getStream() throws IOException;
+    InputStream getStream() throws IOException;
 
 }

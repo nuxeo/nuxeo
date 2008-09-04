@@ -49,7 +49,7 @@ import org.nuxeo.ecm.core.repository.jcr.testing.RepositoryTestCase;
 
 /**
  * Test Queries.
- * 
+ *
  * @author DM
  */
 public class TestQuery extends RepositoryTestCase {
@@ -86,7 +86,7 @@ public class TestQuery extends RepositoryTestCase {
 
     /**
      * Creates the following structure of documents:
-     * 
+     *
      * <pre>
      *  -- root
      *     +- testfolder1
@@ -97,7 +97,7 @@ public class TestQuery extends RepositoryTestCase {
      *        +- testfolder3
      *            -- testfile4
      * </pre>
-     * 
+     *
      */
     private void createDocs() throws Exception {
         Calendar date1 = Calendar.getInstance();
@@ -424,7 +424,7 @@ public class TestQuery extends RepositoryTestCase {
     /**
      * Convenience method to display a query result. It prints several node (of
      * the JCRDocument) properties.
-     * 
+     *
      * @param qr the QueryResult object
      * @param logPrefix
      * @throws RepositoryException
@@ -448,7 +448,7 @@ public class TestQuery extends RepositoryTestCase {
 
     /**
      * Creates a node string description usable in debugging.
-     * 
+     *
      * @param node
      * @param sep a node props separator
      * @return

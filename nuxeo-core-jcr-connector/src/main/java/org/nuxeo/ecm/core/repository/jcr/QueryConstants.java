@@ -25,20 +25,20 @@ package org.nuxeo.ecm.core.repository.jcr;
  */
 public interface QueryConstants {
 
-    public static final String ECM_TYPE = "ecm:type";
-    public static final String ECM_PATH = "ecm:path";
-    public static final String ECM_SCHEMA = "ecm:schema";
-    public static final String ECM_ID = "ecm:id";
-    public static final String ECM_FULLTEXT = "ecm:fulltext";
-    public static final String ECM_NAME = "ecm:name";
-    public static final String ECM_FROZEN_NODE = "ecm:frozenNode";
-    public static final String ECM_VERSION = "ecm:version";
+    static final String ECM_TYPE = "ecm:type";
+    static final String ECM_PATH = "ecm:path";
+    static final String ECM_SCHEMA = "ecm:schema";
+    static final String ECM_ID = "ecm:id";
+    static final String ECM_FULLTEXT = "ecm:fulltext";
+    static final String ECM_NAME = "ecm:name";
+    static final String ECM_FROZEN_NODE = "ecm:frozenNode";
+    static final String ECM_VERSION = "ecm:version";
 
     /**
      *  only for compatibility
      *  @deprecated use {@link #ECM_VERSION}
      */
     @Deprecated
-    public static final String ECM_IS_CHECKED_IN_VERSION = "ecm:isCheckedInVersion";
+    static final String ECM_IS_CHECKED_IN_VERSION = "ecm:isCheckedInVersion";
 
 }

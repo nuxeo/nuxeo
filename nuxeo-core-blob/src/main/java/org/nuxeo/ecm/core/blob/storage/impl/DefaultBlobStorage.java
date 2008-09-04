@@ -93,4 +93,3 @@ public class DefaultBlobStorage implements BlobStorage {
         return root;
     }
 }
-
