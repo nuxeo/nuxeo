@@ -259,14 +259,4 @@ public class FakeWorkflowEngine extends AbstractWorkflowEngine {
         return null;
     }
 
-    public Collection<WMWorkItemInstance> getWorkItemsFor(
-            List<WMParticipant> participants, String state) {
-        return null;
-    }
-
-    public Collection<WMProcessInstance> listProcessInstanceForCreators(
-            List<String> creators) {
-        return null;
-    }
-
 }
