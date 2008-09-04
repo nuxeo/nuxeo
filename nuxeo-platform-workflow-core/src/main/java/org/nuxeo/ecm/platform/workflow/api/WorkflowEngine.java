@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.nuxeo.ecm.platform.workflow.api.client.wfmc.ResultSlice;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMActivityInstance;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMFilter;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMParticipant;
@@ -275,6 +276,9 @@ public interface WorkflowEngine {
             String state);
     Collection<WMWorkItemInstance> getWorkItemsFor(
             List<WMParticipant> participants, String state);
+    ResultSlice<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participants, String state,
+            int firstResult, int maxResult);
 
     /**
      * Returns the work items for a given process instance in a given state.

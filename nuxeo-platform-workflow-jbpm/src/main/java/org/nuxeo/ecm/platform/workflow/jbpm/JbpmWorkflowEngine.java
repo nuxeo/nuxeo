@@ -36,10 +36,10 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
+import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.jbpm.JbpmContext;
 import org.jbpm.JbpmException;
-import org.jbpm.bytes.ByteArray;
 import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.context.exe.VariableInstance;
 import org.jbpm.context.exe.variableinstance.ByteArrayInstance;
@@ -55,6 +55,7 @@ import org.jbpm.graph.node.TaskNode;
 import org.jbpm.taskmgmt.def.Task;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.jbpm.taskmgmt.exe.TaskMgmtInstance;
+import org.nuxeo.ecm.platform.workflow.api.client.wfmc.ResultSlice;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMActivityInstance;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMFilter;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMParticipant;
@@ -460,7 +461,6 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
                 Serializable value = (Serializable) objectMaps.get(key);
                 props.put(key, value);
             }
-
         }
 
         ctx.closeContext();
@@ -649,31 +649,66 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
 
     public Collection<WMWorkItemInstance> getWorkItemsFor(
             List<WMParticipant> participants, String state) {
+        return getWorkItemsFor(participants, state, 0, -1).slice;
+    }
+
+    public ResultSlice<WMWorkItemInstance> getWorkItemsFor(
+            List<WMParticipant> participants, String state,
+            int firstResult, int maxResults) {
 
         Collection<WMWorkItemInstance> workItems = new ArrayList<WMWorkItemInstance>();
         if (participants == null || participants.isEmpty()) {
-            return workItems;
+            return new ResultSlice<WMWorkItemInstance>(workItems, firstResult, maxResults, 0);
         }
         JbpmWorkflowExecutionContext ctx = getExecutionContext();
 
         JbpmContext jctx = ctx.getContext();
         Session session = jctx.getSession();
-        List<Object[]> objects = null;
-        StringBuilder actorIds = new StringBuilder();
-        for (WMParticipant participant : participants) {
-            actorIds.append("'" + participant.getName() + "',");
+
+        List<String> actorIds = new ArrayList<String>(participants.size());
+        for (WMParticipant participant: participants) {
+            actorIds.add(participant.getName());
         }
-        actorIds.deleteCharAt(actorIds.length() - 1);
-        String query = "select ti, ti.taskMgmtInstance.processInstance, si "
+
+        int totalResults = 0;
+
+        List<Object[]> objects = null;
+        String queryStr = "select ti, ti.taskMgmtInstance.processInstance, si "
                 + "from org.jbpm.taskmgmt.exe.TaskInstance as ti, "
                 + "org.jbpm.context.exe.variableinstance.StringInstance si "
-                + "where ti.actorId in ("
-                + actorIds
-                + ") "
+                + "where ti.actorId in (:actorIds) "
                 + "and ti.taskMgmtInstance.processInstance = si.processInstance "
-                + "and ti.end is null " + "and si.name = 'author'";
+                + "and ti.end is null " + "and si.name = 'author' "
+                + "order by ti.start asc";
         try {
-            objects = session.createQuery(query).list();
+            Query query = session.createQuery(queryStr);
+            query.setParameterList("actorIds", actorIds);
+            if (firstResult == 0 && maxResults == -1) {
+                // fetch all results
+                objects = query.list();
+                totalResults = objects.size();
+            } else {
+                // scroll the results a to only collect elements of the required slice
+                ScrollableResults results = query.scroll();
+                if (results.setRowNumber(firstResult)) {
+                    objects = new ArrayList<Object[]>(maxResults < 100 ? maxResults : 100);
+                    for (int i=0; i<maxResults; i++) {
+                        objects.add(results.get());
+                        if (!results.next()) {
+                            break;
+                        }
+                    }
+                } else {
+                    // no results at such position
+                    objects = Collections.emptyList();
+                }
+                // scroll till the end to fetch the total number of results
+                if (results.last()) {
+                    totalResults = results.getRowNumber() + 1;
+                } else {
+                    totalResults = 0;
+                }
+            }
         } catch (Exception e) {
             log.error(e);
         }
@@ -689,9 +724,8 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
                 }
             }
         }
-
         ctx.closeContext();
-        return workItems;
+        return new ResultSlice<WMWorkItemInstance>(workItems, firstResult, maxResults, totalResults);
     }
 
     public Collection<WMWorkItemInstance> getWorkItemsFor(
