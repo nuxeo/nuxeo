@@ -76,13 +76,13 @@ public class ClassPath implements ClassPathScanner.Callback {
         return nestedJARsDir;
     }
 
-    public File handleJar(BundleFile bf) throws IOException {
+    public File handleJar(BundleFile bf) {
         jars.add(bf);
         loader.addURL(bf.getURL());
         return nestedJARsDir;
     }
 
-    public void handleNestedJar(BundleFile bf) throws IOException {
+    public void handleNestedJar(BundleFile bf) {
         nestedJars.add(bf);
         loader.addURL(bf.getURL());
     }

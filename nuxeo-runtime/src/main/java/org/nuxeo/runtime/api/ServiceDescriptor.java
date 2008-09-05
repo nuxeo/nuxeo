@@ -208,11 +208,9 @@ public class ServiceDescriptor implements Serializable {
 
     @Override
     public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("[name=" + getName() + ", group=" + getGroup()
+        return "[name=" + getName() + ", group=" + getGroup()
                 + ", instanceName=" + getInstanceName() + " locator: "
-                + getLocator() + "]");
-        return stringBuffer.toString();
+                + getLocator() + "]";
     }
 
 }

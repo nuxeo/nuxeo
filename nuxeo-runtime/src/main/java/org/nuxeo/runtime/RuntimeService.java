@@ -41,9 +41,9 @@ import org.osgi.framework.Bundle;
  * directly implementing this interface.
  * <p>
  * After the runtime service was initialized, it may be accessed through the
- * facade class {@link Framework}.
+ * facade class {@link org.nuxeo.runtime.api.Framework}.
  *
- * @see {@link Framework}
+ * @see {@link org.nuxeo.runtime.api.Framework}
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */

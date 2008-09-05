@@ -126,17 +126,17 @@ public class StandaloneApplication extends OSGiAdapter {
         if (bundlesString == null) {
             return; // no bundles to start
         }
-        ArrayList<BundleFile> bundles = new ArrayList<BundleFile>();
+        Iterable<BundleFile> bundles = new ArrayList<BundleFile>();
         String[] ar = StringUtils.split(bundlesString, ',', true);
         for (String entry : ar) {
-            File file = null;
+            File file;
             if (entry.contains("file:")) {
                 URL url = new URL(entry);
                 file = new File(url.toURI());
             } else {
                 file = new File(entry);
             }
-            BundleFile bf = null;
+            BundleFile bf;
             if (file.isDirectory()) {
                 bf = new DirectoryBundleFile(file);
             } else {

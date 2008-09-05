@@ -112,7 +112,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         return entry != null && entry.isResolved() ? entry.object : null;
     }
 
-    private final void resolveEntry(Entry<K, T> entry) {
+    private void resolveEntry(Entry<K, T> entry) {
         //synchronize () {
         resolved.add(entry);
         entry.isResolved = true;
@@ -121,7 +121,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         resolved(entry);
     }
 
-    private final void unresolveEntry(Entry<K, T> entry) {
+    private void unresolveEntry(Entry<K, T> entry) {
         //synchronize () {
         resolved.remove(entry);
         entry.isResolved = false;

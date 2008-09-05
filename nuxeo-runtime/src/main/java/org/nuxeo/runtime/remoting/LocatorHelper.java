@@ -43,7 +43,7 @@ public class LocatorHelper {
     private LocatorHelper() {
     }
 
-    public static final InvokerLocator getLocator(String protocol, String host,
+    public static InvokerLocator getLocator(String protocol, String host,
             int port, String path, Map<String, String> parameters) {
         if (protocol == null) {
             protocol = "socket";
@@ -60,19 +60,19 @@ public class LocatorHelper {
         return new InvokerLocator(protocol, host, port, path, parameters);
     }
 
-    public static final InvokerLocator getLocator(String protocol, String host, int port) {
+    public static InvokerLocator getLocator(String protocol, String host, int port) {
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put(InvokerLocator.DATATYPE, "nuxeo");
         return new InvokerLocator(protocol, host, port, "/", parameters);
     }
 
-    public static final InvokerLocator getLocator(String host, int port) {
+    public static InvokerLocator getLocator(String host, int port) {
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put(InvokerLocator.DATATYPE, "nuxeo");
         return new InvokerLocator("socket", host, port, "/", parameters);
     }
 
-    public static final InvokerLocator getLocator(String host) {
+    public static InvokerLocator getLocator(String host) {
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put(InvokerLocator.DATATYPE, "nuxeo");
         return new InvokerLocator("socket", host, 62474, "/", parameters);
@@ -91,10 +91,10 @@ public class LocatorHelper {
      * @throws MalformedURLException
      */
     public static InvokerLocator parse(String uri) throws MalformedURLException {
-        String protocol = null;
-        String host = null;
-        String path = null;
-        int port = 0;
+        String protocol;
+        String host;
+        String path;
+        int port;
         Map<String, String> parameters = null;
 
         int i = uri.indexOf("://");
@@ -154,7 +154,7 @@ public class LocatorHelper {
         return new InvokerLocator(protocol, host, port, path, parameters);
     }
 
-    public static final String resolveHost(String host) {
+    public static String resolveHost(String host) {
         if (host.indexOf("0.0.0.0") != -1) {
             if (System.getProperty(SERVER_BIND_ADDRESS, "0.0.0.0").equals(
                     "0.0.0.0")) {

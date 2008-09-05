@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -79,9 +80,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         // get errors set by NuxeoDeployer
         String errs = System.getProperty("org.nuxeo.runtime.deployment.errors");
         if (errs != null) {
-            for (String err : errs.split("\n")) {
-                warnings.add(err);
-            }
+            warnings.addAll(Arrays.asList(errs.split("\n")));
             System.clearProperty("org.nuxeo.runtime.deployment.errors");
         }
     }
