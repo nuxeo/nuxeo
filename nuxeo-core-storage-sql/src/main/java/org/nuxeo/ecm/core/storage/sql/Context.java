@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -83,10 +85,9 @@ public class Context {
      */
     protected final Map<Serializable, Fragment> modified;
 
-    /**
-     * The children info (only for the hierarchy table).
-     */
-    private final Map<Serializable, Children> knownChildren;
+    private final Map<Serializable, Children> childrenRegular;
+
+    private final Map<Serializable, Children> childrenComplexProp;
 
     /**
      * The set of modified/created fragments that should be invalidated in other
@@ -134,9 +135,11 @@ public class Context {
         // TODO use a dedicated subclass for the hierarchy table
         isHierarchy = tableName.equals(model.hierTableName);
         if (isHierarchy) {
-            knownChildren = new HashMap<Serializable, Children>();
+            childrenRegular = new HashMap<Serializable, Children>();
+            childrenComplexProp = new HashMap<Serializable, Children>();
         } else {
-            knownChildren = null;
+            childrenRegular = null;
+            childrenComplexProp = null;
         }
         isCollection = model.isCollectionFragment(tableName);
     }
@@ -176,7 +179,7 @@ public class Context {
         }
         SimpleFragment fragment = new SimpleFragment(id, State.CREATED, this,
                 map);
-        if (knownChildren != null) {
+        if (isHierarchy) {
             // add as a child of its parent
             addChild(fragment);
             // note that this new row doesn't have children
@@ -317,41 +320,65 @@ public class Context {
     }
 
     /**
+     * Gets the proper children cache. Creates one if missing, unless {@code
+     * complete} is {@code null}.
+     */
+    protected Children getChildrenCache(Serializable parentId,
+            boolean complexProp, Boolean complete) {
+        Map<Serializable, Children> childrenCaches = complexProp ? childrenComplexProp
+                : childrenRegular;
+        Children children = childrenCaches.get(parentId);
+        if (children == null) {
+            if (complete != null) {
+                children = new Children(complete.booleanValue());
+                childrenCaches.put(parentId, children);
+            }
+        }
+        return children;
+    }
+
+    /**
      * Adds a hierarchy row to the known children of its parent.
      */
-    private void addChild(SimpleFragment row) throws StorageException {
+    protected void addChild(SimpleFragment row) throws StorageException {
+        boolean complexProp = ((Boolean) row.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
+        addChild(row, complexProp);
+    }
+
+    protected void addChild(SimpleFragment row, boolean complexProp)
+            throws StorageException {
         Serializable parentId = row.get(model.HIER_PARENT_KEY);
         if (parentId == null) {
             // don't maintain all versions
             return;
         }
-        Children children = knownChildren.get(parentId);
-        if (children == null) {
-            children = new Children(false);
-            knownChildren.put(parentId, children);
-        }
-        boolean complexProp = ((Boolean) row.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
-        children.add(row, row.getString(model.HIER_CHILD_NAME_KEY), complexProp);
+        Children children = getChildrenCache(parentId, complexProp,
+                Boolean.FALSE);
+        children.add(row, row.getString(model.HIER_CHILD_NAME_KEY));
     }
 
     /**
      * Notes the fact that a new row was created without children.
      */
-    private void addNewParent(Serializable parentId) {
-        assert !knownChildren.containsKey(parentId);
-        Children children = new Children(true); // complete
-        knownChildren.put(parentId, children);
+    protected void addNewParent(Serializable parentId) {
+        childrenRegular.put(parentId, new Children(true));
+        childrenComplexProp.put(parentId, new Children(true));
     }
 
     /**
      * Removes a row from the known children of its parent.
      */
-    private void removeChild(SimpleFragment row) throws StorageException {
+    protected void removeChild(SimpleFragment row) throws StorageException {
+        boolean complexProp = ((Boolean) row.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
+        removeChild(row, complexProp);
+    }
+
+    protected void removeChild(SimpleFragment row, boolean complexProp)
+            throws StorageException {
         Serializable parentId = row.get(model.HIER_PARENT_KEY);
-        Children children = knownChildren.get(parentId);
+        Children children = getChildrenCache(parentId, complexProp, null);
         if (children != null) {
-            boolean complexProp = ((Boolean) row.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
-            children.remove(row, complexProp, model);
+            children.remove(row);
         }
     }
 
@@ -367,12 +394,11 @@ public class Context {
      */
     public SimpleFragment getChildByName(Serializable parentId, String name,
             boolean complexProp) throws StorageException {
-
         // check in the known children
+        Children children = getChildrenCache(parentId, complexProp, null);
         SimpleFragment fragment;
-        Children children = knownChildren.get(parentId);
         if (children != null) {
-            fragment = children.get(name, complexProp);
+            fragment = children.get(name, model.HIER_CHILD_NAME_KEY);
             if (fragment != SimpleFragment.UNKNOWN) {
                 return fragment;
             }
@@ -382,13 +408,8 @@ public class Context {
         fragment = mapper.readChildHierRow(parentId, name, complexProp, this);
         if (fragment != null) {
             // add as know child
-            addChild(fragment);
-            boolean isComplex = ((Boolean) fragment.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
-            if (isComplex != complexProp) {
-                fragment = null;
-            }
+            addChild(fragment, complexProp);
         }
-
         return fragment;
     }
 
@@ -403,28 +424,22 @@ public class Context {
      */
     public Collection<SimpleFragment> getChildren(Serializable parentId,
             String name, boolean complexProp) throws StorageException {
-        Collection<SimpleFragment> fragments;
+        List<SimpleFragment> fragments;
 
-        // check in the known children
-        Children children = knownChildren.get(parentId);
-        if (children == null) {
-            children = new Children(false);
-            knownChildren.put(parentId, children);
-        } else {
-            fragments = children.getFragments(name, complexProp);
-            if (fragments != null) {
-                return fragments;
-            }
+        Children children = getChildrenCache(parentId, complexProp,
+                Boolean.FALSE);
+        fragments = children.getAll(name, model.HIER_CHILD_NAME_KEY);
+        if (fragments != null) {
+            // we know all the children
+            return fragments;
         }
 
-        // ask the children to the mapper
+        // ask the actual children to the mapper
         fragments = mapper.readChildHierRows(parentId, complexProp, this);
+        children.addComplete(fragments);
 
-        // we now know the full children for this parent
-        children.addComplete(fragments, complexProp, model);
-
-        // the children may include newly-created ones, also restrict name
-        return children.getFragments(name, complexProp);
+        // the children may include newly-created ones, and filter by name
+        return children.getAll(name, model.HIER_CHILD_NAME_KEY);
     }
 
     /**
@@ -451,9 +466,8 @@ public class Context {
      * Checks that a name is free.
      */
     protected void checkFreeName(SimpleFragment row, Serializable parentId,
-            String name) throws StorageException {
-        boolean isComplex = ((Boolean) row.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
-        Fragment prev = getChildByName(parentId, name, isComplex);
+            String name, boolean complexProp) throws StorageException {
+        Fragment prev = getChildByName(parentId, name, complexProp);
         if (prev != null) {
             throw new StorageException("Destination name already exists: " +
                     name);
@@ -480,14 +494,15 @@ public class Context {
             // null move
             return;
         }
-        checkFreeName(hierFragment, parentId, name);
+        boolean complexProp = ((Boolean) hierFragment.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
+        checkFreeName(hierFragment, parentId, name, complexProp);
         /*
          * Do the move.
          */
-        removeChild(hierFragment);
+        removeChild(hierFragment, complexProp);
         hierFragment.put(model.HIER_PARENT_KEY, parentId);
         hierFragment.put(model.HIER_CHILD_NAME_KEY, name);
-        addChild(hierFragment);
+        addChild(hierFragment, complexProp);
     }
 
     /**
@@ -507,7 +522,8 @@ public class Context {
         if (!oldParentId.equals(parentId)) {
             checkNotUnder(parentId, id, "copy");
         }
-        checkFreeName(hierFragment, parentId, name);
+        boolean complexProp = ((Boolean) hierFragment.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
+        checkFreeName(hierFragment, parentId, name, complexProp);
         /*
          * Do the copy.
          */
@@ -525,7 +541,7 @@ public class Context {
      * @throws StorageException
      */
     public void remove(Fragment fragment) throws StorageException {
-        if (knownChildren != null) {
+        if (isHierarchy) {
             // remove from parent
             removeChild((SimpleFragment) fragment);
         }
@@ -662,11 +678,15 @@ public class Context {
         /*
          * Map temporary parent ids for created parents.
          */
-        if (knownChildren != null) {
+        if (isHierarchy) {
             for (Entry<Serializable, Serializable> e : idMap.entrySet()) {
-                Children children = knownChildren.remove(e.getKey());
+                Children children = childrenRegular.remove(e.getKey());
                 if (children != null) {
-                    knownChildren.put(e.getValue(), children);
+                    childrenRegular.put(e.getValue(), children);
+                }
+                children = childrenComplexProp.remove(e.getKey());
+                if (children != null) {
+                    childrenComplexProp.put(e.getValue(), children);
                 }
             }
         }
@@ -677,9 +697,9 @@ public class Context {
      */
     protected void markChildrenInvalidatedAdded(Serializable id,
             boolean complexProp) {
-        Children children = knownChildren.get(id);
+        Children children = getChildrenCache(id, complexProp, null);
         if (children != null) {
-            children.invalidateAdded(complexProp);
+            children.invalidateAdded();
         }
     }
 

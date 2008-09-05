@@ -408,7 +408,10 @@ public class PersistenceContext {
         /*
          * Clear complex properties.
          */
-        for (Fragment child : getChildren(versionableId, null, true)) {
+        Collection<SimpleFragment> children = getChildren(versionableId, null,
+                true);
+        // copy to avoid concurrent modifications
+        for (Fragment child : children.toArray(new Fragment[children.size()])) {
             remove(child); // will cascade deletes
         }
         save(); // flush deletes

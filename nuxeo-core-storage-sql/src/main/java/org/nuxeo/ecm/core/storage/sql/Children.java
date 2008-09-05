@@ -17,13 +17,11 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.util.Collection;
+import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -32,11 +30,6 @@ import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
  * Holds information about the children of a given parent node.
- * <p>
- * There are two kinds of children, the "regular" ones, which correspond to
- * child documents and have unique names, and the "properties", which correspond
- * to complex properties and may have non-unique names (which allows for lists
- * of complex properties).
  * <p>
  * Information about children may be complete, or just partial if only a few
  * individual children have been retrieved.
@@ -53,37 +46,29 @@ public class Children {
     private static final Log log = LogFactory.getLog(Children.class);
 
     /**
+     * The fragments we know about. This list is not ordered, and may not be
+     * complete.
+     */
+    protected List<SimpleFragment> existing;
+
+    /**
      * This is {@code true} when complete information about the children is
      * known.
      * <p>
      * This is the case when a query to the database has been made to fetch all
      * children, or when a new parent node with no children has been created.
      */
-    private boolean completeRegular;
-
-    private Map<String, SimpleFragment> existingRegular;
-
-    private Set<String> missingRegular;
-
-    private boolean completeProperties;
-
-    private Map<String, List<SimpleFragment>> existingProperties;
+    protected boolean complete;
 
     public Children(boolean complete) {
-        this.completeRegular = complete;
-        this.completeProperties = complete;
+        this.complete = complete;
     }
 
-    private void newExistingRegular() {
-        existingRegular = new HashMap<String, SimpleFragment>();
-    }
-
-    private void newExistingProperties() {
-        existingProperties = new HashMap<String, List<SimpleFragment>>();
-    }
-
-    private void newMissingRegular() {
-        missingRegular = new HashSet<String>();
+    protected List<SimpleFragment> getExisting() {
+        if (existing == null) {
+            existing = new LinkedList<SimpleFragment>();
+        }
+        return existing;
     }
 
     /**
@@ -91,36 +76,12 @@ public class Children {
      *
      * @param fragment the hierarchy fragment for the child
      * @param name the child name
-     * @param complexProp whether the child is a complex property or a regular
-     *            child
      * @throws StorageException
      */
     // TODO unordered for now
-    public void add(SimpleFragment fragment, String name, boolean complexProp)
+    public void add(SimpleFragment fragment, String name)
             throws StorageException {
-        if (complexProp) {
-            if (existingProperties == null) {
-                newExistingProperties();
-            }
-            List<SimpleFragment> list = existingProperties.get(name);
-            if (list == null) {
-                list = new LinkedList<SimpleFragment>();
-                existingProperties.put(name, list);
-            }
-            list.add(fragment);
-        } else {
-            if (missingRegular != null) {
-                missingRegular.remove(name);
-            }
-            if (existingRegular == null) {
-                newExistingRegular();
-            } else {
-                if (existingRegular.containsKey(name)) {
-                    throw new StorageException("Duplicate child name: " + name);
-                }
-            }
-            existingRegular.put(name, fragment);
-        }
+        getExisting().add(fragment);
     }
 
     /**
@@ -128,110 +89,57 @@ public class Children {
      * <p>
      * Fragments already known are not erased, as they may be new.
      *
-     * @param fragments
-     * @param complexProp whether the children are complex properties or regular
-     *            children
-     * @param model
+     * @param fragments the fragments (must be mutable)
      */
-    public void addComplete(Collection<SimpleFragment> fragments,
-            boolean complexProp, Model model) {
-        String name_key = model.HIER_CHILD_NAME_KEY;
-        if (complexProp) {
-            assert !completeProperties;
-            if (existingProperties == null) {
-                newExistingProperties();
-            }
-            for (SimpleFragment fragment : fragments) {
-                String name;
-                try {
-                    name = fragment.getString(name_key);
-                } catch (StorageException e) {
-                    // cannot happen, row is pristine
-                    name = "ACCESSFAILED";
-                }
-                List<SimpleFragment> list = existingProperties.get(name);
-                if (list == null) {
-                    list = new LinkedList<SimpleFragment>();
-                    existingProperties.put(name, list);
-                }
-                list.add(fragment);
-            }
-            completeProperties = true;
+    public void addComplete(List<SimpleFragment> fragments) {
+        assert !complete;
+        complete = true;
+        if (existing == null || existing.size() == 0) {
+            existing = fragments; // don't copy, for efficiency
         } else {
-            assert !completeRegular;
-            if (existingRegular == null) {
-                newExistingRegular();
+            // assumes that the list of fragments already known is small
+            // collect already know ids
+            Set<Serializable> ids = new HashSet<Serializable>();
+            for (SimpleFragment fragment : existing) {
+                ids.add(fragment.getId());
             }
+            // add complete set, note the ids we knew
+            List<SimpleFragment> newExisting = new LinkedList<SimpleFragment>();
             for (SimpleFragment fragment : fragments) {
-                String name;
-                try {
-                    name = fragment.getString(name_key);
-                } catch (StorageException e) {
-                    // cannot happen, row is pristine
-                    name = "ACCESSFAILED";
-                }
-                existingRegular.put(name, fragment);
+                ids.remove(fragment.getId());
+                newExisting.add(fragment);
             }
-            missingRegular = null; // could check coherence with existing
-            completeRegular = true;
+            // finish with the created ones
+            for (SimpleFragment fragment : existing) {
+                if (ids.contains(fragment.getId())) {
+                    newExisting.add(fragment);
+                }
+            }
+            // replace existing
+            existing = newExisting;
         }
     }
 
     /**
      * Invalidates children after some have been added.
      */
-    public void invalidateAdded(boolean complexProp) {
-        if (complexProp) {
-            completeProperties = false;
-        } else {
-            completeRegular = false;
-        }
+    public void invalidateAdded() {
+        complete = false;
     }
 
     /**
      * Removes a known child.
      *
      * @param fragment the fragment to remove
-     * @param complexProp whether the child is a complex property or a regular
-     *            child
-     * @param model the model
      * @throws StorageException
      */
-    public void remove(SimpleFragment fragment, boolean complexProp, Model model)
-            throws StorageException {
-        String name;
-        try {
-            name = fragment.getString(model.HIER_CHILD_NAME_KEY);
-        } catch (StorageException e) {
-            // cannot happen, row is pristine
-            name = "ACCESSFAILED";
+    public void remove(SimpleFragment fragment) throws StorageException {
+        if (existing == null) {
+            return;
         }
-        if (complexProp) {
-            if (existingProperties != null) {
-                List<SimpleFragment> list = existingProperties.get(name);
-                if (list == null) {
-                    throw new StorageException(
-                            "Nonexistent complex property: " + name);
-                }
-                if (!list.remove(fragment)) {
-                    throw new StorageException(
-                            "Nonexistent complex property: " + fragment);
-                }
-            }
-        } else {
-            if (existingRegular != null) {
-                if (existingRegular.remove(name) == null) {
-                    throw new StorageException("Nonexistent child: " + name);
-                }
-            }
-            if (missingRegular == null) {
-                newMissingRegular();
-            } else {
-                if (missingRegular.contains(name)) {
-                    throw new StorageException("Already missing child: " + name);
-                }
-            }
-            missingRegular.add(name);
+        if (!existing.remove(fragment)) {
+            throw new StorageException("Nonexistent complex property: " +
+                    fragment);
         }
     }
 
@@ -243,75 +151,68 @@ public class Children {
      * Returns {@link SimpleFragment#UNKNOWN} if there's no info about it.
      *
      * @param name the name
-     * @param complexProp {@code true} if a complex property is searched,
-     *            {@code false} for a regular child
+     * @param nameKey the key to use to filter by name
      * @return the fragment, or {@code null}, or {@link SimpleFragment#UNKNOWN}
      */
-    public SimpleFragment get(String name, boolean complexProp) {
-        if (complexProp) {
-            if (existingProperties == null) {
-                return completeProperties ? null : SimpleFragment.UNKNOWN;
-            }
-            List<SimpleFragment> list = existingProperties.get(name);
-            if (list == null || list.size() == 0) {
-                return completeProperties ? null : SimpleFragment.UNKNOWN;
-            }
-            if (list.size() > 1) {
-                log.warn("Get by name with several children: " + name);
-            }
-            return list.get(0);
-        } else {
-            if (completeRegular) {
-                return existingRegular == null ? null
-                        : existingRegular.get(name);
-            }
-            if (existingRegular != null) {
-                SimpleFragment fragment = existingRegular.get(name);
-                if (fragment != null) {
-                    return fragment;
+    public SimpleFragment get(String name, String nameKey) {
+        // TODO optimize by removing WARN checks
+        SimpleFragment found = null;
+        if (existing != null) {
+            for (SimpleFragment fragment : existing) {
+                try {
+                    if (name.equals(fragment.getString(nameKey))) {
+                        if (found == null) {
+                            found = fragment;
+                            continue; // to check further WARN
+                        } else {
+                            log.warn("Get by name with several children: " +
+                                    name);
+                            break;
+                        }
+                    }
+                } catch (StorageException e) {
+                    // cannot happen, failed refetch
+                    // pass
                 }
             }
-            return missingRegular != null && missingRegular.contains(name) ? null
-                    : SimpleFragment.UNKNOWN;
+            if (found != null) {
+                return found;
+            }
         }
+        return complete ? null : SimpleFragment.UNKNOWN;
     }
 
     /**
      * Gets all the fragments, for a complete list of children.
-     * <p>
-     * If the list is not complete, returns {@code null}.
      *
-     * @param name the name of the children, or {@code null} for all
-     * @param complexProp {@code true} for complex properties, {@code false} for
-     *            regular children
-     * @return all the fragments, or {@code null}
+     * @param name the name, or {@code null} for all children
+     * @param nameKey the key to use to filter by name
+     * @return all the fragments, or {@code null} if the list is not known to be
+     *         complete
      */
-    public Collection<SimpleFragment> getFragments(String name,
-            boolean complexProp) {
-        if (complexProp) {
-            if (!completeProperties) {
-                return null;
-            }
-            if (existingProperties == null) {
-                return Collections.emptyList();
-            }
-            if (name == null) {
-                List<SimpleFragment> fragments = new LinkedList<SimpleFragment>();
-                for (List<SimpleFragment> list : existingProperties.values()) {
-                    fragments.addAll(list);
-                }
-                return fragments;
-            } else {
-                List<SimpleFragment> list = existingProperties.get(name);
-                return list == null ? Collections.<SimpleFragment> emptyList()
-                        : list;
-            }
+    public List<SimpleFragment> getAll(String name, String nameKey) {
+        if (!complete) {
+            return null;
+        }
+        if (existing == null) {
+            return Collections.emptyList();
+        }
+        if (name == null) {
+            return existing;
         } else {
-            if (!completeRegular) {
-                return null;
+            // filter by name
+            List<SimpleFragment> filtered = new LinkedList<SimpleFragment>();
+            for (SimpleFragment fragment : existing) {
+                try {
+                    if (name.equals(fragment.getString(nameKey))) {
+                        filtered.add(fragment);
+                    }
+                } catch (StorageException e) {
+                    // cannot happen, failed refetch
+                    // pass
+                }
             }
-            return existingRegular == null ? Collections.<SimpleFragment> emptyList()
-                    : existingRegular.values();
+            return filtered;
         }
     }
 }
