@@ -230,24 +230,6 @@ public class PersistenceContext {
     }
 
     /**
-     * Gets a hierarchy fragment given an id.
-     * <p>
-     * If the fragment is not in the context, fetch it from the mapper. If it's
-     * not in the database, returns {@code null} or an absent fragment.
-     *
-     * @param id the fragment id
-     * @param allowAbsent {@code true} to return an absent fragment as an object
-     *            instead of {@code null}
-     * @return the hierarchy fragment, or {@code null} if none is found and
-     *         {@value allowAbsent} was {@code false}
-     * @throws StorageException
-     */
-    public Fragment getChildById(Serializable id, boolean allowAbsent)
-            throws StorageException {
-        return contexts.get(model.hierTableName).getChildById(id, allowAbsent);
-    }
-
-    /**
      * Finds a row in the hierarchy table given its parent id and name. If the
      * row is not in the context, fetch it from the mapper.
      *
@@ -344,6 +326,8 @@ public class PersistenceContext {
         String typeName = node.getPrimaryType();
         Serializable newId = mapper.copyHierarchy(id, typeName, null, null,
                 null, null, this);
+        get(model.hierTableName, newId, false); // adds version as a new child
+        // of its parent
         /*
          * Create a "version" row for our new version.
          */
@@ -354,7 +338,6 @@ public class PersistenceContext {
         map.put(model.VERSION_DESCRIPTION_KEY, description);
         SimpleFragment versionRow = (SimpleFragment) createSimpleFragment(
                 model.VERSION_TABLE_NAME, newId, map);
-        getChildById(newId, false); // adds version as a new child of its parent
         /*
          * Update the original node to reflect that it's checked in.
          */

@@ -75,12 +75,10 @@ public class Children {
      * Adds a known child.
      *
      * @param fragment the hierarchy fragment for the child
-     * @param name the child name
      * @throws StorageException
      */
     // TODO unordered for now
-    public void add(SimpleFragment fragment, String name)
-            throws StorageException {
+    public void add(SimpleFragment fragment) throws StorageException {
         getExisting().add(fragment);
     }
 
@@ -88,6 +86,10 @@ public class Children {
      * Add fragments actually read from the backend, and mark this complete.
      * <p>
      * Fragments already known are not erased, as they may be new.
+     * <p>
+     * Note that when adding a complete list of fragments retrieved from the
+     * database, the deleted fragments have already been removed in the result
+     * set.
      *
      * @param fragments the fragments (must be mutable)
      */

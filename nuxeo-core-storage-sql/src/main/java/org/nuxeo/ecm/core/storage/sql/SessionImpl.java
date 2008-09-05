@@ -185,7 +185,7 @@ public class SessionImpl implements Session {
         Serializable parentId;
         String name;
         if (model.separateMainTable) {
-            childHier = (SimpleFragment) context.getChildById(id, false);
+            childHier = (SimpleFragment) context.get(model.hierTableName, id, false);
             parentId = childHier.get(model.HIER_PARENT_KEY);
             name = childHier.getString(model.HIER_CHILD_NAME_KEY);
         } else {

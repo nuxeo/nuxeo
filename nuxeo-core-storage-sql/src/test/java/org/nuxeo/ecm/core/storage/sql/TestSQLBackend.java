@@ -111,6 +111,28 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     }
 
+    public void testChildrenRemoval() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Serializable fooId = session.addChildNode(root, "foo", null, "TestDoc",
+                false).getId();
+        Serializable barId = session.addChildNode(root, "bar", null, "TestDoc",
+                false).getId();
+        session.save();
+        session.close();
+
+        // from another session
+        // get one and remove it
+        session = repository.getConnection();
+        root = session.getRootNode();
+        session.getNodeById(fooId); // one known child
+        Node nodebar = session.getNodeById(barId); // another
+        session.removeNode(nodebar); // remove one known
+        // the following gets a complete list but skips deleted ones
+        List<Node> children = session.getChildren(root, null, false);
+        assertEquals(1, children.size());
+    }
+
     public void testBasics() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -309,7 +331,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node root1 = session1.getRootNode();
         Node folder1 = session1.addChildNode(root1, "foo", null, "TestDoc",
                 false);
-        Node doc1 = session1.addChildNode(folder1, "gee", null, "TestDoc", false);
+        Node doc1 = session1.addChildNode(folder1, "gee", null, "TestDoc",
+                false);
         session1.save();
 
         // in second session, retrieve folder and check children
@@ -337,7 +360,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 false);
         Node folderb1 = session1.addChildNode(root1, "bar", null, "TestDoc",
                 false);
-        Node doc1 = session1.addChildNode(foldera1, "gee", null, "TestDoc", false);
+        Node doc1 = session1.addChildNode(foldera1, "gee", null, "TestDoc",
+                false);
         session1.save();
 
         // in second session, retrieve folders and check children

@@ -189,7 +189,7 @@ public class Context {
     }
 
     /**
-     * Gets a fragment. Not applicable to hierarchy fragments.
+     * Gets a fragment.
      * <p>
      * If it's not in the context, fetch it from the mapper. If it's not in the
      * database, returns {@code null} or an absent fragment.
@@ -245,57 +245,7 @@ public class Context {
                 }
             }
         }
-        return fragment;
-    }
-
-    /**
-     * Gets a hierarchy fragment.
-     * <p>
-     * If it's not in the context, fetch it from the mapper. If it's not in the
-     * database, returns {@code null} or an absent fragment.
-     *
-     * @param id the fragment id
-     * @param allowAbsent {@code true} to return an absent fragment as an object
-     *            instead of {@code null}
-     * @return the fragment, or {@code null} if none is found and {@value
-     *         allowAbsent} was {@code false}
-     * @throws StorageException
-     */
-    public SimpleFragment getChildById(Serializable id, boolean allowAbsent)
-            throws StorageException {
-        SimpleFragment fragment = (SimpleFragment) getIfPresent(id);
-        if (fragment != null) {
-            if (fragment.getState() == State.DELETED) {
-                return null;
-            }
-            return fragment;
-        }
-
-        // read it through the mapper
-        if (persistenceContext.isIdNew(id)) {
-            // the id has not been saved, so nothing exists yet in the database
-            if (allowAbsent) {
-                fragment = new SimpleFragment(id, State.ABSENT, this, null);
-            } else {
-                fragment = null;
-            }
-        } else {
-            // fragment = mapper.readSingleRow(tableName, id, allowAbsent,
-            // this);
-            Map<String, Serializable> map = mapper.readSingleRowMap(tableName,
-                    id, this);
-            if (map == null) {
-                if (allowAbsent) {
-                    fragment = new SimpleFragment(id, State.ABSENT, this, null);
-                } else {
-                    fragment = null;
-                }
-            } else {
-                fragment = new SimpleFragment(id, State.PRISTINE, this, map);
-
-            }
-        }
-        if (fragment != null) {
+        if (isHierarchy && fragment != null) {
             // add as a child of its parent
             addChild((SimpleFragment) fragment);
         }
@@ -320,17 +270,17 @@ public class Context {
     }
 
     /**
-     * Gets the proper children cache. Creates one if missing, unless {@code
-     * complete} is {@code null}.
+     * Gets the proper children cache. Creates one if missing and {@code create}
+     * is {@code true}.
      */
     protected Children getChildrenCache(Serializable parentId,
-            boolean complexProp, Boolean complete) {
+            boolean complexProp, boolean create) {
         Map<Serializable, Children> childrenCaches = complexProp ? childrenComplexProp
                 : childrenRegular;
         Children children = childrenCaches.get(parentId);
         if (children == null) {
-            if (complete != null) {
-                children = new Children(complete.booleanValue());
+            if (create) {
+                children = new Children(false);
                 childrenCaches.put(parentId, children);
             }
         }
@@ -352,9 +302,7 @@ public class Context {
             // don't maintain all versions
             return;
         }
-        Children children = getChildrenCache(parentId, complexProp,
-                Boolean.FALSE);
-        children.add(row, row.getString(model.HIER_CHILD_NAME_KEY));
+        getChildrenCache(parentId, complexProp, true).add(row);
     }
 
     /**
@@ -376,7 +324,7 @@ public class Context {
     protected void removeChild(SimpleFragment row, boolean complexProp)
             throws StorageException {
         Serializable parentId = row.get(model.HIER_PARENT_KEY);
-        Children children = getChildrenCache(parentId, complexProp, null);
+        Children children = getChildrenCache(parentId, complexProp, false);
         if (children != null) {
             children.remove(row);
         }
@@ -395,7 +343,7 @@ public class Context {
     public SimpleFragment getChildByName(Serializable parentId, String name,
             boolean complexProp) throws StorageException {
         // check in the known children
-        Children children = getChildrenCache(parentId, complexProp, null);
+        Children children = getChildrenCache(parentId, complexProp, false);
         SimpleFragment fragment;
         if (children != null) {
             fragment = children.get(name, model.HIER_CHILD_NAME_KEY);
@@ -426,8 +374,7 @@ public class Context {
             String name, boolean complexProp) throws StorageException {
         List<SimpleFragment> fragments;
 
-        Children children = getChildrenCache(parentId, complexProp,
-                Boolean.FALSE);
+        Children children = getChildrenCache(parentId, complexProp, true);
         fragments = children.getAll(name, model.HIER_CHILD_NAME_KEY);
         if (fragments != null) {
             // we know all the children
@@ -453,7 +400,7 @@ public class Context {
                 throw new StorageException("Cannot " + op +
                         " a node under itself: " + parentId + " is under " + id);
             }
-            SimpleFragment p = (SimpleFragment) getChildById(pid, false);
+            SimpleFragment p = (SimpleFragment) get(pid, false);
             if (p == null) {
                 // cannot happen
                 throw new StorageException("No parent: " + pid);
@@ -530,7 +477,7 @@ public class Context {
         String typeName = source.getPrimaryType();
         Serializable newId = mapper.copyHierarchy(id, typeName, parentId, name,
                 null, null, persistenceContext);
-        getChildById(newId, false); // adds it as a new child of its parent
+        get(newId, false); // adds it as a new child of its parent
         return newId;
     }
 
@@ -697,7 +644,7 @@ public class Context {
      */
     protected void markChildrenInvalidatedAdded(Serializable id,
             boolean complexProp) {
-        Children children = getChildrenCache(id, complexProp, null);
+        Children children = getChildrenCache(id, complexProp, false);
         if (children != null) {
             children.invalidateAdded();
         }
