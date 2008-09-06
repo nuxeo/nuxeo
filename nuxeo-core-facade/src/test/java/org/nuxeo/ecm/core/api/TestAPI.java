@@ -102,7 +102,7 @@ public abstract class TestAPI extends TestConnection {
         List<DocumentModel> rets = new ArrayList<DocumentModel>();
         Collections.addAll(
                 rets,
-                remote.createDocument(childFolders.toArray(new DocumentModel[0])));
+                remote.createDocument(childFolders.toArray(new DocumentModel[childFolders.size()])));
 
         assertNotNull(rets);
         assertEquals(childFolders.size(), rets.size());
@@ -905,7 +905,7 @@ public abstract class TestAPI extends TestConnection {
         returnedChildDocs.get(1).setProperty("file", "filename", "f1");
         returnedChildDocs.get(2).setProperty("file", "filename", "f2");
 
-        remote.saveDocuments(returnedChildDocs.toArray(new DocumentModel[0]));
+        remote.saveDocuments(returnedChildDocs.toArray(new DocumentModel[returnedChildDocs.size()]));
         remote.save();
 
         DocumentModelList list = remote.query("SELECT * FROM File");
@@ -1052,7 +1052,6 @@ public abstract class TestAPI extends TestConnection {
 
         assertFalse(remote.exists(returnedChildDocs.get(0).getRef()));
         assertFalse(remote.exists(returnedChildDocs.get(1).getRef()));
-
     }
 
     /*

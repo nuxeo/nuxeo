@@ -55,7 +55,7 @@ public class DocumentModelTreeNodeComparator implements
         for (int i = 1; i <= path.segmentCount(); i++) {
             parentPath = path.uptoSegment(i).toString();
             if (titles.containsKey(parentPath)) {
-                titlePath += titles.get(parentPath.toString()) + "/";
+                titlePath += titles.get(parentPath) + "/";
             } else {
                 titlePath += path.segment(i - 1) + "/";
             }

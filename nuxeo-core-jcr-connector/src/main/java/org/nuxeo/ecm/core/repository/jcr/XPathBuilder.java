@@ -177,8 +177,10 @@ public class XPathBuilder implements QueryConstants {
     }
 
     /**
-     * Process special expressions. If the expression is not a special one
-     * return false so that the expression will be processed in the default way.
+     * Process special expressions.
+     * <p>
+     * If the expression is not a special one, return false so that
+     * the expression will be processed in the default way.
      * Otherwise process it and return true.
      *
      * @param xq
