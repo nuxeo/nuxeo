@@ -30,7 +30,8 @@ import org.nuxeo.ecm.directory.DirectoryException;
  * Offers utility methods to handle exceptions.
  *
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
- * @deprecated will be removed in 5.2
+ * @deprecated will be removed in 5.2,
+ *             use {@link DirectoryException.wrap} instead
  */
 @Deprecated
 public class EJBExceptionHandler implements Serializable {
