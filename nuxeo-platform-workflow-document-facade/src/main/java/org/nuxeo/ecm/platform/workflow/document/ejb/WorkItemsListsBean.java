@@ -171,7 +171,7 @@ public class WorkItemsListsBean implements WorkItemsListsManager {
         return wiListEntry;
     }
 
-    private int getNextMaxReviewLevel(String pid) throws WorkItemsListException {
+    private static int getNextMaxReviewLevel(String pid) throws WorkItemsListException {
         WAPI wapi;
         try {
             wapi = WAPIBusinessDelegate.getWAPI();

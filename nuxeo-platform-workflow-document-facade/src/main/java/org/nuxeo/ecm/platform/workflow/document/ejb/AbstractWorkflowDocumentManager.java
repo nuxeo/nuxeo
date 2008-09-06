@@ -64,7 +64,7 @@ public abstract class AbstractWorkflowDocumentManager implements
         wDocRightsPolicyBusinessDelegate = new WorkflowDocumentSecurityPolicyBusinessDelegate();
     }
 
-    public void afterBegin() throws EJBException {
+    public void afterBegin() {
         log.debug("afterBegin().........................................");
         try {
             log.info("Connect workflow document manager");
@@ -74,7 +74,7 @@ public abstract class AbstractWorkflowDocumentManager implements
         }
     }
 
-    public void afterCompletion(boolean committed) throws EJBException {
+    public void afterCompletion(boolean committed) {
         log.debug("afterCompletion()....................................");
         try {
             if (documentManager != null) {
@@ -87,7 +87,7 @@ public abstract class AbstractWorkflowDocumentManager implements
         }
     }
 
-    public void beforeCompletion() throws EJBException, RemoteException {
+    public void beforeCompletion() throws RemoteException {
         // TODO Auto-generated method stub
     }
 

@@ -26,7 +26,6 @@ import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.def.Transition;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
-import org.jbpm.security.permission.CreateProcessInstancePermission;
 import org.jbpm.taskmgmt.def.Task;
 import org.jbpm.taskmgmt.exe.TaskInstance;
 import org.nuxeo.ecm.platform.workflow.api.client.wfmc.WMActivityDefinition;
@@ -161,6 +160,7 @@ public class WAPIGenerator {
         return tx;
     }
 
+    @SuppressWarnings("unchecked")
     public static WMActivityDefinition createActivityDefinition(Node node) {
 
         WMActivityDefinition activityDefinition;
@@ -173,11 +173,10 @@ public class WAPIGenerator {
             taskAwareNode = true;
 
             // Generate WMTransitionDefinition list
-            List nodeTransitions = node.getLeavingTransitions();
+            List<Transition> nodeTransitions = node.getLeavingTransitions();
             WMTransitionDefinition[] transitions = new WMTransitionDefinition[nodeTransitions.size()];
             int i = 0;
-            for (Object object : nodeTransitions) {
-                Transition transition = (Transition) object;
+            for (Transition transition : nodeTransitions) {
                 if (transition.getFrom().getId() == node.getId()) {
                     // Case to avoid recursion.
                     // :FIXME: fix from and to activities in this case.
@@ -265,15 +264,16 @@ public class WAPIGenerator {
     }
 
     /**
-     * Use {@link #createWorkItemInstance(TaskInstance, ProcessInstance, String)} instead.
+     * @deprecated Use {@link #createWorkItemInstance(TaskInstance, ProcessInstance, String)} instead.
      * @param taskInstance
      * @return
      */
     @Deprecated
     public static WMWorkItemInstance createWorkItemInstance(
             TaskInstance taskInstance) {
-        return createWorkItemInstance(taskInstance, taskInstance.getTaskMgmtInstance().getProcessInstance(), (String) taskInstance.getTaskMgmtInstance().getProcessInstance().getContextInstance().getVariable(
-                WorkflowConstants.WORKFLOW_CREATOR));
+        return createWorkItemInstance(taskInstance, taskInstance.getTaskMgmtInstance().getProcessInstance(),
+                (String) taskInstance.getTaskMgmtInstance().getProcessInstance().getContextInstance().getVariable(
+                        WorkflowConstants.WORKFLOW_CREATOR));
     }
 
 }

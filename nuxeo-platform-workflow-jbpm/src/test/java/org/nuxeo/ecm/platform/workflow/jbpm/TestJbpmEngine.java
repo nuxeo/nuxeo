@@ -333,7 +333,7 @@ public class TestJbpmEngine extends AbstractJbmTestCase {
     }
 
     // Ensure if no definition are deployed we don't get errors.
-    public void testNoDefinitions() throws WMWorkflowException {
+    public void testNoDefinitions() {
         Collection<WMProcessDefinition> definitions = engine.getProcessDefinitions();
         assertEquals(0, definitions.size());
 
