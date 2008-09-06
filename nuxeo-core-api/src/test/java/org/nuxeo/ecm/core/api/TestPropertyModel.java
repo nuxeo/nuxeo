@@ -65,6 +65,7 @@ public class TestPropertyModel extends TestCase {
 
     protected RuntimeService runtime;
     protected Schema schema;
+    protected DocumentPartImpl dp;
 
     static <T> ArrayList<T> arrayList(T ... args) {
         ArrayList<T> list = new ArrayList<T>(args.length);
@@ -127,13 +128,14 @@ public class TestPropertyModel extends TestCase {
     }
 
     private class Book {
-        String title;
-        Calendar creationDate;
-        Long price;
-        String[] keywords;
-        ArrayList<String> references;
-        ArrayList<Author> authors;
-        BlobFile file;
+
+        private String title;
+        private Calendar creationDate;
+        private Long price;
+        private String[] keywords;
+        private ArrayList<String> references;
+        private ArrayList<Author> authors;
+        private BlobFile file;
 
         HashMap<String,Serializable> getMap() {
             HashMap<String, Serializable> map = new HashMap<String, Serializable>();
@@ -174,6 +176,7 @@ public class TestPropertyModel extends TestCase {
         SchemaManagerImpl mgr = new SchemaManagerImpl();
         XSDLoader loader = new XSDLoader(mgr);
         schema = loader.loadSchema("test", "book", getResource("TestSchema.xsd"));
+        dp = new DocumentPartImpl(schema);
         // set a custom service provider to be able to lookup services without loading the framework
         DefaultServiceProvider provider = new DefaultServiceProvider();
         provider.registerService(SchemaManager.class, mgr);
@@ -255,8 +258,6 @@ public class TestPropertyModel extends TestCase {
     }
 
     public void testPath() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         String path = dp.get("file").get("fileName").getPath();
         assertEquals("/book:file/fileName", path);
 
@@ -267,8 +268,6 @@ public class TestPropertyModel extends TestCase {
     }
 
     public void testPropertyAccess() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         // test complex property access
         Property prop = dp.get("title");
         assertTrue(prop.isScalar());
@@ -354,8 +353,6 @@ public class TestPropertyModel extends TestCase {
     }
 
     public void testPropertyValueAccess() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         // test setters
         Property prop = dp.get("title");
         prop.setValue("The title");
@@ -368,7 +365,7 @@ public class TestPropertyModel extends TestCase {
         assertEquals("jpg", dp.getValue("book:file/fileName/extension"));
 
         Author author = new Author();
-        author.age = (long)100;
+        author.age = 100L;
         author.name = new Name();
         author.name.firstName = "Toto";
         prop = dp.get("authors").add(author.getMap());
@@ -395,7 +392,6 @@ public class TestPropertyModel extends TestCase {
     }
 
     public void testReadOnlyValue() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
         Property prop = dp.resolvePath("file/fileName/extension");
         try {
             prop.setReadOnly(true);
@@ -407,8 +403,6 @@ public class TestPropertyModel extends TestCase {
     }
 
     public void testFlags() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         dp.setValue("file/fileName/extension", "ejb");
         assertTrue(dp.get("file").isDirty());
         assertTrue(dp.get("file").get("fileName").isDirty());
@@ -422,8 +416,6 @@ public class TestPropertyModel extends TestCase {
     }
 
     public void testDefaultFactories() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         Book book = new Book();
         Author author = new Author();
         author.name.firstName = "John";
@@ -431,7 +423,7 @@ public class TestPropertyModel extends TestCase {
         book.authors.add(author);
         book.title = "My Title";
         book.creationDate = Calendar.getInstance();
-        book.price = new Long(100);
+        book.price = 100L;
         BlobFile file = new BlobFile();
         file.fileName.extension = "xml";
         book.file = file;
@@ -450,8 +442,6 @@ public class TestPropertyModel extends TestCase {
      * Compatibility test - this should be removed when ListDiff will be no more used in nuxeo
      */
     public void testListDiffCompatibility() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         Book book = new Book();
         book.authors = new ArrayList<Author>();
         book.authors.add(new Author(1));
@@ -491,9 +481,6 @@ public class TestPropertyModel extends TestCase {
      * Compatibility test - this should be removed when ListDiff will be no more used in nuxeo
      */
     public void testListDiffCompatibilityForScalarList() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
-        Book book = new Book();
         ArrayList<String> references = arrayList("a", "b", "c", "d", "e");
         dp.get("references").init(references);
 
@@ -513,8 +500,6 @@ public class TestPropertyModel extends TestCase {
     }
 
     public void testScalarList() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         ArrayList<String> references = arrayList("a", "b", "c", "d", "e");
         dp.get("references").init(references);
 
@@ -542,8 +527,6 @@ public class TestPropertyModel extends TestCase {
     }
 
     public void testBlob()  throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         Book book = new Book();
         BlobFile file = new BlobFile();
         file.fileName.extension = "xml";
@@ -573,8 +556,6 @@ public class TestPropertyModel extends TestCase {
     }
 
     public void testSerialization()  throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         Book book = new Book();
         BlobFile file = new BlobFile();
         file.fileName.extension = "xml";
@@ -616,8 +597,6 @@ public class TestPropertyModel extends TestCase {
 
     @SuppressWarnings("unchecked")
     public void testDirtyChildren() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         Iterator<Property> it = dp.getDirtyChildren();
         assertFalse(it.hasNext());
 
@@ -672,8 +651,6 @@ public class TestPropertyModel extends TestCase {
 
     @SuppressWarnings("unchecked")
     public void testInit() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         Book book = new Book();
         Author author = new Author();
         author.name.firstName = "John";
@@ -724,10 +701,7 @@ public class TestPropertyModel extends TestCase {
         assertEquals(2, dp.get("references").size());
     }
 
-
     public void testExport() throws Exception {
-        DocumentPartImpl dp = new DocumentPartImpl(schema);
-
         Book book = new Book();
         Author author = new Author();
         author.name.firstName = "John";
