@@ -23,7 +23,7 @@ package org.nuxeo.ecm.core.api;
  * @author Anahide Tchertchian
  *
  */
-public class CoreFacadeTestConstants {
+public class TestConstants {
 
     public static final String CORE_BUNDLE = "org.nuxeo.ecm.core";
 
