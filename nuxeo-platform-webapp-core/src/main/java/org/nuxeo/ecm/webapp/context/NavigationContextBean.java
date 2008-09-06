@@ -68,7 +68,6 @@ import org.nuxeo.ecm.core.search.api.client.SearchService;
 import org.nuxeo.ecm.core.search.api.client.common.SearchServiceDelegate;
 import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -109,7 +108,6 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
 
     @In
     protected transient Context eventContext;
-
 
     // --------------------------------------------
     // fields managed by this class
@@ -307,7 +305,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             // logDocWithTitle(logPrefix + "Retrieved children for: ",
             // currentDocument);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
         return currentDocumentChildren;
     }
@@ -370,7 +368,7 @@ public class NavigationContextBean implements NavigationContextLocal, Serializab
             // logDocWithTitle(logPrefix + "Retrieved children for: ",
             // currentDocument);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
         return currentDocumentChildren;
     }

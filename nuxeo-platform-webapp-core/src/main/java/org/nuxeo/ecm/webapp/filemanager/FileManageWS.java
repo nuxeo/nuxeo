@@ -75,7 +75,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.api.ws.DocumentDescriptor;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
@@ -119,7 +118,6 @@ public class FileManageWS extends InputController implements
 
     private static final String CURRENT_EDITED_DOCUMENT = "liveEditEditedDocument";
     private static final String CURRENT_EDITED_REPOSITORY_LOCATION = "liveEditEditedRepositoryLocation";
-
 
     private static final String DOC_URL = "doc_url";
 
@@ -291,7 +289,7 @@ public class FileManageWS extends InputController implements
             context.responseComplete();
             return null;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -488,7 +486,7 @@ public class FileManageWS extends InputController implements
             // "after-edit");
             return ""; // non-null
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -517,7 +515,7 @@ public class FileManageWS extends InputController implements
             return result;
 
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -546,7 +544,7 @@ public class FileManageWS extends InputController implements
             byte[] output = content.getByteArray();
             return new String(output);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -554,8 +552,8 @@ public class FileManageWS extends InputController implements
      * The client must call this method on the doc before saving.
      * <p>
      * This methods returns a HashMap listing all possibles actions with their
-     * desciption. Ex: { 'lock' : "Locking the document", 'lock+version' : "Lock
-     * and version the document" ...} The returned actions are all exclusives,
+     * description. Ex: { 'lock' : "Locking the document", 'lock+version' : "Lock
+     * and version the document" ...}. The returned actions are all exclusive,
      * and the user will have to chose one of the options.
      *
      * @param doc_url

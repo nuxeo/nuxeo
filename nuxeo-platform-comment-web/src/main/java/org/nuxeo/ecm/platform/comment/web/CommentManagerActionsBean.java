@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -176,7 +175,7 @@ public class CommentManagerActionsBean extends InputController implements
         } catch (Throwable t) {
             log.error("failed to add comment", t);
             log.error(t.getStackTrace());
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -334,7 +333,7 @@ public class CommentManagerActionsBean extends InputController implements
             return null;
         } catch (Throwable t) {
             log.error("failed to delete comment", t);
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 

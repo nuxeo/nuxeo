@@ -55,7 +55,6 @@ import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -158,7 +157,7 @@ public class SecurityActionsBean extends InputController implements
                 obsoleteSecurityData = false;
             }
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -304,7 +303,7 @@ public class SecurityActionsBean extends InputController implements
             return null;
 
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -426,7 +425,7 @@ public class SecurityActionsBean extends InputController implements
                     "WriteSecurity")
                     && !getDataTableModel().getSelectedRows().isEmpty();
         } catch (Exception e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 

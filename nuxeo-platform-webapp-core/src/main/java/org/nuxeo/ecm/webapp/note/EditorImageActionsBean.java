@@ -54,7 +54,6 @@ import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.core.search.api.client.query.impl.ComposedNXQueryImpl;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultSet;
 import org.nuxeo.ecm.core.search.api.client.search.results.document.SearchPageProvider;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -66,7 +65,7 @@ import org.nuxeo.ecm.webapp.base.InputController;
  * The uploaded image is stored in the <code>files</code> schema of the
  * document.
  * <p>
- * After uploading an image, the rest url for this image can be retrieve through
+ * After uploading an image, the REST URL for this image can be retrieve through
  * the appropriate method.
  * <p>
  * The search method retrieves only the Picture document of the repository.
@@ -252,7 +251,7 @@ public class EditorImageActionsBean extends InputController implements
                             "label.search.service.wrong.query"));
             log.error("QueryParseException in search popup : " + e.getMessage());
         } catch (SearchException e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
         return "editor_image_upload";
     }

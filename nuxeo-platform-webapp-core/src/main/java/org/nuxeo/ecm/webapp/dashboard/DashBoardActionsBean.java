@@ -54,7 +54,6 @@ import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.search.api.client.query.QueryException;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.pagination.ResultsProviderFarmUserException;
@@ -78,13 +77,10 @@ import org.nuxeo.ecm.webapp.querymodel.QueryModelActions;
 
 /**
  * Dash board actions.
- *
  * <p>
  * Those actions are related to the current authenticated principal.
- * </p>
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
  */
 @Name("dashboardActions")
 @Scope(SESSION)
@@ -251,7 +247,7 @@ public class DashBoardActionsBean extends InputController implements
                 }
             }
         } catch (ClientException ce) {
-            throw EJBExceptionHandler.wrapException(ce);
+            throw ClientException.wrap(ce);
         }
         return documentProcessItems;
     }
@@ -340,9 +336,9 @@ public class DashBoardActionsBean extends InputController implements
                 }
             }
         } catch (WMWorkflowException we) {
-            throw EJBExceptionHandler.wrapException(we);
+            throw ClientException.wrap(we);
         } catch (ClientException ce) {
-            throw EJBExceptionHandler.wrapException(ce);
+            throw ClientException.wrap(ce);
         }
         return dashboardItems;
     }

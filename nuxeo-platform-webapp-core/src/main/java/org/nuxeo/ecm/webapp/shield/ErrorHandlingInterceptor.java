@@ -36,7 +36,6 @@ import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.contexts.FacesLifecycle;
 import  org.jboss.seam.faces.Redirect;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 
 /**
@@ -71,7 +70,7 @@ public class ErrorHandlingInterceptor implements Serializable {
             log.debug("Before invocation...");
             return invocation.proceed();
         } catch (Throwable t) {
-            ClientException cException = EJBExceptionHandler.wrapException(t);
+            ClientException cException = ClientException.wrap(t);
             // redirect is not allowed during render response phase => throw the
             // error without redirecting
             FacesContext facesContext = FacesContext.getCurrentInstance();

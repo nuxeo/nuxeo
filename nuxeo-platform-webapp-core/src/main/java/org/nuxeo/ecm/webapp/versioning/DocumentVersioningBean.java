@@ -221,9 +221,6 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
         return versions;
     }
 
-    /**
-     * @return Map with available versioning options for the current document
-     */
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED }, create = false, inject = false)
     public void resetVersioningOption() {
         availableVersioningOptionsMap = null;

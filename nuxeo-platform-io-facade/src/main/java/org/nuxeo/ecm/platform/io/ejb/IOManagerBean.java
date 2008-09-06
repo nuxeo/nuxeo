@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.io.exceptions.ExportDocumentException;
 import org.nuxeo.ecm.core.io.exceptions.ImportDocumentException;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.io.api.IOManager;
 import org.nuxeo.ecm.platform.io.api.IOResourceAdapter;
 import org.nuxeo.ecm.platform.io.api.ejb.IOManagerLocal;
@@ -77,7 +76,7 @@ public class IOManagerBean implements IOManager {
         try {
             service.addAdapter(name, adapter);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -88,7 +87,7 @@ public class IOManagerBean implements IOManager {
             return service.copyDocumentsAndResources(repo, sources,
                     targetLocation, ioAdapters);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -100,7 +99,7 @@ public class IOManagerBean implements IOManager {
             service.exportDocumentsAndResources(out, repo, sources, false,
                     format, ioAdapters);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -108,7 +107,7 @@ public class IOManagerBean implements IOManager {
         try {
             return service.getAdapter(name);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -119,7 +118,7 @@ public class IOManagerBean implements IOManager {
         try {
             service.importDocumentsAndResources(in, repo, root);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -127,7 +126,7 @@ public class IOManagerBean implements IOManager {
         try {
             service.removeAdapter(name);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -139,7 +138,7 @@ public class IOManagerBean implements IOManager {
             service.copyDocumentsAndResources(repo, sources, serverAddress,
                     rmiPort, targetLocation, ioAdapters);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -148,7 +147,7 @@ public class IOManagerBean implements IOManager {
         try {
             service.importExportedFile(uri, targetLocation);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -164,7 +163,7 @@ public class IOManagerBean implements IOManager {
                     rFactoryParams, docWriterFactoryName, wFactoryParams,
                     ioAdapters);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -175,7 +174,7 @@ public class IOManagerBean implements IOManager {
             service.importExportedFile(uri, targetLocation,
                     docWriterFactoryName, wFactoryParams);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -187,7 +186,7 @@ public class IOManagerBean implements IOManager {
             service.copyDocumentsAndResources(repo, sources, remoteIOManager,
                     targetLocation, ioAdapters);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -198,7 +197,7 @@ public class IOManagerBean implements IOManager {
             String uri = service.externalizeExport(repo, sources, ioAdapters);
             return uri;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -210,7 +209,7 @@ public class IOManagerBean implements IOManager {
                     readerFactoryParams, ioAdapters);
             return uri;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -223,7 +222,7 @@ public class IOManagerBean implements IOManager {
                     readerFactoryParams, ioAdapters);
             return uri;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -231,7 +230,7 @@ public class IOManagerBean implements IOManager {
         try {
             service.disposeExport(uri);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -245,7 +244,7 @@ public class IOManagerBean implements IOManager {
                     docReaderFactoryClassName, rFactoryParams,
                     docWriterFactoryClassName, wFactoryParams);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 

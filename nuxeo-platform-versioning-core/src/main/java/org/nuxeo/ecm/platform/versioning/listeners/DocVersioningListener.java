@@ -28,12 +28,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleEventTypes;
 import org.nuxeo.ecm.core.listener.AbstractEventListener;
@@ -301,7 +298,6 @@ public class DocVersioningListener extends AbstractEventListener implements
      * @return
      * @throws VersioningException
      * @throws ClientException
-     * @throws DocumentException
      */
     private static boolean isIncOptionUserSelected(DocumentModel doc)
             throws VersioningException, ClientException {

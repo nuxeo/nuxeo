@@ -66,7 +66,7 @@ public class DirectoryTreeNode {
 
     protected String type = "defaultDirectoryTreeNode";
 
-    protected transient DirectoryService directoryService;
+    protected DirectoryService directoryService;
 
     private QueryModel queryModel;
 

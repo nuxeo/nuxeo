@@ -68,7 +68,6 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -582,8 +581,9 @@ public class ClipboardActionsBean extends InputController implements
                 }
 
                 // NXP-2334 : skip deleted docs
-                if (doc.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE))
+                if (doc.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE)) {
                     continue;
+                }
 
                 if (doc.isFolder() && !isEmptyFolder(doc, documentManager)) {
 
@@ -623,7 +623,7 @@ public class ClipboardActionsBean extends InputController implements
             context.responseComplete();
             return null;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -786,8 +786,9 @@ public class ClipboardActionsBean extends InputController implements
         for (DocumentModel docChild : docList) {
 
             // NXP-2334 : skip deleted docs
-            if (docChild.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE))
+            if (docChild.getCurrentLifeCycleState().equals(DELETED_LIFECYCLE_STATE)) {
                 continue;
+            }
 
             if (docChild.isFolder()
                     && !isEmptyFolder(docChild, documentManager)) {

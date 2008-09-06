@@ -54,7 +54,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.search.api.client.query.QueryException;
 import org.nuxeo.ecm.core.search.api.client.querymodel.QueryModel;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.events.api.DocumentMessageProducer;
 import org.nuxeo.ecm.platform.events.api.delegate.DocumentMessageProducerBusinessDelegate;
 import org.nuxeo.ecm.platform.events.api.impl.MassLifeCycleTransitionMessage;
@@ -730,14 +729,14 @@ public class DeleteActionsBean extends InputController implements
             currentDocumentChildren = resultsProvider.getCurrentPage();
 
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
         return currentDocumentChildren;
     }
 
     /**
      * Listener method - not used for now because the binding is not used but
-     * might be used after the refactorization
+     * might be used after the refactoring.
      */
     public void processSelectRowEvent(SelectDataModelRowEvent event)
             throws ClientException {

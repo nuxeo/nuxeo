@@ -112,7 +112,6 @@ public class TableRow extends GenericTableRow {
      * Returns the cell selection index. Computes the index if necessary.
      *
      * @return
-     * @throws ClientException
      */
     public int getSelectionCellIndex() {
         return selectionCellIndex;

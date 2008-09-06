@@ -54,7 +54,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -506,7 +505,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                     isEditable = Boolean.valueOf(mimetypeEntry.isOnlineEditable());
                 }
             } catch (Throwable t) {
-                throw EJBExceptionHandler.wrapException(t);
+                throw ClientException.wrap(t);
             }
             cachedEditableStates.put(mimetype, isEditable);
         }

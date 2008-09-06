@@ -49,7 +49,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.interfaces.ejb.ECContentRoot;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
 import org.nuxeo.ecm.platform.util.ECInvalidParameterException;
@@ -151,7 +150,7 @@ public class ContentRootsActionsBean extends InputController implements
                     .getSelectedDocModel();
             return navigationContext.getActionResult(doc, UserAction.VIEW);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -163,7 +162,7 @@ public class ContentRootsActionsBean extends InputController implements
                     .getSelectedDocModel();
             return navigationContext.getActionResult(doc, UserAction.VIEW);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -187,7 +186,7 @@ public class ContentRootsActionsBean extends InputController implements
             return navigationContext
                     .getActionResult(doc, UserAction.AFTER_EDIT);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -256,7 +255,7 @@ public class ContentRootsActionsBean extends InputController implements
             log.debug("Retrieved workspace type children for domain: "
                     + currentDomain + ' ' + workspacesChildren);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -282,7 +281,7 @@ public class ContentRootsActionsBean extends InputController implements
             log.debug("Retrieved workspace type children for domain: "
                     + currentDomain + ' ' + sectionsChildren);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -314,7 +313,7 @@ public class ContentRootsActionsBean extends InputController implements
 
             return contentRootDocuments;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -324,7 +323,6 @@ public class ContentRootsActionsBean extends InputController implements
      * @param type
      * @return
      * @throws ClientException
-     * @throws AlreadyConnectedException
      */
     protected DocumentModel getContentRootWithType(String type)
             throws ClientException {
@@ -365,7 +363,7 @@ public class ContentRootsActionsBean extends InputController implements
                         || !getSectionsTableModel().getSelectedRows().isEmpty())
                     && currentItem.isFolder();
         } catch (Exception e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 
@@ -376,7 +374,7 @@ public class ContentRootsActionsBean extends InputController implements
             selectedDocs.addAll(getSectionsTableModel().getSelectedDocs());
             return selectedDocs;
         } catch (ECInvalidParameterException e) {
-            throw EJBExceptionHandler.wrapException(e);
+            throw ClientException.wrap(e);
         }
     }
 

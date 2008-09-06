@@ -59,10 +59,10 @@ public class ConversionActionBean implements ConversionAction {
     private static final Log log = LogFactory.getLog(ConversionActionBean.class);
 
     @In(create = true, required = false)
-    transient CoreSession documentManager;
+    CoreSession documentManager;
 
     @In(create = true)
-    transient NavigationContext navigationContext;
+    NavigationContext navigationContext;
 
     @RequestParameter
     private String docRef;

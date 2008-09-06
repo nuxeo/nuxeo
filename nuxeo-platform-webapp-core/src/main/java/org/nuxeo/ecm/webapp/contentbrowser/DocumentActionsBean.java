@@ -60,7 +60,6 @@ import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.types.Type;
@@ -216,7 +215,7 @@ public class DocumentActionsBean extends InputController implements
             return name;
 
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -232,7 +231,7 @@ public class DocumentActionsBean extends InputController implements
             FacesContext context = FacesContext.getCurrentInstance();
             return ComponentUtils.download(context, blob, filename);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -313,7 +312,7 @@ public class DocumentActionsBean extends InputController implements
             context.responseComplete();
             return null;
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -341,7 +340,7 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.navigateToDocument(currentDocument,
                     "after-edit");
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -363,7 +362,7 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.navigateToDocument(changeableDocument,
                     "after-edit");
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -426,7 +425,7 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.navigateToDocument(changeableDocument,
                     "after-edit");
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -456,7 +455,7 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.getActionResult(changeableDocument,
                     UserAction.CREATE);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -503,7 +502,7 @@ public class DocumentActionsBean extends InputController implements
             return navigationContext.navigateToDocument(newDocument,
                     "after-create");
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -518,7 +517,8 @@ public class DocumentActionsBean extends InputController implements
         // XXX : this proves that this method is called too many times
         // log.debug("Getter children select model");
         DocumentModelList documents = navigationContext.getCurrentDocumentChildrenPage();
-        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
+        List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(
+                DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         SelectDataModel model = new SelectDataModelImpl(CHILDREN_DOCUMENT_LIST,
                 documents, selectedDocuments);
         model.addSelectModelListener(this);

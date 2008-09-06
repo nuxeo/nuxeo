@@ -45,7 +45,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.api.FileManagerPermissionException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
@@ -156,7 +155,7 @@ public class FileManageActionsBean extends InputController implements
                     UserAction.AFTER_CREATE);
 
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 

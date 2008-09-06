@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Filter;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.webapp.shield.ErrorHandlingInterceptor;
 
 /**
@@ -103,7 +102,7 @@ public class SearchBusinessDelegate implements Serializable {
                 throw new SearchException(cause);
             }
 
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -138,7 +137,7 @@ public class SearchBusinessDelegate implements Serializable {
                 throw new SearchException(cause);
             }
 
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -173,7 +172,7 @@ public class SearchBusinessDelegate implements Serializable {
                 throw new SearchException(cause);
             }
 
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -224,7 +223,7 @@ public class SearchBusinessDelegate implements Serializable {
                 throw new SearchException(cause);
             }
 
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -259,7 +258,7 @@ public class SearchBusinessDelegate implements Serializable {
                 throw new SearchException(cause);
             }
 
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -288,7 +287,7 @@ public class SearchBusinessDelegate implements Serializable {
                 throw new SearchException(cause);
             }
 
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 

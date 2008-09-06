@@ -58,7 +58,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
@@ -168,7 +167,7 @@ public class UserManagerActionsBean extends InputController implements
                 users = Collections.emptyList();
                 searchOverflow = true;
             } catch (Exception t) {
-                throw EJBExceptionHandler.wrapException(t);
+                throw ClientException.wrap(t);
             }
         }
     }
@@ -187,7 +186,7 @@ public class UserManagerActionsBean extends InputController implements
             sessionContext.set("selectedUser", selectedUser);
             return "view_user";
         } catch (Exception t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -200,7 +199,7 @@ public class UserManagerActionsBean extends InputController implements
             sessionContext.set("selectedUser", selectedUser);
             return "view_user";
         } catch (Exception t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -232,7 +231,7 @@ public class UserManagerActionsBean extends InputController implements
             sessionContext.set("selectedUser", selectedUser);
             return "edit_user";
         } catch (Exception t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -251,7 +250,7 @@ public class UserManagerActionsBean extends InputController implements
 
             return viewUsers();
         } catch (Exception t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -344,7 +343,7 @@ public class UserManagerActionsBean extends InputController implements
             userManager.updatePrincipal(selectedUser);
             return viewUser(selectedUser.getName());
         } catch (Exception t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -387,7 +386,7 @@ public class UserManagerActionsBean extends InputController implements
             return null;
 
         } catch (Exception t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -410,7 +409,7 @@ public class UserManagerActionsBean extends InputController implements
             sessionContext.set("newUser", newUser);
             return "create_user";
         } catch (Exception t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 

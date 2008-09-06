@@ -68,10 +68,10 @@ public class TreeActionsBean implements TreeActions {
             + "_NODE_SELECTED_MARKER";
 
     @In(create = true, required = false)
-    protected transient CoreSession documentManager;
+    protected CoreSession documentManager;
 
     @In(create = true)
-    protected transient NavigationContext navigationContext;
+    protected NavigationContext navigationContext;
 
     protected List<DocumentTreeNode> tree;
 

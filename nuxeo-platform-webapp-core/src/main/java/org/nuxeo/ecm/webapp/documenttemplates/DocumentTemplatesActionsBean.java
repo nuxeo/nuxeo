@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.action.TypesTool;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -198,7 +197,7 @@ public class DocumentTemplatesActionsBean extends InputController implements
                     resourcesAccessor.getMessages().get("document_saved"), resourcesAccessor.getMessages().get(created.getType()));
             return navigationContext.navigateToDocument(created, "after-create");
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
