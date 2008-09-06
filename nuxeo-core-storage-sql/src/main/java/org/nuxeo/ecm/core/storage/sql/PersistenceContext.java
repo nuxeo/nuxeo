@@ -53,6 +53,8 @@ public class PersistenceContext {
 
     private final Map<String, Context> contexts;
 
+    private final HierarchyContext hierContext;
+
     private final Model model;
 
     /**
@@ -78,7 +80,9 @@ public class PersistenceContext {
         contexts = new ConcurrentHashMap<String, Context>();
 
         // avoid doing tests all the time for this known case
-        getContext(model.hierTableName);
+        hierContext = new HierarchyContext(mapper, this);
+        contexts.put(model.hierTableName, hierContext);
+
         // this has to be linked to keep creation order, as foreign keys
         // are used and need this
         createdIds = new LinkedHashSet<Serializable>();
@@ -137,14 +141,8 @@ public class PersistenceContext {
         /*
          * First, create the main rows to get final ids for each.
          */
-        Context mainContext = contexts.get(model.mainTableName);
-        Map<Serializable, Serializable> idMap;
-        if (mainContext != null) {
-            idMap = mainContext.saveMainCreated(createdIds);
-        } else {
-            idMap = Collections.emptyMap();
-        }
-        // all generated ids have now been written
+        assert !model.separateMainTable;
+        Map<Serializable, Serializable> idMap = hierContext.saveCreated(createdIds);
         createdIds.clear();
 
         /*
@@ -230,24 +228,6 @@ public class PersistenceContext {
     }
 
     /**
-     * Gets a hierarchy fragment given an id.
-     * <p>
-     * If the fragment is not in the context, fetch it from the mapper. If it's
-     * not in the database, returns {@code null} or an absent fragment.
-     *
-     * @param id the fragment id
-     * @param allowAbsent {@code true} to return an absent fragment as an object
-     *            instead of {@code null}
-     * @return the hierarchy fragment, or {@code null} if none is found and
-     *         {@value allowAbsent} was {@code false}
-     * @throws StorageException
-     */
-    public Fragment getChildById(Serializable id, boolean allowAbsent)
-            throws StorageException {
-        return contexts.get(model.hierTableName).getChildById(id, allowAbsent);
-    }
-
-    /**
      * Finds a row in the hierarchy table given its parent id and name. If the
      * row is not in the context, fetch it from the mapper.
      *
@@ -259,8 +239,7 @@ public class PersistenceContext {
      */
     public SimpleFragment getChildByName(Serializable parentId, String name,
             boolean complexProp) throws StorageException {
-        return contexts.get(model.hierTableName).getChildByName(parentId, name,
-                complexProp);
+        return hierContext.getChildByName(parentId, name, complexProp);
     }
 
     /**
@@ -274,8 +253,7 @@ public class PersistenceContext {
      */
     public Collection<SimpleFragment> getChildren(Serializable parentId,
             String name, boolean complexProp) throws StorageException {
-        return contexts.get(model.hierTableName).getChildren(parentId, name,
-                complexProp);
+        return hierContext.getChildren(parentId, name, complexProp);
     }
 
     /**
@@ -288,7 +266,7 @@ public class PersistenceContext {
      */
     public void move(Node source, Serializable parentId, String name)
             throws StorageException {
-        contexts.get(model.hierTableName).moveChild(source, parentId, name);
+        hierContext.moveChild(source, parentId, name);
     }
 
     /**
@@ -302,8 +280,7 @@ public class PersistenceContext {
      */
     public Serializable copy(Node source, Serializable parentId, String name)
             throws StorageException {
-        return contexts.get(model.hierTableName).copyChild(source, parentId,
-                name);
+        return hierContext.copyChild(source, parentId, name);
     }
 
     /**
@@ -344,6 +321,8 @@ public class PersistenceContext {
         String typeName = node.getPrimaryType();
         Serializable newId = mapper.copyHierarchy(id, typeName, null, null,
                 null, null, this);
+        get(model.hierTableName, newId, false); // adds version as a new child
+        // of its parent
         /*
          * Create a "version" row for our new version.
          */
@@ -354,7 +333,6 @@ public class PersistenceContext {
         map.put(model.VERSION_DESCRIPTION_KEY, description);
         SimpleFragment versionRow = (SimpleFragment) createSimpleFragment(
                 model.VERSION_TABLE_NAME, newId, map);
-        getChildById(newId, false); // adds version as a new child of its parent
         /*
          * Update the original node to reflect that it's checked in.
          */
@@ -408,7 +386,10 @@ public class PersistenceContext {
         /*
          * Clear complex properties.
          */
-        for (Fragment child : getChildren(versionableId, null, true)) {
+        Collection<SimpleFragment> children = getChildren(versionableId, null,
+                true);
+        // copy to avoid concurrent modifications
+        for (Fragment child : children.toArray(new Fragment[children.size()])) {
             remove(child); // will cascade deletes
         }
         save(); // flush deletes
@@ -416,8 +397,8 @@ public class PersistenceContext {
          * Copy the version values.
          */
         Map<String, Serializable> overwriteMap = new HashMap<String, Serializable>();
-        SimpleFragment versionHier = (SimpleFragment) getContext(
-                model.hierTableName).get(versionId, false);
+        SimpleFragment versionHier = (SimpleFragment) hierContext.get(
+                versionId, false);
         for (String key : model.getFragmentKeysType(model.hierTableName).keySet()) {
             if (key.equals(model.HIER_PARENT_KEY) ||
                     key.equals(model.HIER_CHILD_NAME_KEY) ||
@@ -435,8 +416,7 @@ public class PersistenceContext {
         mapper.copyHierarchy(versionId, typeName, node.getParentId(), null,
                 versionableId, overwriteMap, this);
         // mark Children non-complete as there may be new ones
-        getContext(model.hierTableName).markChildrenInvalidatedAdded(
-                versionableId, true);
+        hierContext.markChildrenInvalidatedAdded(versionableId, true);
     }
 
     /**

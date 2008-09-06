@@ -111,6 +111,28 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     }
 
+    public void testChildrenRemoval() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Serializable fooId = session.addChildNode(root, "foo", null, "TestDoc",
+                false).getId();
+        Serializable barId = session.addChildNode(root, "bar", null, "TestDoc",
+                false).getId();
+        session.save();
+        session.close();
+
+        // from another session
+        // get one and remove it
+        session = repository.getConnection();
+        root = session.getRootNode();
+        session.getNodeById(fooId); // one known child
+        Node nodebar = session.getNodeById(barId); // another
+        session.removeNode(nodebar); // remove one known
+        // the following gets a complete list but skips deleted ones
+        List<Node> children = session.getChildren(root, null, false);
+        assertEquals(1, children.size());
+    }
+
     public void testBasics() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
@@ -277,8 +299,91 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // session2 save wins
         assertEquals("glop", title1.getString());
         assertEquals("glop", title2.getString());
+    }
 
-        // TODO test collections, and children
+    public void testCrossSessionChildrenInvalidationAdd() throws Exception {
+        // in first session, create base folder
+        Session session1 = repository.getConnection();
+        Node root1 = session1.getRootNode();
+        Node folder1 = session1.addChildNode(root1, "foo", null, "TestDoc",
+                false);
+        session1.save();
+
+        // in second session, retrieve folder and check children
+        Session session2 = repository.getConnection();
+        Node root2 = session2.getRootNode();
+        Node folder2 = session2.getChildNode(root2, "foo", false);
+        session2.getChildren(folder2, null, false);
+
+        // in first session, add document
+        session1.addChildNode(folder1, "gee", null, "TestDoc", false);
+        session1.save();
+
+        // in second session, try to get document
+        session2.save(); // process invalidations (non-transactional)
+        Node doc2 = session2.getChildNode(folder2, "gee", false);
+        assertNotNull(doc2);
+    }
+
+    public void testCrossSessionChildrenInvalidationRemove() throws Exception {
+        // in first session, create base folder and doc
+        Session session1 = repository.getConnection();
+        Node root1 = session1.getRootNode();
+        Node folder1 = session1.addChildNode(root1, "foo", null, "TestDoc",
+                false);
+        Node doc1 = session1.addChildNode(folder1, "gee", null, "TestDoc",
+                false);
+        session1.save();
+
+        // in second session, retrieve folder and check children
+        Session session2 = repository.getConnection();
+        Node root2 = session2.getRootNode();
+        Node folder2 = session2.getChildNode(root2, "foo", false);
+        List<Node> children2 = session2.getChildren(folder2, null, false);
+        assertEquals(1, children2.size());
+
+        // in first session, remove child
+        session1.removeNode(doc1);
+        session1.save();
+
+        // in second session, check no more children
+        session2.save(); // process invalidations (non-transactional)
+        children2 = session2.getChildren(folder2, null, false);
+        assertEquals(0, children2.size());
+    }
+
+    public void testCrossSessionChildrenInvalidationMove() throws Exception {
+        // in first session, create base folders and doc
+        Session session1 = repository.getConnection();
+        Node root1 = session1.getRootNode();
+        Node foldera1 = session1.addChildNode(root1, "foo", null, "TestDoc",
+                false);
+        Node folderb1 = session1.addChildNode(root1, "bar", null, "TestDoc",
+                false);
+        Node doc1 = session1.addChildNode(foldera1, "gee", null, "TestDoc",
+                false);
+        session1.save();
+
+        // in second session, retrieve folders and check children
+        Session session2 = repository.getConnection();
+        Node root2 = session2.getRootNode();
+        Node foldera2 = session2.getChildNode(root2, "foo", false);
+        List<Node> childrena2 = session2.getChildren(foldera2, null, false);
+        assertEquals(1, childrena2.size());
+        Node folderb2 = session2.getChildNode(root2, "bar", false);
+        List<Node> childrenb2 = session2.getChildren(folderb2, null, false);
+        assertEquals(0, childrenb2.size());
+
+        // in first session, move between folders
+        session1.move(doc1, folderb1, null);
+        session1.save();
+
+        // in second session, check children count
+        session2.save(); // process invalidations (non-transactional)
+        childrena2 = session2.getChildren(foldera2, null, false);
+        assertEquals(0, childrena2.size());
+        childrenb2 = session2.getChildren(folderb2, null, false);
+        assertEquals(1, childrenb2.size());
     }
 
     public void testMove() throws Exception {

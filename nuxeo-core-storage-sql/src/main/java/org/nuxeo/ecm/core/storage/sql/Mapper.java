@@ -801,7 +801,7 @@ public class Mapper {
      * @param context the persistence context to which the read rows are tied
      * @return the child hierarchy rows, or {@code null}
      */
-    public Collection<SimpleFragment> readChildHierRows(Serializable parentId,
+    public List<SimpleFragment> readChildHierRows(Serializable parentId,
             boolean complexProp, Context context) throws StorageException {
         if (parentId == null) {
             throw new IllegalArgumentException("Illegal null parentId");
