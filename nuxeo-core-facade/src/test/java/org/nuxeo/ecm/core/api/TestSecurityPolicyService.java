@@ -43,16 +43,16 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        deployBundle(CoreFacadeTestConstants.SCHEMA_BUNDLE);
-        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+        deployBundle(TestConstants.SCHEMA_BUNDLE);
+        deployContrib(TestConstants.CORE_BUNDLE,
                 "OSGI-INF/CoreService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+        deployContrib(TestConstants.CORE_BUNDLE,
                 "OSGI-INF/SecurityService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+        deployContrib(TestConstants.CORE_BUNDLE,
                 "OSGI-INF/RepositoryService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "test-CoreExtensions.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "DemoRepository.xml");
     }
 
@@ -122,20 +122,20 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
     public void testOldCorePolicy() throws Exception {
         // standard permissions
-        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+        deployContrib(TestConstants.CORE_BUNDLE,
                 "OSGI-INF/permissions-contrib.xml");
         // deploy custom security policy
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "PolicyService.xml");
         checkCorePolicy();
     }
 
     public void testNewSecurityPolicy() throws Exception {
         // standard permissions
-        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+        deployContrib(TestConstants.CORE_BUNDLE,
                 "OSGI-INF/permissions-contrib.xml");
         // deploy custom security policy
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "test-security-policy-contrib.xml");
         checkCorePolicy();
     }
@@ -152,9 +152,9 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
     public void testLockSecurityPolicy() throws Exception {
         // deploy standard contribs
-        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+        deployContrib(TestConstants.CORE_BUNDLE,
                 "OSGI-INF/permissions-contrib.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+        deployContrib(TestConstants.CORE_BUNDLE,
                 "OSGI-INF/security-policy-contrib.xml");
 
         // create document

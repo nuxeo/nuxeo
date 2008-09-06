@@ -50,29 +50,30 @@ public class TestLocalAPI extends TestAPI {
     protected RuntimeService runtime;
 
     protected void doDeployments() throws Exception {
-        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+        deployContrib(TestConstants.CORE_BUNDLE,
                 "OSGI-INF/CoreService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_BUNDLE,
+        deployContrib(TestConstants.CORE_BUNDLE,
                 "OSGI-INF/SecurityService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "TypeService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "permissions-contrib.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "RepositoryService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "test-CoreExtensions.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "CoreTestExtensions.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "DemoRepository.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "LifeCycleService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "LifeCycleServiceExtensions.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "CoreEventListenerService.xml");
-        deployContrib(CoreFacadeTestConstants.CORE_FACADE_TESTS_BUNDLE,
+        deployContrib(TestConstants.CORE_FACADE_TESTS_BUNDLE,
                 "DocumentAdapterService.xml");
     }
 
@@ -96,13 +97,13 @@ public class TestLocalAPI extends TestAPI {
         assertTrue(p.isPhantom());
         assertNull(p.getValue());
         p.setValue(12);
-        assertEquals(new Long(12), p.getValue());
+        assertEquals(12L, p.getValue());
         remote.saveDocument(doc);
 
         dp = doc.getPart("MySchema");
         p = dp.get("long");
         assertFalse(p.isPhantom());
-        assertEquals(new Long(12), p.getValue());
+        assertEquals(12L, p.getValue());
         p.setValue(null);
         assertFalse(p.isPhantom());
         assertNull(p.getValue());
@@ -113,7 +114,7 @@ public class TestLocalAPI extends TestAPI {
         p = dp.get("long");
         // assertTrue(p.isPhantom());
         assertNull(p.getValue());
-        p.setValue(new Long(13));
+        p.setValue(13L);
         p.remove();
         assertTrue(p.isRemoved());
         assertNull(p.getValue());
