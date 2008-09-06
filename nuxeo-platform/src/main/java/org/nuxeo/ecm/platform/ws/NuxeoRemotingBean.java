@@ -490,6 +490,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements
         return groups.toArray(new String[groups.size()]);
     }
 
+    @SuppressWarnings("unchecked")
     @WebMethod
     public String getRelativePathAsString(String sessionId, String uuid)
             throws ClientException {
