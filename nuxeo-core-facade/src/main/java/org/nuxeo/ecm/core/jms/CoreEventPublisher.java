@@ -64,10 +64,10 @@ public class CoreEventPublisher {
 
     private void configureJMS() {
         Properties runtime = Framework.getRuntime().getProperties();
-        transacted = new Boolean(runtime.getProperty("jms.useTransactedConnection"));
-        isDeliveryPersistent = new Boolean(runtime.getProperty("jms.isDeliveryPersistent"));
-        isDisableMessageID = new Boolean(runtime.getProperty("jms.isDisableMessageID"));
-        isDisableMessageTimestamp = new Boolean(runtime.getProperty("jms.isDisableMessageTimestamp"));
+        transacted = Boolean.valueOf(runtime.getProperty("jms.useTransactedConnection"));
+        isDeliveryPersistent = Boolean.valueOf(runtime.getProperty("jms.isDeliveryPersistent"));
+        isDisableMessageID = Boolean.valueOf(runtime.getProperty("jms.isDisableMessageID"));
+        isDisableMessageTimestamp = Boolean.valueOf(runtime.getProperty("jms.isDisableMessageTimestamp"));
     }
 
     public static CoreEventPublisher getInstance() {
@@ -103,7 +103,7 @@ public class CoreEventPublisher {
     }
 
     /**
-     * Retrieves a new JMS Connection from the pool
+     * Retrieves a new JMS Connection from the pool.
      *
      * @return a <code>QueueConnection</code>
      * @throws JMSException if the connection could not be retrieved

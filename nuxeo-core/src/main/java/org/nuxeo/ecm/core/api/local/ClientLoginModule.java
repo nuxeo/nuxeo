@@ -44,7 +44,9 @@ public class ClientLoginModule implements LoginModule {
 
     protected static final ThreadLocal<LoginStack> threadInstance = new ThreadLocal<LoginStack>() {
         @Override
-        protected LoginStack initialValue() { return new LoginStack(); };
+        protected LoginStack initialValue() {
+            return new LoginStack();
+        }
     };
 
     public static LoginStack getThreadLocalLogin() {
@@ -106,7 +108,7 @@ public class ClientLoginModule implements LoginModule {
     */
    public boolean login() throws LoginException {
         // If useFirstPass is true, look for the shared password
-        if (useFirstPass == true) {
+        if (useFirstPass) {
             return true;
         }
 

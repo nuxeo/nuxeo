@@ -230,8 +230,7 @@ public class XPathBuilder implements QueryConstants {
                 }
                 boolean value;
                 if (expr.rvalue.getClass() == IntegerLiteral.class) {
-                    value = ((IntegerLiteral) expr.rvalue).value == 0 ? false
-                            : true;
+                    value = ((IntegerLiteral) expr.rvalue).value != 0;
                 } else {
                     throw new QueryException(
                             "Invalid query: ecm:isCheckedInVersion support integer values");

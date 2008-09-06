@@ -64,7 +64,7 @@ public class BlobObjectAdapter extends DynamicObjectAdapter {
             ss = new ByteArraySource(new byte[0]);
         }
 
-        StreamingBlob blob = new StreamingBlob(ss);
+        Blob blob = new StreamingBlob(ss);
         blob.setMimeType(mimeType);
         blob.setEncoding(encoding);
 //        blob.setFilename(filename);

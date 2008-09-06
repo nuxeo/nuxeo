@@ -26,7 +26,6 @@ import java.util.Set;
 import org.nuxeo.ecm.core.schema.types.CompositeTypeImpl;
 import org.nuxeo.runtime.api.Framework;
 
-
 /**
  * Implementation of a document type.
  * <p>

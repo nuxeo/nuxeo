@@ -34,7 +34,7 @@ public class LoginStack {
         return new Sync();
     }
 
-    protected LinkedList<Entry> stack = new LinkedList<Entry>();
+    protected final LinkedList<Entry> stack = new LinkedList<Entry>();
 
     public void clear() {
         stack.clear();
@@ -79,29 +79,24 @@ public class LoginStack {
     }
 
     public static class Entry {
-        protected Principal principal;
-        protected Object credential;
-        protected Subject subject;
+        protected final Principal principal;
+        protected final Object credential;
+        protected final Subject subject;
+
         public Entry(Principal principal, Object credential, Subject subject) {
             this.principal = principal;
             this.credential = credential;
             this.subject = subject;
         }
-        /**
-         * @return the principal.
-         */
+
         public Principal getPrincipal() {
             return principal;
         }
-        /**
-         * @return the credential.
-         */
+
         public Object getCredential() {
             return credential;
         }
-        /**
-         * @return the subject.
-         */
+
         public Subject getSubject() {
             return subject;
         }
@@ -152,4 +147,5 @@ public class LoginStack {
         }
 
     }
+
 }

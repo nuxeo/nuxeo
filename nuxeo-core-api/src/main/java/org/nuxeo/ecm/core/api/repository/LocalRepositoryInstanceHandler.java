@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.api.repository;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -54,7 +55,7 @@ public class LocalRepositoryInstanceHandler extends RepositoryInstanceHandler {
         if (repositoryUri == null) {
             repositoryUri = repository.getName();
         }
-        HashMap<String, Serializable> ctx = new HashMap<String, Serializable>();
+        Map<String, Serializable> ctx = new HashMap<String, Serializable>();
         ctx.put("principal", (NuxeoPrincipal) principal);
         String sid = session.connect(repositoryUri, ctx);
         // register session on local JVM so it can be used later by doc models
