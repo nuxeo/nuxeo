@@ -838,7 +838,6 @@ public class UIEditableList extends UIInput implements NamingContainer {
         // }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void processUpdates(@NotNull
     FacesContext context) {

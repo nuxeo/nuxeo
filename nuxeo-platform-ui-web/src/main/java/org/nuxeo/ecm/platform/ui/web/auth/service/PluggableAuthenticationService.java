@@ -97,7 +97,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
             // create the new instance
             AuthenticationPluginDescriptor actualDescriptor = authenticatorsDescriptors.get(descriptor.getName());
             try {
-                NuxeoAuthenticationPlugin authPlugin = (NuxeoAuthenticationPlugin) actualDescriptor.getClassName().newInstance();
+                NuxeoAuthenticationPlugin authPlugin = actualDescriptor.getClassName().newInstance();
                 authPlugin.initPlugin(actualDescriptor.getParameters());
                 authenticators.put(actualDescriptor.getName(), authPlugin);
             } catch (InstantiationException e) {

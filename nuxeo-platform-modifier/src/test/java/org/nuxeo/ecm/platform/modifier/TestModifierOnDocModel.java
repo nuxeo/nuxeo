@@ -39,6 +39,7 @@ import org.nuxeo.ecm.platform.transform.document.TransformDocumentImpl;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
 import org.nuxeo.ecm.platform.transform.interfaces.Transformer;
 import org.nuxeo.ecm.platform.transform.service.TransformService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Test the Document Modifier component.
@@ -70,7 +71,7 @@ public class TestModifierOnDocModel extends AbstractPluginTestCase {
 
         openCoreSession();
 
-        TransformService service = NXTransform.getTransformService();
+        TransformService service = (TransformService) Framework.getRuntime().getComponent(TransformService.NAME);
         transformer = service.getTransformerByName("any2text");
     }
 

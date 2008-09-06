@@ -312,6 +312,7 @@ public abstract class DirectoryAwareComponent extends UIInput {
         this.directoryValues = directoryValues;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object saveState(FacesContext context) {
         Object[] values = new Object[16];

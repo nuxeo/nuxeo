@@ -42,6 +42,7 @@ import java.io.Serializable;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoCallbackHandlerFactory;
 
 @XObject(value = "callbackHandlerFactory")
 public class CallbackHandlerFactoryDescriptor implements Serializable {
@@ -52,13 +53,13 @@ public class CallbackHandlerFactoryDescriptor implements Serializable {
     private String name;
 
     @XNode("@class")
-    Class className;
+    Class<NuxeoCallbackHandlerFactory> className;
 
-    public Class getClassName() {
+    public Class<NuxeoCallbackHandlerFactory> getClassName() {
         return className;
     }
 
-    public void setClassName(Class className) {
+    public void setClassName(Class<NuxeoCallbackHandlerFactory> className) {
         this.className = className;
     }
 

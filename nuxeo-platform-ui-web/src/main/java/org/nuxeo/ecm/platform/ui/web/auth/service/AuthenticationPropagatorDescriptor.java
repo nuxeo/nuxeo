@@ -42,6 +42,7 @@ import java.io.Serializable;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPropagator;
 
 @XObject(value = "propagationHandler")
 public class AuthenticationPropagatorDescriptor implements Serializable {
@@ -52,13 +53,13 @@ public class AuthenticationPropagatorDescriptor implements Serializable {
     private String name;
 
     @XNode("@class")
-    Class className;
+    Class<NuxeoAuthenticationPropagator> className;
 
-    public Class getClassName() {
+    public Class<NuxeoAuthenticationPropagator> getClassName() {
         return className;
     }
 
-    public void setClassName(Class className) {
+    public void setClassName(Class<NuxeoAuthenticationPropagator> className) {
         this.className = className;
     }
 

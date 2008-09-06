@@ -28,7 +28,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.platform.transform.NXTransform;
 import org.nuxeo.ecm.platform.transform.document.TransformDocumentImpl;
 import org.nuxeo.ecm.platform.transform.interfaces.Plugin;
 import org.nuxeo.ecm.platform.transform.interfaces.TransformDocument;
@@ -36,6 +35,7 @@ import org.nuxeo.ecm.platform.transform.interfaces.TransformServiceCommon;
 import org.nuxeo.ecm.platform.transform.interfaces.Transformer;
 import org.nuxeo.ecm.platform.transform.service.TransformService;
 import org.nuxeo.ecm.platform.transform.timer.SimpleTimer;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Abstract transformer.
@@ -68,7 +68,7 @@ public abstract class AbstractTransformer implements Transformer {
     }
 
     protected static TransformService getNXTransform() {
-        return NXTransform.getTransformService();
+        return (TransformService) Framework.getRuntime().getComponent(TransformService.NAME);
     }
 
     public Map<String, Map<String, Serializable>> getDefaultOptions() {
