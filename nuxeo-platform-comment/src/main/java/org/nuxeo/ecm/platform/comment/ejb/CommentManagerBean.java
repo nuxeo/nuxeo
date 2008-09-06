@@ -88,7 +88,6 @@ public class CommentManagerBean implements CommentManager {
         return author;
     }
 
-
     public DocumentModel createComment(DocumentModel docModel,
             DocumentModel comment) throws ClientException {
         try {

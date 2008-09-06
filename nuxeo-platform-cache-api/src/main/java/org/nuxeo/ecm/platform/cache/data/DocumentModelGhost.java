@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.jetbrains.annotations.NotNull;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.Path;
@@ -96,9 +95,9 @@ public class DocumentModelGhost implements DocumentModel {
      * from server.
      *
      */
-    public DocumentModelGhost(@NotNull DocumentRef ref, String sid, @NotNull String type,
-            String[] declaredSchemas, @NotNull String id, @NotNull Path path,
-            @NotNull DocumentRef parentRef) {
+    public DocumentModelGhost(DocumentRef ref, String sid, String type,
+            String[] declaredSchemas, String id, Path path,
+            DocumentRef parentRef) {
         this.ref = ref;
         this.sid = sid;
         this.type = type;

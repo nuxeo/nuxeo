@@ -58,7 +58,7 @@ public abstract class AbstractNuxeoCoreValidatorsRule implements ValidatorsRule 
         session = mgr.getRepository(repoName).open();
     }
 
-    protected void closeCoreSession() throws Exception {
+    protected void closeCoreSession() {
         if (session != null) {
             CoreInstance.getInstance().close(session);
         }

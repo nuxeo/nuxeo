@@ -62,7 +62,8 @@ import org.nuxeo.runtime.api.Framework;
         @ActivationConfigProperty(propertyName = "providerAdapterJNDI", propertyValue = "java:/NXCoreEventsProvider"),
         @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
         @ActivationConfigProperty(propertyName = "messageSelector",
-                propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " IN ('" + JMSConstant.DOCUMENT_MESSAGE + "','" + JMSConstant.EVENT_MESSAGE + "') AND " + JMSConstant.NUXEO_EVENT_ID + " IN ('"
+                propertyValue = JMSConstant.NUXEO_MESSAGE_TYPE + " IN ('" + JMSConstant.DOCUMENT_MESSAGE + "','"
+                    + JMSConstant.EVENT_MESSAGE + "') AND " + JMSConstant.NUXEO_EVENT_ID + " IN ('"
                     + DocumentEventTypes.DOCUMENT_CREATED +"','" + DocumentEventTypes.DOCUMENT_UPDATED + "')") })
 public class UploadFileListener implements MessageListener {
 
@@ -131,8 +132,9 @@ public class UploadFileListener implements MessageListener {
 
         try {
             Object obj = ((ObjectMessage)message).getObject();
-            if(!(obj instanceof DocumentMessage))
+            if(!(obj instanceof DocumentMessage)) {
                 return;
+            }
             DocumentMessage doc = (DocumentMessage) obj;
             login();
 

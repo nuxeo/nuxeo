@@ -47,11 +47,12 @@ import org.nuxeo.ecm.platform.audit.ejb.LogEntryImpl;
 /**
  * Audit log entry importer/exporter.
  * <p>
- * Could be overriden to externalize additional information of a redefined
+ * Could be overridden to externalize additional information of a redefined
  * LogEntry.
  *
  * @author DM
  */
+// FIXME: design issue - this is a util class (only static methods) with no subclasses (misleading name).
 public class IOLogEntryBase {
 
     public static final String DOCUMENT_TAG = "documentLogs";
@@ -220,4 +221,5 @@ public class IOLogEntryBase {
 
         return newLogEntry;
     }
+
 }

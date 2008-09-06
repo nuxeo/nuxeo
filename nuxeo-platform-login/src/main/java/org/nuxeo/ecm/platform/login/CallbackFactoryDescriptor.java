@@ -38,7 +38,6 @@ public class CallbackFactoryDescriptor {
         return className;
     }
 
-
     public Boolean getEnabled() {
         return enabled;
     }
@@ -54,6 +53,5 @@ public class CallbackFactoryDescriptor {
     public void setName(String name) {
         this.name = name;
     }
-
 
 }

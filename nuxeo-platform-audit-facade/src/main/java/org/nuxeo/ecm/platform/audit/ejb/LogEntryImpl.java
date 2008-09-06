@@ -48,7 +48,8 @@ import org.nuxeo.ecm.platform.events.api.DocumentMessage;
  */
 @Entity
 @NamedQueries({
-        @NamedQuery(name = "listLogEntriesFor", query = "from LogEntryImpl log where log.docUUID=:docUUID ORDER BY log.eventDate DESC"),
+        @NamedQuery(name = "listLogEntriesFor",
+                query = "from LogEntryImpl log where log.docUUID=:docUUID ORDER BY log.eventDate DESC"),
         @NamedQuery(name = "allLogEntries", query = "from LogEntryImpl") })
 @Table(name = "NXP_LOGS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)

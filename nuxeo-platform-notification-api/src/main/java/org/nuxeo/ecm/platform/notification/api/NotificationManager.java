@@ -34,11 +34,6 @@ public interface NotificationManager {
 
     /**
      * Gets the users that subscribed to a notification on a certain document.
-     *
-     * @param notification
-     * @param docId
-     * @return
-     * @throws ClassNotFoundException
      */
     List<String> getSubscribers(String notification, String docId)
             throws ClientException;
@@ -46,12 +41,6 @@ public interface NotificationManager {
     /**
      * Gets the notifications for which a user subscribed for a certain
      * document.
-     *
-     * @param username
-     * @param docId
-     * @return
-     * @throws ClassNotFoundException
-     * @throws ClientException
      */
     List<String> getSubscriptionsForUserOnDocument(String username,
             String docId) throws ClassNotFoundException, ClientException;
@@ -59,22 +48,12 @@ public interface NotificationManager {
     /**
      * Gets all users and groups that subscribed to a notification on a document
      * This is used in management of subscritptions.
-     *
-     * @param notification
-     * @param docId
-     * @return
-     * @throws ClientException
      */
     List<String> getUsersSubscribedToNotificationOnDocument(
             String notification, String docId) throws ClientException;
 
     /**
      * Called when a user subscribes to a notification.
-     *
-     * @param username
-     * @param notification
-     * @param docId
-     * @throws ClientException
      */
     void addSubscription(String username, String notification,
             DocumentModel doc, Boolean sendConfirmationEmail,
@@ -83,11 +62,6 @@ public interface NotificationManager {
 
     /**
      * Called when a user cancels his notification.
-     *
-     * @param username
-     * @param notification
-     * @param docId
-     * @throws ClientException
      */
     void removeSubscription(String username, String notification,
             String docId) throws ClientException;
@@ -96,15 +70,12 @@ public interface NotificationManager {
      * Returns the notification manager.
      *
      * @deprecated should never have to return the registry : use delegation
-     * @return
      */
     @Deprecated
     NotificationRegistry getNotificationRegistry();
 
     /**
-     * Returns a notification with all data loaded (label, etc)
-     * @param selectedNotification
-     * @return
+     * Returns a notification with all data loaded (label, etc).
      */
     Notification getNotificationByName(String selectedNotification);
 
@@ -127,22 +98,11 @@ public interface NotificationManager {
 
     /**
      * Sends an e-mail directly.
-     *
-     * @param doc
-     * @param freemarkerTemplateName
-     * @param subject
-     * @param comment
-     * @param sender
-     * @param sendto
      */
     void sendDocumentByMail(DocumentModel doc,
             String freemarkerTemplateName, String subject, String comment,
             NuxeoPrincipal sender, List<String> sendto);
 
-    /**
-     *
-     * @param parentType
-     * @return
-     */
     List<Notification> getNotificationsForSubscriptions(String parentType);
+
 }
