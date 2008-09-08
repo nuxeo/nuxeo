@@ -238,6 +238,13 @@
       <sourceMimeType>text/xml</sourceMimeType>
     </plugin>
 
+    <!-- This plugin extracts text form Html documents -->
+    <plugin name="html2text"
+      class="org.nuxeo.ecm.platform.transform.plugin.html.Html2TextPlugin"
+      destinationMimeType="text/plain">
+      <sourceMimeType>text/html</sourceMimeType>
+    </plugin>
+
     <plugin name="xml2text"
       class="org.nuxeo.ecm.platform.transform.plugin.xml.Xml2TextPluginImpl"
       destinationMimeType="text/plain">
@@ -417,6 +424,12 @@
     <transformer name="xslt"
       class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
       <plugin name="xslt" />
+    </transformer>
+
+    <!-- This transformer use the html2text plugin to extract text form Html documents -->
+    <transformer name="html2text"
+      class="org.nuxeo.ecm.platform.transform.transformer.TransformerImpl">
+      <plugin name="html2text" />
     </transformer>
 
   </extension>
