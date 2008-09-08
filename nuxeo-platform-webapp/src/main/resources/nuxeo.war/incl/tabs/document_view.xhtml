@@ -69,6 +69,12 @@
               value="#{nxd:liveEditUrl(changeableDocument, field.schemaName, field.fieldName, 'filename')}">
               <h:outputText value="#{messages['label.document.directEdit']}" />
             </h:outputLink> 
+            <h:outputText value=" | " />
+            <h:outputLink
+              value="#{nxd:liveCreateFromTemplateUrl(changeableDocument, field.schemaName, field.fieldName, 'File', 'file', 'content','filename')}">
+              <h:outputText value="#{messages['label.document.directCreateFromTemplate']}" />
+            </h:outputLink> 
+
           </h:panelGroup>
         </nxu:methodResult>
 
