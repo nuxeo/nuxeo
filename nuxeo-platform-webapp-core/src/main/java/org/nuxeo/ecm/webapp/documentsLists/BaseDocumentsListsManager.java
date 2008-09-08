@@ -82,7 +82,6 @@ public abstract class BaseDocumentsListsManager implements Serializable{
         }
 
         return persistenceManager;
-
     }
 
     public List<DocumentModel> resetWorkingList(String listName) {
@@ -150,7 +149,7 @@ public abstract class BaseDocumentsListsManager implements Serializable{
         if (descriptor == null) {
             descriptor = new DocumentsListDescriptor(listName);
         }
-
+ 
         documentsLists_descriptors.put(listName, descriptor);
 
         // manage events subscriptions

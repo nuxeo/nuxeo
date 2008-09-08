@@ -23,19 +23,19 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 
 /**
  * MimetypeEntry.
  * <p>
  * A mimetype instance holds mimetype meta information.
  *
- * @see org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry
+ * @see MimetypeEntry
  *
  * @author <a href="ja@nuxeo.com">Julien Anguenot</a>
  *
  */
-public class MimetypeEntryImpl implements
-        org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry {
+public class MimetypeEntryImpl implements MimetypeEntry {
 
     private static final long serialVersionUID = 5416098564564151631L;
 

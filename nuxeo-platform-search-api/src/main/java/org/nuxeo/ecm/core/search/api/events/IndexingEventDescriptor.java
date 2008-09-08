@@ -60,15 +60,15 @@ public class IndexingEventDescriptor implements IndexingEventConf {
         this.resources = resources;
         this.recursive = recursive;
         this.name = name;
-        this.mode=SYNC_ASYNC;
+        mode = SYNC_ASYNC;
     }
 
     public IndexingEventDescriptor(String action, Set<String> resources,
             boolean recursive, String name,String mode) {
         this(action,resources,recursive, name);
         this.mode = mode;
-
     }
+
     public String getAction() {
         return action;
     }
@@ -89,8 +89,8 @@ public class IndexingEventDescriptor implements IndexingEventConf {
         return name;
     }
 
-    public String getMode()
-    {
+    public String getMode() {
         return mode;
     }
+
 }

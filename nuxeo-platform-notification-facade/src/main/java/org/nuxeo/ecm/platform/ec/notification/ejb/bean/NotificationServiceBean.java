@@ -53,7 +53,7 @@ public class NotificationServiceBean implements NotificationManager {
     // EntityManager em;
     private static final Log log = LogFactory.getLog(NotificationServiceBean.class);
 
-    protected transient NotificationManager service;
+    protected NotificationManager service;
 
     @PostActivate
     @PostConstruct

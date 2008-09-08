@@ -35,9 +35,6 @@ public class FakeJbpmWorkflowActionHandler extends JbpmWorkflowActionHandler {
     public static boolean isExecuted = false;
 
     public void execute(ExecutionContext executionContext) throws Exception {
-        System.out.println("###############################################");
-        System.out.println("PROCESS START..................................");
-        System.out.println("###############################################");
         isExecuted = true;
     }
 

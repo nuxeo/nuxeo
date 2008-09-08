@@ -54,7 +54,6 @@ public class DirectoryEntry {
         } else {
             parent = null;
         }
-
     }
 
     public String getId() {
