@@ -56,6 +56,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -569,6 +571,23 @@ public class DocumentActionsBean extends InputController implements
         return "ERROR: " + errorMessage;
     }
 
+    /**
+     * Handle row selection event after having ensured that the
+     * navigation context stills points to currentDocumentRef to protect against
+     * browsers' back button errors
+     *
+     * @throws ClientException if currentDocRef is not a valid document
+     */
+    @WebRemote
+    public String checkCurrentDocAndProcessSelectRow(String docRef, String providerName,
+            String listName, Boolean selection, String currentDocRef) throws ClientException {
+        DocumentRef currentDocumentRef = new IdRef(currentDocRef);
+        if (!currentDocumentRef.equals(navigationContext.getCurrentDocument().getRef())) {
+            navigationContext.navigateToRef(currentDocumentRef);
+        }
+        return processSelectRow(docRef, providerName, listName, selection);
+    }
+
     @WebRemote
     public String processSelectRow(String docRef, String providerName,
             String listName, Boolean selection) {
@@ -598,6 +617,23 @@ public class DocumentActionsBean extends InputController implements
             documentsListsManager.removeFromWorkingList(lName, doc);
         }
         return computeSelectionActions(lName);
+    }
+
+    /**
+     * Handle complete table selection event after having ensured that the
+     * navigation context stills points to currentDocumentRef to protect against
+     * browsers' back button errors
+     *
+     * @throws ClientException if currentDocRef is not a valid document
+     */
+    @WebRemote
+    public String checkCurrentDocAndProcessSelectPage(String providerName, String listName,
+            Boolean selection, String currentDocRef) throws ClientException {
+        DocumentRef currentDocumentRef = new IdRef(currentDocRef);
+        if (!currentDocumentRef.equals(navigationContext.getCurrentDocument().getRef())) {
+            navigationContext.navigateToRef(currentDocumentRef);
+        }
+        return processSelectPage(providerName, listName, selection);
     }
 
     @WebRemote

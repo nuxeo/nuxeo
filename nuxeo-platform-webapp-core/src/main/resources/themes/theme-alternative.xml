@@ -1606,6 +1606,9 @@
         <font-size>9px</font-size>
         <float>right</float>
       </selector>
+      <selector path=".syndicationContainer">
+        <height>30px</height>
+      </selector>
       <selector path="div.syndicationButton div.syndicationLinks"
         view="facelet region">
         <color>rgb(241, 242, 243)</color>
@@ -1641,6 +1644,9 @@
         <margin-top>10px</margin-top>
         <font-size>9px</font-size>
         <float>right</float>
+      </selector>
+      <selector path=".syndicationContainer">
+        <height>30px</height>
       </selector>
       <selector path="div.syndicationButton div.syndicationLinks"
         view="facelet region">
