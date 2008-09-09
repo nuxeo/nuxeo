@@ -21,8 +21,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.ClientException;
@@ -72,9 +72,9 @@ public class FeedItemAdapter {
         feedIt.setLink(DocumentModelFunctions.documentUrl(null, doc, null,
                 null, true));
 
-        Date creationDate = ((GregorianCalendar) doc.getProperty("dublincore",
+        Date creationDate = ((Calendar) doc.getProperty("dublincore",
                 "created")).getTime();
-        Date updateDate = ((GregorianCalendar) doc.getProperty("dublincore",
+        Date updateDate = ((Calendar) doc.getProperty("dublincore",
                 "modified")).getTime();
 
         try {

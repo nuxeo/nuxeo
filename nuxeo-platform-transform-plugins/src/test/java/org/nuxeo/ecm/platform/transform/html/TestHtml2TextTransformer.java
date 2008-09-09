@@ -29,7 +29,7 @@ import org.nuxeo.ecm.platform.transform.interfaces.Transformer;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * 
+ *
  */
 public class TestHtml2TextTransformer extends AbstractPluginTestCase {
 

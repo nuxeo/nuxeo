@@ -90,11 +90,13 @@ public final class FileManagerUtils {
     }
 
     /**
-     * Returns the fileName of an uploadedfile.
+     * Returns the fileName of an uploaded file.
      *
      * @param fullName the full name that we need to parse
      * @return the FileName String
      */
+    // FIXME: badly named method
+    // FIXME: doesn't work in some corner cases, for instance a Unix filename with a \, or a DOS file with a /
     public static String fetchFileName(String fullName) {
         // Fetching filename
         String ret = fullName;
