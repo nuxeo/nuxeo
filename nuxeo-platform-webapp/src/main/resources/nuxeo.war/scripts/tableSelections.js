@@ -88,17 +88,19 @@ function selectDataTablePageCB(result) {
 
 function enableActions(actionsId) {
   var buttonDiv = document.getElementById("selection_buttons");
-  var nodes = buttonDiv.childNodes;
-  for (var i=0; i<nodes.length; i++) {
-    node = nodes[i];
-    if (node.tagName == "SPAN") {
-      actionId = node.id.split(":")[0];
-      enabled = isActionEnabled(actionId, actionsId);
-      if (enabled) {
-        node.childNodes[0].removeAttribute("disabled");
-      }
-      else {
-        node.childNodes[0].setAttribute("disabled", "disabled");
+  if (buttonDiv) {
+    var nodes = buttonDiv.childNodes;
+    for (var i=0; i<nodes.length; i++) {
+      node = nodes[i];
+      if (node.tagName == "SPAN") {
+        actionId = node.id.split(":")[0];
+        enabled = isActionEnabled(actionId, actionsId);
+        if (enabled) {
+          node.childNodes[0].removeAttribute("disabled");
+        }
+        else {
+          node.childNodes[0].setAttribute("disabled", "disabled");
+        }
       }
     }
   }
