@@ -12,6 +12,16 @@ function selectDataTableRow(docRef, providerName, checkbox, listName) {
   proxy.processSelectRow(docRef, providerName, listName, checkbox.checked, selectDataTableRowCB);
 }
 
+// same as above with current document explicit reference to avoid browser back button to
+// trigger errors with the default CURRENT_DOC_CHILDREN provider
+function selectDataTableRow(docRef, providerName, checkbox, listName, currentDocRef) {
+  if (proxy == null) {
+    proxy = Seam.Component.getInstance("documentActions");
+  }
+  lastSelectedCheckBox = checkbox;
+  proxy.checkCurrentDocAndProcessSelectRow(docRef, providerName, listName, checkbox.checked, currentDocRef, selectDataTableRowCB);
+}
+
 // to be deprecated: the search form should use the ResultsProviderCache
 // as well
 function selectResultsDataTableRow(docRef, selected) {
@@ -28,6 +38,18 @@ function selectDataTablePage(tableId, providerName, selected, listName) {
   lastSelectAll = selected;
   lastTableName = tableId;
   proxy.processSelectPage(providerName, listName, selected, selectDataTablePageCB);
+  handleAllCheckBoxes(tableId, selected);
+}
+
+// same as above with current document explicit reference to avoid browser back button to
+// trigger errors with the default CURRENT_DOC_CHILDREN provider
+function selectDataTablePage(tableId, providerName, selected, listName, currentDocRef) {
+  if (proxy == null) {
+    proxy = Seam.Component.getInstance("documentActions");
+  }
+  lastSelectAll = selected;
+  lastTableName = tableId;
+  proxy.checkCurrentDocAndProcessSelectPage(providerName, listName, selected, currentDocRef, selectDataTablePageCB);
   handleAllCheckBoxes(tableId, selected);
 }
 
