@@ -93,7 +93,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * This Seam bean manages the publishing tab.
- * 
+ *
  * @author Narcis Paslaru
  * @author Florent Guillaume
  * @author Thierry Martins
@@ -226,7 +226,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
      * Helper class to run something with an unrestricted session.
      * <p>
      * The caller should implement the run() method.
-     * 
+     *
      * @author Florent Guillaume
      */
     protected abstract static class UnrestrictedSessionRunner {
@@ -296,7 +296,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
          * This method will run with {@link #unrestrictedSession} available. The
          * field {@link #misc}, suitably cast, can be used to pass values back
          * to the caller.
-         * 
+         *
          * @throws ClientException
          */
         public abstract void run() throws ClientException;

@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 /**
  * @author <a href="mailto:andreas.kalogeropoulos@nuxeo.com">Andreas
  *         Kalogeropoulos</a>
- * 
+ *
  */
 @Local
 public interface FileManageActionsLocal extends FileManageActions {

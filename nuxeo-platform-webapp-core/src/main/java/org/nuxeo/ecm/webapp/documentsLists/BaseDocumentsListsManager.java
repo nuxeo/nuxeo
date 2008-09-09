@@ -149,7 +149,7 @@ public abstract class BaseDocumentsListsManager implements Serializable{
         if (descriptor == null) {
             descriptor = new DocumentsListDescriptor(listName);
         }
- 
+
         documentsLists_descriptors.put(listName, descriptor);
 
         // manage events subscriptions

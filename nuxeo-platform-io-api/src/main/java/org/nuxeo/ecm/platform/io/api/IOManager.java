@@ -209,7 +209,7 @@ public interface IOManager extends Serializable {
      * @return
      * @throws ClientException
      */
-    public String externalizeExport(String repo,
+    String externalizeExport(String repo,
             Collection<DocumentRef> sources, String docReaderFactoryName,
             Map<String, Object> readerFactoryParams,
             Collection<String> ioAdapters) throws ClientException;

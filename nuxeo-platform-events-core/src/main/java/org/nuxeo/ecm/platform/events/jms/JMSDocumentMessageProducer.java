@@ -76,7 +76,7 @@ public final class JMSDocumentMessageProducer {
             String jmsConnectionFactoryJndiName, Context ctx)
             throws DocumentMessageProducerException {
 
-        TopicConnectionFactory jmsConnectionFactory; 
+        TopicConnectionFactory jmsConnectionFactory;
         try {
             jmsConnectionFactory = (TopicConnectionFactory) ctx.lookup(jmsConnectionFactoryJndiName);
 
@@ -120,7 +120,7 @@ public final class JMSDocumentMessageProducer {
             throw exception;
         }
     }
-    public static void sendEventMessages(List<EventMessage> messages, String connection, String destination) 
+    public static void sendEventMessages(List<EventMessage> messages, String connection, String destination)
             throws DocumentMessageProducerException {
         DocumentMessageProducerException exception = null;
         try {
@@ -191,7 +191,7 @@ public final class JMSDocumentMessageProducer {
         if (exception != null) {
             throw exception;
         }
-    }    
+    }
     private static void sendNXCoreEventMessages(List<NXCoreEvent> messages,
             String connectionFactoryJndiName, String destinationJndiName,
             Context ctx) throws DocumentMessageProducerException {

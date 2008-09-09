@@ -499,7 +499,7 @@ public class QueryConverter {
         }
         CompassQuery res = sBuilder.toQuery();
         if (res.toString().trim().length() == 0) {
-        	return null;
+            return null;
         }
         return res;
     }

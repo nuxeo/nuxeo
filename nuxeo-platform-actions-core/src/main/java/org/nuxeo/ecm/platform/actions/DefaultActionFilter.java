@@ -258,7 +258,7 @@ public class DefaultActionFilter implements ActionFilter {
                 // get custom context from ActionContext
                 for (String k : context.keySet())
                 {
-                	ctx.put(k, context.get(k));
+                    ctx.put(k, context.get(k));
                 }
                 ctx.put("SeamContext", context.get("SeamContext"));
 

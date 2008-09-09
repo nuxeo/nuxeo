@@ -33,8 +33,8 @@ import org.nuxeo.ecm.platform.io.api.IOManager;
  */
 public interface IOConfiguration {
 
-    public final String DOC_READER_FACTORY = "org.nuxeo.ecm.core.io.doc_reader_factory";
-    public final String DOC_WRITER_FACTORY = "org.nuxeo.ecm.core.io.doc_writer_factory";
+    final String DOC_READER_FACTORY = "org.nuxeo.ecm.core.io.doc_reader_factory";
+    final String DOC_WRITER_FACTORY = "org.nuxeo.ecm.core.io.doc_writer_factory";
 
 
     IOManager getManager();
