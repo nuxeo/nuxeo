@@ -160,9 +160,9 @@ public class ResultsProvidersCacheBean implements ResultsProvidersCache, Seriali
                     if (lifeCycleId != PhaseId.RENDER_RESPONSE) {
                         // don't send message during render phase
                         // otherwise they will be displayed in next page !
+
                         facesMessages.add(FacesMessage.SEVERITY_WARN,
-                                resourcesAccessor.getMessages().get(
-                                        e.getMessage()));
+                                resourcesAccessor.getMessages().get("feedback.search.invalid"));
                     }
                     return new EmptyResultsProvider();
                 }

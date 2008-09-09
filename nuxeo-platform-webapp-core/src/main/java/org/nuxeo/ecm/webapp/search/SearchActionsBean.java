@@ -314,6 +314,17 @@ public class SearchActionsBean extends InputController implements
                                     "feedback.search.noKeywords"));
                     return ACTION_PAGE_SEARCH_NO_KEYWORDS;
                 }
+                String[] keywords = simpleSearchKeywords.split(" ");
+                for (String string : keywords) {
+                    if (string.startsWith("*")) {
+                        log.warn("Can't begin search with * character");
+                        facesMessages.add(FacesMessage.SEVERITY_INFO,
+                                resourcesAccessor.getMessages().get(
+                                        "feedback.search.star"));
+                        return ACTION_PAGE_SEARCH_NO_KEYWORDS;
+                        
+                    }
+                }   
                 resultsProvidersCache.invalidate(QM_SIMPLE);
                 resultsProvider = resultsProvidersCache.get(QM_SIMPLE);
                 page = ACTION_PAGE_SEARCH_SIMPLE;
