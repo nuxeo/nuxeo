@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.io.client;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
@@ -49,11 +50,13 @@ import org.nuxeo.ecm.webapp.clipboard.ClipboardActions;
 
 @Name("importExportAction")
 @Scope(ScopeType.EVENT)
-public class ImportExportActionBean {
+public class ImportExportActionBean implements Serializable {
 
     private static final String RESTLET_PREFIX = "restAPI";
 
     private static final Log log = LogFactory.getLog(ImportExportActionBean.class);
+
+    private static final long serialVersionUID = 1770386525984671333L;
 
     @In(create = true)
     protected NavigationContext navigationContext;

@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  * implementation class.
  *
  * @author Razvan Caraghin
- *
+ * @deprecated remove in 5.2
  */
 @Deprecated
 @Stateless
@@ -57,7 +57,7 @@ public class ECServerBean implements ECServer, ECServerLocal {
             LocationManagerService lms = getLocationManagerService();
             returningLocations.addAll(lms.getAvailableLocations().values());
         } catch (Throwable t) {
-            EJBExceptionHandler.wrapException(t);
+            ClientException.wrap(t);
         }
         return returningLocations;
     }
@@ -68,7 +68,7 @@ public class ECServerBean implements ECServer, ECServerLocal {
             principals.add(new UserPrincipal("q"));
             principals.add(new UserPrincipal("useradmin"));
         } catch (Throwable t) {
-            EJBExceptionHandler.wrapException(t);
+            ClientException.wrap(t);
         }
         return principals;
     }
