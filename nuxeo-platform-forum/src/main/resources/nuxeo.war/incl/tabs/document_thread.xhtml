@@ -4,12 +4,11 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <h:form enctype="multipart/form-data">
-       <t:dataList var="threadEntry" value="#{currentThreadPosts}" styleClass="commentsOutput"
+       <nxu:dataList var="threadEntry" value="#{currentThreadPosts}" styleClass="commentsOutput"
         rowIndexVar="rowIndex">
         <h:panelGroup rendered="#{currentThreadPosts.size > 0}" layout="block"
           style="margin-left:#{threadEntry.depth*25}px;"
@@ -70,7 +69,7 @@
 
         </h:panelGroup>
 
-      </t:dataList>
+      </nxu:dataList>
 
     <nxu:methodResult name="canWrite"
           value="#{postAction.checkWritePermissionOnThread}">

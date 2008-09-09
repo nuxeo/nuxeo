@@ -19,13 +19,11 @@
 
 package org.nuxeo.ecm.platform.transform.wordml;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -33,8 +31,6 @@ import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.transform.AbstractPluginTestCase;
 import org.nuxeo.ecm.platform.transform.DocumentTestUtils;
@@ -52,8 +48,6 @@ import org.xml.sax.SAXException;
  */
 public class TestXmlTransformer extends AbstractPluginTestCase {
 
-    private static final Log log = LogFactory.getLog(TestXmlTransformer.class);
-
     private Transformer transformer;
 
     @Override
@@ -69,7 +63,7 @@ public class TestXmlTransformer extends AbstractPluginTestCase {
     }
 
     /**
-     * This will test the same data given as input is returned if no options are
+     * Tests if the same data given as input is returned when no options are
      * specified.
      * @throws Exception
      */
@@ -110,7 +104,7 @@ public class TestXmlTransformer extends AbstractPluginTestCase {
         compareXml(pathExpectedResult, results.get(0).getBlob().getStream());
     }
 
-    private void compareXml(final String expectedResultFilePath,
+    private static void compareXml(final String expectedResultFilePath,
             final InputStream resultStream) throws IOException, SAXException,
             ParserConfigurationException {
 
@@ -131,16 +125,6 @@ public class TestXmlTransformer extends AbstractPluginTestCase {
 
         // assertEquals("transformed content", new String(expectedResultData),
         // resultTxt);
-    }
-
-    private static String readStream(InputStream is) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(is));
-        StringBuilder buffer = new StringBuilder();
-        String line;
-        while ((line = in.readLine()) != null) {
-            buffer.append(line);
-        }
-        return buffer.toString();
     }
 
     private static byte[] readFileContent(String path) throws IOException {

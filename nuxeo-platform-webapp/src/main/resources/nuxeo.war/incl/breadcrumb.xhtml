@@ -1,7 +1,6 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:t="http://myfaces.apache.org/tomahawk"
   xmlns:s="http://jboss.com/products/seam/taglib"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
@@ -39,7 +38,7 @@ function printView()
 
   <f:subview rendered="#{!empty backendPath}">
 
-  <t:dataList var="pathElement"
+  <nxu:dataList var="pathElement"
     value="#{backendPath}">
     <f:verbatim>&amp;gt;&amp;nbsp;</f:verbatim>
 
@@ -48,7 +47,7 @@ function printView()
   </nxd:restDocumentLink>
   <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link}"/>
 
-  </t:dataList>
+  </nxu:dataList>
 
 <h:panelGroup rendered="false">
   <!-- Permalink -->
