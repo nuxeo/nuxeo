@@ -7,9 +7,7 @@
     <script>
       <expression>
         executionContext.setVariable("workflow_review_type", "workflowDocumentReviewTypeParallel");
-        System.out.println("Setting workflow review type....");
         executionContext.setVariable("workflowDirectives", new String[] {"workflowDirectiveCheck", "workflowDirectiveDiffusion", "workflowDirectiveOpinion"});
-        System.out.println("Setting work item directives for this process definition ....");
       </expression>
    </script>
   </event>
