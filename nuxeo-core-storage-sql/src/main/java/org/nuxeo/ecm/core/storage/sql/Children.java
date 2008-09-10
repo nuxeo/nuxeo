@@ -18,7 +18,6 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,10 +28,15 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
- * Holds information about the children of a given parent node.
- * <p>
- * Information about children may be complete, or just partial if only a few
- * individual children have been retrieved.
+ * Holds information about the children of a given parent node. The internal
+ * state reflects:
+ * <ul>
+ * <li>children known to exist in the database,</li>
+ * <li>created children not yet flushed to database,</li>
+ * <li>deleted children not yet flushed to database.</li>
+ * </ul>
+ * Information about children in the database may be complete, or just partial
+ * if only individual children have been retrieved from the database.
  * <p>
  * This class is not thread-safe and should be used only from a single-threaded
  * session.
@@ -45,176 +49,243 @@ public class Children {
 
     private static final Log log = LogFactory.getLog(Children.class);
 
-    /**
-     * The fragments we know about. This list is not ordered, and may not be
-     * complete.
-     */
-    protected List<SimpleFragment> existing;
+    /** The context from which to fetch fragments. */
+    protected final Context context;
+
+    /** The key to use to filter on names. */
+    protected final String filterKey;
 
     /**
-     * This is {@code true} when complete information about the children is
-     * known.
+     * This is {@code true} when complete information about the existing
+     * children is known.
      * <p>
      * This is the case when a query to the database has been made to fetch all
      * children, or when a new parent node with no children has been created.
      */
     protected boolean complete;
 
-    public Children(boolean complete) {
-        this.complete = complete;
+    /** The ids known in the database and not deleted. This list is not ordered. */
+    protected List<Serializable> existing;
+
+    /** The ids created and not yet flushed to database. */
+    protected List<Serializable> created;
+
+    /**
+     * The ids deleted (or which changed parents) and not yet flushed to
+     * database.
+     */
+    protected Set<Serializable> deleted;
+
+    /**
+     * Constructs a Children cache.
+     *
+     * @param context the context from which to fetch fragments
+     * @param filterKey the key to use to filter on names
+     * @param allowDuplicateValue whether same-name siblings are allowed
+     * @param empty if the new instance is created empty
+     */
+    public Children(Context context, String filterKey, boolean empty) {
+        this.context = context;
+        this.filterKey = filterKey;
+        this.complete = empty;
     }
 
-    protected List<SimpleFragment> getExisting() {
-        if (existing == null) {
-            existing = new LinkedList<SimpleFragment>();
+    protected Serializable fragmentValue(SimpleFragment fragment) {
+        try {
+            return fragment.get(filterKey);
+        } catch (StorageException e) {
+            log.error("Could not fetch value: " + fragment.getId());
+            return null;
         }
-        return existing;
     }
 
     /**
      * Adds a known child.
      *
-     * @param fragment the hierarchy fragment for the child
-     * @throws StorageException
+     * @param id the fragment id
      */
-    // TODO unordered for now
-    public void add(SimpleFragment fragment) throws StorageException {
-        getExisting().add(fragment);
+    public void addExisting(Serializable id) {
+        if (existing == null) {
+            existing = new LinkedList<Serializable>();
+        }
+        if (existing.contains(id) || (created != null && created.contains(id))) {
+            // TODO remove sanity check if ok
+            log.error("Adding already present id: " + id);
+            return;
+        }
+        existing.add(id);
     }
 
     /**
-     * Add fragments actually read from the backend, and mark this complete.
-     * <p>
-     * Fragments already known are not erased, as they may be new.
-     * <p>
-     * Note that when adding a complete list of fragments retrieved from the
-     * database, the deleted fragments have already been removed in the result
-     * set.
+     * Adds a created child.
      *
-     * @param fragments the fragments (must be mutable)
+     * @param id the fragment id
      */
-    public void addComplete(List<SimpleFragment> fragments) {
+    public void addCreated(Serializable id) {
+        if (created == null) {
+            created = new LinkedList<Serializable>();
+        }
+        if ((existing != null && existing.contains(id)) || created.contains(id)) {
+            // TODO remove sanity check if ok
+            log.error("Creating already present id: " + id);
+            return;
+        }
+        created.add(id);
+    }
+
+    /**
+     * Adds ids actually read from the backend, and mark this complete.
+     * <p>
+     * Note that when adding a complete list of ids retrieved from the database,
+     * the deleted ids have already been removed in the result set.
+     *
+     * @param actualExisting the existing database ids (the list must be
+     *            mutable)
+     */
+    public void addExistingComplete(List<Serializable> actualExisting) {
         assert !complete;
         complete = true;
-        if (existing == null || existing.size() == 0) {
-            existing = fragments; // don't copy, for efficiency
-        } else {
-            // assumes that the list of fragments already known is small
-            // collect already know ids
-            Set<Serializable> ids = new HashSet<Serializable>();
-            for (SimpleFragment fragment : existing) {
-                ids.add(fragment.getId());
-            }
-            // add complete set, note the ids we knew
-            List<SimpleFragment> newExisting = new LinkedList<SimpleFragment>();
-            for (SimpleFragment fragment : fragments) {
-                ids.remove(fragment.getId());
-                newExisting.add(fragment);
-            }
-            // finish with the created ones
-            for (SimpleFragment fragment : existing) {
-                if (ids.contains(fragment.getId())) {
-                    newExisting.add(fragment);
-                }
-            }
-            // replace existing
-            existing = newExisting;
-        }
+        existing = actualExisting;
     }
 
     /**
-     * Invalidates children after some have been added.
+     * Marks incomplete.
+     *
+     * Called after a database operation added children with unknwon ids
+     * (restore of complex properties).
      */
-    public void invalidateAdded() {
+    public void setIncomplete() {
         complete = false;
     }
 
     /**
-     * Removes a known child.
+     * Removes a known child id.
      *
-     * @param fragment the fragment to remove
-     * @throws StorageException
+     * @param id the id to remove
      */
-    public void remove(SimpleFragment fragment) throws StorageException {
-        if (existing == null) {
-            return;
+    public void remove(Serializable id) {
+        if (existing != null) {
+            existing.remove(id);
         }
-        if (!existing.remove(fragment)) {
-            throw new StorageException("Nonexistent complex property: " +
-                    fragment);
+        if (deleted == null) {
+            deleted = new HashSet<Serializable>();
         }
+        deleted.add(id);
     }
 
     /**
-     * Gets a fragment by its name.
+     * Flushes to database. Clears created and deleted map.
+     */
+    public void flush() {
+        if (created != null) {
+            if (existing == null) {
+                existing = new LinkedList<Serializable>();
+            }
+            existing.addAll(created);
+            created = null;
+        }
+        deleted = null;
+    }
+
+    /**
+     * Gets a fragment given its name.
      * <p>
      * Returns {@code null} if there is no such child.
      * <p>
      * Returns {@link SimpleFragment#UNKNOWN} if there's no info about it.
      *
-     * @param name the name
-     * @param nameKey the key to use to filter by name
+     * @param value the name
      * @return the fragment, or {@code null}, or {@link SimpleFragment#UNKNOWN}
      */
-    public SimpleFragment get(String name, String nameKey) {
-        // TODO optimize by removing WARN checks
-        SimpleFragment found = null;
+    public SimpleFragment getFragmentByValue(Serializable value) {
         if (existing != null) {
-            for (SimpleFragment fragment : existing) {
+            for (Serializable id : existing) {
+                SimpleFragment fragment;
                 try {
-                    if (name.equals(fragment.getString(nameKey))) {
-                        if (found == null) {
-                            found = fragment;
-                            continue; // to check further WARN
-                        } else {
-                            log.warn("Get by name with several children: " +
-                                    name);
-                            break;
-                        }
-                    }
+                    fragment = (SimpleFragment) context.get(id, false);
                 } catch (StorageException e) {
-                    // cannot happen, failed refetch
-                    // pass
+                    log.warn("Failed refetch for: " + id, e);
+                    continue;
+                }
+                if (fragment == null) {
+                    log.warn("Existing fragment missing: " + id);
+                    continue;
+                }
+                if (value.equals(fragmentValue(fragment))) {
+                    return fragment;
                 }
             }
-            if (found != null) {
-                return found;
+        }
+        if (created != null) {
+            for (Serializable id : created) {
+                SimpleFragment fragment = (SimpleFragment) context.getIfPresent(id);
+                if (fragment == null) {
+                    log.warn("Created fragment missing: " + id);
+                    continue;
+                }
+                if (value.equals(fragmentValue(fragment))) {
+                    return fragment;
+                }
+            }
+        }
+        if (deleted != null) {
+            for (Serializable id : deleted) {
+                SimpleFragment fragment = (SimpleFragment) context.getIfPresent(id);
+                if (fragment == null) {
+                    log.warn("Deleted fragment missing: " + id);
+                    continue;
+                }
+                if (value.equals(fragmentValue(fragment))) {
+                    return null;
+                }
             }
         }
         return complete ? null : SimpleFragment.UNKNOWN;
     }
 
     /**
-     * Gets all the fragments, for a complete list of children.
+     * Gets all the fragments, if the list of children is complete.
      *
-     * @param name the name, or {@code null} for all children
-     * @param nameKey the key to use to filter by name
-     * @return all the fragments, or {@code null} if the list is not known to be
+     * @param value the name to filter on, or {@code null} for all children
+     * @return the fragments, or {@code null} if the list is not known to be
      *         complete
      */
-    public List<SimpleFragment> getAll(String name, String nameKey) {
+    public List<SimpleFragment> getFragmentsByValue(Serializable value) {
         if (!complete) {
             return null;
         }
-        if (existing == null) {
-            return Collections.emptyList();
-        }
-        if (name == null) {
-            return existing;
-        } else {
-            // filter by name
-            List<SimpleFragment> filtered = new LinkedList<SimpleFragment>();
-            for (SimpleFragment fragment : existing) {
+        // fetch fragments and maybe filter by name
+        List<SimpleFragment> filtered = new LinkedList<SimpleFragment>();
+        if (existing != null) {
+            for (Serializable id : existing) {
+                SimpleFragment fragment;
                 try {
-                    if (name.equals(fragment.getString(nameKey))) {
-                        filtered.add(fragment);
-                    }
+                    fragment = (SimpleFragment) context.get(id, false);
                 } catch (StorageException e) {
-                    // cannot happen, failed refetch
-                    // pass
+                    log.warn("Failed refetch for: " + id, e);
+                    continue;
+                }
+                if (fragment == null) {
+                    log.warn("Existing fragment missing: " + id);
+                    continue;
+                }
+                if (value == null || value.equals(fragmentValue(fragment))) {
+                    filtered.add(fragment);
                 }
             }
-            return filtered;
         }
+        if (created != null) {
+            for (Serializable id : created) {
+                SimpleFragment fragment = (SimpleFragment) context.getIfPresent(id);
+                if (fragment == null) {
+                    log.warn("Created fragment missing: " + id);
+                    continue;
+                }
+                if (value == null || value.equals(fragmentValue(fragment))) {
+                    filtered.add(fragment);
+                }
+            }
+        }
+        return filtered;
     }
 }

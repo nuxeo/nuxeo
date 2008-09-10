@@ -19,7 +19,6 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -102,6 +101,10 @@ public class PersistenceContext {
             contexts.put(tableName, context);
         }
         return context;
+    }
+
+    protected HierarchyContext getHierContext() {
+        return hierContext;
     }
 
     public Serializable generateNewId() {
@@ -251,8 +254,8 @@ public class PersistenceContext {
      * @return the collection of hierarchy fragments
      * @throws StorageException
      */
-    public Collection<SimpleFragment> getChildren(Serializable parentId,
-            String name, boolean complexProp) throws StorageException {
+    public List<SimpleFragment> getChildren(Serializable parentId, String name,
+            boolean complexProp) throws StorageException {
         return hierContext.getChildren(parentId, name, complexProp);
     }
 
@@ -386,8 +389,7 @@ public class PersistenceContext {
         /*
          * Clear complex properties.
          */
-        Collection<SimpleFragment> children = getChildren(versionableId, null,
-                true);
+        List<SimpleFragment> children = getChildren(versionableId, null, true);
         // copy to avoid concurrent modifications
         for (Fragment child : children.toArray(new Fragment[children.size()])) {
             remove(child); // will cascade deletes
@@ -415,8 +417,6 @@ public class PersistenceContext {
         overwriteMap.put(model.MAIN_BASE_VERSION_KEY, versionId);
         mapper.copyHierarchy(versionId, typeName, node.getParentId(), null,
                 versionableId, overwriteMap, this);
-        // mark Children non-complete as there may be new ones
-        hierContext.markChildrenInvalidatedAdded(versionableId, true);
     }
 
     /**

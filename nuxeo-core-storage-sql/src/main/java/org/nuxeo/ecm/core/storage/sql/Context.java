@@ -293,10 +293,6 @@ public class Context {
                     fragment.setId(newId);
                     id = newId;
                 }
-                // map hierarchy parent column
-                remapFragmentOnSave(fragment, idMap);
-                // TODO XXX there are other references to id (versionableid,
-                // targetid, etc).
                 /*
                  * Do the creation.
                  */
@@ -386,13 +382,17 @@ public class Context {
 
     /**
      * Notify invalidations to other sessions. Called post-transaction.
+     *
+     * @return true if there were invalidations to send
      */
-    protected void notifyInvalidations() {
+    protected boolean notifyInvalidations() {
         if (!modifiedInTransaction.isEmpty() || !deletedInTransaction.isEmpty()) {
             persistenceContext.invalidateOthers(this);
             modifiedInTransaction.clear();
             deletedInTransaction.clear();
+            return true;
         }
+        return false;
     }
 
     /**
