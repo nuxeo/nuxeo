@@ -27,6 +27,8 @@
   </xsl:template>
   <xsl:template match="category[@name='org.hibernate']">
   </xsl:template>
+  <xsl:template match="category[@name='org.hibernate.engine.StatefulPersistenceContext.ProxyWarnLog']">
+  </xsl:template>
   <xsl:template match="category[@name='org.hibernate.cache.EhCacheProvider']">
   </xsl:template>
   <xsl:template match="category[@name='org.hibernate.hql.ast.tree.FromElementType']">
@@ -84,6 +86,11 @@
    </xsl:text>
     <category name="org.hibernate">
       <priority value="WARN"/>
+    </category>
+    <xsl:text>
+   </xsl:text>
+    <category name="org.hibernate.engine.StatefulPersistenceContext.ProxyWarnLog">
+      <priority value="ERROR"/>
     </category>
     <xsl:text>
    </xsl:text>
