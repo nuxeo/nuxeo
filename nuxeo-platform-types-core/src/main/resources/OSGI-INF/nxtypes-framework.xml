@@ -36,6 +36,10 @@
       This can be used to filter some document types creation and copy to
       specific kinds of container documents.
 
+      - deniedSubtypes: list of forbidden sub document types for a given
+      container. Useful when you inherit from another container type and
+      want to restrict its subtypes.
+
       - default-view: this view will be returned when accessing the document.
 
       - create-view: this view will be returned when creating the document.
@@ -69,6 +73,9 @@
             <type>WorkspaceRoot</type>
             <type>SectionRoot</type>
           </subtypes>
+          <deniedSubtypes>
+            <type>File</type>
+          </deniedSubtypes>
           <layouts mode="any">
             <layout>heading</layout>
           </layouts>
