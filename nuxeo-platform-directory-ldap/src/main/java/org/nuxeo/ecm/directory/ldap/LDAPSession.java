@@ -70,11 +70,15 @@ import org.nuxeo.ecm.directory.Session;
 
 /**
  * This class represents a session against an LDAPDirectory.
- *
+ * 
  * @author Olivier Grisel <ogrisel@nuxeo.com>
- *
+ * 
  */
 public class LDAPSession implements Session, EntrySource {
+
+    protected static final String MISSING_ID_LOWER_CASE = "lower";
+
+    protected static final String MISSING_ID_UPPER_CASE = "upper";
 
     // directory connection parameters
     private static final Log log = LogFactory.getLog(LDAPSession.class);
@@ -738,9 +742,20 @@ public class LDAPSession implements Session, EntrySource {
                 idAttribute);
         Object obj = fieldMap.get(fieldId);
         if (obj == null) {
-            fieldMap.put(fieldId, entryId);
+            fieldMap.put(fieldId, changeEntryIdCase(entryId));
         }
         return fieldMapToDocumentModel(fieldMap);
+    }
+
+    protected String changeEntryIdCase(String id) {
+        String idFieldCase = directory.getConfig().missingIdFieldCase;
+        if (MISSING_ID_LOWER_CASE.equals(idFieldCase)) {
+            return id.toLowerCase();
+        } else if (MISSING_ID_UPPER_CASE.equals(idFieldCase)) {
+            return id.toUpperCase();
+        }
+        // returns the unchanged id
+        return id;
     }
 
     public boolean authenticate(String username, String password)

@@ -106,6 +106,9 @@ public class LDAPDirectoryDescriptor {
     @XNode("emptyRefMarker")
     public String emptyRefMarker = "cn=emptyRef";
 
+    @XNode("missingIdFieldCase")
+    public String missingIdFieldCase = "unchanged";
+
     // XXX: passwordEncryption?
     // XXX: ignoredFields?
     // XXX: referenceFields?
