@@ -36,9 +36,7 @@ public class EndActionHandler extends AbstractWorkflowDocumentActionHandler {
 
     public void execute(ExecutionContext ec) throws Exception {
 
-        log.info("##########################################");
-        log.info("             PROCESS ENDS                 ");
-        log.info("##########################################");
+        log.debug("Ending process");
 
         try {
             ProcessInstance pi = getProcessInstance(ec);
