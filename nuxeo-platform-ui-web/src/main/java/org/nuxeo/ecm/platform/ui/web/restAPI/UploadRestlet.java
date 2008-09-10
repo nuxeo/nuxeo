@@ -105,6 +105,7 @@ public class UploadRestlet extends BaseNuxeoRestlet {
                 try {
                     Blob inputBlob = StreamingBlob.createFromStream(
                             repr.getStream()).persist();
+                    inputBlob.setFilename(fileName);
                     outcome = FileManageActions.addBinaryFileFromPlugin(
                             inputBlob, fileName, targetContainer);
                 } catch (Exception e) {
@@ -119,6 +120,7 @@ public class UploadRestlet extends BaseNuxeoRestlet {
                     try {
                         Blob inputBlob = StreamingBlob.createFromStream(
                                 fileItem.getInputStream()).persist();
+                        inputBlob.setFilename(fileItem.getName());
                         outcome = FileManageActions.addBinaryFileFromPlugin(
                                 inputBlob, fileItem.getName(), targetContainer);
                     } catch (Exception e) {
