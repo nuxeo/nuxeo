@@ -27,7 +27,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -424,6 +423,7 @@ public class Mapper {
                 throw newStorageException(e, "Could not insert", sql);
             }
 
+            // TODO only do this if the id was not inserted!
             switch (model.idGenPolicy) {
             case APP_UUID:
                 // nothing to do, id is already known
@@ -985,7 +985,8 @@ public class Mapper {
      * doesn't recurse in regular children.
      * <p>
      * If {@code overwriteId} and {@code overwriteMap} are passed, the copy is
-     * done onto this existing node as its root (version restore).
+     * done onto this existing node as its root (version restore) instead of
+     * creating a new node in the parent.
      *
      * @param sourceId the id of fragment to copy (with children)
      * @param typeName the type of the fragment to copy (to avoid refetching
@@ -1005,6 +1006,7 @@ public class Mapper {
             Serializable overwriteId, Map<String, Serializable> overwriteMap,
             PersistenceContext persistenceContext) throws StorageException {
         assert !model.separateMainTable; // other case not implemented
+        HierarchyContext hierContext = persistenceContext.getHierContext();
         try {
             Map<Serializable, Serializable> idMap = new LinkedHashMap<Serializable, Serializable>();
             Map<Serializable, String> idType = new HashMap<Serializable, String>();
@@ -1015,12 +1017,14 @@ public class Mapper {
                         overwriteMap);
                 idMap.put(sourceId, overwriteId);
                 // invalidate
-                persistenceContext.getContext(model.hierTableName).markInvalidated(
-                        overwriteId, true);
+                hierContext.markInvalidated(overwriteId, true);
             }
             // create the new hierarchy by copy
             Serializable newRootId = copyHierRecursive(sourceId, typeName,
                     destParentId, destName, overwriteId, idMap, idType);
+            // invalidate children
+            hierContext.markChildrenAdded(overwriteId == null ? destParentId
+                    : overwriteId);
             // copy all collected fragments
             for (Entry<String, Set<Serializable>> entry : model.getPerFragmentIds(
                     idType).entrySet()) {

@@ -18,15 +18,19 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.storage.StorageException;
+
+import sun.tools.tree.ThisExpression;
 
 /**
  * This class holds persistence context information for the hierarchy table, and
@@ -40,26 +44,38 @@ public class HierarchyContext extends Context {
 
     protected final Map<Serializable, Children> childrenComplexProp;
 
+    /**
+     * The parents modified in the transaction.
+     */
+    private final Set<Serializable> modifiedParentsInTransaction;
+
+    /**
+     * The set of parents that have to be invalidated in this session at
+     * post-commit time.
+     */
+    private final Set<Serializable> modifiedParentsInvalidations;
+
+    @SuppressWarnings("unchecked")
     HierarchyContext(Mapper mapper, PersistenceContext persistenceContext) {
         super(mapper.getModel().hierTableName, mapper, persistenceContext);
-        childrenRegular = new HashMap<Serializable, Children>();
-        childrenComplexProp = new HashMap<Serializable, Children>();
+        childrenRegular = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
+        childrenComplexProp = new ReferenceMap(ReferenceMap.HARD,
+                ReferenceMap.SOFT);
+        modifiedParentsInTransaction = new HashSet<Serializable>();
+        modifiedParentsInvalidations = new HashSet<Serializable>();
     }
 
     /**
-     * Gets the proper children cache. Creates one if missing and {@code create}
-     * is {@code true}.
+     * Gets the proper children cache. Creates one if missing.
      */
     protected Children getChildrenCache(Serializable parentId,
-            boolean complexProp, boolean create) {
+            boolean complexProp) {
         Map<Serializable, Children> childrenCaches = complexProp ? childrenComplexProp
                 : childrenRegular;
         Children children = childrenCaches.get(parentId);
         if (children == null) {
-            if (create) {
-                children = new Children(false);
-                childrenCaches.put(parentId, children);
-            }
+            children = new Children(this, model.HIER_CHILD_NAME_KEY, false);
+            childrenCaches.put(parentId, children);
         }
         return children;
     }
@@ -68,21 +84,34 @@ public class HierarchyContext extends Context {
         return ((Boolean) row.get(model.HIER_CHILD_ISPROPERTY_KEY)).booleanValue();
     }
 
-    /**
-     * Adds a hierarchy row to the known children of its parent.
-     */
-    protected void addChild(SimpleFragment row) throws StorageException {
-        addChild(row, complexProp(row));
-    }
-
-    protected void addChild(SimpleFragment row, boolean complexProp)
+    protected void addExistingChild(SimpleFragment row, boolean complexProp)
             throws StorageException {
         Serializable parentId = row.get(model.HIER_PARENT_KEY);
         if (parentId == null) {
-            // don't maintain all versions
             return;
         }
-        getChildrenCache(parentId, complexProp, true).add(row);
+        getChildrenCache(parentId, complexProp).addExisting(row.getId());
+        modifiedParentsInTransaction.add(parentId);
+    }
+
+    protected void addCreatedChild(SimpleFragment row, boolean complexProp)
+            throws StorageException {
+        Serializable parentId = row.get(model.HIER_PARENT_KEY);
+        if (parentId == null) {
+            return;
+        }
+        getChildrenCache(parentId, complexProp).addCreated(row.getId());
+        modifiedParentsInTransaction.add(parentId);
+    }
+
+    protected void removeChild(SimpleFragment row, boolean complexProp)
+            throws StorageException {
+        Serializable parentId = row.get(model.HIER_PARENT_KEY);
+        if (parentId == null) {
+            return;
+        }
+        getChildrenCache(parentId, complexProp).remove(row.getId());
+        modifiedParentsInTransaction.add(parentId);
     }
 
     @Override
@@ -90,7 +119,7 @@ public class HierarchyContext extends Context {
             throws StorageException {
         SimpleFragment fragment = super.create(id, map);
         // add as a child of its parent
-        addChild(fragment);
+        addCreatedChild(fragment, complexProp(fragment));
         // note that this new row doesn't have children
         addNewParent(id);
         return fragment;
@@ -100,17 +129,20 @@ public class HierarchyContext extends Context {
      * Notes the fact that a new row was created without children.
      */
     protected void addNewParent(Serializable parentId) {
-        childrenRegular.put(parentId, new Children(true));
-        childrenComplexProp.put(parentId, new Children(true));
+        childrenRegular.put(parentId, new Children(this,
+                model.HIER_CHILD_NAME_KEY, true));
+        childrenComplexProp.put(parentId, new Children(this,
+                model.HIER_CHILD_NAME_KEY, true));
     }
 
     @Override
     protected Fragment getFromMapper(Serializable id, boolean allowAbsent)
             throws StorageException {
-        Fragment fragment = super.getFromMapper(id, allowAbsent);
+        SimpleFragment fragment = (SimpleFragment) super.getFromMapper(id,
+                allowAbsent);
         if (fragment != null) {
             // add as a child of its parent
-            addChild((SimpleFragment) fragment);
+            addExistingChild(fragment, complexProp(fragment));
         }
         return fragment;
     }
@@ -127,21 +159,16 @@ public class HierarchyContext extends Context {
      */
     public SimpleFragment getChildByName(Serializable parentId, String name,
             boolean complexProp) throws StorageException {
-        // check in the known children
-        Children children = getChildrenCache(parentId, complexProp, false);
-        SimpleFragment fragment;
-        if (children != null) {
-            fragment = children.get(name, model.HIER_CHILD_NAME_KEY);
-            if (fragment != SimpleFragment.UNKNOWN) {
-                return fragment;
+        SimpleFragment fragment = getChildrenCache(parentId, complexProp).getFragmentByValue(
+                name);
+        if (fragment == SimpleFragment.UNKNOWN) {
+            // read it through the mapper
+            fragment = mapper.readChildHierRow(parentId, name, complexProp,
+                    this);
+            if (fragment != null) {
+                // add as know child
+                addExistingChild(fragment, complexProp);
             }
-        }
-
-        // read it through the mapper
-        fragment = mapper.readChildHierRow(parentId, name, complexProp, this);
-        if (fragment != null) {
-            // add as know child
-            addChild(fragment, complexProp);
         }
         return fragment;
     }
@@ -155,12 +182,12 @@ public class HierarchyContext extends Context {
      * @return the list of children
      * @throws StorageException
      */
-    public Collection<SimpleFragment> getChildren(Serializable parentId,
-            String name, boolean complexProp) throws StorageException {
+    public List<SimpleFragment> getChildren(Serializable parentId, String name,
+            boolean complexProp) throws StorageException {
         List<SimpleFragment> fragments;
 
-        Children children = getChildrenCache(parentId, complexProp, true);
-        fragments = children.getAll(name, model.HIER_CHILD_NAME_KEY);
+        Children children = getChildrenCache(parentId, complexProp);
+        fragments = children.getFragmentsByValue(name);
         if (fragments != null) {
             // we know all the children
             return fragments;
@@ -168,10 +195,14 @@ public class HierarchyContext extends Context {
 
         // ask the actual children to the mapper
         fragments = mapper.readChildHierRows(parentId, complexProp, this);
-        children.addComplete(fragments);
+        List<Serializable> ids = new ArrayList<Serializable>(fragments.size());
+        for (Fragment fragment : fragments) {
+            ids.add(fragment.getId());
+        }
+        children.addExistingComplete(ids);
 
         // the children may include newly-created ones, and filter by name
-        return children.getAll(name, model.HIER_CHILD_NAME_KEY);
+        return children.getFragmentsByValue(name);
     }
 
     /**
@@ -216,6 +247,7 @@ public class HierarchyContext extends Context {
      */
     public void moveChild(Node source, Serializable parentId, String name)
             throws StorageException {
+        // a save() has already been done by the caller
         Serializable id = source.getId();
         SimpleFragment hierFragment = source.getHierFragment();
         Serializable oldParentId = hierFragment.get(model.HIER_PARENT_KEY);
@@ -231,10 +263,12 @@ public class HierarchyContext extends Context {
         /*
          * Do the move.
          */
+        if (!oldName.equals(name)) {
+            hierFragment.put(model.HIER_CHILD_NAME_KEY, name);
+        }
         removeChild(hierFragment, complexProp);
         hierFragment.put(model.HIER_PARENT_KEY, parentId);
-        hierFragment.put(model.HIER_CHILD_NAME_KEY, name);
-        addChild(hierFragment, complexProp);
+        addExistingChild(hierFragment, complexProp);
     }
 
     /**
@@ -267,25 +301,9 @@ public class HierarchyContext extends Context {
 
     @Override
     public void remove(Fragment fragment) throws StorageException {
-        // remove from parent
-        removeChild((SimpleFragment) fragment);
+        removeChild((SimpleFragment) fragment,
+                complexProp((SimpleFragment) fragment));
         super.remove(fragment);
-    }
-
-    /**
-     * Removes a row from the known children of its parent.
-     */
-    protected void removeChild(SimpleFragment row) throws StorageException {
-        removeChild(row, complexProp(row));
-    }
-
-    protected void removeChild(SimpleFragment row, boolean complexProp)
-            throws StorageException {
-        Serializable parentId = row.get(model.HIER_PARENT_KEY);
-        Children children = getChildrenCache(parentId, complexProp, false);
-        if (children != null) {
-            children.remove(row);
-        }
     }
 
     @Override
@@ -355,16 +373,58 @@ public class HierarchyContext extends Context {
                 childrenComplexProp.put(entry.getValue(), children);
             }
         }
+        // flush children caches
+        for (Children children : childrenRegular.values()) {
+            children.flush();
+        }
+        for (Children children : childrenComplexProp.values()) {
+            children.flush();
+        }
     }
 
     /**
-     * Called when the database has added new children to a node.
+     * Called by the mapper when it has added new children (of unknown ids) to a
+     * node.
      */
-    protected void markChildrenInvalidatedAdded(Serializable id,
-            boolean complexProp) {
-        Children children = getChildrenCache(id, complexProp, false);
+    protected void markChildrenAdded(Serializable parentId) {
+        Children children = childrenRegular.get(parentId);
         if (children != null) {
-            children.invalidateAdded();
+            children.setIncomplete();
+        }
+        children = childrenComplexProp.get(parentId);
+        if (children != null) {
+            children.setIncomplete();
+        }
+        modifiedParentsInTransaction.add(parentId);
+    }
+
+    @Override
+    protected void processInvalidations() {
+        super.processInvalidations();
+        synchronized (modifiedParentsInvalidations) {
+            for (Serializable parentId : modifiedParentsInvalidations) {
+                childrenRegular.remove(parentId);
+                childrenComplexProp.remove(parentId);
+            }
+            modifiedParentsInvalidations.clear();
+        }
+    }
+
+    @Override
+    protected boolean notifyInvalidations() {
+        boolean done = super.notifyInvalidations();
+        if (!done && !modifiedParentsInTransaction.isEmpty()) {
+            persistenceContext.invalidateOthers(this);
+            done = true;
+        }
+        return done;
+    }
+
+    @Override
+    protected void invalidate(Context other) {
+        super.invalidate(other);
+        synchronized (modifiedParentsInvalidations) {
+            modifiedParentsInvalidations.addAll(((HierarchyContext) other).modifiedParentsInTransaction);
         }
     }
 

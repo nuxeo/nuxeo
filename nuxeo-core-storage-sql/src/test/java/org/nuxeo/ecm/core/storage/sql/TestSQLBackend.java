@@ -128,6 +128,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.getNodeById(fooId); // one known child
         Node nodebar = session.getNodeById(barId); // another
         session.removeNode(nodebar); // remove one known
+        // check removal in Children cache
+        nodebar = session.getChildNode(root, "bar", false);
+        assertNull(nodebar);
         // the following gets a complete list but skips deleted ones
         List<Node> children = session.getChildren(root, null, false);
         assertEquals(1, children.size());
@@ -382,6 +385,40 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session2.save(); // process invalidations (non-transactional)
         childrena2 = session2.getChildren(foldera2, null, false);
         assertEquals(0, childrena2.size());
+        childrenb2 = session2.getChildren(folderb2, null, false);
+        assertEquals(1, childrenb2.size());
+    }
+
+    public void testCrossSessionChildrenInvalidationCopy() throws Exception {
+        // in first session, create base folders and doc
+        Session session1 = repository.getConnection();
+        Node root1 = session1.getRootNode();
+        Node foldera1 = session1.addChildNode(root1, "foo", null, "TestDoc",
+                false);
+        Node folderb1 = session1.addChildNode(root1, "bar", null, "TestDoc",
+                false);
+        Node doc1 = session1.addChildNode(foldera1, "gee", null, "TestDoc",
+                false);
+        session1.save();
+
+        // in second session, retrieve folders and check children
+        Session session2 = repository.getConnection();
+        Node root2 = session2.getRootNode();
+        Node foldera2 = session2.getChildNode(root2, "foo", false);
+        List<Node> childrena2 = session2.getChildren(foldera2, null, false);
+        assertEquals(1, childrena2.size());
+        Node folderb2 = session2.getChildNode(root2, "bar", false);
+        List<Node> childrenb2 = session2.getChildren(folderb2, null, false);
+        assertEquals(0, childrenb2.size());
+
+        // in first session, copy between folders
+        session1.copy(doc1, folderb1, null);
+        session1.save();
+
+        // in second session, check children count
+        session2.save(); // process invalidations (non-transactional)
+        childrena2 = session2.getChildren(foldera2, null, false);
+        assertEquals(1, childrena2.size());
         childrenb2 = session2.getChildren(folderb2, null, false);
         assertEquals(1, childrenb2.size());
     }

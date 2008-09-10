@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.security.AccessControlException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -185,7 +184,8 @@ public class SessionImpl implements Session {
         Serializable parentId;
         String name;
         if (model.separateMainTable) {
-            childHier = (SimpleFragment) context.get(model.hierTableName, id, false);
+            childHier = (SimpleFragment) context.get(model.hierTableName, id,
+                    false);
             parentId = childHier.get(model.HIER_PARENT_KEY);
             name = childHier.getString(model.HIER_CHILD_NAME_KEY);
         } else {
@@ -409,23 +409,15 @@ public class SessionImpl implements Session {
     public List<Node> getChildren(Node parent, String name, boolean complexProp)
             throws StorageException {
         checkLive();
-        Collection<SimpleFragment> fragments = context.getChildren(
-                parent.getId(), name, complexProp);
-        List<Node> nodes;
-        if (complexProp) {
-            nodes = new LinkedList<Node>();
-        } else {
-            nodes = new ArrayList<Node>(fragments.size());
-        }
+        List<SimpleFragment> fragments = context.getChildren(parent.getId(),
+                name, complexProp);
+        List<Node> nodes = new ArrayList<Node>(fragments.size());
         for (SimpleFragment fragment : fragments) {
-            if (complexProp &&
-                    !name.equals(fragment.getString(model.HIER_CHILD_NAME_KEY))) {
-                continue;
-            }
             Node node = getNodeById(fragment.getId());
             if (node == null) {
-                // TODO what if node is null?
-                throw new RuntimeException("XXX");
+                // cannot happen
+                log.error("Child node cannot be created: " + fragment.getId());
+                continue;
             }
             nodes.add(node);
         }
