@@ -92,7 +92,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * This Seam bean manages the publishing tab.
- *
+ * 
  * @author Narcis Paslaru
  * @author Florent Guillaume
  * @author Thierry Martins
@@ -226,7 +226,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
      * Helper class to run something with an unrestricted session.
      * <p>
      * The caller should implement the run() method.
-     *
+     * 
      * @author Florent Guillaume
      */
     protected static abstract class UnrestrictedSessionRunner {
@@ -261,8 +261,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
                     throw new ClientException(e);
                 }
                 if (repository == null) {
-                    throw new ClientException("Cannot get repository " +
-                            repositoryName);
+                    throw new ClientException("Cannot get repository "
+                            + repositoryName);
                 }
                 try {
                     unrestrictedSession = repository.open();
@@ -298,7 +298,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
          * This method will run with {@link #unrestrictedSession} available. The
          * field {@link #misc}, suitably cast, can be used to pass values back
          * to the caller.
-         *
+         * 
          * @throws ClientException
          */
         public abstract void run() throws ClientException;
@@ -348,8 +348,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
                         if (sectionRef.equals(proxyParentRef)) {
                             String versionLabel = versioningManager.getVersionLabel(pProxy);
                             node.setVersion(versionLabel);
-                            existingPublishedProxy.put(proxyParentRef.toString(),
-                                    pProxy);
+                            existingPublishedProxy.put(
+                                    proxyParentRef.toString(), pProxy);
                             if (!sectionRef.equals(currentParentRef)) {
                                 // when looking at a proxy, don't check itself
                                 addSelectedSection(node);
@@ -407,10 +407,10 @@ public class PublishActionsBean implements PublishActions, Serializable {
         // sort sections using titles
         DocumentModelTreeNodeComparator comp = new DocumentModelTreeNodeComparator(
                 nodes.getPathTitles());
-        Collections.sort((ArrayList)nodes, comp);
+        Collections.sort((ArrayList) nodes, comp);
 
         // populate sections
-        for (DocumentModelTreeNode node: nodes) {
+        for (DocumentModelTreeNode node : nodes) {
             sections.add(node);
         }
     }
@@ -499,7 +499,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
         if (published) {
 
-            // notifyEvent(org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_PUBLISHED,
+            // notifyEvent(org.nuxeo.ecm.webapp.helpers.EventNames.
+            // DOCUMENT_PUBLISHED,
             // null, comment,
             // null, docToPublish);
 
@@ -510,7 +511,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
         }
 
         if (!forModeration.isEmpty()) {
-            // notifyEvent(org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_SUBMITED_FOR_PUBLICATION,
+            // notifyEvent(org.nuxeo.ecm.webapp.helpers.EventNames.
+            // DOCUMENT_SUBMITED_FOR_PUBLICATION,
             // null, comment,
             // null, docToPublish);
             comment = null;
@@ -587,15 +589,16 @@ public class PublishActionsBean implements PublishActions, Serializable {
                     documentManager.publishDocument(doc, target);
                     nbPublishedDocs++;
                 } else {
-                    log.info("Attempted to publish non-publishable document " +
-                            doc.getTitle());
+                    log.info("Attempted to publish non-publishable document "
+                            + doc.getTitle());
                 }
             }
         }
 
         Object[] params = { nbPublishedDocs };
-        facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 " +
-                resourcesAccessor.getMessages().get("n_published_docs"), params);
+        facesMessages.add(FacesMessage.SEVERITY_INFO, "#0 "
+                + resourcesAccessor.getMessages().get("n_published_docs"),
+                params);
 
         if (nbPublishedDocs < docs2Publish.size()) {
             facesMessages.add(FacesMessage.SEVERITY_WARN,
@@ -622,8 +625,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
         // set issued date only if the doc is dirty, to avoid setting it
         // repeatedly if several publishings are done
-        final boolean setIssuedDate = documentManager.isDirty(docToPublish.getRef()) &&
-                !docToPublish.isProxy();
+        final boolean setIssuedDate = documentManager.isDirty(docToPublish.getRef())
+                && !docToPublish.isProxy();
         if (setIssuedDate) {
             docToPublish.setProperty("dublincore", "issued",
                     Calendar.getInstance());
@@ -658,8 +661,10 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
                     // Fire an event for the publication workflow.
                     // NuxeoPrincipal principal = (NuxeoPrincipal)
-                    // FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
-                    // eventManager.raiseEventsOnDocumentSubmitedForPublication(docToPublish,
+                    // FacesContext.getCurrentInstance().getExternalContext().
+                    // getUserPrincipal();
+                    // eventManager.raiseEventsOnDocumentSubmitedForPublication(
+                    // docToPublish,
                     // section, principal, comment);
 
                     Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
@@ -669,8 +674,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
                     StringBuilder recips = new StringBuilder();
                     for (String user : validators) {
                         boolean isUser = principalListManager.getPrincipalType(user) == PrincipalListManager.USER_TYPE;
-                        recips.append((isUser ? "user:" : "group:") + user +
-                                "|");
+                        recips.append((isUser ? "user:" : "group:") + user
+                                + "|");
                     }
                     eventInfo.put("recipients", recips.substring(0,
                             recips.length() - 1));
@@ -703,7 +708,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
             documentManager.save();
             // fire an event for the publication workflow
             // NuxeoPrincipal principal = (NuxeoPrincipal)
-            // FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
+            // FacesContext.getCurrentInstance().getExternalContext().
+            // getUserPrincipal();
             // eventManager.raiseEventsOnDirectDocumentPublish(docToPublish,
             // section, principal, comment);
             Map<String, Serializable> eventInfo = new HashMap<String, Serializable>();
@@ -775,6 +781,7 @@ public class PublishActionsBean implements PublishActions, Serializable {
         setSectionsModel(null);
         setSelectedSections(null);
         existingPublishedProxy = null;
+        comment = null;
     }
 
     /**
@@ -944,8 +951,8 @@ public class PublishActionsBean implements PublishActions, Serializable {
      * Called by section_clipboard.xhtml
      */
     public List<Action> getActionsForSectionSelection() {
-        return webActions.getUnfiltredActionsList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION +
-                "_LIST");
+        return webActions.getUnfiltredActionsList(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION
+                + "_LIST");
     }
 
     protected PublishingService getPublishingService() throws ClientException {

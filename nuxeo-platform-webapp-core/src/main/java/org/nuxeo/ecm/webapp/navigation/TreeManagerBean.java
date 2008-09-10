@@ -56,7 +56,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
 /**
  * Manages the tree. Performs additional work when a node is selected such as
  * saving the selection and redirectig towards the required page.
- *
+ * 
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
  */
 @Scope(CONVERSATION)
@@ -111,9 +111,7 @@ public class TreeManagerBean extends InputController implements TreeManager,
         registerCacheListener();
     }
 
-    @Observer(value = { EventNames.GO_HOME,
-            EventNames.DOMAIN_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED,
-            EventNames.DOCUMENT_SECURITY_CHANGED }, create = false)
+    @Observer(value = { EventNames.GO_HOME, EventNames.DOMAIN_SELECTION_CHANGED }, create = false)
     public void reset() {
         if (cacheUpdateNotifier != null && cacheListener != null) {
             cacheUpdateNotifier.removeCacheListener(cacheListener);
@@ -357,7 +355,18 @@ public class TreeManagerBean extends InputController implements TreeManager,
         refreshTreeNodeDescription();
     }
 
-    /**
+    @Observer(value = { EventNames.DOCUMENT_CHANGED }, create = false)
+    public void refreshCurrentNode(DocumentModel targetDoc)
+            throws ClientException {
+        if (isInitialized()) {
+            LazyTreeNode node = findNode(targetDoc, false);
+            if (node != null) {
+                node.refreshDescription();
+            }
+        }
+    }
+
+    /*
      * Goes through all the nodes and refreshes the description of the one that
      * corresponds to the newly selected document.
      */

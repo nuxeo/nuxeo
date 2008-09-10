@@ -25,12 +25,12 @@
       <nxu:column styleClass="iconColumn" rendered="#{showCheckboxes or false}">
         <f:facet name="header">
           <h:selectBooleanCheckbox rendered="true"
-              onclick="selectDataTablePage('#{documents.name}', '#{providerName}', this.checked, '#{listName}')" title="#{messages['tooltip.content.select.all']}">
+              onclick="selectDataTablePage('#{documents.name}', '#{providerName}', this.checked, '#{listName}', '#{currentDocument.ref}')" title="#{messages['tooltip.content.select.all']}">
           </h:selectBooleanCheckbox>
         </f:facet>
         <h:selectBooleanCheckbox
             value="#{row.selected}"
-            onclick="selectDataTableRow('#{row.data.ref}', '#{providerName}', this, '#{listName}')">
+            onclick="selectDataTableRow('#{row.data.ref}', '#{providerName}', this, '#{listName}', '#{currentDocument.ref}')">
         </h:selectBooleanCheckbox>
       </nxu:column>
       <!-- Icon + Type -->

@@ -708,6 +708,8 @@ public class JbpmWorkflowEngine extends AbstractWorkflowEngine {
                 } else {
                     totalResults = 0;
                 }
+                // release the DB cursor
+                results.close();
             }
         } catch (Exception e) {
             log.error(e);
