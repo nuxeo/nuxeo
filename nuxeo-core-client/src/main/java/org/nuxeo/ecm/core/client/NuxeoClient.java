@@ -77,20 +77,13 @@ public final class NuxeoClient {
         return instance;
     }
 
-    /**
-     * @param multiThreadedLogin the multiThreadedLogin to set.
-     */
     public void setMultiThreadedLogin(boolean useMultiThreadedLogin) {
         this.multiThreadedLogin = useMultiThreadedLogin;
     }
 
-    /**
-     * @return the multiThreadedLogin.
-     */
     public boolean getMultiThreadedLogin() {
         return multiThreadedLogin;
     }
-
 
     public synchronized  void connect(String locator) throws Exception {
         if (this.locator != null) {
@@ -155,12 +148,11 @@ public final class NuxeoClient {
         doConnect(locator);
     }
 
-
     private void doConnect(InvokerLocator locator) throws Exception {
         this.locator = locator;
         try {
             cfg.load(locator);
-            // ------------------------------- FIXME TODO workarounf to work with nxruntime core 1.3.3 --------------
+            // FIXME TODO workarounf to work with nxruntime core 1.3.3 --------------
             String newPort = Framework.getProperty("org.nuxeo.runtime.1.3.3.streaming.port");
             if (newPort != null) {
                 StreamingService streamingService = (StreamingService) Framework.getRuntime().getComponent(
@@ -177,11 +169,10 @@ public final class NuxeoClient {
                     streamingService.startManager();
                 }
             }
-            // ------------------------------------------------------------------------------
-             // ------------------------------ FIXME TODO workaround for remote services -------------------------------
+            // FIXME TODO workaround for remote services -------------------------------
             schemaRemotingWorkaround(locator.getHost());
-            // ------------------------------------------------------------------------------
-            // ---------------- workaround for client login configuration - we need to make it not multi threaded - TODO put an option for this in NuxeoClient
+            // workaround for client login configuration - we need to make it not multi threaded
+            // TODO put an option for this in NuxeoClient
             if (!multiThreadedLogin) {
                 LoginService ls = Framework.getService(LoginService.class);
                 SecurityDomain sysDomain = ls.getSecurityDomain(LoginComponent.SYSTEM_LOGIN);
@@ -290,16 +281,10 @@ public final class NuxeoClient {
         return serverName;
     }
 
-    /**
-     * @return the isStarted.
-     */
     public synchronized boolean isConnected() {
         return locator != null;
     }
 
-    /**
-     * @return the host.
-     */
     public String getServerHost() {
         if (this.locator == null) {
             throw new IllegalStateException("Client is not connected");
@@ -307,9 +292,6 @@ public final class NuxeoClient {
         return locator.getHost();
     }
 
-    /**
-     * @return the port.
-     */
     public int getServerPort() {
         if (this.locator == null) {
             throw new IllegalStateException("Client is not connected");
@@ -317,23 +299,14 @@ public final class NuxeoClient {
         return locator.getPort();
     }
 
-    /**
-     * @return the locator.
-     */
     public InvokerLocator getLocator() {
         return locator;
     }
 
-    /**
-     * @return the loginHandler.
-     */
     public synchronized LoginHandler getLoginHandler() {
         return loginHandler;
     }
 
-    /**
-     * @param loginHandler the loginHandler to set.
-     */
     public synchronized void setLoginHandler(LoginHandler loginHandler) {
         this.loginHandler = loginHandler;
     }
@@ -350,7 +323,6 @@ public final class NuxeoClient {
         }
     }
 
-
     public RepositoryManager  getRepositoryManager() throws Exception {
         if (repositoryMgr == null) {
             repositoryMgr = Framework.getService(RepositoryManager.class);
@@ -359,7 +331,8 @@ public final class NuxeoClient {
     }
 
     /**
-     * Get the repositories available on the connected server
+     * Gets the repositories available on the connected server.
+     *
      * @return the repositories
      */
     public Repository[] getRepositories() throws Exception {
@@ -397,12 +370,11 @@ public final class NuxeoClient {
         }
     }
 
-
     public RepositoryInstance[] getRepositoryInstances() {
         return repositoryInstances.toArray(new RepositoryInstance[repositoryInstances.size()]);
     }
 
-    public final static RepositoryInstance newRepositoryInstance(Repository repository) {
+    public static RepositoryInstance newRepositoryInstance(Repository repository) {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         if (cl == null) {
             cl = NuxeoClient.class.getClassLoader();

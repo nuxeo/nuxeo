@@ -39,7 +39,7 @@ public class DefaultLoginHandler implements LoginHandler {
     }
 
     public DefaultLoginHandler(String username, String password) {
-        this (username, password.toCharArray());
+        this(username, password.toCharArray());
     }
 
     public DefaultLoginHandler(String username, char[] password) {
@@ -47,16 +47,10 @@ public class DefaultLoginHandler implements LoginHandler {
         this.password = password;
     }
 
-    /**
-     * @param username the username to set.
-     */
     public void setUsername(String username) {
         this.username = username;
     }
 
-    /**
-     * @param password the password to set.
-     */
     public void setPassword(char[] password) {
         this.password = password;
     }
@@ -65,20 +59,13 @@ public class DefaultLoginHandler implements LoginHandler {
         this.password = password.toCharArray();
     }
 
-    /**
-     * @return the password.
-     */
     public char[] getPassword() {
         return password;
     }
 
-    /**
-     * @return the username.
-     */
     public String getUsername() {
         return username;
     }
-
 
     public synchronized LoginContext getLoginContext() {
         return lc;
