@@ -53,8 +53,8 @@ public class DublinCoreListener extends AbstractEventListener implements
      * Gets core events and updates DublinCore if needed.
      *
      * @param coreEvent event fired at core layer
-     *
      */
+    @Override
     public void notifyEvent(CoreEvent coreEvent) {
         Object source = coreEvent.getSource();
         if (source instanceof DocumentModel) {

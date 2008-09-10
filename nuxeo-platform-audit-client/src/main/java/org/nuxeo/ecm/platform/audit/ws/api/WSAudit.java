@@ -52,17 +52,17 @@ public interface WSAudit extends BaseNuxeoWebService {
     EventDescriptorPage listEventsByPage(String sessionId,
             String dateRangeQuery, int page, int pageSize)
             throws AuditException;
-    
+
     /**
      * Get a filtered list of document events
      * <p>
      * Expecting either a dateRangeQuery or a startDate.
-     * 
+     *
      * @param sessionId : the Nuxeo core session id.
      * @param dateRangeQuery : the date range query like "24h" for the last 24 hours,
      *                         may be <code>null</code> if startDate is set.
-     * @param startDate : return events that occurs after startDate, expecting W3C date 
-     *                    time format. May be <code>null</code> if dateRangeQuery is set. 
+     * @param startDate : return events that occurs after startDate, expecting W3C date
+     *                    time format. May be <code>null</code> if dateRangeQuery is set.
      *                    Will be ignored if dateRangeQuery is set.
      * @param path : filter events for documents starting with this path.
      * @param page : page number starting with page 1.
