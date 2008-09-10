@@ -24,6 +24,7 @@ import junit.framework.TestCase;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.query.sql.model.WhereClause;
@@ -262,8 +263,8 @@ public class TestQueryParser2 extends TestCase {
         WhereClause whereClause = query.getWhereClause();
         assertEquals(Operator.STARTSWITH, whereClause.predicate.operator);
 
-        StringLiteral sleft = (StringLiteral) whereClause.predicate.lvalue;
-        assertEquals("ecm:path", sleft.value);
+        Reference sleft = (Reference) whereClause.predicate.lvalue;
+        assertEquals("ecm:path", sleft.name);
         StringLiteral sright = (StringLiteral) whereClause.predicate.rvalue;
         assertEquals("/test", sright.value);
     }

@@ -28,16 +28,17 @@ import org.nuxeo.ecm.core.model.Session;
 
 /**
  * This class knows how to resolve a Document from a document reference. It is
- * intended to be used inside this module ( NXCoreAPI ) and not exposed to the
- * clients.
+ * intended to be used inside this module ({@link org.nuxeo.ecm.core.api}) and
+ * not exposed to the clients.
  * <p>
  * It is factored out from {@link AbstractSession} because other classes need to
- * use this functionality (security classes for example) and we don't want
- * this functionality exposed to the clients.
+ * use this functionality (security classes for example) and we don't want this
+ * functionality exposed to the clients.
  *
  * @author Razvan Caraghin
- *
  */
+// XXX: this is actually untrue: only AbstractSession references this class. This
+// could be refactored.
 public class DocumentResolver implements Serializable {
 
     private static final long serialVersionUID = -2261223293670404568L;
