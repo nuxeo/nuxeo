@@ -142,10 +142,14 @@ public final class FileManagerUtils {
         DocumentRef pathRef = new PathRef(path);
         DocumentModelList docList = documentManager.getChildren(pathRef);
         for (DocumentModel doc : docList) {
-            String existFileName = (String) doc.getProperty("file", "filename");
-            if (existFileName != null && existFileName.equals(filename)) {
-                existing = doc;
-                break;
+            String currentLifeCycleState = doc.getCurrentLifeCycleState();
+            // CB: NXP-2483 - This check should be done only for the documents which aren't deleted
+            if (!"deleted".equals(currentLifeCycleState)) {
+                String existFileName = (String) doc.getProperty("file", "filename");
+                if (existFileName != null && existFileName.equals(filename)) {
+                    existing = doc;
+                    break;
+                }
             }
         }
         return existing;
@@ -165,10 +169,14 @@ public final class FileManagerUtils {
         DocumentRef pathRef = new PathRef(path);
         DocumentModelList docList = documentManager.getChildren(pathRef);
         for (DocumentModel doc : docList) {
-            String existTitle = (String) doc.getProperty("dublincore", "title");
-            if (existTitle != null && existTitle.equals(title)) {
-                existing = doc;
-                break;
+            String currentLifeCycleState = doc.getCurrentLifeCycleState();
+            // CB: NXP-2483 - This check should be done only for the documents which aren't deleted
+            if (!"deleted".equals(currentLifeCycleState)) {
+                String existTitle = (String) doc.getProperty("dublincore", "title");
+                if (existTitle != null && existTitle.equals(title)) {
+                    existing = doc;
+                    break;
+                }
             }
         }
         return existing;
