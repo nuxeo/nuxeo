@@ -28,6 +28,14 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-schema</artifactId>
     </dependency>
+
+    <!-- Fixes compilation failure on 10 sept 2008.
+         Is this the right fix? -->
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-remoting</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
 </project>
