@@ -313,7 +313,9 @@ font-weight:bold;
             <tr>
                 <td>&nbsp;</td>
                 <% // label.login.logIn %>
-                <td><input class="login_button" type="submit" name="Submit"
+                <td><input type="hidden" name="form_submitted_marker"
+                    id="form_submitted_marker">
+                    <input class="login_button" type="submit" name="Submit"
                     value="<fmt:message bundle="${messages}" key="label.login.logIn" />"></td>
             </tr>
 
@@ -329,6 +331,11 @@ font-weight:bold;
           <c:if test="${param.loginFailed}">
             <div class="errorMessage">
                   <fmt:message bundle="${messages}" key="label.login.invalidUsernameOrPassword" />
+            </div>
+          </c:if>
+          <c:if test="${param.loginMissing}">
+            <div class="errorMessage">
+                  <fmt:message bundle="${messages}" key="label.login.missingUsername" />
             </div>
           </c:if>
         </td>
