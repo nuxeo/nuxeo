@@ -16,6 +16,7 @@
     <doctype name="MyDocType" extends="Document">
       <schema name="common" />
       <schema name="myschema" />
+      <schema name="dublincore"/>
       <schema name="testList" />
       <prefetch>common.icon</prefetch>
     </doctype>

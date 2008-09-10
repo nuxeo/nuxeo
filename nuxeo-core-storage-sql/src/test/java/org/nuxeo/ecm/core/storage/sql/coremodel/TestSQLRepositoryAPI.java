@@ -88,7 +88,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         DocumentModel root = session.getRootDocument();
         String name = "domain123";
         DocumentModel child = new DocumentModelImpl(root.getPathAsString(),
-                name, "Domain");
+                name, "MyDocType");
         child = session.createDocument(child);
         session.save();
 
@@ -97,6 +97,14 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         Calendar cal = new GregorianCalendar(2008, Calendar.JULY, 14, 12, 34,
                 56);
         child.setProperty("dublincore", "modified", cal);
+        // simple list as array
+        child.setProperty("dublincore", "subjects", new String[] { "a", "b" });
+        // simple list as List
+        child.setProperty("dublincore", "contributors", new ArrayList<String>(
+                Arrays.asList("c", "d")));
+        // complex list as List
+        child.setProperty("testList", "participants", new ArrayList<String>(
+                Arrays.asList("c", "d")));
         session.saveDocument(child);
         session.save();
         closeSession();
@@ -114,6 +122,17 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         Calendar modified = (Calendar) child.getProperty("dublincore",
                 "modified");
         assertEquals(cal, modified);
+        Object subjects = child.getProperty("dublincore", "subjects");
+        assertTrue(subjects instanceof String[]);
+        assertEquals(Arrays.asList("a", "b"),
+                Arrays.asList((String[]) subjects));
+        Object contributors = child.getProperty("dublincore", "contributors");
+        assertTrue(contributors instanceof String[]);
+        assertEquals(Arrays.asList("c", "d"),
+                Arrays.asList((String[]) contributors));
+        Object participants = child.getProperty("testList", "participants");
+        assertTrue(participants instanceof List);
+        assertEquals(Arrays.asList("c", "d"), (List<?>) participants);
     }
 
     //

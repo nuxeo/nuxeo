@@ -279,7 +279,7 @@ public class Column implements Serializable {
     }
 
     public Serializable[] listToArray(List<Serializable> list) {
-        return type.listToArray(list);
+        return type.collectionToArray(list);
     }
 
     @Override

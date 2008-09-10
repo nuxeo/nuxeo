@@ -32,8 +32,8 @@ public abstract class BaseProperty {
     /** The property name. */
     private final String name;
 
-    /** The property name. */
-    protected final PropertyType type;
+    /** The property type. */
+    public final PropertyType type;
 
     /** Is this property readonly (for system properties). */
     private final boolean readonly;

@@ -20,9 +20,9 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -83,12 +83,12 @@ public enum PropertyType {
         return emptyArray;
     }
 
-    public Serializable[] listToArray(List<Serializable> list) {
+    public Serializable[] collectionToArray(Collection<Serializable> collection) {
         // contrary to list.toArray(), this creates an array
         // of the property type instead of an Object[]
         Serializable[] array = (Serializable[]) Array.newInstance(klass,
-                list.size());
-        return list.toArray(array);
+                collection.size());
+        return collection.toArray(array);
     }
 
     /**

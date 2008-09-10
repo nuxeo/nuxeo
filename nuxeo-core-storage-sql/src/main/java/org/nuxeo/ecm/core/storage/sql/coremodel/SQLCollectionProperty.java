@@ -18,6 +18,10 @@
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -34,6 +38,8 @@ public class SQLCollectionProperty extends SQLBaseProperty {
 
     private final CollectionProperty property;
 
+    private final boolean isArray;
+
     /**
      * Creates a {@link SQLCollectionProperty} to wrap a
      * {@link CollectionProperty}.
@@ -42,6 +48,7 @@ public class SQLCollectionProperty extends SQLBaseProperty {
             boolean readonly) {
         super(type, readonly);
         this.property = property;
+        this.isArray = type == null || type.isArray();
     }
 
     /*
@@ -52,18 +59,35 @@ public class SQLCollectionProperty extends SQLBaseProperty {
         return property.getName();
     }
 
-    public Serializable[] getValue() throws DocumentException {
+    public Object getValue() throws DocumentException {
         try {
-            return property.getValue();
+            Serializable[] value = property.getValue();
+            if (isArray) {
+                return value;
+            } else {
+                return new ArrayList<Serializable>(Arrays.asList(value));
+            }
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void setValue(Object value) throws DocumentException {
         checkWritable();
         if (value != null && !(value instanceof Serializable[])) {
-            throw new DocumentException("Value is not Serializable[]: " + value);
+            if (isArray) {
+                throw new DocumentException("Value is not Serializable[] but " +
+                        value.getClass().getName() + ": " + value);
+            }
+            // accept Serializable[] or any List
+            if (!(value instanceof Collection)) {
+                throw new DocumentException(
+                        "Value is not Serializable[] or Collection but " +
+                                value.getClass().getName() + ": " + value);
+            }
+            value = property.type.getArrayBaseType().collectionToArray(
+                    (Collection<Serializable>) value);
         }
         try {
             property.setValue((Serializable[]) value);
