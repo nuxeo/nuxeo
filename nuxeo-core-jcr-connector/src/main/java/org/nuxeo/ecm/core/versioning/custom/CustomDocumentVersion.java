@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
@@ -167,7 +168,7 @@ public class CustomDocumentVersion extends JCRDocument implements
     }
 
     protected Node getSourceDocumentNode() throws RepositoryException {
-        javax.jcr.Property prop = node.getProperty(NodeConstants.ECM_FROZEN_NODE_UUID.rawname);
+        Property prop = node.getProperty(NodeConstants.ECM_FROZEN_NODE_UUID.rawname);
         return session.jcrSession().getNodeByUUID(prop.getString());
     }
 

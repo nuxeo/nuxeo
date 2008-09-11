@@ -70,8 +70,23 @@ import org.nuxeo.ecm.core.schema.DocumentType;
  */
 public interface DocumentModel extends Serializable {
 
+    int REFRESH_LOCK = 1;
+    int REFRESH_LIFE_CYCLE = 2;
+    int REFRESH_PREFETCH = 4;
+    int REFRESH_ACP_IF_LOADED = 8; // refresh now only if already loaded
+    int REFRESH_ACP_LAZY = 16; // refresh later in lazy mode
+    int REFRESH_ACP = 32; // refresh now
+    int REFRESH_CONTENT_IF_LOADED = 64; // refresh now only if already loaded
+    int REFRESH_CONTENT_LAZY = 128; // refresh later in lazy mode
+    int REFRESH_CONTENT = 256; // refresh now
+    int REFRESH_STATE = REFRESH_LIFE_CYCLE | REFRESH_LOCK;
+    int REFRESH_IF_LOADED = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP_IF_LOADED | REFRESH_CONTENT_IF_LOADED;
+    int REFRESH_LAZY = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP_LAZY | REFRESH_CONTENT_LAZY;
+    int REFRESH_ALL = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP | REFRESH_CONTENT;
+    int REFRESH_DEFAULT = REFRESH_STATE | REFRESH_PREFETCH | REFRESH_ACP_IF_LOADED | REFRESH_CONTENT_LAZY;
+
     /**
-     * Get the document type object.
+     * Gets the document type object.
      *
      * @return the document type object
      */
@@ -585,16 +600,18 @@ public interface DocumentModel extends Serializable {
     Property getProperty(String xpath) throws PropertyException;
 
     /**
-     * Get a property value given a xpath
-     * @param path
+     * Gets a property value given a xpath.
+     *
+     * @param xpath
      * @return
      * @throws PropertyException
      */
     Serializable getPropertyValue(String xpath) throws PropertyException;
 
     /**
-     * Set a p[roperty value given a xpath
-     * @param path
+     * Sets a property value given a xpath.
+     *
+     * @param xpath
      * @param value
      * @throws PropertyException
      */
@@ -608,16 +625,57 @@ public interface DocumentModel extends Serializable {
     long getFlags();
 
     /**
-     * Clone operation
-     * @return
-     * @throws CloneNotSupportedException
-     */
-    DocumentModel clone() throws CloneNotSupportedException;
-
-    /**
      * Clear any prefetched or cached document data. This will force the document to lazy update
      * it's data when required.
      */
     void reset();
+
+    /**
+     * Refresh document data from server.
+     * <p>
+     * The data models will be removed and all prefetch and system data will be refreshed from the server
+     * <p>
+     * The refreshed data contains:
+     * <ul>
+     * <li> document life cycle
+     * <li> document lock state, acp if required
+     * <li> document prefetch map
+     * <li> acp if required - otherwise acp info will be cleared so that it will be refetched in lazy way
+     * <li> document parts if required - otherwise parts data will be removed to be refreshed lazy
+     * </ul>
+     * The refresh flags are:
+     * <ul>
+     * <li> {@link DocumentModel#REFRESH_LIFE_CYCLE}
+     * <li> {@link DocumentModel#REFRESH_LOCK}
+     *
+     * <li> {@link DocumentModel#REFRESH_PREFETCH}
+     * <li> {@link DocumentModel#REFRESH_ACP_IF_LOADED}
+     * <li> {@link DocumentModel#REFRESH_ACP_LAZY}
+     * <li> {@link DocumentModel#REFRESH_ACP}
+     * <li> {@link DocumentModel#REFRESH_CONTENT_IF_LOADED}
+     * <li> {@link DocumentModel#REFRESH_CONTENT_LAZY}
+     * <li> {@link DocumentModel#REFRESH_CONTENT}
+     * <li> {@link DocumentModel#REFRESH_STATE} same as REFRESH_LIFE_CYCLE | REFRESH_LOCK
+     * <li> {@link DocumentModel#REFRESH_DEFAULT} same as REFRESH_STATE | REFRESH_DEFAULT | REFRESH_ACP_IF_LOADED | REFRESH_CONTENT_IF_LOADED
+     * <li> {@link DocumentModel#REFRESH_ALL} same as REFRESH_STATE | REFRESH_PREFTECH | REFRESH_ACP | REFRESH_CONTENT
+     * </ul>
+     * If XX_IF_LOADED is used then XX will be refreshed only if already loaded in the document - otherwise a lazy refresh will be done
+     *
+     * @param refreshFlags the refresh flags
+     * @param schemas the document parts (schemas) that should be refreshed now
+     */
+    void refresh(int refreshFlags, String[] schemas) throws ClientException;
+
+    /**
+     * Same as {@code DocumentModel.refresh(REFRESH_DEFAULT)}.
+     *
+     * @throws ClientException
+     */
+    void refresh() throws ClientException;
+
+    /**
+     * Clone operation. Must be made public instead of just protected as in Object.
+     */
+    DocumentModel clone() throws CloneNotSupportedException;
 
 }
