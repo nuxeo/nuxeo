@@ -53,11 +53,12 @@ import org.nuxeo.ecm.core.versioning.DocumentVersion;
  * Utility class used by <code>CustomVersioningService</code>. This contains methods to
  * easy construction of a Document version by embedding several storage peculiarities
  * of a version node.
+ * Rux NXP-2617 made it public and also few methods to be able to use it from extension.
  *
  * @author DM
  *
  */
-final class VerServUtils {
+final public class VerServUtils {
 
     public static final String START_VERSION_NODE = "root";
 
@@ -500,7 +501,7 @@ final class VerServUtils {
         return docNode.setProperty(propname, true).getBoolean();
     }
 
-    static void setCheckedOut(Node docNode, boolean checkedout)
+    static public void setCheckedOut(Node docNode, boolean checkedout)
             throws RepositoryException {
         final String propname = NodeConstants.ECM_VER_ISCHECKEDOUT.rawname;
         docNode.setProperty(propname, checkedout);
