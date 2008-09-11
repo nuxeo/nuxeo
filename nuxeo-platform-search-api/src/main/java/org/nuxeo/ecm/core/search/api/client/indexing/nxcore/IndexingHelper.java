@@ -262,7 +262,7 @@ public final class IndexingHelper {
         }
     }
 
-    private static void recursiveUnIndex(DocumentModel docModel,
+    public static void recursiveUnIndex(DocumentModel docModel,
             CoreSession session, SearchService service)
             throws IndexingException {
 
