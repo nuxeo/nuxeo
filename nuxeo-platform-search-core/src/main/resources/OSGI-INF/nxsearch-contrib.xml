@@ -116,7 +116,6 @@
     <indexingEvent name="documentCreated" action="Index" />
     <indexingEvent name="documentModified" action="ReIndex" />
     <indexingEvent name="documentPublished" action="ReIndex" />
-    <indexingEvent name="documentRestored" action="ReIndex" />
     <indexingEvent name="documentProxyPublished" action="Index" />
     <indexingEvent name="documentCreatedByCopy" action="Index"
       recursive="true" />
@@ -134,6 +133,11 @@
       <!-- uncomment when it's meaningful <resource>security</resource> -->
     </indexingEvent>
     <indexingEvent name="lifecycle_transition_event" action="ReIndex" />
+
+    <indexingEvent name="beforeRestoringDocument" action="UnIndex" recursive="true" mode="Synchronous">
+    </indexingEvent>
+    <indexingEvent name="documentRestored" action="ReIndex" recursive="true"/>
+
   </extension>
   <extension
     target="org.nuxeo.ecm.core.search.service.SearchServiceImpl"
