@@ -56,13 +56,16 @@ public class CustomDocumentVersion extends JCRDocument implements
 
     /**
      * Protected constructor called by CustomVersioningService class.
+     * Rux NXP-2617: actually made it public to allow service extension. Otherwise, the
+     * contribution is not considered because the implementation of service framework
+     * (see {@link TypeImporter.createDocTypeDefinition})
      *
      * @param session
      * @param versionNode the node should be the immediate child of a versionHistory
      *   node. This node contains version metadata.
      * @throws RepositoryException
      */
-    CustomDocumentVersion(JCRSession session, Node versionNode)
+    public CustomDocumentVersion(JCRSession session, Node versionNode)
             throws RepositoryException {
 
         if (versionNode == null) {
