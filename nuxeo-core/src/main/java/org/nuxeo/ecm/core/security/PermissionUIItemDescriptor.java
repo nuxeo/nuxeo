@@ -69,6 +69,19 @@ public class PermissionUIItemDescriptor {
         return permission;
     }
 
+    public void merge(PermissionUIItemDescriptor pid) throws Exception {
+        // sanity check
+        if (!permission.equals(pid.permission)) {
+            // TODO: use a dedicated Nuxeo Runtime / OSGi exception here
+            throw new Exception(String.format(
+                    "cannot merge permission item '%s' with '%s'", permission,
+                    pid.permission));
+        }
+        // do not merge unset attributes
+        show = pid.show != null ? pid.show : show;
+        order = pid.order != null ? pid.order : order;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other instanceof PermissionUIItemDescriptor) {
@@ -97,19 +110,6 @@ public class PermissionUIItemDescriptor {
             return true;
         }
         return false;
-    }
-
-    public void merge(PermissionUIItemDescriptor pid) throws Exception {
-        // sanity check
-        if (!permission.equals(pid.permission)) {
-            // TODO: use a dedicated Nuxeo Runtime / OSGi exception here
-            throw new Exception(String.format(
-                    "cannot merge permission item '%s' with '%s'", permission,
-                    pid.permission));
-        }
-        // do not merge unset attributes
-        show = pid.show != null ? pid.show : show;
-        order = pid.order != null ? pid.order : order;
     }
 
     @Override
