@@ -22,8 +22,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -193,21 +195,39 @@ public class SQLDocument extends SQLComplexProperty implements Document {
         dp.clearDirtyFlags();
     }
 
-    public <T extends Serializable> void setSystemProp(String name, T value)
-            throws DocumentException {
-        return;
-        // TODO XXX
-        // throw new UnsupportedOperationException();
+    protected static Map<String, String> systemPropNameMap;
+
+    static {
+        systemPropNameMap = new HashMap<String, String>();
+        systemPropNameMap.put("WfinProgress", Model.MISC_WF_IN_PROGRESS_PROP);
+        systemPropNameMap.put("WfIncOption", Model.MISC_WF_INC_OPTION_PROP);
     }
 
+    public <T extends Serializable> void setSystemProp(String name, T value)
+            throws DocumentException {
+        String propertyName = systemPropNameMap.get(name);
+        if (propertyName == null) {
+            throw new DocumentException("Unknown system property: " + name);
+        }
+        getProperty(propertyName).setValue(value);
+    }
+
+    @SuppressWarnings("unchecked")
     public <T extends Serializable> T getSystemProp(String name, Class<T> type)
             throws DocumentException {
-        if (type == Boolean.class) {
-            return (T) Boolean.FALSE;
+        String propertyName = systemPropNameMap.get(name);
+        if (propertyName == null) {
+            throw new DocumentException("Unknown system property: " + name);
         }
-        return null;
-        // TODO XXX
-        // throw new UnsupportedOperationException();
+        Object value = getProperty(propertyName).getValue();
+        if (value == null) {
+            if (type == Boolean.class) {
+                value = Boolean.FALSE;
+            } else if (type == Long.class) {
+                value = Long.valueOf(0);
+            }
+        }
+        return (T) value;
     }
 
     /*

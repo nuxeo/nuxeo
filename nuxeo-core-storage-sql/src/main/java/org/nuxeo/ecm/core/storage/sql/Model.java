@@ -132,6 +132,14 @@ public class Model {
 
     public static final String MISC_DIRTY_KEY = "dirty";
 
+    public static final String MISC_WF_IN_PROGRESS_PROP = "ecm:wfInProgress";
+
+    public static final String MISC_WF_IN_PROGRESS_KEY = "wfinprogress";
+
+    public static final String MISC_WF_INC_OPTION_PROP = "ecm:wfIncOption";
+
+    public static final String MISC_WF_INC_OPTION_KEY = "wfincoption";
+
     public static final String ACL_TABLE_NAME = "acls";
 
     public static final String ACL_PROP = "ecm:acl";
@@ -612,6 +620,12 @@ public class Model {
                 StringType.INSTANCE);
         addPropertyInfo(null, MISC_DIRTY_PROP, PropertyType.BOOLEAN,
                 MISC_TABLE_NAME, MISC_DIRTY_KEY, false, BooleanType.INSTANCE);
+        addPropertyInfo(null, MISC_WF_IN_PROGRESS_PROP, PropertyType.BOOLEAN,
+                MISC_TABLE_NAME, MISC_WF_IN_PROGRESS_KEY, false,
+                BooleanType.INSTANCE);
+        addPropertyInfo(null, MISC_WF_INC_OPTION_PROP, PropertyType.STRING,
+                MISC_TABLE_NAME, MISC_WF_INC_OPTION_KEY, false,
+                StringType.INSTANCE);
     }
 
     /**

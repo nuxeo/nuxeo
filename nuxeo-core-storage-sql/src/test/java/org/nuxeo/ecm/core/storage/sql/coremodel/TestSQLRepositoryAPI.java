@@ -135,6 +135,29 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals(Arrays.asList("c", "d"), (List<?>) participants);
     }
 
+    public void testSystemProperties() throws Exception {
+        DocumentModel root = session.getRootDocument();
+        DocumentModel doc = new DocumentModelImpl("/", "doc", "MyDocType");
+        doc = session.createDocument(doc);
+        session.save();
+        Boolean bool = doc.getSystemProp("WfinProgress", Boolean.class);
+        assertEquals(Boolean.FALSE, bool);
+        String opt = doc.getSystemProp("WfIncOption", String.class);
+        assertNull(opt);
+
+        session.setDocumentSystemProp(doc.getRef(), "WfinProgress",
+                Boolean.TRUE);
+        session.setDocumentSystemProp(doc.getRef(), "WfIncOption", "option1");
+        closeSession();
+        openSession();
+        root = session.getRootDocument();
+        doc = session.getChild(root.getRef(), "doc");
+        bool = doc.getSystemProp("WfinProgress", Boolean.class);
+        assertEquals(Boolean.TRUE, bool);
+        opt = doc.getSystemProp("WfIncOption", String.class);
+        assertEquals("option1", opt);
+    }
+
     //
     //
     // ----------------------------------------------------

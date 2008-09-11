@@ -703,4 +703,20 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.removeNode(nodea);
         session.save();
     }
+
+    public void testSystemProperties() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
+        nodea.setSingleProperty("ecm:wfInProgress", Boolean.TRUE);
+        nodea.setSingleProperty("ecm:wfIncOption", "beeep");
+        session.save();
+        session.close();
+        session = repository.getConnection();
+        root = session.getRootNode();
+        assertNotNull(root);
+        nodea = session.getChildNode(root, "foo", false);
+        assertEquals(Boolean.TRUE, nodea.getSimpleProperty("ecm:wfInProgress").getValue());
+        assertEquals("beeep", nodea.getSimpleProperty("ecm:wfIncOption").getValue());
+    }
 }
