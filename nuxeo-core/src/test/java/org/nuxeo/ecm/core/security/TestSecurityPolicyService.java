@@ -34,17 +34,17 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestSecurityPolicyService extends NXRuntimeTestCase {
 
+    static final String creator = "Bodie";
+
+    static final String user = "Bubbles";
+
+    static final Principal creatorPrincipal = new UserPrincipal("Bodie");
+
+    static final Principal userPrincipal = new UserPrincipal("Bubbles");
+
     private SecurityPolicyService service;
 
     private Document doc;
-
-    String creator = "Bodie";
-
-    String user = "Bubbles";
-
-    Principal creatorPrincipal = new UserPrincipal("Bodie");
-
-    Principal userPrincipal = new UserPrincipal("Bubbles");
 
     @Override
     public void setUp() throws Exception {
@@ -79,7 +79,7 @@ public class TestSecurityPolicyService extends NXRuntimeTestCase {
                 userPrincipal, permission, permissions, null));
 
         // with lock
-        doc.setLock(user + ":");
+        doc.setLock(user + ':');
         assertEquals(Access.DENY, service.checkPermission(doc, null,
                 creatorPrincipal, permission, permissions, null));
         assertEquals(Access.UNKNOWN, service.checkPermission(doc, null,

@@ -58,6 +58,10 @@ public class DocumentModelFactory {
 
     private static final SecureRandom random = new SecureRandom();
 
+    // Utility class.
+    private DocumentModelFactory() {
+    }
+
     public static DocumentModel newDocument(DocumentModel parent, String type) {
         DocumentType docType = ((DocumentModelImpl) parent).getClient().getDocumentType(
                 type);
@@ -77,6 +81,7 @@ public class DocumentModelFactory {
                 + Long.toHexString(random.nextLong()), type);
     }
 
+    // XXX: parameter 'name' not used. Refactor?
     public static DocumentModel newDocument(DocumentModel parent, String name,
             DocumentType type) {
         return new DocumentModelImpl(null, type.getName(), null,
@@ -302,6 +307,7 @@ public class DocumentModelFactory {
         return new DataModelImpl(schema.getName(), map);
     }
 
+    // XXX: parameter 'sid' not used.
     public static DataModel exportSchema(String sid, DocumentRef docRef,
             Document doc, Schema schema) throws DocumentException {
         DocumentPart part = new DocumentPartImpl(schema);
