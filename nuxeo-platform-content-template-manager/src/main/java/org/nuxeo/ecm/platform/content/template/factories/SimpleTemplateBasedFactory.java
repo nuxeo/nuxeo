@@ -25,7 +25,6 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -84,7 +83,7 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
 
             // add the the ACL defined in the descriptor
             for (ACEDescriptor ace : aces) {
-                existingACL.add(new ACE(ace.getUserName(), ace.getPermission(),
+                existingACL.add(new ACE(ace.getPrincipal(), ace.getPermission(),
                         ace.getGranted().booleanValue()));
             }
             // readd the acl to invalidate the ACPImpl cache
@@ -96,7 +95,7 @@ public class SimpleTemplateBasedFactory extends BaseContentFactory {
     public boolean initFactory(Map<String, String> options,
             List<ACEDescriptor> rootAcl, List<TemplateItemDescriptor> template) {
         this.template = template;
-        this.acl = rootAcl;
+        acl = rootAcl;
         return true;
     }
 

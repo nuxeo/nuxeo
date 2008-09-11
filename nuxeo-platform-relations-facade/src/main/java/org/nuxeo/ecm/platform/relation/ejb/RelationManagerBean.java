@@ -21,7 +21,9 @@ package org.nuxeo.ecm.platform.relation.ejb;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -32,7 +34,6 @@ import javax.ejb.Stateless;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QueryResult;
@@ -70,14 +71,15 @@ public class RelationManagerBean implements RelationManager {
         }
     }
 
-    public void remove() {}
+    public void remove() {
+    }
 
     // TODO: maybe hack here to get graph in a cleaner way
     public Graph getGraphByName(String name) throws ClientException {
         try {
             return service.getGraphByName(name);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -86,7 +88,18 @@ public class RelationManagerBean implements RelationManager {
         try {
             return service.getResourceRepresentation(namespace, resource);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
+        }
+    }
+
+    public Serializable getResourceRepresentation(String namespace,
+            Resource resource, Map<String, Serializable> context)
+            throws ClientException {
+        try {
+            return service.getResourceRepresentation(namespace, resource,
+                    context);
+        } catch (Throwable t) {
+            throw ClientException.wrap(t);
         }
     }
 
@@ -95,7 +108,16 @@ public class RelationManagerBean implements RelationManager {
         try {
             return service.getResource(namespace, object);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
+        }
+    }
+
+    public Resource getResource(String namespace, Serializable object,
+            Map<String, Serializable> context) throws ClientException {
+        try {
+            return service.getResource(namespace, object, context);
+        } catch (Throwable t) {
+            throw ClientException.wrap(t);
         }
     }
 
@@ -103,7 +125,16 @@ public class RelationManagerBean implements RelationManager {
         try {
             return service.getAllResources(object);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
+        }
+    }
+
+    public Set<Resource> getAllResources(Serializable object,
+            Map<String, Serializable> context) throws ClientException {
+        try {
+            return service.getAllResources(object, context);
+        } catch (Throwable t) {
+            throw ClientException.wrap(t);
         }
     }
 
@@ -112,7 +143,7 @@ public class RelationManagerBean implements RelationManager {
         try {
             getGraphByName(graphName).add(statements);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -120,7 +151,7 @@ public class RelationManagerBean implements RelationManager {
         try {
             getGraphByName(graphName).clear();
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -129,7 +160,7 @@ public class RelationManagerBean implements RelationManager {
         try {
             return getGraphByName(graphName).getObjects(subject, predicate);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -138,7 +169,7 @@ public class RelationManagerBean implements RelationManager {
         try {
             return getGraphByName(graphName).getPredicates(subject, object);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -147,7 +178,7 @@ public class RelationManagerBean implements RelationManager {
         try {
             return getGraphByName(graphName).getStatements(statement);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -156,7 +187,7 @@ public class RelationManagerBean implements RelationManager {
         try {
             return getGraphByName(graphName).getStatements();
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -165,7 +196,7 @@ public class RelationManagerBean implements RelationManager {
         try {
             return getGraphByName(graphName).getSubjects(predicate, object);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -174,7 +205,7 @@ public class RelationManagerBean implements RelationManager {
         try {
             return getGraphByName(graphName).hasResource(resource);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -183,7 +214,7 @@ public class RelationManagerBean implements RelationManager {
         try {
             return getGraphByName(graphName).hasStatement(statement);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -193,7 +224,7 @@ public class RelationManagerBean implements RelationManager {
             return getGraphByName(graphName).query(queryString, language,
                     baseURI);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -202,7 +233,7 @@ public class RelationManagerBean implements RelationManager {
         try {
             return getGraphByName(graphName).read(in, lang, base);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -211,7 +242,7 @@ public class RelationManagerBean implements RelationManager {
         try {
             getGraphByName(graphName).remove(statements);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -219,7 +250,7 @@ public class RelationManagerBean implements RelationManager {
         try {
             return getGraphByName(graphName).size();
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -228,7 +259,7 @@ public class RelationManagerBean implements RelationManager {
         try {
             return getGraphByName(graphName).write(out, lang, base);
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 

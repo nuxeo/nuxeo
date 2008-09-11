@@ -35,13 +35,13 @@ public class QueryDataService extends DefaultComponent implements
 
     private static final Log log = LogFactory.getLog(QueryDataService.class);
 
-    private QueryExtensionPointHandler queryExtensionHandler;
+    private final QueryExtensionPointHandler queryExtensionHandler;
 
-    private DisplayExtensionPointHandler displayExtensionHandler;
+    private final DisplayExtensionPointHandler displayExtensionHandler;
 
-    private Registry querysRegistry;
+    private final Registry querysRegistry;
 
-    private Registry displaysRegistry;
+    private final Registry displaysRegistry;
 
     public QueryDataService() {
         queryExtensionHandler = new QueryExtensionPointHandler();

@@ -65,13 +65,13 @@ public class TestWorkflowDocumentBeanRemote extends TestCase {
         return Framework.getService(WorkflowDocumentRelationManager.class);
     }
 
-    public void testDocumentRefs() throws WorkflowDocumentRelationException {
+    public void testDocumentRefs() {
         DocumentRef[] docRefs = wDocBean.getDocumentRefsFor(WORKLFOW_INSTANCE_ID);
         assertEquals(1, docRefs.length);
         assertEquals(DOC_REF1.hashCode(), docRefs[0].hashCode());
     }
 
-    public void testWorkflowRefs() throws WorkflowDocumentRelationException {
+    public void testWorkflowRefs() {
         String[] wRefs = wDocBean.getWorkflowInstanceIdsFor(DOC_REF1);
         assertEquals(1, wRefs.length);
         assertEquals(WORKLFOW_INSTANCE_ID, wRefs[0]);

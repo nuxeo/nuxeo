@@ -29,7 +29,7 @@ import org.cyberneko.html.HTMLConfiguration;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
- * 
+ *
  */
 public class HtmlParser extends AbstractSAXParser {
 
@@ -89,7 +89,7 @@ public class HtmlParser extends AbstractSAXParser {
 
     /**
      * Returns parsed content
-     * 
+     *
      * @return String Parsed content
      */
     public String getContents() {

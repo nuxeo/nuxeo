@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.webapp.filemanager;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +32,6 @@ import javax.faces.application.FacesMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.myfaces.trinidad.model.UploadedFile;
 import org.jboss.annotation.ejb.SerializedConcurrentAccess;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -45,7 +45,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.platform.ejb.EJBExceptionHandler;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.api.FileManagerPermissionException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
@@ -71,7 +70,7 @@ import sun.misc.BASE64Decoder;
 @Local(FileManageActionsLocal.class)
 @Remote(FileManageActions.class)
 public class FileManageActionsBean extends InputController implements
-        FileManageActionsLocal, FileManageActions {
+        FileManageActionsLocal {
 
     private static final Log log = LogFactory.getLog(FileManageActionsBean.class);
 
@@ -89,12 +88,14 @@ public class FileManageActionsBean extends InputController implements
 
     private static final String MOVE_OK = "MOVE_OK";
 
-    protected UploadedFile fileUpload;
+    protected InputStream fileUpload;
+
+    protected String fileName;
 
     @In(create = true, required = false)
     protected CoreSession documentManager;
 
-    @In(required = true)
+    @In
     protected TypeManager typeManager;
 
     @In(create = true)
@@ -103,7 +104,7 @@ public class FileManageActionsBean extends InputController implements
     @In(create = true)
     protected PublishActions publishActions;
 
-    protected transient FileManager fileManager;
+    protected FileManager fileManager;
 
     protected FileManager getFileManagerService() throws ClientException {
         if (fileManager == null) {
@@ -129,7 +130,7 @@ public class FileManageActionsBean extends InputController implements
 
     public String addFile() throws ClientException {
         try {
-            if (fileUpload == null) {
+            if (fileUpload == null || fileName == null) {
                 facesMessages.add(FacesMessage.SEVERITY_ERROR,
                         resourcesAccessor.getMessages().get(
                                 "fileImporter.error.nullUploadedFile"));
@@ -137,12 +138,14 @@ public class FileManageActionsBean extends InputController implements
                         navigationContext.getCurrentDocument(),
                         UserAction.AFTER_CREATE);
             }
+            fileName = FileUtils.getCleanFileName(fileName);
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             String path = currentDocument.getPathAsString();
-            Blob blob = FileUtils.fetchContent(fileUpload);
+            Blob blob = FileUtils.createSerializableBlob(fileUpload, fileName,
+                    null);
 
             DocumentModel createdDoc = getFileManagerService().createDocumentFromBlob(
-                    documentManager, blob, path, true, fileUpload.getFilename());
+                    documentManager, blob, path, true, fileName);
             eventManager.raiseEventsOnDocumentSelected(createdDoc);
 
             facesMessages.add(FacesMessage.SEVERITY_INFO,
@@ -152,7 +155,7 @@ public class FileManageActionsBean extends InputController implements
                     UserAction.AFTER_CREATE);
 
         } catch (Throwable t) {
-            throw EJBExceptionHandler.wrapException(t);
+            throw ClientException.wrap(t);
         }
     }
 
@@ -299,7 +302,7 @@ public class FileManageActionsBean extends InputController implements
     }
 
     // TODO: this method is weird! What is it doing?
-    public String delCopyWithId(String docId) throws ClientException {
+    public String delCopyWithId(String docId) {
         try {
             String debug = "deleting copyId " + docId;
             if (docId.startsWith("pasteRef_")) {
@@ -509,12 +512,20 @@ public class FileManageActionsBean extends InputController implements
         log.info("Initializing...");
     }
 
-    public UploadedFile getFileUpload() {
+    public InputStream getFileUpload() {
         return fileUpload;
     }
 
-    public void setFileUpload(UploadedFile fileUpload) {
+    public void setFileUpload(InputStream fileUpload) {
         this.fileUpload = fileUpload;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public DocumentModel getChangeableDocument() {
