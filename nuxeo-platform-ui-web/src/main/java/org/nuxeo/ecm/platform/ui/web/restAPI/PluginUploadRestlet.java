@@ -31,11 +31,12 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.SimpleFileManager;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
@@ -120,19 +121,13 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet {
                 //InputStream input = repr.getStream();
                 InputStream input = myFile.getInputStream();
 
-                MediaType mediaType = repr.getMediaType();
-
-                String mimeType = mediaType.getName();
                 String fileName = myFile.getName();
-                byte[] content = FileUtils.readBytes(input);
+                Blob blob = StreamingBlob.createFromStream(input).persist();
+                blob.setFilename(fileName);
 
                 try {
                     returnCode = FileManageActions.addBinaryFileFromPlugin(
-                            content, mimeType, fileName, relativePath);
-                    //Element upload = result.addElement("upload");
-                    //upload.setText(returnCode);
-                    //result.setRootElement(upload);
-
+                            blob, fileName, relativePath);
                 } catch (ClientException e) {
                     handleError(res, e);
                     return;
