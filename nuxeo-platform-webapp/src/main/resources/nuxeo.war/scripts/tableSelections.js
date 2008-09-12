@@ -14,7 +14,7 @@ function selectDataTableRow(docRef, providerName, checkbox, listName) {
 
 // same as above with current document explicit reference to avoid browser back button to
 // trigger errors with the default CURRENT_DOC_CHILDREN provider
-function selectDataTableRow(docRef, providerName, checkbox, listName, currentDocRef) {
+function selectDataTableRowForDocument(docRef, providerName, checkbox, listName, currentDocRef) {
   if (proxy == null) {
     proxy = Seam.Component.getInstance("documentActions");
   }
@@ -43,7 +43,7 @@ function selectDataTablePage(tableId, providerName, selected, listName) {
 
 // same as above with current document explicit reference to avoid browser back button to
 // trigger errors with the default CURRENT_DOC_CHILDREN provider
-function selectDataTablePage(tableId, providerName, selected, listName, currentDocRef) {
+function selectDataTablePageForDocument(tableId, providerName, selected, listName, currentDocRef) {
   if (proxy == null) {
     proxy = Seam.Component.getInstance("documentActions");
   }
