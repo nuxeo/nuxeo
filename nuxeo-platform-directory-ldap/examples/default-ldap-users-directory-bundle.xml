@@ -78,6 +78,13 @@
       <!-- maximum number of cached entries before global invalidation -->
       <cacheMaxSize>1000</cacheMaxSize>
 
+      <!--
+           If the id field is not returned by the search, we set it with the searched entry, probably the login.
+           Before setting it, you can change its case. Accepted values are 'lower' and 'upper',
+           anything else will not change the case.
+      -->
+      <missingIdFieldCase>lower</missingIdFieldCase>
+
       <creationBaseDn>ou=people,dc=example,dc=com</creationBaseDn>
       <creationClass>top</creationClass>
       <creationClass>person</creationClass>

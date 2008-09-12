@@ -79,7 +79,7 @@ import org.nuxeo.ecm.platform.workflow.jbpm.util.IDConverter;
  */
 public abstract class AbstractWorkflowDocumentHandler {
 
-    protected static final Log log = LogFactory.getLog(AbstractWorkflowDocumentActionHandler.class);
+    protected static final Log log = LogFactory.getLog(AbstractWorkflowDocumentHandler.class);
 
     protected final WorkflowDocumentLifeCycleBusinessDelegate lifecycleBD = new WorkflowDocumentLifeCycleBusinessDelegate();
 

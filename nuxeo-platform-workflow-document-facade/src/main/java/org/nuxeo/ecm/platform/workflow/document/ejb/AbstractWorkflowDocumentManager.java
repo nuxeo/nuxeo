@@ -68,7 +68,7 @@ public abstract class AbstractWorkflowDocumentManager implements
     public void afterBegin() throws EJBException {
         log.debug("afterBegin().........................................");
         try {
-            log.info("Connect workflow document manager");
+            log.debug("Connect workflow document manager");
             documentManager = getDocumentManager();
         } catch (NamingException e) {
             throw new EJBException(e);
@@ -81,7 +81,7 @@ public abstract class AbstractWorkflowDocumentManager implements
         log.debug("afterCompletion()....................................");
         try {
             if (documentManager != null) {
-                log.info("Disconnect workflow document manager");
+                log.debug("Disconnect workflow document manager");
                 documentManager.disconnect();
                 documentManager = null;
             }
@@ -119,7 +119,7 @@ public abstract class AbstractWorkflowDocumentManager implements
         if (docRef != null) {
             documentManager.unlock(docRef);
             documentManager.save();
-            log.info("Document has been unlocked.... docRef=" + docRef);
+            log.debug("Document has been unlocked.... docRef=" + docRef);
         }
 
     }
