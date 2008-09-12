@@ -137,7 +137,6 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
      * Initializes a new user session from the credentials bound the Web Service
      * remote session.
      *
-     * @param rs a Web Service remote instance.
      * @throws ClientException
      */
     protected void login(String username, String password)

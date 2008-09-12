@@ -107,10 +107,8 @@ public class DocumentIdCodec extends AbstractDocumentViewCodec implements
 
                 final DocumentLocation docLoc = new DocumentLocationImpl(
                         server, docRef);
-                final DocumentView docView = new DocumentViewImpl(docLoc,
-                        viewId, params);
 
-                return docView;
+                return new DocumentViewImpl(docLoc, viewId, params);
             }
         }
 
