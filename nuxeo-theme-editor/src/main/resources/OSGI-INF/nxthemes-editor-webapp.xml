@@ -55,6 +55,12 @@
        <mapping pattern="/update_element_widget">
           <script>/update_element_widget.groovy</script>
        </mapping>
+       <mapping pattern="/duplicate_element">
+          <script>/duplicate_element.groovy</script>
+       </mapping>
+       <mapping pattern="/delete_element">
+          <script>/delete_element.groovy</script>
+       </mapping>
       </mappings>
     </webapp>
 
