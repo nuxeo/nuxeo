@@ -26,10 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.myfaces.trinidad.model.UploadedFile;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.ui.web.resolver.TrinidadUploadedFileStreamSource;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * File information used to manage a file adding/removal.
@@ -70,13 +67,6 @@ public class InputFileInfo {
             UploadedFile upFile = (UploadedFile) blob;
             try {
                 convertedBlob = createSerializableBlob(upFile, null);
-                // TODO: query the service using an adapter
-                MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
-                String mimetype = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
-                        upFile.getFilename(), convertedBlob, upFile.getContentType());
-                convertedBlob.setMimeType(mimetype);
-            } catch (MimetypeDetectionException e) {
-                throw new ConverterException("error.inputFile.invalidFile");
             } catch (Exception e1) {
                 log.error("Error while accessing mimetype service " + e1.getMessage());
                 throw new ConverterException("error.inputFile.invalidFile");
