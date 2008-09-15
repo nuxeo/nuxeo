@@ -21,13 +21,8 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -36,15 +31,13 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.SimpleFileManager;
+import org.nuxeo.ecm.platform.ui.web.util.FileUploadHelper;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.ext.fileupload.RestletFileUpload;
-import org.restlet.resource.Representation;
 
 
 @Name("pluginUploadRestlet")
@@ -75,9 +68,6 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet {
             }
         }
 
-        //DOMDocumentFactory domfactory = new DOMDocumentFactory();
-        //DOMDocument result = (DOMDocument) domfactory.createDocument();
-
         DocumentModel currentDocument;
 
         try {
@@ -102,43 +92,24 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet {
         }
 
         if (currentDocument != null) {
-            Representation repr = req.getEntity();
-            RestletFileUpload fu = new RestletFileUpload();
-            fu.setFileItemFactory(new DiskFileItemFactory());
-            String fileNameCharset = getHttpRequest(req).getHeader("FileNameCharset");
-            if (fileNameCharset!=null)
-                fu.setHeaderEncoding(fileNameCharset);
-            List<FileItem> fiList = null;
+            List<Blob> blobs = null;
             try {
-                fiList = fu.parseRequest(req);
-            } catch (FileUploadException e) {
+                blobs = FileUploadHelper.parseRequest(req);
+
+            } catch (Exception e) {
                 handleError(res, e);
                 return;
             }
 
-            FileItem myFile = fiList.get(0);
+            Blob blob = blobs.get(0);
             try {
-                //InputStream input = repr.getStream();
-                InputStream input = myFile.getInputStream();
-
-                String fileName = myFile.getName();
-                Blob blob = StreamingBlob.createFromStream(input).persist();
-                blob.setFilename(fileName);
-
-                try {
-                    returnCode = FileManageActions.addBinaryFileFromPlugin(
-                            blob, fileName, relativePath);
-                } catch (ClientException e) {
-                    handleError(res, e);
-                    return;
-                }
-                //
-            } catch (IOException e) {
+                returnCode = FileManageActions.addBinaryFileFromPlugin(blob,
+                        blob.getFilename(), relativePath);
+            } catch (ClientException e) {
                 handleError(res, e);
                 return;
             }
         }
-        //res.setEntity(result.asXML(), MediaType.TEXT_XML);
         res.setEntity(returnCode, MediaType.TEXT_PLAIN);
     }
 

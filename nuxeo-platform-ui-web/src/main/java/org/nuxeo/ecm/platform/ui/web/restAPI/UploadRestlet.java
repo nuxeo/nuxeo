@@ -23,8 +23,6 @@ import static org.jboss.seam.ScopeType.EVENT;
 
 import java.util.List;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -40,12 +38,11 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.SimpleFileManager;
+import org.nuxeo.ecm.platform.ui.web.util.FileUploadHelper;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.ext.fileupload.RestletFileUpload;
-import org.restlet.resource.Representation;
 
 /**
  * Restlet to import files as nuxeo documents using the pluggable FileManager
@@ -89,22 +86,20 @@ public class UploadRestlet extends BaseNuxeoRestlet {
         }
 
         if (targetContainer != null) {
-            Representation repr = req.getEntity();
-            RestletFileUpload fu = new RestletFileUpload();
-            List<FileItem> fiList = null;
+            List<Blob> blobs = null;
             try {
-                fiList = fu.parseRequest(req);
-            } catch (FileUploadException e) {
-                // handleError(res, e);
-                // return;
-                // XXX : this fails for requests not sent via browser
+                blobs = FileUploadHelper.parseRequest(req);
+            } catch (Exception e) {
+                handleError(res, e);
+                return;
             }
-            if (fiList == null) {
+
+            if (blobs == null) {
                 // mono import
                 String outcome;
                 try {
                     Blob inputBlob = StreamingBlob.createFromStream(
-                            repr.getStream()).persist();
+                            req.getEntity().getStream()).persist();
                     inputBlob.setFilename(fileName);
                     outcome = FileManageActions.addBinaryFileFromPlugin(
                             inputBlob, fileName, targetContainer);
@@ -115,16 +110,13 @@ public class UploadRestlet extends BaseNuxeoRestlet {
             } else {
                 // multiple file upload
                 Element uploads = result.addElement("uploads");
-                for (FileItem fileItem : fiList) {
+                for (Blob blob: blobs) {
                     String outcome;
                     try {
-                        Blob inputBlob = StreamingBlob.createFromStream(
-                                fileItem.getInputStream()).persist();
-                        inputBlob.setFilename(fileItem.getName());
                         outcome = FileManageActions.addBinaryFileFromPlugin(
-                                inputBlob, fileItem.getName(), targetContainer);
+                                blob, blob.getFilename(), targetContainer);
                     } catch (Exception e) {
-                        log.error("error importing " + fileItem.getName()
+                        log.error("error importing " + blob.getFilename()
                                 + ": " + e.getMessage(), e);
                         outcome = "ERROR : " + e.getMessage();
                     }
