@@ -31,8 +31,6 @@ import java.util.regex.Pattern;
 import javax.resource.ResourceException;
 import javax.transaction.xa.XAResource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
@@ -64,8 +62,6 @@ import org.nuxeo.ecm.core.versioning.DocumentVersion;
  * @author Florent Guillaume
  */
 public class SQLSession implements Session {
-
-    private static final Log log = LogFactory.getLog(SQLSession.class);
 
     private final Repository repository;
 
@@ -194,6 +190,9 @@ public class SQLSession implements Session {
     }
 
     public Document resolvePath(String path) throws DocumentException {
+        if (path.endsWith("/") && path.length() > 1) {
+            path = path.substring(0, path.length() - 1);
+        }
         Node node;
         try {
             node = session.getNodeByPath(path, session.getRootNode());

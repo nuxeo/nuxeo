@@ -158,6 +158,18 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         assertEquals("option1", opt);
     }
 
+    public void testPathWithExtraSlash() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "doc", "MyDocType");
+        doc = session.createDocument(doc);
+        session.save();
+        DocumentModelList children = session.getChildren(new PathRef("/"));
+        assertEquals(1, children.size());
+        children = session.getChildren(new PathRef("/doc"));
+        assertEquals(0, children.size());
+        children = session.getChildren(new PathRef("/doc/"));
+        assertEquals(0, children.size());
+    }
+
     //
     //
     // ----------------------------------------------------
