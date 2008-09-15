@@ -226,6 +226,12 @@ final public class VerServUtils {
         // make a copy of the current node
         final Node copyNode = copyNode((JCRSession) jdoc.getSession(), jdoc.getNode(), versionNode);
         copyNode.setProperty(NodeConstants.ECM_FROZEN_NODE_UUID.rawname, docNode.getUUID());
+        // CB: NXP-2219 - This property should be explicitly set in order to
+        // avoid the breaking of the archive in the case when the first version
+        // is restored.
+        copyNode.setProperty(NodeConstants.ECM_VERSION_HISTORY.rawname,
+                versionHistoryNode);
+        
         // NXP-754
         copyNode.save();
         // ----------------------------------------
@@ -501,7 +507,7 @@ final public class VerServUtils {
         return docNode.setProperty(propname, true).getBoolean();
     }
 
-    static public void setCheckedOut(Node docNode, boolean checkedout)
+    public static void setCheckedOut(Node docNode, boolean checkedout)
             throws RepositoryException {
         final String propname = NodeConstants.ECM_VER_ISCHECKEDOUT.rawname;
         docNode.setProperty(propname, checkedout);
