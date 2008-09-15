@@ -89,6 +89,17 @@ public class SessionImpl implements Session {
         return transactionalSession;
     }
 
+    /**
+     * Clears all the caches. Called by RepositoryManagement.
+     */
+    protected int clearCaches() {
+        if (transactionalSession.isInTransaction()) {
+            // avoid potential multi-threaded access to active session
+            return 0;
+        }
+        return context.clearCaches();
+    }
+
     /*
      * ----- javax.resource.cci.Connection -----
      */

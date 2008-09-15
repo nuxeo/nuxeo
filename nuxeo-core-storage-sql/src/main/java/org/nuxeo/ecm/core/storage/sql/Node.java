@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model.PropertyInfo;
 
@@ -49,10 +50,8 @@ public class Node {
     /**
      * Cache of property objects already retrieved. They are dumb objects, just
      * providing an indirection to an underlying {@link Fragment}.
-     *
-     * TODO make this a memory-sensitive cache.
      */
-    private transient final Map<String, BaseProperty> propertyCache;
+    private final Map<String, BaseProperty> propertyCache;
 
     private transient Boolean isVersion;
 
@@ -64,6 +63,7 @@ public class Node {
      * @param rowGroup the group of rows for the node
      * @throws StorageException
      */
+    @SuppressWarnings("unchecked")
     protected Node(Session session, PersistenceContext context,
             FragmentGroup rowGroup) throws StorageException {
         this.context = context;
@@ -75,7 +75,9 @@ public class Node {
         } else {
             fragments = rowGroup.fragments;
         }
-        this.propertyCache = new HashMap<String, BaseProperty>();
+        // memory-sensitive
+        this.propertyCache = new ReferenceMap(ReferenceMap.HARD,
+                ReferenceMap.SOFT);
     }
 
     // ----- basics -----

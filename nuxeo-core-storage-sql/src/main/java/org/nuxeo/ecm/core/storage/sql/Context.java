@@ -128,6 +128,18 @@ public class Context {
     }
 
     /**
+     * Clears all the caches. Called by RepositoryManagement.
+     */
+    protected int clearCaches() {
+        // TODO there should be a synchronization here
+        // but this is a rare operation and we don't call
+        // it if a transaction is in progress
+        int n = pristine.size();
+        pristine.clear();
+        return n;
+    }
+
+    /**
      * Closes the context. Keeps around the {@link #pristine} and
      * {@link #absent} caches (to avoid costly refills). These two caches are
      * nevertheless still invalidatable.

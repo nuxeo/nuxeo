@@ -22,15 +22,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.storage.StorageException;
-
-import sun.tools.tree.ThisExpression;
 
 /**
  * This class holds persistence context information for the hierarchy table, and
@@ -55,14 +53,35 @@ public class HierarchyContext extends Context {
      */
     private final Set<Serializable> modifiedParentsInvalidations;
 
-    @SuppressWarnings("unchecked")
     HierarchyContext(Mapper mapper, PersistenceContext persistenceContext) {
         super(mapper.getModel().hierTableName, mapper, persistenceContext);
-        childrenRegular = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.SOFT);
-        childrenComplexProp = new ReferenceMap(ReferenceMap.HARD,
-                ReferenceMap.SOFT);
+        // these cannot be ReferenceMaps because we can't get rid of Children
+        // when they have not been flushed
+        childrenRegular = new HashMap<Serializable, Children>();
+        childrenComplexProp = new HashMap<Serializable, Children>();
         modifiedParentsInTransaction = new HashSet<Serializable>();
         modifiedParentsInvalidations = new HashSet<Serializable>();
+    }
+
+    @Override
+    protected int clearCaches() {
+        int n = super.clearCaches();
+        // flush allowable children caches
+        for (Iterator<Children> it = childrenRegular.values().iterator(); it.hasNext();) {
+            Children children = it.next();
+            if (children.isFlushed()) {
+                it.remove();
+                n++;
+            }
+        }
+        for (Iterator<Children> it = childrenComplexProp.values().iterator(); it.hasNext();) {
+            Children children = it.next();
+            if (children.isFlushed()) {
+                it.remove();
+                n++;
+            }
+        }
+        return n;
     }
 
     /**

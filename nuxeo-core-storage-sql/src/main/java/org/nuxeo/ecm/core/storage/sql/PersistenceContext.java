@@ -88,6 +88,17 @@ public class PersistenceContext {
         oldIdMap = new HashMap<Serializable, Serializable>();
     }
 
+    /**
+     * Clears all the caches. Called by RepositoryManagement.
+     */
+    protected int clearCaches() {
+        int n = 0;
+        for (Context context : contexts.values()) {
+            n += context.clearCaches();
+        }
+        return n;
+    }
+
     // get or return null
     protected Context getContextOrNull(String tableName) {
         return contexts.get(tableName);

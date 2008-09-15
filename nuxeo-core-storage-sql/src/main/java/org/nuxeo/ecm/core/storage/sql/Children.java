@@ -187,6 +187,10 @@ public class Children {
         deleted = null;
     }
 
+    public boolean isFlushed() {
+        return created == null && deleted == null;
+    }
+
     /**
      * Gets a fragment given its name.
      * <p>

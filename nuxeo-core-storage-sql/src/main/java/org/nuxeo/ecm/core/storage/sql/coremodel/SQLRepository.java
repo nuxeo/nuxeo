@@ -77,8 +77,10 @@ public class SQLRepository implements Repository {
         String filename = descriptor.getConfigurationFile();
         XMap xmap = new XMap();
         xmap.register(org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.class);
-        return (org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor) xmap.load(new FileInputStream(
+        org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor sqldescr = (org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor) xmap.load(new FileInputStream(
                 filename));
+        sqldescr.name = descriptor.getName();
+        return sqldescr;
     }
 
     /*

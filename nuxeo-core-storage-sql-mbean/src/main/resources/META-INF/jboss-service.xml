@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<server>
+  <mbean code="org.nuxeo.ecm.core.storage.sql.mbean.RepositoryStatus"
+    name="nx:service=RepositoryStatus,type=SQLStorage">
+  </mbean>
+</server>
