@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.Attributes;
+import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.apache.commons.logging.Log;
@@ -153,6 +154,32 @@ public abstract class NXRuntimeTestCase extends MockObjectTestCase {
             return;
         }
         urls = ((URLClassLoader) classLoader).getURLs();
+        // special case for maven surefire with useManifestOnlyJar
+        if (urls.length == 1) {
+            try {
+                URI uri = urls[0].toURI();
+                if (uri.getScheme().equals("file") &&
+                        uri.getPath().contains("surefirebooter")) {
+                    JarFile jar = new JarFile(new File(uri));
+                    try {
+                        String cp = jar.getManifest().getMainAttributes().getValue(
+                                Attributes.Name.CLASS_PATH);
+                        if (cp != null) {
+                            String[] cpe = cp.split(" ");
+                            URL[] newUrls = new URL[cpe.length];
+                            for (int i = 0; i < cpe.length; i++) {
+                                newUrls[i] = new URL("file:" + cpe[i]);
+                            }
+                            urls = newUrls;
+                        }
+                    } finally {
+                        jar.close();
+                    }
+                }
+            } catch (Exception e) {
+                // skip
+            }
+        }
         StringBuilder sb = new StringBuilder();
         sb.append("URLs on the classpath: ");
         for (URL url:urls) {
