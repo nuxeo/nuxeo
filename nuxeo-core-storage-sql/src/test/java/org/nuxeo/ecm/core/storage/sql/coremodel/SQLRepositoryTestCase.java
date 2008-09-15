@@ -63,10 +63,12 @@ public abstract class SQLRepositoryTestCase extends NXRuntimeTestCase {
     }
 
     public void deployRepository() throws Exception {
-        File dbdir = new File("target/test/repository");
+        File testdir = new File("target/test");
+        testdir.mkdirs();
+        File dbdir = new File(testdir, "repository");
         deleteRecursive(dbdir);
-        System.setProperty("derby.stream.error.file", new File(
-                "target/test/derby.log").getAbsolutePath());
+        System.setProperty("derby.stream.error.file", new File(testdir,
+                "derby.log").getAbsolutePath());
         deployContrib("org.nuxeo.ecm.core.storage.sql.tests",
                 "OSGI-INF/test-repo-repository-contrib.xml");
     }
