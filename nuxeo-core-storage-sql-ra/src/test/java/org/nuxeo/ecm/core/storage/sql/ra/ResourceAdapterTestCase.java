@@ -74,6 +74,9 @@ public class ResourceAdapterTestCase extends BaseTestCase {
         super.setUp();
         runtimeTestCase.setUp();
         runtimeTestCase.deployBundle("org.nuxeo.ecm.core.schema");
+        runtimeTestCase.deployContrib(
+                "org.nuxeo.ecm.core.storage.sql.ra.tests",
+                "OSGI-INF/test-core-types-contrib.xml");
         assertNotNull(Framework.getService(SchemaManager.class));
     }
 

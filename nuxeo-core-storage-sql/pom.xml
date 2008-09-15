@@ -76,6 +76,8 @@
         <configuration>
           <excludes>
             <exclude>**/Test*MemoryLeak.java</exclude>
+            <!-- Derby leaks memory in this one: -->
+            <exclude>**/TestSQLRepositoryAPI.java</exclude>
           </excludes>
         </configuration>
       </plugin>
