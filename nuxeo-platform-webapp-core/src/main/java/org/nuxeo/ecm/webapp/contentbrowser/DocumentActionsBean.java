@@ -44,10 +44,10 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Transactional;
 import org.jboss.seam.annotations.remoting.WebRemote;
+import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.StringUtils;
@@ -62,8 +62,6 @@ import org.nuxeo.ecm.core.api.PagedDocumentsProvider;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
@@ -82,7 +80,6 @@ import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.pagination.ResultsProvidersCache;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:rcaraghin@nuxeo.com">Razvan Caraghin</a>
@@ -127,20 +124,7 @@ public class DocumentActionsBean extends InputController implements
     @In(create = true)
     protected transient WebActions webActions;
 
-    protected static transient MimetypeRegistry mimetypeService;
-
     protected String comment;
-
-    protected MimetypeRegistry getMimetypeService() {
-        if (mimetypeService == null) {
-            try {
-                mimetypeService = Framework.getService(MimetypeRegistry.class);
-            } catch (Exception e) {
-                log.error("Unable to get mimetype service : " + e.getMessage());
-            }
-        }
-        return mimetypeService;
-    }
 
     //@Create
     public void initialize() {
@@ -352,7 +336,6 @@ public class DocumentActionsBean extends InputController implements
     public String updateDocument() throws ClientException {
         try {
             DocumentModel changeableDocument = navigationContext.getChangeableDocument();
-            setDocumentIconPath(changeableDocument);
             changeableDocument = documentManager.saveDocument(changeableDocument);
             throwUpdateComments(changeableDocument);
             documentManager.save();
@@ -368,54 +351,13 @@ public class DocumentActionsBean extends InputController implements
         }
     }
 
-    private void setDocumentIconPath(DocumentModel docModel) {
-        // Set the document icon according to the uploaded file if document
-        // schema holds given values.
-        // FIXME: Surely not the better way to do this here
-        // XXX AT: jsf components should take care of this, or event
-        // listeners should make the necessary updates + this would need to
-        // be done again after each edition
-        Type currentType = getChangeableDocumentType();
-        Object file = docModel.getProperty("file", "content");
-        if (file != null && file instanceof Blob) {
-            Blob blob = (Blob) file;
-            MimetypeEntry mimeEntry = getMimetypeService().getMimetypeEntryByMimeType(
-                    blob.getMimeType());
-            String iconPath = "";
-            if (mimeEntry != null) {
-                if (mimeEntry.getIconPath() != null) {
-                    // FIXME: above Context should find it
-                    iconPath = "/icons/" + mimeEntry.getIconPath();
-                } else {
-                    iconPath = currentType.getIcon();
-                }
-            } else {
-                iconPath = currentType.getIcon();
-            }
-            docModel.setProperty("common", "icon", iconPath);
-        } else {
-            docModel.setProperty("common", "icon", currentType.getIcon());
-        }
-    }
 
     /**
      * Saves changes in current version and then create a new current one.
      */
     public String updateDocumentAsNewVersion() throws ClientException {
         try {
-            /*
-             * // save the changed data to the current working version String
-             * result = updateDocument(); // Do a checkin / checkout of the
-             * edited version DocumentRef docRef = changeableDocument.getRef();
-             * VersionModel newVersion = new VersionModelImpl(); newVersion
-             * .setLabel(documentManager.generateVersionLabelFor(docRef));
-             * documentManager.checkIn(docRef, newVersion);
-             * logDocumentWithTitle("Checked in ", changeableDocument);
-             * documentManager.checkOut(docRef); logDocumentWithTitle("Checked
-             * out ", changeableDocument);
-             */
             DocumentModel changeableDocument = navigationContext.getChangeableDocument();
-            setDocumentIconPath(changeableDocument);
             changeableDocument = documentManager.saveDocumentAsNewVersion(changeableDocument);
 
             facesMessages.add(FacesMessage.SEVERITY_INFO,
@@ -488,8 +430,6 @@ public class DocumentActionsBean extends InputController implements
             String name = IdUtils.generateId(title);
             // set parent path and name for document model
             newDocument.setPathInfo(parentPath, name);
-
-            setDocumentIconPath(newDocument);
 
             newDocument = documentManager.createDocument(newDocument);
             documentManager.save();

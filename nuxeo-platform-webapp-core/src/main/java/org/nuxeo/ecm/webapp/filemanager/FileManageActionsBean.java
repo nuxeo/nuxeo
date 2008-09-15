@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.filemanager.api.FileManagerPermissionException;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.publishing.api.PublishActions;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.UserAction;
@@ -176,6 +175,11 @@ public class FileManageActionsBean extends InputController implements
                         "message.operation.fails.generic"));
     }
 
+    /**
+     * @deprecated use addBinaryFileFromPlugin with a Blob argument API to avoid
+     *             loading the content in memory
+     */
+    @Deprecated
     public String addFileFromPlugin(String content, String mimetype,
             String fullName, String morePath, Boolean UseBase64)
             throws ClientException {
@@ -195,55 +199,73 @@ public class FileManageActionsBean extends InputController implements
         }
     }
 
-    public String addBinaryFileFromPlugin(byte[] content, String mimetype,
-            String fullName, String morePath) throws ClientException {
-        try {
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
-            String curPath = currentDocument.getPathAsString();
+    public String addBinaryFileFromPlugin(Blob blob, String fullName,
+            String morePath) throws ClientException {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        String curPath = currentDocument.getPathAsString();
 
-            // compute the path of the target container
-            if (!currentDocument.isFolder()) {
-                curPath = curPath.substring(0, curPath.lastIndexOf("/"));
-            }
-            String path = curPath + morePath;
-
-            // wrap the content into a streaming blob and use the mimetype
-            // service to update the right
-            Blob blob = StreamingBlob.createFromByteArray(content, null);
-            MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
-            mimetype = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
-                    fullName, blob, mimetype);
-            blob.setMimeType(mimetype);
-            DocumentModel createdDoc;
-            try {
-                createdDoc = getFileManagerService().createDocumentFromBlob(
-                        documentManager, blob, path, true, fullName);
-            } catch (FileManagerPermissionException e) {
-                // security check failed
-                log.error("No permissions creating " + fullName);
-                return getErrorMessage(TRANSF_ERROR, fullName);
-            }
-
-            if (createdDoc == null) {
-                log.error("Couldn't create the document " + fullName);
-                return getErrorMessage(TRANSF_ERROR, fullName);
-            }
-
-            // update the context, raise events and return the next page
-            if (currentDocument.getRef().equals(createdDoc.getRef())) {
-                // contextManager.updateContext(createdDoc);
-                navigationContext.updateDocumentContext(createdDoc);
-            }
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-                    currentDocument);
-            eventManager.raiseEventsOnDocumentSelected(createdDoc);
-            return createdDoc.getName();
-        } catch (Throwable t) {
-            log.error(t);
-            return getErrorMessage(TRANSF_ERROR, fullName);
+        // compute the path of the target container
+        if (!currentDocument.isFolder()) {
+            curPath = curPath.substring(0, curPath.lastIndexOf("/"));
         }
+        String path = curPath + morePath;
+        return createDocumentFromBlob(blob, fullName, path);
     }
 
+    public String addBinaryFileFromPlugin(Blob blob, String fullName,
+            DocumentModel targetContainer) throws ClientException {
+        return createDocumentFromBlob(blob, fullName,
+                targetContainer.getPathAsString());
+    }
+
+    protected String createDocumentFromBlob(Blob blob, String fullName,
+            String path) throws ClientException {
+        DocumentModel createdDoc;
+        try {
+            createdDoc = getFileManagerService().createDocumentFromBlob(
+                    documentManager, blob, path, true, fullName);
+        } catch (FileManagerPermissionException e) {
+            // security check failed
+            log.debug("No permissions creating " + fullName);
+            return getErrorMessage(TRANSF_ERROR, fullName);
+        } catch (Exception e) {
+            // log error stack trace for server side debugging while giving a
+            // generic and localized error message to the client
+            log.error("Error importing " + fullName, e);
+            return getErrorMessage(TRANSF_ERROR, fullName);
+        }
+        if (createdDoc == null) {
+            log.error("could not create the document " + fullName);
+            return getErrorMessage(TRANSF_ERROR, fullName);
+        }
+        // update the context, raise events to update the seam context
+        if (navigationContext.getCurrentDocument().getRef().equals(
+                createdDoc.getRef())) {
+            // contextManager.updateContext(createdDoc);
+            navigationContext.updateDocumentContext(createdDoc);
+        }
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
+                currentDocument);
+        eventManager.raiseEventsOnDocumentSelected(createdDoc);
+        return createdDoc.getName();
+    }
+
+    /**
+     * @deprecated Use addBinaryFileFromPlugin(Blob, String, String) to avoid
+     *             loading the data in memory as a Bytes array
+     */
+    @Deprecated
+    public String addBinaryFileFromPlugin(byte[] content, String mimetype,
+            String fullName, String morePath) throws ClientException {
+        Blob blob = StreamingBlob.createFromByteArray(content, null);
+        return addBinaryFileFromPlugin(blob, fullName, morePath);
+    }
+
+    /**
+     * @deprecated Use addBinaryFileFromPlugin(Blob, String, DocumentRef) to
+     *             avoid loading the data in memory as a Bytes array
+     */
+    @Deprecated
     public String addBinaryFile(byte[] content, String mimetype,
             String fullName, DocumentRef docRef) throws ClientException {
         try {
@@ -251,11 +273,6 @@ public class FileManageActionsBean extends InputController implements
 
             String path = targetContainer.getPathAsString();
             Blob blob = StreamingBlob.createFromByteArray(content, mimetype);
-
-            MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
-            mimetype = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
-                    fullName, blob, mimetype);
-            blob.setMimeType(mimetype);
 
             DocumentModel createdDoc = getFileManagerService().createDocumentFromBlob(
                     documentManager, blob, path, true, fullName);
@@ -282,7 +299,7 @@ public class FileManageActionsBean extends InputController implements
                 createdDoc = getFileManagerService().createFolder(
                         documentManager, fullName, path);
             } catch (FileManagerPermissionException e) {
-                log.error("No permissions creating folder " + fullName);
+                log.debug("No permissions creating folder " + fullName);
                 return getErrorMessage(TRANSF_ERROR, fullName);
             }
 

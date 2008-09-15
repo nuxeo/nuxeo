@@ -21,36 +21,42 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.SimpleFileManager;
+import org.nuxeo.ecm.platform.ui.web.util.FileUploadHelper;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.ext.fileupload.RestletFileUpload;
-import org.restlet.resource.Representation;
 
+/**
+ * Restlet to import files as nuxeo documents using the pluggable FileManager
+ * service. This restlet is mainly used for desktop integration with drag and
+ * drop browser plugins.
+ *
+ * @author tdelprat
+ */
 @Name("uploadRestlet")
 @Scope(EVENT)
 public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
+
+    private static final Log log = LogFactory.getLog(UploadRestlet.class);
 
     private static final long serialVersionUID = -7858792615823015193L;
 
@@ -71,87 +77,56 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
         DOMDocumentFactory domfactory = new DOMDocumentFactory();
         DOMDocument result = (DOMDocument) domfactory.createDocument();
 
-        DocumentModel dm;
-
+        DocumentModel targetContainer;
         try {
-            navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
+            navigationContext.setCurrentServerLocation(new RepositoryLocation(
+                    repo));
             documentManager = navigationContext.getOrCreateDocumentManager();
-            dm = documentManager.getDocument(new IdRef(docid));
-        } catch (ClientException e) {
+            targetContainer = documentManager.getDocument(new IdRef(docid));
+        } catch (Exception e) {
             handleError(res, e);
             return;
         }
 
-        if (dm != null) {
-            Representation repr = req.getEntity();
-            RestletFileUpload fu = new RestletFileUpload();
-            List<FileItem> fiList = null;
+        if (targetContainer != null) {
+            List<Blob> blobs = null;
             try {
-                fiList = fu.parseRequest(req);
-            } catch (FileUploadException e) {
-                //handleError(res, e);
-                //return;
-                // XXX : this fails for requests not sent via browser
+                blobs = FileUploadHelper.parseRequest(req);
+            } catch (Exception e) {
+                handleError(res, e);
+                return;
             }
 
-            if (fiList == null) {
+            if (blobs == null) {
                 // mono import
-
+                String outcome;
                 try {
-                    InputStream input = repr.getStream();
-                    MediaType mediaType = repr.getMediaType();
-                    String mimeType = mediaType.getName();
-                    byte[] content = FileUtils.readBytes(input);
-
-                    try {
-                        String returnCode = FileManageActions.addBinaryFile(
-                                content, mimeType, fileName, new IdRef(docid));
-                        Element upload = result.addElement("upload");
-                        upload.setText(returnCode);
-                        result.setRootElement(upload);
-
-                    } catch (ClientException e) {
-                        handleError(res, e);
-                        return;
-                    }
-                    //
-                } catch (IOException e) {
-                    handleError(res, e);
-                    return;
+                    Blob inputBlob = StreamingBlob.createFromStream(
+                            req.getEntity().getStream()).persist();
+                    inputBlob.setFilename(fileName);
+                    outcome = FileManageActions.addBinaryFileFromPlugin(
+                            inputBlob, fileName, targetContainer);
+                } catch (Exception e) {
+                    outcome = "ERROR : " + e.getMessage();
                 }
+                result.addElement("upload").setText(outcome);
             } else {
                 // multiple file upload
                 Element uploads = result.addElement("uploads");
-                result.setRootElement(uploads);
-
-                for (FileItem fileItem : fiList) {
-
-                    Element upload = result.addElement("upload");
-                    ((org.w3c.dom.Element) uploads).appendChild((org.w3c.dom.Element) upload);
-
-                    fileName = fileItem.getName();
-                    String mimeType = fileItem.getContentType();
-                    byte[] content;
+                for (Blob blob : blobs) {
+                    String outcome;
                     try {
-                        content = FileUtils.readBytes(fileItem.getInputStream());
-                    } catch (IOException e) {
-                        upload.setText("ERROR : " + e.getMessage());
-                        continue;
+                        outcome = FileManageActions.addBinaryFileFromPlugin(
+                                blob, blob.getFilename(), targetContainer);
+                    } catch (Exception e) {
+                        log.error("error importing " + blob.getFilename()
+                                + ": " + e.getMessage(), e);
+                        outcome = "ERROR : " + e.getMessage();
                     }
-
-                    try {
-                        String returnCode = FileManageActions.addBinaryFile(
-                                content, mimeType, fileName, new IdRef(docid));
-                        upload.setText(returnCode);
-                    } catch (ClientException e) {
-                        upload.setText("ERROR : " + e.getMessage());
-                        continue;
-                    }
+                    uploads.addElement("upload").setText(outcome);
                 }
             }
         }
-
         res.setEntity(result.asXML(), MediaType.TEXT_XML);
     }
-
 }

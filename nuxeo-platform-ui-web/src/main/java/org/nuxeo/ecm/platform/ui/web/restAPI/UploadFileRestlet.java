@@ -34,11 +34,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
-import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -65,9 +63,9 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
 
         String repo = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");
-        String fileName = (String) req.getAttributes().get("filename");
+        String filename = (String) req.getAttributes().get("filename");
         try {
-            fileName = URLDecoder.decode(fileName, URL_ENCODE_CHARSET);
+            filename = URLDecoder.decode(filename, URL_ENCODE_CHARSET);
         } catch (UnsupportedEncodingException e) {
             handleError(res, e);
             return;
@@ -97,7 +95,7 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
             // computation, core binary storage)
             Blob blob = StreamingBlob.createFromStream(
                     req.getEntity().getStream()).persist();
-            blob = getBlobWithGoodMimetype(blob, fileName);
+            blob.setFilename(filename);
             // save the properties on the document model
             String blobPropertyName = getQueryParamValue(req,
                     BLOB_PROPERTY_NAME, null);
@@ -105,7 +103,7 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
                     FILENAME_PROPERTY_NAME, null);
             if (blobPropertyName != null && filenamePropertyName != null) {
                 dm.setPropertyValue(blobPropertyName, (Serializable) blob);
-                dm.setPropertyValue(filenamePropertyName, fileName);
+                dm.setPropertyValue(filenamePropertyName, filename);
             } else {
                 // find the names of the fields from the optional request
                 // parameters with fallback to defaults if none is provided
@@ -117,7 +115,7 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
                         FILENAME_FIELD, DEFAULT_FILENAME_FIELD);
 
                 dm.setProperty(schemaName, blobFieldName, blob);
-                dm.setProperty(schemaName, filenameFieldName, fileName);
+                dm.setProperty(schemaName, filenameFieldName, filename);
             }
 
             documentManager.saveDocument(dm);
@@ -126,18 +124,7 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements
         } catch (Exception e) {
             handleError(res, e);
         }
-    }
 
-    private Blob getBlobWithGoodMimetype(Blob blob, String fileName)
-            throws Exception {
-        // ask the mimetype service for the blob mimetype first
-        // according to filename extension with a fallback to binary
-        // sniffing
-        MimetypeRegistry mimeService = Framework.getService(MimetypeRegistry.class);
-        String mimetype = mimeService.getMimetypeFromFilenameAndBlobWithDefault(
-                fileName, blob, "application/octet-stream");
-        blob.setMimeType(mimetype);
-        return blob;
     }
 
 }

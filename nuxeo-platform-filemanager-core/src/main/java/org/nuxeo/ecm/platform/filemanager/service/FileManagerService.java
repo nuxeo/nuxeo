@@ -66,7 +66,6 @@ import org.nuxeo.ecm.platform.filemanager.service.extension.PluginExtension;
 import org.nuxeo.ecm.platform.filemanager.service.extension.UnicityExtension;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
-import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
@@ -154,32 +153,18 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         return repositoryManager;
     }
 
-    private Blob checkMimeType(Blob input, String fullname)
+    private Blob checkMimeType(Blob blob, String fullname)
             throws ClientException {
-        String mime = input.getMimeType();
-        if (mime == null || mime.equals("application/octet-stream")) {
+        String mime = blob.getMimeType();
+        if (mime == null) {
             String filename = FileManagerUtils.fetchFileName(fullname);
-            if (mime == null || mime.equals("application/octet-stream")) {
-                try {
-                    mime = getMimeService().getMimetypeFromFilenameAndBlobWithDefault(
-                            filename, input, mime);
-                    input.setMimeType(mime);
-                } catch (MimetypeDetectionException e) {
-                    log.error("Unable to get MimeType : " + e.getMessage());
-                    input.setMimeType("application/octet-stream*");
-                }
+            try {
+                blob = getMimeService().updateMimetype(blob, filename);
+            } catch (MimetypeDetectionException e) {
+                throw new ClientException(e);
             }
         }
-        return input;
-    }
-
-    private static String getMimeType(Blob input) {
-        String mime = input.getMimeType();
-        if (mime.equals("application/octet-stream*")) {
-            return "application/octet-stream";
-        } else {
-            return mime;
-        }
+        return blob;
     }
 
     public DocumentModel createFolder(CoreSession documentManager,
@@ -240,12 +225,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             docModel = documentManager.createDocumentModel(path, docId,
                     containerTypeName);
 
-            Type folder = getTypeService().getType(containerTypeName);
-            String iconPath = folder.getIcon();
-            docModel.setProperty("dublincore", "title", title);
-            docModel.setProperty("common", "icon", iconPath);
-
             // writing changes
+            docModel.setProperty("dublincore", "title", title);
             docModel = documentManager.createDocument(docModel);
             documentManager.save();
 
@@ -259,7 +240,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             Blob input, String path, boolean overwrite, String fullName)
             throws IOException, ClientException {
 
-        // check mime type
+        // check mime type to be able to select the best importer plugin
         input = checkMimeType(input, fullName);
 
         for (String namePlug : fileImporters.keySet()) {
@@ -303,6 +284,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         }
 
         String filename = FileManagerUtils.fetchFileName(fullname);
+        input.setFilename(filename);
 
         // Looking if an existing Document with the same filename exists.
         DocumentModel docModel = FileManagerUtils.getExistingDocByFileName(
@@ -322,10 +304,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             documentManager.checkIn(docRef, newVersion);
             documentManager.checkOut(docRef);
 
-            // update the file part and the size property
-            Long size = (long) input.getByteArray().length;
             docModel.setProperty("file", "content", input);
-            docModel.setProperty("common", "size", size);
             documentManager.saveDocument(docModel);
 
         } else {
@@ -335,41 +314,13 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             // Creating an unique identifier
             String docId = IdUtils.generateId(title);
 
-            // TODO : Get type Id from mime/type of the upload
-            Long size = (long) input.getByteArray().length;
             docModel = documentManager.createDocumentModel(path, docId,
                     typeName);
 
             // Updating known attributes (title, filename, content)
             docModel.setProperty("dublincore", "title", title);
             docModel.setProperty("file", "filename", filename);
-            docModel.setProperty("common", "size", size);
-
-            input = checkMimeType(input, fullname);
-            String mime = getMimeType(input);
-            log.debug("mimetype in blob = " + mime);
             docModel.setProperty("file", "content", input);
-
-            // updating icon
-            MimetypeEntry mimeEntry = getMimeService().getMimetypeEntryByMimeType(
-                    mime);
-
-            String iconPath = "";
-            if (mimeEntry != null) {
-                if (mimeEntry.getIconPath() != null) {
-                    // FIXME : this should be found out by the context
-                    iconPath = "/icons/" + mimeEntry.getIconPath();
-                } else {
-                    Type type = getTypeService().getType(typeName);
-                    iconPath = type.getIcon();
-                }
-
-            } else {
-                Type fileType = getTypeService().getType(typeName);
-                iconPath = fileType.getIcon();
-            }
-
-            docModel.setProperty("common", "icon", iconPath);
 
             // writing the new document to the repository
             docModel = documentManager.createDocument(docModel);
@@ -492,7 +443,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         if (fileImporters.containsKey(name)) {
             log.info("Overriding FileImporter plugin " + name);
             if (className != null) {
-                Plugin plugin = (Plugin) extension.getContext().loadClass(className).newInstance();
+                Plugin plugin = (Plugin) extension.getContext().loadClass(
+                        className).newInstance();
                 plugin.setName(name);
                 plugin.setFilters(filters);
                 plugin.setFileManagerService(this);
@@ -625,7 +577,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
                 SQLQueryParser.parse(nxql),
                 service.getSearchPrincipal(principal));
         SearchPageProvider nxqlProvider = new SearchPageProvider(
-                service.searchQuery(query, 0, maxResultsCount), false, null, nxql);
+                service.searchQuery(query, 0, maxResultsCount), false, null,
+                nxql);
 
         long nbresult = nxqlProvider.getResultsCount();
         return nbresult == 0;
@@ -651,7 +604,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
                 SQLQueryParser.parse(nxql),
                 service.getSearchPrincipal(principal));
         SearchPageProvider nxqlProvider = new SearchPageProvider(
-                service.searchQuery(query, 0, maxResultsCount), false, null, nxql);
+                service.searchQuery(query, 0, maxResultsCount), false, null,
+                nxql);
 
         nxqlProvider.getResultsCount();
         DocumentModelList documentModelList = nxqlProvider.getCurrentPage();
