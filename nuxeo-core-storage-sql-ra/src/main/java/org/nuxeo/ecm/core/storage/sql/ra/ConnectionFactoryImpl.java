@@ -252,7 +252,7 @@ public class ConnectionFactoryImpl implements Repository,
     }
 
     /*
-     * Used only by JCR MBean.
+     * Used only by core MBean.
      */
     public synchronized org.nuxeo.ecm.core.model.Session[] getOpenedSessions() {
         return new org.nuxeo.ecm.core.model.Session[0];
@@ -271,7 +271,15 @@ public class ConnectionFactoryImpl implements Repository,
         return 0;
     }
 
+    /*
+     * ----- org.nuxeo.ecm.core.model.RepositoryManagement -----
+     */
+
     public int getActiveSessionsCount() {
-        return 0;
+        return managedConnectionFactory.getActiveSessionsCount();
+    }
+
+    public int clearCaches() {
+        return managedConnectionFactory.clearCaches();
     }
 }

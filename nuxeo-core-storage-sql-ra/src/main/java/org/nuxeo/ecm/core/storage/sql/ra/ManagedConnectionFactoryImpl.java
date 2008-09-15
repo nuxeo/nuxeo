@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ConnectionSpecImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
+import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
 import org.nuxeo.runtime.api.Framework;
 
@@ -50,7 +51,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author Florent Guillaume
  */
 public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
-        ResourceAdapterAssociation {
+        ResourceAdapterAssociation, RepositoryManagement {
 
     private static final Log log = LogFactory.getLog(ManagedConnectionFactoryImpl.class);
 
@@ -213,6 +214,24 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory,
 
     private boolean equals(ManagedConnectionFactoryImpl other) {
         return name == null ? false : name.equals(other.name);
+    }
+
+    /*
+     * ----- org.nuxeo.ecm.core.storage.sql.RepositoryManagement -----
+     */
+
+    public int getActiveSessionsCount() {
+        if (repository == null) {
+            return 0;
+        }
+        return repository.getActiveSessionsCount();
+    }
+
+    public int clearCaches() {
+        if (repository == null) {
+            return 0;
+        }
+        return repository.clearCaches();
     }
 
     /*

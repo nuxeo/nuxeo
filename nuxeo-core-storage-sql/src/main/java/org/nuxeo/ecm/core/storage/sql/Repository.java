@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.storage.StorageException;
 /**
  * @author Florent Guillaume
  */
-public interface Repository extends ConnectionFactory {
+public interface Repository extends ConnectionFactory, RepositoryManagement {
 
     /**
      * Gets a new connection by logging in to the repository with default

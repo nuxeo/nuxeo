@@ -182,6 +182,26 @@ public class RepositoryImpl implements Repository {
     }
 
     /*
+     * ----- RepositoryManagement -----
+     */
+
+    public String getName() {
+        return repositoryDescriptor.name;
+    }
+
+    public int getActiveSessionsCount() {
+        return sessions.size();
+    }
+
+    public int clearCaches() {
+        int n = 0;
+        for (SessionImpl session : sessions) {
+            n += session.clearCaches();
+        }
+        return n;
+    }
+
+    /*
      * ----- -----
      */
 

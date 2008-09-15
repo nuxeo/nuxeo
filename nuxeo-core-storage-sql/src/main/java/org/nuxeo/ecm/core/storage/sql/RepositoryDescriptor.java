@@ -36,6 +36,9 @@ public class RepositoryDescriptor {
 
     private static final Log log = LogFactory.getLog(RepositoryDescriptor.class);
 
+    @XNode("@name")
+    public String name;
+
     @XNode("xa-datasource")
     public String xaDataSourceName;
 
