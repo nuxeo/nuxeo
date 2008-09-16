@@ -30,15 +30,23 @@ import org.nuxeo.ecm.core.search.NXSearch;
 import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResources;
 import org.nuxeo.ecm.core.search.api.client.IndexingException;
 import org.nuxeo.ecm.core.search.api.client.SearchService;
+import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.BrowsingTask;
+import org.nuxeo.ecm.core.search.api.client.indexing.nxcore.IndexingTask;
+import org.nuxeo.ecm.core.search.threading.task.AbstractIndexingTask;
+import org.nuxeo.ecm.core.search.threading.task.IndexingBrowseTask;
+import org.nuxeo.ecm.core.search.threading.task.IndexingSingleDocumentTask;
+import org.nuxeo.ecm.core.search.threading.task.ReindexingAllTask;
+import org.nuxeo.ecm.core.search.threading.task.UnIndexingBrowseTask;
+import org.nuxeo.ecm.core.search.threading.task.UnIndexingSingleDocumentTask;
 
 /**
  * Indexing thread pool.
  * <p>
  * Control the amount of indexing threads that will run in a concurrent way.
- *
- * @see IndexingTask
- * @see IndexingThreadImpl
- *
+ * 
+ * @see IndexingSingleDocumentTask
+ * @see IndexingSingleDocumentThread
+ * 
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
 public final class IndexingThreadPool {
@@ -56,11 +64,11 @@ public final class IndexingThreadPool {
     // tasks;
     private static final long THREAD_KEEP_ALIVE = 5000L;
 
-    private static final ThreadPoolExecutor tpExec;
+    private static final ThreadPoolExecutor indexingTpExec;
+
+    private static final ThreadPoolExecutor browsingTpExec;
 
     private static final ThreadPoolExecutor reindexExec;
-
-    private static final int DEFAULT_QUEUE_SIZE = 100;
 
     private static transient SearchService searchService;
 
@@ -69,16 +77,20 @@ public final class IndexingThreadPool {
         MAX_POOL_SIZE = NXSearch.getSearchService().getNumberOfIndexingThreads();
         log.info("Indexing thread pool will be initialized with a size pool @ "
                 + MAX_POOL_SIZE);
-        tpExec = new ThreadPoolExecutor(MIN_POOL_SIZE, MAX_POOL_SIZE,
+        indexingTpExec = new ThreadPoolExecutor(MIN_POOL_SIZE, MAX_POOL_SIZE,
                 THREAD_KEEP_ALIVE, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>(DEFAULT_QUEUE_SIZE),
-                new IndexingThreadFactory());
+                new LinkedBlockingQueue<Runnable>(),
+                IndexingThreadFactory.getIndexingSingleDocumentThreadFactory());
         // tpExec.prestartAllCoreThreads();
         log.info("Indexing Thread Pool initialized...");
 
-        reindexExec = new ThreadPoolExecutor(1, 1, 0,
-                TimeUnit.MICROSECONDS, new LinkedBlockingQueue<Runnable>(1),
-                new IndexingThreadFactory());
+        reindexExec = new ThreadPoolExecutor(1, 1, 0, TimeUnit.MICROSECONDS,
+                new LinkedBlockingQueue<Runnable>(1),
+                IndexingThreadFactory.getBrowseThreadFactory());
+
+        browsingTpExec = new ThreadPoolExecutor(1, 1, 0, TimeUnit.MICROSECONDS,
+                new LinkedBlockingQueue<Runnable>(1),
+                IndexingThreadFactory.getBrowseThreadFactory());
     }
 
     public static void setSearchService(SearchService service) {
@@ -87,17 +99,74 @@ public final class IndexingThreadPool {
 
     public static void index(DocumentModel dm, Boolean recursive)
             throws IndexingException {
-        execute(new IndexingTask(dm, recursive));
+        if (recursive) {
+            executeBrowsingTask(new IndexingBrowseTask(dm.getRef(),
+                    dm.getRepositoryName()));
+        } else {
+            executeIndexingTask(new IndexingSingleDocumentTask(dm.getRef(),
+                    dm.getRepositoryName()));
+        }
     }
 
     public static void index(DocumentModel dm, Boolean recursive,
             boolean fulltext) throws IndexingException {
-        execute(new IndexingTask(dm, recursive, fulltext));
+        if (recursive) {
+            executeBrowsingTask(new IndexingBrowseTask(dm.getRef(),
+                    dm.getRepositoryName()));
+        } else {
+            executeIndexingTask(new IndexingSingleDocumentTask(dm.getRef(),
+                    fulltext, dm.getRepositoryName()));
+        }
     }
 
     public static void index(ResolvedResources resources)
             throws IndexingException {
-        execute(new IndexingTask(resources));
+        executeIndexingTask(new IndexingSingleDocumentTask(resources));
+    }
+
+    public static void unindex(DocumentModel dm, boolean recursive)
+            throws IndexingException {
+        if (recursive) {
+            executeBrowsingTask(new UnIndexingBrowseTask(dm.getRef(),
+                    dm.getRepositoryName()));
+        } else {
+            executeIndexingTask(new UnIndexingSingleDocumentTask(dm.getRef(),
+                    dm.getRepositoryName()));
+        }
+    }
+
+    public static int getActiveIndexingTasks() {
+        return indexingTpExec.getActiveCount();
+    }
+
+    public static long getTotalCompletedIndexingTasks() {
+        return indexingTpExec.getCompletedTaskCount();
+    }
+
+    public static long getQueueSize() {
+        return indexingTpExec.getQueue().size();
+    }
+
+    protected static void executeBrowsingTask(BrowsingTask task) {
+        synchronized (browsingTpExec) {
+            browsingTpExec.execute(task);
+        }
+    }
+
+    protected static void executeIndexingTask(IndexingTask task) {
+        if (searchService != null) {
+            task.setSearchService(searchService);
+        }
+
+        synchronized (indexingTpExec) {
+            indexingTpExec.execute(task);
+        }
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        indexingTpExec.shutdown();
+        super.finalize();
     }
 
     public static void reindexAll(DocumentModel dm, Boolean recursive)
@@ -125,58 +194,6 @@ public final class IndexingThreadPool {
 
     public static boolean isReindexing() {
         return reindexExec.getActiveCount() > 0;
-    }
-
-    public static void reindexAll(ResolvedResources resources)
-            throws IndexingException {
-        Runnable r = new ReindexingAllTask(resources);
-        if (searchService != null) {
-            ((AbstractIndexingTask) r).setSearchService(searchService);
-        }
-        synchronized (reindexExec) {
-            reindexExec.execute(r);
-        }
-    }
-
-    public static void unindex(DocumentModel dm, boolean recursive)
-            throws IndexingException {
-        execute(new UnIndexingTask(dm, recursive));
-    }
-
-    public static int getActiveIndexingTasks() {
-        return tpExec.getActiveCount();
-    }
-
-    public static long getTotalCompletedIndexingTasks() {
-        return tpExec.getCompletedTaskCount();
-    }
-
-    public static long getQueueSize() {
-        return tpExec.getQueue().size();
-    }
-
-    protected static void execute(AbstractIndexingTask r)
-            throws IndexingException {
-        if (searchService != null) {
-            ((AbstractIndexingTask) r).setSearchService(searchService);
-        }
-        synchronized (tpExec) {
-            // Should be safe to use this here with the synchronized kw.
-            while (tpExec.getQueue().size() >= DEFAULT_QUEUE_SIZE) {
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException ie) {
-                    throw new IndexingException(ie);
-                }
-            }
-            tpExec.execute(r);
-        }
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        tpExec.shutdown();
-        super.finalize();
     }
 
 }

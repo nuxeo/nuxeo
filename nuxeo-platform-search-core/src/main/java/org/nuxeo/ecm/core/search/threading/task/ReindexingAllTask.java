@@ -1,35 +1,24 @@
 /**
  *
  */
-package org.nuxeo.ecm.core.search.threading;
+package org.nuxeo.ecm.core.search.threading.task;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.search.api.backend.indexing.resources.ResolvedResources;
+import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
- *
+ * 
  */
-public class ReindexingAllTask extends IndexingTask {
+public class ReindexingAllTask extends IndexingBrowseTask {
 
     private static final Log log = LogFactory.getLog(ReindexingAllTask.class);
 
     private static int DEFAULT_DOC_BATCH_SIZE = 50;
 
-    public ReindexingAllTask(DocumentModel dm, Boolean recursive) {
-        super(dm, recursive);
-    }
-
-    public ReindexingAllTask(DocumentModel dm, Boolean recursive,
-            boolean fulltext) {
-        super(dm, recursive, fulltext);
-    }
-
-    // XXX deal with that.
-    public ReindexingAllTask(ResolvedResources resources) {
-        super(resources);
+    public ReindexingAllTask(DocumentRef docRef, String repositoryName) {
+        super(docRef, repositoryName);
     }
 
     public void run() {
@@ -64,14 +53,14 @@ public class ReindexingAllTask extends IndexingTask {
             // batch size.
 
             // FIXME
-            //log.info("Flush remaining sessions...");
-            //searchService.saveAllSessions();
+            // log.info("Flush remaining sessions...");
+            // searchService.saveAllSessions();
 
         } catch (InterruptedException e) {
             log.error(errorMsg, e);
-        //}
-        //catch (IndexingException e) {
-        //r    log.error(errorMsg, e);
+            // }
+            // catch (IndexingException e) {
+            // r log.error(errorMsg, e);
         } finally {
             searchService.setIndexingDocBatchSize(current_batch_size);
         }
