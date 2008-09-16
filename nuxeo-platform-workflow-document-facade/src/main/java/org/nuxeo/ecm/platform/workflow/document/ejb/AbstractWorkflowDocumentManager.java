@@ -64,21 +64,19 @@ public abstract class AbstractWorkflowDocumentManager implements
         wDocRightsPolicyBusinessDelegate = new WorkflowDocumentSecurityPolicyBusinessDelegate();
     }
 
-    public void afterBegin() {
-        log.debug("afterBegin().........................................");
+    public void afterBegin() throws EJBException {
         try {
-            log.debug("Connect workflow document manager");
+            log.trace("Connect workflow document manager");
             documentManager = getDocumentManager();
         } catch (ClientException e) {
             throw new EJBException(e);
         }
     }
 
-    public void afterCompletion(boolean committed) {
-        log.debug("afterCompletion()....................................");
+    public void afterCompletion(boolean committed) throws EJBException {
         try {
             if (documentManager != null) {
-                log.debug("Disconnect workflow document manager");
+                log.trace("Disconnect workflow document manager");
                 documentManager.disconnect();
                 documentManager = null;
             }

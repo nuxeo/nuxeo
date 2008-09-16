@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.publishing;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -113,6 +114,9 @@ public class PublishActionsBean implements PublishActions, Serializable {
     protected static final String DOMAIN_SECTIONS = "DOMAIN_SECTIONS";
 
     private static final String DOMAIN_TYPE = "Domain";
+
+    @In(create = true)
+    protected Principal currentUser;
 
     @In(create = true)
     protected transient WebActions webActions;
@@ -466,31 +470,32 @@ public class PublishActionsBean implements PublishActions, Serializable {
 
         log.debug("selected " + selectedSections.size() + " sections");
 
-        /**
+        /*
          * Proxies for which we need a moderation. Let's request the moderation
          * after the document manager session has been saved to avoid conflicts
          * in between sync txn and async txn that can start before the end of
          * the sync txn.
          */
         List<DocumentModel> forModeration = new ArrayList<DocumentModel>();
+        List<DocumentModel> alreadyPublished = new ArrayList<DocumentModel>();
 
+        boolean published = false;
         for (DocumentModelTreeNode section : selectedSections) {
-            boolean moderation = !isAlreadyPublishedInSection(docToPublish,
+            DocumentModel proxy = getPublishedInSection(docToPublish,
                     section.getDocument());
-
-            DocumentModel proxy = publishDocument(docToPublish,
-                    section.getDocument());
-
+            boolean moderation = proxy == null
+                    || new PublishingTasks(proxy, currentUser).getPublishingWorkItem() != null;
+            boolean candidate = false;
+            if (proxy == null) {
+                candidate = true;
+                proxy = publishDocument(docToPublish, section.getDocument());
+            }
+            if(candidate && isReviewer(proxy)) {
+                    published = true;
+            }
             if (moderation && !isReviewer(proxy)) {
                 forModeration.add(proxy);
             }
-        }
-
-        // A document is considered published if it doesn't have
-        // approval from section's manager
-        boolean published = false;
-        if (selectedSections.size() > forModeration.size()) {
-            published = true;
         }
 
         if (published) {
@@ -550,6 +555,17 @@ public class PublishActionsBean implements PublishActions, Serializable {
             }
         }
         return false;
+    }
+
+    private DocumentModel getPublishedInSection(DocumentModel doc,
+            DocumentModel section) throws ClientException {
+        for (PublishingInformation each : getPublishingInformation(doc)) {
+            if (each.getSection().getPathAsString().equals(
+                    section.getPathAsString())) {
+                return each.getProxy();
+            }
+        }
+        return null;
     }
 
     /*

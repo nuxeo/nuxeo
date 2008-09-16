@@ -101,5 +101,4 @@ public interface WorkflowDocumentSecurityManager extends
      */
     void setRules(DocumentRef docRef, List<UserEntry> userEntries, String pid)
             throws WorkflowDocumentSecurityException;
-
 }
