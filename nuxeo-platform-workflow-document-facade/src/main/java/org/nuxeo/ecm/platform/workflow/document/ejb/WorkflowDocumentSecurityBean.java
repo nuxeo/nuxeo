@@ -20,9 +20,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.Local;
 import javax.ejb.Remote;
-import javax.ejb.Remove;
 import javax.ejb.Stateless;
 import javax.naming.NamingException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -149,8 +149,12 @@ public class WorkflowDocumentSecurityBean implements
     }
 
     protected ACP getACP(DocumentRef docRef) throws ClientException {
-        CoreSession docManager = getDocumentManager();
-        return docManager.getACP(docRef);
+        try {
+            CoreSession docManager = getDocumentManager();
+            return docManager.getACP(docRef);
+        } catch (NamingException e) {
+            throw new ClientException(e);
+        }
     }
 
     public ACL getACL(DocumentRef docRef, String pid)
@@ -211,6 +215,8 @@ public class WorkflowDocumentSecurityBean implements
             throw new WorkflowDocumentSecurityException(se);
         } catch (ClientException ce) {
             throw new WorkflowDocumentSecurityException(ce);
+        } catch (NamingException ne) {
+            throw new WorkflowDocumentSecurityException(ne);
         }
     }
 
@@ -254,6 +260,8 @@ public class WorkflowDocumentSecurityBean implements
                         throw new WorkflowDocumentSecurityException(se);
                     } catch (ClientException ce) {
                         throw new WorkflowDocumentSecurityException(ce);
+                    } catch (NamingException ne) {
+                        throw new WorkflowDocumentSecurityException(ne);
                     }
                 }
             }
@@ -273,6 +281,8 @@ public class WorkflowDocumentSecurityBean implements
                 log.debug("Removing wf acp.");
             } catch (ClientException ce) {
                 throw new WorkflowDocumentSecurityException(ce);
+            } catch (NamingException ne) {
+                throw new WorkflowDocumentSecurityException(ne);
             }
         }
     }
@@ -320,6 +330,8 @@ public class WorkflowDocumentSecurityBean implements
             throw new WorkflowDocumentSecurityException(se);
         } catch (ClientException ce) {
             throw new WorkflowDocumentSecurityException(ce);
+        } catch (NamingException ne) {
+            throw new WorkflowDocumentSecurityException(ne);
         }
     }
 }

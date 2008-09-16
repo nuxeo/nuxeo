@@ -44,6 +44,10 @@
       <groupId>javax.ejb</groupId>
       <artifactId>ejb-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>jsr250-api</artifactId>
+    </dependency>
     <!-- jboss-j2ee is required for EJBException class ??? -->
     <dependency>
       <groupId>jboss</groupId>
@@ -110,7 +114,8 @@
                 <echo message="Replacing deployment-fragment.xml ..." />
                 <copy
                   file="src-remote/main/resources/OSGI-INF/deployment-fragment.xml"
-                  todir="${project.build.directory}/classes/OSGI-INF" overwrite="true" />
+                  todir="${project.build.directory}/classes/OSGI-INF"
+                  overwrite="true" />
               </tasks>
             </configuration>
           </execution>
