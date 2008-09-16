@@ -143,4 +143,7 @@ public interface NotificationManager {
      * @return
      */
     List<Notification> getNotificationsForSubscriptions(String parentType);
+
+
+    List<Notification> getNotificationsForEvents(String eventId);
 }

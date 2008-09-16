@@ -491,4 +491,8 @@ public class NotificationService extends DefaultComponent implements Notificatio
         return notificationRegistry.getNotificationsForSubscriptions(parentType);
     }
 
+    public List<Notification> getNotificationsForEvents(String eventId) {
+        return notificationRegistry.getNotificationsForEvent(eventId);
+    }
+
 }

@@ -98,6 +98,11 @@ public class NotificationRegistryImpl implements NotificationRegistry {
         return notificationList;
     }
 
+    public Map<String, List<Notification>> getNotificationRegistry()
+    {
+        return notificationRegistry;
+    }
+
     public List<Notification> getNotificationsForSubscriptions(String parentType) {
         List<Notification> result = new ArrayList<Notification>();
         for (Notification notification : notificationList) {

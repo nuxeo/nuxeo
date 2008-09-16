@@ -109,8 +109,7 @@ public class NotificationMessageListener implements MessageListener {
             NotificationService service = NotificationServiceHelper.getNotificationService();
 
             // (2)
-            List<Notification> notifs = service.getNotificationRegistry().getNotificationsForEvent(
-                    eventId);
+            List<Notification> notifs = service.getNotificationsForEvents(eventId);
             if (notifs == null || notifs.isEmpty()) {
                 return;
             }
