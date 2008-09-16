@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.api.event.impl;
 
 import java.security.Principal;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.event.CoreEvent;
@@ -61,16 +60,6 @@ public class CoreEventImpl implements CoreEvent {
         this.principal = principal;
         this.category = category;
         this.comment = comment;
-    }
-
-
-
-    public boolean isComposite() {
-        return false;
-    }
-
-    public List<CoreEvent> getNestedEvents() {
-        return null;
     }
 
     public String getEventId() {

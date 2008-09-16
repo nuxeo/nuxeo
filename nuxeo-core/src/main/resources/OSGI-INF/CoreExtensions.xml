@@ -48,6 +48,11 @@
       <schema name="common" />
       <schema name="dublincore" />
       <facet name="Folderish" />
+      <subtypes>
+        <type>Folder</type>
+        <type>File</type>
+        <type>Note</type>
+      </subtypes>
     </doctype>
 
     <doctype name="OrderedFolder" extends="Document">
@@ -58,35 +63,61 @@
     </doctype>
 
     <doctype name="Root" extends="Folder">
+      <subtypes>
+        <type>Domain</type>
+      </subtypes>
     </doctype>
 
     <doctype name="Domain" extends="Folder">
       <schema name="domain" />
       <facet name="SuperSpace"/>
+      <subtypes>
+        <type>WorkspaceRoot</type>
+        <type>SectionRoot</type>
+        <type>TemplateRoot</type>
+      </subtypes>
     </doctype>
 
     <doctype name="WorkspaceRoot" extends="Folder">
           <facet name="SuperSpace"/>
+      <subtypes>
+        <type>Workspace</type>
+      </subtypes>
     </doctype>
 
     <doctype name="Workspace" extends="Folder">
       <!-- for logo -->
       <schema name="file" />
       <facet name="SuperSpace"/>
+      <subtypes>
+        <type>Workspace</type>
+        <type>Folder</type>
+        <type>File</type>
+        <type>Note</type>
+      </subtypes>
     </doctype>
 
     <doctype name="TemplateRoot" extends="Folder" >
           <facet name="SuperSpace"/>
+      <subtypes>
+        <type>Workspace</type>
+      </subtypes>
     </doctype>
 
     <doctype name="SectionRoot" extends="Folder">
           <facet name="SuperSpace"/>
+      <subtypes>
+        <type>Section</type>
+      </subtypes>
     </doctype>
 
     <doctype name="Section" extends="Folder">
       <!-- for logo -->
       <schema name="file" />
       <facet name="SuperSpace"/>
+      <subtypes>
+        <type>Section</type>
+      </subtypes>
     </doctype>
 
     <doctype name="File" extends="Document">

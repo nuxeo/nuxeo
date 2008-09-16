@@ -36,7 +36,7 @@ public class DocumentModelTreeImpl extends ArrayList<DocumentModelTreeNode>
 
     private static final long serialVersionUID = -6980985131163070762L;
 
-    protected Map<String, String> pathTitles;
+    protected final Map<String, String> pathTitles;
 
     public DocumentModelTreeImpl() {
         super();
