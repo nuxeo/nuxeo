@@ -51,8 +51,9 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
     private static Map<String, String> pluginsOptions;
 
     @Override
-    public void encodeBegin(@NotNull FacesContext context, @NotNull UIComponent component)
-            throws IOException {
+    public void encodeBegin(@NotNull
+    FacesContext context, @NotNull
+    UIComponent component) throws IOException {
         if (!component.isRendered()) {
             return;
         }
@@ -80,10 +81,10 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
 
         // plugins registration
         if (pluginsOptions == null) {
-            final HtmlEditorPluginService pluginService = Framework.getLocalService(
-                    HtmlEditorPluginService.class);
+            final HtmlEditorPluginService pluginService = Framework.getLocalService(HtmlEditorPluginService.class);
             pluginsOptions = new HashMap<String, String>();
-            pluginsOptions.put("plugins", pluginService.getFormattedPluginsNames());
+            pluginsOptions.put("plugins",
+                    pluginService.getFormattedPluginsNames());
             pluginsOptions.putAll(pluginService.getToolbarsButtons());
         }
         options.putAll(pluginsOptions);
@@ -100,7 +101,11 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         writer.writeAttribute("name", clientId, null);
         writer.writeAttribute("class", editorSelector, null);
         Object currentValue = getCurrentValue(editorComp);
-        writer.writeText(currentValue, null);
+        if (currentValue != null) {
+            writer.writeText(currentValue, null);
+        } else {
+            writer.writeText("", null);
+        }
         writer.endElement("textarea");
 
         writer.flush();
